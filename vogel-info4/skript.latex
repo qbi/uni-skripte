@@ -1,0 +1,1957 @@
+% TODO:
+%   * einen \befehl für \texttt{\underline{ und alles im Text ersetzen
+%   * eine Umgebung für Schreibweisen/Notationen
+
+\documentclass[draft,twoside]{scrreprt}
+
+\usepackage{longtable}
+\usepackage{ifthen}
+
+% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
+% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
+% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
+% eine Druckversion ist das wichtig! Daher dieser Hack.
+% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
+% ohne die Option "`hyperref"' geladen.
+%
+% Achtung: Die Korrektur von \thref muss von Hand auskommentiert werden,
+% wenn hyperref nicht geladen wird!
+\newboolean{withHyperref}
+\setboolean{withHyperref}{true} % true, false
+\ifthenelse{\boolean{withHyperref}}{}%
+	   {\newcommand{\texorpdfstring}[2]{#1}%
+	    \newcommand{\pdfbookmark}[3][]{}%
+	   }
+
+\usepackage{makeidx}
+\usepackage[final]{graphicx}
+\usepackage{color}
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
+	   {}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage{nicefrac}
+\usepackage{ae}
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{helvet}
+\usepackage{xspace}
+\usepackage{longtable}
+\usepackage{slashbox}
+
+% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
+	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
+
+% Zur Korrektur von \thref
+% <news:col095$me8$2@n.ruf.uni-freiburg.de>
+\makeatletter
+\def\thref#1{%
+   \expandafter\ifx\csname r@#1@type\endcsname\None
+     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
+       \thepage \space undefined}\G@refundefinedtrue
+     \else\csname r@#1@type\endcsname~\fi%
+   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
+}
+
+% Korrektur der Platzierung der Gleichungsnummer
+% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
+\def\SetOnlyEndMark{%
+   \global\tag@true
+   \iftagsleft@
+     \gdef\df@tag{%
+       \hfuzz\displaywidth
+       \hbox to 1sp{%
+         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
+   \else
+     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
+   \fi}
+\def\SetTagPlusEndMark{%
+   \iftagsleft@
+     \gdef\maketag@@@##1{%
+       \hfuzz\displaywidth
+       \hbox to 1sp{%
+         \hbox to \displaywidth{%
+           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
+       }%
+     }%
+   \else
+     \gdef\maketag@@@##1{%
+       \hbox{\m@th\normalfont##1%
+         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
+   \fi}
+
+% setzt / als Trenner zwischen Abschnitt und Satznummer
+\def\@thmcountersep{/}
+\makeatother
+
+\usepackage{paralist}
+\usepackage{ngerman}
+%\usepackage{wasysym}  % \lightning
+
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+% \newtheorem{lemma}{Lemma}[section]
+
+\theoremstyle{nonumberbreak}
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{\textnormal{\scshape Beweis:}}
+\newtheorem{fakt}{Fakt}
+
+% \setdefaultenum{(1)}{(a)}{i.}{A.}
+\pagestyle{headings}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\Prr}{\mathbb{P}\mathrm{r}}  % The command \Pr already exist
+\newcommand{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
+
+% Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
+% und in den Index aufgenommen werden.
+\newcommand{\highl}[1]{\textbf{#1}\index{#1}}
+
+% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
+\newcommand*{\taglabel}[1]{%
+  \refstepcounter{equation}\tag{\theequation}\label{#1}%
+}
+
+\newcommand{\obda}{o.\,B.\,d.\,A.\xspace}
+\newcommand{\sonst}{\text{sonst}}
+\newcommand{\leerz}{\ifthenelse{\boolean{mmode}}%
+			       {\text{\textvisiblespace}}%
+			       {\textvisiblespace}}
+\newcommand{\ndef}{\ifthenelse{\boolean{mmode}}%
+			       {\text{n.\,def.}}%
+			       {n.\,def.\xspace}}
+
+% verlängertes vdash für Arme; funktioniert nicht immer
+% \let\vdashorig\vdash
+% \renewcommand{\vdash}{\vdashorig\!\!\!\raisebox{.3mm}{\textbf{--}}}
+      
+\renewcommand{\epsilon}{\varepsilon}
+% \renewcommand{\phi}{\varphi}
+% \renewcommand{\tilde}{\widetilde}
+
+				   		
+\newcounter{schritt}
+\newenvironment{schritte}%
+	       {\begin{list}{\textit{\underline{\arabic{schritt}.\,Schritt:}}}%
+		      {\usecounter{schritt}%
+			\settowidth{\labelwidth}{\textit{\underline{99.\,Schritt:}}}%
+			\setlength{\leftmargin}{1cm}%
+			\setlength{\itemindent}{4mm}%
+			\addtolength{\itemindent}{\labelwidth}%
+			\addtolength{\itemindent}{-\leftmargin}%
+		      }}%
+	       {\end{list}}
+
+
+\newenvironment{mdescription}%
+	       {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+
+
+\setlength{\parindent}{0ex}
+\addtolength{\parskip}{2ex}
+
+\makeindex
+
+\begin{document}
+
+\title{Grundlagen der theoretischen Informatik}
+\author{Jörg Vogel}
+\date{SS 2003}
+\maketitle
+
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+\clearpage
+
+\chapter{Berechenbarkeit}
+\section{Was ist ein Algorithmus?}
+
+1935 formulierte Alan Turing folgende Frage: "`Gibt es eine
+\emph{effektive Prozedur}, die das Hilbertsche Problem löst?"'
+
+\begin{description}
+ \item[Hilbert'sche Problem:] Gegeben sei eine Menge von
+  prädikaten-logischer Formeln und eine weitere Formel $F$. Ist $F$ eine
+  Folgerung aus der Menge der gegebenen Formeln?
+ \item[\textnormal{Umformulierung:}] Ist eine gegebene Formel erfüllbar
+  oder nicht?
+\end{description}
+
+Das Problem von Turing war, dass es bis 1935 keine Präzisierung dessen
+gab, was ein solches Verfahren ("`effektive Prozedur"') ist, obwohl es
+schon seit jahrtausenden Rechenverfahren gibt.
+
+Beispiele für solche Verfahren:
+\begin{itemize}
+ \item Grundrechenarten für mehrstellige Zahlen
+ \item Lösungsverfahren für Gleichungen
+  \begin{itemize}
+   \item lineare Gleichungen
+   \item Polynome
+   \item Differentialgleichungen
+   \item Diophantische Gleichungen
+  \end{itemize}
+ \item Konstruktionsverfahren
+  \begin{itemize}
+   \item regelmäßiges 17-Eck
+  \end{itemize}
+ \item Rezepturen\ldots
+  \begin{itemize}
+   \item \ldots für Speißen
+   \item \ldots für Arzeneimittel
+   \item \ldots für Parfüme
+  \end{itemize}
+\end{itemize}
+
+allen Rezepturen ist gemeinsam:
+\begin{itemize}
+ \item wohlbestimmte Menge an Ausgangsstoffen
+ \item Folge exakter Handlungsanweisungen
+ \item $\longrightarrow$ Produkt
+\end{itemize}
+den Rechenverfahren ist gemeinsam:
+\begin{itemize}
+ \item wohldefinierte Menge von Ausgangsgrößen
+ \item Folge von Rechenschritten
+ \item $\longrightarrow$ Resultat
+\end{itemize}
+
+Dies liefert einen ersten Ansatz für die Formulierung:
+\begin{center}
+  \input{algorithmus.latex}
+\end{center}
+
+Ein konkreter Algorithmus ist der \highl{Euklidische Algorithmus}
+\begin{festl}\label{fes:1}
+  Für zwei natürliche Zahlen $x$ und $y$ bezeichnet $x \mod y$ diejenige
+  natürliche Zahl, die als Rest bei der ganzzahligen Division mit  dem
+  Dividenden $x$ und dem Divisor $y$ bleibt.
+\end{festl}
+
+\begin{bemerk}
+ Frage: Ist diese Festlegung sinnvoll? Was ist das Resultat?
+\end{bemerk}
+
+\begin{satz}\label{satz:1}
+  Für je zwei natürliche Zahlen $x$ und $y$ gibt es zwei eindeutig
+  bestimmte Zahlen $q$ und $r$ mit folgenden Eigenschaften:
+  \begin{enumerate}
+   \item $x = qy+r$
+   \item $0 \leq r < y$
+  \end{enumerate}
+\end{satz}
+
+\begin{bemerk}
+  \thref{satz:1} rechtfertigt die folgende Bezeichnung:
+  \begin{enumerate}
+   \item $q = x \div y$
+   \item $r = x \mod y$
+  \end{enumerate}
+\end{bemerk}
+
+\highl{Euklidischer Algorithmus} -- informal
+\begin{mdescription}
+ \item[Eingabe:] zwei natürliche Zahlen $a$ und $b$
+ \item[Ausgabe:] $r_{k-1}$
+\end{mdescription}
+\begin{schritte}
+ \item Bestimmt $r = a \mod b$\\
+  Falls $r=0$, dann gib $b$ aus, sonst gehen zum nächsten Schritt.
+ \item Bestimme $r_{2} = b \mod r$\\
+  Falls $r_{2} = 0$, dann gebe $r$ aus, sonst gehe zum nächsten Schritt.
+ \item Bestimmt $r_{3} = r \mod r_{2}$\\
+  Falls $r_{3} =0$, dann gebe $r_{2}$ aus, sonst gehe zum nächsten Schritt.
+ \item \ldots Widerhole das Verfahren solange, bis ein Wert $r_{k}=0$
+  erreicht wird und gib den Wert $r_{k-1}$ aus.
+\end{schritte}
+
+\highl{Euklidischer Algorithmus} -- formal
+\begin{enumerate}
+ \item $a_{0}=a; a_{1} = b; i=0$
+ \item \texttt{while} $a_{i+1} \not= 0$ \texttt{do}
+ \item \quad $a_{i+2} = a_{i} \mod a_{i+1}$
+ \item \quad $i=i+1$
+ \item \texttt{return} $a_{i}$
+\end{enumerate}
+
+Zwei Fragen
+\begin{enumerate}
+ \item Ist die Ausgabe $a_{i}$ bzw. $r_{k-1}$ tatsächlich der größte
+  gemeinsame Teiler der Zahlen $a$ und $b$? -- Ist das gegebene Verfahren
+  \emph{korrekt}?
+ \item Liefert das Verfahren das Resultat in einer praktikablen Zeit? --
+  Ist das gegebene Verfahren \emph{effizient}?
+\end{enumerate}
+In unserem Beispiel lassen sich beide Fragen mit \underline{ja}
+beantworten.
+
+Eigenschaften von Algorithmen
+\begin{itemize}
+ \item endliche Beschreibung
+ \item endlicher Datenbereich
+ \item beschränkte Menge von Anfangs-Grundoperationen
+ \item schrittweise Ausführung (bzw. endliche Parallelität)
+ \item endliche Dauer jeder Grundoperation
+ \item Determiniertheit -- zu jedem Zeitpunkt steht fest, welches der
+  nächste Schritt ist
+ \item Terminierung -- das Verfahren endet
+\end{itemize}
+
+\textbf{\large mathematische Formalisierung des Algorithmenbegriffs}
+
+verschiedene Zugänge:
+\begin{description}
+ \item[Termersetzungssysteme]
+  \begin{itemize}
+   \item Turing-Maschine (A.\,Turing, 1936)
+   \item Post'sche Systeme (M.\,Post, 1943)
+   \item Markovalgorithmen (M.\,Markov, 1951)
+  \end{itemize}
+ \item[algebraischer Zugang]
+  \begin{itemize}
+   \item partiell rekursive Funktionen (Kleene, Herbrand, Gödel, 1936)
+   \item $\lambda$-definierbare Funktionen (Church, 1936)
+  \end{itemize}
+ \item[theoretische Modelle]
+  \begin{itemize}
+   \item Registermaschinen (Sheperson, 1964)
+  \end{itemize}
+\end{description}
+
+\begin{satz}[Hauptsatz der Algorithmentheorie]
+  Alle verschiedene Formalisierungen des Algorithmenbegriffs sind äuqivalent.
+\end{satz}
+
+\begin{satz}[These von Church]
+  Alle Algorithmenbegriffe beschreiben die Klasse der im intuitiven Sinne
+  berechenbaren Funktionen!
+\end{satz}
+
+\chapter{Turing-Maschinen}
+\section{Wörter und Sprachen}\label{sec:1}
+
+Es sei $\Sigma$ eine endliche Menge, z.\,B. $\Sigma=\{a_{1},a_{2},
+\ldots, a_{n}\}$. $\Sigma$ heißt \highl{Alphabet}, $x\in\Sigma$ heißt
+\highl{Buchstabe}. Jede endliche Folge $x_{1},\ldots,x_{m}$ von
+Buchstaben aus $\Sigma$ heißt \highl{Wort} über dem Alphabet $\Sigma$.
+Die Anzahl $m$ der Buchstaben eines Wortes $w$ heißt \highl{Länge des
+Wortes} und wird mit $|w|$ bezeichnet.
+
+Eine besondere Rolle spielt das "`\highl{leere Wort}"' der Länge Null.
+(also kein Buchstabe). Die Bezeichnung dafür ist $\lambda(\epsilon)$
+
+$\Sigma^{\ast}$ bezeichnet die \highl{Menge aller endlichen Wörter}
+(inkl.~$\lambda$). Angenommen die Buchstaben $a_{1},\ldots,a_{n}$ von
+$\Sigma$ sind geordnet:
+\begin{equation*}
+  a_{1} < a_{2} < \ldots a_{n}
+\end{equation*}
+Dann ergibt sich hieraus eine kanonische Ordnung für $\Sigma^{\ast}$.
+\begin{align*}
+  w_{1}< w_{2} \Longleftrightarrow& |w_{1}| < |w_{2}| \text{ oder}\\
+  & \big(|w_{1}| = |w_{2}| \text{ und für die erste Stelle, an der sich
+     $w_{1}$ und $w_{2}$ unterscheiden,}\\
+  &\quad\text{gilt: der Buchstabe von $w_{1} <$ dem Buchstaben von
+     $w_{2}$}\big)
+\end{align*}
+oder formal ausgedrück: $w_{1} = wx_{1}w_{1}', w_{2}=wx_{2}w_{2}' \wedge
+x_{1} < x_{2}$ Die Reihenfolge von $\Sigma^{\ast}$ heißt auch
+\highl{quasilexikographische Reihenfolge}
+
+Es sei $\Sigma$ ein Alphabet. Dann bezeichnet
+\begin{align*}
+  \Sigma^{0} &:= \{\lambda\}\\
+  \Sigma^{1} &:= \Sigma\\
+  \Sigma^{n+1} &:= \{ wx: w\in\Sigma^{n} \wedge x\in\Sigma \}\\
+  \Sigma^{\ast} &= \bigcup_{n=0}^{\infty} \Sigma^{n}\\
+  \Sigma^{+} &:= \Sigma^{\ast}\setminus \{\lambda\}
+\end{align*}
+Für $w\in\Sigma$ gilt: $|w| = n$.
+
+Für zwei Wörter $u,v\in\Sigma^{\ast}$ mit $u=x_{1}\ldots x_{m}$ und
+$v=y_{1} \ldots y_{n}$ bezeichnet die \highl{Konkatenation}
+(Hintereinanderschreibung) $u\cdot v$ das Wort $x_{1}\ldots x_{m}y_{1}\ldots
+y_{n}$.
+
+Für ein Wort $w\in\Sigma^{\ast}$ mit $w=x_{1}\ldots x_{m}$ bezeichnet das
+\highl{Spiegelwort} $w^{R}$ das Wort $x_{m}x_{m-1}\ldots x_{1}$.
+
+Man bezeichnet $L\subseteq \Sigma^{\ast}$ als \highl{formale Sprache}.
+Für zwei Sprachen $L_{1},L_{2}\subseteq \Sigma^{\ast}$ ist die
+\highl{Konkaternation} $L_{1}\cdot L_{2} := \{ u\cdot u: u\in L_{1}, v\in
+L_{2}\}$. Für eine Sprache $L\subseteq \Sigma^{\ast}$ ist die
+\highl{Spiegelsprache} $L^{R}$ definiert durch $\{w^{R}: w\in L\}$.
+
+Für ein Wort $w\in\Sigma^{\ast}$ sind die \highl{Potenzen} von $w$
+folgendermaßen definiert:
+\begin{align*}
+  w^{0} &:=\lambda\\
+  w^{1} &:=w\\
+  w^{n+1} & := w^{n}\cdot w
+\end{align*}
+Die $n$-te Pozenz ist also das Wort, das durch $n$-fache
+Hintereinanderschreibung entsteht.
+
+Für eine Sprache $L\subseteq \Sigma^{\ast}$  sind die \highl{Potenzen}
+von $L$ folgendermaßen definiert:
+\begin{align*}
+  L^{0} &:= \{\lambda\}\\
+  L^{1} &:= L\\
+  L^{n+1} &:= L^{n}\cdot L
+\end{align*}
+Die $n$-te Potenz einer Sprache besteht also aus all denjenigen Wörtern,
+die das $n$-fache Produkt irgendwelcher Wörter aus $L$ sind.
+
+Für $L\subseteq \Sigma^{\ast}$ heißt
+\begin{equation*}
+  L^{\ast}:= \bigcup_{n=0}^{\infty} L^{n}
+\end{equation*}
+die \highl{Kleene-Hülle} von $L$.
+
+\subsection{Spezielle Alphabete}
+\begin{align*}
+  \Sigma_{latein} &:= \{ a,b,c,\ldots,x,y,z \}\\
+  \Sigma_{dezi} &:= \{ 0,\ldots,9 \}\\
+  \Sigma_{bool} &:= \{ 0,1\}\\
+  \Sigma_{Tastatur} &:= \{
+     a,\ldots,z,A,\ldots,Z,0,\ldots,9,-,+,:,\ldots\} \cup \{ \leerz \}
+\end{align*}
+\textbf{Achtung:} Es gilt $|\leerz|=1$!
+
+\begin{bemerk}
+  Jeder Roman ist ein Wort über diesem Alphabet
+\end{bemerk}
+
+Wir definieren für Wörter $w\in \Sigma_{bool}^{\ast}$ der Form
+$x_{1}\ldots x_{n}$ die Funktion 
+\begin{equation*}
+  No(w): \Sigma_{bool}^{\ast} \rightarrow \N,
+  w \mapsto \sum_{i=1}^{n}x_{i} 2^{n-i}
+\end{equation*}
+
+Das kürzeste Wort~$w$ mit der Eigenschaft $No(w)=n$ heißt
+\highl{Binärdarstellung} von $n$. Schreibweise: $bin(n) := w$.
+
+Für Wörter $w\in\Sigma_{dezi}^{\ast}$ definiert man analog:
+\begin{equation*}
+  No(w) := \sum_{i=1}^{n} x_{i} 10^{n-i}
+\end{equation*}
+und die \highl{Dezimaldarstellung} $dezi(n)$ als das kürzeste Wort $w$
+mit $No(w) := n$.
+
+Eine Abbildung $f:\Sigma^{\ast} \rightarrow \Delta^{\ast}$ heißt
+\highl{Homomorphismus} von $\Sigma^{\ast}$ auf $L_{2}\subseteq
+\Delta^{\ast}$ $:\Longleftrightarrow$ für alle Wörter
+$u,v\in\Sigma^{\ast}$ gilt: $f(u\cdot v) = f(u)\cdot f(v)$.
+
+\section{Der Begriff der Turing-Maschine}
+
+Zunächst eine informale Beschreibung der Bestandteile einer Turing-Maschine:
+\begin{itemize}
+ \item Ein nach rechts und links unendliches Arbeitsband
+  (\highl{Turing-Band}), das in Felder (Zellen) unterteilt ist.
+ \item In jeder Zelle kan ein Buchstabe eines gegebenen
+  Alphabets~$\Sigma$ stehen oder die Zelle ist leer.
+  
+  Bezeichnung for eine leere Zelle: $\Box$
+  
+  Beispiel für $\Sigma = \Sigma_{latin}$
+  \todo{Beispiel des Turing-Bandes}
+ \item Auf dem Band agiert ein Lese-Schreib-Kopf.
+ \item Dieser Kopf steht auf genau einer Zelle des Bandes und kann in
+  einem Takt den Inhalt dieser Zelle lesen und überschreiben.
+ \item Ein endliches Gedächtnis steuert diesen Arbeitskopf und kann einen
+  von endliche vielen inneren Zuständen annehmen.
+ \item In Abhängigkeit vom gelesenen Symbol und dem inneren Zustand wird
+  eine Aktion ausgeführt.
+ \item Eine solche Aktion hat drei Bestandteile:
+  \begin{itemize}
+   \item neues Symbol schreiben
+   \item neuen inneren Zustand annehmen
+   \item Bewegung des Kopfes um eine Zelle
+  \end{itemize}
+\end{itemize}
+
+\begin{defini}[Formale Beschreibung der Turing-Maschine]
+  Eine \highl{Turing-Maschine} $M$ ist gegeben durch ein Sextupel
+  $M=(Q,\Sigma,\Gamma, \delta, q_{0}, F)$. Dabei ist
+  \begin{tabular}{r@{\ldots}l}
+    $Q$& eine endliche Menge (Zustandsmenge)\\
+    $\Sigma$& ein endliches Alphabet (Eingabealphabet)\\
+    $\Gamma$& ein endliches Alphabet (Arbeitsalphabet), wobei
+       $\Sigma\subseteq\Gamma$\\
+    $\delta$ & Überführungsfunktion $Q\times \Gamma \rightarrow Q\times
+       \Gamma\times\{L,0,R\}$ (links, stehen, rechts)\\
+    $q_{0}\in Q$& Startzustand\\
+    $F\subseteq Q$& Finalzustände
+  \end{tabular}
+\end{defini}
+
+Vereinbarung: Blanksymbol $\Box\in\Gamma\setminus\Sigma$ und
+$Q\cap\Gamma\emptyset$.
+  
+\begin{bsp}
+  Beispiel einer aktuellen Situation einer Turing-Maschine.
+
+  \todo{bild einfügen}
+
+  Es sei $\delta(q,b) = (q', a, R)$. Damit ist die neue Situation:
+  
+  \todo{bild einfügen}
+\end{bsp}
+
+\begin{bemerk}
+  Dieser Übergang heißt "`Takt"' der Maschine.
+\end{bemerk}
+
+\begin{defini}
+  Es ein $M=(Q,\Sigma,\Gamma,\delta,q_{0},F)$ eine Turing-Maschine. Eine
+  \highl{Konfiguration} von $M$ ist ein Wort $\alpha\cdot q\cdot\beta\in
+  \Gamma^{\ast}\times Q\times\Gamma^{\ast}$. Dabei bezeichnet $q\in Q$
+  den aktuellen Zustand der Maschine und
+  $\alpha\cdot\beta\in\Gamma^{\ast}$ die aktuelle Bandinschrift der
+  Maschine.
+\end{defini}
+
+\begin{bemerk}
+  Zu jedem Zeitpunkt sind höchstens endliche viele Symbole veschieden vom
+  Blanksymbol. Damit beschreibt eine Konfiguration eine Momentansituation
+  von $M$.
+\end{bemerk}
+
+\begin{bsp}
+  $K_{1} = aqbba$ und $K_{2}=aaq'ba$. Der Lese-Schreib-Kopf befindet sich
+  auf der ersten Zelle des "`rechten Teils"' von $\beta$.
+\end{bsp}
+
+\begin{defini}
+  Wir definieren auf der Menge der Konfigurationen eine zweistellige
+  Relation $\vdash \subseteq (\Gamma^{\ast}\cdot Q\cdot\Gamma^{\ast})
+  \times (\Gamma^{\ast}\cdot Q\Gamma^{\ast})$
+  
+  \begin{equation*}
+    a_{1}a_{2}\ldots a_{m} \underbrace{q}_{\makebox[0pt]{$\in Q$}}
+    b_{1}b_{2}\ldots b_{n} \vdash
+    \begin{cases}
+      a_{1}a_{2}\ldots a_{m}cq'b_{2}\ldots b_{n}&: \delta(q,b_{1}) =
+      (q',c,R)\\
+      a_{1}a_{2}\ldots a_{m}q'cb_{2}\ldots b_{n}&: \delta(q,b_{1}) =
+      (q',c,0)\\
+      a_{1}a_{2}\ldots q'a_{m}cb_{2}\ldots b_{n}&: \delta(q,b_{1}) =
+      (q',c,L)
+    \end{cases}
+  \end{equation*}
+  
+  Zwei Sonderfälle:
+  \begin{enumerate}
+   \item Der Lese-Schreib-Kopf steht am rechten Rand und bewegt sich nach
+    rechts:
+    \begin{equation*}
+      a_{1}\ldots a_{m}qb_{1} \mapsto a_{1}\ldots a_{m}cq'\Box
+    \end{equation*}
+    falls $\delta(q,b_{1}) = (q',c,R)$.
+   \item Der Lese-Schreib-Kopf steht am linken Rand und bewegt sich nach
+    links:
+    \begin{equation*}
+      qb_{1}b_{2} \ldots b_{n} \mapsto q'\Box b_{2} \ldots b_{n}
+    \end{equation*}
+    falls $\delta(q,b_{1}) = (q',c,L)$.
+  \end{enumerate}
+\end{defini}
+
+\begin{defini}
+  Es sei $M$ eine Turing-Maschine und es seien $K_{1}, K_{2}$ zwei Konfigurationen
+  von $M$.
+
+  \begin{enumerate}
+   \item $K_{2}$ ist \highl{unmittelbare Nachfolgekonfiguration} von
+    $K_{1}$ $:\Longleftrightarrow$ $K_{1} \vdash K_{2}$.
+   \item $K_{2}$ ist \highl{Folgekonfiguration} von $K_{1}$
+    $:\Longleftrightarrow$ $K_{2}=K_{1}$ oder eine endliche Folge
+    $K_{1}', K_{2}',\ldots,K_{m}'$ mit $K_{1} = K_{1}' \vdash K_{2}',
+    K_{2}' \vdash K_{3}', \ldots, K_{m-1}' \vdash K_{m}' = K_{2}$
+    existiert.
+    
+    Schreibweise: $K_{1}\vdash^{\ast} K_{2}$
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  $\vdash^{\ast}$ ist eine reflexive und transitive Hülle von $\vdash$.
+\end{bemerk}
+
+\begin{defini}
+  Die \highl{Startkonfiguration} der Turing-Maschine $M$ bei der Eingabe
+  $w\in\Sigma^{\ast}$ ist $q_{0}w = Start-Konf_{M}(w)$. Jede
+  Konfiguration von $M$ der Form $\alpha q_{F} \beta$ heißt
+  \highl{Endkonfiguration} (oder \highl{Finalzustand}), falls $q_{F}\in
+  F$.
+\end{defini}
+
+\section{Beispiele von Turing-Maschinen}
+\begin{bsp}\label{bsp:1}
+  $L=\{w\in\{a,b\}^{\ast} : w^{R}=w\}$ ist die Menge aller
+  \highl{Palindrome} über $\{a,b\}$.
+  
+  Ziel: Konstruktion einer Turing-Maschine $M$, die $L$ im folgenden Sinne erkennt:
+  \begin{enumerate}
+   \item $w\in L$, dann löscht $M$ die Eingabe $w$, schreibt ein "`a"'
+    und stoppt im Finalzustand.
+   \item $w\in\{a,b\}^{\ast}\setminus L$, dann löscht $M$ diese Eingabe
+    $w$, schreibt ein "`b"' und stoppt im Finalzustand.
+  \end{enumerate}
+  
+  Zustände:\\
+  \begin{tabular}{r@{\ldots}l}
+    $q_{0}$& Startzustand\\
+    $q_{a}$& merke sich "`a"' und Kopf läuft nach rechts\\
+    $q_{b}$& merke sich "`b"' und Kopf läuft nach rechts\\
+    $q_{a}'$& testet "`a"' und Kopf läuft nach links\\
+    $q_{b}'$& testet "`b"' und Kopf läuft nach links\\
+    $q_{+}$& Test positiv\\
+    $q_{-}$& Test negativ\\
+    $q_{F}$& Finalzustand
+  \end{tabular}
+  
+  $\Sigma = \{a,b\}$
+  
+  Zustandsüberführungsfunktion $\delta$:\\
+  \begin{tabular}{*{3}{c|}c}
+    \backslashbox{$Q$}{$\Gamma$}& $a$ & $b$& $\Box$ \\
+    \hline
+    $q_{0}$& $(q_{a},\Box, R)$& $(q_{b},\Box, R)$& $(q_{F},a, 0)$\\
+    $q_{a}$& $(q_{a},a, R)$& $(q_{b},b, R)$& $(q_{a}',\Box, L)$\\
+    $q_{b}$& $(q_{b}, a, R)$& $(q_{b}, b, R)$& $(q_{b}', \Box, L)$\\
+    $q_{a}'$& $(q_{+}, \Box, L)$& $(q_{-}, \Box, L)$& $(q_{F}, a, 0)$\\
+    $q_{b}'$& $(q_{-}, \Box, L)$& $(q_{+}, \Box, L)$& $(q_{F}, a, 0)$\\
+    $q_{+}$& $(q_{+}, a, L)$& $(q_{+}, b, L)$& $(q_{0}, \Box, R)$\\
+    $q_{-}$& $(q_{-}, \Box, L)$& $(q_{-}, \Box, L)$& $(q_{F}, b, 0)$\\
+    $q_{F}$& $(q_{F}, a, 0)$& $(q_{F}, b, 0)$& $(q_{F}, \Box, 0)$
+  \end{tabular}
+
+  Die Überführungsfunktion ist stets eine \highl{totaldefinierte
+  Fuktion}! Das bedeutet, es gibt keine undefinierten Situationen! Wenn
+  ein Finalzustand erreicht wird, stoppt die Maschine (von außen
+  betrachtet) bzw. ist in einer Endlosschleife (von innen betrachtet).
+\end{bsp}
+
+\begin{bsp}
+  Wir konstruieren eine Maschine $M$, die die Sprache $L=\{a^{n}b^{n}:
+  n\geq 1\} \subseteq \{a,b\}^{\ast}$ erkennt.
+  
+  $M$ arbeitet in zwei Etappen:
+  \begin{enumerate}%[1.\,{Etappe}]
+   \item $M$ testet, ob die Eingabe von der Form $a^{i}b^{j}$ ist.
+   \item $M$ testet, ob $i =j$ ist.
+  \end{enumerate}
+  
+  \begin{longtable}{r@{\;\ldots\;}p{.75\linewidth}}
+    $q_{0}$& \parbox[t]{\linewidth}{
+	       falls "`a"' gelesen wird: Bewegung nach rechts\\
+	       falls "`b"' gelesen wird: Übergang in $q_{1}$\\
+	       falls "`$\Box$"' gelesen wird: "`Fehler"'
+	     }\\
+    $q_{1}$& \parbox[t]{\linewidth}{
+    	       falls "`a"' gelesen wird: "`Fehler"'\\
+    	       falls "`b"' gelesen wird: Bewegung nach rechts\\
+    	       falls "`$\Box$"' gelesen wird: Übergang in $q_{2}$
+    	     }\\
+    $q_{2}$& \parbox[t]{\linewidth}{
+    	       löscht das rechteste "`b"': Übergang in $q_{3}$\\
+    	       lese "`a"' oder "`$\Box$"': "`Fehler"'
+    	     }\\
+    $q_{3}$& Bewegung nach links bis zum ersten $\Box$: Übergang in $q_{4}$\\
+    $q_{4}$& \parbox[t]{\linewidth}{
+    	       streiche das "`a"': Übergang zu $q_{5}$\\
+    	       falls "`b"' oder "`$\Box$"': "`Fehler"'
+    	     }\\
+    $q_{5}$& \parbox[t]{\linewidth}{
+    	       testet, ob der "`Rest"' das leere Wort ist: Fianlzustand $q_{7}$\\
+    	       lesse "`a"' oder "`b"': Übergang zu $q_{6}$
+    	     }\\
+    $q_{6}$& Bewegung nach rechts bis zum ersten $\Box$: Übergang zu $q_{2}$\\
+    $q_{7}$& Finalzustand
+  \end{longtable}
+  
+  \begin{tabular}{c|ccc}
+    & $a$ & $b$ & $c$\\
+    \hline
+    $q_{0}$ & $(q_{0}, a, R)$ & $(q_{1}, b, R)$&
+	 $(q_{0},\Box,0)^{\star}$\\
+    $q_{1}$& $(q_{1},a,0)^{\star}$ & $(q_{1}, b, R)$& $(q_{2}, \Box, L)$\\
+    $q_{2}$& $(q_{2},a,0)^{\star}$ & $(q_{3}, \Box, L)$& $(q_{2}, \Box,
+	 0)^{\star}$\\
+    $q_{3}$& $(q_{3},a,L)$ & $(q_{3}, b, L)$& $(q_{4}, \Box, R)$\\
+    $q_{4}$& $(q_{5},\Box,R)$ & $(q_{4}, b, 0)^{\star}$& $(q_{4}, \Box,
+	 0)^{\star}$\\
+    $q_{5}$& $(q_{6},a,R)$ & $(q_{6}, b, R)$& $(q_{7}, \Box, 0)$\\
+    $q_{6}$& $(q_{6},a,R)$ & $(q_{6}, b, R)$& $(q_{2}, \Box, L)$\\
+    $q_{7}$& $(q_{7},a,0)$ & $(q_{7}, b, 0)$& $(q_{7}, \Box, 0)$\\
+  \end{tabular}\\
+  \textit{$^{\star}$: Für diese Zustände stoppt die Maschine mit "`Fehler"'.}
+
+  Es gilt: $M$ erreicht bei Eingabe $w$ den Finalzustand~$q_{7}$
+  $\Longleftrightarrow$ $w\in L$.
+\end{bsp}
+
+\section{Exkurs über Zahlenfunktionen}
+Es sei $b>1\in\N$ \highl{Basis}
+
+\subsection{\texorpdfstring{$b$}{b}-näre Zahlendarstellung}
+Ziffern $\{0,1,\ldots,b-1\}$
+
+Fakt: Jede natrüliche Zahl $n\geq0$ besitzt ein eindeutige Darstellung
+der Form
+\begin{equation*}
+  m=x_{m}b^{m}+ x_{m-1}b^{m-1} + \ldots + x_{2}b^{2} + x_{1}b+x_{0}
+\end{equation*}
+wobei $x_{m},\ldots,x_{0}\in\{0,\ldots,b-1\}$ und $x_{m}\not=0$ sind.
+
+Schreibweise: $bnaer(n) = x_{m}x_{m-1}\ldots x_{2}x_{1}x_{0}$
+
+Damit gilt: $bnaer : \N \rightarrow \{0,1,\ldots,b-1\}^{\ast}$. Die
+Abbildung ist eindeutig, aber nicht bijektiv.
+
+speziell: $b=2$ mit den Ziffern $\{0,1\}$ heißt binär. z.\,B.: $2naer(17)
+=10001$, aber $010001\in\{0,1\}^{\ast}$ ist kein Bild der Abbildung.
+
+\subsection[\texorpdfstring{$b$}{b}-adische Darstellung]%
+	   {$\boldsymbol{b}$-adische Darstellung}
+Ziffern $\{1,2,\ldots,b\}$
+
+\begin{fakt}
+  jede natürliche Zahl $n>0$ besitzt eine eindeutige Darstellung der Form
+  \begin{equation*}
+    n=y_{n}b^{n}+ y_{n-1}b^{n-1}+\ldots + y_{1}b^{1} + y_{0}
+  \end{equation*}
+  wobei $y_{n},y_{n-1},\ldots,y_{0}\in\{1,2,\ldots,b\}$
+\end{fakt}
+
+Schreibweise: $bad(m) = y_{n}y_{n-1}\ldots y_{0}$, $bad(0) = \lambda$.
+
+Die Abbildung $bad : \N\rightarrow\{1,2,\ldots,b\}^{\ast}$ ist eine
+Bijektion.
+
+speziell: $b=2$ dyadisch; $dya: \N \rightarrow \{1,2\}^{\ast}$ ist
+injektiv und surjektiv. z.\,B.: $dya(17) = 1121$
+
+\section{Turing-Berechenbarkeit}
+Sei $M= (Q,\Sigma,\Gamma,\delta, q_{0}, F)$ eine Turing-Maschine. Ferner seien
+$\Box,\#\in\Gamma, \Sigma\subseteq \Gamma\setminus\{\Box,\#\},
+\Delta\subseteq\Gamma\setminus\{\Box\}$ und $n>0$.
+
+Eine Funktion $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$
+heißt
+\highl{berechenbar} von $M$, falls gilt:
+\begin{enumerate}
+ \item Für $(w_{1},w_{2},\ldots,w_{n})\in \bigl(\Sigma^{\ast}\bigr)^{n}$
+  sei $f$ definiert und für die Startkonfiguration\\
+  $q_{0}w_{1}\#w_{2}\#\ldots\#w_{n}$ gilt:
+  \begin{equation*}
+    q_{0}w_{1}\#w_{2}\#\ldots\#w_{n} \vdash^{\ast}
+    q_{F}f(w_{1},w_{2},\ldots,w_{n})
+  \end{equation*}
+  mit $q_{F}\in F$.
+ \item Falls $f$ für $(w_{1},w_{2},\ldots,w_{n})\in
+  \bigl(\Sigma^{\ast}\bigr)^{n}$ nicht definiert ist, dann ausgehend von\\
+  $q_{0}w_{1}\#w_{2}\#\ldots\#w_{n}$, stoppt $M$ nicht oder $M$ stoppt nicht
+  in einem Finalzustand.
+\end{enumerate}
+
+\begin{defini}
+  Eine Wortfunktion $f: \bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow
+  \Delta^{n}$ heißt \highl{Turing-brechenbar} $:\Longleftrightarrow$ eine
+  Turing-Maschine $M$ existiert, die $f$ berechnet.
+\end{defini}
+
+\begin{defini}\label{def:1}
+  Eine Zahlenfunktion $g:\N^{n}\rightarrow\N$ heißt
+  \highl{Turing-berechenbar} $:\Longleftrightarrow$ $g$ ist bei dyadischer
+  Codierung $f_{g}$ ($f_{g}$ ist eine Wortfunktion) Turing-brechenbar, d.\,h. 
+  \begin{equation*}
+    f_{g}(y_{1}, y_{2}, \ldots, y_{n}) = dya\Bigl(g
+    \bigl(dya^{-1}(y_{1}), \ldots, dya^{-1}(y_{n}) \bigr) \Bigr)
+  \end{equation*}
+\end{defini}
+
+\begin{defini}\label{def:2}
+  Eine Sprache $L\subseteq\Sigma^{\ast}$ heißt
+  \highl{Turing-entscheidbar} $:\Longleftrightarrow$ die
+  \highl{charakteristische Funktion} $\chi_{L}$ Turing-berechenbar ist
+  \begin{equation*}
+    \chi_{L}(w) = \begin{cases}
+		 1&:w\in L\\
+		 0&:w\not\in L
+	       \end{cases}
+  \end{equation*}
+\end{defini}
+
+\begin{defini}\label{def:3}
+  Eine Sprache $L\subseteq \Sigma^{\ast}$ heißt
+  \highl{Turing-semientscheidbar} $:\Longleftrightarrow$ die
+  \highl{partielle charakteristische Funktion} $\chi_{L}^{p}$ ist
+  Turing-berechenbar
+  \begin{equation*}
+    \chi_{L}^{p}(w) = \begin{cases}
+			1&: w\in L\\
+			\ndef&: w\not\in L
+		      \end{cases}
+  \end{equation*}
+\end{defini}
+
+\begin{defini}
+  Eine Sprache $L\subseteq\Sigma^{\ast}$ heißt \highl{Turing-aufzählbar}
+  $:\Longleftrightarrow$ eine total definierte Turing-berechenbare
+  Funktion $f:\Sigma^{\ast} \rightarrow\Sigma^{\ast}$ existiert, so dass
+  $f(\Sigma^{\ast}) = L$. \help{Wohin werden $w\in\Sigma^{\ast}\setminus
+  L$ abgebildet?}
+\end{defini}
+
+\subsection{Normierte Startsituation}
+\begin{itemize}
+ \item Definition trifft keine Aussage über das Verhalten einer Turing-Maschine für
+  Eingaben, die nicht von der erwarteten Form sind.
+ \item Jede Turing-Maschine berechnet für jede natürliche Zahl $n>0$ eine
+  $n$-stellige Funktion.
+\end{itemize}
+
+\subsection{partielle Funktionen}
+Als berechenbare Funktionen werden auch solche angesehen, die nicht
+überall definiert sind.
+
+\begin{bsp}
+  Wir definieren für $\Sigma=\{1,2\}$ die Turing-Maschine $M =(\{q_{0},
+  q_{F}\}, \Sigma, \Sigma\cup\{\Box\}, \delta, q_{0}, \{q_{F}\})$
+  \begin{align*}
+    \delta(q_{0},1) &= (q_{0}, 1, R) &\delta(q_{F}, 1) &= (q_{F}, 1,0)\\
+    \delta(q_{0},2) &= (q_{0}, 2, R) &\delta(q_{F}, 2) &= (q_{F}, 2,0)\\
+    \delta(q_{0},\Box) &= (q_{0}, \Box, R) &\delta(q_{F}, \Box) &=
+	 (q_{F}, \Box,0)
+  \end{align*}
+  $\delta(q_{F},\ast)$ ist die Verfollständigung der
+  Überführungsfunktion, obwohl $q_{F}$ nie erreicht wird.
+  
+  $M$ berechnet die \highl{"`nirgends definierte"' Funktion}
+  $f:\Sigma^{\ast} \rightarrow\Sigma^{\ast}$
+  \begin{align*}
+    f(w) = \text{ \ndef (Symbol $\perp$)}&&\forall w\in\Sigma^{n}
+  \end{align*}
+  Dies gilt für den Definitionsbereich $D\not=\emptyset$ und damit
+  $f=\emptyset$
+\end{bsp}
+
+\subsection{Wortfunktionen}
+Die Abbildung $bad: \N\rightarrow\{1,2,\ldots,b\}^{\ast}$ (für eine
+Basis $b>1$) ist eine Bijektion zwischen den Zahlen und den Wörten.
+Diese Bijektion erlaubt ein eine natürliche Zahl $n$ mit dem Wort
+$bad(n)$ und schließlich die Menge $\N$ mit $\{1,2,\ldots,b\}^{\ast}$
+zu identifizieren.
+
+Jedes Alphabet $\Sigma$ mit $k$~Buchstaben kann durch Umbennen in
+$\{1,2,\ldots,k\}$ übersetzt werden und damit kann $\Sigma^{\ast}$ mit
+$\N$ identifiziert werden.
+
+\begin{bsp}
+  Eine Turing-Maschine, die die Nachfolgerfunktion dyadischer Darstellung berechnet:
+  \begin{longtable}[l]{r@{\;\ldots\;}l}
+    $q_{0}$& Startzustand\\
+    $q_{U1}$& Übertrag 1\\
+    $q_{U0}$& Übertrag 0\\
+    $q_{F}$& Finalzustand
+  \end{longtable}
+  $\Sigma=\{1,2\}, \Gamma=\{1,2,\Box\}$\\
+  \begin{tabular}{c|ccc}
+    $\delta$& $1$& $2$ & $\Box$\\
+    \hline
+    $q_{0}$ & $(q_{0}, 1, R)$& $(q_{0}, 2, R)$& $(q_{U1}, \Box, L)$\\
+    $q_{U1}$ & $(q_{U0}, 2, L)$& $(q_{U1}, 1, L)$& $(q_{F}, 1, 0)$\\
+    $q_{U0}$ & $(q_{U0}, 1, L)$& $(q_{U0}, 2, L)$& $(q_{F}, \Box, R)$\\
+    $q_{F}$ & $(q_{F}, 1, 0)$& $(q_{F}, 2, 0)$& $(q_{F}, \Box, 0)$
+  \end{tabular}
+\end{bsp}
+
+Wir haben in \thref{def:1} folgende Festlegung getroffen:
+Eine Zahlenfunktion $f:\N^{n} \rightarrow\N$ heißt 
+Turing-berechenbar $:\Longleftrightarrow$ die folgende Funktion $f'$
+Turing-berechenbar ist:
+\begin{equation*}
+  f': \{1,2\}^{\ast} \rightarrow \{1,2\}^{\ast}, f(y_{1},\ldots,y_{n}) =
+  dya\Bigl(f\bigl(dya^{-1}(y_{1}), \ldots,dya^{-1}(y_{n}) \bigr)\Bigr)
+\end{equation*}
+Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
+\begin{defini}
+  Eine Zahlenfunktion $f:\N^{n}\rightarrow\N$ heißt
+  \highl{Turing-berechenbar} $:\Longleftrightarrow$ zwei natürliche
+  Zahlen $b_{1},b_{2} >1$ und eine Turing-berechenbare Funktion
+  \begin{equation*}
+    f'': (\{1,\ldots,b_{1}\}^{\ast})^{n} \rightarrow
+    \{1,\ldots,b_{2}\}^{\ast}, (z_{1}, \ldots,z_{n}) \mapsto
+    b_{2}ad\Bigl( f \bigl(b_{1}ad^{-1}(z_{1}), \ldots,
+    b_{1}ad^{-1}(z_{n}) \bigr) \Bigr)
+  \end{equation*}
+  existieren.
+\end{defini}
+
+\begin{description}
+ \item[Frage:] Führen diese zwei verschiedenen
+  Definitionen auf zwei verschiedene Arten von Berechenbarkeit?
+ \item[Wir zeigen:] Falls $f''$
+  Turing-berechenbar ist, dann folgt daraus, dass auch $f$
+  Turing-berechenbar ist.
+  \begin{align*}
+    f'(y_{1},\ldots,y_{n}) &= dya\Bigl( f \bigl(dya^{-1}(y_{1}),\ldots,
+       dya^{-1}(y_{n}) \bigr)\Bigr)\\
+    &= dya\biggl( \underbrace{b_{2}ad^{-1}\Bigl( \underbrace{f''\bigl(b_{1}ad(
+       \underbrace{dya^{-1}
+	 (\underbrace{y_{1}}_{\makebox[0pt]{$\in\{1,2\}^{\ast}$}}) )
+       }_{\in\{1,\ldots,b_{1}\}^{\ast}},
+       \ldots, b_{1}ad(dya^{-1}(y_{n})) \bigr)}_{\in\{1,\ldots,b_{2}\}^{\ast}}
+        \Bigr)}_{\in\N} \biggr)\\
+    &= \bigl(b_{2}ad^{-1} \circ dya \bigr) f''( (dya^{-1}\circ
+       b_{1}ad)(y_{1}), \ldots, (dya^{-1}\circ b_{1}ad)(y_{n}) )
+  \end{align*}
+\end{description}
+
+\begin{fakt}\mbox{}\\
+  \begin{tabular}{p{.35\linewidth}cp{.4\linewidth}}
+    $(b_{2}ad^{-1} \circ dya)$ & und & $(dya^{-1}\circ b_{1}ad)$\\
+    Umrechnung von $b_{2}$-adischer in dyadische Darstellung
+       && Umrechnung von dyadischer in $b_{1}$-adishe Darstellung\\
+    \multicolumn{3}{c}{sind "`einfach"' durch Turing-Maschinen berechenbar.}
+  \end{tabular}
+\end{fakt}
+
+\begin{bemerk}
+  zur Verkettung von Funktionen:
+  \begin{center}
+    \input{verkettung.pdf_t}\\
+    $c = g(b) = g(f(a)) = (f\circ g)(a)$
+  \end{center}
+
+  Es gilt: $(a,c) \in f\circ g :\Longleftrightarrow \exists b\in B:
+  (a,b)\in f, (b,c)\in g$
+\end{bemerk}
+
+\begin{description}
+ \item[Fazit:] Es gibt einen Begriff der Turing-Berechenbarkeit für Wort-
+  und Zahlenfunktionen, unabhängig von der Darstellung.
+\end{description}
+
+\begin{defini}
+  \begin{equation*}
+    \mathcal{TM} = \{f:\N^{n}\rightarrow\N \big| f \text{ ist
+    Turing-berechenbar}\}
+  \end{equation*}
+  $\mathcal{TM}$ ist die \highl{Klasse aller Turing-berechenbarer
+  Funktionen}
+\end{defini}
+
+\subsection{Entscheidbarkeit, Semientscheidbarkeit und Aufzählbarkeit}
+Alle diese Begriffen sind zurückgeführt auf die Berechenbarkeit gewisser
+Funktionen und damit spezielle Formulierungen der Berechenbarkeit.
+
+\begin{satz}
+  Eine Sprache $L\subseteq\Sigma^{\ast}$ ist \highl{Turing-aufzählbar}
+  $:\Longleftrightarrow$ $L=\emptyset$ oder es existiert eine total
+  definierte Funktion $f:\Sigma^{\ast}\rightarrow\Sigma^{\ast}$, für die
+  gilt: $f(\Sigma^{\ast}) = L$.
+\end{satz}
+
+\subsubsection{Beziehungen zwischen den Begriffen}
+\begin{mdescription}
+ \item[1.\,Beobachtung:] Die Sprache
+  $L\subseteq\Sigma^{\ast}$ ist Turing-entscheidbar $\Longleftrightarrow$
+  $\overline{L}=\Sigma^{\ast}\setminus L$ ist Turing-endscheidbar
+  \begin{center}
+    \input{t-entsch1.pdf_t}
+  \end{center}
+ \item[2.\,Beobachtung:] Die Sprache
+  $L\subseteq\Sigma^{\ast}$ ist Turing-entscheidbar $\Longleftrightarrow$
+  $L$ und $\overline{L}$ sind Turing-semientscheidbar
+  \begin{center}
+    \input{t-entsch2.pdf_t}
+  \end{center}
+ \item[2.\,Beobachtung:] Eine Sprache
+  $L\subseteq\Sigma^{\ast}$ ist Turing-sementscheidbar
+  $\Longleftrightarrow$ $L$ ist aufzählbar
+  
+  Begründung: Übung \todo{ergänzen}
+\end{mdescription}
+
+\subsection{Turing-Maschinen als Akzeptoren und Erkenner}\label{sec:2}
+Eine Sprache $L$ ist Turing-entscheidbar $\Longleftrightarrow$
+$\chi_{L}$ ist Turing-berechenbar (vgl. \thref{def:2}), d.\,h. falls eine
+Eingabe $w\in\Sigma^{\ast}$ zu $L$ gehört, endet die Berechnung einer Turing-Maschine
+in der Konfiguration $\Box q_{F}1\Box$ und falls $w\not\in L$ endet die
+Berechnung in $\Box q_{F}0\Box$.
+
+Wir definieren neue Finalzustände (einer neuen Turing-Maschine):
+\begin{itemize}
+ \item 
+  aus der Konfiguration $\Box q_{F}1\Box \vdash \Box q_{+}\Box\Box$,
+  $q_{+}$ heißt \highl{akzeptierender Zustand} (wobei das Turing-Band
+  leer ist)
+ \item 
+  aus der Konfiguration $\Box q_{F}0\Box \vdash \Box q_{-}\Box\Box$,
+  $q_{-}$ heißt \highl{ablehnender Zustand} (wobei das Turing-Band
+  leer ist)
+\end{itemize}
+Eine solche Turing-Maschine (ohne Ausgabe) heißt \highl{Erkenner} der Sprache $L$ mit
+dem akzeptierenden Finalzustand $q_{+}$ und dem ablehnenden Finalzustand
+$q_{-}$.
+
+$L$ ist Turing-semientscheidbar $\Longleftrightarrow$ $\chi_{L}^{p}$ ist
+berechenbar (vgl. \thref{def:3}).
+
+Analog definieren wir einen akzeptierenden Zustand $q_{+}$ als denjenigen
+Finalzustand von $\Box q_{F}1\Box\vdash \Box q_{F}\Box\Box$. Es gibt
+jedoch keinen ablehnenden Zustand. Eine solche Turing-Maschine heißt \highl{Akzeptor}
+der Sprache $L$.
+
+\section{Techniken zur Programmierung von Turing-Maschinen}
+\subsection{Endliche Sprache mit schnellem Zugriff}
+
+Die Daten einer endlichen Datenmenge $D$ können durch folgenden Trick in
+das "`Gedächtnis"' der Turing-Maschine eingeführt werden:
+\begin{equation*}
+  Q_{neu} = Q_{alt} \times D
+\end{equation*}
+
+\begin{bemerk}\label{bem:1}
+  Dies ist keine Änderung des bisherigen Begriffs Turing-Maschine, sondern lediglich
+  eine \emph{Modifikation}, die eine Konstruktion wahrnimmt!
+\end{bemerk}
+
+\begin{bsp}
+  Für $w\in\Sigma^{\ast}$ bezeichnet $|w|$ die Länge von $w$, d.\,h. $w$
+  hat $|w|$ viele Buchstaben. (vgl. Beginn von Abschnitt\,\ref{sec:1})
+  
+  Wir betrachten die folgende Sprache
+  \begin{equation*}
+    L= \{w=w_{1}w_{2}\ldots w_{|w|}: w_{1} \not= w_{j}, j=2,\ldots,|w|\}
+    \subseteq \Sigma^{\ast}
+  \end{equation*}
+  
+  Wir konstruieren folgende Turing-Maschine $M$:
+  $\Sigma=\{a,b,c\}, \Gamma = \Sigma\cup\{\Box\}$\\
+  $Q_{neu} =\{q_{1},q_{2},q3\}\times \Gamma$\\
+  Startzustand: $[q_{0}, \Box]$\\
+  Finalzustand: $[q_{F}, \Box]$\\
+  Überführungsfunktion:
+  \begin{align*}
+    \delta( [q_{0}, X], X) &= ([q_{1}, X], \Box, R) &X\in\{a,b,c\}\\
+    \delta( [q_{0}, \Box], \Box) &= ([q_{F}, \Box], \Box, 0)
+       &\text{(Finalzustand)}\\
+    \delta( [q_{1}, X], Y) &= ([q_{1}, X], \Box, R) &X,Y\in\{a,b,c\},
+       X\not=Y\\
+    \delta( [q_{1}, X], \Box) &= ([q_{1}, \Box], \Box, 0)
+       &\text{(Finalzustand)}\\
+    \delta( [q_{1}, X], X) &= ([q_{2}, \Box], X, R) &X\in\{a,b,c\}\\
+    \delta( [q_{2}, \Box], X) &= ([q_{2}, \Box], X, L) &\text{($M$ stoppt
+       nicht)}\\
+  \end{align*}
+  $M$ ist ein Akzeptor für $L$.
+\end{bsp}
+
+\subsection{Turing-Bänder mit mehreren Spuren}
+Mehrspurmaschinen:
+\begin{mdescription}
+ \item[informell:] Das Turing-Band ist in mehrere Zeilen
+  bzw. Spuren unterteilt
+ \item[formal:]
+  \begin{equation*}
+    \Gamma_{neu} = \Sigma \cup \Gamma_{alt}^{(k)}
+  \end{equation*}
+  Dabei ist $\Box^{k}$ das neue Blanksymbol
+\end{mdescription}
+
+\begin{bemerk}
+  Analog zu \thref{bem:1} ist dies keine Änderung des Begriffs Turing-Maschine.
+\end{bemerk}
+
+\begin{bsp}[Addition mehrstelliger Zahlen in dyadischer
+  Darstellung]\mbox{}\\
+  \begin{tabular}{r}
+    1221\\
+    1221\\
+    \hline
+    12122
+  \end{tabular}
+  
+  Eingabe: $\Box dya(x)\# dya(y)\Box$\\
+  $\Sigma = \{1,2,\#\}$
+
+  \begin{enumerate}
+   \item Initialisierung: $k=3$ (3 Spuren)
+    \begin{align*}
+      b\in\Sigma &\mapsto (b,\Box,\Box)\\
+      \Box &\mapsto (\Box,\Box,\Box)
+    \end{align*}
+    
+    wir erhalten so:
+    \begin{equation*}
+      \begin{array}{ccccc}
+	\Box&dya(x) & \#& dya(y) & \Box\\
+	\Box&\Box\ldots\Box& \Box & \Box\ldots\Box & \Box\\
+	\Box&\Box\ldots\Box& \Box & \Box\ldots\Box & \Box
+      \end{array}
+    \end{equation*}
+   \item Übertragung von $dya(y)$ in die 2.\,Spur:
+    wir erhalten:
+    \begin{equation*}
+      \begin{array}{ccc}
+	\Box&dya(x) & \Box\\
+	\Box&dya(y) & \Box\\
+	\Box&\Box\ldots\Box & \Box
+      \end{array}
+    \end{equation*}
+   \item Stellenweise Addition:
+    wir erhalten:
+    \begin{equation*}
+      \begin{array}{ccc}
+	\Box&dya(x) & \Box\\
+	\Box&dya(y) & \Box\\
+	\Box&dya(x+y) & \Box
+      \end{array}
+    \end{equation*}
+   \item Normierung:
+    eine Spur $(\gamma_{1}, \gamma_{2}, \gamma_{3}) \mapsto \gamma_{3}$
+  \end{enumerate}
+\end{bsp}
+
+\begin{bsp}[Multipikation mehrstelliger Zahlen in dyadischer Darstellung]
+  Bei der Multiplikation zweier Faktoren $x$ und $y$ benötigt das
+  herkömmliche Verfahren etwas $\lfloor\log_{2} y\rfloor$ viele Zeilen --
+  also nicht konstant viele!
+  
+  \begin{tabular}[t]{r}
+    $1221\cdot 1$\\
+    \hline
+    1221
+  \end{tabular}\qquad
+  \begin{tabular}[t]{r}
+    $1221\cdot 2$\\
+    \hline
+    12122
+  \end{tabular}\qquad
+  \begin{tabular}[t]{r}
+    $1221\cdot 11$\\
+    \hline
+    1221\\
+    1221\phantom{1}\\
+    \hline
+    111111
+  \end{tabular}\qquad
+  \begin{tabular}[t]{r}
+    $1221\cdot 12$\\
+    \hline
+    12122\\
+    1221\phantom{2}\\
+    \hline
+    121212
+  \end{tabular}\qquad
+  \begin{tabular}[t]{r}
+    $1221\cdot 21$\\
+    \hline
+    1221\\
+    12122\phantom{1}\\
+    \hline
+    212121
+  \end{tabular}
+  
+  Der erste Faktor $x$ wird mit den Stellen des zweiten Faktors $y$
+  multipliziert und die Ergebnisse werden aufsummiert.
+  
+  \begin{enumerate}
+   \item Initialisierung: $k=4$
+   \item Frage: $y=0$? $\rightarrow$ ja: gehe zu 3.; nein: gehe zu 4.
+   \item Lösche den Bandinhalt und stoppe
+   \item 2.\,Spur Zwischenergebnis $x$ mal letztes Bit von $y$.
+   \item Frage: hat $y$ ein weiteres Bit? $\rightarrow$ ja: gehe zu 6.;
+    nein: gehe zu 9.
+   \item 3.\,Spur Zwischenergebnis $x$ mal aktuelles Bit von $y$.
+   \item 4.\,Spur Zwischenergebnis 2.+3.\,Spur
+   \item Übertrage das Zwischenergebnis Summe 2.+3.\,Spur in die 2.\,Spur
+    und lösche die 3. und 4. Spur, gehe zu 5.
+   \item Normierung: Das Ergbenis $dya(x+y)$ steht in der 2.\,Spur und
+    wird in eine Spur zurückübersetzt
+  \end{enumerate}
+\end{bsp}
+
+\subsection{Mehrbandmaschninen}
+$k$ sei fixiert, $k$-Band-Turing-Maschine
+\begin{mdescription}
+ \item[informell:] $k$\,Bänder mit je einem Kopf
+ \item[formell:] $\delta:Q\times \Gamma^{k} \rightarrow Q\times
+  \Gamma^{k}\times\{L,0,R\}^{k}$
+\end{mdescription}
+
+\begin{bemerk}
+  Dies ist eine Erweiterung der bisherigen Definition der Turing-Maschine. \help{Wieso
+  das auf einmal?}
+\end{bemerk}
+
+\begin{bsp}
+  $k=2, L= \{w\in\{a,b\}^{\ast}: w =w^{R}\}$
+  
+  Wir wissen bereits aus \thref{bsp:1}, dass $L$ Turing-entscheidbar
+  durch eine gewöhnliche (1-Band-) Turing-Maschine ist.
+  
+  Idee:
+  \begin{enumerate}
+   \item $q_{0}$ läuft an das rechte Ende der Eingabe, $\rightarrow q_{1}$
+   \item $q_{1}$ liest die Eingabe von rechts nach links und kopiert sie
+    buchstabenweise auf das 2.\,Band, $\rightarrow q_{2}$
+   \item $q_{2}$ bewegt den Kopf auf Band\,2 an das linke Ende,
+    $\rightarrow q_{3}$
+   \item $q_{3}$ vergleicht beide Bandinhalte buchstabenweise; stets
+    Übereinstimmung $\rightarrow$ akzeptiere; irgendwo Unterschied
+    $\rightarrow$ ablehnen
+  \end{enumerate}
+\end{bsp}
+
+\begin{satz}
+  Jede Sprache $L\subseteq \Sigma^{\ast}$, die von einer $k$-Band-Turing-Maschine
+  entschieden werden kann, kann auch von einer gewöhnlichen (1-Band-)
+  Turing-Maschine entschieden werden.
+  
+  \begin{proof}
+    Es sei $M$ eine $k$-Band-Turing-Maschine, die die Sprache $L\subseteq
+    \Sigma^{\ast}$ entscheidet. (Schreibweise: $L(M)=L$: $M$ entscheidet
+    $L$)
+    
+    Wir konstruieren eine 1-Band-Turing-Maschine $M'$, die die Arbeit von $M$
+    nachvollzieht, d.\,h. "`simuliert"'. (Beweis durch Simulation) $M'$
+    vollzieht die Arbeit von $M$ mit ihren Mitteln nach. Das Arbeitsband
+    von $M'$ ist unterteilt in $(2k+1)$\,Spuren. Die Spuren
+    $1,3,\ldots,2k-1$ enthalten Inhalte der Bänder $1,2,\ldots,k$ von
+    $M$. Die Spuren $2,4,\ldots,2k$ markieren die Kopfposition auf den
+    Bändern $1,2,3,\ldots,k$ von $M$. Die Spur~$2k+1$ enthält eine linke
+    und eine rechte Endmarke, die das am weitesten links bzw. rechts
+    liegene Feld eines der Bänder markiert.
+    
+    \textbf{Ausgangssituation\ldots}
+    \begin{description}
+     \item[\ldots von $M$:]\mbox{}\\
+      \begin{tabular}{*{6}{c}@{\qquad}r}
+	$\Box$& $w_{1}$ &$w_{2}$& \ldots &$w_{n}$&$\Box$& 1.\,Band\\
+	&$\uparrow$\\
+	$\Box$& $\Box$ & \multicolumn{2}{c}{\ldots} &$\Box$&$\Box$& 2.\,Band\\
+	&$\uparrow$\\
+	\multicolumn{6}{c}{\vdots}&\multicolumn{1}{c}{\vdots}\\
+	$\Box$& $\Box$ & \multicolumn{2}{c}{\ldots} &$\Box$&$\Box$& $k$.\,Band\\
+	&$\uparrow$
+      \end{tabular}
+      Startzustand: $q_{0}$
+     \item[\ldots von $M'$:]
+      $\Box w_{1} w_{2} \ldots w_{n} \Box$\qquad einzigstes Band,
+      Startzustand $q_{0}'$
+    \end{description}
+    
+    \begin{enumerate}
+     \item \textbf{Initialisierung} (Einrichten der Spuren):\\
+      \begin{tabular}{l@{\quad}*{6}{c}}
+	1.& $\Box$& $w_{1}$ &$w_{2}$& \ldots &$w_{n}$&$\Box$\\
+	2.&$\Box$&$\blacktriangle$&$\Box$&\ldots&$\Box$&$\Box$\\
+	3.&$\Box$& $\Box$ & \multicolumn{2}{c}{\ldots} &$\Box$&$\Box$\\
+	4.&$\Box$&$\blacktriangle$&$\Box$&\ldots&$\Box$&$\Box$\\
+	5.&$\spadesuit$& $\Box$ & \multicolumn{3}{c}{\ldots} &$\clubsuit$\\
+	&$\uparrow$
+      \end{tabular}\qquad$(k=2)$
+     \item \textbf{Simulation}: um einen Schritt der Arbeit von $M$
+      nachzuvollziehen, führt $M'$ folgende Schritte aus:
+      \begin{enumerate}
+       \item der Kopf von $M'$ bewegt sich von links nach rechts und
+	merkt sich für jedes Band von $M$ das aktuelle gelesene Symbol.
+	Am rechten Rand kennt $M'$ den aktuellen Zustand und die aktuell
+	gelesenen Symbole und kann damit gemäß der Überführungsfunktion
+	$\delta$ von $M$ einen neuen aktuellen Zustand $q_{t+1}$ vin $M$
+	und $k$ neue Buchstaben (von $M$) und $k$ Bewegungen der Köpfe
+	bestimmen.
+       \item Der Kopf von $M'$ bewegt sich von rechts nach links und
+	überschreibt die Buchstaben in den markierten Feldern gemäß
+	$\delta$, verschiebt die Kopfmarkierungen gemäß $\delta$ und
+	erreicht die linke Endmarke. Falls hierbei eine Zelle, die eine
+	der beiden Endmarken enthält, beschriftet wird, wird die Marke um
+	ein Feld nach links bzw. rechts verschoben, so dass der
+	Arbeitsbereich von $M'$ stets zwischen den Endmarken liegt.
+	
+	Damit erreicht $M'$ eine normierte Zwischesituation und der
+	nächste Schritt von $M$ kann simuliert werden.
+	
+	$M'$ akzeptiert eine Eingabe $w$ $\Longleftrightarrow$ $M$ diese
+	Eingabe akzeptiert.
+      \end{enumerate}
+     \item \textbf{Normierung} (Band aufräumen)
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\subsection{Unterprogramme}
+\begin{defini}
+  Unterprogramme sind eigenständige Turing-Maschinen, die in größere Turing-Maschinen eingebaut sind.
+  \begin{itemize}
+   \item Ein Teil der Zustände von $M$ und des Arbeitsspeichers von $M$
+    sind für das Unterprogramm reserviert.
+   \item In gewissen Situationen der Hauptprogramms werden Daten an ein
+    Unterprogramm übergeben, dort behandelt und wieder zuürck an das
+    Hauptprogramm übergeben.
+  \end{itemize}
+\end{defini}
+
+\begin{bsp}[Multiplikation von natürlichen Zahlen in unärer Darstellung]
+  \begin{description}
+   \item[Eingabe:] der Form $1^{n}\#1^{m}$
+    \begin{equation*}
+      \Box \underbrace{1\ldots1}_{n-\text{mal}}\# \underbrace{1\ldots1}_{m-\text{mal}}\Box
+    \end{equation*}
+   \item[Resultat:] $1^{n\cdot m}$
+   \item[Idee:] Kopiere ersten Block ($1^{n}$) so oft, wie es der zweite
+    Block angibt. Konstruiere eine 3-Band-Turing-Maschine
+    \begin{center}
+      \begin{tabular}{ll}
+	1.\,Band: &Eingabe\\
+	2.\,Band: &2.\,Block ($1^{m}$)\\
+	3.\,Band: & Ergebnis
+      \end{tabular}
+    \end{center}
+    
+    Wir beschreiben die Arbeit der Maschine:
+    \begin{longtable}{r@{\;\ldots\;}p{.7\linewidth}}
+      $q_{0}$& Überlaufen des ersten Blocks $\rightarrow$ $q_{1}$\\
+      $q_{1}$& Überlaufen des zweiten Blocks nach rechts und kopiere
+	 Inhalt auf das zweite Band (lösche ihn auf dem ersten Band)
+	 $\rightarrow$ $q_{2}$\\
+      $q_{2}$& falls auf dem zweiten Band ein Strich gelesen wird, dann
+	 gehe zu $q_{u}$, falls ein $\Box$ gelesen wird, gehe zu $q_{3}$\\
+      $q_{u}$& kopiere den Inhalt des ersten Bandes auf das dritte Band
+	 $\rightarrow$ $q_{u}'$\\
+      $q_{u}'$& gehe mit den Köpfen in die Ausgangsposition $\rightarrow$
+	 $q_{2}$\\
+      $q_{3}$& Normierung -- Resultat auf das erste Band schreiben
+	 und Aufräumen $\rightarrow$ $q_{F}$\\
+      $q_{0}$--$q_{3}$& Turing-Maschine mit Startzustand $q_{0}$, Finalzustand $q_{F}$\\
+      $q_{u},q_{u}'$& Unterprogramm, Startzustand $q_{u}$, Finalzustand
+	 $q_{u}'$, eingebettet in große Turing-Maschine
+    \end{longtable}
+  \end{description}
+\end{bsp}
+
+% Die fehlt noch einiges an Text, damit die underfull \vbox weggeht! Aber
+% was will man noch schreiben?
+
+\subsection{Komposition von Turing-Maschinen}
+\subsubsection{Transitionsdiagramme}
+
+\begin{bsp}
+  Am Beispiel einer Turing-Maschine, die binär eine Eins addiert. Zustände der
+  Maschine werden als Knoten in einem Diagramm dargestellt. Die
+  Überführungsfunktion mittels bewerteter Kanten.
+  \begin{center}
+    \input{transition.pdf_t}\\
+    \textit{Die Maschine "`$i:=i+1$"'}
+  \end{center}
+  Dieser (Mega-)Knoten lässt dich in ein weiteres Transitionsdiagramm
+  (einer größeren Turing-Maschine) einsetzen.
+\end{bsp}
+
+\begin{bsp}
+  Eine Turing-Maschine, die testet, ob der Bandinhalt $=0$ ist oder nicht (binäre
+  Darstellung)
+  \begin{center}
+    \input{transition2.pdf_t}\\
+    \textit{Die Maschine "`$i=0$"'}
+  \end{center}
+  Die Anschlüsse für dieses Unterprogramm (Knoten) führen in den
+  Startzustand und verlassen die Endzustände.
+\end{bsp}
+
+\subsubsection{Hintereinanderschalten von Turing-Maschinen}
+Es seien $M_{i}=(Q_{i}, \Sigma, \Gamma_{i}, \delta_{i}, q_{0_{i}}, F_{i})$
+($i=1,2$) zwei Turing-Maschinen. \obda $Q_{1}\cap Q_{2}=\emptyset$. Die Turing-Maschine
+$M=(Q_{1}\cup Q_{2}, \Sigma, \Gamma_{1}\cup \Gamma_{2}, \delta,
+q_{0_{1}}, F_{2})$ realisiert ein hintereinanderschalten von $M_{1}$ und $M_{2}$.
+Dabei gilt:
+\begin{equation*}
+  \delta = \delta_{1}\cup\delta_{2}\cup\{(q_{1},a) \mapsto (q_{0_{2}},
+  a', 0): q_{1}\in F_{1}, a\in\Gamma_{1}, a'\in\Gamma_{2}\}
+\end{equation*}
+
+\begin{description}
+ \item[Notation:] $start \rightarrow M_{1} \rightarrow M_{2} \rightarrow
+  stopp$ oder $M:= M_{1}\,;\,M_{2}$
+\end{description}
+
+\begin{bsp}
+  \begin{equation*}
+    \underbrace{start \rightarrow \fbox{i:=i+1} \rightarrow \fbox{i:=i+1}
+      \rightarrow stopp}_{i:=i+2}
+  \end{equation*}
+\end{bsp}
+
+\begin{bsp}[Fallunterscheidung]
+  \begin{gather*}
+    start \rightarrow M_{0} \rightarrow \fbox{i=0}
+    \begin{cases}
+      q_{+} \rightarrow M_{2} \rightarrow \ldots \rightarrow stopp\\
+      q_{-} \rightarrow M_{2} \rightarrow \ldots \rightarrow stopp
+    \end{cases}\\
+    M := M_{0};\ \text{\textit{\texttt{\underline{if}}}}\ i=0\
+       \text{\textit{\texttt{\underline{then}}}} \ M_{1}\
+       \text{\textit{\texttt{\underline{else}}}}\ M_{2}
+  \end{gather*}
+\end{bsp}
+
+\begin{bsp}[while-Schleifen]
+  \mbox{}
+  \begin{center}
+    \input{while.pdf_t}\\
+    \textit{Maschine "`\underline{\texttt{while}} $i\not=0$ 
+      \underline{\texttt{do}} $M$"'}
+  \end{center}
+\end{bsp}
+
+\section{Rechenzeit und Speichersplatz}
+
+\begin{defini}
+  Es sei $M=(Q, \Sigma, \Gamma, \delta, q_{0}, F)$ ein Turing-Maschine und
+  $w\in\Sigma^{\ast}$ eine Eingabe.
+  \begin{align*}
+    time_{M}(w) &:=
+       \begin{cases}
+	 \text{\parbox{.4\textwidth}{Anzahl der Rechenschritte von $M$
+	 bei der Eingabe $w$}}&
+	 \text{falls $M$ bei $w$ stoppt}\\
+	 \ndef& $M$\text{ stoppt nicht}
+       \end{cases}\\
+    space_{M}(w) &:=
+       \begin{cases}
+	 \text{\parbox{.4\textwidth}{Anzahl der vom Kopf besuchten Zellen
+	 des Arbeitsbandes}}&
+	 \text{falls $M$ bei $w$ stoppt}\\
+	 \ndef& $M$\text{ stoppt nicht}
+       \end{cases}
+  \end{align*}
+  Damit ist $time_{M}: \Sigma^{\ast} \rightarrow \N,
+  space_{M}:\Sigma^{\ast} \rightarrow \N$.
+  \begin{align*}
+    TIME_{M}(n) &:=
+       \begin{cases}
+	 \max_{|w|\leq n} time_{M}(w)& time_{M}(w) \text{ definiert}\\
+	 \ndef& $M$\sonst
+       \end{cases}\\
+    SPACE_{M}(n) &:=
+       \begin{cases}
+	 \max_{|w|\leq n}space_{M}(w)&space_{M}(w)\text{ ist definiert}\\
+	 \ndef& $M$\sonst
+       \end{cases}
+  \end{align*}
+  $TIME_{M}: \N\rightarrow\N, SPACE_{M}:\N\rightarrow\N$
+\end{defini}
+
+\begin{defini}
+  Es sei $t:\N \rightarrow\N$ und $s:\N\rightarrow\N$ zwei (total
+  definierte) Zahlenfunktionen. Eine Funktion $f:\N\rightarrow\N$ ist
+  \highl{Turing-berechenbar mit der Zeitschranke} $t$ und der
+  \highl{Speicherplatzbeschränkung} $s$, falls es eine Turing-Maschine $M_{t}$ und eine
+  Turing-Maschine $M_{s}$ gibt, so dass $TIME_{M_{t}} \leq t$ und $SPACE_{M_{s}}\leq s$.
+  
+  Es sei $L\subseteq \Sigma^{\ast}$ eine formale Sprache. $L$ ist
+  \highl{Turing-erkennbar mit der Zeitbeschränkung} $t$ und der
+  \highl{Speicherplatzbeschränkung} $s$ $\Longleftrightarrow$ ein
+  Erkenner $M_{t}$ (Turing-Maschine ohne Ausgabe;
+  s.\,Abschn.\,\ref{sec:2}) und ein Erkenner $M_{s}$ existieren, die
+  folgende Bedingungen erfüllen:
+  \begin{gather*}
+    M_{t}(w\in L)= q_{+}, M_{t}(w\not\in L) = q_{-}, TIME_{M_{t}} \leq t\\
+    M_{s}(w\in L)= q_{+}, M_{s}(w\not\in L) = q_{-}, SPACE_{M_{s}} \leq s\\
+  \end{gather*}
+\end{defini}
+
+\begin{satz}
+  Jede Sprache $L\subseteq \Sigma^{\ast}$, die von einer Mehrband-Turing-Maschine $M$
+  mit der Zeitbeschränkung $t$ und der Speicherplatzbeschränkung $s$
+  enschieden werden kann, kann auch von einer 1-Band-Turing-Maschine $M_{1}$ mit der
+  Zeitbeschränkung $O(s\cdot t)$ und der Platzbeschränkung $O(s)$
+  entschieden werden.
+  
+  \begin{equation*}
+    \mathcal{P} = \{L: \exists p, p \text{ ist Polynom}, TIME_{M} \leq p\}
+  \end{equation*}
+  $\mathcal{P}$ sind alle die Sprachen, die sich von einer Turing-Maschine in
+  Polynomialzeit entscheiden lassen.
+\end{satz}
+
+\chapter{Partiell-rekursive Funktionen}
+\begin{mdescription}
+ \item[bisher:] (Turing-)Maschinen, die Funktionen mit Hilfe eines
+  Algorithmus' berechnen
+ \item[jetzt:] algebraische Beschreibung:
+  \begin{itemize}
+   \item Gundfunktionen\ldots die (selbstverständlich) berechenbar sind
+   \item Schemata\ldots die aus "`einfachen"' Funktionen neue "`komplexe"'
+    Funktionen konstruieren
+  \end{itemize}
+\end{mdescription}
+
+\begin{bsp}[Modulo-Funktion]\label{bsp:2}
+  $\mod:\N\times\N \rightarrow\N$\\
+  $\mod(a,b) =$ Rest bei der ganzzahligen Division von $a$ und $b$\\
+  $\mod(a,0) = \mod(0,b) = \mod(0,0) = 0$
+  
+  Für $b\not=0$ lässt sich die Funktion rekursiv auf folgende Weise
+  berechnen:
+  \begin{equation*}
+    \mod(a,b) = \text{\texttt{\underline{if}} } a < b
+    \text{\texttt{ \underline{then}} } a \text{\texttt{
+    \underline{else}}} \mod(a-b, b)
+  \end{equation*}
+  
+  Vergleiche mit \thref{fes:1}
+\end{bsp}
+  
+Das zugrundeliegende Schema ist folgendes:
+\begin{itemize}
+ \item für eine endliche Menge $A\subseteq \N$ sind die Werte der
+  Funktion bekannt (mittels anderer einfacherer Funktionen berechenbar)
+ \item für den "`größen"' Rest werden die Funktionswerte durch Werte
+  dieser Funktionen an früheren Stellen $B_{n}$ (mittels anderer
+  einfacher Funktionen) bestimmt.
+\end{itemize}
+
+In unserem \thref{bsp:2} sind dies: $A=\{0,\ldots,b-1\}, B_{n}=\{n-b\}$.
+
+Ein besonders einfacher Fall liegt vor, wenn $A=\{0\}$ und
+$B_{n}=\{n-1\}$.
+
+\section{Primitiv-rekursive Funktionen}
+\begin{festl}
+  Wir beschränken uns \obda auf Zahlenfunktionen $f:\N^{k}\rightarrow\N$.
+\end{festl}
+
+\begin{bemerk}
+  Eine echte Einschränkung für diesen Abschnitt ist, dass wir nur total
+  definierte Funktionen betrachten.
+\end{bemerk}
+
+\begin{defini}[Grundfunktionen]\index{Grundfunktionen}
+  \begin{description}
+   \item[Projektion]\index{Projektion}
+    \begin{align*}
+      I_{j}^{n}(x_{1},\ldots,x_{n}) = x_{j}
+      &&\bigl((x_{1},\ldots,x_{n})\in\N^{n}, n\geq1, 1\leq j\leq n\bigr)
+    \end{align*}
+    Die Menge aller Projektionen $\{I_{j}^{n}: n>0, 1\leq j \leq n\}$
+   \item[Konstanten]
+    \begin{align*}
+      C_{k}^{n}(x_{1},\ldots,x_{n}) = k
+      &&\bigl((x_{1},\ldots,x_{n})\in\N^{n}, n\geq1, k\geq 0)
+    \end{align*}
+    Die Menge aller Konstanten $\{C_{k}^{n}: n\geq 1, k\geq 0\}$
+    \help{$=\N$?}
+   \item[Nachfolgerfunktion]
+    \begin{align*}
+      N(x) = x+1 &&(x\in\N)
+    \end{align*}
+  \end{description}
+  
+  $\mathcal{G}$\ldots ist die Menge aller Grundfunktionen
+\end{defini}
+
+\begin{bemerk}
+  Alle Grundfunktionen sind Turing-berechenbar!
+\end{bemerk}
+
+\begin{defini}[Einsetzungsprinzip]
+  Gegeben seien eine Funktion $h\!:\N^{m}\rightarrow\N$ und eine Menge von
+  Funktionen $g_{i}\!:\N^{n}\rightarrow\N$ ($i=1,\ldots,m$). Die Funktion
+  $f\!:\N^{n}\rightarrow\N$ geht aus den Funktionen $h$ und $g_{i}$ durch
+  \highl{Einsetzung} hervor $:\Longleftrightarrow$
+  \begin{equation*}
+    f(x_{1},\ldots,x_{n}) = h(g_{1}(x_{1},\ldots,x_{n}),\ldots,
+    g_{m}(x_{1},\ldots,x_{n}))
+  \end{equation*}
+  Schreibweise: $f=SUB^{m}(h; g_{1},\ldots,g_{m})$
+  
+  Es sei $F\subseteq\{f:\N^{n}\rightarrow\N, n\geq0\}$ eine Menge von
+  (Zahlen-)Funktionen. $F$ heißt \highl{abgeschlossen bezüglich des
+  Schemas der Einsetzung} $:\Longleftrightarrow$ jede Funktion, die durch
+  Einsetzung von Funktionen auf $F$ hervorgeht, gehört zu $F$. 
+\end{defini}
+
+\begin{bemerk}
+  Die Klasse der Turing-berechenbaren Funktionen $\mathcal{TM}$ ist
+  abgeschlossen bezüglich des Schemas der Einsetzung!
+  \begin{center}
+    \input{einsetzung.pdf_t}
+  \end{center}
+\end{bemerk}
+
+\begin{defini}[Schema der primitiven Rekursion]
+  Eine Funktion $f:\N^{n}\rightarrow\N$ geht auf den Funktionen
+  $g:\N^{n-1}\rightarrow\N$ und $h:\N^{n+1}\rightarrow\N$ durch
+  \highl{primitive Rekursion} hervor $:\Longleftrightarrow$
+  \begin{align*}
+    \forall x_{1},\ldots,x_{n-1},y: f(x_{1},\ldots,x_{n-1},0) &=
+       g(x_{1},\ldots,x_{n-1})\\
+    f(x_{1},\ldots,x_{n-1},y+1) &= h(x_{1},\ldots,x_{n-1}, y,
+       f(x_{1},\ldots,x_{n-1},y))
+  \end{align*}
+  Schreibweise: $f=PR(g,h)$
+  
+  $F$ heißt abgeschlossen bzgl. primitiver Rekursion
+  $:\Longleftrightarrow$ jede Funktion, die sich durch primitive
+  Rekursion aus den Funktionen aus $F$ ergibt, selbst zu $F$ gehört.
+\end{defini}
+
+\begin{bemerk}
+  $\mathcal{TM}$ ist abgeschlossen bzgl. primitiver Rekursion.
+\end{bemerk}
+
+\begin{bsp}
+  Die Addition $plus:\N\times\N\rightarrow\N$ geht aus den
+  Grundfunktionen durch primitive Rekursion und Einsetzung hervor.
+  \begin{align*}
+    plus(x,y+1) &= x+(y+1) = (x+y) +1 = plus(x,y)+1 =
+       N\bigl(plus(x,y)\bigr)\\
+    plus(x,0) &= x = I_{1}^{1}(x)\\
+    plus(x,y+1) &= N\bigl( I_{3}^{3}(x,y,plus(x,y)) \bigr)
+  \end{align*}
+  Damit gilt: $plus = PR\bigl(I_{1}^{1}, SUB^{1}(N;I_{3}^{3})\bigr)$
+\end{bsp}
+
+\begin{defini}[primitiv-rekursive Funktionen]
+  Die Klasse $\Prr$ der primitiv-rekursiven Funktionen ist die kleinste
+  Klasse von Funktionen $\{f:\N^{n}\rightarrow\N: n\geq0\}$ mit folgenden
+  Eigenschaften:
+  \begin{enumerate}
+   \item Die Grundfunktionen $\mathcal{G}$ liegen in $\Prr$. ($\mathcal{G}\subseteq\Prr$)
+   \item $\Prr$ ist abgeschlossen bzgl. der Einsetzung.
+   \item $\Prr$ ist abgeschlossen bzgl. der primitiven Rekursion
+  \end{enumerate}
+
+  Die Klasse der primitiv-rekursiven Funktionen lässt sich damit als
+  algebraische Hülle schreiben:
+  \begin{equation*}
+    \Prr = \Gamma_{\{SUB,PR\}}(G)
+  \end{equation*}
+  Dabei steht $SUB$ für $SUB = \{SUB^{m}:m\in\N\}$
+\end{defini}
+
+\begin{bemerk}
+  Alle primitiv-rekursiven Funktionen sind Turing-berechenbar!
+\end{bemerk}
+
+\begin{description}
+ \item[Frage:] Sind alle Funktionen, die total definiert und berechenbar
+  sind, primitiv-rekursiv?
+\end{description}
+
+\section{Die Ackermann-Funktion}
+F.\,W.\,Ackermann definierte 1928 die folgende Funktion, die total
+definiert und berechenbar ist, aber von der gezeigt wurde, dass sie nicht
+primitiv-rekursiv ist!
+
+Wir benutzen folgende Form: $A:\N^{2}\rightarrow\N$
+\begin{align*}
+  A(0,y) &:= y+1\\
+  A(x+1, 0) &:= A(x,1)\\
+  A(x+1, y+1) &:= A(x, A(x+1, y))
+\end{align*}
+
+\begin{bemerk}
+  Dieses Definitionsschema enthält eine doppelte Rekursion, die dazu
+  führt, dass die Funktion \emph{exorbitant} schnell wächst!
+\end{bemerk}
+
+\begin{bsp}
+  \begin{align*}
+    A(1,0) &= A(0,1) = 2\\
+    A(1,1) &= A(0, A(1,0)) = A(0,2) = 3\\
+    A(1,2) &= A(0, A(1,1)) = A(0,3) = 4\\
+    \mathbf{A(1,y)} & \mathbf{=y+2}\\
+    A(1,y+1) &= A(0, A(1,y)) = A(0,y+2) = (y+2) +1 = (y+1) +2\\
+    A(2,0) &= A(1,1) = 1+2 = 3\\
+    A(2,1) &= A(1, A(2,0)) = A(1,3) = 3+2 = 5\\
+    A(2,2) &= A(1, A(2,1)) = A(1,5) = 5+2 = 7\\
+    \mathbf{A(2,y)} &\mathbf{= 2y+3}\\
+    A(2,y+1) &= A(1, A(2,y)) = A(1,2y+3) = 2y+3+2 = 2(y+1) +3
+  \end{align*}
+  % Eine align wird nicht zwischendrin umgebrochen.
+  \begin{align*}
+    A(3,0) &= A(2,1) = 2\cdot 1+3 = 5\\
+    A(3,1) &= A(2, A(3,0)) = A(2,5) = 2\cdot5+3 = 13\\
+    A(3,2) &= A(2, A(3,1)) = A(2,13) = 2\cdot13+3 = 29\\
+    A(3,3) &= A(2, A(3,2)) = A(2,29) = 2\cdot29+3 = 61\\
+    \mathbf{A(3,y)} &\mathbf{= 2^{y+3}-3}\\
+    A(3,y+1) &= A(2, A(3,y)) = A(2, 2^{y+3}-3) = 2\cdot(2^{y+3}-3)+3 =
+       2^{(y+1)+3}-3\\
+    A(4,0) &= A(3,1) = 2^{1+3}-3\\
+    A(4,1) &= A(3,A(4,1)) = A(3,2^{16}-3) = 2^{2^{16}}-3\\
+    A(4,2) &= A(3,A(4,2)) = A(3, 2^{2^{16}}-3) = 2^{2^{2^{16}}}-3\\
+    \mathbf{A(4,y)} &\mathbf{= 2^{2^{\cdots^{2}}}
+       \raisebox{1mm}{\big\}}y\text{\textbf{-mal}} -3}\\
+    A(5,0) &= A(4,1) = 2^{16}-3\\
+    A(5,1) &= A(4, A(5,0) ) = A(4, 2^{16}-3)
+  \end{align*}
+\end{bsp}
+
+\begin{fakt}\help{könnte man das nicht als Satz machen?}
+  Die Ackermannfunktion ist (intuitiv) berechenbar, aber nicht
+  primitiv-rekursiv.
+  
+  Idee: Definition einer Folge von Funktionen $f_{n}:
+  \N\rightarrow\N$
+  \begin{align*}
+    f_{0}(y) &= y+1\\
+    f_{n+1}(y) &= f_{n}(1)\\
+    f_{n+1}(y) &= f_{n}(f_{n+1}(y))\\
+    \intertext{mit dem Effekt}
+    f_{n+1}(y+1) &= f_{n}(f_{n+1}(y)) = f_{n}(f_{n}(f_{n+1}(y-1))) =
+       \ldots\\
+    \intertext{von $y$ ineinander geschachtelten Rekursionen}
+  \end{align*}
+  
+  Haben $\Prr = \Gamma_{\{SUB,PR\}}(G)$, d.\,h. jede primitiv-rekursive
+  Funktion lässt sich darstellen aus den Grundfunktionen und endlich oft
+  nötiger Anwendung des Schemas der Einsetzung und des Schemas der
+  primitiven Rekursion.
+  
+  Für jede konkrete Funktion ergibt sich eine konkrete Darstellung mit
+  einer festen Anzahl von Einsetzungen und primitiven Rekursionen.
+\end{fakt}
+
+\begin{bemerk}\label{bem:2}
+  Jede primitiv-rekursive Funktion lässt sich durch einen Ausdruck
+  endlicher Länge über einem gegebenen Alphabet beschreiben:
+  \begin{equation*}
+    \Sigma = \{I,C,N, |, \#, ), ,, (, x, SUB, PR\}
+  \end{equation*}
+\end{bemerk}
+
+\begin{bsp}
+  Hatten: $plus= PR(I_{1}^{1}, SUB^{1}(N, I^{3}_{3}))$ es ergibt sich:
+  \begin{equation*}
+    plus = PR(I\#|\#|\#,SUB\#|\#(N,I\#|||\#|||\#))
+  \end{equation*}
+  Dies ist ein Wort über dem Alphabet $\Sigma$
+\end{bsp}
+
+\textbf{Konsequenz}:\\
+Eine solche Darstellung zeigt:
+\begin{enumerate}
+ \item $\Prr$ ist abzählbar unendlich
+ \item $\Prr$ ist effektiv nummerierbar (durch systematisches
+  nummerieren der Wörter über $\Sigma$)
+\end{enumerate}
+
+Die hat folgende weitere Konsequenzen:\\
+Es sei $\phi_{0}, \phi_{1}, \phi_{2},\ldots$ eine Nummerierung aller
+einstelligen primitiv-rekursiven Funktionen. Wir definieren durch
+\emph{Diagonalisierung} ein Funktion $\psi$
+\begin{equation*}
+  \psi(n) = \phi_{n}(n)+1\qquad(n\in\N)
+\end{equation*}
+Klar ist: $\psi$ ist (intuitiv) berechenbar, aber $\psi$ ist nicht
+primitiv-rekursiv.
+
+Ann.: $\psi\in\Prr$ $\Rightarrow$ Dann existiert $k\in\N: \psi=\phi_{k}$,
+aber es gilt: $\phi_{k}(k) = \psi(k) = \phi_{k}(k)+1$.
+
+% Die Zeichen im Mathemodus werden nicht fett dargestellt, daher
+% \boldsymbol (s. Amsmath-Doku). Da jedoch die Zeichen in der Überschrift
+% und im Inhaltsverzeichnis normal seien sollen, muss der optionale
+% Parameter sein.
+\section[\texorpdfstring{$\mu$}{\textmu}-rekursive Funktionen]%
+	{$\boldsymbol{\mu}$-rekursive Funktionen}
+
+Programmiersprachen mit Schleifen:
+\begin{equation*}
+  \text{\texttt{\underline{while}} } Bedingung
+  \text{ \texttt{\underline{do}} } Anweisung \text{ \texttt{\underline{end}}}
+\end{equation*}
+wollen solche Schleifen simulieren
+
+\begin{defini}
+  Es sei $g:\N^{k+1}\rightarrow\N$ eine Funktion mit $k>0$. Die Funktion
+  $f:\N^{k}\rightarrow\N$ entsteht aus $g$ durch das Schema der
+  \highl{$\mu$-Rekursion} $:\Longleftrightarrow$ für alle
+  $(x_{1},\ldots,x_{k})\in\N^{k}$ gilt:
+  \begin{equation*}
+    f(x_{1},\ldots,x_{k}) =
+    \begin{cases}
+      \min\{t\in\N: g(x_{1},\ldots,x_{k},t)=0\}&
+      \text{\parbox[t]{.35\linewidth}{falls ein solches
+      $t$ existiert und $\forall 0\leq y\leq t$ $g(x_{1},\ldots,x_{k},y)$
+      definiert ist}}\\
+      \ndef&\sonst
+    \end{cases}
+  \end{equation*}
+\end{defini}
+Schreibweise: $f=\mu R(g)$
+
+Damit gilt: Wenn $g$ berechenbar ist, dann ist auch $f$ (intuitiv)
+berechenbar.
+
+als Schleife:\\
+\verb|t := 0|\\
+\verb|while |$g(x_{1},\ldots,x_{k}, t)\not=0$\verb| do t := t+1 end|
+
+\begin{defini}
+  \begin{enumerate}
+   \item Eine Klasse $\mathbb{F}$ von Funktionen heißt abgeschlossen
+    bzgl. $\mu$-Rekursion $:\Longleftrightarrow$ für alle
+    $g\in\mathbb{F}$ ist $f=\mu R(g)\in\mathbb{F}$.
+   \item Die Klasse $\mathbb{P}$ der partiell-rekursiven Funktionen
+    \index{Klasse|part.-rek.\,Fkt} ist die kleinste Klasse, die $\Prr$
+    umfasst und abgeschlossen bzgl. $\mu$-Rekursion ist. Anders
+    dargestellt: $\mathbb{P}=\Gamma_{\{\mu R\}}(\Prr)$
+  \end{enumerate}
+\end{defini}
+
+Äquivalent hierzu ist die folgende Definition:
+\begin{defini}
+  Die Klasse $\mathbb{P}$ ist die kleinste Klasse, die $\mathcal{G}$ umfasst und
+  die abgeschlossen bzgl. Einsetzung, primitiver-Rekursion und
+  $\mu$-Rekursion ist. Anders dargestellt:
+  $\mathbb{P}=\Gamma_{\{SUB,PR,\mu R\}}(\mathcal{G})$
+\end{defini}
+
+\begin{bemerk}
+  Dabei werden das Schema der Einsetzung und das Schema der primitiven
+  Rekurision für partiell-definierte Funktionen erweitert.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{equation*}
+    d(m,n) = \begin{cases}
+	       \frac{n}{m}&\text{falls Teiler existiert}\\
+	       \ndef& \sonst
+	     \end{cases}
+  \end{equation*}
+  Zunächst zeigen wir, dass die Signumfunktion, Potenzfunktion und die
+  Betragsfunktion primitiv-rekursiv sind.
+  
+  \begin{gather*}
+    sgn: \N\rightarrow\N, n \mapsto
+       \begin{cases}0&:n=0\\1&:n>0\end{cases}\\
+    exp:\N^{2}\rightarrow\N, (m,n)\mapsto m^{n}\quad (0,0)\mapsto1\\
+    ab:\N^{2}\rightarrow\N, (m,n)\mapsto |m-n|
+  \end{gather*}
+  
+  \begin{align*}
+    sgn(0) &= C_{0}^{0}\\
+    sgn(n+1) &= h(n, sgn(n)) = C_{1}^{2}(n, sgn(n))
+  \end{align*}
+  Also:
+  \begin{align*}
+    sgn &= PR(C_{0}^{0}, C_{1}^{2})&\text{Die Darstellung ist nicht
+       eindeutig!}\\
+    sgn &= PR(SUB^{1}(I_{1}^{1}, C_{0}^{0}), SUB^{1}(C_{1}^{1}, I_{1}^{2}))
+  \end{align*}
+
+  Damit ist $f:\N^{3}\rightarrow\N$ primitiv-rekursiv
+  \begin{align*}
+    f(k,m,n) &= |k\cdot m-n|^{sgn(m)}\\
+    \intertext{setzen $f$ in $\mu R(f)$ ein:}
+    [\mu R(f)](m,n) &=
+       \begin{cases}
+	 \mu k(|k\cdot m-n|=0)&: \text{falls ein solches $k$ existiert
+	 und $m\not=0$}\\
+	 \ndef&:\sonst
+       \end{cases}\\
+    &= \begin{cases}
+	 \mu k(k\cdot m=n)&: \text{falls ein solches $k$ existiert}\\
+	 \ndef&:\sonst
+       \end{cases}\\
+    &= \begin{cases}
+	 \mu \frac{n}{m}&: \text{falls $m$ ein Teiler von $n$ ist, $m\not=0$}\\
+	 \ndef&:\sonst
+       \end{cases}\\
+    &= d(m,n)
+  \end{align*}
+\end{bsp}
+
+\begin{bsp}
+  Die Funktion $wurz:\N\rightarrow\N$ ist partiell-rekursiv
+  \begin{equation*}
+    wurz(n) := \begin{cases}
+		 \sqrt{n}&:\sqrt{n}\in\N\\
+		 \ndef&:\sonst
+	       \end{cases}
+  \end{equation*}
+  
+  Wir betrachten folgende zweistellige Funktion $h$
+  \begin{align*}
+    h(m,n) &= |m-n^{2}|&&h\in\Prr\\
+    \intertext{Wir bestimmen $\mu R(h)$:}
+    [\mu R(h)](m) &=
+       \begin{cases}
+	 \mu n(|m-n^{2}|=0)&:\exists n\\
+	 \ndef&:\sonst
+       \end{cases}\\
+    &= \begin{cases}
+	 \sqrt{m}&:\sqrt{m}\in\N\\
+	 \ndef&:\sonst
+       \end{cases}\\
+    &= wurz(m)
+  \end{align*}
+  Also ist $wurz = \mu R(h)$
+\end{bsp}
+
+\begin{bsp}
+  Die Funktion $ganzwurz:\N\rightarrow\N$ ist partiell-rekursiv
+  \begin{align*}
+    ganzwurz(m) = gw(m) = \lfloor\sqrt{m}\rfloor&&(m\in\N)
+  \end{align*}
+  Es gilt:
+  \begin{align*}
+    gw(m) = n &\Leftrightarrow n\leq\sqrt{m}< n+1\\
+    &\Leftrightarrow n^{2} \leq m < (n+1)^{2}
+  \end{align*}
+  Also gilt:
+  \begin{align*}
+    gw(m) &= \mu n(m < (n+1)^{2})\\
+    &= \mu n(|(n+1)^{2}- (m+1)|=0)
+  \end{align*}
+  Weiter gilt: $gw(m) = wurz(m)$ falls $wurz(m)$ definiert ist und $gw$
+  ist total definiert. Damit ist $gw$ eine Fortsetung von $wurz$ und $gw$
+  ist partiell-rekursiv (sogar primitiv-rekursiv)
+\end{bsp}
+
+\begin{fakt}
+  Jede partiell-rekursive Funktion lässt sich darstellen als ein Term, der
+  die Symbole für die Grundfunktion, die Schemata $SUB, PR, \mu R$, sowie
+  weitere notwendige Hilfssymbole enthält.
+  
+  Vergleiche das Alphabet $\Sigma$ für primitiv-rekursive Funktionen in
+  \thref{bem:2} und füge "`$\mu R$"' als neues Symbol hinzu!
+  
+  Die kanonische (quasilexikographische) Auflistung aller dieser Terme
+  liefert eine \emph{effektive Nummerierung} aller partiell-rekursiven
+  Funktionen.
+\end{fakt}
+
+\section{Allgemein rekursive Funktionen}
+\end{document}
