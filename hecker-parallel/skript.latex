@@ -1,0 +1,1923 @@
+\documentclass[draft,12pt]{scrartcl}
+
+\usepackage{fancyvrb}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{paralist}
+\usepackage{ngerman}
+
+\newtheorem{satz}{Satz}
+\newtheorem{
+\newcommand{time}{TIME}
+\newcommand{work}{WORK}
+  
+\begin{document}
+
+Buchempfehlung:
+\begin{description}
+ \item[Joseph Ja'Ja] ``Introduction to parallel algorithms''
+ \item[AKL] ``Introduction to parallel algorithms''
+ \item[Gibbon & Rytter] ``parallel algorithms''
+\end{description}
+
+\section{Einleitung}
+serielle Algorithmen $\quad\rightarrow\quad$ Paradigmen\\
+\underline{Ziel:} Algo finden, die gut sind (Kriterium: Speicher, Zeit,
+einfach Formulierbar)
+
+Die von Neumann-Architektur ist ein allgemein anerkanntes Modell im
+Seriellen -- Random access machine (RAM) --- Basisoperationen in
+$O(1)$-Zeit. F"ur parallele Algorithmen gibt es eine Vielzahl von
+Modellen.
+\begin{itemize}
+ \item Einmal wenig leistungsf"ahige Prozessoren
+ \item andere sehr viele ``einfache'' Prozessoren
+ \item verteilte Systeme -- nicht Gegenstand der Vorlesung
+\end{itemize}
+
+unser Modell: SHARED MEMORY MODELL
+\begin{center}
+  \include{parall_modell.pdf_t}
+  MIMD -- Multiple Instruction Multiple Dataword\\
+  SIMD -- Single Instruction Multiple Dataword\\
+  PRAM -- Parallel Random Access Machine -- allgem. Verallgemeinerung der
+  RAM
+\end{center}
+
+\begin{description}
+ \item[Ziel:] Entwurf von Algorithmen, die gut sind
+\end{description}
+
+Anderer Ansatz: Netzwerkmodell (alternativ)
+\begin{center}
+  \include{network_modell.pdf_t}
+  
+  rechtes Hypercube
+\end{center}
+Abstraktes Modell: DAG-Modell (directed acyclic graph)
+
+Sei $P$ ein Problem:
+
+serieller Algo $A$, Input size $n$ $\quad\rightarrow\quad T_{A}(n)$
+
+Def.: $T^{\ast}(n)$ sei das serielle Optimum
+
+Sei $A$ parall. Algo., $p$ Prozessoren
+
+Def.: Speed-up
+\begin{gather}
+  S_{p}(n):=\frac{T^{\ast}(n)}{T_{p}(n)}
+\end{gather}
+ist die Beschleunigung eines Algorithmus gegen"uber eines seriellen
+Algorithmus.
+
+Satz: $S_{p}(n)\le p$
+
+Bemerkung: Wenn $S_{p}(n)\approx p$, dann
+\begin{gather}
+  S_{p}(n) = \frac{T^{\ast}(n)}{T_{p}(n)}=p\\
+  \Rightarrow T^{\ast}(n) = p\,T_{p}(n)\\
+  \Rightarrow T^{p}(n) = \frac{T^{\ast}(n)}{p}
+\end{gather}
+
+Folgerung: Mit polynomial vielen Prozessoren kann man ein NP-schweres
+Problem \emph{nicht} parallel in Polynomzeit l"osen.
+
+Def.: Effizienz
+\begin{gather}
+  E_{p}(n):=\frac{T_{1}(n)}{p}\,T_{p}(n)}
+\end{gather}
+Ma"s daf"ur, wie effizient mehrer Prozessoren einzusetzen sind.
+
+Bemerkung: Sei $E_{p}(n)\approx 1$
+\begin{gather}\\
+  \Rightarrow T_{1}(n)\approx p\,T_{p}(n)\\
+  \Rightarrow T_{p}(n) \approx \frac{T_{1}(n)}{p}
+\end{gather}
+
+\begin{satz}[Theorem von Brent]
+  Was ist f"ur einen Algorithmus die maximale Anzahl an zur gleichen Zeit
+  ausf"uhrbaren Operationen?
+
+  Im Normalfall kann man jeden Parallelen Algorithmen auf jede Anzahl an
+  Prozessoren anpassen.
+\end{satz}
+
+synchron\hfill--\hfill asynchron
+\begin{gather}\\
+  A\vec{x} (a_{11}\ldots a_{1n} \ldots a_{nn}) (x_{1}\ldots x_{n})=(y_{1}\ldots
+     y_{n})
+\end{gather}
+
+Modell: \ldots
+
+\begin{enumerate}
+ \item globalread(X,Y) X: Variable des shared memory, Y:local  variable
+  "ubertr"agt den Wert von X nach Y
+ \item globalwite(Y,X) "ubertr"agt Y nach X
+\end{enumerate}
+Beispiel: ``A:=B+C''
+ globalread(B,x)
+ globalread(C,y)
+ setze z:=x+y (Prozessor-Arbeit)
+ globalwrite(z,A)
+
+Algo.Mult.:\\ (A in Zeilen zerlegel)
+INPUT: $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
+Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
+OUTPUT: Die Komponenten $[(i-1)\,r+1,\ldots,i\,r] von \vec{y}=A\vec{x}
+
+begin
+\begin{enumerate}
+ \item globalread(\vec{x},\vec{z}) \texttt{Alle Prozessoren lesen diesen Vektor}
+ \item globalread(A((i-1)r+1:ir,1:n), B)
+ \item berechne \vec{w}=B\vec{z}
+ \item globalwrite(\vec{w}, y((i-1)r+1:ir))
+\end{enumerate}
+end
+
+\begin{bemerk}\\
+  Befehlt 1 erfordert CR (concurrent read) im Modell\\
+  Befehlt 4 erfordert nicht CW (concurrent write) sondern EW (exclusive
+  write)\\
+  EREW, CREW (Modell asynchron m"oglich), CRCW
+\end{bemerk}
+
+A in Spalten zerlegen, A_{1}x_{1}
+(a_{11},\ldots,a_{1r})(x_{1}\vdots x_{r})=z_{1}=A_{1}x_{1}
+\vec{y}=A_{1}\vec{x}_{1}+\ldots+A_{r}\vec{x}_{r}
+z_{i}=A_{i}\vec{x}_{i}
+(..) (\vdot)=(z_{1}+z_{2}+\ldots) \quad\rightarrow\quad erfordert ein
+synchrones Modell
+
+Beispiel 2:\\
+INPUT: n=2^{k} Zahlen in Array A, n Proz, i:i\le i \le n\\
+OUTPUT: \sum_{i=1}^{n}a_{i}\quad\Rightarrow\quad gespeichert im shared
+mem., Variable S
+
+begin
+\begin{enumerate}
+ \item globalread(A(i), a)
+ \item globalwrite(a,B(i))
+ \item for h=1 to \log n do
+  \begin{enumerate}
+   \item if (i\le \frac{n}{2^{k}}) then
+    begin
+    \begin{enumerate}
+     \item globalread(B(2\,i-1),x)
+     \item globalread(B(2\,i), y)
+     \item z:=x+y
+     \item globalwrite(z,B(i))
+    \end{enumerate}
+    end
+  \end{enumerate}
+ \item if (i=1) then globalwrite(z,S)
+\end{enumerate}
+end.
+
+% Baumdiagramm
+
+Aus Baum leicht zu erkennen: Berechnung in O(\log n)
+
+Kosten C(n)=\underbrace{P(n)}_{O(n)}\,\underbrace{T(n)}_{O(\log
+n)}=O(n\log n)
+
+serielles Optimum T^{*}=O(n) C(N)\ge T^{*}(n)
+
+\begin{defini}\\
+  Ein Algorithmus hei"st optimal, wenn C(n)=T^{*}(n)
+\end{defini}
+
+Es existiert ein Variante dieses Algorithmus, die O(\log n) Zeit braucht
+und die Kosten C(n)=O(n) hat.
+
+% 2. Baumdiagramm
+
+sei \log n=r\in\N, \frac{n}{log n}\in\Z, p_{1},\ldots,p_{\frac{n}{\log n}}
+
+Algo: p_{i} addiert die Zahlen a_{(i-1)\log(n)+1}+\ldots+a_{i\log n}
+(seriell in O(\log n) Zeit)
+weiter mit oberen Algo mit z_{i}
+
+Kosten: C(n)=O(\log n)\,O(\frac{n}{\log n})=O(n)
+
+Ab sofort: Kurzform von globalread() bzw. globalwrite()
+
+\begin{bemerk}
+  Das synchrone shared memory-Modell hei"st PRAM.
+  EREW-PRAM, CREW-PRAM, CRCW-PRAM (unterteilung in common (schreiben nur
+  zugelassen, wenn alle prozessoren wollen das gleiche schreiben),
+  arbitrary (es wird z.B. die Summe aller Werte geschrieben), priority
+\end{bemerk}
+
+Vorgehen: Oberes Level - Unteres Level.
+liefert Zeitpakete(TIMEUNITS) /\ Prozessor-Allocation - schreibt Programm
+f"ur Prozessor $i$\\
+TIME UNITS -- in einer Zeiteinheit k"onnen bel. viele Operationen
+zusammengefasst werden, die gleichzeitig augef"uhrbar sind. ``pardo''
+\underline{pardo statement}
+for 1\le i\le u pardo statement
+
+\quad\rightarrow\quad eventuell zerlgt in mehrere Takte, falls nicht
+gen"ugend Proz. da sind & Programm f"ur Proz. $i$\\
+Prozessoren nicht erw"ahnt -- was kann parallel Ausgef"uhrt werden
+%$
+
+(Algo im upperlevel)
+INPUT: n=$2^{k}$-Zahlen, Array $A$
+OUTPUT: S=$\sum_{i=1}^{n}A(i)$
+begin
+\begin{Verbatim}[numbers=left]
+for i \le i \le n pardo B(i) := A(i)
+for h=1 to \log n do
+    for 1 \le i \le \frac{n}{2^h} pardo
+        B(i) := B(2\,i-1)+B(2\,i)
+S := B(1)
+\end{Verbatim}
+end
+
+\begin{defini}\\
+  \emph{Rechenzeit eines par. Algorithmus} (im upper Level) T(n)=Anzahl der TIME
+  UNITS.
+\end{defini}
+
+f"ur obiges Beispiel: T(n) = 2+\log n
+
+\begin{defini}\\
+  \emph{WORK} eines Algorithmus W(n) :$\quad\Leftrightarrow\quad$ Gesamtzahl
+  der auszuf"uhrenden Einzeloperationen
+\end{defini}
+
+f"ur obiges Beispiel:
+\begin{enumerate}
+ \item W(n) = n+$\sum_{j=1}^{\log n}\frac{n}{2^j}+1$ \le
+  n+1+n$sum_{j=1}^{log n}\frac{1}{2^j}=O(n)$
+\end{enumerate}
+
+upper level: WORK-TIME-Darstellung
+lower level: Theorem von Brent (WORK-TIME Scheduling-Prinzip)
+Eine Rechnung ist bei $p$ Prozessoren in
+\lfloor\frac{W(n)}{p}\rfloor+T(n) meist m"oglich.
+\begin{proof}\\
+  geg.: Algorithmus, der 100~T.Units 99 davon nur eine Op. $W_{i}(n)=1$
+  
+  $W_{i}(n) := $ Anzahl der Op. in der i-ten Zeiteinheit
+  $\lceil\frac{W_i(n)}{p}\rceil$ Zeit des Algo mit $p$ Proz.:
+  $\sum_{j=1}{T(n)} \frac{\lceil W_{i}(n)\rceil}{p}\le$
+  $\sum_{j=1}{T(n)} \frac{W_{i}(n)}{p} =$
+  $\lfloor\frac{W(n)}{p}\rfloor+T(n)$
+  
+  Vor.: $W_{i}$ berechnen, Prozessor-Allocation
+\end{proof}
+
+\begin{bemerk}\\
+  Wenn die Prozessor-Allocation (Aufteilen des Algos auf mehrere Proz.)
+  m"oglich ist, dann geht es mit obiger Laufzeit.
+\end{bemerk}
+
+(Algo ``Summe'' im lower level - Programm f"ur den Prozessor $P_{s}$)
+INPUT: n=$2^{k}$-Zahlen, Array $A$, p =$2^{q}\le n$, s
+OUTPUT: S=$\sum_{i=1}^{n}A(i)$
+begin
+\begin{Verbatim}[numbers=left]
+for j=1 to l (=\frac n p) do setze B(l(s-1)+j) := A(l(s-1)+j)
+for h =1 to \log n do
+    if (k-h-q) \ge 0 then
+        for j =$2^{k-h-q}(s-1)$ to $2^{k-h-q}s$ do
+	    setze B(j) := B(2j-1)+B(2j)
+    else if s \le $2^{k-h}$ then
+        setze B(s) := B(2s-1)+B(2s)
+if (s=1) then S:= B(1)
+\end{Verbatim}
+end
+
+In Zukunft: upper level
+
+\begin{tabular}\\
+  WORK& --& KOSTEN\\
+  T(n) $\rightarrow$ p-prozzesor-PRAM: $T_{p}(n)=O(\frac{W(n)}{p}+T(n))$\\
+  Kosten $C_{p}(n)=T_{p}(n)\,p=O(W(n)+T(n)p)\ldots$\\
+  \multicolumn{2}{l}{Ansatz: P=O(\frac{W(n)}{T(n)})}\\
+  \ldots=O(W(n)+T(n)\frac{W(n)}{T(n)})=O(W(n))
+\end{tabular}
+
+\begin{satz}
+  $C_{p}(n)\ge W(n)$
+  Die Kosten, die mit $p$ Prozessoren entstehen, sind immer min. WORK, denn wenn nicht
+  w"are dies ein Widerspruch zum Seriellen Optimum.
+\end{satz}
+
+\begin{folgerung}
+  bei p=O(\frac{W(n)}{T(n)}) Prozessoren sind WORK und KOSTEN gleich.
+\end{folgerung}
+
+\begin{defini}[Optimalit"at]
+  \begin{enumerate}
+   \item Ein Algorithmus A hei"st \emph{optimal (zeitoptimal)}, wenn $W(n) =
+    O(T^{\ast}(n))$ ($T^{\ast}$ -- serielles Optimum)
+   \item Ein Algorithmus A hei"st \emph{WORK-TIME-Optimal} oder \emph{streng
+    optimal}, wenn er optimal ist und wenn es keinen schnelleren optimalen
+    Algorithmus gibt.
+  \end{enumerate}
+\end{defini}
+
+\section{Die sieben Paradigmen beim Entwurf paralleler Algorithmen}
+\begin{enumerate}
+ \item Summenparadigma
+ \item Pointer-Jumping
+ \item Teile und Hersche
+ \item Zerlungsstrategie (Paritioning)
+ \item Accelerated Cascading
+ \item Pipelining
+ \item Aufbrachen von Symetrien
+\end{enumerate}
+
+\subsection{Pointer Jumping}
+
+INPUT: Forest im Array $p$
+OUTPUT: $\forall i: W(i) $(Gewicht), $W(i)=0$ f"ur Roots, damit $\forall
+i:$ Summe der Gewichte auf dem wag von $i$ zur Root
+
+(Seriell in $O(n) TIME$)
+\begin{Verbatim}
+begin
+    For 1 \le i \le n pardo
+        s(i) := p(i)
+	while s(i) \not= i do
+	    W(i) := W(i) + W(S(i))
+	    S(i) := S(S(i))  << Pointer Jumping
+end.
+\end{Verbatim}
+Beispiel: Liste: $v\in V$ (Knotenmenge), $I\subseteq V$
+% Knotenliste
+
+Beispiel:
+% Baum
+
+Anfang: W(8)=W(13)=0, W(rest)=1
+1. It.: W(1,2,3,4,5,9,10,11)=2 W(6,7,12)=1, W(8,13)=0
+2. It.: W(1)=W(1)+W(6)=3, W(9)=4, W(2,10)=3, W(6,7,12)=1, W(3,4,5,11)=2
+
+Modell? CREW; Analyse: h-max. H"ohe im Forest, $TIME O(\log h)$ WORK
+$O(n\log h)$ $\rightarrow$ Algorithmus ist nicht optimal
+
+\begin{defini}\\
+  Die Aufgabe \emph{Parallel Prefix} :$\Leftrightarrow$ Spezialfall der
+  lin. Liste
+\end{defini}
+
+\begin{satz}\\
+  Parallel Prefix funktioniert in $O(\log n) TIME$ mit $O(n\log n) WORK$
+  
+  Spezialfall: $W(root)=0, \forall i\not= root: W(i)=1$ liefert der Algorithmus f"ur jeden
+  Knoten den Abstand zum Ende der Liste.
+\end{satz}
+
+\subsection{Teile und Herrsche/Divide and Conquer}
+
+Teile -- trivial, Herrsche -- schwer
+
+Beispiel: Convex Hull genauer Upper convex hull
+% Conv hull
+
+Ann.: Br"ucke kann in $O(log n) TIME$ seriell bestimmt werden.
+Algo:
+begin
+\begin{Verbatim}\\
+if |S|\le 4 then OUTPUT von UCH (Brute force)
+S$_{1}$ = \{$p_{1}, \ldots, p_{\frac{n}{2}}\}$
+S$_{2}$ = \{$p_{n/2+1},\ldots,p_{n}\}$
+Berechne UCH($S_{1}$), UCH($S_{2}$) parallel
+Bestimme die Br"ucke, bearbeite zum OUTPUT (verbinde die beiden h"ochsten
+Punkte von $UCH(S_{1})$ und $UCH(S_{2})$)
+\end{Verbatim}
+end.
+
+\subsubsection{Analyse}
+\begin{align}\\
+T(n) &\le T(n/2)+c\,\log n &=O($\log^{2} n)$
+W(n) &\le 2W(n/2)+c\,\log n &=O(n\log n) 
+  
+\end{align}
+$\rightarrow$ Algorithmus ist optimal
+
+\begin{bemerk}
+  zu $O(\log n)$ seriell 
+\end{bemerk}
+
+left turn |1 $p_{x}$ $p_{y}$\\1 $v_{x}$ $v_{y}$\\1 $v'_{x}$ $v'_{y}$| > 0
+-left <0 - right
+
+Vergleich der y-Werte gibt die Unterscheidung
+
+\begin{defini}\\
+  1. Supporting
+  2. Concave
+  3. Convex
+\end{defini}
+
+\begin{tabular}{ccc}
+  &konkav& supp& konvex\\
+  \hline
+  konkav\\
+  supp\\
+  konvex
+\end{tabular}
+
+\subsection{Partitioning/Zerlegunsstrategie}
+
+Beispiel: Merge (INPUT: 2 sortierte Folgen beide L"ange $n$, OUTPUT: eine sortierte Folge)
+
+Herrsche ist einfach, teile trivial.
+
+Mischen von zwei sortierten Feldern $A^{n}$ und $B^{m}$
+
+X bel. Folge von Elementen einer Menge S. x\in S; S lin. geordnet
+Rang(x:X) := |\{y:y\in X, y$\leq x$\}|
+
+Annahme: m=n
+
+Sei Y$\subseteq$ S. Rang(Y:X) := (Rang($y_{1}$:S),\ldots,Rang($y_{s}:S$))
+Y=\{$y_{1},\ldots,y_{s}\}$ (genauer: Y=($y_{1},\ldots,y_{s}$))
+
+A,B$\rightarrow$$C^{n+m}$: C sortiert
+
+Annahme (o.B.d.A.): Ele. von A$\cup$B seien paarw. verschieden.
+
+Beisp.: A=(3,5,7), B=(2,4,6)
+Rang(2:A) = 0
+Rang(2:B)=1
+Rang(2:A$\cup$B)=1=Rang(2:A)+Rang(2:B)
+
+Allg.: Rang(x:A$\cup$B)=Rang(x:A)+Rang(x:B)
+
+wenn Rang(x:A$\cup$B)=i $\Rightarrow$ x=$c_{i}$
+(Sei x\in A$\cup$B)
+
+\begin{folgerung}\\
+  Wenn f"ur allle x\in A$\cup$B der Rang(x:A$\cup$B) bekannt ist, ist die
+  gesuchte sortierte Menge C bekannt.
+\end{folgerung}
+
+\begin{bemerk}\\
+  Dazu reicht es aus Rang(A:B) und Rang(B:A) zu berechnen.
+\end{bemerk}
+
+\begin{folgerung}\\
+  Es reicht, den Algo. f"ur die Bestimmung dein rang(B:A) anzugeben.
+  
+  \underline{genauer:} Die Zeit-WORK-Komplexit"at hierf"ur ist identisch
+  mit der f"ur MERGE.
+\end{folgerung}
+
+Algo.: $\forall b\in B$ suche "uber bin. Suchen $Rang(b:A^{n})$ (pardo)
+O(log n) TIME, O(n log n) WORK $\rightarrow$ nicht optimal, da MERGE im
+seriellen nur O(n) ben"otigt.
+
+\begin{description}
+ \item[Ziel:] Das gleiche optimal erreichen.
+ \item[Strategie:] Partitioning
+\end{description}
+
+INPUT: $A^{n}, B^{m}$ sortiert
+OUTPUT: $C^{m+n} = A\cup B$ sortiert
+begin
+\begin{Verbatim}
+j(0) := 0; j(k(m)) := j(m/log n) := n
+for i := 1 to k(m)-1 pardo
+    j(i) := Rang($b_{i log(m)}$ : A)
+for i := 1 to k(m)-1 pardo
+    $B_{i}$ := ($b_{i\log m+1},\ldots,b_{(i+1)log m})$
+    $A_{i}$ := ($a_{j(i)+1},\ldots,a_{j(i+1)})$
+\end{Verbatim}
+end.
+
+% Algo skizze
+
+\begin{satz}
+  Der Algo. ben"otigt O(log n) TIME und O(n+m) WORK
+  
+  \begin{proof}
+    Rechenzeit klar
+    
+    Sei $m,n>4, m<n \Rightarrow \frac{m}{log m} < \frac{n}{log n}
+    (\lim_{n\rightarrow\infty}\frac{n}{log n}=\infty$ 
+    \begin{align}
+      m<m+n &\Rightarrow \frac{m}{\log m}<\frac{m+n}{\log (m+n)}\\
+      &\Rightarrow \frac{m\log(m+n)}{\log m}<m+n
+    \end{align}
+    WORK: $O(\underbrace{\frac{m}{log m}}_{=k(m)}\cdot\log m)= <
+    O(\frac{m\log (m+n)}{log m}}) < O(m+n)$
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Der Algorithmus arbeitet korrekt im folgenden Sinn: wenn die Mengen
+  $(A_{i}, B_{i})$ untereinander gemischt werden, so erh"alt man das
+  sortierte $C$ durch aneinanderheften der einzelnen Ergebnisse.
+  
+  Mische $B_{0}$ mit $A_{0}$ $\rightarrow$ $C_{0}$\\
+  Mische $B_{1}$ mit $A_{1}$ $\rightarrow$ $C_{1}$\\
+  Mische $B_{2}$ mit $A_{2}$ $\rightarrow$ $C_{2}$\\
+  $\vdots$
+  
+  $C:C_{0}C_{1}C_{2}C_{3}\ldots$
+\end{bemerk}
+
+Wie teuer? trivial: WORK=O(n+m) (mit seriellen mischen jeweils),
+TIME? |$B_{i}$|=log m Sei m=n\ldotslog n
+Fall |$A_{i}$|=log n $\Rightarrow$ O(log n) TIME
+
+sei nicht erf"ullt $A_{i}=O(log n)$ f"ur $i$
+
+jetzt: $A_{i}$ in B einmischen
+
+% Skizze Algokorrektur
+
+O(\log n) TIME, O(n) WORK jetzt kann $A_{i}$ mit $B_{i}$ in O(\log n)
+TIME mit O(n) WORK gemischt werden!
+
+\subsection{Pipelining}
+
+2-3-B"aume ("ahnlich Top-Down-2-3-4-B"aumen)
+
+$a_{1}<a_{2}<\ldots<a_{n}$ Blattsuchbaum innere Knoten: Pfad-Infos
+
+Knoten $v$: L(v) : gr"o"ster Wert des linken TB, M(v) gr"o"ster Wert des
+mittleren TB
+
+INSERT: $b_{1}<b_{2}<\ldots<b_{k}$ $k<<n$
+
+Problem: Wie hilft hier ein paralleler Ansatz?
+
+Idee: 
+
+% 4.5.
+
+\begin{description}
+ \item[B Task] 100 Autos Teilaufgabe 1. Auto ($t_{1}, t_{2},t_{3}, \ldots)$
+  2. Auto ($t_{2}, t_{3},\ldots$)
+ \item[A Task $t$] 1 Auto, zerlege in Folge von Teilaufgaben ($t_{1},
+  t_{2}, t_{3},\ldots)$
+\end{description}
+
+Nutzen dieser Idee zum Algorithmusentwurf
+
+Beispiel: INSERT von ($b_{1}<b_{2}<\ldots<b_{k})$ in
+($a_{1}<a_{2}<\ldots<a_{n}$) $k=O(n)$, sogar $k<<n$
+
+\begin{description}
+ \item[Variante B] task: INSERT($b_{1}, b_{2},\ldots,b_{k})$
+ \item[Variante A] task: INSERT einen Teil davon
+\end{description}
+
+Verwaltung der Werte in (2,3)-Suchbaum (-Blattsuchbaum)
+
+Knoten $v$: L[v], M[v], R[v]
+INSERT : SEARCH+ Einf"ugen
+START: INSERT $b$: gesucht $i$: $a_{i}<b<a_{i+1}$
+
+% Bild: Einf"ugen in 2-3-Baum
+
+Vorschritt: INSERT $b_{1},b_{k}$ (O(\log n) TIME) (Damit alle Elemente
+zwischen zwei Elementen im Baum eingef"ugt werden und nicht vor dem
+linken oder nach dem rechten)
+
+Dann: Umbenennung: $a_{1}<\ldots<a_{n}$ neu = $a_{1},\ldots,a_{n}$ alt
+erg"anzt um $b_{1},b_{k}$
+Jetzt Def.: $B_{i}:= $ Teilkette der $b_{2},\ldots,b_{k-1}$ zwischen
+$a_{i}$ und $a_{i+1}$
+\begin{enumerate}[1. Fall]
+ \item $|B_{i}|\leq 1 \forall i=1,\ldots,n-1$
+  
+  WORSTCASE
+  % Bild: Worstcase bei Fall1
+  
+  $\Rightarrow$ bei pardo insert ($b_{2},\ldots,b_{k-1})$ im Fall 1
+  entstehen pro Knoten "uber der Blattebene max. 6 S"ohne
+ \item ($\neg$ 1. Fall)
+  |$B_{i}$|=$k_{i}$ ($\sum k_{i} = k-2$)
+  m"oglich f"ur ein $i$: |$B_{i}$|=$k_{i}$=$\Omega(k)$
+  
+  $b_{i_{1}},\ldots,b_{i_{k}} \rightarrow$ mittleres Element mit Index $z
+  := \lseal\frac{1+k_{i}}{2}\rseal$ also $b_{i_{z}}$ das f"ur alle $i$
+  
+  insert alle $b_{i_{z}}$ = 1. Fall
+  
+  Damit reduzieren wir die Maximall"ange der Folge der einzuf"ugenden
+  Elemente zwischen zwei Elementen auf die H"alfte. Das wird fortgesetzt,
+  bis Fall 1 erreicht.
+\end{enumerate}
+
+H"ohe des Baumes: $O(\log n)$
+Im 1. Fall: parallel (pardo) : $O(\log n) TIME, O(k \log n) WORK$
+2. Fall: ($\log k$)-mal durchzuf"uhren, jedesmal Fall 1 $\Rightarrow$
+$O(\log k \log n) TIME, O(k \log n) WORK$
+
+Aufgabe: INSERT z.B. $b_{i_{1}},\ldots,b_{i_{k_{i}}}$
+
+1. Teilaufgabe INSERT: INSERT jeweils das erste gelbe Element
+2. Teilaufgabe: INSERT jeweils die beiden n"achsten gelben Elemente
+$\Rightarrow O(\log n + \log k)=O(\log n) TIME$
+\begin{bemerk}\\
+  Das erste Element braucht $\log n$ Schritte um an seiner Stelle zu sein.
+  Das letzte Element wird nach $\log k$ Schritten losgeschickt und kommt
+  nach weiteren $\log n$ Schritten an, also $\log k+\log n$
+\end{bemerk}
+
+\subsection{Accelarated Cascading}
+
+1. sehr schnell, nicht opt. Algo.
+2. langsam Algo. optimal
+
+speziell: seqential subset
+
+Beispiel: Bestimmen des Maximums auf common CRCW in $O(\log\log n) TIME$
+\emph{optimal}.
+
+\begin{satz}\\
+  Das ist auf der CREW prinzipiell unm"oglich: dort gilt $\Omega(\log n)$
+  f"ur die Zeit (unabh. von WORK).
+
+  Spezialfall eines Satzes: Def.:
+  n-stell. Boolsche Fnkt. $f^{n}: \{0,1\}^{n}\rightarrow\{0,1\}
+  I=(x_{1},\ldots,x_{n}); I(i)  := (x_{i},\ldots,\bar{x_{i}},\ldots,x_{n})$
+  
+  I kritisch :$\Leftrightarrow$ $\forall$ i:1$\leq$i$\leq$n: f(I)\not=
+  f(I(i)) (max\{$x_{1},\ldots,x_n\}$ -- $(0,\ldots,0)$ kritisch)
+\end{satz}
+
+Haupttheorem: $f: \{0,1\}^{n} \rightarrow \{0,1\}$ besitze kritischen
+Input. Dann sind auf der CREW $\Omega(\log n)$Schritte zur Berechnung von
+$f$ n"otig
+
+Alog: ``Maximum von $n$ Elementen''
+INPUT: Array $A$ von $p$ verschiedenen Elementen
+OUTPUT: Boolsches Array $M: M[i] = 1 \Leftrightarrow A[i] = Max$
+begin
+\begin{Verbatim}\\
+for i \le i,j \le p pardo
+    if A[i] \ge A[j]
+        then B(i,j) := 1
+	else B(i,j) := 0
+for 1 $\Leftarrow$ i <= p
+    M(i) = B(i,j)$\wedge$\ldots$\wedge$ B(i,p)
+\end{Verbatim}
+end.
+
+\begin{lemma}\\
+  Auf der common CRCW (schreiben nur dann, wenn alle das gleich schreiben
+  wollen) kann das Maximum in O(1) >TIME mit O($p^{2}$) Operationen
+  berechnet werden.
+\end{lemma}
+
+% 7.5.
+
+1. Ziel: auf CRCW optimal in O(\log \log n) TIME
+Schritt A: O(log log n) TIME mit O(n log log n) WORK
+Schritt B: Accellerated cascading $\rightarrow$ optimal
+
+2.) B"aume doppelt logarithmischer Tiefe
+
+% Grafik: Vergleich von log n und wurzel(n)
+% Bild: Baum mit levels
+
+Die Wurzel habe $n=2^{2^{k-1}}$ S"ohne, jeder dieser S"ohne habe
+$2^{2^{k-2}}$ S"ohne, $2^{2^{k-i-1}}$ S"ohne f"ur die Knoten im Level $i$
+(0$\leq i\leq k-1)$
+
+Jeder Knoten im Level k habe 2 S"ohne. Bsp.: $k=3$ dann $n=2^{2^{3}}=256$
+Knoten. Wurzel hat $2^{2^{3-1}}=16$ S"ohne
+
+% Bild: Baum mit 16 S"ohnen
+
+\begin{lemma}\\
+  Jeder Knoten im Level $i$ (0$\leq$ i $\leq$ k-1) hat $2^{2^{k-i-1}}$
+  S"ohne.
+\end{lemma}
+
+\begin{lemma}\\
+  Die Gesamtzahl der Knoten im Level $i$ f"ur 0$\leq$ i $\leq$ k-1 ist
+  $2^{2^{k}-2^{k-i}}$
+\end{lemma}
+
+3.) Algorithmus f"ur das Max. auf der common CRCW.
+
+\begin{lemma}\\
+  H"ohe des Baumes doppelt logarithmischer Tiefe f"ur $n$ Bl"atter ist
+  (log log n)+1=k+1.
+\end{lemma}
+
+Wir nutzen den Algorithmus in O(1) TIME mit O($n^{2}$) WORK f"ur $n$
+Elemente und arbeiten mit einem Baum doppelt logarithm. Tiefer. Damit
+haben brauchen wir in jedem Level O(1) TIME und reduzieren den $WORK$ auf
+$O(\log \log n)$
+
+\begin{lemma}\\
+  WORK pro Level ist O(n).
+  
+  \begin{proof}\\
+    Sei $v$ Knoten im Level $i$. Er hat seine S"ohne in Level $i+1$. Das
+    sind $2^{2^{k-i-1}}$ S"ohne. $\Rightarrow$ WORK
+    O($(2^{2^{k-i-1}})^{2}$ nach der Eigenschaft des O(1)-Algo.
+    $\Rightarrow$ O($2^{2^{k-i}}$ WORK. Nach Lemma~2:
+    ($2^{2^{k}-2^{k-i}}$)-mal $\Rightarrow$ O($2^{2^{k}}$)=O(n)
+  \end{proof}
+\end{lemma}
+
+\begin{folgerung}
+  Das Max. von $n'$ Elementen kann auf der common CRCW in O(log log n')
+  TIME mit O(n' log log n') WORK berechnet werden.
+\end{folgerung}
+
+I: Bin"arbaum-Algo. O(\log n) TIME optimal
+II: Algo (*) (folgerung) O(\log \log n) TIME, O(n\log\log n) WORK
+
+Algo I \lseil\log\log\log n\rseil Level lang ausf"uhren. Schritt 1:
+$\frac{n}{2^{1}}$ 2. $\frac{n}{2^{2}}$, 3. $\frac{n}{2^{3}}$
+$\frac{n}{2^{log log log n}}=\frac{n}{log log n}$ Elemente "als Rest
+
+Diese $\frac{n}{log log n}$ Bl"atter f"ur den Baum doppelt log. Tiefe
+verarbeiten wir weiter nach Algo II $\Rightarrow$ liefert das Maximum, wa
+gesucht ist. $TIME O(\log\log n)$
+
+WORK-Analyse:
+
+\begin{description}
+ \item[F"ur I:] O(n) (trivial, da I insgesamt optimal, also imsgesamt O(n)
+  WORK ben"otigt!)
+ \item[F"ur II:] Folgerung: $n'=\frac{n}{log log n} TIME: O(log log
+  n')=O(log log n)$
+  
+  WORK: O(\frac{n}{log log n} log log (\frac{n}{log log n})= O(n)
+\end{description}
+
+Acce cas: Man arbeitet mit einem optimalen Algorithmus solange, bis man
+noch log log n Elemente hat, setzt dann einen nichtoptimalen schnellen
+Algo an.
+
+Alternativ:
+
+% alternativer Baum
+
+Zusammenwirken von Acc. casc. und sequential subset
+
+\subsubsection{Aufbrechen von Symetrien}
+
+% Bild: greichteter Kreis
+
+Einf"arben der Knoten, so dass eine Kante nicht zwei Knoten gleicher
+Farbe verbindet. Geht seriell in O(n) TIME
+
+Basisalgortihmus.
+INPUT: Array der n Knoten (Kreis), zul"assige Farbung $c_{n}$
+OUTPUT: c' neue F"arbung, zul"assig
+begin
+\begin{Verbatim}\\
+for 1 $\leq$ i $\leq$ n pardo
+    setze k gleich der kleinsten singifikanten Position, wo sich c(i)
+    und c(s(i)) als Bin"arzahlen sich unterscheiden
+    c'(i) := 2k+c(i)
+\end{Verbatim}
+end
+
+% 11.5.
+
+Basisoperationen:
+$i=i_{t-1}i_{t-2}\ldots i_{1}i_{0}$ $k$-t-kleinstes signifikantes Bit :=
+$i_{k}$
+
+% Bild: Kreis.gd
+
+-- vierstellige: 0001
+Vereinbarung: m"oglichst kurz
+
+\begin{tabular}{@{16}{c}}
+  &0&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15\\
+  &*&3& &7& & & &14&& &  &  &  &  &2 &
+\end{tabular}
+
+\begin{tabular}{cccc}
+  v&Basisf"arbung & k& c'\\
+  1& 0001 & 1 & 2\\
+  3& 0011 & 2 & 4\\
+  7& 0111 & 0 & 1\\
+  14& 1110& 2&5\\
+  2&0010 & 0& 0\\
+  15& 1111& 0&1\\
+  4&0100&0&0\\
+  5& 0101 & 0 & 1\\
+  6& 0110 & 0&0
+\end{tabular}
+
+\begin{gather}\\
+  c'(1) = 2k+c(1)=2+0=2\\
+  c'(2) = 2$\cdot$0+0=0
+\end{gather}
+
+\begin{lemma}\\
+  c zul"assig $\rightarrow$ c' ist auch zul"assig, T(n)=O(1), W(n)=O(n)
+  
+  \begin{proof}\\
+    (indirekt) Ann.: c'(i)=c'(j) f"ur einen Kante $(i,j)\in E$, d.h.
+    j=S(i) $\Rightarrow c'(i) =2k+c(i)_{k} =c'(j)=2l+c(j)_{l}$ Wegen
+    Faktor 2 und da $c(i)_{k}, c(j)_{l}\in\{0,1\} \Rightarrow k=l
+    \Rightarrow c(i)_{k}=c(j)_{l}$ Widerspruch zur Wahl von $k$
+    $\Rightarrow c'(i) \not=c'(j)$
+    
+    Die Aussagen zu TIME und WORK gelten offensichtlich.
+  \end{proof}
+\end{lemma}
+
+Sei t>3. Daf"ur reichen f"ur c' \lseil\log t\rseil+1 Bin"arpl"atze
+
+$\Rightarrow c$ $q$ Farben hatte $\Rightarrow$ $2^{t-1}<q\leq2^{t}$, so
+braucht c' $2^{\lseil\log t\rseil+1}=O(t)=O(\log g)$ Farben
+
+t>3 $\Rightarrow$ \lseil\log t\rseil +1 < t
+
+Iterative Anwendung des Basisalgo. bis t=3 (\lseil\log t\rseil+1=2+1=3)
+
+Farben: \{0,1,2,3,4,5\}=6
+Eliminiere: 3;4;5 $\rightarrow$ 3 O(1)-Schritte parallel mit O(n) WORK
+
+\begin{satz}\\
+  Wir k"onnen einen Kreis mit n Knoten mit 3 Farben f"arben in
+  $O(\log^{\ast} n) TIME$ mit $O(n log^{\ast} n) WORK$
+  
+  \begin{proof}\\
+    Basisalgo. iterativ bis auf $t=3$ anwenden.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}\\
+  Dieser Algorithmus ist ohne M"uhe auf der EREW implementierbar.
+\end{bemerk}
+
+\begin{bemerk}\\
+  Algo nicht Optimal.
+\end{bemerk}
+
+Ziel: optimaler Algrotihmus in O(\log n) Zeit.
+
+\begin{satz}(o.Bew.)
+  Man kann ganze Zahlen aus [0,\log n] in O(\log n) TIME mit O(n) WORK
+  sorierten.
+\end{satz}
+
+Optimale F"arbung:
+INPUT: Di-Kreis mit n Knoten, S
+OUTPUT: 3-F"arbung
+begin
+\begin{Verbatim}
+for i \le i \le n pardo C(i) := i
+Wende den Basisalgo genau einmal an
+Sortiere die Ecken nach Farbe
+for i=3 to \lseil\log n\rseil do f"ur alle Ecken der Farbe i
+   pardo F"arbe v mit kleinster farbe aus \{0,1,2\}, die vom Vorg"anger
+     und Nachfolger verschieden ist.
+\end{Verbatim}
+end.
+
+\begin{satz}\\
+  3-F"arben geht in $O(\log n) TIME$ optimal.
+\end{satz}
+
+\section{Listen, B"aume} % 3. Kapitel
+\subsection{List-Ranking}
+verkettete Liste $L$ , Nachfolgerarray $S$ $i\rightarrow S(i)$, S(i)=0
+Ende der Liste bei Knoten i
+
+List-Ranking-Problem: $\forall i$ bestimme den Abstand von i zum Ende der
+Liste. (Erinnerung: Pointerjumping: O(\log n) TIME, WORK: O(n\log n))
+
+Idee: sequential subset
+$\cdot\rightarrow\cdot\rightarrow\cdot\rightarrow\ldots\rightarrow\cdot$
+
+Aufteilen des Arrays S in Abschnitte der L"ange $\log n$.
+
+Leider funktioniert die Idee nicht, da die Elemente in den Abschnitten
+sich auf Elemente au"serhalb des Abschnitts beziehen, was das sp"atere
+mischen verkompliziert macht.
+
+\subsection{optimales Listranking}
+\begin{description}
+ \item[Ergebnis:] Listranking geht in O(\log n) TIME mit O(n) WORK
+ \item[Wir beweisen:] O(\log n\log\log n) geht optimal
+\end{description}
+
+\subsubsection{Pointer Jumping}
+
+O(\log n) TIME, O(n\log n) WORK
+  
+  Unterteilung des Arrays in Bl"ocke der Gr"o"se \log n funktioniert
+  nicht, da die Zeiger in den Bl"ocken auch au"serhalb des Blocks zeigen
+  k"onnen -- Block nicht abgeschlossen.
+  
+  Strategie trotzdem
+  \begin{enumerate}
+   \item Reduziere die Startliste von $n$ auf \frac{n}{\log n} Knoten.
+   \item Pointer Jumping auf red. Liste anwenden
+   \item Stelle die Ausgangsliste wieder her.
+  \end{enumerate}
+  
+  Aufgabe f"ur Listranking: INPUT Liste, OUTPUT f"ur jeden Knoten den
+  Abstand zum Ende.
+  
+  Algo. Pointer Jumping
+  \begin{tabular}{@{9}{c}}
+    1&2&3&4&5&6&7&8&9\\
+    2 & 6 &1&5&7&8&3&9&0
+  \end{tabular}
+  % Bild der Liste: Einfacher Strang
+  
+  OUTPUT: $\forall i: R(i)\ldots$ Abstand vom Ende
+  begin
+  \begin{Verbatim}[gobble=2]
+  for 1 \leq i $\leq$ n pardo
+      if S(i) != 0 then R(i) := 1
+          else R(i) := 0
+  for i=1 to n pardo
+      Q(i) := S(i)
+      while Q(i) != 0 and Q(Q(i)) != 0 do
+          R(i) := R(i)+R(Q(i))
+          Q(i) := Q(Q(i))
+  \end{Verbatim}
+  end.
+  
+  \begin{defini}
+    Eine Teilmenge $I$ aller Knoten hei"se unabh"angig, wenn f"ur alle $i$:
+    $[i\in I\rightarrowS(i)\not\in I]$
+  \end{defini}
+  
+  Algo entferne I:
+  INPUT: Gesamtliste, Teilliste
+  OUTPUT: Gesamtliste ohne die Teilliste
+  begin
+  \begin{Verbatim}[gobble=2]
+  Ordne Reihennummern den Elem. von I zu: N(i) : 1$\leq$ N(i) $\leq$ |I| =: n'
+    geht in O(\log n) TIME optimal mithilfe des Prefisummen-Algo "uber
+    den Array
+  f"ur alle i\in I pardo
+      U(N(i)) := (i, S(i), R(i)) -- Info, die sonst verlohren geht!
+      R(P(i) (Vorg"anger) ) := R(P(i))+R(i)
+      S(P(i)) := S(i)
+      P(S(i)) := P(i)
+  \end{Verbatim}
+  end.
+  
+  Die Knoten seien k-gef"arbt: Farben \{0,\ldots,k-1\}
+  Knoten hei"st lokales Minimum $\Leftrightarrow$ Farbe(i) =
+  \min\{Farbe(i), Farbe(Vorg"anger(i)), Farbe(Nachfolger(i))\}
+  
+  \begin{lemma}
+    Bei gegebener k-F"arbung in einer Liste $L^{n}$ ist die Mende der
+    lokalen Minima unabh. Menge von size $\Omega(\frac{n}{k})$ (Finde sie
+    in O(1) TIME, O(n) WORK)
+    
+    \begin{proof}
+      u,v lok. Minima, benachbert in dieser Eigenschaft
+      max. Anzahl von Knoten zwischen zwei Minima u und v
+       = 2k-2-1=2k-3 $\Rightarrow$ $\Omega(\frac{n}{k})$
+      
+      Bsp.: k=3: 2k-3=3
+      
+    \end{proof}
+  \end{lemma}
+  
+  $\frac15$ Elemente kommen raus (es bleiben $\frac45$ Rest)  Wir
+  reduzieren von n Elementen auf h"ochstens $\frac45n$ Elemente
+  
+  Optim. Listranking
+  INPUT: $S^{n}$
+  OUTPUT $\forall$ Knoten Abstand zum Ende
+  begin
+  \begin{Verbatim}[gobble=2]
+  $n_{0}:=n$
+  k:=0
+  while $n_{k}>\frac{n}{\log n}$
+      setze k := k+1
+      F"arbe Liste mit 3 Farben, Bestimme I (lok. Minima)
+      Entferne die Knoten aus I (wie gehabt)
+      $n_{k}$ sei size der Restliste compact die wei"sen Knoten
+      aufeinanderfolgend
+  Pointer Jumping auf wei"sen Rest - optimal in O(\log n) TIME
+  Nutze die Informationen in den Arrays U, um die Gesamtausgabe zu erhalten
+  \end{Verbatim}
+  end.
+  
+  Analyse
+  $n_{k}\leq\big(\frac{4}{5}\big)^{k}\cdot n\leq\frac{n}{\log n} \Rightarrow
+  \big(\frac45\big)^{k}\leq\frac1{\log n}$ ($(\frac45)^{\log\log
+  n}=O(\log n)$) k=O(\log\log n) reicht
+  
+  while-schleife O(\log\log n) mal.
+  $\Rightarrow$ TIME: O(\log n\log\log n), WORK: O(n)
+  
+  WORK des Algorithmus.: $n_{k}$ Elemente bleiben nach Iteration $k$,
+  damit
+  \begin{gather}
+    WORK=O(\sum_{k}n_{k})= O(\sum_{k}\left(\frac45\right)^{k}\cdot n) = O(n)
+  \end{gather}
+  
+\begin{tabular}{l*8c}
+  I & 6 & \color{red}{4} & 1 & \color{red}{3} & 7 & \color{red}{2} & 8
+     & \color{red}{5}\\
+  3-F"arbung & (1) & (0) & (2) & (0) & (2) & (1) & (2) & (0)\\
+  R: [1] & [1] & [1] & [1] & [1] & [1] & [1] & [0]\\
+  && U(1,N(4)) = (4,1,1)\\
+  \hline
+  \multicolumn{9}{l}{Nach dem L"oschen der Elemente}\\
+  & 6 && \color{red}{1} & & 7 && \color{red}{8}\\
+  R: & [2] && [2] && [2] && [1]\\
+  3-Farben & (2) && (1) && (2) && (0)\\
+  &&& U(2,N(1))=(1,7,2) &&& U(2,N(8)) = (8,0,1)\\
+  \hline
+  & 6 &&&& 7\\
+  & [4] &&&& [3]\\
+  $\frac8{log 8}=\frac83> 2 \rightarrow$ Abbruch\\
+  \hline
+  einf"ugen der Knoten in umgekehrter Reichenfolge ihres Entnehmens und
+     dabei ergibt sich die Entfernung aus dem im U gespeicherten + der
+     Entferung des Nachfolgers vom Ende\\
+  R_{Ende}& [7]
+\end{tabular}
+
+\begin{bemerk}
+  Analog dazu ist:
+  Wende Parallel-Prefix auf die umkehrte Liste (Nachfolger = Vorg"anger)
+  an, um die Entfernung zum Ende zu berechnen.
+\end{bemerk}
+
+\begin{bemerk}
+  Listranking geht auch in O(\log n), Zeit optimal (Lit.: Ja Ja)
+\end{bemerk}
+
+\subsection{Euler-Tour-Technik}
+
+\begin{defini}
+  Eulergraph $:\Leftrightarrow$ Es existiert ein Di-Kreis, der jede Kante
+  des Graphen genau einmal durchl"auft ($\Rightarrow$ zusammenh"angend)
+\end{defini}
+
+B"aume
+% Grafik: Euler-Baum
+
+T=(V,E) $\rightarrow$ T'=(V,E'), <u,v>\in E $\rightarrow$
+\{<u,v>,<v,u>\}$\subseteq$ E'
+
+\begin{satz}
+  Ein zusammenh"angender Graph ist Euler-Graph $\Leftrightarrow$ $\forall
+  v\in V: Indegree(v)=Outdegree(v)$
+\end{satz}
+
+% Grafik: Eulergrpah
+
+Adjazenzlisten: (Ringlisten) <v,L[v]>
+L[1]=<2,3,4>
+
+Beispiel f"ur eulerkreis:
+<1,2>$\rightarrow$<2,5>$\rightarrow$<5,2>$\rightarrow$<2,6>$\rightarrow$<6,2>
+$\rightarrow$<2,7>\ldots<3,1>$\rightarrow$<1,4>$\rightarrow$<4,1>
+
+Ziel: parallele Berechnung des Eulerkreises mit S(<,>)=<,> (Nachfolger
+einer Kante)
+
+L[v]=<$u_{0},\ldots,u_{d-1}$>
+
+\begin{gather}
+  s(<u_{i},v>) := <v,u_{(i+1)\mod d}>
+\end{gather}
+
+\begin{satz}
+  Die Funktion S beschreibt einen Eulerkreis in T'=(V,E').
+\end{satz}
+
+\begin{beispiel}
+  Setzen das Gewicht einer Kante vom Vater zum Sohn $
+  w(<p(v),v>) := +1$ und vom Sohn zum Vater $
+  w(<v,p(v)>) := -1$
+  
+  Damit l"asst sich das Level eines jeden Knoten bei Wahl eines Knotens
+  als Root in $O(\log n) TIME$ mit $O(n) WORK$ berechnen. (Vor.: Rooting
+  geht in diesen Grenzen und Eulertour geht so)
+\end{beispiel}
+
+\begin{beispiel}
+  ROOTING: Eulertour-Technik, alle Kanten erhalten Gewicht 1 + Parallel
+  Prefix
+  
+  Der Vorg"anger eines Knoten hat ein kleineres Gewicht
+\end{beispiel}
+
+\begin{beispiel}
+  POST-Order, PRE-Order w(<v,p(v)>)=1, w(<p(v),v>)=0
+  
+  Ergebnis: O(1) TIME mit O(n) WORK kann eine Eulertour berechnet werden
+\end{beispiel}
+
+"aquvalent: Angabe der Nachfolgerfunktion s:
+s(e)= e' (e,e'\in E') T=(V,E), T'=(V,E')
+
+Vor.:
+% Bild: Stern; Mittelpunktknoten mit Sternf"ormig davonlaufenden S"ohnen;
+% gegen den Urzeigersinn nummerieren $u_{i}$
+
+adj(v) = <$u_{0}$, \ldots, $u_{d-1}$> Liste aller Pfade, die von v zu
+$u_{i}$ f"uhren.
+
+adj als Ringliste implementieren.
+
+Ringlisten f"ur Standardgraph:
+\begin{tabular}{*8l}
+  1 &\\
+  2 & (1,) (5,) (6,) (7,Zeiger auf (2,) in Liste 7)\\
+  7 & (2,) (8,) (9,)\\
+  8 & (7,)
+\end{tabular}
+
+Beipiel: w"ahle $u_{i}=7$, v=2; bestimme den Index j: L[v] =
+<$u_{1},\ldots,u_{j},\ldots>$
+
+Damit l"asst sich der Nachfolger in O(1) berechnen.
+
+\subsection{Baumkontraktion}
+
+Was ist eine Harke (engl. Rake)? Entfernen des Vaters und eines Sohnes,
+der andere Sohn wird mit dem Gro"svater verbunden.
+
+Ziel: Schnelle parallele Auswertung arithm. Ausdr"ucke (+,$\cdot$)
+
+% Bild: arithm. Baum
+
+Von unten nach oben f"uhrt in zweitem Fall zu O(n), was keine
+Verbesserung gegen"uber dem Seriellen darstellt.
+
+Algo. Baumkontraktion
+INPUT: Baum,
+OUTPUT: Reduktion auf Wurzel und linkeste und rechteste Blatt
+begin
+\begin{Verbatim}
+markiere alle Bl"atter von A (Array der Bl"atter) (ohne linkeste und rechteste) wachsend von links
+  nach rechts; "uber parallel Prefix mit gewicht w(v) = 0 wenn v innerer
+  Knoten, w(v)=1 wenn v Blatt; Eulertour
+for \lseil log n+1\rseil do
+  RAKE auf $A_{odd} = \{v_{i}: i odd\}$, die linke S"ohne sind
+  RAKE auf Rest von $A_{odd}$
+  A := $A_{even}$
+\end{Verbatim}
+end.
+
+% Hier fehlt was!
+
+% Grafik: ``B'' Kreise mit Zahlen: 8 3 4 5 2 11 15 17 n=$2^{l}$
+
+B = $b_{1},\ldots,b_{n}=b_{2^{l}}$
+B = $b_{1},\ldots,b_{i},\ldots,b_{j},\ldots,b_{n}$
+\{$b_i,b_{i+1},\ldots,b_{j-1},b_{j}\}$
+Sei $v=LCA(b_{i},b_{j})$
+
+LCA: v Teilbaum mit Knoten v enth"alt Bl"atter
+\{$b_{r},\ldots,b_{i},\ldots,b_{j},\ldots,b_{s}\}$
+
+Teilung der Folge in linken und rechten Teil:
+\{$b_{r},\ldots,b_{i},\ldots,b_{p}\},\{b_{p+1},\ldots,b_{j},\ldots,b_{s}\}$
+
+Suchen: Minimum(Minumum(\{$b_{i},\ldots,b_{p}\})$,
+Minimum(\{$b_{p+1},\ldots,b_{j}\}))$
+
+Vorteil dieses Mal: Die Minuma liegen am Rand. Min($b_{i},\ldots,b_{p})$
+ist ein Suffix-Minimum, Min($b_{p+1},\ldots,b_{j})$ ist ein Prefix-Minimum
+
+Algo: ``Rang-Min:
+Input: $B^{n}, n=2^{l}$
+OUTPUT: vollst"andiger Bin"arbaum mit den Arrays P,S
+begin
+\begin{Verbatim}
+for j=1 to n pardo
+    P(0,j) := B(j)
+    S(0,j) := B(j)
+for h=1 to log(n) do
+    for j=1 to n/$2^{h}$ pardo
+        # h ist das Level von den Bl"attern an (h=0)
+        Merge(P(h-1,2j-1) mit P(h-1,2j) zu P(h,j)
+
+Merge: Kopiere erstes Array und f"ur alle Elemente des zweiten Arrays das
+Minimum des Elements und des letzten Elements des ersten Array ein
+\end{Verbatim}
+end.
+
+Analyse: TIME: O(\log n)
+ WORK: O(n\log n) (O(n) pro Stufe)
+
+\begin{satz} *
+  Das Preprocessing f"ur Rang-Minima-Problem ist O(\log n) TIME mit
+  O(n\log n) WORK.
+\end{satz}
+
+\begin{bemerk}
+  Im Seriellen gilt: optimal in O(n) Zeit sind LCA und Range-Minima
+  l"osbar. (im Sinne der Einzelanfrage in O(1) TIME)
+\end{bemerk}
+
+\begin{folgerung}
+  Der Satz * ist nicht optimal.
+\end{folgerung}
+
+Im Parallelen gilt: LCA geht in O(\log n) TIME optimal
+Range-Minima geht in O(\log\log n) TIME optimal
+
+Aufgabe: Range-Minima \emph{optimal} in O(\log n) TIME
+
+Standardtechnik:
+\begin{enumerate}
+ \item Zerlege B in Bl"ocke gleicher L"ange $\log n$
+ \item Preprocessing mit seriellem Algorithmus parallel f"ur alle Bl"ocke
+ \item berechne f"ur jeden Block das Minimum $x_{i}
+  (i=1,\ldots,\frac{n}{\log n})$ und die Prefix- und
+  Suffix-Minima innerhalb der Bl"ocke
+ \item wende den Algorithmus Range-Minima auf Array
+  B'=($x_{1},\ldots,x_{\frac{n}{\log n}})$
+\end{enumerate}
+
+Analyse:
+\begin{enumerate}
+ \item O(log n) TIME, O(n) WORK
+ \item O(log n) TIME, O(n) WORK
+ \item O(log n) TIME, O(n) WORK
+ \item O(log n) TIME, O(\frac{n}{\log n} \log n)=O(n) WORK
+\end{enumerate}
+
+Algo:
+
+MIN($b_{i},\ldots,b_{j}) = MIN(Suffixmin_{B_{s-1}}(b_{i}),
+min(x_{s},\ldots,x_{t}), Pr"afixmin_{B_{t+1}}(b_{j})$
+
+Ergebnis: Satz * geht auch mit O(n) WORK.
+
+\begin{folgerung}
+  Die analogen Schranken gelten f"ur LCA.
+\end{folgerung}
+
+\section{Suchen, Mischen, Sortieren} % Kapitel 4
+\subsection{Suchen/Search}
+
+Vorraussetzung:
+\begin{description}
+ \item[INPUT] $x_{1}<x_{2}<\ldots<x_{n}$, zu suchendes Element $s$
+ \item[OUTPUT] $i: x_{i}\leq<x_{i+1}$
+\end{description}
+
+Kruskal 1984: 
+
+\begin{lemma}
+  Mit $k$ Schritten l"asst sich eine sortierte Liste von $n=(p+1)^{k}-1$
+  ($p$-Anzahl der Proz.) Elementen durchsuchen.
+  
+  \begin{proof}
+    Sei $k=1$.
+    
+    Dann ist $n=(p+1)^{1}-1=p$. Damit sagt des Lemma, dass man mit
+    $p$~Prozessoren $n$~Elemente in einem Schritt durchsuchen. -- trivial.
+    
+    $k-1 \rightarrow k$:
+    
+    $j(p+1)^{k-1} (j=1,\ldots,p)$ -- Pl"atze f"ur die Prozessoren
+    
+    \begin{enumerate}[1.\,Fall:]
+     \item $s$ gefunden -- fertig
+     \item $s$ ist in einem der Abschnitte, die wir nach dem Entfernen
+      der roten Elemente (Elemente, die im ersten Schritt von den
+      Prozessoren durchsucht wurden) erhalten. Die Anzahl der
+      verbleibenden Elemente ist somit
+      \begin{gather}
+	\frac{n-p}{p+1}=\frac{(p+1)^{k}-1-p}{p+1}
+	   =(p+1)^{k-1}-\frac{p+1}{p+1} =(p-1)^{k-1}-1
+      \end{gather}
+      Dieser Abschnitt l"asst sich nach Induktionsvorraussetzung in
+      $k-1$~Schritten durchsuchen.
+      
+      Also l"asst sich ein Feld in $1+k-1=k$~Schritten durchsuchen.
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{satz}[Satz von Kruskel (1984)]
+  $T_{s}(n,p)$ sei die Anzahl der Schritte, die notwendig und hinreichend
+  sind, um mit $p$ Prozessoren eine Liste von $n$ Elementen zu durchsuchen.
+  
+  F"ur $n=(p+1)^{k}-1$ gilt: 
+  \begin{gather}
+    T_{s}(n,p)= \lseil\frac{\log(n+1)}{\log(p+1)}\rseil
+  \end{gather}
+  
+  \begin{proof}
+    hinreichend:
+    \begin{align}
+      (p+1)^{k}-1\geq n &\Leftrightarrow (p+1)^{k}\geq n+1\\
+	 &\Leftrightarrow \log(p+1)^{k}\geq \log(n+1)\\
+      &\Leftrightarrow k\log(p+1)\geq \log(n+1)\\
+      &\Leftrightarrow k\geq \frac{\log(n+1)}{\log(p+1)}
+    \end{align}
+    
+    notwendig: Wenn wir die Prozessoren beliebig positionieren
+    $\Rightarrow$ Es bleibt min eine Abschnitt nicht untersuchter
+    Elemente, der L"ange $> \frac{n-p}{p+1}$ "ubrig.
+
+    \begin{align}
+      \frac{n-p}{p+1} = \frac{n}{p+1}-\frac{p+1}{p+1}+\frac1{p+1} =
+	 \frac{n+1}{p+1}-1
+    \end{align}
+    \begin{align}
+      \frac{"ubrig-Zahl der durchsuchten}{Abschnitte}
+	 \frac{\frac{n++1}-1-p}{p+1} = \frac{n+1}{(p+1)^{2}}-1
+    \end{align}
+    
+    Mit Induktion kann man zeigen, dass nach $k$~Schritten
+    $\frac{n+1}{(p+1)^{k}}-1$ Elemente als Rest bleiben.
+    
+    Ziel: 
+    \begin{gather}
+      \frac{n+1}{(p+1)^{k}} - 1 \leq 0
+    \end{gather}
+  \end{proof}
+\end{satz}
+
+\subsubsection{Konsequenzen des Satzes}
+\begin{enumerate}
+ \item $X$ sei sortierte Folge von $n$ paarweise verschiedenen Elementen,
+  $Y$ sei bel. Folge von $m$~Elementen, $m<<n (m=\Theta(n^{s}), 0<s<1)$
+  
+  Ranke Y in X! - Kruskal f"ur jeden Element. Wieviele Prozessoren?
+  $p=\lfloor\frac{n}{m}\rfloor$
+  Einzelnes Element: Zeit $O(\frac{\log(n+1)}{\log(p+1)}) =
+  O(\frac{\log(n+1)}{\log n^{1-s}})=O(\frac1{1-s}\frac{\log(n+1)}{\log
+  n})=O(1)$ 
+  
+  parallel f"ur alle Elemente aus Y: O(1) TIME WORK? O(\frac{n}{m}) WORK
+  (zahl der Proz*Rechenzeit)
+  f"ur eine Element. Bei m St"uck m$\cdot$O(\frac{n}{m}) WORK = O(n) WORK
+  
+  \begin{satz}
+    Sei Y eine beliebige Folge mit m Elementen, X: $x_{1}<\ldots<x_{n}$,
+    sei m=O($n^{s}$): 0<s<1
+    
+    Dann kann Y in X in O(1) TIME mit O(n) WORK eingeordnet werden.
+  \end{satz}
+
+  Merge-Algo:
+  INPUT: $A^{n}, B^{m}$ (\sqrt{m} ganzzahlig)
+  OUTPUT: Rang(B:A)
+  begin
+  \begin{Verbatim}[gobble=2]
+  if m < 4 -- so B zu kurz $\Rightarrow$ p=n -- exit mO(1)
+  Ranke $b_{\sqrt{m}}, b_{2\sqrt{m}},b_{3\sqrt{m}},\ldots,b_{\sqrt{m}\sqrt{m}}$ parallel mit Kruskal in A
+  Sei Rang(b_{i\sqrt{m}}:A) =: j(i), j(0) := 0
+  $B_{i}:=(b_{i\sqrt{m}+1},b_{i\sqrt{m}+2},\ldots,b_{(i+1)\sqrt{m}-1}$
+  $A_{i}:=(a_{j(i)+1},\ldots,a_{j(i+1)})$
+  wenn j(i)=j(i+1), so Rang($B_{i}:A_{i})=(0,0,\ldots)$ sonst berechne
+  Rang($B_{i}:A_{i})$ rekursiv
+  
+  Sei i < k $\leq$ m bel. Index, der nicht vielfaches von \sqrt{m} ist.
+  Sei i=floor(k/sqrt(m)). Si sei Rang($b_{k}:A) :=j(i)+Rang(b_{k}:A_{i})$
+  \end{Verbatim}
+  end.
+
+  Einschub:
+  Die Klasse P der in polynomeller Zeit l"osbaren Algorithmen zerf"allt
+  f"ur parallele Ans"atze in drei Klassen:
+  \begin{enumerate}
+   \item $O(1)$, z.B. Eulertour-Technik
+   \item $O(\log n)$, vielzahl der Probleme
+   \item $O(\log\log n)$, z.B. Merge
+  \end{enumerate}
+
+  \begin{satz}
+    Merge geht optimal in O(\log\log n)
+  \end{satz}
+  
+  % Grafik: kruskal-merge
+  
+  \begin{satz}
+    Der Rang($B^{m}:A^{n}$) kann in O(\log\log n) TIME mit
+    O((n+m)\log\log m) WORK berechnet werden.
+    
+    \begin{proof}
+      T(n,m) =: TIME (worst case)
+      1.Schritt im Algo: if (m<4) Ranke B in A mit Kruskal mit p=n Proz.
+      $\Rightarrow$ O(1) TIME, O(n) WORK
+      2. schritt: (=Pfeile $\sqrt{m}$\,St"uck)
+        p:= \sqrt{n}; Kruskal O(\frac{\log(n+1)}{\log(\sqrt{n}+1)})=O(1)
+        WORK: \sqrt{m} Pfeile parallel $\Rightarrow$ Gesamt O(1) TIME
+            WORK = O(\sqrt{m}$\cdot$\sqrt{n}) = O(n+m) = WORK im Schritt~2
+            (mit O(1) TIME)
+      \begin{enumerate}[1.\,Fall]
+       \item (m$\leq$n) 2\sqrt{m}$\cdot$\sqrt{n} $\leq$ 2\sqrt{n}\sqrt{n}
+	= n+n = O(2n) = O(n) = O(n+m)
+       \item n $\leq$ m
+	analog 2\sqrt{m}\sqrt{n} = O(n+m)
+      \end{enumerate}
+      
+      |$A_{i}$| =: $n_{i}$ (0$\leq$i$\leq$\sqrt{m}-1); Zeit f"ur gr"un
+      (=$B_{i}:A_{i}$) = T($n_{i}$, \sqrt{m})
+      
+      $\Rightarrow T(n,m) \leq \max_{i} T(n_{i}, \sqrt{m}), T(n,3) = O(1)$  
+      
+      oBdA jetzt: n=m
+      
+      \begin{folgerung}
+	$A^{n}, B^{m}$ sortiert k"onnen in O(\log\log n) TIME mit
+	O(n\log\log n) WORK gemischt werden.
+      \end{folgerung}
+      
+      Ziel: optimal
+      
+      % Grafik: 11.6./1
+      A' := ($p_{1},p_{2},p_{3},\ldots)$
+      B' := ($q_{1},q_{2},q_{3},\ldots)$
+      |B'|=\frac{n}{\log\log n}
+      |A'|=\frac{n}{\log\log n}
+      
+      
+      Merge(A',B') in O(\log\log n) TIME mit O(n) WORK (O(n) =
+      O(n\log\log n/\log\log n))
+      
+      % Grafik: 11.6./2
+      
+      Aufgabe: Rang(A':B) - seriell f"ur jedes $p_{i}$ in O(\log\log n)
+      TIME (Parallel f"ur alle $p_{i}$, WORK: O(n) gesamt)
+      
+      analog Rang(B':A)
+      
+      $\Rightarrow$ % Grafik 11.6./3
+      
+      Wenn auch unten jeweils log log n Elemente-- so paarweise mischen
+      und kleben -- O(log log n) TIME, O(n) WORK
+
+      Wenn nicht: 
+      zwichen $q_{i}$ und $q_{i+1}$ sind jeweils loglog n Element. Die
+      Pfeil m"ussen zwischen $p_{i}$ und $p_{i+1}$, was auch nur loglog n
+      Elemente insgesamt sind. Also f"ur jedes $q_{i}\leq loglog n$
+      Elemente. Diese dann abschnittsweise mischen+kleben
+    \end{proof}
+  \end{satz}
+\end{enumerate}
+
+\subsection{SORT}
+
+Baumparadigma
+Ansatz
+% Baum mit sortierten Listen als Bl"atter
+
+- Umwandlung in Bin"arbaum
+
+oBdA
+\begin{enumerate}
+ \item Bin"arbaum
+ \item Innere Knoten haben genau 2 S"ohne
+ \item In Bl"attern stehen Einerlisten
+\end{enumerate}
+
+Richard Cole:
+% Grafik: Cole-Baum
+
+\begin{festlegung}
+  % kleiner baum mit vuw
+  v: Vaterknoten
+  u: linke Sohn
+  w: rechter Sohn
+\end{festlegung}
+
+Trivial gilt: Sortieren geht mit der Idee des Baumparadigmas
+(``merge-sort'') in $O(\log n\log\log n) TIME$ (optimal).
+\begin{proof}
+  Merge in $O(\log\log n) TIME$ optimal
+\end{proof}
+
+\subsubsection{Merge with the help of a cover}
+c-Decke $c\in\Z$
+
+\begin{definition}
+  sortierte Folge X hei"se c-Decke einer sortierten Folge Y, wenn Y
+  h"ochstens c Elemente zwischen zwei aufeinanderfolgenden Elementen der
+  Folge $X_{\infty} := (-\infty, X, \infty)$ enth"alt
+\end{definition}
+
+\begin{satz}
+  Seien $A^{n}, B^{m}$ sortiert, sei X c-Decke von $A^{n}$ und $B^{m}$.
+  
+  Wenn der Rang(X:A) und Rang(X:B) bekannt sind, so kann Merge(A, B) in
+  $O(1)\time$ und $O(|X|)\work$ erhalten werden.
+  
+  \begin{proof}
+    X = ($x_{1},\ldots,x_{s}$), Rang(X:A)=($r_{1},\ldots,r_{s}$),
+    Rang(X:B)=($t_{1},\ldots,t_{s})$
+    
+    Da c-Decke: $|B_{i}|,|A_{i}|\leq c$
+  \end{proof}
+\end{satz}
+
+Sei $T$ unser Baum, $v$ ein Knoten von $T$, $Level(v)$, H"ohe $h(T)$, Altitude
+$alt(v) := h(T)-Level(v)$
+
+Algorithmus arbeitet in Schritten $s$.
+
+\begin{defini}
+  $L[v]:$ Lister der sortierten Elemente der S"ohne
+  
+  $L_{s}[v]:$ Liste im Knoten $v$ nach Schritt $s$, Ziel: $L_{s}[v] =
+  L[v]$ f"ur $s\geq 3\cdot alt(v)$
+  
+  v \emph{voll} im Schritt $s$, wenn $L_{s}[v]=L[v]$
+\end{defini}
+
+\begin{defini}
+  $v$ hei"st \emph{aktiv} im Schritt $s$ :$\Leftrightarrow$ $alt(v) \leq
+  s \leq alt(v)$
+\end{defini}
+
+\begin{folgerung}
+  Wir bekommen f"ur root:
+  \begin{gather}
+    alt(root) = h(T) \leq s \leq 3\cdot alt(root) = 3\cdot h(T)
+  \end{gather}
+  
+  Root ist damit voll nach $3\cdot h(T)$ Schritten.
+\end{folgerung}
+
+\begin{defini}
+  Sei $L$ sortierte Liste. Das c-Raster $Raster_{c}(L)$ (c-sample) ist die sortierte
+  Teilliste aus jedem $c$-ten Element.
+\end{defini}
+
+\begin{beispiel}
+  \begin{gather}
+    L = (1,3,5,6,7,8,11,13,14,15,16)\\
+    Raster_{4}(L) = (6,13)\\
+    Raster_{2}(L) = (3,6,8,13,15)\\
+    Raster_{1}(L) = L
+  \end{gather}
+\end{beispiel}
+
+\begin{description}
+ \item[Pipeline-Strategie] besteht aus der Bestimmung von $L[v]$ "uber
+  Schritte $s$, wobei $L_{s}[v]$ Approximation von $L[v]$ und im Schritt
+  $s+1$ verbessert wird. Dabei wird ein \emph{Sample} von $L_{s}[v]$
+  benutzt, um Informationen Richtung Root zu senden, die genutzt werden,
+  um weiter oben neue Approximationen an die entsprechenden Listen zu
+  erhalten.
+\end{description}
+
+\begin{definition}
+  x Knoten,
+  \begin{gather}
+    Sample(L_{s}[v]):=
+       \begin{case}
+	 Raster_{4}(L_{s}[x])& s\leq3\cdot alt(x)\\
+	 Raster_{2}(L_{s}[x])& s=3\cdot alt(x)+1\\
+	 Raster_{1}(L_{s}[x])& s=3\cdot alt(x)+2
+       \end{case}
+  \end{gather}
+\end{definition}
+
+Algo: R-Cole
+\begin{Verbatim}
+Ist v Blatt, so $L_{0}$[v] = Wert im Blatt
+ v kein Blatt $L_{0}$[v]=$\emptyset$
+\end{Verbatim}
+INPUT: $\forall v:L_{s}[v]$ $v$ voll, wenn s$\geq$ 3 alt(v)
+OUTPUT: $\forall$ v: $L_{s+1}[v]$, v voll, wenn s+1$\geq$ 3alt(v)
+begin
+\begin{Verbatim}
+f"ur alle aktiven Knoten pardo
+L'_{s+1}[w] = Sample($L_{s}[w])$
+L'_{s+1}[u] = Sample($L_{s}[u])$
+merge($L_{s+1}'[u], L'_{s+1}[w])$ zu $L_{s+1}[v]$
+\end{Verbatim}
+
+% Hier fehlen zwei Vorlesungen
+
+\subsection{Selektion}
+
+Median der Mediane-Technik; R.Cole; Prefixsummenalgo.; Litheratur liefert u.a. 2
+Ans"atze: Akl (s. Info 3), R.Cole
+
+Akl: 0<x<1: O($n^{x}$) TIME optimal
+INPUT: Folge ($a_{1},\ldots,a_{n}$), k: 1$\leq$k $\leq$n
+OUTPUT: El. vom Rang $k$
+
+F"alle k=1,n. O(\log\log n) CRCW, optimal \work O(n)
+Median: nicht erreichbar.
+Bem. dazu: $par_{n}(\alpha_{1},\ldots,\alpha_{n}) := \alpha_{1}\oplus
+\alpha_{2}\oplus\ldots\oplus \alpha_{n}$ ($\alpha_{i}$ boolsche Werte)
+
+Die Berechnung von $par_{n}$ erfordert auf der PRIORITY-CRCW-PRAM
+$\omega(\frac{\log n}{\log\log n}) \time$. (Beweis schwer!) Die gleiche
+Schranke gilt f"ur den Median.
+
+Ziel: O(\log n \log\log n) \time, CREW (EREW) \emph{optimal}. (bekannt ist
+sogar $O(\log n\log^{\ast}n)$)
+
+Alg. Selektion
+INPUT: A=($a_{1},\ldots,a_{n}$), k: 1$\leq$ k $\leq$ n
+OUTPUT: \ldots
+begin
+\begin{Verbatim}
+n0 := n; s := 0
+while ns > n/log(n) do
+    s := s+1
+    Zerlege A in Bl"ocke Bi
+    for i := 1 to n/log(n) pardo
+       mi := median(Bi) (seriell linear) (O(log $n_{s}$)\time O($n_{s}$)\work)
+    a := median(m1,\ldots,mnlogn) (mit Cole) (O(log $n_{s}$)\time O(\frac{$n_{s}$}{\log $n_{s}$}\log $n_{s}$)\work
+    Bestimme s1,s2,s3 - Anzahl der Elemente < a, =a, >a (mit Prefixsummenalgo in O(\log n)\time optimal)
+    Case statement s1 < k $\Leftarrow$ s1+s2 -> OUTPUT "a" (}O(\log$n_{s}$)\time)
+      k $\Leftarrow$ s1 -> packe in Array, ns := s1        (})
+      k > s1 + s2  -> packe in Array, ns := s3             (})
+\end{Verbatim}
+
+ns = Zahl der Elemente nach Schritt s
+
+dazu: 
+\begin{gather}
+  \frac{n}4 \leq Rang(a:A) \leq \frac34 n
+\end{gather}
+
+$a\geq$ H"alfe der Mediane $m_{1},\ldots,m_{\frac{n}{\log n}}$, jeder
+Median ist $\geq\frac{\log n}{2}$ Elemente
+\begin{gather}
+  \frac{n_{s}}{2\log n}\frac{log n}{2}=\frac{n_{s}}{4}\\
+  n_{s} \leq \frac34 n
+\end{gather}
+$\Rightarrow$ O(\log n\log\log n) \time, O(n) \work
+
+\section{Parallelisierbarkeit}
+
+Theorem von Brent liefert $O(\frac{W(n)}{p}+T(n))\time$. Jedoch macht es
+in vielen F"allen keinen Sinn, mehr als $\alpha(n)$ Prozessoren zu
+w"ahlen, da dies keine Verbesserung bringt. Um z.B. ein Element in 100
+Zahlen zu suchen, machen mehr als 100 Prozessoren keinen Sinn.
+
+Was bedeutet parallelisierbarkeit:
+\begin{enumerate}[1. Ansatz]
+ \item mehr Prozessoren liefern bessere Zeiten
+ \item Das Problem ist schneller l"osbar
+\end{enumerate}
+
+\begin{definition}
+  Ein Problem $L$ ist in $NC$ (Nick's class -- benannt nach seinem
+  Erfinder), wenn die charakteristische Funktion von $L$ in $O( (\log
+  n)^{k} )\time$ mit $O(n^{k})$ Prozessoren f"ur festes $k$ berechnet
+  werden kann.
+\end{definition}
+
+\begin{gather}
+  L\subseteq\sum\limits^{\ast}; w\in\Sigma^{\ast}, w\in L?
+     \chi_{L}(w) = \begin{case} 0& w\in L\\ 1& w\not\in L\end{case}
+\end{gather}
+
+``polylogarithmische Zeit'' mit polynomial vielen Prozessoren. 
+
+\begin{definition}
+  $L$ hochgradig parallelisierbar $:\Leftrightarrow$ $L\in NC$ ist.
+  (Vorr. generell: $L\in P$) (wenn nicht in NC, so exist kein schneller
+  paralleler Algo.)
+\end{definition}
+
+\subsubsection{Gibt es Probleme in $P$, die nicht in $NC$ sind?}
+
+\begin{definition}
+  $L\subseteq \Sigma^{\ast}$
+  
+  $L$ ist $P$-vollst"andige $:\Leftrightarrow$ $\forall L_{1}\subseteq
+  \Sigma^{\ast}, L_{1}\in P: L_{1}\leq_{NC} L$
+  
+  $L_{1}\leq_{NC} L :\Leftrightarrow \exists f: \Sigma^{\ast}\rightarrow
+  \Sigma^{\ast}, f\in NC: \forall w\in \Sigma^{\ast}: w\in
+  L_{1}\Leftrightarrow f(w) \in L$
+\end{definition}
+
+NC- Klasse der in polylog. Zeit und poly. vielen Proz.
+
+\begin{bemerkung}
+  NC$\subseteq$P
+  
+  \begin{proof}
+    "uber serielle Modellierung der Rechnung
+  \end{proof}
+\end{bemerkung}
+
+\subsection{Maximum Flow-f}
+Graph $G=(V,E)$
+
+% Grafik: parallel
+
+\begin{enumerate}
+ \item Kapazit"at $c(e)$ eines Knotens $e$
+  0$\leq$f(e)$\leq$ c(e) (f: Flu"s durch e)
+  Flu"s f: E$\rightarrow$ \N
+ \item $f^{-}(v) :=\sum_{u}f(u,v)
+  (Abfluss), f^{+}(w) :=\sum_{u}f(v,w) (Zufluss); \forall v\in
+  V\setminus\{s,t\}: f^{+}(v)=f^{-}(v)$
+\end{enumerate}
+
+\begin{definition}
+  Ein Flu"s f ist maximal, wenn val(f) := $f^{-}(t)-f^{+}(t)
+  (=f^{+}(s)-f^{-}(s)) \geq val(f') \forall$ zul"assigen $f'$ ist (d.h.
+  f"ur $f,f'$ gelten (1) (2) % obige Aufz"ahlung
+\end{definition}
+
+\subsubsection{Lineare Programmierung:}
+\begin{gather}
+  \sum_{i=1}^{n}c_{i}x_{i} \rightarrow \max\\
+  A\overrightarrow{x} \leq b, x_{i}\geq0, 1 \leq i \leq n
+\end{gather}
+
+\subsubsection{DFS (geordnete Tiefensuche)}
+INPUT: beginnend bei $a$ %garfik dfs
+OUTPUT:
+\begin{tabular}{l|l}
+  Ecken& DFS-Liste\\
+  \hline
+  a& 1\\
+  b & 2\\
+  c & 5\\
+  d& 3\\
+  e& 4\\
+  f&6\\
+  g&7
+\end{tabular}
+
+Formulieren wir ein Problem ``Kommt $e$ vor $d$ in DFS-Liste'' so haben
+wir damit ein Entscheidungsproblem -- ein Sprachproblem.
+
+relevante Entscheidungsproblem: -- wenn das Ursprungsproblem l"osbar ist,
+dann auch das relevante Entscheidungsproblem. Wenn das relevante
+Entscheidungsproblem unl"osbar ist, so erstrecht das Ursprungsproblem.
+
+\begin{definition}
+  \begin{gather}
+    L_{1} \leq_{NC} L_{2} :\Leftrightarrow \exists f_{L_{1}}
+       NC-\text{brechenbar}: \forall w\in \Sigma^\ast: w\in L_{1}
+       \Leftrightarrow f(w)\in L_{2}
+  \end{gather}
+\end{definition}
+
+\begin{definition}
+  \begin{gather}
+    L,L'\subseteq \Sigma^{\ast}, L P(arallelisierbar)-vollst"andig
+       :\Leftrightarrow L\in P \wedge \forall L'\in P: L'\leq_{NC} L
+  \end{gather}
+\end{definition}
+
+\begin{satz}[Hauptsatz "uber die Reduktion]
+  Seien $L_{1}, L_{2}\in \Sigma^{\ast}: L_{1}\leq_{NC} L_{2}$
+  
+  So gilt: $L_{2}\in NC \Rightarrow L_{1}\in NC$
+  
+  \begin{proof}
+    Gelte: $L_{2}\in NC$
+    Beh.: $L_{1}\in NC$ Seien $u_{i}\in \Sigma^{\ast} input f"ur L_{1}:
+    u_{1}\in L_{1}?$
+    
+    Algo:
+    \begin{enumerate}
+     \item Berechne f($u_{1})$
+     \item Pr"ufe: f($u_{1})$\in $L_{2}$? (in NC)
+     \item wegen f($u_{1}) \in L_{2} \Leftrightarrow u_{1}\in L_{1}$ ist
+      die Antwort von 2. gleich der Antwort $u_{1}\in L_{1}$ (in NC
+      erhalten)
+    \end{enumerate}
+    $\Rightarrow$ $L_{1}\in NC$
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Satz "uber Transitivit"at]
+  \begin{gather}
+    L_{1} \leq_{NC} L_{2}\wedge L_{2} \leq_{NC} L_{3} \Rightarrow
+       L_{1}\leq_{NC} L_{3}
+  \end{gather}
+\end{satz}
+
+\begin{bemerkung}
+  Zwei Methoden zum Nachweise der P-Vollst"andigkeit:
+  \begin{enumerate}
+   \item direkte Methode
+   \item Indirekte Methode mit Hauptsatz
+  \end{enumerate}
+\end{bemerkung}
+
+CVP (circuit value problem)
+$\forall L'\in P: L'\leq_{NC} CVP$
+
+% 6.7.
+
+\begin{definition}
+  Ein Schaltkreis (engl. Circuit) $C=<g_{1},\ldots,g_{n}>$
+  :$\Leftrightarrow$ $\forall i\in \{1,\ldots,n\}: g_{i} sind INPUT (\in
+  \{0,1\}) oder g_{i}=g_{j}\vee g_{k}, g_{i}=g_{j}\wedge g_{k},
+  g_{i}=\neg g_{j}: j,k < i$
+\end{definition}
+
+\begin{definition}
+  CVP-Problem: INPUT: Circuit C. QUESTION: $g_{n}=1$?
+\end{definition}
+
+Theorem von Cook: (Beweis von irgendeinem Satz)
+z.z. $\forall L\in P: L \leq_{NC} CVP$
+Weg: Allgemeines Beweisrezept
+
+$L\in P \Rightarrow \exists TM\in\mathcal{TM} (\text{Turing-Maschine})$
+$\Sigma=\{a_{1},\ldots,a_{m}\}, Q=\{q_{1},\ldots,q_{s}\}, T(n)-$Rechenzeit
+
+$L\leq_{NP} CVP$, d.h. es existiert eine Funktion f, die L auf CVP
+reduziert, f=$f_{L}() \Rightarrow m,s$ sind konstant, T(n) ist fest
+gegeben. L bel., aber fest!
+
+Ziel: Angabe eines NC-Algorithmus, der ein $f$ berechnet: Jedes Beispiel
+(engl. Instance) $I$ zu $L$ wird mit $f$ in ein Beispiel $I_{CVP}$ zu
+$CVP$ "uberf"uhrt: $I_{L}\in L \Leftrightarrow f_{L}(I_{L})=I_{CVP}\in CVP$.
+
+Wir entwerfen einen Schaltkreis, der die Arbeit der Turning-Maschine
+nachbildet und genau dann durchschaltet, wenn die Turing-Maschine die
+Sprache erkennt.
+
+Simulation:
+\begin{enumerate}
+ \item H(i,t): steht der Lese-Schreibkopfes zum Zeitpunkt $t\in
+  \{1,\ldots,T(n)\}$ auf dem Band an der Stelle $i$?
+ \item C(i,j,t): steht das Zeichen $a_{j}$ an der Position $i$ zum
+  Zeitpunkt $t$ auf dem Band?
+ \item S(k,t): befindet sich die Turing-Maschine zum Zeitpunkt $t$ im
+  Zustand $q_{k}$?
+\end{enumerate}
+
+Start:
+\begin{gather}
+  H(i,0) = \begin{case}1&i=1\\0&i>1\end{case}\\
+  S(k,0) = \begin{case}1&k=1\\0&k>1\end{case}\\
+  C(i,j,0) = \begin{case}1&\text{Zelle} i = a_{j}\\0&\text{sonst}\end{case}
+\end{gather}
+
+Mittels $\delta$ beschreiben wir $t\rightarrow t+1$
+
+% 9.7.
+
+Mit dem letzten Satz haben wir gezeigt, dass NOR-CVP schwer entscheibar ist.
+Diese Aussagen wollen wir jetzt nutzen, um zu zeigen, dass auch DFS
+schwer ist.
+
+Wir zeigen, dass NOR-CVP leichter ist als DFS. Jedoch ist DFS kein
+Entscheidungspoblem, was eine direkte Abbildung der INPUT-Mengen
+aufeinander nicht m"oglich macht. Daher konstruieren wir ein
+Entscheidungsproblem, das leichter ist als DFS, an dem wir aber zeigen
+k"onnen, dass es schwerer ist als NOR-CVP. Damit w"are dann auch gezeigt,
+dass DFS schwerer ist, als NOR-CVP und damit auch schwer entscheidbar ist.
+
+DFS:
+INPUT: gerichteter Graph, Kantenmarkierung (genormt), Startknoten,
+  Traversierung im Graph soll m"oglich sein
+OUTPUT: DFS-Liste
+
+zu konstruieren mit NC-Zuordnung.
+
+Jedem INPUT von NOR-CVP: $I_{CVP} \rightarrow f(I_{CVP})=I_{DFS}(v,w):$
+Wert($I_{CVP})=1 \Leftrightarrow$ das relevante Entscheidungsproblem von
+$I_{DVS}$ wahr ist (=1 ist) (d.h. $u$ wird vor $v$ besucht.
+
+$I_{CVP}: <g_{1},g_{2},\ldots,g_{n}>$
+entweder $g_{i}=1 \vee g_{i}=\neg(g_{i}\wedge g_{k}), k,j<i$
+$\rightarrow$ Graph, s,u,v
+\begin{enumerate}[1.Fall]
+ \item $g_{i}=1$ $\Rightarrow$ Abb.1 $g_{i}$ sei INPUT f"ur
+  $g_{j_{1}},\ldots,g_{j_{k}}$, bilde <i,$j_{1}$>,\ldots,<i,$j_{k}$>
+  
+  Ind.beweise: Wenn wert=1 $\Leftrightarrow$ so wird s(i) vor t(i) besucht
+ \item $g_{i} = \neg (g_{j}\vee g_{k}) \Rightarrow $ Abb.2
+  
+  Ind.beweis: Sei Wert($g_{i}$)=1 $\Rightarrow$ ($g_{j}=0=g_{k})$
+  Ind.vor. $\Rightarrow$ t(j) vor s(j) besucht (t(k) vor s(k)) genauer:
+  Abb.4-Verlauf: speziell: <j,i>, <k,i> sind nicht besucht $\Rightarrow$
+  f"ur $g_{i}$ wird Abb.5 verfolgt $\Rightarrow$ s(i) vor t(i)
+  
+  sei Wert($g_{i}$)=0 $\Rightarrow$ ($g_{j}$=1 oder $g_{k}$=1)
+ 
+  \begin{enumerate}
+   \item $g_{j}=1 \rightarrow G_{j}$ (Graph, der $g_{i}$ zugeordnet ist)
+    wird nach Abb.5 durchlaufen $\Rightarrow$ ``Zackenweg''
+    
+    $\Rightarrow$ in Abb.3 ist <j,i> bereits besucht $\Rightarrow$ f"ur i
+    $\Rightarrow$ Weg wie Abb.4
+   \item $g_{j}=0, g_{k}=1$ $\Rightarrow$ im wesentlichen Weg wie in
+    Abb.4 (Ausnahme: erst <j,i> dann zur"uck)
+  \end{enumerate}
+  $\Rightarrow$ t(i) vor s(i)
+\end{enumerate}
+
+\begin{definition}
+  u:=s(n), v=t(n) $\Rightarrow$ u vor v besucht $\Leftrightarrow$
+  wert($g_{n}$)=1
+\end{definition}
+
+\end{document}
