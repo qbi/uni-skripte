@@ -100,7 +100,6 @@
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
-% \newtheorem{lemma}{Lemma}[section]
 
 \theoremstyle{nonumberbreak}
 \theoremsymbol{\ensuremath{_\blacksquare}}
@@ -117,7 +116,9 @@
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\K}{\mathbb{K}}
-\newcommand{\Prr}{\mathbb{P}\mathrm{r}}  % The command \Pr already exist
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Prr}{\PP\mathrm{r}}  % The command \Pr already exist
+\newcommand{\Pa}{\PP\mathrm{a}}
 \newcommand{\help}[1]{\textcolor{green}{help: #1}}
 \newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
 
@@ -1823,19 +1824,19 @@ als Schleife:\\
    \item Eine Klasse $\mathbb{F}$ von Funktionen heißt abgeschlossen
     bzgl. $\mu$-Rekursion $:\Longleftrightarrow$ für alle
     $g\in\mathbb{F}$ ist $f=\mu R(g)\in\mathbb{F}$.
-   \item Die Klasse $\mathbb{P}$ der partiell-rekursiven Funktionen
+   \item Die Klasse $\PP$ der partiell-rekursiven Funktionen
     \index{Klasse|part.-rek.\,Fkt} ist die kleinste Klasse, die $\Prr$
     umfasst und abgeschlossen bzgl. $\mu$-Rekursion ist. Anders
-    dargestellt: $\mathbb{P}=\Gamma_{\{\mu R\}}(\Prr)$
+    dargestellt: $\PP=\Gamma_{\{\mu R\}}(\Prr)$
   \end{enumerate}
 \end{defini}
 
 Äquivalent hierzu ist die folgende Definition:
 \begin{defini}
-  Die Klasse $\mathbb{P}$ ist die kleinste Klasse, die $\mathcal{G}$ umfasst und
+  Die Klasse $\PP$ ist die kleinste Klasse, die $\mathcal{G}$ umfasst und
   die abgeschlossen bzgl. Einsetzung, primitiver-Rekursion und
   $\mu$-Rekursion ist. Anders dargestellt:
-  $\mathbb{P}=\Gamma_{\{SUB,PR,\mu R\}}(\mathcal{G})$
+  $\PP=\Gamma_{\{SUB,PR,\mu R\}}(\mathcal{G})$
 \end{defini}
 
 \begin{bemerk}
@@ -1954,4 +1955,310 @@ als Schleife:\\
 \end{fakt}
 
 \section{Allgemein rekursive Funktionen}
+
+Die Funktion $wurz\in\PP$ und ist partiell (definiert). Die
+Funktion $gw\in\PP$, total (definiert). Die Fortsetzung von $gw$
+ist $wurz:\big|_{D wurz} = wurz$
+
+\begin{defini}
+  Eine partiell-rekursive Funktion $f$ heißt \highl{allgemein-rekursiv}
+  $:\Longleftrightarrow$ $f$ total definiert ist.
+  
+  $\Pa$\index{$\Pa$} bezeichnet die Menge aller allgemein
+  rekursiven Funktionen.
+\end{defini}
+
+Wenn $\mathbb{F}$\index{$\mathbb{F}$} die Menge aller Zahlenfunktionen
+bezeichnet, dann gilt:
+\begin{equation*}
+  \emptyset \subseteq \Prr \subseteq \Pa \subseteq
+  \PP \subseteq \mathbb{F}
+\end{equation*}
+
+\begin{fakt}
+  Alle Inklusionen sind echt:
+  \begin{alignat*}
+    \emptyset &\subsetneq \Prr &\subsetneq \Pa &\subsetneq
+    \PP &\subsetneq \mathbb{F}\\
+    &(1)&(2)&(3)&(4)
+  \end{alignat*}
+  \begin{enumerate}
+   \item z.\,B. ist $nachfolger\in\Prr$ \todo{Link dorthin ergänzen}
+   \item Ackermann-Funktion
+   \item $wurz\in\PP\setminus\Pa$
+   \item Funktionen aus $\mathbb{F}\setminus\PP$ sind nicht
+    berechenbar
+    \begin{proof}
+      Wir wissen, dass $\PP$ eine effektive Numerierung
+      besitzt\help{woher?}, d.\,h. es gibt höchstens abzählbar unendlich
+      viele partiell rekursive Funktionen. Aber es gibt überabzählbar
+      viele Zahlenfunktionen, z.\,B. ist bereits $\{0,1\}^{\N}$
+      überabzählbar.
+    \end{proof}
+  \end{enumerate}
+\end{fakt}
+
+\begin{bemerk}
+  Da nicht jede partiell-rekursive Funktion partiell ist, ist
+  $\mu$-rekursive Funktion eine alternative Bezeichnund.
+  
+  Da nicht jede primitiv-rekursive Funktion primitiv ist, ist
+  induktiv-rekursive Funktion eine alternative Bezeichnung.
+\end{bemerk}
+
+Dennoch bleibt die Frage offen, ob jede partiell-rekursive Funktion zu
+einer allgemein-rekursiven Funktion fortgesetzt werden kann.
+
+Wir betrachten die folgende Diagonalisierung der partiell-rekursiven
+Funktionen:\\
+$\phi_{0},\phi_{1},\phi_{2},\ldots$ ist eine Nummerierung der
+partiell-rekursiven Funktionen, die sich aus einer Auflistung aller
+zugehörigen Terme ergibt. Wir definieren nun die folgende Funktion
+\begin{equation*}
+  \psi(n) := \phi_{n}(n) +1 =
+  \begin{cases}
+    \phi_{n}(a)+1&: \text{falls } \phi_{n}(n)\text{ definiert ist}\\
+    \ndef&\sonst
+  \end{cases}
+\end{equation*}
+$\psi$ ist eine berechenbare Funktion, d.\,h. $\psi$ kommt in der Liste
+vor und hat den Index $k$ mit $\psi=\phi_{k}$! wir untersuchen den Wert
+von $\psi$ an der Stelle $k$:
+\begin{equation*}
+  \phi_{k}(k) = \psi(k) = \phi_{k}(k)+1 = 
+  \begin{cases}
+    \phi_{n}(a)+1&: \text{falls } \phi_{n}(n)\text{ definiert ist}\\
+    \ndef&\sonst
+  \end{cases}
+\end{equation*}
+Die Auflösung dieses "`Widerspruchs"' besteht in der Konsequenz, dass $\psi$
+an der Stell $k$ nicht definiert seien kann. $\phi_{k}(k)$ ist nicht
+definiert.
+
+Also ist die Eigenschaft partiell-rekursiv sein zu können, unverzichtbar
+für die Definition von Berechenbarkeit. Dies führt zu einer negativen
+Antwort unserer Frage.
+
+Es sei $\phi_{l}$ eine Nummer irgendeiner allgemein-rekursiven Funktion.
+Dann gilt: $\psi(l)$ ist definiert und hat den Wert $\psi(l) =
+\phi_{l}(l)+1$ und es gilt $\psi(l)\not=\phi_{l}(l)$. Also gilt
+$\psi\not=\phi_{l}$ und $\phi_{l}$ ist \emph{keine} Fortsetzung von
+$\psi$.
+
+\begin{fakt}
+  Nicht jede partiell-rekursive Funktion kann zu einer
+  allgemein-rekursiven Funktion fortgesetzt werden!
+\end{fakt}
+
+\begin{fakt}
+  Die Menge $\Pa$ der allgemein-rekursiven Funktionen besitzt
+  keine effektive Nummerierung!
+  
+  \begin{proof}
+    (durch Diagonalisierung) Annahme: es existiert eine Liste
+    $f_{0},f_{1},f_{2},\ldots$ über allgemein-rekursive Funktionen. Dann
+    wäre auch $g(n) = f(n)+1$ eine allgemein-rekursive Funktion und es
+    gäbe einen Index $m$ mit $g=f_{m}$. Dies führt jedoch zu dem
+    Widerspruch:
+    \begin{equation*}
+      f_{m}(m) = g(m) = f_{m}(m)+1
+    \end{equation*}
+  \end{proof}
+\end{fakt}
+
+Gibt ein anschauliches Beispiel einer partiell-rekursiven (d.\,h.
+berechenbaren) Funktion, von der es nicht offensichtlich ist, dass sie
+selbst oder eine ihrer Fortsetzungen primitv-rekursiv ist?
+
+Ein Kandidat für eine solche Funktion wird jetzt beschrieben.
+Ausgangspunkt is die ungewisse Vermutung:
+\begin{quote}
+  Für jede natürliche Zahl $n\geq1$ führt die wiederholte Anwendung
+  folgender Regel nach endlich vielen Schritten auf die Zahl 1:
+  \begin{equation*}
+    n \mapsto
+    \begin{cases}
+      \frac{n}{2} & n \text{ ist gerade}\\
+      3n+1& n \text{ ist ungerade}
+    \end{cases}
+  \end{equation*}
+\end{quote}
+
+Ein Beispiel hierzu:
+\begin{align*}
+  1\\
+  2 \mapsto 1\\
+  3 \mapsto 10 \mapsto 5 \mapsto 16 \mapsto 8 \mapsto 4 \mapsto 2 \mapsto
+     1\\
+  4 \mapsto 2 \mapsto 1\\
+  5 \mapsto 16 \mapsto 8 \mapsto 4 \mapsto 2 \mapsto 1\\
+  6 \mapsto 3 \mapsto \ldots\\
+  7 \mapsto 22 \mapsto 11 \mapsto 34 \mapsto 17 \mapsto 52 \mapsto 26
+     \mapsto 13 \mapsto 40 \mapsto 20 \mapsto 10 \mapsto 5 \mapsto \ldots\\
+  8 \mapsto 4 \mapsto\ldots \\
+  9 \mapsto 28 \mapsto 14 \mapsto 7\mapsto\ldots \\
+  10 \mapsto 5\mapsto\ldots 
+\end{align*}
+
+Wir fassen alle Zahlen, für die diese Vermutung zutrifft als Menge $B =
+\{n\in\N: \text{ Vermutung trifft für $n$ zu}\}$ zusammen. Nun ist die
+Frage: Ist $B=\N$?
+
+Die einmalige Anwendung der Regel entspricht folgender Funktion
+\begin{equation*}
+  f (n) =
+    \begin{cases}
+      \frac{n}{2} & n \text{ ist gerade}\\
+      3n+1& n \text{ ist ungerade}
+    \end{cases}
+\end{equation*}
+$f$ ist definiert durch primitiv-rekursive Funktionen mittels
+Fallunterscheidung! Deshalb ist auch $f$ primitiv-rekursiv.
+
+Die $t$-malige Anwendung der Regel wird durch die folgende Funktion
+beschrieben
+\begin{align*}
+  g(n, 0) &= n && I_{1}^{1}(n)\\
+  g(n,t+1) &= f(g(n,t)) = h(n, t, g(n,t)) &&SUB(f,I_{3}^{3})
+\end{align*}
+$g$ ist also eine primitv-rekursive Funktion mit $PR(I_{1}^{1},
+SUB(f,I_{3}^{3}))$.
+
+Wir definieren nun
+\begin{equation*}
+  h(n) =
+  \begin{cases}
+    \mu t(g(n,t) = 1) &: \text{ ein solches $t$ existiert}\\
+    \ndef &:\sonst
+  \end{cases}
+\end{equation*}
+$h$ ist partiell-rekursiv und für den Definitionsbereich gilt: $D_{n}=B$
+
+Aber es gibt keine Beschreibung von $h$ (oder einer Fortsetzung) als
+primitv-rekursive Funktion
+\begin{equation*}
+  g(n,t) = 1 \Longleftrightarrow g(n,t) -1 = 0
+\end{equation*}
+
+\section{Einfache Eigenschaften primitiv-rekursiver Funktionen}
+\begin{satz}[stückweise definierte Funktionen]
+  Es seien folgende Funktionen primitiv-rekursiv
+  \begin{align*}
+    f_{1},\ldots,f_{k},f_{k+1}:\N^{n} \rightarrow \N\\
+    \text{und } g_{1},\ldots,g_{k} :\N^{n} \rightarrow \N
+  \end{align*}
+  und es sei die folgende Bedingung erfüllt: Es gibt \emph{keine} Tupel
+  $(x_{1},\ldots,x_{n})\in\N^{n}$ mit der Eigenschaft, dass für jedes
+  $j\not=i$ $g_{i}(x_{1},\ldots,x_{n})=0$ \emph{und}
+  $g_{j}(x_{1},\ldots,x_{n})=0$ (d.\,h. für jedes Tupel ist höchstens
+  eine Funktion $g_{i}=0$).
+  
+  Dann ist die Funktion $h:\N^{n}\rightarrow\N$ mit
+  \begin{equation*}
+    h(x_{1},\ldots,x_{n}) :=
+    \begin{cases}
+      f_{1}(x_{1},\ldots,x_{n}) &: g_{1}(x_{1},\ldots,x_{n})=0\\
+      f_{2}(x_{1},\ldots,x_{n}) &: g_{2}(x_{1},\ldots,x_{n})=0\\
+      \vdots\\
+      f_{k}(x_{1},\ldots,x_{n}) &: g_{k}(x_{1},\ldots,x_{n})=0\\
+      f_{k+1}(x_{1},\ldots,x_{n}) &: \sonst
+    \end{cases}
+  \end{equation*}
+  primitiv-rekursiv.
+\end{satz}
+
+\begin{satz}[obere Schranken]
+  Es seien $g:\N^{n+1}\rightarrow_{t} \N$ und $h:\N^{n}\rightarrow\N$
+  primitiv-rekursiv. Ferner sei $f=\mu R(g)$ die durch $\mu$-Rekursion
+  aus $g$ entstehende Funktion mit der Eigenschaft, dass für alle
+  $(x_{1},\ldots,x_{n})\in\N^{n}$ gilt:
+  \begin{equation*}
+    f(x_{1},\ldots,x_{n}) \leq h(x_{1},\ldots,x_{n})
+  \end{equation*}
+  (d.\,h. $f$ ist für alle Tupel $(x_{1},\ldots,x_{n})$ definiert und es
+  gilt die Ungleichung).
+  
+  Dann ist $f$ primitiv-rekursiv!
+\end{satz}
+
+\begin{satz}[Simultane Rekursion]
+  Es seien $g_{1},g_{2}: \N^{n-1}\rightarrow_{t}\N$ und $h_{1},h_{2}:
+  \N^{n+2}\rightarrow_{t}\N$ primitiv-rekursiv.
+  
+  Dann sind auch die Funktionen $f_{1},f_{2}:\N^{n}\rightarrow\N$ mit
+  \begin{align*}
+    f_{1}(x_{1},\ldots,x_{n-1}, 0) &= g_{1}(x_{1},\ldots,x_{n})\\
+    f_{2}(x_{1},\ldots,x_{n-1}, 0) &= g_{2}(x_{1},\ldots,x_{n})\\
+    \text{und } f_{1}(x_{1},\ldots,x_{n-1},y+1) &=
+       h_{1}(x_{1},\ldots,x_{n-1}, f_{1}(x_{1},\ldots,x_{n-1},y),
+       f_{2}(x_{1},\ldots,x_{n-1},y))\\
+    f_{2}(x_{1},\ldots,x_{n-1},y+1) &= h_{2}(x_{1},\ldots,x_{n-1},
+       f_{1}(x_{1},\ldots,x_{n-1},y), f_{2}(x_{1},\ldots,x_{n-1},y))
+  \end{align*}
+  primitv-rekursiv.
+\end{satz}
+
+\begin{satz}[Wertverlaufsfunktionen]
+  Es sei $A=\{0,1,\ldots,l\}$ und ferner sei
+  $B_{n}\subseteq\{0,\ldots,n-1\}$ mit der Eigenschaft $|B_{n}|=k$.
+  Ferner sei $g_{0},\ldots,g_{l}:\N^{n-1}\rightarrow_{t}\N$ und
+  $h:\N^{n+k}\rightarrow_{t}\N$ primitv-rekursiv.
+  
+  Dann ist auch die Funktion $f:\N^{n} \rightarrow_{t} \N$ mit
+  \begin{align*}
+    f(x_{1},\ldots,x_{n-1},0) &= g_{0}(x_{1},\ldots,x_{n-1})\\
+    \vdots\\
+    f(x_{1},\ldots,x_{n-1},l) &= g_{0}(x_{1},\ldots,x_{n-1})\\
+    f(x_{1},\ldots,x_{n-1},y+1) &= h(x_{1},\ldots,x_{n-1}, y,
+       z_{1},\ldots,z_{k})\\
+    z_{1} &= f(x_{1},\ldots,x_{n-1},y_{1})\\
+    \vdots\\
+    z_{k} &= f(x_{1},\ldots,x_{n-1},y_{k})\\
+    B_{y+1} &= \{y_{1},\ldots,y_{k}\}
+  \end{align*}
+  primitiv-rekursiv.
+\end{satz}
+
+\begin{bsp}[Fibonacci-Zahlen]
+  \begin{align*}
+    A &= \{0,1\}, B_{n}= \{n-2, n-1: n\geq 2\}\\
+    F(0) &= F(1) = 1\\
+    F(n) &= F(n-2)+F(n+1)&&n\geq2
+  \end{align*}
+  $F$ ist primitiv-rekursiv! \todo{etwas mehr Erklärung bitte}
+\end{bsp}
+
+\section{Partiell-rekursive und Turing-berechenbare Funktionen}
+
+\begin{satz}
+  Jeder partiell-rekursive Funktion ist Turing-berechenbar, d.\,h.
+  $\PP\subseteq\mathcal{TM}$.
+
+  \begin{proof}
+    \begin{enumerate}
+     \item Jede Grundfunktion ist Turing-berechenbar, d.\,h.
+      $\mathcal{G}\subseteq\mathcal{TM}$.
+     \item $\mathcal{TM}$ ist abgeschlossen bzgl. der Einsetzung, d.\,h.
+      falls $g_{1},\ldots,g_{m}:\N^{n}\rightarrow_{t}\N$ und
+      $h:\N^{m}\rightarrow_{t}\N$ Turing-berechenbar sind, dann ist auch
+      $f:\N^{n}\rightarrow_{t}\N$ mit $f(x_{1},\ldots,x_{n}) =
+      h\bigl(g_{1}(x_{1},\ldots,x_{n}),\ldots,
+      g_{m}(x_{1},\ldots,x_{n})\bigr)$ Turing-berechenbar!
+      
+      \begin{center}
+	\input{n-einsetzung.pdf_t}
+      \end{center}
+     \item $\mathcal{TM}$ ist abgeschlossen bzgl. Primitiver-Rekursion,
+      d.\,h. falls $g:\N^{n-1} \rightarrow_{t}\N$ und
+      $h:\N^{n+1}\rightarrow_{t}\N$ Turing-berechenbar sind, dann ist
+      auch $f:\N^{n}\rightarrow\N$ mit
+      \begin{align*}
+	f(x_{1},\ldots,x_{n-1},0) &= g(x_{1},\ldots,x_{n-1})\\
+	f(x_{1},\ldots,x_{n-1},y+1) &= h\bigl(x_{1},\ldots,x_{n-1}, y,
+	   f(x_{1},\ldots,x_{n-1},y)\bigr)
+      \end{align*}
+      Turing-berechenbar.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
 \end{document}
