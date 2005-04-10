@@ -1,0 +1,1579 @@
+\documentclass[draft,12pti,twoside]{scrreprt}
+\usepackage{a4wide}
+\usepackage{makeidx}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+\usepackage{graphicx}
+\usepackage{delarray}
+\usepackage{epsfig}
+\usepackage{boxedminipage}
+\usepackage{pictex,color}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{theorem}
+%\usepackage{treetex}
+\usepackage{fancyhdr}
+
+\makeindex
+\theoremstyle{break}
+\newtheorem{Ax}{Axiom}[chapter]
+\newtheorem{Bsp}{Beispiel}
+\newtheorem{Def}[Ax]{Definition}
+\newtheorem{Satz}{Satz}[chapter]
+\newtheorem{Lemma}[Satz]{Lemma}
+\newtheorem{Theorem}[Satz]{Theorem}
+
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\EX}{\mathbb{E}X}
+\newcommand{\VG}{Verteilungsgesetz }
+\newcommand{\ZG}{Zufallsgröße }
+\newcommand{\X}{X}
+\newcommand{\Y}{Y}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\p}{\mathbb{P}}
+\newcommand{\PR}{\mathcal{R}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\E}{\mathcal{E}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\ar}{\curvearrowright}
+\newcommand{\lb}{\left\{}               %kleine Klammer {
+\newcommand{\blb}{\bigl\{} %grosse Klammer {
+\newcommand{\bblb}{\biggl\{} %ganz grosse Klammer {
+\newcommand{\rb}{\right\}}  %kleine Klammer }
+\newcommand{\brb}{\bigr\}} %grosse Klammer }
+\newcommand{\bbrb}{\biggr\}} %ganz grosse Klammer }
+
+\newcommand{\vektor}[1][\omega]{\ensuremath{\lb#1_1,\ldots,#1_n\rb}}
+\newcommand{\WM}{Wahrscheinlichkeitsmaß }
+\newcommand{\VF}{Verteilungsfunktion }
+\newcommand{\Int}{\int\limits}
+\newcommand{\vol}{V\!ol}
+
+\newcolumntype{L}{>{$}l<{$}}
+\newenvironment{Cases}{\begin{array}\{{lL}.}{\end{array}}
+
+\begin{document}
+\author{Prof. Dr. Linde\thanks{aufgeschrieben von Christian Raschka \quad
+    Email: chrisra@informatik.uni-jena.de}}
+\date{WS 2002/2003}
+\title{Vorlesung Mathematik für Informatiker 3\\
+    Wahrscheinlichkeitstheorie\\[0.5cm]
+    %\Large Arbeitstitel:\\Hochgradig nicht trivial
+	}
+\maketitle
+
+%\setlength{\headrulewidth}{1.0pt}
+%\pagestyle{fancy}
+%\setlength{\footrulewidth}{0.4pt}
+%\setlength{\headwidth}{\textwidth}
+\pagestyle{headings}
+%\lhead[\bfseries\thepage]{\rightmark}
+%\rhead[\leftmark]{\bfseries\thepage}
+%\cfoot{Vorlesung Mathematik für Informatiker III (SS 2002)}
+
+\tableofcontents
+\chapter{Das Modell der Wahrscheinlichkeitstheorie}
+\index{Wahrscheinlichkeitstheorie}
+\label{sec:WTheorie}
+
+\section{Der Wahrscheinlichkeitsraum}
+\index{Wahrscheinlichkeitsraum}
+\label{sec:WRaum}
+        
+WT = Mathematisches Modell zur Beschreibung von Versuchen mit zufälligem Ergebnis, 
+von Zufallsexperimenten und von zufälligen Erscheinungen.
+        
+\begin{itemize}
+        \item{kein philosophischer Ansatz}
+        \item{Modell vs. Realität ? (nie 100\%)}
+        \item{Versuch mit zufälligem Ergebnis $\hat{=}$ bei identischer Versuchsanordnung
+                                sind unterschiedliche Ergebnisse möglich (nicht vorhersehbar)}
+        \item{\index{Zufallsexperiment}Zufallsexperiment $\hat{=}$ gezieltes Experiment und Aussagen über den wahren
+                                Sachverhalt zu bekommen.\\
+                                Beobachtung = Stichprobe (Statistisches Experiment)}
+        \item{zum Beipiel Meinungsforschung, Gütekontrolle o.ä.}
+        \item{zufällige Erscheinung $\hat{=}$ Dinge der realen Welt, die anscheinend völlig
+                                gesetzlos auftreten, zum Beispiel Anzahl Anrufe in einem Callcenter an einem Tag, 
+                                Ausfallszeit eines Bauteils, Anzahl der Verkehrsunfällen in einer Stadt pro Tag, 
+                                Brände usw.}
+        \item{\underline{Zwei Typische Beispiele}
+                \begin{enumerate}
+                        \item{Würfeln:
+                                \begin{itemize}
+                                        \item{Einmaliges Würfeln:\\
+                                                Ergebnis, zufällige Zahl aus $\left\{1,\dots,6\right\}$}
+                                        \item{n-maliges Würfeln:\\
+                                                Ergebnis, zufälliger Vektor, Länge n, $\omega=(\omega_1,\dots,\omega_n)
+                                                                \quad \omega_j \in \left\{1,\dots,6\right\}$}
+                                \end{itemize}
+                        \item{Lebensdauer eines Bauteils, Lebewesens\\
+                                                Zum Zeitpunkt 0 nehmen wir Bauteil in Betrieb\\
+                                                Zum zufälligen Zeitpunkt $t>0$ Ausfall des Bauteils\\
+                                                Zufall: $t>0$;
+                                                Beobachten zufällige
+                                                reelle zahl 
+                                                $t \in \left[ 0,\infty \right)$.}}
+                \end{enumerate}}                
+\end{itemize}
+
+\begin{Ax}
+        Vorgänge, bei denen zufällige Erscheinungen auftreten, werden durch einen
+        Wahrscheinlickeitsraum
+        \index{Wahrscheinlichkeitsraum}\index{Grundraum $\Omega$}
+        \index{Ereignis-$\sigma$-Algebra}\index{Wahrscheinlichkeitsmaß}
+        \LARGE $$\left(\underbrace{\Omega}_{Grundraum},\underbrace{\A}_{
+        Ereignis-\sigma-Algebra},\underbrace{\mathbb{P}}_{Wahrscheinlichkeitsma"s} \right)$$ 
+        \normalsize beschrieben.
+\end{Ax}
+
+\subsection{Grundraum $\Omega$}
+\label{sec:Omega}
+
+        Der Raum der Elementarereignisse $\Omega$ enhält (mindestens) alle möglichen
+        Versuchsausgänge. Aus mathematischen Gründen wählt man manchmal $\Omega$ größer.
+
+\begin{Bsp}
+        \begin{enumerate}
+                \item{Einmaliges Würfeln:\\
+                                        $\Omega=\left\{1,\dots,6\right\}$ \quad 
+                                        möglich wäre $\Omega=\left\{1,2,3,\dots\right\}$ oder $\Omega=\mathbb{R}$, 
+                                        \quad \underline{nicht möglich $\Omega=\left\{1,\dots,5\right\}$}}
+                \item{n-maliges Würfeln:\\
+                                        $\Omega=\left\{1,\dots,6\right\}^n=\left\{\omega=(\omega_1,\dots,\omega_n):
+                                        \omega_j \in \left\{1,\dots,6\right\}\right\}$}
+        \end{enumerate}
+\end{Bsp}
+
+\begin{Bsp}
+        Urne mit weißen und schwarzen Kugeln\\
+        Man ziehe zwei Kugeln\\
+        $\Omega=\left\{(s,s),(s,w),(w,s),(w,w)\right\}$\\
+        Interesse Anzahl weiße Kugeln: $\Omega=\left\{0,1,2\right\}$
+\end{Bsp}
+
+\begin{Bsp}
+        Würfeln bis erste Sechs\\
+        Registriere die Anzahl der Würfeldauer\\
+        $\Omega=\left\{0,1,2,3,\dots\right\}=\mathbb{N}_0$
+\end{Bsp}
+
+\begin{Bsp}
+        Lebensdauer eines Bauteils\\
+        $\Omega = \left[0,\infty\right)$
+\end{Bsp}
+
+\begin{Def}
+        \index{Ereignis}
+        Eine Teilmenge $A\subseteq\Omega$ heißt Ereignis.\\
+        $\omega \in \Omega$ wurde beobachtet:
+        \begin{itemize}
+                \item{$\omega \in A$, d.h. A ist \underline{eingetreten}}
+                \item{$\omega\notin A$, d.h. A ist \underline{nicht eingetreten}}
+                                                                                                                                                        \end{itemize}
+\end{Def}
+
+\begin{Bsp}
+        Sei $\Omega=\left\{1,\dots,6\right\}\quad A=\left\{2,4,6\right\}$\\
+        Würfel zeigt "`Drei"' $\curvearrowright$ A ist \underline{nicht} eingetreten!
+\end{Bsp}
+
+Die einpunktigen Teilmengen von $\Omega$ heißen \underline{Elementarereignisse!}\\
+\index{Ereignis!Elementar-}
+Sei $\Omega=\left\{1,\dots,6\right\}$\\
+Ereignisse: $\emptyset,\underbrace{\left\{1\right\},\dots,\left\{6\right\},}_{Elementarereignisse}
+                                                 \left\{1,2\right\},\left\{1,3\right\},\dots,\Omega$
+                                                 
+\begin{Bsp}
+        Lebensdauer eines Bauteils \quad $A = \left[0,\infty\right)$ \\
+        A ist eingetreten $\Leftrightarrow$ Bauteil arbeitet mindestens 100 Zeiteinheiten
+        $\Leftrightarrow$ Zum Zeitpunkt 100 ist es noch nicht defekt! Ein Elementarereignis
+        $\left\{\omega_0\right\}$ tritt ein $\Leftrightarrow \omega_0$ beobachtet wird.
+\end{Bsp}                                                
+
+\underline{Eigenschaften}
+\index{Ereignis!Eigenschaften}
+\begin{enumerate}
+        \item{$\Omega$ tritt stets ein $\curvearrowright$ 
+        \underline{sicheres} Ereignis}\index{Ereignis!sicheres}
+        \item{$\emptyset$ tritt niemals ein $\curvearrowright$ \underline{unmögliches} Ereignis}\index{Ereignis!unmögliches}
+        \item{$A,B \subseteq \Omega;A\cup B$ tritt ein $\Leftrightarrow$ A \underline{oder} B
+                                tritt ein}
+        \item{$A\cap B$ tritt ein $\Leftrightarrow$ A \underline{und} B tritt ein}
+        \item{$A^C$ (Komplement)$=\Omega \backslash A$ tritt ein $\Leftrightarrow
+                                A$ tritt \underline{nicht} ein}
+\end{enumerate}
+\underline{Zusammenfassung:}\\
+Der Grundraum $\Omega$ besteht aus allen möglichen Versuchsausgängen. Die
+Teilmengen treten ein, gdw. ein Element der Teilmenge beobachtet wird.
+
+\subsection{Wahrscheinlichkeitsmaß und Ereignis-$\sigma$-Algebra}
+
+                                                 
+Der Zufall unterliegt gewissen Gesetzmäßigkeiten. Ereignisse treten
+nicht völlig willkürlich ein, sondern mit gewisser Wahrscheinlichkeit.\\
+\underline{Ziel:}\\
+Jedem Ereignis $A\subseteq \Omega$ die Wahrscheinlichkeit $\mathbb{P}(A)$ zuordnen.\\
+$0\ge \mathbb{P}(A) \ge 1$\\
+$\mathbb{P}(A)=0$, d.h. Wahrscheinlichkeit des Eintretens $A$ ist Null.\\
+$\mathbb{P}(A)=1$, d.h. $A$ tritt sicher ein
+
+\setcounter{Bsp}{0}
+\begin{Bsp}
+        $\Omega=\left\{1,\dots,6\right\}$, Würfel sei fair\\
+        $A=\left\{1\right\}\Rightarrow \mathbb{P}(A)=\frac{1}{6}$ \quad
+        $A=\left\{2,5\right\}\Rightarrow \mathbb{P}(A)=\frac{2}{3}$ \quad
+        $\mathbb{P}\Omega=1$\\
+        Was bedeutet $\mathbb{P}(\left\{2,5\right\})=\frac{1}{3}$ ?
+\end{Bsp}
+
+\begin{Bsp}
+        Krankheit X: Überlebenschance ist $\frac{1}{2}$ ! Was bedeutet das?
+\end{Bsp}
+
+$\mathbb{P}(A)\hat{=}$ mathematische Abstraktion für den Grenzwert der relativen Häufigkeiten $r_n$\\
+\index{Häufigkeit!relative}
+n-unabhängige Versuche:\\
+$$r_n:=\frac{\sharp\text{ Versuche, bei denen } A \text{ eingetreten ist}}{n}$$
+$r_n\rightarrow\mathbb{P}(A)$\\
+\underline{Bestimmung von $\mathbb{P}(A)$:}\\
+\begin{enumerate}
+        \item{Theoretische Überlegung: (z.B. Symetrie)}
+        \item{Statistische Untersuchung}
+        \item{Subjektive Annahme aufgrund von Erfahrungen}      
+\end{enumerate}
+
+\underline{Ziel:}\\
+Abbildung $\mathbb{P} : \mathfrak{R}( \Omega ) \rightarrow \left[ 0,1
+\right]$, die jedem Ereignis $A\subseteq\Omega$ die Wahrscheinlichkeit seines Eintretens zuordnet.\\
+Welche Eigenschaft sollte $\mathbb{P}$ besitzen?
+\begin{enumerate}
+        \item{$\mathbb{P}(\emptyset)=0$,\quad $\mathbb{P}(\Omega)=1$}
+        \item{$A\cap B=\emptyset \rightarrow \mathbb{P}(A \cup B)\stackrel{\text{!}}{=}
+                                \mathbb{P}(A) + \mathbb{P}(B)$ (endliche Additivität)\\
+                                $\Rightarrow A_1,\dots,A_n : A_i \cap A_j=\emptyset;i\neq j
+                                \Rightarrow \mathbb{P}(\bigcup^n_{j=1}{A_j})=\sum^n_{j=1}{\mathbb{P}(A_J)}$\\
+                                endliche Additivität reicht nicht aus.}
+\end{enumerate}
+
+\begin{Bsp}
+        Würfeln bis erste Sechs\\
+        $A_n := \left\{ \text{Erste Sechs erscheint in } (n+1) \text{-ten Versuch}
+                                        \right\}; n=0,1,\dots$\\
+        \underline{Frage:} Wahrscheinlichkeit von 
+        $B := \left\{\text{erste Sechs nach ungerader Wurfzahl}\right\}$ \\
+        $$\mathbb{P}(B)=\mathbb{P}(\bigcup^\infty_{n=0}{A_{2n}})\stackrel{\text{!}}{=}
+                \sum^\infty_{n=0}{\mathbb{P}(A_{2n})}$$
+\end{Bsp}
+
+\begin{Def}
+        $\mathbb{P}:\mathfrak{R}(\Omega)\rightarrow \left[0,1\right]$ heißt $\sigma$-additiv, wenn
+                für $A_1,A_2,\dots$ mit $A_i \cap A_j \emptyset;i\neq j$, stets
+        $${\mathbb{P}(\bigcup^\infty_{j=1}{A_j})=\sum^\infty_{\mathbb{P}(A_j)}}$$ folgt.
+\end{Def}
+
+\underline{Problem:}
+$\Omega$ "`groß"' z.B. $\Omega=\mathbb{R}$, dann existiert keine solche Abbildung
+\underline{Lösung:}
+Teilsystem $\A\subseteq \mathfrak{R}(\Omega)$ und man
+definiert $\mathbb{P}(A)$ nunmehr nur für Mengen $A \in \A$,
+d.h. nicht alle Ereignisse besitzen eine Wahrscheinlichkeit ihres Eintretens.\\
+$\A$ sollte die "`wichtigen"' Teilmengen enthalten, z.B. alle Intervalle, Punkte usw.
+\begin{Def}
+        $\A$ heißt $\sigma$-Algebra, wenn
+        \begin{enumerate}
+                \item{$\emptyset,\Omega \in \A$}
+                \item{$A \in \A \curvearrowright A^C \in \A$}
+                \item{$A_1,A_2,\dots \in \A \curvearrowright \bigcup^\infty_{j=1}
+                                        \in\A$}
+        \end{enumerate}
+\end{Def}
+
+\underline{Eigenschaften:}\\
+\begin{enumerate}
+        \item{$A_1,A_2,\dots \in\A
+                                \quad \curvearrowright \quad 
+                                \bigcap^\infty_{j=1}{A_j}
+                                \in\A$\\
+                                \underline{Beweis:} $A_1,A_2,\dots \quad \curvearrowright \quad
+                                A^C_1,A^C_2,\dots \in \A \quad \curvearrowright \quad
+                                \bigcup^\infty_{j=1}{A^C_j} \in \A
+                                \quad \curvearrowright \\\
+                                (\bigcup^\infty_{j=1}{A^C_j})^C \in \A
+                                \quad \curvearrowright \quad
+                                \bigcup^\infty_{j=1}{A_j} \in \A$; \boxed{}
+        \item{$A,B \in \A \quad \curvearrowright \quad
+                                A \cup B \in \A$\\
+                                \underline{Beweis:} $A_1:=A,A_2:=B,A_3:=\emptyset,A_4:=\emptyset,\dots
+                                \quad \curvearrowright \quad
+                                \bigcup^\infty_{j=1}{A_j} \in \A
+                                \quad \\ \curvearrowright \quad
+                                A_1 \cup A_2 = A \cup B$; \qquad\boxed{}}}
+\end{enumerate}
+
+\begin{Def}[\underline{Wahrscheinlichkeitsraum($\Omega,\A,\mathbb{P}$)}]
+    \index{Wahrscheinlichkeitsraum!Definition}
+  \large
+        $ \text{Grundraum } \Omega \neq \emptyset$\\
+        $\A \subseteq \mathfrak{R}(\Omega) - \sigma\text{-Algebra}$\\
+        $\mathbb{P}: \A \rightarrow \left[0,1\right] \text{ mit } 
+                \mathbb{P}(\emptyset)=0,\mathbb{P}(\Omega)=1\text{, und }
+                 \mathbb{P} \text{ ist } \sigma\text{-additiv!}$
+        \normalsize
+\end{Def}
+
+\begin{Bsp}
+        Modell des Würfelns:\\
+        $$(\left\{1,\dots,6\right\},\mathfrak{R},\mathbb{P})$$
+        $$\mathbb{P}(A)=\frac{\sharp(A)}{6}$$
+\end{Bsp}
+Versuch mir zufälligem Ausgang; \\
+Aufgabe : Man finde das passende Modell!
+\section{Einfache Eigenschaften von Wahrscheinlichkeitsmaßen}
+\index{Wahrscheinlichkeitsmaß!diskret!Eigenschaften}
+\LARGE $$(\Omega,\A,\p)$$
+\normalsize
+
+\begin{Satz}
+\label{satz:11}
+        \begin{enumerate}
+                \item{Sind $A_1,\dots,A_n \in \A$ disjunkt, so folgt $\p(\bigcup^n_j{A_j})=\sum^n_j{\p(A_j)}$ 
+                                        \underline{endliche Additivität}}
+                \item{$A \subseteq B \ar \p(A) \leq \p(B)$ \underline{Monotonie}}
+                \item{$A \subseteq B \ar \p(B \backslash A)=\p(B)-\p(a)$}
+                \item{$\p(A^C)=1-\p(A)$}
+                \item{$A_1\subseteq A_2 \subseteq \ldots \ar \p(\bigcup^\infty_{j=1})=\lim_{n \rightarrow \infty}{\p(A_n)}$
+                                                (Stetigkeit von unten)}
+                \item{$A_1\supseteq A_2 \supseteq \ldots \ar
+                    \p(\bigcap^\infty_{j=1}{A_j}= \lim_{n\rightarrow \infty}{\p(A_n)}$
+                                                (Stetigkeit von oben)}
+        \end{enumerate}
+        \underline{Beweis:}\\
+        \begin{enumerate}
+                \item{$B_1 := A_1; B_2 := A_2;\ldots;B_n:=A_n;\qquad B_{n+1}:=\emptyset;B_{n+2}:\emptyset;\ldots;\\
+                                        B_i\cap B_j=\emptyset;i\neq j;\\
+                                        \ar \underline{\sigma-Add.:}\qquad$
+                                        \begin{eqnarray*}
+                                                \underbrace{\p(\bigcup^\infty_{j=1}{B_j})}_=
+                                                &=& \underbrace{\sum^\infty_{j=1}{\p(B_j)}}_=\\
+                                                \p(\bigcup^n_{j=1}{A_j})
+                                                &=&
+                                                \sum^n_{j=1}{\p(A_j)}+
+                                                \underbrace{\p(\emptyset)+\ldots}_{=0}
+                                        \end{eqnarray*}}
+                \item{$\p(B)=\p(A)+\p(B\backslash A)\geq \p(A)$}
+                \item{$B=\underbrace{A\cup (B\backslash A)}_{\text{disjunkt}} \ar^{(1)} \qquad
+                                        \p(B)=\p(A)+\p(B\backslash A) $\\
+                \emph{siehe Abbildung \ref{fig:satz11abb01}}}
+          \label{item:satz113}
+                \item{$\Omega=A\cup A^C \qquad \p(\Omega)=1=\p(A)+\p(A^C) $}
+                \item{$A_0 := \emptyset; B_n:=A_n\backslash A_{n-1} \qquad \text{(Ringe), für}\quad n=1,2,\ldots \\
+                                        \ar B_n \text{ sind disjunkt
+                                          \& }
+                                        \bigcup^\infty_{n=1}{B_n} := A = \bigcup^\infty_{j=1}{A_j}\\
+                                        \p(A)=\sum^\infty_{n=1}{\p(B_n)}=\sum^\infty_{n=1}{\p(A_n\backslash A_{n-1})}
+                                        \ar^{(3)} \sum^\infty_{n=1}{\left[\p(A_n)-\p(A_{n-1})\right]} \\ 
+                                        =\lim_{n\rightarrow\infty}\sum^n_{j=1}{\left[\p(A_j)-\p(A_{j-1})\right]}
+                                        =\lim_{n\rightarrow\infty}\left[\p(A_n)-\underbrace{\p(A_0)}_=\right]
+                                        =\lim_{n\rightarrow\infty}\p(A_n) $\\
+                                        \emph{siehe Abbildung \ref{fig:satz11abb02}}}
+                \label{item:satz115}
+                \item{$A_1 \supseteq A_2 \supseteq \ldots \qquad A:= \bigcap^\infty{n=1}{A_n}
+                                        \ar A_1^C \subseteq A_2^C \subseteq \ldots \\
+                                        \bigcup^\infty_{n=1}{A_n^C}
+                                        \overbrace{=}^{\text{de Morgan}}(\bigcap^\infty_{n=1}{A_n})^C=A^C        \\
+                                        \ar^{(5)} \underbrace{\lim_{n\rightarrow\infty}{\p(A_n^C)}}_{=}= \p(A^C)\\
+                                         1 - \lim_{n\rightarrow\infty}{\p(A_n)}=1-\p(A) \qquad$}\boxed{}
+        \end{enumerate}
+  \begin{figure}
+                \noindent
+                \begin{minipage}[b]{.46\linewidth}
+                        \centering\input{figures/satz11abb01.pictex}%\epsfig{figure=satz11abb01.eps}
+                        \caption{zu Satz \ref{satz:11} (\ref{item:satz113})}
+                        \label{fig:satz11abb01}
+                \end{minipage}\hfill
+                \begin{minipage}[b]{.46\linewidth}
+                        \centering\input{figures/satz11abb02.pictex}%\epsfig{figure=satz11abb02.eps}
+                  \caption{zu Satz \ref{satz:11} (\ref{item:satz115})}
+                        \label{fig:satz11abb02}
+                \end{minipage}
+        \end{figure}
+\end{Satz}
+
+\section{Diskrete Wahrscheinlichkeitsmaße}
+\label{sec:diskret}
+\index{Wahrscheinlichkeitsmaß!diskret}
+
+Experiment: endlich viele der höchstens abzählbar unendlich vielen Werte können auftreten:\\
+$\ar \Omega=\left\{\omega_1,\ldots,\omega_n\right\} \quad \text{oder}
+\quad \Omega= \left\{\omega_1,\omega_2,\ldots\right\}$\\
+\setcounter{Bsp}{0}
+\begin{Bsp}
+\label{bsp:nmal}
+        Würfel n-mal $\ar
+        \Omega=\left\{1,\ldots,6\right\}^n=\left\{(x_1,\ldots,x_n):x_j\in
+        \left\{1,\ldots,6\right\}\right\}$
+\end{Bsp}
+
+\begin{Bsp}
+\label{bsp:erste6}
+        Würfel bis erste "`Sechs"', Registriere Anzahl Würfe\\
+        $\ar \Omega=\left\{0,1,2,\ldots\right\}\cup\left\{\infty\right\}$\\
+        Man kann in beiden Fällen stets $\A=\mathfrak{R}(\Omega)$ wählen!
+\end{Bsp}
+
+zu Beispiel \ref{bsp:nmal}:\\
+$$\Omega=\lb\omega_1,\ldots,\omega_n\rb \qquad p_j = \p(\lb\omega_j\rb),\quad 1 \leq j \leq N.$$ \\
+$$p_j \geq 0; 1 = \p(\Omega)=\p(\bigcup^n_{j=1}{\omega_j})=\sum^n_{j=1}{\p(\lb\omega_j\rb)}=\sum^n_{j=1}{p_j}$$\\
+$$A\subseteq \Omega \qquad \p(A)=\p(\bigcup_{w_j\in A}{\omega_j})=\sum_{\lb j:\omega_j \in A\rb}{p_j}$$\\
+$\p$ ist Wahrscheinlickeitsmaß $\Rightarrow^{\text{eindeutig}} (p_j)^N_{j=1}$ mit $p_j \geq 0;
+ \sum_j^N{p_j}=1$\\
+Seien nunmehr $p_j \geq$ mit $\sum^N_j{p_j}=1$ gegeben. Definieren nun:
+\begin{Def}
+        $$\p:\quad \mathfrak{R}(\Omega) \rightarrow \left[0,1\right]$$\\
+          \text{durch}
+        $$\p(A) := \sum_{w_j \in A}{p_j} \qquad \rightarrow \p \quad \text{Wahrscheinlichkeitsmaß}$$
+\end{Def}
+
+$\Omega=\lb\omega_1,\ldots,\omega_n\rb \qquad \lb\p: \p\quad\text{Wahrscheinlichkeitsmaß auf }\Omega\rb$\\
+$\Leftrightarrow$\\
+$\lb(p_j)^N_{j=1}:p_j\geq0;\quad\sum^N_{j=1}{p_j}=1\rb$\\
+"`$\Rightarrow$"'$\quad p_j:=\p(\lb\omega_j\rb)\qquad \qquad \qquad$
+"'$\Leftarrow$"'$\quad \p(A):=\sum_{\omega_j\in A}{p_j}$
+
+\begin{Bsp}
+        $\Omega=\lb1,\ldots,6\rb$\\
+        Wahrscheinlichkeitsmaße auf $\Omega$ entsprechen eineindeutig Zahlen $p_1,\ldots,p_6 \geq0;\\ p_1+\ldots+p_6=1$\\
+        Würfel(fair): $\qquad p_1=\ldots=p_6=\frac{1}{6}$\\
+        Würfel(unfair): $\quad p_1=p_2=p_5=0;p_3=p_4=\frac{1}{4};p_6=\frac{1}{2}$\\
+        Frage: $\qquad\qquad\quad \p(\lb1,2,3\rb)=\frac{1}{4} \qquad \p(\lb4,6\rb)=\frac{3}{4}$
+\end{Bsp}
+
+zu Beispiel \ref{bsp:erste6}:\\
+$\Omega=\lb\omega_1,\omega_2,\ldots\rb \qquad p_j=\p(\lb\omega_j\rb), j=1,2,\ldots \qquad
+p_j \geq 0;\quad \sum^\infty_{j=1}{p_j}=1$\\
+$\p \Rightarrow (p_j)^\infty_{j=1};p_j\geq0;\sum^\infty_{j=1}{p_j}=1$\\
+Seien nun $(p_j)^\infty_{j=1}$ mit diesen Eigenschaften gegeben:\\
+$$\p(A):=\sum_{\omega_j\in A}{p_j}$$
+$\ar \p$ ist ein \WM auf $\mathfrak{R}(\Omega)$\\
+
+\begin{Bsp}
+        $\Omega=\lb1,2,\ldots\rb \qquad p_j:=\frac{1}{2^j};\ar
+        p_j\geq0;\ar \sum^\infty_{j=1}{p_j}= \frac{1}{1-\frac{1}{2}}-1=1$\\
+        $\p(A):=\sum{j\in A}{\frac{1}{2^j}}$; Erzeugendes \WM\\
+        $A=\lb2,4,6,\ldots\rb \qquad \p(A)=\sum^\infty_{j=1}{\frac{1}{2^{2j}}}=\frac{1}{1-\frac{1}{4}}-1=\frac{1}{3}$\\
+        $\p(\lb2,3,4,\ldots\rb)=\sum^\infty_{j=2}{\frac{1}{2^j}}\qquad \text{besser:}\quad
+        1-\p(\lb1\rb)=1-\frac{1}{2}=\frac{1}{2}$\\
+\end{Bsp}
+
+\underline{Allgemeiner:} $\Omega$ beliebig; $D \subseteq \Omega$ mit $D=\lb\omega_1,\ldots,\omega_n\rb$
+oder  $D=\lb\omega_1,\omega_2,\ldots\rb$, so daß $\p(D)=1$. Dann heißt $D$ \underline{diskret}.
+$$\p(A)=\p(A\cap D)=\sum_{\omega_j \in A}{\p(\omega_j)}$$
+
+\begin{Bsp}
+        $\Omega=\mathbb{R} \qquad D=\lb1,2,3,\ldots\rb \qquad \text{Sei } \p(D)=1 \ar \p \text{diskret.}$
+\end{Bsp}
+
+\section{Wichtigste diskrete Wahrscheinlichkeitsmaße}
+\label{sec:dMasse}
+
+\makeatletter
+\renewcommand{\theenumi}{\alph{enumi}}
+\renewcommand{\labelenumi}{\theenumi)}
+\renewcommand{\p@enumi}{}
+\makeatother
+\index{Einpunktverteilung}
+\index{Zweipunktverteilung}
+\index{Gleichverteilung!diskret}
+\index{klassische Verteilung|see{Gleichverteilung}}
+\begin{enumerate}
+        \item{\underline{Einpunktverteilung:}\\
+        \[
+                \Omega \text{ beliebig; } \omega_0 \in \Omega \text{ fest. }\quad\p(A)= 
+                        \begin{Cases}
+                                1 : & $\omega_0 \in A$\\
+                                0 : & $\omega_0 \notin A \quad$
+                        \end{Cases}\\
+        \]
+                $\ar \p$ ist Einpunktverteilung in $\omega_0$ ("`Dirac"'-Maß)\\
+                $D:=\lb\omega_0\rb \ar \p(D)=1 \text{ diskretes \WM} \p(\lb\omega_0\rb)=1;$
+                das heißt mit Wahrscheinlichkeit von 1 tritt $\omega_0$ ein: Deterministisches Experiment}
+        \item{\underline{Zweipunktverteilung:}\\
+                $\Omega=\lb0,1\rb \qquad \p(\lb1\rb)=p,\quad 0\geq p \geq 1 \qquad \p(\lb0\rb)=1-p$}
+        \item{\underline{Klassische Verteilung bzw. Gleichverteilung}\\
+                                $$\Omega=\vektor$$\\
+                                Alle Elemtarereignisse sind gleichwahrscheinlich. $\ar p_1=p_2=\ldots=p_n=\frac{1}{N} \\
+                                \p(A)=\sum_{\omega_j\in
+                                  A}{p_j}=\frac{1}{N}\sum_{\omega_j\in
+                                  A}{1}=\frac{1}{N}card(A)= \frac{\sharp(A)}{N}$\\
+                                $\p$ nennt man Gleichverteilung auf $\Omega$
+        \large
+        \underline{Merkregel:}
+\begin{center}\begin{boxedminipage}[t]{13cm}
+  $$\p(A)=\frac{\text{Anzahl der günstigen Fälle für A}}{\text{Anzahl aller möglichen Fälle}}=
+    \frac{\sharp(A)}{\sharp(\Omega)}$$
+\end{boxedminipage}\end{center}
+\normalsize
+\setcounter{Bsp}{0}
+\begin{Bsp}
+        Werfe n-mal faire Münze (0,1) $\Omega=\lb0,1\rb^N$ Alle Folgen von 0 und 1 sind gleichwahrscheinlich\\
+        $\p(\lb\omega\rb)=\frac{1}{2^N}\quad A:=\lb\text{1. Wurf 0 }\rb \quad   \ar \quad 
+        \sharp(A)=2^{N-1}\quad \ar \quad \p(A)=\frac{2^{N-}}{2^N}=\frac{1}{2}$\\
+        $B:=\lb\text{Genau k-mal "`Eins"' } \rb \quad \sharp(B)=\binom{n}{k}
+        \quad \ar \quad \p(B)=\frac{1}{2^N}\binom{n}{k}$
+\end{Bsp}
+
+\begin{Bsp}
+        6 aus 49 $\ar \quad \Omega=\blb\vektor[x];x_j\in \lb1,\ldots,49\rb;x_i\neq x_j;i\neq j\brb$\\
+        $\sharp(\Omega)=49\cdot48\cdot46\cdot45\cdot44 \qquad$ Tippe 6 Zahlen $t_1,\ldots,t_6$\\
+        $A:=\lb\text{6 Richtige}\rb \qquad \sharp(A)=6! \quad \ar \quad
+         \p(A)=\frac{6!}{49\cdot\ldots\cdot44}=\frac{1}{\binom{49}{6}}\approx7,151\cdot10^{-8}$
+\end{Bsp}
+
+\underline{Beispiele aus der Physik}\\
+N Kästen, n Teilchen, $n\leq N$\\
+Verteile Teilchen auf die Kästen so, dass alle Verteilungen gleichwahrscheinlich sind.
+
+
+\makeatletter
+\renewcommand{\theenumii}{\Roman{enumii}}
+\renewcommand{\labelenumii}{Fall \theenumii:}
+\renewcommand{\p@enumii}{Fall }
+\makeatother
+
+\begin{enumerate}
+        \index{Boltzmann-Statistik@{\emph{Boltzmann}-Statistik}}
+        \item \emph{(Boltzmann-Statistik)} \\ Teilchen tragen Namen (unterscheidbar)
+                \label{item:fall1}
+        \index{Bose-Einstein-Statistik@{\emph{Bose-Einstein}-Statistik}}
+        \item \emph{(Bose-Einstein-Statistik)}\\  Teilchen sind anonym
+                \label{item:fall2}
+        \index{Fermi-Dirac-Statistik@{\emph{Fermi-Dirac}-Statistik}}
+        \item \emph{(Fermi-Dirac-Statistik)} \\ Teilchen sind anonym und maximal 1 Teilchen pro Kasten
+                \label{item:fall3}
+\end{enumerate}
+
+$A:=\lb\text{In n vorgegebenen Kästen $K_1,\ldots,K_n$ befindet sich genau ein Teilchen}\rb$\\ \vspace{0.5cm}
+$B:=\lb\text{In keinem Kasten ist mehr als ein Teilchen}\rb$\\
+Zu \ref{item:fall1}: \underline{Boltzmann-Statistik} (Teilchen tragen Namen)\\
+$\Omega=\blb(a_1,\ldots,a_n);a_j\in \lb1,\ldots,\rb\brb$\\
+$(a_1,\ldots,a_n)$ ist eingetreten $\Leftrightarrow$ Teilchen k im Kasten $a_k ($für $k=1,\ldots,N)$\\
+$$\sharp(\Omega)=N^m$$\\
+Günstig für A: Ist $(K_1,\ldots,K_n)$ und alle Permutationen davon\\
+$$\sharp(A)=n! \qquad \Rightarrow \qquad \p(A)=\frac{n!}{N^m}$$\\
+Man kann $\binom{N}{m}$ Kästen $K_1,\ldots,K_n$ vorher auswählen\\
+$$ \ar \quad \p(B)=\binom{N}{m}\p(A)=\binom{N}{n}\binom{n!}{N^n}=\frac{N!}{(N-n)!N^n}$$\\
+Zu \ref{item:fall2}: \underline{Bose-Einstein-Statistik} (Teilchen anonym)\\
+
+%Abbildung
+
+N Kästen $\Leftrightarrow n-1 \quad$ Trennwände (2 äußere Trennwände fest)\\
+Alle Anordnungen von $N-1$ Trennwände und n Teilchen\\
+$$\Omega=\lb(\omega_1,\ldots,\omega_{N+n-1})\rb \qquad n \text{ der } \omega_j \text{ sind Teilchen, N-1 Trennwände}$$\\
+\begin{Bsp}
+        %Abbildung
+        $\ar (t,t,T,T,t) \qquad \sharp(\Omega)=(N+n-1)! \qquad \sharp(A)=n!(N-1)! \qquad
+        \p(A)=\frac{n!(N-1)!}{(N+n-1)!}$\\
+        $\ar \p(B)=\binom{N}{1}\p(A)=\frac{N!(N-1)!}{(N-m)!(N+n-1)!}$
+\end{Bsp}
+
+Zu \ref{item:fall3}: \underline{Fermi-Dirac-Statistik} (Teilchen anonym, max. ein Teil pro Kasten)\\
+$$\Omega=\blb(k_1,\ldots,k_n):1\leq k_j \leq N;\quad k_i \neq k_j;\quad i\neq j \brb$$
+$(k_1,\ldots,k_j)$ tritt ein gdw. in den Kästen $k_1,\ldots,k_j$ befindet sich genau ein Teilchen\\
+$$\sharp(\Omega)=N\cdot(N-1)\cdot(N-2)\cdot\ldots\cdot(N-n+1)$$\\
+Günstig für A: $(k_1,\ldots,k_n)$ und alle Permutationen davon $\quad \ar \quad \sharp(A)=n!$\\
+$$\ar \quad \p(A)=\frac{n!}{N\cdot\ldots\cdot(N-n+1)}=\frac{1}{\binom{N}{n}};\quad
+\p(B)=\binom{N}{n}\frac{1}{\binom{N}{n}}=1$$\\}
+        \item {\underline{Binominialverteilung:}\\
+                \index{Binominialverteilung}
+                Modell: In Jedem Versuch erscheine die Null oder die Eins\\
+                "`1"' mit Wahrscheinlcihkeit: $\p\in \left[0,1\right]$ und "`0"' mit $1-p$\\
+                n-unabhängige Versuche. Wir suchen die Wahrscheinlichkeit k-mal 1 $\p(k-mal 1)$\\
+                $$\p(k-mal 1)\overbrace{=}^{\text{später}}\binom{n}{k}p^k(1-p)^{n-k}$$
+                $$\Omega=\lb0,\ldots,n\rb \qquad 0\leq p \leq 1;$$\\
+                $$\boxed{B_{n,p}(\lb k\rb):=\binom{n}{k}p^k(1-p)^{n-k};\quad k=0,\ldots,n}$$
+                zu zeigen: $B_{n,p}(\lb k\rb)\geq0;$ $$\sum^n_{k=0}{B_{n,p}(\lb k\rb)}=1
+                \sum^n_{k=0}{\binom{n}{k}p^k(1-p)^{n-k}}=(p+(1-p))^n=1^n=1$$\
+                $\ar B_{n,p}$ ist \WM auf $\Omega$: Binominialverteilung mit Parametern n,p.\\
+                $n=1 \quad \ar \Omega(\lb0,1\rb)\quad B_{1,p}=1-p\qquad B_{1,p}(\lb1\rb)=p:$ Zweipunktverteilung\\
+                $n\geq4 \qquad A=\lb0,1,2\rb\quad B_{n,p}(A)=(1-p)^n+np(1-p)^{1\cdot n}+\binom{n}{2}p^2(1-p)^{n-2}$\\
+        }
+        \item {\underline{Hypergeometrische Verteilung}\\
+                \index{Hypergeometrische Verteilung}
+                Lieferung von N-Geräten. Davon sind $M\leq N$ defekt. Entnahme aus der Lieferung zufällig $n\leq N$ Geräte
+                und prüfe sie. Gesucht ist die Wahrscheinlichkeit\\
+                $\p(\text{Genau m der geprüften Geräte sind defekt})$.
+                Insgesamt $\binom{N}{m}$ Möglichkeiten, Geräte zu
+                entnehmen. Damit davon genau m defekt sind, m Geräte aus den
+                M defekten entnehmen, n-m Geräte aus den N-M nicht defekten.
+                $$\binom{N}{m}\binom{N-M}{n-m}\text{ Möglichkeiten}$$
+                Ansatz: 
+                $$\p(\lb m \rb):=\frac{\binom{M}{m}\binom{N-M}{n-m}}{\binom{N}{n}};\quad m=0,\ldots,n$$
+                $\Rightarrow$ Hypergeometrische Verteilung mit Parametern N,M,n.\\
+                z.z.
+                $$\sum^n_{m=0}{\binom{M}{N}\binom{N-M}{n-m}}=\binom{N}{m}\quad \text{Übungsaufgabe!}$$
+                $\ar \p$ ist \WM auf $\Omega(\lb0,\ldots,n\rb)\quad \binom{M}{m}=0 \quad \text{für }m\leq M$\\
+        }
+        \item {\underline{POISSON-Verteilung:}\\
+                \index{Poisson-Verteilung@{\emph{Poisson}-Verteilung}}
+                Starten mit $B_{n,p}$ (n Versuche, Erfolgswahrscheinlichkeit p)
+                $$ \text{"`}n\rightarrow\infty,\quad p\rightarrow0\text{"'} $$
+                Gegeben: $\lambda>0 \qquad p_n:=\frac{\lambda}{n} \underset{n\rightarrow\infty}{\rightarrow}0$
+                \begin{Satz}
+                        \begin{boxedminipage}[t]{9.5cm}
+                                \underline{Poissonscher-Grenzwertsatz}\\
+                                \index{Poissonscher-Grenzwertsatz@
+                                {\emph{Poisson}scher-Grenzwertsatz}}
+                                $$\lambda>0,\quad k \in \mathbb{N}_0$$
+                                $$\underset{n\rightarrow\infty}{lim}{B_{n,\frac{\lambda}{n}}
+                                  (\lb k\rb)=\frac{\lambda^k}{k!}e^{-\lambda}}$$
+                        \end{boxedminipage}
+                \end{Satz}
+                \underline{Beweis: }\\
+                \begin{equation*}
+                \begin{split}
+                        B_{n,\frac{\lambda}{n}}(\lb k\rb) &=
+                                                \binom{n}{k}\binom{\lambda}{n}^k(1-\frac{\lambda}{n})^{n-l}\\
+                                                &=
+                                                \frac{n!}{(n-k)!k!}\frac{\lambda^k}{n^k}(1-
+                                                \frac{\lambda}{n})^n(1-\frac{\lambda}{n})^{-k}\\
+                                                &=
+                                                \frac{\lambda^k}{k!}\frac{n(n-1)\cdot\ldots\cdot(n-k+1)}
+                                                {\underbrace{n\cdot\ldots\cdot}_{k-mal}}
+                                                                (1-\frac{\lambda}{n})^n(1-\frac{\lambda}{n}^{-k}\\
+                                                &\underset{n\rightarrow\infty}{\rightarrow}
+                                                                \frac{\lambda^k}{k!}\cdot\qquad 1 \cdot
+                                                                \qquad e^{-\lambda}\cdot\qquad1\\
+                                                &=\frac{\lambda^k}{k!}e^{-\lambda}\qquad \boxed{}
+                \end{split}
+                \end{equation*}
+                
+                \begin{Def}
+                        Die Abbildung $P_\lambda$ mit $$P_\lambda(\lb
+                        k\rb):=\frac{\lambda^k}{k!}e^{-\lambda}; \qquad k=0,1,\ldots$$
+                        heißt Poisson-Verteilung mit Parameter $\lambda>0$\\
+                \end{Def}
+                \underline{Probe: } $\Omega=\mathbb{N}_0$\\
+                zu zeigen: $\sum^\infty_{k=0}{P_\lambda(\lb k \rb)}\overset{\text{?}}{=}1$
+                $$e^{-\lambda}\sum^\infty_{k=0}{\frac{\lambda^k}{k!}}=e^{-\lambda}\cdot e^\lambda=1$$
+                $$B_{n,\frac{\lambda}{n}}(\lb k \rb)
+                \underset{n\rightarrow\infty}{\rightarrow}P_\lambda(\lb k \rb)$$
+                Poisson-Verteilung trifft auf, wenn viele Versuche und
+                geringe Erfolgswahrscheinlichkeiten herrschen
+                \begin{itemize}
+                  \item{Telefonzentrale, viele Teilnehmer,
+                      Wahrscheinlichkeit, dass einzelner Kunde anruft
+                      ist sehr gering\\
+                      $\Rightarrow$ ges. Zahl der Anrufe pro Tag ist
+                      \emph{Poisson}-Verteilung}
+                  \item{Anzahl der Hausbrände pro Jahr}
+                \end{itemize}
+                \emph{Bemerkung:} $B_{n,p}(\lb k \rb)$ schlecht
+                berechenbar für n groß, $P_\lambda$ mit $\lambda:=np$
+                ist Approximation für $B_{n,p}$
+                \setcounter{Bsp}{0}
+                \begin{Bsp}
+                  500 Studenten, gesucht ist $\p($Genau k Studenten
+                  haben am 24.12. Geburtstag)\\
+                  Exakt:
+                  \[
+                    B_{500,\frac{1}{365}}(\lb k
+                    \rb)=\binom{500}{k}\frac{1}{365}^k\binom{364}{365}^{500-k}
+                  \]
+                  Appr. Lösung:\quad $\lambda = \frac{500}{365}$
+                  \[
+                    \p_\lambda(\lb k
+                    \rb)=\frac{\binom{500}{365}^k}{k!}e^{-\frac{500}{365}}
+                  \]
+                \end{Bsp}
+                \begin{Bsp}
+                  $10.000$ Würfe auf ein Ziel mit
+                  Trefferwahrscheinlichkeit $\frac{1}{1000},\quad
+                  \lambda=10$
+                  \[\p_\lambda(\lb k \rb)=\frac{10^k}{k!}e^{-10}\]
+                  \[\p_\lambda(\lb 0 \rb)=e^{-10}\approx 0,0000453\hdots\]
+                \end{Bsp}
+        }
+\end{enumerate} 
+\section{Stetige Verteilungen}
+Bauteil, Lebenszeit ist zufällig, wir registrieren den Zeitpunkt
+$t>0$, an dem der Defekt eintritt. $t>0$ ist zuf. reelle Zahl\\
+Ziel: diesen Vorgang zu beschreiben\\
+Hier: $\Omega=[0,\infty)$\\
+Es macht keinen Sinn zu fragen, nach der Wahrscheinlichkeit, dass der
+Ausfall zum Zeitpunkt $t_0>0 \quad(t_0=2.000000000\hdots)$
+eintritt. $\to$ wäre 0\\
+Interesse: $\p($Ausfall im Zeitintervall [a,b])\\
+Suchen: $\p([a,b])=$ ?
+\makeatletter
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\labelenumi}{\theenumi)}
+\renewcommand{\p@enumi}{}
+\makeatother
+\begin{Def}
+  Eine \emph{Riemann}-integrierbare Funktion $p:\quad \mathbb{R}\to
+  \mathbb{R}$ heisst Wahrscheinlichkeitsdichte, wenn gilt:
+    \index{Wahrscheinlichkeitsdichte}
+  \begin{enumerate}
+    \item{$p(x)\geq 0,\quad x \in \mathbb{R}$}
+    \item{$\int\limits_{-\infty}^\infty p(x)\; dx$}
+  \end{enumerate}
+\end{Def}
+\begin{figure}
+  \centering\input{figures/def15.pictex}
+    \caption{Definition der Wahrscheinlichkeitsdichte}
+    \label{fig:def15}      
+\end{figure}
+\begin{Def}
+  Die Wahrscheinlichkeit eines Intervalls $[a,b]$ ist
+  \[ \p([a,b]):=\int\limits_a^bp(x)\; dx\]
+  p Dichte des \WM $\p$\index{Dichte|see {Wahrscheinlichkeitsdichte}}
+  \begin{itemize}
+    \item{$\p([a,b])\geq 0$}
+    \item{$\p(\mathbb{R}=\int\limits_{-\infty}^\infty p(x) \; dx = 1$}
+  \end{itemize}
+\end{Def}
+\emph{Problem:} $\Omega=\mathbb{R}$, $\sigma$-Algebra ? $\p([a,b])$
+definiert. Was ist $\p(A)=$ ? für $A\in \A$
+\setcounter{Bsp}{0}
+\begin{Bsp}
+  \[ p(x) := \left\{ \begin{array}{r@{\quad:\quad}l}
+               0 & x \leq 0 \\ \lambda e^{-\lambda x} & x > 0
+             \end{array} \right. \qquad \lambda > 0\]
+  \[ p(x)\geq 0,\qquad \left. \int\limits_0^\infty\lambda e^{-\lambda x}\; dx
+  = -e^{-\lambda x}\right|_0^\infty=1\]
+  \[ \p([a,b])= \int\limits_a^b\lambda e^{-\lambda x}\; dx=e^{-\lambda
+    a}-e^{-\lambda b} \]
+\end{Bsp}
+Diskrete Wahrscheinlichkeistmaße sind ungeeignet zur Beschreibung von
+Vorgängen, bei denen das Ergebnis eine reelle Zahl ist. Stetige
+Wahrscheinlichkeitsmaße:\\[0.5em]
+\index{Wahrscheinlichkeitsmaß!stetig}
+$\Omega = \mathbb{R}$ \qquad Suchen $\sigma$-Algebra $\A \subseteq
+\mathcal{R}(\mathbb{R})$, so dass $$\p:\quad \A \to [0,1]$$
+Im Moment ist $\p$ nur auf $\lb[a,b]:\quad a\leq b \rb$ definiert.\\
+\emph{Aussage:} $\Omega$ beliebig, $\E \subseteq
+\mathfrak{R}(\Omega)$\\
+Dann existiert eine kleinste $\E$-umfassende
+$\sigma$-Algebra $\A$.\\
+\emph{Beweis:} 
+\[ \A_0 := \bigcap \lb \underbrace{\A:\quad \A\supseteq
+  \E,\quad \A \text{ ist }\sigma\text{-Algebra}}_{\neq
+  \emptyset \text{ ,da }\mathfrak{R}(\Omega) \supseteq
+  \E}\rb\]
+man zeigt: $\A_0$ ist $\sigma$-Algebra; $\A_0\supseteq \E$\\
+$\L(\mathbb{R})$ kleinste $\mathcal{E}$-umfassende
+  $\sigma$-Algebra.\\
+Ein stetiges \WM $\p$ lässt sich eindeutig von $\E$ auf
+  $\mathcal{L}(\mathbb{R})$ fortsetzen. $\to
+  (\mathbb{R},\L(\mathbb{R}),\p)$ mit $\p$ erzeugt von der
+  Dichte p
+\subsection*{Eigenschaften stetiger Wahrscheinlichkeitsmaße}
+\index{Wahrscheinlichkeitsmaß!stetig!Eigenschaften}
+\begin{enumerate}
+  \item{Da $p(x) \geq 0 \to \int\limits_a^bp(x)\; dx \geq 0 \to
+      \p([a,b])\geq 0$}
+  \item{$\p(\mathbb{R})=\int\limits_{-\infty}^\infty p(x)\; dx=1$}
+  \item{$\p(\lb a\rb)=\int\limits_a^ap(x)\; dx=0$}
+  \item{$\p\left(\left(a,b\right)\right)=\p([a,b])-\p(\lb a\rb) -
+      \p(\lb b\rb)=\p([a,b])$}
+  \item{Sei $p(x)>0$\quad auf $[a,b] \to \int\limits_a^bp(x)\; dx >
+      0$}
+  \item{Sei $p(x)=0$ für $x \not\in[a,b] \to \p([a,b])=1$}
+\end{enumerate}
+\subsection*{Wichtige Stetige Verteilungsgesetze}
+\begin{description}
+    \index{Gleichverteilung!stetig|(}
+  \item[1.) Gleichverteilung auf $I=(a,b)$]{Experiment: Zufälliges
+      Ziehen einer Zahl aus $[a,b]$. Wahrscheinlichkeit dass ein
+      Intervall eintritt hängt nur von der Länge, nicht aber von der
+      Lage des Intervalls ab.
+      \[ p(x)= \lb \begin{array}{r@{\quad:\quad}l}
+                          \frac{1}{\left|I\right|} & x \in I \\
+                          0                        & \mbox{sonst}
+                   \end{array} \right. \quad ; \quad\left|I\right|=b-a
+                          \]
+      \begin{itemize}
+        \item{$p(x)=0$}
+        \item{$$\Int_{-\infty}^\infty p(x)\,dx=\Int_a^bp(x)\,dx=\frac{1}{\left|I\right|}\Int_a^bdx=\frac{b-a}{b-a}=1$$}
+      \end{itemize}
+      $[\alpha,\beta]\subseteq [a,b]$
+      $$\p([\alpha,\beta])=\Int_\alpha^\beta
+      p(x)\,dx=\frac{1}{ba}\Int_\alpha^\beta
+      dx=\frac{\beta-\alpha}{b-a}=1$$
+      $\to\quad$ Wahrscheinlichkeit ist proportional zur Länge von
+      $[a,b]$\\
+      \begin{figure}[h]
+	  \centering\input{figures/gv01.pictex}%}
+	  \caption{Beispiel zur Gleichverteilung}
+         \label{fig:gv01}
+      \end{figure}
+      \setcounter{Bsp}{0}
+      \begin{Bsp}
+        Straßenbahn fährt alle 15 Minuten. man gehe zufällig zur
+        Strassenbahnhaltestelle. Wie groß ist die Wahrscheinlichkeit,
+        mehr als 5 Minuten zu warten?\\
+      \begin{figure}[h]
+	  \centering\input{figures/gv02.pictex}%}
+	  \caption{2. Beispiel zur Gleichverteilung}
+         \label{fig:gv02}
+      \end{figure}%
+	Wahrscheinlichkeit ist $\frac{10}{15}=\frac{2}{3}$
+      \end{Bsp}
+      }
+      \item[2.) n-dimenstionale Gleichverteilung]{ Sei $p:\quad
+          \mathbb{R}^n \to \mathbb{R}$, Wahrscheinlichkeitsdichte,
+          dann gilt:
+          \begin{itemize}
+            \item{$p(x)\geq 0;\quad x \in \mathbb{R}^n$}
+            \item{$1=\Int_{\mathbb{R}^n}p(x)\,dx=\Int_{-\infty}^\infty\cdots\
+                   Int_{-\infty}^\infty p(x_1,\ldots,x_n)\,dx_1,\ldots,x_n$}
+          \end{itemize}
+          $A\subset \mathbb{R}^n\quad$ Quader oder Kugel oder
+          ähnliches
+          $$ \p(A):=\Int_Ap(x)\,dx\quad\mbox{Wahrscheinlichkeitsmaß}$$
+          \setcounter{Bsp}{0}
+          \begin{Bsp}
+            $p(x_1,x_2):=\lb \begin{array}{c@{\quad :\quad}l}
+                               x_1 + x_2 & 0 \leq x_1,x_2 \leq 1 \\
+                               0         & \mbox{sonst}
+                             \end{array}\right.$\\
+            $p:\quad \mathbb{R}^2 \to \mathbb{R}$\\
+            \begin{enumerate}
+              \item{$\p(x_1,x_2)\geq 0$}
+              \item{\begin{eqnarray*}
+                     \Int_{-\infty}^\infty\!\Int_{-\infty}^\infty
+                     p(x_1,x_2)\,dx_1\,dx_2
+                     &=& \Int_0^1\!\Int_0^1 (x_1+x_2)\,dx_1\,dx_2\\
+                     &=& \Int_0^1\left[\frac{1}{2}x_1^2+x_1x_2\right]_0^1\,dx_2\\
+                     &=& \Int_0^1\left(\frac{1}{2}+x_2\right)\,dx_2\\
+                     &=& \frac{1}{2}+\frac{1}{2}=1 \to p\quad \mbox{ist Wahrscheinlichkeitsmaß!}
+                   \end{eqnarray*}}
+	     \end{enumerate}
+                   $$A:=\lb(x_1+x_2):\quad x_1 \leq x_2\rb$$
+                   \begin{figure}[htbp]
+                     \begin{center}
+                        \input{figures/gv03.pictex}
+                        \caption{Fläche A}
+                        \label{fig:gv03}
+                     \end{center}
+                   \end{figure}
+                   \begin{eqnarray*}
+                     \p(A)&=&\Int_{A \atop 0\leq x_1,x_2\leq
+                     1}(x_1+x_2)\,dx_1\,dx_2 \\
+                     &=&
+                     \Int_0^{x_1}\!\Int_0^{x_2}(x_1+x_2)\,dx_1\,dx_2\\
+                     &=& \Int_0^13\frac{x_2^2}{2}\,dx_2=\frac{1}{2}
+                   \end{eqnarray*}
+             \end{Bsp}
+                   Sei nun $B \subseteq \mathbb{R}^n\quad$ Quader,
+                   Kugel oder ähnliches\\
+                   $\vol_n(B) \quad$ n-dimensionale Volumen von B\\
+                   ($n=1 \to $ Länge; $n=2 \to$ Fläche; $n=3 \to$
+                   Volumen $\ldots$\\
+                   $p:\quad \mathbb{R}^n\to\mathbb{R}$
+                   \[ p(x):= \left\{\begin{array}{c@{\quad : \quad}l}
+                               \frac{1}{\vol_n(B)} & x \in B\\
+                               0                   & \mbox{sonst}
+                             \end{array}\right. \]
+                   \begin{figure}[h]
+                     \begin{center}
+                        \input{figures/gv04.pictex}
+                        \caption{2-dimensionale Gleichverteilung}
+                        \label{fig:gv04}
+                     \end{center}
+                   \end{figure}
+                   p Wahrscheinlichkeitsdichte?\\
+                   \begin{enumerate}
+                     \item{$p(x)\geq 0$}
+                     \item{$\Int_{\mathbb{R}^n}p(x)\,dx=\Int_B\frac{1}{\vol_n(B)}\,dx=\frac{\vol_n(B)}{\vol_n(B)}=1$}  
+                   \end{enumerate}
+                   $A\subseteq B$
+                   \[
+                   \p(A)=\Int_Ap(x)\,dx=\frac{1}{\vol_n(B)}\Int_Adx=\mbox{\fbox{$\frac{\vol_n(A)}{\vol_n(B)}$}}\]
+                   \[ \to \mbox{\emph{n-dimensionale Gleichverteilung
+                       auf B von }} (A\subseteq B)\]
+\setcounter{Bsp}{0}
+\begin{Bsp}
+  Zwei Freunde treffen zufällig zwischen 12-13 Uhr auf dem Marktplatz
+  ein. Jeder wartet nach Eintreffen noch 20 Minuten, dann geht er. Wie
+  groß ist die Wahrscheinlichkeit, dass sich beide treffen?
+  $t_1$ sei Zeitpunkt Freund$_1;\quad t_2$ Zeitpunkt Freund$_2$
+  treffen ein.\\
+  $(t_1,t_2)$ gleichverteilt auf $[12,13] \times [12,13]$\\
+  Treffen $\Leftrightarrow \quad t_2 \leq t_1 + \frac{1}{3}$ oder $t_1
+  \leq t_2 + \frac{1}{3} \quad \Leftrightarrow \quad
+  \left|t_1-t_2\right| \leq \frac{1}{3}$\\
+  $\p(A)=1-\frac{2}{9}-\frac{2}{9}=\frac{5}{9}$
+                   \begin{figure}[h]
+                     \begin{center}
+                        \input{figures/gv05.pictex}
+                        \caption{Fläche für das Treffen}
+                        \label{fig:gv05}
+                     \end{center}
+                   \end{figure}
+\end{Bsp}
+\begin{Bsp}
+  Kugel mit Radius $R>0\quad$ Gleichverteilung auf dieser Kugel
+  \[ \p(A)=\frac{\vol_3(A)}{\frac{4}{3}\pi\mathbb{R}^3} \]
+  $0<r<R$
+  \[ A=\lb(x,y,z):\quad x^2+y^2+z^2\leq r^2\rb \]
+  \[ \Rightarrow \quad \p(A)=\frac{r^3}{R^3} \]
+\end{Bsp}
+\begin{Bsp}
+  \emph{Nadeltest von Buffon (\symbol{126}1740)}\\
+  lineares Papier und Nadel der Länge $a<1$\\
+%Abbildung einfügen
+%\begin{figure}
+%  \centering\input{figures/nadel01.pictex}
+%    \caption{Definition der Wahrscheinlichkeitsdichte}
+%    \label{fig:def15}      
+%\end{figure}
+  Gesucht ist die Wahrscheinlichkeit, dass die Nadel eine Gerade
+  (Linie) schneidet.
+  \begin{tabular}{crr}
+%Abbildung einfügen 
+    & \begin{tabular}{l}
+        x Mittelpunkt \\
+        $\theta$ Winkel
+      \end{tabular}
+    & \begin{tabular}{c}
+        $0\leq x \leq 1$ \\
+        $-\frac{\pi}{2} \leq \theta \leq +\frac{\pi}{2}$\\
+        $\theta \in [-\frac{\pi}{2},\frac{\pi}{2}]$
+      \end{tabular}
+  \end{tabular}
+  Zufälliges Werfen der Nadel bedeutet:\\
+  Wähle Punkt $(x,\theta) \in [0,1]\times
+  [-\frac{\pi}{2},\frac{\pi}{2}]$ entsprechend der
+  Gleichverteilung. \\
+  Nadel schneidet untere Gerade
+  $$ \Leftrightarrow \quad x \leq \frac{a}{2}\cos\theta$$
+  Nadel schneidet untere Gerade
+  $$ \Leftrightarrow \quad 1-x \leq \frac{a}{2}\cos\theta$$
+%Abbildung einfügen
+  \[
+  \p(A)=\frac{\vol_2(A)}{\pi}=\frac{1}{\pi}2\Int_{-\frac{\pi}{2}}^\frac{\pi}{2}\frac{a}{2}\cos\theta\,d\theta
+  =
+  \left.\frac{a}{\pi}\sin\theta\right|_{-\frac{\pi}{2}}^\frac{\pi}{2}=\frac{2a}{\pi}\]
+  zum Beispiel für $a=\frac{\pi}{4} \to \p(A)=\frac{1}{2}$
+  \[r_n := \frac{\mbox{Anzahl der Schritte bei n
+  Versuchen}}{n}\quad\mbox{(Relative Häufigkeit)}\]
+  \[ r_n \to_{n \to \infty} \quad \to \quad \pi \approx \frac{2a}{r_n}
+  \]
+  \begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|c|}\hline
+                            & a   & n      & Anzahl der Schritte & $\pi$\\ \hline
+    \emph{Wolf} (1850)      & 0.8 & 5000   & 2532                & 3.160\\ \hline    
+    \emph{Smith} (1855)     & 0.6 & 3204   & 1218                & 3.157\\ \hline
+    \multicolumn{1}{|c|}{\vdots} & \vdots & \vdots & \vdots & \vdots  \\ \hline
+    \emph{Lazzerini} (1913) & $\frac{5}{6}$ & 3408   & 1808      & 3.142\\ \hline
+    \emph{Reinhard} (1925)  & 0.5419        & 2520   & 859       & 3.179\\ \hline
+  \end{tabular}
+	\caption{Versuche zur Bestimmung der Kreiszahl Pi}	
+  \end{table}
+\end{Bsp}}
+    \index{Gleichverteilung!stetig|)}
+    \item[3.) Normalverteilung (\emph{Gau"s-Verteilung})]{ .
+        \index{Gauß-Verteilung@{\emph{Gauß}-Verteilung}|see{Normalverteilung}}
+        \index{Normalverteilung}
+        \begin{Satz}
+            \[ \int\limits_{-\infty}^\infty e^{-\frac{x^2}{2}} \; dx=\sqrt{2 \pi} \]
+        \end{Satz}
+        \underline{Beweis:}
+        \begin{align*}
+            a :&= \int\limits_{-\infty}^\infty e^{-\frac{x^2}{2}} \;dx  \\
+            a^2 &= \left( \int\limits_{-\infty}^\infty e^{-\frac{x^2}{2}} \;dx \right)
+            \left( \int\limits_{-\infty}^\infty e^{-\frac{y^2}{2}} \;dy \right) \\
+            &= \int\limits_{-\infty}^\infty \int\limits_{-\infty}^\infty
+            e^{-\frac{1}{2}(x^2+y^2)} \;dx\;dy \\
+            x &= r \cos \theta &0<r<\infty \\
+            y &= r \sin \theta &0 \leq \theta < 2 \pi \\
+            dx\;dy &= r\;dr\;d\theta\\
+            \to a^2 &= \int\limits_0^\infty \int\limits_0^{2 \pi}
+            e^{-\frac{r^2}{2}} r\;dr\;d\theta 
+            = 2\pi \int\limits_0^\infty r e^{-\frac{r^2}{2}}\;dr \\
+            &= 2\pi \left[ -e^{-\frac{r^2}{2}} \right]_0^\infty = 2\pi \\
+            \to a &= \sqrt{2\pi}\qquad\boxed{}\\
+        \end{align*}
+        \begin{center}\begin{boxedminipage}[t]{9.5cm}\Large
+            \[ a,x \in \mathbb{R};\quad \sigma > 0 \]
+            \[  \p_{a,\sigma^2}(x):=\frac{1}{\sqrt{2\pi}\sigma}
+                e^{\frac{-\frac{1}{2}(x-a)^2}{\sigma^2}}\]
+        \end{boxedminipage}\end{center}
+        \begin{figure}
+            \centering\input{figures/nv01.pictex}
+            \caption{Normalverteilung}
+            \label{fig:nv01}      
+        \end{figure}
+        \underline{Behauptung:}\\
+        $\p_{a,\sigma^2}$ ist eine Wahrscheinlichkeitsdichte!\\
+        $\p_{a,\sigma^2}(x)\geq 0$ klar, da $e^x >0; \forall x \in \mathbb{R}$\\
+        $\int\limits_{-\infty}^\infty \frac {1}{\sqrt{2\pi} \sigma}
+        e^{\frac{-\frac{1}{2}(x-a)^2}{\sigma^2}} $\\
+        Substitution: $y := \frac{x-a}{\sigma} \quad dx = \sigma\;dy$\\
+        \[ \frac{1}{\sqrt{2\pi}\sigma} \int_{-\infty}^\infty e^{-\frac{y^2}{2}}
+        \;\sigma\;dy=\frac{1}{\sqrt{2\pi}} \underbrace{\int_{-\infty}^\infty
+        e^{-\frac{y^2}{2}}\;dy}_{=\sqrt{2\pi}}=1 \]
+        \begin{Def}
+            $\mathcal{N}(a,\sigma^2)$ hei"st das von $\p_{a,\sigma^2}$ erzeugte
+            \WM, d.h. 
+            \[ \mathcal{N}(a,\sigma^2)([\alpha,\beta])=\frac{1}{\sqrt{2\pi} \sigma}
+            \int\limits_\alpha^\beta
+            e^{\frac{-\frac{1}{2}(x-a)^2}{\sigma^2}}\;dx \]
+            $\mathcal{N}(a,\sigma^2)$ Normalverteilung mit Erwartungswert
+            $a\in \mathbb{R}$ und Varianz $\sigma^2>0$\\
+            $\mathcal{N}(0,1)$ hei"st Standardnormalverteilung und hat die Dichte
+            $\frac{e^{-\frac{x^2}{2}}}{\sqrt{2\pi}}$ (Wichtigstes \WM!)
+        \end{Def}
+    }
+    \item[4.) Exponentialverteilung]{.\index{Exponentialverteilung}\\
+        $\lambda>0;\quad p(x) := \left\{ \begin{array}{l@{\quad:\quad}l}
+            \lambda e^{-\lambda x} & x > 0 \\
+            0 & x \leq 0               \end{array}\right.$\\[0.2cm]
+        \underline{Behauptung:}\\
+        $p$ ist eine Wahrscheinlichkeitsdichte:
+        \begin{enumerate}
+            \item{$p(x) \geq 0$ (klar)}
+            \item{$\int\limits_{-\infty}^\infty p(x)\;dx = 
+            \int\limits_0^\infty \lambda e^{-\lambda x}\;dx=
+            \lambda\left[ \frac{e^{-\lambda x}}{-\lambda}\right]_0^\infty=1$}
+        \end{enumerate}
+        Das erzeugte \WM $E_\lambda$ hei"st Exponentialverteilung
+        mit Parameter $\lambda>0$\\
+        \[ E_\lambda([\alpha,\beta])=\int\limits_\alpha^\beta \lambda
+        e^{-\lambda x}\;dx=\left[ -e^{-\lambda x}\right]_\alpha^\beta
+        =e^{-\lambda\alpha}-e^{-\lambda\beta}\quad (\alpha \geq 0) \]
+        $E-lambda$ wird verwendet zur Beschreibung von Lebensdauerverteilungen
+        (ohne Altern).
+        \setcounter{Bsp}{0}
+        \begin{Bsp}
+            Lebensdauer eines Bauteils sei Exponentialverteilt mit Parameter
+            $\lambda = \frac{1}{2}$. Wie gro"s ist die Wahrscheinlichkeit, dass
+            das Bauteil zum Zeitpunkt $t>o$ noch funktioniert?
+            \[ A := \left\{\text{arbeitet zum Zeitpunkt } t\right\}=
+            \left\{\text{Ausfall nach }t\right\}
+            =(t,\infty)\]
+            \[\p(A)=E_\frac{1}{2}\left((t,\infty)\right)=e^{-\frac{t}{2}}-0 !\]
+        \end{Bsp}
+    }
+\end{description}
+\section{Bedingte Wahrscheinlichkeiten}
+\index{Bedingte Wahrscheinlichkeiten}
+    Urne mit 4 wei"sen und 3 schwarzen Kugeln. Man ziehe 2 Kugeln ohne Zurücklegen.
+    $\Omega=\left\{(s,s),(s,w),(w,s),(w,w)\right\}$\\
+    Wir suchen z.B. $\p(\left\{(s,w)\right\})=$ ?\\
+    $A := \left\{\text{Erste Kugel schwarz}\right\}
+    =\left\{(s,s),(s,w)\right\}$\\
+    $B := \left\{\text{Zweite Kugel weiß}\right\}
+    =\left\{(w,w),(s,w)\right\}$\\
+    Was ist berechenbar?
+    \begin{enumerate}
+        \item{$\p(A)=\frac{3}{7}$}
+        \item{$\p(B)$ unter der Bedingung, dass A eingetreten ist $=\p(A|B)$}
+    \end{enumerate}
+    \[\p(\left\{(s,w)\right\})=\p(A)\cdot\p(B|A)
+    =\frac{3}{7}\cdot\frac{2}{3}=\frac{2}{7}\]
+    \begin{Def}
+        Sei $(\Omega,\A, \p)$ ein Wahrscheinlichkeitsraum;$\quad B \in \A$
+        mit $\p(B)>0$, dann ist
+        \begin{center}\begin{boxedminipage}[c]{7.5cm}\Large
+            \[\p(A|B):=\frac{\p(A\cap B)}{\p(B)}\]
+        \end{boxedminipage}\end{center}
+        die Wahrscheinlichkeit des Eintretens von A, unter der Bedingung, dass
+        B bereits eingetreten ist.
+    \end{Def}
+    \setcounter{Bsp}{0}
+    \begin{Bsp}
+        $E_\lambda([0,5])|[2,\infty])$\\
+        Wahrscheinlichkeit, dass ein Teilchen vor Erreichen des Alters 5 stirb,
+        unter der Bedingung, mindestens 2 Jahre alt geworden zu sein:
+        \[ \frac{E_\lambda([0,5]\cap[2,\infty])}{E_\lambda([2,\infty])}
+        =\frac{e^{-2\lambda}-e^{-5\lambda}}{e^{-2\lambda}}=1-e^{-3\lambda}\]
+        ist die Wahrscheinlichkeit, dass ein neugeborenes Teilchen höchstens 3
+        Jahre altwird. (nicht altern)
+    \end{Bsp}
+    \begin{Satz}
+        \begin{enumerate}
+            \item{Die Zuordnung $ A \to \p(A|B)$ ist \WM auf $(\Omega,\A)$}
+            \label{satz:141}
+            \item{$\p(B|B)=1;\quad \p(B^C|B)=0$}
+        \end{enumerate}
+    \end{Satz}
+    \underline{Beweis:\\}
+    \begin{enumerate}
+        \item{$\p(\emptyset|B)=\frac{\p(\emptyset\cap B)}{\p(B)}=0\\
+            \p(\Omega|B)=\frac{\p(\Omega\cap B)}{\p(B)}=1\\
+            A_1,A_2,\ldots$ disjunkt $\to$\\
+            \begin{align*}
+                \p(\bigcup_{j=1}^\infty A_j |B) 
+                &= \frac{\p(\bigcup_{j=1}^\infty A_j \cap B)}{\p(B)}
+                = \frac{\p(\bigcup_{j=1}^\infty (A_j \cap B))}{\p(B)}\\
+                &= \frac{\sum_{j=1}^\infty \p(A_j \cap B)}{\p(B)}
+                = \sum_{j=1}^\infty \p(A_j | B)\\
+                &\to \sigma-\text{Addidivität} \to (1)
+            \end{align*}
+        }
+        \item{\[\p(B|B)=\frac{\p(B\cap B)}{\p(B)}=1\]
+            \[\p(B^C|B)=\frac{\p(B^C\cap B)}{\p(B)}=\frac{\p(\emptyset)}{\p(B)}=0\]
+        }
+    \end{enumerate}   
+    \begin{Bsp}
+        Gegeben sind zwei Urnen $U_1$ und $U_2$. In der ersten Urnen befinden sich
+        zwei weiße und eine schwarze Kugel, in der zweiten eine weiße und zwei
+        schwarze Kugeln, wobei die Wahrscheinlichkeit, dass die erste Urne gezogen
+        wird gleich $\frac{1}{3}$, die der zweiten gleich $\frac{2}{3}$ ist.
+        Als erstes wird eine Urne ausgewählt und dann eine Kugel
+        aus dieser Urne gezogen. Gesucht ist die Wahrscheinlichkeit, dass die
+        gezogene Kugel weiß ist.\\
+        $\Omega=\left\{w_1,w_2,s_1,s_2\right\}$ mit
+        $w_1$ ist aus $U_1$\\
+        $U_1=\lb w_1,s_1\rb\qquad U_2=\lb s_2,w_2\rb\qquad W=\lb w_1,w_2\rb\qquad
+        S=\lb s_1,s_2\rb\\
+        \p(U_1)=\frac{1}{3}\qquad \p(U_2)=\frac{2}{3} \qquad
+        \p(W|U_1)=\frac{2}{3}\qquad \p(W|U_2)=\frac{1}{3}$\\
+        Wir suchen $\p(W)$\\
+        $\Omega=U_1\cup U_2$\\
+        $\p(W)=\p(U_1)\cdot\p(W|U_1)+\p(U_2)\cdot\p(W|U_2)
+        =\frac{1}{3}\cdot\frac{2}{3}+\frac{2}{3}\cdot\frac{1}{3}=\frac{4}{9}$\\
+    \end{Bsp} 
+    \begin{Bsp}
+        Nun umgekehrte Fragestellung:\\
+        Wir haben weiß beobachtet. Wie groß ist die Wahrscheinlichkeit, dass die
+        gezogene Kugel aus Urne $U_1$ stammt?\\
+        Wir suchen also die Wahrscheinlichkeit $\p(U_1|W)$\\
+        Am Anfang vorgegebene Wahrscheinlichkeiten für $U_1,U_2$\\
+        $\qquad\to$ \emph{a priori} Wahrscheinlichkeit (in unserem Fall
+        $\frac{1}{3},\frac{2}{3}$)\\
+        \index{a priori}\index{priori|see{a priori}}
+        Versuch durchgeführt und weiß beobachtet:\\
+        $\p(U_1|W)\qquad \p(U_2|W) \qquad\to $\emph{a posteriori} 
+        Wahrscheinlichkeit\\
+        \index{a posteriori}\index{posteriori|see{a posteriori}}
+        \underline{Allgemeine Situation:}\\
+        $\Omega=\bigcup\limits_{j=1}^n B_j$ (disjunktiv)\\
+        $\p(B_1),\ldots,\p(B_n)$ a priori Wahrscheinlichkeiten\\
+        $A \in \A$ eingetreten\\
+        $\p(B_1|A),\ldots,\p(B_n|A)$ a posteriori Wahrscheinlichkeiten
+    \end{Bsp}
+    \begin{Satz}[Formel über die totale Wahrscheinlichkeit]
+        \index{totale Wahrscheinlichkeit}
+        \index{Formel über die totale Wahrscheinlichkeit}
+        $(\Omega,\A,\p),\quad B_1,\ldots,B_n \in \A$\\
+        $\p(B_j)>0,\quad$ disjunkt und $\bigcup_{j=1}^\infty B_j := \Omega$\\
+        \begin{center}\begin{boxedminipage}[c]{7.5cm}\Large
+            \[\p(A)=\sum_{j=1}^n \p(B_j)\cdot \p(A|B_j)\]
+        \end{boxedminipage}\end{center}
+    \end{Satz}
+    \underline{Beweis:}\\
+    $\sum_{j=1}^n \p(B_j)\cdot \p(A|B_j)=\sum_{j=1}^n \p(B_j)\cdot
+    \frac{\p(A\cap B)}{\p(B_j)}
+    =\sum_{j=1}^n \p(\underbrace{A\cap B_j}_{\text{disjunkt}})
+    =\p(\bigcup_{j=1}^n(A\cap B_j))\\
+    =\p(A \cap \underbrace{\bigcup\nolimits_{j=1}^n B_j}_{
+    \text{nach Vorr.}=\Omega})=\p(A)\qquad\boxed{}$
+    \begin{Satz}[Formel von Bayes].
+        \index{Formal von Bayes@{Formel von \emph{Bayes}}}
+        \begin{center}\begin{boxedminipage}[c]{10cm}\Large
+            \[\p(B_j|A)=\frac{\p(B_j)\cdot\p(A|B_j)}
+            {\sum_{j=1}^n\p(B_j)\cdot\p(A|B_j)}\]
+        \end{boxedminipage}\end{center}
+    \end{Satz}
+    \underline{Beweis:}\\
+    $\p(A)=\sum_{j=1}^n\p(B_j)\p(A|B_j)\\
+    \to \text{Rechte Seite}=\frac{\p(B_j)\p(A|B_j)}{\p(A)}
+    =\frac{\p(B_j)\cdot\frac{\p(A\cap B_j)}{\p(B_j)}}{\p(A)}
+    =\frac{\p(A\cap B_j)}{\p(A)}=\p(B_j|A)\qquad\boxed{}$
+    \underline{Bemerkungen:}\\
+    \begin{enumerate}
+        \item{Kennt man bereits $\p(A)$, so vereinfacht sich obige Formel:
+            \[\p(B_j|A)=\frac{\p(B_j)\p(A|B_j)}{\p(A)}\]}
+        \item{$\Omega=B\cup B^C$
+            \begin{center}\begin{boxedminipage}[c]{12cm}\Large
+                \[\p(B|A)=\frac{\p(B)\p(A|B)}{\p(B)\p(A|B)+\p(B^C)\p(A|B^C)}
+                \]
+            \end{boxedminipage}\end{center}}
+    \end{enumerate}
+    \begin{Bsp}[TBC-Test]
+        Person hat TBC $\to$ Test ist in 96\% der Fälle positiv\\
+        Person hat kein TBC $\to$ Test ist in 94\% der Fälle negativ\\
+        $0.4\%$ der Bevölkerung hat TBC.\\
+        Wir suchen Wahrscheinlichkeit, dass eine zufällige Person mit positiven
+        Test wirklich TBC hat?\\
+        $A:=\{$Test positiv$\};\quad B:=\{$Person hat TBC$\}$
+        Wir suchen $\p(B|A)$!\\
+        $\p(B)=0.004 \quad\to\quad\p(B^C)=0.996\\
+        \p(A)=0.96;\qquad \p(A|B^C)=0.06\\
+        \p(B|A)=\frac{\p(B)\p(A|B)}{\p(B)\p(A|B)+\p(B^C)\p(A|B^C)}
+        =\frac{0.004\cdot 0.96}{0.004\cdot 0.96+0.996\cdot 0.06}=0.06$\\
+        Nur 6\% der positiv getesteten Personen haben TBC.
+    \end{Bsp}
+
+    %\subsection*{Veranschaulichung von bedingten Wahrscheinlichkeiten}
+    %Anschauliche Abbildung???
+
+    \section{Unabhängigkeit von Ereignissen}
+    \index{Unabhängigkeit|(}
+    \underline{Ziel:} Mathematische Formulierung der Unabhängigkeit von 
+    Ereignissen\\
+    \begin{Bsp}
+        2-maliges Würfeln\\
+        $\Omega=\lb(i,j):1\leq i,j\leq 6\rb\\
+        \p$ Gleichverteilung\\
+        $A:=\lb\text{1. Wurf gerade Zahl}\rb\\
+        B:=\lb\text{2. Wurf ist $\geq$ 3}\rb$\\
+        Intuitiv sind A und B unabhängig, d.h. Eintreten von B ist unabhängig
+        davon, ob A eintritt;
+        \[\p(B|A)\stackrel{!}{=}\p(B)\]
+    \end{Bsp}
+    \begin{Bsp}
+        Graswachstum und Mondphasen abhängig oder unabhängig?\\
+        $\p($Gras wächst pro Tag $\leq$ 1 cm $|$ Vollmond$)
+        =\p($Gras wächst pro Tag 1 cm$)$\\
+        B unabhängig von A, falls $\p(B|A)=\p(B)$\\
+        \[\p(B)=\frac{\p(A\cap B)}{\p(A)}=\p(B|A)\quad\to\quad
+        \p(A\cap B)=\p(A)\cdot\p(B)\]
+    \end{Bsp}
+    \begin{Def}
+        $(\Omega,\A,\p)$ Wahrscheinlichkeitsraum,$\quad A,B\in\A$\\
+        A und B heißen stochastisch unabhängig, wenn gilt:
+        \[\p(A\cap B)=\\p(A)\cdot\p(B)\]
+    \end{Def}
+    \begin{Satz}
+        \begin{enumerate}
+            \item{$\emptyset,\Omega$ sind  unabhängig von jedem $A\in\A$}
+            \item{$A,B$ unabhängig$\to A,B^C$ unabhänig $\to A^C,B$ unabhängig}
+        \end{enumerate}
+    \end{Satz}
+    \underline{Beweis:}
+        \begin{enumerate}
+            \item{$\p(A\cap\emptyset)=\p(\emptyset)=0=\p(\emptyset)\cdot\p(A)\\
+                    \p(A\cap\Omega)=\p(A)=1\cdot\p(A)=\p(\Omega)\cdot\p(A)$}
+            \item{$\p(A\cap B^C)=\p(A)\cdot\p(B^C)=\p(A)(1-\p(B))
+                    =\p(A)-\p(A)\cdot\p(B)=\p(A)-\p(A\cap B)
+                    =\p(A\setminus A\cap B)=\p(A\cap B^C)$}
+        \end{enumerate}
+    Wir wissen: $B^C,A$ unabhängig $\to B^C,A^C$ unabhängig (analog zu
+    obigem Beweis!)
+    \begin{Bsp}
+        Zahlenlotto 6 aus 49:\\
+        $A:=\lb\text{1. gezogene Zahl ist gerade}\rb\\
+        B:=\lb\text{2. gezogene Zahl ist ungerade}\rb\\
+        \p(A\cap B)\stackrel{!}{=}\p(A)\cdot\p(B)$\quad ?\\
+        $\p($1. Zahl gerade und 2. Zahl ungerade$)
+        =\frac{24\cdot 25}{49\cdot 48}=\frac{25}{98}$\\
+        $\p($1. Zahl gerade$)=\frac{24}{49}$\\
+        $\p($2. Zahl ungerade$)=\p(B|A)\cdot\p(A)+\p(B|A^C)\cdot\p(A^C)
+        =\frac{25}{48}\cdot\frac{24}{49}+\frac{24}{48}\cdot\frac{25}{49}
+        =2\cdot\frac{24\cdot 25}{48\cdot 49}=\frac{25}{49}$\\
+        $\p(A\cap B)=\frac{24\cdot 25}{49\cdot 48}\quad
+        \not=\quad\frac{24\cdot 25}{49\cdot 49}=\p(A)\cdot\p(B)$
+    \end{Bsp}
+    \begin{Bsp}
+        n-facher Münzwurf mit fairer Münze:\\
+        $a:=\lb\text{1. Wurf 0}\rb\qquad B:=\lb\text{n. Wurf 1}\rb$\\
+        $A:=\lb(0,\omega_2,\ldots,\omega_n):\omega_j\in\lb0,1\rb\rb\\
+        \p(A)=\frac{2^{n-1}}{2^n}=\frac{1}{2}=\p(B)\\
+        A\cap B =\lb(0,\omega_2,\ldots,\omega_{n-1},1)\rb\\
+        \p(A\cap B)=\frac{2^{n-2}}{2^n}=\frac{1}{4}=\frac{1}{2}\cdot\frac{1}{2}
+        =\p(A)\cdot\p(B)\qquad \to $A und B unabhängig!
+    \end{Bsp}
+    
+    \subsection*{Unabhänigkeit von n-Ereignissen}
+    Gegeben: $A_1,\ldots,A_n \in \A$\qquad
+    Wann heißen $A_1,\ldots,A_n$ unabhängig?\\
+    \begin{itemize}
+        \item{Falls $\p(A_i\cap A_j)=\p(A_i)\cdot\p(A_j);\quad i\not=j
+            \to$ paarweise unabhängig\\\underline{aber nicht}\quad
+            $\p(A_1\cap\ldots\cap A_n)=\p(A_1)\cdot\ldots\cdot\p(A_n)$}
+        \item{$\p(A_1\cap\ldots\cap A_n)=\p(A_1)\cdot\ldots\cdot\p(A_n)
+            \to$ folgt nicht die paarweise Unabhängigkeit!}
+        \item{beides ungeeignet, müsste vereint werden!}
+    \end{itemize}
+    \begin{Def}
+        $A_1,\ldots,A_j\in \A$ heißen unabhängig,wenn  für alle 
+        $1\leq i_m<\ldots<i_m\leq n$ und $m=2,\ldots,n$ gilt:
+        \[ \p(A_{i_1}\cap\ldots\cap A_{i_m})
+        =\p(A_{i_1})\cdot\ldots\cdot\p(A_{i_m})\]
+    \end{Def}
+    \begin{Bsp}[n=3]$.\\\left.
+        \begin{array}{lllll}
+            m=2 & i_1=1 & i_2=2 & &\p(A_1\cap A_2)=\p(A_1)\cdot\p(A_2)\\
+            & i_1=1 & i_2=3 & &\p(A_1\cap A_3)=\p(A_1)\cdot\p(A_3)\\
+            & i_1=2 & i_2=3 & &\p(A_2\cap A_3)=\p(A_2)\cdot\p(A_3)\\[0.3cm]
+            m=3 & i_1=2 & i_2=3 & i_3=3 &
+                \p(A_1\cap A_2\cap A_3)=\p(A_1)\cdot\p(A_2)\cdot\p(A_3)\\
+        \end{array}\right\{$ 
+        \begin{minipage}[c]{2.6cm}
+            alle müssen erfüllt sein, keine folgt aus der anderen!            
+        \end{minipage}
+    \end{Bsp}
+    \begin{Bsp}
+        2-faches Würfeln:\\
+        $A_1:=\lb\text{1. Würfel gerade}\rb\\
+        A_2:=\lb\text{2. Würfel ungerade}\rb\\
+        A_3:=\lb\text{beide Würfe gerade oder beide Würfe ungerade}\rb\\
+        \p(A_1)=\p(A_2)=\frac{1}{2}\\
+        A_3=\lb(1,1),(1,3),(1,5),(3,1),(3,3),(3,5),(5,1),(5,3),(5,5),
+        (2,2),(2,4),\ldots\rb\\
+        \p(A_3)=\frac{18}{36}=\frac{1}{2}$\\
+        $\p(A_1\cap A_3)\stackrel{?}{=}=\p(A_1)\cdot\p(A_3)\\
+        A_1\cap A_3=\lb(2,2),(2,4),(2,6,(4,2),(4,4),(4,6),(6,2),(6,4),(6,6)\rb\\
+        \to \p(A_1\cap A_3)=\frac{1}{4}=\frac{1}{2}\cdot\frac{1}{2}\quad$o.k.\\
+        analog $A_1\cap A_2$ und $A_2\cap A_3 \quad \to $paarweise unabhängig!\\
+        $\p(A_1\cap A_2\cap A_3)=0\qquad \not=\qquad
+        \p(A_1)\cdot\p(A_2)\cdot\p(A_3)=\frac{1}{8}\\
+        \to A_1,A_2,A_3$ nicht unabhängig!\\
+    \end{Bsp}
+    \begin{Bsp}[Veranschaulichung]
+        Maschine M, n Bauteile, $B_1,\ldots,B_n$ Ausfall unabhängig!\\
+        $p(B_j $fällt aus$)=p_j\qquad 0\leq p_j\leq 1$
+        \begin{enumerate}
+            \item{M fällt aus, wenn mindestens ein Bauteil ausfällt\\
+                $\p($M fällt nicht aus$)=\p(B_1,\ldots,B_n$ fällt nicht aus$)
+                =\p(B_1\text{ nicht})\cdot\ldots\cdot\p(B_n\text{ nicht})
+                =\prod_{j=1}^n(1-p_j)\\
+                \to \p($M fällt aus$)=1-\prod_{j=1}^n(1-p_j)\\
+                p_j$ nahe bei 1:$\to 1-p_j$ nahe 0$\to \prod$ nahe 0
+                $\to \p($M fällt aus$)\approx 1$}
+            \item{Maschine fällt aus, wenn alle Bauteile ausfallen\\
+                $\p($M fällt aus$)=\p(B_1$ fällt aus$,\ldots,B_n$ fällt aus)
+                $=\p(B_1$ fällt aus$)\cdot\ldots\cdot\p(B_n$ fällt aus$)
+                =\prod_{j=1}^np_j$\\
+                $p_j$ nahe 0$\to \prod$ nahe $0\to\p(M$ fällt aus$)\approx 0$}
+        \end{enumerate}
+    \end{Bsp}
+    \index{Unabhängigkeit|)}
+
+    \subsection*{\emph{Bernoulli}-Schema}
+    \index{Bernoulli-SChema@{\emph{Bernoulli}-Schema}}
+    \underline{Stochastiches Experiment:}\\
+    Beobachte 1 (Erfolg) oder 0 (Mißerfolg)\\
+    Wahrscheinlichkeit für Erfolg sei $p\in[0,1]$,
+    Wahrscheinlichkeit für Mißerfolg $1-p$\\
+    n unabhängige Experimente (\emph{Bernoulli})\\
+    Beobachte Vektor $\omega=(\omega_1,\ldots,\omega_n),\omega_j\in\lb0,1\rb
+    \qquad\Omega=\lb0,1\rb^n\qquad\A=\PR(\Omega)$
+    \begin{Bsp}[$p=\frac{1}{2}$]
+        $\p=$ Gleichverteilung$\qquad\to p=\frac{1}{2}\qquad\to\p(\lb\omega\rb)
+        =\frac{1}{2^n}$\\
+    \end{Bsp}
+    \begin{Bsp}[$p>\frac{1}{2}$]
+        $p>\frac{1}{2}\quad\to\quad(1,\ldots,1)$ ist wahrscheinlicher als
+        $(0,\ldots,0)\quad\to\p$ keine Gleichverteilung!\\
+        $n=4\\
+        \p((0,1,0,1))=p^2(-p)^2\\
+        \p((0,0,0,1))=p(1-p)^3$\\
+        allgemein gilt:
+        \[ p^k(1-p)^{n-k}=\p(A)\qquad k=\sharp\lb j:\omega_j=1\rb\]
+    \end{Bsp}
+    $\Omega=\lb0,1\rb^n\qquad 0\leq p\leq 1\\
+    \p(\lb\omega\rb)=p^k(1-p){n-k}\\
+    \omega=(\omega_1,\ldots,\omega_n),\quad k=\omega_1+\ldots+\omega_n$\\
+    Probe: $\p$ ist \WM
+    \begin{enumerate}
+        \item{$p^k(1-p)^{n-k}\geq 0$}
+        \item{$\sum\limits_{\omega\in\mathbb{R}}p(\lb\omega\rb)\stackrel{!}{=}1
+            =\sum\limits_{k=0}^n\sum\limits_{\omega:\omega_1+,\ldots,+\omega_n=k}
+            \underbrace{p(\lb\omega\rb)}_{p^k(1-p)^{k-n}}
+            =\sum_{k=0}^np^k(1-p)^{n-k}\underbrace
+            {\sharp\lb\omega:\omega_1+,\ldots,+\omega_n=k\rb}_{\binom{n}{k}}\\
+            =\sum_{k=0}^n\binom{n}{k}p^k(1-p)^{n-k}=(p+(1-p))^n=1$}
+    \end{enumerate}
+    $A:=\lb\text{n-ter Versuch} = 1\rb\subseteq\lb0,1\rb^n\\
+    A=\lb(\omega_1,\ldots,\omega_{n-1},1):\omega_j\in\lb0,1\rb\rb\\$
+    \begin{align*}
+        \p(A) 
+        &= \sum_{\omega\in A}\p(\lb\omega\rb)
+        =\sum_{k=1}^n\sum_{\omega\in A;\omega_1+\ldots+\omega_n=k}p^k(1-p)^{n-k}\\
+        &=\sum_{k=1}^np^k(1-p)^{n-k}\cdot
+        \underbrace{\sharp\lb\omega\in\A:\omega_1+\ldots+\omega_n=k\rb}_
+        {\binom{n-1}{k-1}}\\
+        &=\sum_{k=1}^n\binom{n-1}{k}p^{n-k}(1-p)^{n-1-k}
+        =p\sum_{k=1}^{n-1}\binom{n-1}{k}p^k(1-p)^{n-1-k}\\
+        &=p(p+(1-p))^{n-1}=p=\p(A)
+    \end{align*}
+    $\p(\omega_1=\stackrel{0}{1},\ldots,\omega_n=\stackrel{0}{1})
+    =\p(\omega_1=\stackrel{0}{1})\cdot\ldots\cdot\p(\omega_n=\stackrel{0}{1})$\\
+    unabhängig von Ereignissen, deren Eintreten nur vom j-ten Versuch abhängt.
+    \begin{Bsp}.\\
+        $\left.\begin{array}{l}
+            A=\lb\text{2. Versuch 0}\rb\\
+            B=\lb\text{4. Versuch 1}\rb\\
+            C=\lb\text{7. Versuch 0}\rb
+        \end{array}\qquad\rb$
+        \begin{minipage}[c]{2.5cm}
+            unabhängig
+        \end{minipage}
+    \end{Bsp}
+    $A:=\lb\text{genau k mal Erfolg}\rb\\
+    \p(A)=\sum\limits_{\omega_1+\ldots+\omega_n=k}p^k(1-p)^{n-k}
+    =\binom{n}{k}p^k(1-p)^{n-k}$\\
+    \index{Binminialverteilung}
+    Binominialverteilung $B_{n,p}$ beschreibt folgendes Experiment:\\
+    Führe n unabhängige Versuche durch: 1 mit p und 0 mit 1-p:
+    \[B_{n,p}(\lb k\rb)=\p(\text{Genau k-mal Erfolg})\]
+
+    \section*{Geometrische Verteilungen}
+    \index{Geometrische Verteilung|(}
+    Eins erscheint mit Wahrscheinlichkeit $p$, Null mit Wahrscheinlichkeit $1-p$\\
+    Gesucht ist $\p($Im $(k+1)$-ten Versuch erscheint erstmals eine Eins)\\
+    Wir führen Hilfsraum ein:
+    \[\Omega=\lb\omega:=(\omega_1,\omega_2,\ldots),\omega_j\in\lb0,1\rb\rb\]
+    \[A=\lb\omega:\omega_1=a_1,\ldots,\omega_n=a_n,\omega_{n+1} \text{ beliebig}\rb
+    \]für vorgegebene $a_1,\ldots,a_n \in \lb0,1\rb$
+    \[\p(A):=p^k(1-p)^{n-k}\qquad k=a_1+\ldots+a_n \]
+    $\p$ lässt sich eindeutig zu einem \WM auf der von solchen Mengen $A$
+    erzeugten $\sigma$-Algebra fortsetzen (ohne Beweis!)\\
+    \underline{Spezialfall:}
+    \[A=\lb\omega:\omega_1=0,\ldots,\omega_n=0,\omega_{n+1}=1\rb
+    =\lb\text{im $(n+1)$-ten Versuch das erste Mal Eins}\rb\]
+    $\to \p(A)=p(1-p)^n$\\
+    \begin{Def}
+        $0<p<1,\quad \Omega=\mathbb{N}_0=\lb0,1,2,\ldots\rb$\\
+        Das \WM von $\p$ auf $\PR(\mathbb{N_0}$ mit:
+        \[\p(\lb n\rb):=p(1-p)^n\]
+        heisst geometrische Verteilung mit Parameter p.
+    \end{Def}
+    \underline{Problem:}\\
+    zu zeigen: $\sum_{n=0}^\infty \p(\lb n\rb)\stackrel{?}{=}1$\\
+    \underline{Beweis:}\\
+    $\sum_{n=0}^\infty p(1-p)^n=p\sum_{n=0}^\infty(1-p)^n
+    =p\cdot\frac{1}{1-(1-p)}=1\quad\to$ \WM\qquad\boxed{}\\
+    $\p(\lb n\rb)=\p(\text{im }(n+1)\text{. Versuch erstmals Erfolg})$\\
+    \setcounter{Bsp}{0}
+    \begin{Bsp}
+        Wahrscheinlichkeit, dass beim Würfeln die 6 erstmals im 10. Versuch
+        erscheint:\\
+        $p=\frac{1}{6};\quad 1-p=\frac{5}{6}\\
+        \p(\lb9\rb)=\frac{1}{6}\cdot(\frac{5}{6})^9\approx 0.0323\ldots$
+    \end{Bsp}
+    \begin{Bsp}[Roulette]
+        $\p($Im 88. Versuch erstmals rot$)=\p(\lb87\rb)
+        \qquad p=\frac{18}{37};\qquad 1-p=\frac{19}{37}\\
+        \to \p(\lb87\rb)=\frac{18}{37}\cdot(\frac{19}){37}^{87}
+        \approx3.19951\cdot 10^{-26}$
+    \end{Bsp}
+    \index{Geometrische Verteilung|)}
+\section{Verteilungsfunktion}
+    $\p$ sei ein \WM auf $\mathbb{R}$ (besser $\L(\mathbb{R})$),
+    stetig oder diskret
+    \begin{Def}
+        Die Funktion $F:\mathbb{R}\to\mathbb{R}$ mit 
+        \[ F(t):=\p((-\infty,t]),\quad t\in\mathbb{R} \]
+        heisst Verteilungsfunktion des Wahrscheinlichkeitsmaßes $\p$.
+    \end{Def}
+    \setcounter{Bsp}{0}
+    \begin{Bsp}
+        \label{Bsp:vf01}
+        $\p(\lb0\rb)=1-p\qquad\p(\lb1\rb)=p$
+        \begin{figure}[h]
+            \centering\input{figures/vf01.pictex}
+            \caption{Verteilungsfunktion zu Beispiel \ref{Bsp:vf01}}
+            \label{fig:vf01}      
+        \end{figure}
+    \end{Bsp}
+    \begin{Bsp} 
+        \label{Bsp:vf02}
+        $\p=\N(0,1)\\
+        F(t)=\p((-\infty,t])
+        =\frac{1}{\sqrt{2\pi}}\int\limits_{-\infty}^te^{-\frac{x^2}{2}}\;dx$
+        \begin{figure}[h]
+            \centering\input{figures/vf02.pictex}
+            \caption{Verteilungsfunktion zu Beispiel \ref{Bsp:vf02}}
+            \label{fig:vf02}      
+        \end{figure}
+    \end{Bsp}
+    \begin{Satz}
+        Sei $F$ die \VF eines Wahrscheinlichkeitsmaßes
+        \begin{enumerate}
+            \item{$F$ ist monoton wachsend}
+            \item{$F(-\infty):=\lim\limits_{t\to-\infty}F(t)=0;\\
+                F(\infty):=\lim\limits_{t\to\infty}F(t)=1$}
+            \item{$F$ ist rechtsseitig stetig}
+        \end{enumerate}
+    \end{Satz}
+    \underline{Beweis:}\\
+    \begin{enumerate}
+        \item{$t\leq s\to (-\infty,t] \subseteq (-\infty,s]\quad
+         \stackrel{\text{Monotonie}}{\to}\quad \p((-\infty,t])\leq \p((-\infty,s])
+         \quad\to\quad$ 1)}
+        \item{$t_n\searrow -\infty,\quad A_n:=(-\infty,t_n]\quad\to\quad
+         A_1\supseteq A_2\supseteq\ldots$ und $\bigcap_{n=1}^\infty A_n=\emptyset\\
+         \to\quad
+         \p(A_n)\quad\to_{n\to\infty}\quad\p(\emptyset)=0\to\quad\to
+         F(t)\to_{t\to-\infty}0\\
+         t_n\nearrow\infty,\quad A_n:=(-\infty,t_n]\quad\to\quad
+         A_1\subseteq A_2 \subseteq\ldots$ und $
+         \bigcup_{n=1}^\infty A_n=(-\infty,\infty)\\
+         \to\quad\p(A_n)\to_{n\to\infty}\p(\mathbb{R})=1\quad\to\quad
+         F(\infty)=1$}
+        \item{zu zeigen: $t_n\searrow t\quad\to\quad F(t_n)\to F(t)\\
+         t_n\searrow t,\quad A_n:=(-\infty,t_n]\quad
+         A_1\supseteq A_2\supseteq \ldots$ und $
+         \bigcap_{n=1}^\infty A_n=(-\infty,t]\\ \to\quad
+         \p(A_n)\to_{n\to\infty}\p(-\infty,t]=F(t)$}
+    \end{enumerate}\boxed{}\\
+    \underline{Ohne Beweis:}\\
+    Sei $F:\quad\mathbb{R}\to\mathbb{R}$ mit 1),2),3). Dann existiert ein eindeutig
+    bestimmtes \WM $\p$ auf $\mathbb{R}$ mit $F(t)=\p((-\infty,t])$\\
+    
+    \subsection*{Weitere Eigenschaften}
+    \begin{enumerate}
+        \item{$b>a\quad F(b)-F(a) = \p((-\infty,b])-\p((-\infty,a])
+            =\p((-\infty,b]\setminus(-\infty,a])
+            =\p((a,b))$}
+        \item{$\p(\lb t_0\rb)=\lim\limits_{n\to\infty}\p((t_0-\frac{1}{n},t_0])
+            =\lim\limits_{n\to\infty}\left[F(t_0)-F(t_0-\frac{1}{n})\right]
+            =F(t_0)-F(t_0-0)\\
+            F$ ist stetig in $t_0 \Leftrightarrow F(t_0-0)=F(t_0)
+            \Leftrightarrow \p(\lb t_0\rb)=0\\
+            F$ hat einen Sprung der Höhe $h>0 \Leftrightarrow \p(\lb t_0\rb)=h$\\
+            Wenn $\p$ stetig $\to$ F stetig\\
+            Wenn $\p$ diskret $\to$ F hat nur Sprünge (dazwischen konstant)
+      \begin{Bsp}
+        \label{Bsp:vf03}
+        $\p$ \emph{Poisson}-Verteilung
+        \[ \p(\lb n\rb)=\frac{\lambda^n}{n!}e^{-\lambda} \]
+        \begin{figure}[h]
+            \centering\input{figures/vf03.pictex}
+            \caption{Verteilungsfunktion zu Beispiel \ref{Bsp:vf03}}
+            \label{fig:vf03}      
+        \end{figure}
+    \end{Bsp}
+    \begin{Bsp}
+        Sei $F(t)=\lb\begin{array}{l@{\quad : \quad}c}
+            0 & -\infty < t < 1 \\
+            \frac{1}{4} & 1 \leq t < 2 \\
+            1 & t \geq 2
+        \end{array}\right.\\
+        \p([\frac{1}{2},4])=1 \qquad \p([\frac{1}{2},\frac{3}{2})=\frac{1}{4}\qquad
+        \p([\frac{3}{2},\infty))=\frac{3}{4}$
+    \end{Bsp}}
+    \item{$\p$ habe eine Dichte $p\\
+    F(t)=\p((-\infty,t])=\int\limits_{-\infty}^t p(x)\;dx$\\
+    \begin{boxedminipage}[c]{5cm}        \large
+        $F'(t)=\frac{d}{dt}F(t)=p(t)$
+    \end{boxedminipage}
+    \qquad(p stetig integrierbar)
+    \begin{Bsp}
+        \qquad$F(t):=\lb\begin{array}{l@{\quad :\quad}l}
+            0 & t \leq 0\\
+            1 - e^{-t^2} & t > 0
+        \end{array}\right.\quad\to\quad
+        p(t)=\lb\begin{array}{l@{\quad : \quad}l}
+            0 & t \leq 0\\
+            2te^{-t^2} & t > 0
+        \end{array}\right.$
+    \end{Bsp}}
+  \end{enumerate}
+    
+
+
+    \input{chapter2.tex}
+	
+	\input{chapter3.tex}
+
+\printindex
+\end{document}
