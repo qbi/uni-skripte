@@ -177,7 +177,7 @@ Modellen. Es gibt viel mehr Abhängigkeiten vom konkreten Rechner.
 	\item Einfachheit - möglichst maschinenunabhängig
 	\item Implementierbarkeit
 	\end{itemize}
-\begin{defini}{Speed Up}\\
+\begin{defini}[Speed Up]
 	$T^*(n)$ - serielle Komplexität\\
 	$T_p(n)$ - Zeit für parallelen Algorithmus mit $p$ Prozessoren\\
 	\[
@@ -215,10 +215,84 @@ Problem \emph{nicht} parallel in Polynomialzeit lösen.
 \end{equation*}
 \end{defini}
 
-\begin{section}{DAG (directed acyclic graph)}
+\section{DAG (directed acyclic graph)}
+
+Für unsere Bedürfnisse zu allgemein.
 
 \input{figures/dag_parallel.pdf_t}
 
+\begin{defini}
+	Gegeben seien $p$ Prozessoren. Jedem inneren Knoten $i$ des DAG ordnen wir ein
+	Paar $(j_i,t_i) : 1 \le j_i \le p$ mit $t_i$ - Zeitpunkt zu:
+	\begin{enumerate}
+		\item wenn $t_i=t_k$ für $i \not= k$, so gilt: $j_i \not= j_k$
+		\item wenn $(i,k)$ eine gerichtete Kante ist, so ist $t_k \ge t_i +1$
+	\end{enumerate}
+\end{defini}
+
+\section{Netzwerkmodell}
+
+Für unsere Bedürfnisse zu speziell. Beispiel ist Feldrechner:
+
+%% Grafik Feldrechner (Hypercube) einfügen (@ ferdy)
+
+%% in der pdf Grafik sind noch vier Zahlen doppelt,
+%% die entfernt werden müssen (siehe pdf)
+\input{figures/netmodell_input.pdf_t}
+
+\section{Shared Memory}
+
+\input{figures/parall_modell.pdf_t}
+
+\begin{bsp}[Matrixmultiplikation $y = Ax$]
+	Annahme: \begin{enumerate}
+		\item $ n > p$
+		\item $ r = \frac{n}{p}$ (ganze Zahl)
+	\end{enumerate}
+	\begin{equation*}
+		A = \begin{pmatrix}
+			a_{11} & & \hdots & & a_{1n} \\
+			\vdots & & \ddots & & \vdots \\
+			a_{n1} & & \hdots & & a_{nn}
+		\end{pmatrix}
+		\begin{pmatrix}
+			x_1 \\
+			\vdots \\
+			x_n
+		\end{pmatrix}
+	\end{equation*}
+	Dabei übernimmt jeder Prozessor $P_i$ genau $r$ Zeilen, d.h. $P_1$ rechnet mit
+	den Zeilen $1$ bis $r$, $P_2$ mit den Zeilen $r+1$ bis $2r$, usw.
+
+	Algorithmus: \\
+	Input: $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
+	Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
+
+	\begin{verbatim}
+	begin
+	    globalread( x , z ) // Alle Prozessoren lesen diesen Vektor
+	    globalread( A((i-1) r + 1 : ir , 1:n ), B)
+	    Berechne w = B z
+	    globalwrite( w , y((i-1)r+1:ir))
+	end
+	\end{verbatim}
+	\begin{bemerk}
+		\begin{enumerate}
+			\item In der ersten Zeile wird von allen Prozessoren
+				zur gleichen Zeit gelesen (\emph{CR}, Concurrent Read)
+			\item In den anderen Zeilen gibt es einen exklusiven Zugriff
+				(\emph{ER}, Exclusive Read)
+			\item Es ist keine Syncronisation nötig
+			\item Alternative wäre, die Spalten zu Blöcken zusammenzufassen
+				und danach die Summe zu bilden, allerdings ist dann eine
+				Syncronisation notwendig!
+		\end{enumerate}
+	\end{bemerk}
+	
+\end{bsp}
+
+
+---------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Sei $P$ ein Problem:
@@ -2075,5 +2149,4 @@ $\rightarrow$ Graph, s,u,v
   wert($g_{n}$)=1
 \end{defini}
 
-\end{section}
 \end{document}
