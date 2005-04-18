@@ -1,0 +1,386 @@
+\documentclass[draft,twoside]{scrreprt}
+
+\usepackage{ifthen}
+
+% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
+% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
+% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
+% eine Druckversion ist das wichtig! Daher dieser Hack.
+% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
+% ohne die Option "`hyperref"' geladen.
+%
+% Achtung: Die Korrektur von \thref muss von Hand auskommentiert werden,
+% wenn hyperref nicht geladen wird!
+\newboolean{withHyperref}
+\setboolean{withHyperref}{true} % true, false
+\ifthenelse{\boolean{withHyperref}}{}%
+	   {\newcommand{\texorpdfstring}[2]{#1}%
+	    \newcommand{\pdfbookmark}[3][]{}%
+	   }
+
+\usepackage{makeidx}
+\usepackage{amssymb}
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
+	   {}
+\usepackage[leqno]{amsmath}
+\usepackage{fixmath}
+\usepackage{paralist}
+\usepackage{helvet}
+\usepackage{ngerman}
+\usepackage{ae}
+\usepackage[T1]{fontenc}
+
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
+	   {}
+
+% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
+	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
+
+% Zur Korrektur von \thref
+% <news:col095$me8$2@n.ruf.uni-freiburg.de>
+\makeatletter
+\def\thref#1{%
+   \expandafter\ifx\csname r@#1@type\endcsname\None
+     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
+       \thepage \space undefined}\G@refundefinedtrue
+     \else\csname r@#1@type\endcsname~\fi%
+   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
+}
+
+% Korrektur der Platzierung der Gleichungsnummer
+% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
+\def\SetOnlyEndMark{%
+   \global\tag@true
+   \iftagsleft@
+     \gdef\df@tag{%
+       \hfuzz\displaywidth
+       \hbox to 1sp{%
+         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
+   \else
+     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
+   \fi}
+\def\SetTagPlusEndMark{%
+   \iftagsleft@
+     \gdef\maketag@@@##1{%
+       \hfuzz\displaywidth
+       \hbox to 1sp{%
+         \hbox to \displaywidth{%
+           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
+       }%
+     }%
+   \else
+     \gdef\maketag@@@##1{%
+       \hbox{\m@th\normalfont##1%
+         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
+   \fi}
+
+% setzt / als Trenner zwischen Abschnitt und Satznummer
+\def\@thmcountersep{/}
+\makeatother
+
+\theoremstyle{break}
+\newtheorem{satz}{Satz}
+\newtheorem{defini}{Definition}
+\newtheorem{bem}{Bemerkung}
+
+\theoremstyle{nonumberbreak}
+\theoremsymbol{\ensuremath{_\blacksquare}}
+\newtheorem{proof}{\textnormal{\scshape Beweis:}}
+
+\newcommand{\gramma}{[X,N,S,R]}
+
+\begin{document}
+
+\title{Formale Sprachen und Automaten\thanks{$LastChangedRevision$ von $LastChangedDate$}}
+\date{SS 2004}
+\author{Lischke}
+\maketitle
+
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+\clearpage
+
+\chapter{Einf"uhrung und Wiederholung}
+
+\begin{defini}
+  $L$ hei"st \emph{(formale) Sprache} "uber dem Alphabet $X$ (d.\,h. $X$
+  ist endl. Menge) $:\Longleftrightarrow L\subseteq X^{\ast}$
+
+  \begin{tabular}{ll}
+    $X^{\ast}$\ldots & Vereinigung aller Teilmengen\\
+    $e$\ldots & leeres Wort\\
+    $X^{+}=$& $X^{\ast}\setminus{e}$
+  \end{tabular}
+\end{defini}
+
+\begin{defini}
+  $G=[X,N,S,R]$ hei"st \emph{(generative) Grammatik} $:\Longleftrightarrow$
+  \begin{enumerate}
+   \item $X$ endl. Menge (Menge terminaler Symbole)
+   \item $N$ endl. Menge (Menge nichtterminaler oder Hilfsymbole), $X\cap N=\emptyset$
+   \item $S\in N$ Anfangs- oder Startsymbol
+   \item $R\subseteq (X\cup N)^{\ast}\times(X\cup N)^{\ast}$ ($R$ endl.
+    Regelmenge)
+  \end{enumerate}
+  Die Paare $[p,q]\in R$ hei"sen Regel und werden oft auch als
+  $p\longrightarrow q$ geschrieben.
+\end{defini}
+
+\begin{defini}
+  $w'$ hei"st unmittelbare Ableitung von $w$ bezgl. einer Grammatik
+  $G=[X,N,S,R]$ $w\longrightarrow w :\Leftrightarrow$
+  
+  \begin{gather*}
+      w,w'\in (X\cup N)^{\ast} \wedge \exists p\exists q\exists p_{1}\exists p_{2}
+       (p,q,p_{1},p_{2}\in (X\cup N)^{\ast}\wedge [p,q] \in R \wedge
+       w=p_{1}pp_{2}\wedge w'=p_{1}qp_{2})
+  \end{gather*}
+
+  $w'$ hei"st Ableitung aus $w$ bezgl. $G$, $w\longrightarrow*w'$
+  $\Leftrightarrow$ oder es gibt endl. viele W"orter $w_{0},
+  w_{1},\ldots w_{r}$
+  mit $w_{0}=w, w_{i-1}\xrightarrow[G]{} w_{i}$ f"ur $i=1,\ldots,r$ und
+  $w_{r} = w'$. Man nennt dies auch eine Ableitung der L"ange $r$ und
+  schreibt daf"ar $w_{0} \Rightarrow w_{1} \Rightarrow
+  \ldots \Rightarrow w_{r}$ oder $w_{0} \xrightarrow{r}
+  w_{r}$
+\end{defini}
+
+\begin{defini}
+  $L$ hei"st die von der Grammatik $G[\ldots]$ erzeugte Sprache, $L= L(G)
+  :\Leftrightarrow L=\{w: S\xrightarrow[G]{*} w\}\cap
+  X^{\ast}$
+\end{defini}
+
+\begin{defini}
+  Zwei Grammatiken $G_{1}$ und $G_{2}$ hei"sen "aquivalent $G_{1}\sim
+  G_{2}$  $:\Leftrightarrow$ $L(G_{1}) = L(G_{2})$
+\end{defini}
+
+\begin{defini}
+  Eine Grammatik $G=\gramma$ hei"st \emph{Normalfomgrammatik}
+  $:\Leftrightarrow$ $R\subseteq N^{+}\times(X\cup N)^{*}$
+\end{defini}
+
+\begin{satz}
+  Zu jeder Grammtik gibt es eine "aquivalente Normalformgramatik.
+  
+  \begin{proof}
+    Es sei $G=\gramma$ belibige Grammatik und zun"achst
+    $[\alpha,\beta]\not\in R$ f"ur jedes Wort $p$
+    
+    $X':={x':x'\in X}$ wobei $X'\cap X=X'\cap N=\emptyset$
+    
+    $R'$\ldots Menge aller Regeln, die aus der Regel der Menge $R$
+    entstehen, in dem darin alle Buchstaben $x\in X$ durch die
+    entspechenden Buchstaben $x'\in X'$ ersetzt werden.
+    
+    $R'' := \{[x',x]: x\in X\}$ und $G' := [X, N\cup X', S', R'\cup R'']$
+    $\longrightarrow$ $G'\sim G$
+    
+    Ist $[e,p]\in R$ f"ur gewisse $p$, so sei $R'$ wie oben mit Ausnahme
+    aller Regeln $[e,p']$.
+    
+    Sei $E\not\in X'\cup N$ und $R_{E} := \{[B,BE]: B\in X\cup N\} \cup \{[B,EB]:
+    B\in \in N\} \cup \{[E,p']: [e,p]\in R \wedge p' \text{ entsteht aus p durch
+    Ersetzen aller } x \text{ in } X \text{ durch } x\in X'\}$,
+    
+    $G_{E}:= [N, N\cup X' \cup\{E\}, S, R'\cup R''\cup R_{E}]$
+    $\longrightarrow$ $G_{E}\sim G$.
+  \end{proof}
+\end{satz}
+
+Avram Noam Chomsky
+
+\begin{defini}
+  Eine Grammatik $G=\gramma$ (ohne Einschr"ankung an die Regelm"enge $R$)
+  hei"st Grammatik vom \emph{Typ 0}
+  
+  $G$ hei"st Grammatik vom \emph{Typ 1} oder nicht verk"urzende Grammtik
+  $:\Leftrightarrow$ $\forall p\forall q ([p,q]\in R
+  \rightarrow l(p) \le l(q))$
+  
+  $G$ hei"st Grammatik vom Typ 1' oder Kontextgrammtik $\Longleftrightarrow$
+  $\forall p\forall q ([p,q])\in R \rightarrow \exists p_{1}\exists
+  p_{2}\exists u\exists B(p_{1},p_{2},u \le (X\cup N)*\wedge B\in N\wedge
+  u\not= e\wedge p=p_{1}Bp_{2}\wedge q=p_{1}\cup p_{2}$
+  
+  $G$ hei"st Grammtik vom Type 2 oder kontextfreie Grammtik
+  $:\Leftrightarrow$ $\forall p\forall q([p,q]\in R) \rightarrow p\in N
+  \wedge q(X\cup N)^{+}$
+  
+  G ehi"st Grammtik vom Typ 3, Automaten- oder rechtslineare Grammtik
+  $:\Leftrightarrow$ $\forall p,q ([p,q]\in R
+  \rightarrow p\in N \wedge q \in X\cdot N\cup X)$
+  
+  Eine Sprache L hei"st vom Typ~$i$, wenn sie von einer Grammtik vom
+  Typ~$i$ erzeugt wird. $rundL_{i}$ ist die Klasse aller Sprachen vom
+  Typ~$i$ ($i\in\{0,1,1',2,3\}$).
+\end{defini}
+
+\begin{defini}
+  Ist $L$ eine Sprache von Typ~$i$, so hei"st auch $L\cup \{e\}$ Sprache vom
+  Typ $i$ ($i\in{0,1,1',2,3}$)
+  
+  Ist $G=\gramma$ eine Grammtik vom Typ $i$ und $S'\not\in X\cap N$, so
+  hei"st auch $G' := [X,N\cup {S}, S, \{[S', e], [S',S]\}\cup R]$ Grammatik
+  vom type $i$ ($i\in \{0,1,1',2,3\}$)
+\end{defini}
+
+\begin{satz}
+  Jede Grammtik $G=\gramma$ mit $R\subseteq N\times(X\cup N)^{\ast}$ gibt
+  es eine "aquivalente Grammatik $G=\gramma$ mit $R\subseteq
+  N\times(X^{\ast}N\cup X^{\ast})$ gibt es eine "aquivalente rechtslineare
+  Grammatik.
+  
+  \begin{proof}
+    \begin{enumerate}
+     \item $G=\gramma$ ist Grammatik mit $R\subseteq N\times(X\cup
+      N)^{\ast}$
+      
+      Falls keine Regel $[A,e]\in R$, so $G$ kontextfrei gem"a"s D7,
+      andernfalls konstruiere $G'$ nach Algo
+    \end{enumerate}
+    
+    Algo:
+    \begin{itemize}
+     \item setze W_{0}:= {A: [A,e] \in R} und W_{i+1} := W_{i}\cup {A:
+      \exists q ([A,q]\in R \wedge q \in W_{i}^{\ast})} solange bis
+      W_{i+1}=W_{i}
+     \item Dann W := W_{i}, G'=[X, N,S,R'] mit R' := {[p,q']: q\not= e
+       \wedge \exists q([p,q]\in R\wedge(q'=q\vee q entsteht aus q durch
+      weglassen gewisser Symbole der Menge $W$))}
+      \longrightarrow G' kontextfrei gem"a"s D7 und A\in W
+      \longleftrightarrow A\in N \wedge A\xrightarrow[G]{\ast}e.
+    \end{itemize}
+
+    Behauptung: L(G')=L(G)\\{e\}
+    \subseteq: B\longrightarrow w' \longrightarrow
+    [B,w']\in R' \longrightarrow ex. w=b_{1}\ldots b_{n} mit
+    b_{r}\in X\cup N, [B,w]\in R\wedgew'=b_{i_{1}}\ldots b_{i_{k}}, wobei
+    b_{i_{1}}\ldots b_{i_{k}} Teilfolge von b_{1}\ldots b_{n} und b\in W
+    f"ur b\in\{b_{1},\ldots,b_{n}\}\setminus{b_{i_{1}},\ldots,b_{i_{k}}}
+    \rightarrow B \xrightarrow[G]{\ast}w'.
+    
+    p\in L(G') \longrightarrow S\rightarrow_{G'}^{*} p
+    \longrightarrow S \Rightarrow_{G}^{*} p
+    \longrightarrow p\in L(G). L\not\in L(G'), da nicht
+    verk"urzend \longrightarrow L(G')\subseteq L(G)\setminus\{e\}
+    
+    r"uckw \subseteq: G' := [X,N,S,R\cup R'] \longrightarrow
+    L(G) \subseteq L(G') \longrightarrow
+    L(G)\setminux{e}\subseteq L(G')\setminus{e} \longrightarrow
+    reicht z.z. L(G'')\setminus{e}\subseteq L(G)
+    
+    Entsprechend ex. w\in L(G)\setminus{e}, w\not\inL(G').
+    
+    Es sei w_{0}
+
+    \Rightarrow_{G}w_{1}\Rightarrow\ldots
+    \Rightarrow_{G} w_{t} eine Ableitung von $w$ aus $S$ bzgl.
+    G'' k"urzester L"ange w_{0} \Rightarrow S, w_{t}=w
+    
+    Da $w\inL(G'')\setminus L(G')$ auf wenigstens einmal eine Regel aus
+    R\setminusR' angewandt worden sein, d.h. eine Regel [A,e] erwa bei
+    w_{i}\Rightarrow_{G''}w_{i+1} \longrightarrow
+    A\in W, w_{i}=w_{i+1}Aw_{i+2}, w_{i+1}=w_{1}w_{2}
+    \rightarrow e j<i mit w_{j}=w_{j+1}Bw_{j2},
+    w_{j+1}=w_{j1}q_{j}Aq_{i}w_{j2}, q_{1}q_{2}\not= q
+    \longrightarrow [B, q_{1}Aq_{2}]\in R',
+    w_{j1}q_{1}\Rightarrow^{i-(i+1)}_{G''}w_{1},
+    q_{1}w_{j2}\Rightarrow_{G''}^{r}w_{j2}, 0\le i\le i-(j+1)
+    \longrightarrow [B,q_{1}q_{2}]\in R'
+    \longrightarrow w_{q}
+    \longrightarrow_{G}^{j}w_{1}Bw_{2}
+    \longrightarrow_{G} w_{j1}q_{1}q_{2}w_{j2}
+    \longrightarrow^{i-j(+1)}_{G''} w_{1}w_{2}
+    \longrightarrow_{G''}^{t+(i+1)} ist Ableitung von $w$ aus S
+    der L"ange t-1 Widerspruch dazu, dass t eine stets k"urzeste L"ange
+    ist. \longrightarrow L(G'')\setminus{e}\subseteqL(G')
+    
+    Ist q_{1}q_{2}=e [B,A] \in R' \longrightarrow B´in W
+    \longrightarrow \alpha j'<j nit w_{j}=w_{j'1}Cw_{j'2}
+    w_{j'+1} = w_{j'+1} \ldots\ldots \longrightarrow Schluss
+    analog mit BX statt AB
+    
+    e\not\in L(G) \longrightarrow G\sim G'
+    
+    e\in L(G) \longrightarrow ex. kontextfreie gram. f"ur
+    L(G'')\cup{e} nach D7!
+  \end{proof}
+\end{satz}
+
+\begin{satz}
+  REG=L_{3}\subsetL_{2}\subset L_{1}=L_{1'}\subset REC \subset RE=L_{0}
+\end{satz}
+
+\begin{defini}
+  7'' CS := L_{1}=L_{1'} hei"st Klasse der kintextsensitiven oder
+  kontextsprachen
+  
+  CF := L_{2} hei"st Klasse der kontextfreien oder Chompsky-Spachen.
+  
+  REG := L_{3} hei"st Klasse der regul"aren, Automaten- oder
+  rechstlinearen Sprachen.
+\end{defini}
+
+\begin{satz} % Satz 3
+  REG\subset CF\subset CS\subset REC \subset RE=L_{0}
+  
+  \begin{proof}
+    CF \subset noteq
+    
+    L := \{a^{n}b^{n}c^{n}: n\in\N\setminus\{0\} \}
+    G=[{a,b,c}, {S,A,B}, S, {[S,aSBA],[A,abA], [AB,BA], [bB, bb], [A,c]}]
+    \longrightarrow L(G)=L
+    es ist leicht ersichtlich, dass $G$ $L$ erzeugt und $G$
+    kontextsensitiv ist.
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Pumping-Lemma; Bar-Hillit, Perles, Shamir]
+  Zu jeder kontextfreien Sprache $L$ existiert eine Zahl $n\in \N$, so
+  dass jedes Wort $w\in L$ mit l(w)> m in der Fom
+  w=w_{1}w_{2}w_{3}w_{4}w_{5} dargestellt werden kann, wobei
+  $w_{2}w_{4}\not= e$, l(w_{2}w_{3}w_{4}) <m mit
+  w_{1}w_{2}w_{3}w_{4}w_{5}\in L f"ur jedes i\in\N.
+\end{satz}
+
+\begin{satz}
+  Jede kontextfreie Sprache "uber einbuchstabigem Alphabet ist regul"ar.
+  \begin{proof}
+    Sei L\in CE, L\subset{a}^{\ast}.
+    
+    Nach Satz~4 existiert n\in\N, so dass f"ur jedes Wort a^{l}\in L mit
+    l>m folgt: l=i+j mit i\le j\le <m mit a^{i+kj}\subseteq L f"ur jedes
+    k\in \N
+    
+    L_{0} := {a^{i}: 1\le i\le m}\cap L
+    Falls L\setminusL_{0}\not\emptyset sei l_1 := min{l: a^{l}\in
+    L\setminusL_{0}}
+    
+    Nach Satz~4 ist l_{1}=i_{1}+j_{1} mit 1\le j_{1}\le m, 0\le i_{1}\le
+    m mit { a^{i_{1}+kj_{1}}: k\in\N}\subseteq L
+    
+    L_{1} := {a_{i_{1}+kj_{1}}: k\in\N}
+    
+    Seien L_{1},L_{2},\ldots,L_{i'} konstruiert mit
+    L\setminus\cup_{i=0}^{i'}, so l_{i'+1} := min { l: a^{l}\in
+    L\setminus\cup_{r=0}^{i'} L_{r}} \longrightarrow l_{i+j}=
+    i+j mit 1 \le j\le m, 0\le i\lem und L_{i+1} := {a^{i+kj}:
+    k\in\N}\subseteq L.
+    
+    Nach endl. vielen Schritten muss
+    $L\setminus\cup_{r=0}^{i}L_{r}=\emptyset$ eintreten
+    -\longrightarrow L=\cup_{r=0}^{i}L_{r},
+    L_{0},\ldots,L_{i}\in REG \longrightarrow L\in REG
+  \end{proof}
+\end{satz}
+
+(A4) CF_{1} \subset CS_{1} \subset REC_{1}\subset RE_{1}
+\end{document}
+% LaTeX_output_format: pdf
