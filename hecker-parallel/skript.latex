@@ -14,6 +14,12 @@
 %    wie n oder k oder i oder \log oder $O(n^{2})$
 %  * Überlegen, ob man für KOSTEN auch einen Befehl macht. Kommt es oft
 %    genug im Dokument vor?
+%
+%  * Das Skript IMMER so hinterlassen, daß es mit pdflatex übersetzbar 
+%	 bleibt!
+%
+%  * Alle Bilder in center-environment
+%
 
 \documentclass[twoside]{scrreprt}
 
@@ -140,21 +146,19 @@
 \end{thebibliography}
 
 \chapter{Einleitung}
+Die Paradigmen (\emph{Entwurfsmuster}) für serielle Algorithmen werden nach den
+Kriterien Speicher- und Zeitkomplexit"at, sowie ihrer einfachen Formulierbarkeit
+bestimmt. Bezüglich dieser Kriterien sollen serielle Algorithmen "`gut"' sein.
+Die von Neumann-Architektur ist ein allgemein anerkanntes Modell im Seriellen.
+Als konkretes Modell wird die Random access machine (RAM) betrachtet unter der
+Annahme, dass Basisoperationen in $O(1)$-Zeit bew"altigt werden.\\
 
-serielle Algorithmen $\rightarrow$ Paradigmen\\
-\underline{Ziel:} Algorithmen finden, die gut sind (Kriterium: Speicher, Zeit,
-einfach Formulierbar)
-
-Die von Neumann-Architektur ist ein allgemein anerkanntes Modell im
-Seriellen -- Random access machine (RAM) --- Basisoperationen in
-$O(1)$-Zeit. 
-
-Für parallele Algorithmen gibt es eine Vielzahl von
-Modellen. Es gibt viel mehr Abhängigkeiten vom konkreten Rechner.
+Für parallele Algorithmen hingegen gibt es eine Vielzahl von Modellen. Im
+Parallelen ergeben sich wesentlich mehr Abhängigkeiten vom konkreten Rechner.
 \begin{itemize}
- \item Einmal wenig leistungsf"ahige Prozessoren
- \item andere sehr viele "`einfache"' Prozessoren
- \item verteilte Systeme -- nicht Gegenstand der Vorlesung
+ \item Geringe Anzahl leistungsf"ahiger Prozessoren
+ \item Hohe Anzahl "`einfacher"' Prozessoren
+ \item Verteilte Systeme (nicht Gegenstand der Vorlesung, siehe Rechnerarchitektur)
 \end{itemize}
 
 \begin{table}
@@ -171,14 +175,17 @@ Modellen. Es gibt viel mehr Abhängigkeiten vom konkreten Rechner.
 \end{table}
 
 \section{Algorithmenvorlesung}
-	allgemeine Entwurfsprinzipien
-	Ziel für das Modell:
+	Wir haben also eine Vorlesung, die sich mit den Entwurfsprinzipien für
+	parallele Algorithmen beschäftigt. Als allgemeine Prinzipien gelte für ein
+	Modell:
 	\begin{itemize}
-	\item Einfachheit - möglichst maschinenunabhängig
+	\item Einfachheit
+	\item M"oglichst maschinenunabh"angig
 	\item Implementierbarkeit
 	\end{itemize}
+
 \begin{defini}[Speed Up]
-	$T^*(n)$ - serielle Komplexität\\
+	$T^*(n)$ - Serielle Komplexität\\
 	$T_p(n)$ - Zeit für parallelen Algorithmus mit $p$ Prozessoren\\
 	\[
 		S_{p}(n):=\frac{T^{\ast}(n)}{T_{p}(n)}
@@ -190,7 +197,7 @@ Modellen. Es gibt viel mehr Abhängigkeiten vom konkreten Rechner.
 	\[S_{p}(n)\le p \qquad (T^*(n) \le p T_p(n))\]
 	
 	\begin{proof}
-		Simulation der Rechnungen der $p$ Prozessoren schrittweise nacheinander
+		Die Simulation der Rechnungen der $p$ Prozessoren schrittweise nacheinander
 		ergibt einen neuen seriellen Algorithmus, der nicht schneller als 
 		$T^*(n)$ sein kann.
 	\end{proof}
@@ -207,7 +214,7 @@ Modellen. Es gibt viel mehr Abhängigkeiten vom konkreten Rechner.
 \end{bemerk}
 
 Folgerung: Mit polynomial vielen Prozessoren kann man ein NP-schweres
-Problem \emph{nicht} parallel in Polynomialzeit lösen.
+Problem \emph{nicht} parallel in Polynomialzeit lösen!
 
 \begin{defini}[Effizienz]
 \begin{equation*}
@@ -217,9 +224,13 @@ Problem \emph{nicht} parallel in Polynomialzeit lösen.
 
 \section{DAG (directed acyclic graph)}
 
-Für unsere Bedürfnisse zu allgemein.
+Für unsere Bedürfnisse ist das Modell des gerichteten, kreisfreien Graphen zu
+allgemein. Hier ein Beispiel für die serielle und parallele Summation einer
+Folge von Zahlen:\\
 
-\input{figures/dag_parallel.pdf_t}
+\begin{center}
+\input{figures/dag_parallel.pdf_t} 
+\end{center}
 
 \begin{defini}
 	Gegeben seien $p$ Prozessoren. Jedem inneren Knoten $i$ des DAG ordnen wir ein
@@ -232,22 +243,27 @@ Für unsere Bedürfnisse zu allgemein.
 
 \section{Netzwerkmodell}
 
+Für unsere Bedürfnisse ist das Netzwerkmodell zu speziell. Betrachten wir als
+Beispiel das Modell eines Feldrechners:
 
+\begin{center}
+\input{figures/network_modell.pdf_t} 
+\end{center}
 
-Für unsere Bedürfnisse zu speziell. Beispiel ist Feldrechner:
-
-%% Grafik Feldrechner (Hypercube) einfügen (@ ferdy)
 
 %% ZU TESTZWECKEN
-\input{figures/add_tree.pdf_t}
+%\input{figures/add_tree.pdf_t}
+%\input{figures/sum_bsp.pdf_t}
 
 %% in der pdf Grafik sind noch vier Zahlen doppelt,
 %% die entfernt werden müssen (siehe pdf)
-\input{figures/netmodell_input.pdf_t}
+%\input{figures/netmodell_input.pdf_t}
 
-\section{Shared Memory}
+\section{Synchrones Shared Memory Modell}
 
-\input{figures/parall_modell.pdf_t}
+\begin{center}
+\input{figures/parall_modell.pdf_t} 
+\end{center}
 
 \begin{bsp}[Matrixmultiplikation $y = Ax$]
 	Annahme: \begin{enumerate}
