@@ -250,15 +250,6 @@ Beispiel das Modell eines Feldrechners:
 \input{figures/network_modell.pdf_t} 
 \end{center}
 
-
-
-% TODO: sum_bsp, add_tree muss noch an passende Stelle eingebunden werden
-% das sind die zwei bilder, die du mir geschickt hast chrisra von der vl wo ich nicht
-% gewesen bin
-
-%\input{figures/sum_bsp.pdf_t} 
-%\input{figures/add_tree.pdf_t}
-
 %% in der pdf Grafik sind noch vier Zahlen doppelt,
 %% die entfernt werden müssen (siehe pdf)
 \begin {center}
@@ -315,249 +306,363 @@ Beispiel das Modell eines Feldrechners:
 				Syncronisation notwendig!
 		\end{enumerate}
 	\end{bemerk}
-	
+	Zur Vereinfachung werden wir folgende Kurzschreibweise verwenden. Dies ist sinnvoll,
+	da die Ein- und Ausgabe nur jeweils $O(1)$ Schritte dauert, und deshalb ignoriert
+	werden kann.
+	\begin{verbatim}
+	   globalRead(B,x)
+	   globalRead(C,y)
+	   z = x + y
+	   globalWrite(z,A)
+	\end{verbatim}
+	wird ersetzt durch:
+	\begin{verbatim}
+	   A = B + C
+	\end{verbatim}
 \end{bsp}
 
+Wir verwenden in dieser Vorlesung das Modell eines Syncronen Rechners mit Shared Memory und Abstraktion Random Access ($O(1)$.)
 
----------------------------------------
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Sei $P$ ein Problem:
-
-Serieller Algo $A$, Input size $n$ $\quad\rightarrow\quad T_{A}(n)$
-
-Def.: $T^{\ast}(n)$ sei das serielle Optimum
-
-Sei $A$ parall. Algo., $p$ Prozessoren
-
-%%
-
-\begin{satz}[Theorem von Brent]
-  Was ist f"ur einen Algorithmus die maximale Anzahl an zur gleichen Zeit
-  ausf"uhrbaren Operationen?
-
-  Im Normalfall kann man jeden parallelen Algorithmus auf jede Anzahl an
-  Prozessoren anpassen.
-\end{satz}
-
-synchron\hfill--\hfill asynchron
-\begin{gather}
-  A\vec{x} (a_{11}\ldots a_{1n} \ldots a_{nn}) (x_{1}\ldots x_{n})=(y_{1}\ldots
-     y_{n})
-\end{gather}
-
-Modell: \ldots
-
-\begin{enumerate}
- \item globalread(X,Y) X: Variable des shared memory, Y:local  variable
-  "ubertr"agt den Wert von X nach Y
- \item globalwite(Y,X) "ubertr"agt Y nach X
-\end{enumerate}
-Beispiel: "`A:=B+C"'
- globalread(B,x)
- globalread(C,y)
- setze z:=x+y (Prozessor-Arbeit)
- globalwrite(z,A)
-
-Algo.Mult.:\\ (A in Zeilen zerlegel)
-INPUT: $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
-Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
-OUTPUT: Die Komponenten $[(i-1)\,r+1,\ldots,i\,r] von \vec{y}=A\vec{x}$
-
+\begin{bsp}[Summenbeispiel]
+Programm für Prozessor $i$
+\begin{verbatim}
 begin
-\begin{enumerate}
- \item globalread($\vec{x},\vec{z}$) \texttt{Alle Prozessoren lesen diesen Vektor}
- \item globalread(A((i-1)r+1:ir,1:n), B)
- \item berechne $\vec{w}=B\vec{z}$
- \item globalwrite($\vec{w}, y((i-1)r+1:ir)$)
-\end{enumerate}
+    B(i) := A(i)
+    for h := 1 to log n do
+        if i < n / 2^h then
+            B(i) := B(2i-1) + B(2i)
+        if i := 1 then
+            S := B(1)
 end
+\end{verbatim}
+\input{figures/add_tree.pdf_t}
+Ein Problem tritt auf, bei einer geringen Anzahl Prozessoren (im Verhältnis zur Anzahl der Eingabedaten). D.h. man benötigt eine sinnvolle Allokation der Prozessoren.
 
-\begin{bemerk}
-  Befehlt 1 erfordert CR (concurrent read) im Modell\\
-  Befehlt 4 erfordert nicht CW (concurrent write) sondern EW (exclusive
-  write)\\
-  EREW, CREW (Modell asynchron m"oglich), CRCW
-\end{bemerk}
-
-A in Spalten zerlegen, $A_{1}x_{1}
-(a_{11},\ldots,a_{1r})(x_{1}\vdots x_{r})=z_{1}=A_{1}x_{1}
-\vec{y}=A_{1}\vec{x}_{1}+\ldots+A_{r}\vec{x}_{r}
-z_{i}=A_{i}\vec{x}_{i}
-(..) (\vdots)=(z_{1}+z_{2}+\ldots) \quad\rightarrow\quad$ erfordert ein
-synchrones Modell
-
-Beispiel 2:\\
-INPUT: $n=2^{k}$ Zahlen in Array $A$, $n$ Proz, $i:i\le i \le n$\\
-OUTPUT: $\sum_{i=1}^{n}a_{i}\quad\Rightarrow\quad$ gespeichert im shared
-memory, Variable $S$
-
+Ein Rechner habe $p=2^q \leq n = 2^k$ Prozessoren.
+Sei $l := \frac{n}{p} = 2^{k-q}$ und $A$ das Inputarray, dann wäre ein Programm für Prozessor s:
+\begin{verbatim}
 begin
-\begin{enumerate}
- \item globalread(A(i), a)
- \item globalwrite(a,B(i))
- \item \texttt{for} $h=1$ \texttt{to} $\log n$ \texttt{do}
-  \begin{enumerate}
-   \item if ($i\le \frac{n}{2^{k}}$) then
-    begin
-    \begin{enumerate}
-     \item globalread(B(2\,i-1),x)
-     \item globalread(B(2\,i), y)
-     \item z:=x+y
-     \item globalwrite(z,B(i))
-    \end{enumerate}
-    end
-  \end{enumerate}
- \item if (i=1) then globalwrite(z,S)
-\end{enumerate}
-end.
-
-% Baumdiagramm
-
-Aus Baum leicht zu erkennen: Berechnung in O($\log n$)
-
-Kosten $C(n)=\underbrace{P(n)}_{O(n)}\,\underbrace{T(n)}_{O(\log
-n)}=O(n\log n)$
-
-Serielles Optimum $T^{*}=O(n) C(N)\ge T^{*}(n)$
-
-\begin{defini}
-  Ein Algorithmus hei"st optimal, wenn $C(n)=T^{*}(n)$
-\end{defini}
-
-Es existiert ein Variante dieses Algorithmus, die $O(\log n)$ Zeit braucht
-und die Kosten $C(n)=O(n)$ hat.
-
-% 2. Baumdiagramm
-
-sei $\log n=r\in\N, \frac{n}{\log n}\in\Z, p_{1},\ldots,p_{\frac{n}{\log
-n}}$
-
-Algorithmus: $p_{i}$ addiert die Zahlen $a_{(i-1)\log(n)+1}+\ldots+a_{i\log n}$
-(seriell in $O(\log n)$ \Time) weiter mit oberen Algorithmus mit $z_{i}$
-
-Kosten: $C(n)=O(\log n)\,O(\frac{n}{\log n})=O(n)$
-
-Ab sofort: Kurzform von globalread() bzw. globalwrite()
-
-\begin{bemerk}
-  Das synchrone shared memory-Modell hei"st PRAM.
-  EREW-PRAM, CREW-PRAM, CRCW-PRAM (Unterteilung in {\it common}, d.h. das Schreiben ist nur dann
-  zugelassen, wenn alle Prozessoren das Gleiche schreiben,
-  sowie {\it arbitrary}, was z.Bsp. die Summenbildung über allen Werten darstellen kann.
-  Weiterhin: {\it  priority }.
-\end{bemerk}
-
-Vorgehen: Oberes Level - Unteres Level.
-liefert Zeitpakete(TIMEUNITS) /\ Prozessor-Allocation - schreibt Programm
-f"ur Prozessor $i$\\
-TIME UNITS -- in einer Zeiteinheit k"onnen bel. viele Operationen
-zusammengefasst werden, die gleichzeitig augef"uhrbar sind. "`pardo"'
-\underline{pardo statement}
-\texttt{for} $1\le i\le u$ \texttt{pardo statement}
-
-$\quad\rightarrow\quad$ eventuell zerlgt in mehrere Takte, falls nicht
-gen"ugend Proz. da sind % & hier soll ein Spaltenwechsel hin
- Programm f"ur Proz. $i$\\
-Prozessoren nicht erw"ahnt -- was kann parallel Ausgef"uhrt werden
-
-(Algo im upperlevel)
-INPUT: n=$2^{k}$-Zahlen, Array $A$
-OUTPUT: S=$\sum_{i=1}^{n}A(i)$
-begin
-\begin{Verbatim}[numbers=left]
-for i \le i \le n pardo B(i) := A(i)
-for h=1 to \log n do
-    for 1 \le i \le \frac{n}{2^h} pardo
-        B(i) := B(2\,i-1)+B(2\,i)
-S := B(1)
-\end{Verbatim}
+    for j := 1 to l do
+        B(l*(s-1)+j) := A(l(s-1)+j)
+    for h := 1 to log n do
+        if (k-h-q) >= 0 then
+            for j := 2^(k-h-q) * (s-1)+1 to 2^(k-h-q) *s do
+                B(j) := B(2j-1) + B(2j)
+        else
+            if s <= 2^(k-h) then
+                B(s) := B(2s - 1) + B(2s)
+    if s = 1 then
+        S := B(1)
 end
+\end{verbatim}
+Für $n=8$ und $p=4$ würde das folgendermaßen aussehen:\\
+\input{figures/sum_bsp.pdf_t}
+\end{bsp}
 
-\begin{defini}
-  \emph{Rechenzeit eines par. Algorithmus} (im upper Level) T(n)=Anzahl der TIME
-  UNITS.
+Allokation ist technisch aufwendig, ohne dass neue Ideen gefragt sind. Deshalb werden wir uns darauf konzentrieren, die Operationen zu beschreiben, die gleichzeitig möglich sind und die Allokation über das \emph{Theorem von Brent} zu behandeln.
+
+\chapter{Die Güte von parallelen Algorithmen und das Theorem von Brent}
+
+\underline{seriell:} \underline{TIME}, SPACE, Einfachheit des Programmes \\
+\underline{parallel:} Zahl der Prozessoren
+
+\begin{defini}[Kosten]
+\[
+	C(n) := T(n) * P(n)
+\]
 \end{defini}
-
-f"ur obiges Beispiel: $T(n) = 2+\log n$
-
-\begin{defini}
-  \emph{\Work} eines Algorithmus $W(n)$ $:\Leftrightarrow$ Gesamtzahl
-  der auszuf"uhrenden Einzeloperationen
-\end{defini}
-
-f"ur obiges Beispiel:
-\begin{enumerate}
- \item W(n) = n+$\sum_{j=1}^{\log n}\frac{n}{2^j}+1$ $\le
-  n+1+n sum_{j=1}^{\log n}\frac{1}{2^j}=O(n)$
-\end{enumerate}
-
-upper level: \Work-\Time-Darstellung\\
-lower level: Theorem von Brent (\Work-\Time Scheduling-Prinzip)
-Eine Rechnung ist bei $p$ Prozessoren in
-$\lfloor\frac{W(n)}{p}\rfloor+T(n)$ meist m"oglich.
-\begin{proof}
-  geg.: Algorithmus, der 100~T.Units 99 davon nur eine Op. $W_{i}(n)=1$
-  
-  $W_{i}(n) := $ Anzahl der Op. in der i-ten Zeiteinheit
-  $\lceil\frac{W_i(n)}{p}\rceil$ Zeit des Algo mit $p$ Proz.:
-  $\sum_{j=1}{T(n)} \frac{\lceil W_{i}(n)\rceil}{p}\le$
-  $\sum_{j=1}{T(n)} \frac{W_{i}(n)}{p} =$
-  $\lfloor\frac{W(n)}{p}\rfloor+T(n)$
-  
-  Vor.: $W_{i}$ berechnen, Prozessor-Allocation
-\end{proof}
-
-\begin{bemerk}
-  Wenn die Prozessor-Allocation (Aufteilen des Algos auf mehrere Proz.)
-  m"oglich ist, dann geht es mit obiger Laufzeit.
-\end{bemerk}
-
-(Algo "`Summe"' im lower level - Programm f"ur den Prozessor $P_{s}$)
-INPUT: n=$2^{k}$-Zahlen, Array $A$, p =$2^{q}\le n$, s
-OUTPUT: S=$\sum_{i=1}^{n}A(i)$
-begin
-\begin{Verbatim}[numbers=left]
-for j=1 to l (=\frac n p) do setze B(l(s-1)+j) := A(l(s-1)+j)
-for h =1 to \log n do
-    if (k-h-q) \ge 0 then
-        for j =$2^{k-h-q}(s-1)$ to $2^{k-h-q}s$ do
-	    setze B(j) := B(2j-1)+B(2j)
-    else if s \le $2^{k-h}$ then
-        setze B(s) := B(2s-1)+B(2s)
-if (s=1) then S:= B(1)
-\end{Verbatim}
-end
-
-In Zukunft: upper level
-
-\begin{tabular}{ccc}
-  \Work& --& KOSTEN\\
-  T(n) $\rightarrow$ p-prozzesor-PRAM: $T_{p}(n)=O(\frac{W(n)}{p}+T(n))$\\
-  Kosten $C_{p}(n)=T_{p}(n)\,p=O(W(n)+T(n)p)\ldots$\\
-  \multicolumn{2}{l}{Ansatz: $P=O(\frac{W(n)}{T(n)})$}\\
-  $\ldots=O(W(n)+T(n)\frac{W(n)}{T(n)})=O(W(n))$
-\end{tabular}
 
 \begin{satz}
-  $C_{p}(n)\ge W(n)$
-  Die Kosten, die mit $p$ Prozessoren entstehen, sind immer min. \Work, denn wenn nicht
-  w"are dies ein Widerspruch zum Seriellen Optimum.
+Kosten können nicht unter der seriellen Komplexität liegen.
 \end{satz}
 
-\begin{folger}
-  bei $p=O(\frac{W(n)}{T(n)})$ Prozessoren sind \Work und KOSTEN gleich.
-\end{folger}
-
-\begin{defini}[Optimalit"at]
-  \begin{enumerate}
-   \item Ein Algorithmus A hei"st \emph{optimal (zeitoptimal)}, wenn $W(n) =
-    O(T^{\ast}(n))$ ($T^{\ast}$ -- serielles Optimum)
-   \item Ein Algorithmus A hei"st \emph{\Work-\Time-Optimal} oder \emph{streng
-    optimal}, wenn er optimal ist und wenn es keinen schnelleren optimalen
-    Algorithmus gibt.
-  \end{enumerate}
+\begin{defini}
+Ein paralleler Algorithmus ist \emph{optimal}, wenn seine Kosten der seriellen Komplexität entsprechen.
 \end{defini}
+
+\begin{bsp}[Summe]
+bei $n$ Prozessoren: $C(n)= \log n * n \qquad$ (nicht optimal) \\
+bei $\frac{n}{\log n}$ Prozessoren: $C(n) = O(n)= O(n\frac{\log n}{n}) \qquad$ (optimal)\\
+bei 1 Prozessor: $C(n) = O(n) \qquad$ (optimal) \\
+$\to$ Definition ist unzureichend
+\end{bsp}
+
+\begin{defini}
+Ein paralleler Algorithmus heisst WT-optimal (streng optimal), wenn er optimal ist und wenn es keinen schnelleren optimalen Algorithmus gibt.
+\end{defini}
+
+\begin{bemerk}
+Diese Definition wird auch relativ zu einem speziellen Modell des Maschinentyps gebraucht.
+\underline{Modelle:} syncrones shared Memory Modell (PRAM)\\
+(EREW, CREW, CRCW(priority, common, arbitrary))
+\end{bemerk}
+
+\begin{defini}
+WORK eines Algorithmus ist nach Definition die gesamte Anzahl der auszuführenden Einzeloperationen.
+\end{defini}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Restbestände vom letzten Jahr
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Sei $P$ ein Problem:
+% 
+% Serieller Algo $A$, Input size $n$ $\quad\rightarrow\quad T_{A}(n)$
+% 
+% Def.: $T^{\ast}(n)$ sei das serielle Optimum
+% 
+% Sei $A$ parall. Algo., $p$ Prozessoren
+% 
+% %%
+% 
+% \begin{satz}[Theorem von Brent]
+%   Was ist f"ur einen Algorithmus die maximale Anzahl an zur gleichen Zeit
+%   ausf"uhrbaren Operationen?
+% 
+%   Im Normalfall kann man jeden parallelen Algorithmus auf jede Anzahl an
+%   Prozessoren anpassen.
+% \end{satz}
+% 
+% synchron\hfill--\hfill asynchron
+% \begin{gather}
+%   A\vec{x} (a_{11}\ldots a_{1n} \ldots a_{nn}) (x_{1}\ldots x_{n})=(y_{1}\ldots
+%      y_{n})
+% \end{gather}
+% 
+% Modell: \ldots
+% 
+% \begin{enumerate}
+%  \item globalread(X,Y) X: Variable des shared memory, Y:local  variable
+%   "ubertr"agt den Wert von X nach Y
+%  \item globalwite(Y,X) "ubertr"agt Y nach X
+% \end{enumerate}
+% Beispiel: "`A:=B+C"'
+%  globalread(B,x)
+%  globalread(C,y)
+%  setze z:=x+y (Prozessor-Arbeit)
+%  globalwrite(z,A)
+% 
+% Algo.Mult.:\\ (A in Zeilen zerlegel)
+% INPUT: $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
+% Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
+% OUTPUT: Die Komponenten $[(i-1)\,r+1,\ldots,i\,r] von \vec{y}=A\vec{x}$
+% 
+% begin
+% \begin{enumerate}
+%  \item globalread($\vec{x},\vec{z}$) \texttt{Alle Prozessoren lesen diesen Vektor}
+%  \item globalread(A((i-1)r+1:ir,1:n), B)
+%  \item berechne $\vec{w}=B\vec{z}$
+%  \item globalwrite($\vec{w}, y((i-1)r+1:ir)$)
+% \end{enumerate}
+% end
+% 
+% \begin{bemerk}
+%   Befehlt 1 erfordert CR (concurrent read) im Modell\\
+%   Befehlt 4 erfordert nicht CW (concurrent write) sondern EW (exclusive
+%   write)\\
+%   EREW, CREW (Modell asynchron m"oglich), CRCW
+% \end{bemerk}
+% 
+% A in Spalten zerlegen, $A_{1}x_{1}
+% (a_{11},\ldots,a_{1r})(x_{1}\vdots x_{r})=z_{1}=A_{1}x_{1}
+% \vec{y}=A_{1}\vec{x}_{1}+\ldots+A_{r}\vec{x}_{r}
+% z_{i}=A_{i}\vec{x}_{i}
+% (..) (\vdots)=(z_{1}+z_{2}+\ldots) \quad\rightarrow\quad$ erfordert ein
+% synchrones Modell
+% 
+% Beispiel 2:\\
+% INPUT: $n=2^{k}$ Zahlen in Array $A$, $n$ Proz, $i:i\le i \le n$\\
+% OUTPUT: $\sum_{i=1}^{n}a_{i}\quad\Rightarrow\quad$ gespeichert im shared
+% memory, Variable $S$
+% 
+% begin
+% \begin{enumerate}
+%  \item globalread(A(i), a)
+%  \item globalwrite(a,B(i))
+%  \item \texttt{for} $h=1$ \texttt{to} $\log n$ \texttt{do}
+%   \begin{enumerate}
+%    \item if ($i\le \frac{n}{2^{k}}$) then
+%     begin
+%     \begin{enumerate}
+%      \item globalread(B(2\,i-1),x)
+%      \item globalread(B(2\,i), y)
+%      \item z:=x+y
+%      \item globalwrite(z,B(i))
+%     \end{enumerate}
+%     end
+%   \end{enumerate}
+%  \item if (i=1) then globalwrite(z,S)
+% \end{enumerate}
+% end.
+% 
+% % Baumdiagramm
+% 
+% Aus Baum leicht zu erkennen: Berechnung in O($\log n$)
+% 
+% Kosten $C(n)=\underbrace{P(n)}_{O(n)}\,\underbrace{T(n)}_{O(\log
+% n)}=O(n\log n)$
+% 
+% Serielles Optimum $T^{*}=O(n) C(N)\ge T^{*}(n)$
+% 
+% \begin{defini}
+%   Ein Algorithmus hei"st optimal, wenn $C(n)=T^{*}(n)$
+% \end{defini}
+% 
+% Es existiert ein Variante dieses Algorithmus, die $O(\log n)$ Zeit braucht
+% und die Kosten $C(n)=O(n)$ hat.
+% 
+% % 2. Baumdiagramm
+% 
+% sei $\log n=r\in\N, \frac{n}{\log n}\in\Z, p_{1},\ldots,p_{\frac{n}{\log
+% n}}$
+% 
+% Algorithmus: $p_{i}$ addiert die Zahlen $a_{(i-1)\log(n)+1}+\ldots+a_{i\log n}$
+% (seriell in $O(\log n)$ \Time) weiter mit oberen Algorithmus mit $z_{i}$
+% 
+% Kosten: $C(n)=O(\log n)\,O(\frac{n}{\log n})=O(n)$
+% 
+% Ab sofort: Kurzform von globalread() bzw. globalwrite()
+% 
+% \begin{bemerk}
+%   Das synchrone shared memory-Modell hei"st PRAM.
+%   EREW-PRAM, CREW-PRAM, CRCW-PRAM (Unterteilung in {\it common}, d.h. das Schreiben ist nur dann
+%   zugelassen, wenn alle Prozessoren das Gleiche schreiben,
+%   sowie {\it arbitrary}, was z.Bsp. die Summenbildung über allen Werten darstellen kann.
+%   Weiterhin: {\it  priority }.
+% \end{bemerk}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% Vorgehen: Oberes Level - Unteres Level.
+% liefert Zeitpakete(TIMEUNITS) /\ Prozessor-Allocation - schreibt Programm
+% f"ur Prozessor $i$\\
+\underline{TIME UNITS} (Zeiteinheit), in einer Zeiteinheit k"onnen bel. viele Operationen
+zusammengefasst werden, die gleichzeitig augef"uhrbar sind. \\
+"`pardo"'\\
+\underline{pardo statement:}
+\texttt{for} $1\le i\le u$ \texttt{pardo}
+
+% $\quad\rightarrow\quad$ eventuell zerlgt in mehrere Takte, falls nicht
+% gen"ugend Proz. da sind % & hier soll ein Spaltenwechsel hin
+%  Programm f"ur Proz. $i$\\
+% Prozessoren nicht erw"ahnt -- was kann parallel Ausgef"uhrt werden
+
+\underline{WT-Darstellung:} Algorithmus ist Folge solcher TimeUnits
+
+\begin{bsp}
+
+
+INPUT: $n=2^{k}$-Zahlen in Array $A$
+OUTPUT: Summe $S$
+
+\begin{Verbatim}[numbers=left]
+begin
+    for i \le i \le n pardo B(i) := A(i)
+    for h=1 to \log n do
+        for 1 \le i \le \frac{n}{2^h} pardo
+            B(i) := B(2\,i-1)+B(2\,i)
+    S := B(1)
+end
+\end{Verbatim}
+$\to$ WT = $O(\log n)$
+\end{bsp}
+
+% \begin{defini}
+%   \emph{Rechenzeit eines par. Algorithmus} (im upper Level) T(n)=Anzahl der TIME
+%   UNITS.
+% \end{defini}
+% 
+% f"ur obiges Beispiel: $T(n) = 2+\log n$
+% 
+% \begin{defini}
+%   \emph{\Work} eines Algorithmus $W(n)$ $:\Leftrightarrow$ Gesamtzahl
+%   der auszuf"uhrenden Einzeloperationen
+% \end{defini}
+% 
+% f"ur obiges Beispiel:
+% \begin{enumerate}
+%  \item W(n) = n+$\sum_{j=1}^{\log n}\frac{n}{2^j}+1$ $\le
+%   n+1+n sum_{j=1}^{\log n}\frac{1}{2^j}=O(n)$
+% \end{enumerate}
+% 
+% upper level: \Work-\Time-Darstellung\\
+% lower level: Theorem von Brent (\Work-\Time Scheduling-Prinzip)
+% Eine Rechnung ist bei $p$ Prozessoren in
+% $\lfloor\frac{W(n)}{p}\rfloor+T(n)$ meist m"oglich.
+% \begin{proof}
+%   geg.: Algorithmus, der 100~T.Units 99 davon nur eine Op. $W_{i}(n)=1$
+%   
+%   $W_{i}(n) := $ Anzahl der Op. in der i-ten Zeiteinheit
+%   $\lceil\frac{W_i(n)}{p}\rceil$ Zeit des Algo mit $p$ Proz.:
+%   $\sum_{j=1}{T(n)} \frac{\lceil W_{i}(n)\rceil}{p}\le$
+%   $\sum_{j=1}{T(n)} \frac{W_{i}(n)}{p} =$
+%   $\lfloor\frac{W(n)}{p}\rfloor+T(n)$
+%   
+%   Vor.: $W_{i}$ berechnen, Prozessor-Allocation
+% \end{proof}
+% 
+% \begin{bemerk}
+%   Wenn die Prozessor-Allocation (Aufteilen des Algos auf mehrere Proz.)
+%   m"oglich ist, dann geht es mit obiger Laufzeit.
+% \end{bemerk}
+% 
+% (Algo "`Summe"' im lower level - Programm f"ur den Prozessor $P_{s}$)
+% INPUT: n=$2^{k}$-Zahlen, Array $A$, p =$2^{q}\le n$, s
+% OUTPUT: S=$\sum_{i=1}^{n}A(i)$
+% begin
+% \begin{Verbatim}[numbers=left]
+% for j=1 to l (=\frac n p) do setze B(l(s-1)+j) := A(l(s-1)+j)
+% for h =1 to \log n do
+%     if (k-h-q) \ge 0 then
+%         for j =$2^{k-h-q}(s-1)$ to $2^{k-h-q}s$ do
+% 	    setze B(j) := B(2j-1)+B(2j)
+%     else if s \le $2^{k-h}$ then
+%         setze B(s) := B(2s-1)+B(2s)
+% if (s=1) then S:= B(1)
+% \end{Verbatim}
+% end
+% 
+% In Zukunft: upper level
+% 
+% \begin{tabular}{ccc}
+%   \Work& --& KOSTEN\\
+%   T(n) $\rightarrow$ p-prozzesor-PRAM: $T_{p}(n)=O(\frac{W(n)}{p}+T(n))$\\
+%   Kosten $C_{p}(n)=T_{p}(n)\,p=O(W(n)+T(n)p)\ldots$\\
+%   \multicolumn{2}{l}{Ansatz: $P=O(\frac{W(n)}{T(n)})$}\\
+%   $\ldots=O(W(n)+T(n)\frac{W(n)}{T(n)})=O(W(n))$
+% \end{tabular}
+% 
+% \begin{satz}
+%   $C_{p}(n)\ge W(n)$
+%   Die Kosten, die mit $p$ Prozessoren entstehen, sind immer min. \Work, denn wenn nicht
+%   w"are dies ein Widerspruch zum Seriellen Optimum.
+% \end{satz}
+% 
+% \begin{folger}
+%   bei $p=O(\frac{W(n)}{T(n)})$ Prozessoren sind \Work und KOSTEN gleich.
+% \end{folger}
+% 
+% \begin{defini}[Optimalit"at]
+%   \begin{enumerate}
+%    \item Ein Algorithmus A hei"st \emph{optimal (zeitoptimal)}, wenn $W(n) =
+%     O(T^{\ast}(n))$ ($T^{\ast}$ -- serielles Optimum)
+%    \item Ein Algorithmus A hei"st \emph{\Work-\Time-Optimal} oder \emph{streng
+%     optimal}, wenn er optimal ist und wenn es keinen schnelleren optimalen
+%     Algorithmus gibt.
+%   \end{enumerate}
+% \end{defini}
+
+\begin{satz}[Satz von Brent]
+Sei $W_i(n)$ die Anzahl der Operationen des Algorithmus in der TimeUnit $i$. Simuliere jeden dieser Schritte in $\left\lceil \frac{W_i(n)}{p} \right\rceil$ parallelen Schritten mit $p$ Prozessoren. \\
+
+\underline{Wenn} das erfolgreich, gilt: 
+\[
+\text{Zahl der Takte} \leq \sum_i \left\lceil \frac{W_i(n)}{p} \right\rceil 
+\leq \sum_i \left\lfloor \frac{W_i(n)}{p} + 1 \right\rfloor 
+\leq \frac{W(n)}{p} + T(n)
+\]
+\end{satz}
 
 \chapter{Die sieben Paradigmen beim Entwurf paralleler Algorithmen}
 \begin{enumerate}
@@ -570,6 +675,39 @@ In Zukunft: upper level
  \item Aufbrachen von Symetrien
 \end{enumerate}
 
+\section{Präfixsummen}
+
+Input: Array $A, n=2^k$\\
+Output: Array $C(0,j), 1\leq j \leq n$ - Präfixsummen
+\begin{verbatim}
+begin
+    for 1 <= j <= n pardo
+        B(0,j) := A(j)
+    for h := 1 to log n do
+        for 1 <= j <= n / 2^h pardo
+            B(h,j) := B(h-1, 2j-1) + B(h-q, 2j)
+    for h := log n to 0
+        for 1 <= j <= n / 2^h pardo
+            if ( j gerade) then
+                C(h,j) := C(h+1, j/2)
+            elsif j=1 then
+                C(h,1) := B(h,1)
+            else
+                C(h,j) := C(h+1, (j-1)/2) + B(h,j)
+end
+\end{verbatim}
+\begin{bsp}[n=8]
+\begin{eqnarray*}
+B(3,1) &=& a_1+\ldots + a_8 = C(3,1) \\
+C(2,1) &=& B(2,1) = a_1+ \ldots + a_4 \\
+C(2,2) &=& C(3,1) = a_1+ \ldots + a_8 \\
+C(1,1) &=& B(1,1) = a_1+ a_2 \\
+C(1,2) &=& C(2,1) = a_1+ \ldots + a_4 \\
+C(1,3) &=& C(2,1) + B(1,3) = a_1+ \ldots + a_6 \\
+C(1,4) &=& a_1+ \ldots + a_8 \\
+C(0,\ldots) &\dots& C(0,3)= C(1,1) + B(0,3) = a_1+ \ldots + a_3 \\
+\end{eqnarray*}
+\end{bsp}
 \section{Pointer Jumping}
 
 % TODO: Mehr Text schreiben!
@@ -580,16 +718,28 @@ eines Disjoint Set Forests.
 \input{figures/ptr_jumping.pdf_t}
 \end{center}
 
-F"uhren wir weiterhin eine Gewichtung für die Knoten ein. Warum?
+\underline{INPUT:} Forrest $(i, p(i)) : 1 \leq i \leq n$\\
+\underline{OUTPUT:} $\forall$ Knoten $i$ : ROOT $(S(i)$ 
+\begin{Verbatim}
+begin
+    for 1 \le i \le n pardo
+        S(i) := p(i)
+	while S(i) \not= S(S(i)) do
+	    S(i) := S(S(i))  << Pointer Jumping
+end.
+\end{Verbatim}
+
+\begin{bemerk}
+Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Operationen.
+\end{bemerk}
+
+\subsection{Parallel-Präfix}
 
 \begin{center}
 \input{figures/ptr_jumping_weight.pdf_t}
 \end{center}
-
-
-INPUT: Forest im Array $p$
-OUTPUT: $\forall i: W(i) $(Gewicht), $W(i)=0$ f"ur Roots, damit $\forall
-i:$ Summe der Gewichte auf dem wag von $i$ zur Root
+INPUT: Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$ \\
+OUTPUT: $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel
 
 (Seriell in $O(n)$ \Time)
 \begin{Verbatim}
@@ -601,6 +751,12 @@ begin
 	    S(i) := S(S(i))  << Pointer Jumping
 end.
 \end{Verbatim}
+
+-----------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Ende Vorlesung vom 19.04.05
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 Beispiel: Liste: $v\in V$ (Knotenmenge), $I\subseteq V$
 % Knotenliste
 
