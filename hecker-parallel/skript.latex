@@ -32,10 +32,12 @@
 % Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
 % ohne die Option "`hyperref"' geladen.
 %
-% Achtung: Die Korrektur von \thref muss von Hand auskommentiert werden,
-% wenn hyperref nicht geladen wird!
-\newboolean{withHyperref}
-\setboolean{withHyperref}{true} % true, false
+% pdflatex '\def\ifwithHyperref{\iffalse}\input{skript.latex}'
+\ifthenelse{\isundefined{\ifwithHyperref}}%
+	   {\newboolean{withHyperref}
+	     \setboolean{withHyperref}{true} % true, false
+	   }{}
+
 \ifthenelse{\boolean{withHyperref}}{}%
 	   {\newcommand{\texorpdfstring}[2]{#1}%
 	    \newcommand{\pdfbookmark}[3][]{}%
@@ -81,13 +83,15 @@
 % Zur Korrektur von \thref
 % <news:col095$me8$2@n.ruf.uni-freiburg.de>
 \makeatletter
+\ifthenelse{\boolean{withHyperref}}{%
 \def\thref#1{%
    \expandafter\ifx\csname r@#1@type\endcsname\None
      \PackageWarning{\basename}{thref: Reference Type of `#1' on page
        \thepage \space undefined}\G@refundefinedtrue
      \else\csname r@#1@type\endcsname~\fi%
    \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
-}
+}%
+}{}
 
 % Korrektur der Platzierung der Gleichungsnummer
 % <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
