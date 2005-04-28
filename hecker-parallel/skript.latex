@@ -20,6 +20,12 @@
 %
 %  * Alle Bilder in center-environment
 %
+%  line 899: Bild "Merge" einfügen
+%  line 906: Bild "Merge2" einfügen
+%  line 1018: Bild "MergeTrick" einfügen
+%  line 1056: Bild "ConvexHull1" einfügen
+%  line 1061: Bild "ConvexHull2" einfügen
+%  line 1080: Bild "ConvexHull3" einfügen
 
 \documentclass[twoside]{scrreprt}
 
@@ -758,171 +764,211 @@ begin
 end.
 \end{Verbatim}
 
------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Ende Vorlesung vom 19.04.05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Beispiel: Liste: $v\in V$ (Knotenmenge), $I\subseteq V$
-% Knotenliste
+% Beispiel: Liste: $v\in V$ (Knotenmenge), $I\subseteq V$
+% % Knotenliste
+% 
+% Beispiel:
+% % Baum
+% 
+% Anfang: W(8)=W(13)=0, W(rest)=1
+% 1. It.: W(1,2,3,4,5,9,10,11)=2 W(6,7,12)=1, W(8,13)=0
+% 2. It.: W(1)=W(1)+W(6)=3, W(9)=4, W(2,10)=3, W(6,7,12)=1, W(3,4,5,11)=2
+% 
+% Modell? CREW; Analyse: h-max. H"ohe im Forest, \Time $O(\log h)$ \Work
+% $O(n\log h)$ $\rightarrow$ Algorithmus ist nicht optimal
+% 
+% \begin{defini}
+%   Die Aufgabe \emph{Parallel Prefix} :$\Leftrightarrow$ Spezialfall der
+%   lin. Liste
+% \end{defini}
+% 
+% \begin{satz}
+%   Parallel Prefix funktioniert in $O(\log n)$ \Time mit $O(n\log n)$ \Work
+%   
+%   Spezialfall: $W(root)=0, \forall i\not= root: W(i)=1$ liefert der Algorithmus f"ur jeden
+%   Knoten den Abstand zum Ende der Liste.
+% \end{satz}
+% 
+% \section{Teile und Herrsche/Divide and Conquer}
+% 
+% Teile -- trivial, Herrsche -- schwer
+% 
+% Beispiel: Convex Hull genauer Upper convex hull
+% % Grafik: Conv hull
+% 
+% Ann.: Br"ucke kann in $O(\log n)$ \Time seriell bestimmt werden.
+% Algo:
+% begin
+% \begin{Verbatim}
+% if |S|\le 4 then OUTPUT von UCH (Brute force)
+% S$_{1}$ = \{$p_{1}, \ldots, p_{\frac{n}{2}}\}$
+% S$_{2}$ = \{$p_{n/2+1},\ldots,p_{n}\}$
+% Berechne UCH($S_{1}$), UCH($S_{2}$) parallel
+% Bestimme die Br"ucke, bearbeite zum OUTPUT (verbinde die beiden h"ochsten
+% Punkte von $UCH(S_{1})$ und $UCH(S_{2})$)
+% \end{Verbatim}
+% end.
+% 
+% \subsection{Analyse}
+% \begin{align*}
+%   T(n) &\le T(n/2)+c\,\log n &=O(\log^{2} n)\\
+%   W(n) &\le 2W(n/2)+c\,\log n &=O(n\log n)
+% \end{align*}
+% $\rightarrow$ Algorithmus ist optimal
+% 
+% \begin{bemerk}
+%   zu $O(\log n)$ seriell 
+% \end{bemerk}
+% 
+% \begin{equation*}
+%   \begin{vmatrix}
+%     1 &p_{x} &p_{y}\\
+%     1 &v_{x} &v_{y}\\
+%     1 &v'_{x} &v'_{y}
+%   \end{vmatrix}\leadsto
+%   \begin{cases}
+%     > 0 &\Rightarrow\text{left turn}\\
+%     < 0 &\Rightarrow\text{right turn}
+%   \end{cases}
+% \end{equation*}
+% 
+% Vergleich der $y$-Werte gibt die Unterscheidung
+% 
+% \begin{defini}
+%   1. Supporting
+%   2. Concave
+%   3. Convex
+% \end{defini}
+% 
+% \begin{tabular}{lccc}
+%   konkav& supp& konvex\\
+%   \hline
+%   konkav\\
+%   supp\\
+%   konvex
+% \end{tabular}
 
-Beispiel:
-% Baum
+\section{Partitioning (Zerlegunsstrategie)}
 
-Anfang: W(8)=W(13)=0, W(rest)=1
-1. It.: W(1,2,3,4,5,9,10,11)=2 W(6,7,12)=1, W(8,13)=0
-2. It.: W(1)=W(1)+W(6)=3, W(9)=4, W(2,10)=3, W(6,7,12)=1, W(3,4,5,11)=2
+Meistens ist das Problem als ganzes sehr kompliziert. Deshalb versucht man, dieses in Teilprobleme zu zerlegen.
+Dabei müssen die Teilergebnisse zu einer Gesamtlösung zusammengefügt werden.
 
-Modell? CREW; Analyse: h-max. H"ohe im Forest, \Time $O(\log h)$ \Work
-$O(n\log h)$ $\rightarrow$ Algorithmus ist nicht optimal
-
-\begin{defini}
-  Die Aufgabe \emph{Parallel Prefix} :$\Leftrightarrow$ Spezialfall der
-  lin. Liste
-\end{defini}
-
-\begin{satz}
-  Parallel Prefix funktioniert in $O(\log n)$ \Time mit $O(n\log n)$ \Work
-  
-  Spezialfall: $W(root)=0, \forall i\not= root: W(i)=1$ liefert der Algorithmus f"ur jeden
-  Knoten den Abstand zum Ende der Liste.
-\end{satz}
-
-\section{Teile und Herrsche/Divide and Conquer}
-
-Teile -- trivial, Herrsche -- schwer
-
-Beispiel: Convex Hull genauer Upper convex hull
-% Grafik: Conv hull
-
-Ann.: Br"ucke kann in $O(\log n)$ \Time seriell bestimmt werden.
-Algo:
-begin
-\begin{Verbatim}
-if |S|\le 4 then OUTPUT von UCH (Brute force)
-S$_{1}$ = \{$p_{1}, \ldots, p_{\frac{n}{2}}\}$
-S$_{2}$ = \{$p_{n/2+1},\ldots,p_{n}\}$
-Berechne UCH($S_{1}$), UCH($S_{2}$) parallel
-Bestimme die Br"ucke, bearbeite zum OUTPUT (verbinde die beiden h"ochsten
-Punkte von $UCH(S_{1})$ und $UCH(S_{2})$)
-\end{Verbatim}
-end.
-
-\subsection{Analyse}
-\begin{align*}
-  T(n) &\le T(n/2)+c\,\log n &=O(\log^{2} n)\\
-  W(n) &\le 2W(n/2)+c\,\log n &=O(n\log n)
-\end{align*}
-$\rightarrow$ Algorithmus ist optimal
-
-\begin{bemerk}
-  zu $O(\log n)$ seriell 
-\end{bemerk}
-
-\begin{equation*}
-  \begin{vmatrix}
-    1 &p_{x} &p_{y}\\
-    1 &v_{x} &v_{y}\\
-    1 &v'_{x} &v'_{y}
-  \end{vmatrix}\leadsto
-  \begin{cases}
-    > 0 &\Rightarrow\text{left turn}\\
-    < 0 &\Rightarrow\text{right turn}
-  \end{cases}
-\end{equation*}
-
-Vergleich der $y$-Werte gibt die Unterscheidung
-
-\begin{defini}
-  1. Supporting
-  2. Concave
-  3. Convex
-\end{defini}
-
-\begin{tabular}{lccc}
-  konkav& supp& konvex\\
-  \hline
-  konkav\\
-  supp\\
-  konvex
-\end{tabular}
-
-\section{Partitioning/Zerlegunsstrategie}
-
-Beispiel: Merge (INPUT: 2 sortierte Folgen beide L"ange $n$, OUTPUT: eine sortierte Folge)
+\begin{bsp}
+Merge (INPUT: 2 sortierte Folgen beide L"ange $n$, OUTPUT: eine sortierte Folge $C$)
 
 Herrsche ist einfach, teile trivial.
 
-Mischen von zwei sortierten Feldern $A^{n}$ und $B^{m}$
+$A=(a_1,\ldots,a_n)$, $B=(b_1,\ldots,b_n)$\\
+\[
+	a_i, b_i \in S, \quad (S,\subseteq) \quad \text{(Halbordnungsrelation)}
+\]
 
-$X$ beliebige Folge von Elementen einer Menge $S$. $x\in S$; $S$ linear
-geordnet
-\begin{equation*}
-  Rang(x:X) := \bigl| \{y:y\in X, y \leq x\}\bigr|
-\end{equation*}
+(reflexiv, antisymmetrisch, transitiv und total) \\
 
-Annahme: $m=n$
+\begin{defini}
+Sei $X = (x_1,\ldots,x_t) \quad x_i \in S,\quad  i=1 \ldots t$
+\[
+	\text{Rang } (x: X) = \bigl|\left\{ y\, |\, y \leq x,\, y \in \left\{ x_1, \ldots, x_t\right\}\right\}\bigr|
+\]
+\end{defini}
+\begin{bsp}
+Rang $(4, (5,7,23,25))=0$
+\end{bsp}
 
-Sei $Y\subseteq S$.
-\begin{equation*}
-  Rang(Y:X) := (Rang(y_{1}:S),\ldots,Rang(y_{s}:S))
-\end{equation*}
+\[
+\text{Rang } (Y : X) := (r_1, \ldots, r_s) : r_\sigma = \text{Rang } (y_\sigma : X), \quad \sigma = 1,\ldots,s
+\]
 
-$Y=\{y_{1},\ldots,y_{s}\}$ (genauer: $Y=(y_{1},\ldots,y_{s})$)
+\subsubsection*{Elementarer Algorithmus}
+Mische $(A,B)$
+\underline{Ziel:} Bestimmung des Ranges für alle $x \in A \cup B$, also
+Rang $(x: A \cup B)$, damit kennen wir den Platz von $x$ in $C$ 
 
-$A,B \rightarrow C^{n+m}$: $C$ sortiert
+\[
+\text{Rang } (x: A \cup B) = \text{Rang }(x:A) + \text{Rang }(x:B) \qquad (\forall x \in A \cup B)
+\]
 
-Annahme (o.B.d.A.): Ele. von $A \cup B$ seien paarw. verschieden.
+\underline{es genügt:} Rang $(B:A)$ und Rang $(A:B)$
 
-Beisp.: A=(3,5,7), B=(2,4,6)
-Rang(2:A) = 0
-Rang(2:B)=1
-Rang(2:A$\cup$B)=1=Rang(2:A)+Rang(2:B)
+% ToDo: Bild "Merge" einfügen
 
-Allg.: Rang(x:A$\cup$B)=Rang(x:A)+Rang(x:B)
+\subsubsection*{Binäre Suche:} $O(\log n)$ pro Element 
+$\to$ parallel: $=(\log n)$ auf CREW\\
 
-wenn Rang(x:A$\cup$B)=i $\Rightarrow$ x=$c_{i}$
-(Sei $x\in A \cup B$)
+$\to$ WORK $O(n\log n)$
 
-\begin{folger}
-  Wenn f"ur allle $x\in A \cup B$ der $Rang(x:A \cup B)$ bekannt ist, ist die
-  gesuchte sortierte Menge $C$ bekannt.
-\end{folger}
+% ToDo: Bild "Merge 2" einfügen
 
-\begin{bemerk}
-  Dazu reicht es aus Rang(A:B) und Rang(B:A) zu berechnen.
-\end{bemerk}
+$\underbrace{\text{Mische } (B_i,A_i)}_{\text{"`Setzen der Pfeile"'}}$ untereinander und "`klebe"'.\\
 
-\begin{folger}
-  Es reicht, den Algo. f"ur die Bestimmung dein rang(B:A) anzugeben.
-  
-  \underline{genauer:} Die \Time-\Work-Komplexit"at hierf"ur ist identisch
-  mit der f"ur MERGE.
-\end{folger}
+\underline{Programm:} für Partition ($\log m$ und $\frac{m}{\log n}$ sind ganze Zahlen)\\
 
-Algo.: $\forall b\in B$ suche "uber bin. Suchen $Rang(b:A^{n})$ (pardo)
-$O(\log n) \Time, O(n \log n)$ \Work $\rightarrow$ nicht optimal, da MERGE im
-seriellen nur O(n) ben"otigt.
+% Sei $Y\subseteq S$.
+% \begin{equation*}
+%   Rang(Y:X) := (Rang(y_{1}:S),\ldots,Rang(y_{s}:S))
+% \end{equation*}
+% 
+% $Y=\{y_{1},\ldots,y_{s}\}$ (genauer: $Y=(y_{1},\ldots,y_{s})$)
+% 
+% $A,B \rightarrow C^{n+m}$: $C$ sortiert
+% 
+% Annahme (o.B.d.A.): Ele. von $A \cup B$ seien paarw. verschieden.
+% 
+% Beisp.: A=(3,5,7), B=(2,4,6)
+% Rang(2:A) = 0
+% Rang(2:B)=1
+% Rang(2:A$\cup$B)=1=Rang(2:A)+Rang(2:B)
+% 
+% Allg.: Rang(x:A$\cup$B)=Rang(x:A)+Rang(x:B)
+% 
+% wenn Rang(x:A$\cup$B)=i $\Rightarrow$ x=$c_{i}$
+% (Sei $x\in A \cup B$)
+% 
+% \begin{folger}
+%   Wenn f"ur allle $x\in A \cup B$ der $Rang(x:A \cup B)$ bekannt ist, ist die
+%   gesuchte sortierte Menge $C$ bekannt.
+% \end{folger}
+% 
+% \begin{bemerk}
+%   Dazu reicht es aus Rang(A:B) und Rang(B:A) zu berechnen.
+% \end{bemerk}
+% 
+% \begin{folger}
+%   Es reicht, den Algo. f"ur die Bestimmung dein rang(B:A) anzugeben.
+%   
+%   \underline{genauer:} Die \Time-\Work-Komplexit"at hierf"ur ist identisch
+%   mit der f"ur MERGE.
+% \end{folger}
+% 
+% Algo.: $\forall b\in B$ suche "uber bin. Suchen $Rang(b:A^{n})$ (pardo)
+% $O(\log n) \Time, O(n \log n)$ \Work $\rightarrow$ nicht optimal, da MERGE im
+% seriellen nur O(n) ben"otigt.
 
-\begin{description}
- \item[Ziel:] Das gleiche optimal erreichen.
- \item[Strategie:] Partitioning
-\end{description}
+% \begin{description}
+%  \item[Ziel:] Das gleiche optimal erreichen.
+%  \item[Strategie:] Partitioning
+% \end{description}
 
-INPUT: $A^{n}, B^{m}$ sortiert
-OUTPUT: $C^{m+n} = A\cup B$ sortiert
+INPUT: $A^{n}, B^{m}$ sortiert\\
+OUTPUT: Zerlegung: $k(m) (= \frac{m}{\log m})$ Paare $(A_i,B_i):\quad
+|B_i| = \log m, \sum |A_i| = n$\\
+Alle Elemente $A_i$ bzw. $B_i$ sind größer oder gleich aller Elemente von $A_{i-1}$ bzw.
+$B_{i-1}\quad (1\leq i \leq k-1)$\\
+
+\begin{verbatim}
 begin
-\begin{Verbatim}
-j(0) := 0; j(k(m)) := j(m/\log n) := n
-for i := 1 to k(m)-1 pardo
-    j(i) := Rang($b_{i \log(m)}$ : A)
-for i := 1 to k(m)-1 pardo
-    $B_{i}$ := ($b_{i\log m+1},\ldots,b_{(i+1)\log m})$
-    $A_{i}$ := ($a_{j(i)+1},\ldots,a_{j(i+1)})$
-\end{Verbatim}
-end.
-
-% Algo skizze
+    j(0) := 0;   j(k(m)) := j(m/log n) := n
+    for 1 <= i <= k(m)-1 pardo
+        j(i) := Rang(b_(i log m) : A)  
+    for 0 <= i <= k(m)-1 pardo
+        B_i := (b_(i log (m+1)),...,b_((i+1) log m))
+        A_i := (a_(j(i)+1),...,a_(j(i+1)))
+end
+\end{verbatim}
 
 \begin{satz}
   Der Algo. ben"otigt $O(\log n)$ \Time und $O(n+m)$ \Work
@@ -930,43 +976,111 @@ end.
   \begin{proof}
     Rechenzeit klar
     
-    Sei $m,n>4, m<n \Rightarrow \frac{m}{\log m} < \frac{n}{\log n}
-    (\lim_{n\rightarrow\infty}\frac{n}{\log n}=\infty$ 
-    \begin{align}
-      m<m+n &\Rightarrow \frac{m}{\log m}<\frac{m+n}{\log (m+n)}\\
-      &\Rightarrow \frac{m\log(m+n)}{\log m}<m+n
-    \end{align}
-    \Work: $O(\underbrace{\frac{m}{\log m}}_{=k(m)}\cdot\log m)
-      \leq O(\frac{m\log (m+n)}{\log m}) < O(m+n)$
+%     Sei $m,n>4, m<n \Rightarrow \frac{m}{\log m} < \frac{n}{\log n}
+%     (\lim_{n\rightarrow\infty}\frac{n}{\log n}=\infty$ 
+%     \begin{align}
+%       m<m+n &\Rightarrow \frac{m}{\log m}<\frac{m+n}{\log (m+n)}\\
+%       &\Rightarrow \frac{m\log(m+n)}{\log m}<m+n
+%     \end{align}
+%     \Work: $O(\underbrace{\frac{m}{\log m}}_{=k(m)}\cdot\log m)
+%       \leq O(\frac{m\log (m+n)}{\log m}) < O(m+n)$
+
+Schritt 2: 
+\[
+O(\log n \frac{m}{\log m}
+\]
+\[
+a < b \to \log a < \log b 
+\]
+\[
+\lim \frac{z}{\log z} \to 0 \Rightarrow \frac{m}{\log m} < \frac{n+m}{\log (n+m)} 
+\Rightarrow \frac{m \log (n+m)}{\log m} < n+m 
+\]
+\[
+\frac{m \log n}{\log m} < \frac{m \log (n+m)}{\log m} < n+m
+\]
+\[
+\Rightarrow \Work \text{ ist linear } (O(m+n))
+\]
   \end{proof}
 \end{satz}
 
-\begin{bemerk}
-  Der Algorithmus arbeitet korrekt im folgenden Sinn: wenn die Mengen
-  $(A_{i}, B_{i})$ untereinander gemischt werden, so erh"alt man das
-  sortierte $C$ durch aneinanderheften der einzelnen Ergebnisse.
-  
-  Mische $B_{0}$ mit $A_{0}$ $\rightarrow$ $C_{0}$\\
-  Mische $B_{1}$ mit $A_{1}$ $\rightarrow$ $C_{1}$\\
-  Mische $B_{2}$ mit $A_{2}$ $\rightarrow$ $C_{2}$\\
-  $\vdots$
-  
-  $C:C_{0}C_{1}C_{2}C_{3}\ldots$
-\end{bemerk}
+\begin{satz}
+$A^n$ (sortiert) und $B^n$ (sortiert) lassen sich in $O (\log n)$ Zeit optimal mischen.
+\begin{proof}
+\begin{description}
+\item [1. Fall:] Nicht nur die $B_I$ sondern auch $A_i$ haben $O(\log n)$ Elemente:\\
+	Serielles Mischen für alle Paare liefert das Resultat in $O(\log n)$ \Time mit
+	$O(n)$ \Work.
+\item [2. Fall:] 
 
-Wie teuer? trivial: \Work$=O(n+m)$ (mit seriellen mischen jeweils),
-\Time? |$B_{i}$|=$\log m$ Sei $m=n\log n$
-Fall |$A_{i}$|=$\log n$ $\Rightarrow$ $O(\log n)$ \Time
+% ToDo: Bild "MergeTrick" einfügen
 
-sei nicht erf"ullt $A_{i}=O(\log n)$ f"ur $i$
+Dann das analoge Vorgehen mit Vertauschung der Rollen für zu lange $A_i$! Rest wie im Fall 1.
+\end{description}
+$\Rightarrow$ Optimaler paralleler Algorithmus, der aber nicht streng optimal ist.
+\end{proof}
+\end{satz}
 
-jetzt: $A_{i}$ in B einmischen
+% \begin{bemerk}
+%   Der Algorithmus arbeitet korrekt im folgenden Sinn: wenn die Mengen
+%   $(A_{i}, B_{i})$ untereinander gemischt werden, so erh"alt man das
+%   sortierte $C$ durch aneinanderheften der einzelnen Ergebnisse.
+%   
+%   Mische $B_{0}$ mit $A_{0}$ $\rightarrow$ $C_{0}$\\
+%   Mische $B_{1}$ mit $A_{1}$ $\rightarrow$ $C_{1}$\\
+%   Mische $B_{2}$ mit $A_{2}$ $\rightarrow$ $C_{2}$\\
+%   $\vdots$
+%   
+%   $C:C_{0}C_{1}C_{2}C_{3}\ldots$
+% \end{bemerk}
+% 
+% Wie teuer? trivial: \Work$=O(n+m)$ (mit seriellen mischen jeweils),
+% \Time? |$B_{i}$|=$\log m$ Sei $m=n\log n$
+% Fall |$A_{i}$|=$\log n$ $\Rightarrow$ $O(\log n)$ \Time
+% 
+% sei nicht erf"ullt $A_{i}=O(\log n)$ f"ur $i$
+% 
+% jetzt: $A_{i}$ in B einmischen
+% 
+% % Skizze Algokorrektur
+% 
+% $O(\log n)$ \Time, $O(n)$ \Work jetzt kann $A_{i}$ mit $B_{i}$ in
+% $O(\log n)$ \Time mit $O(n)$ \Work gemischt werden!
 
-% Skizze Algokorrektur
+\end{bsp}
 
-$O(\log n)$ \Time, $O(n)$ \Work jetzt kann $A_{i}$ mit $B_{i}$ in
-$O(\log n)$ \Time mit $O(n)$ \Work gemischt werden!
+\section{Teile und Herrsche (Divide and Conquer)}
+Convex Hull:
+%ToDo: Bild "ConvexHull1" einfügen
 
+Komplexe Datenstrukturen für "`merge"' (Diss. Goodrich)\\
+Andere Möglichkeit:
+
+%ToDo: Bild "ConvexHull2" einfügen
+
+\underline{UCH(S):}\\
+INPUT: $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage \\
+OUTPUT: UCH
+
+\begin{verbatim}
+begin
+    if n <= 4 then 
+        bestimme UCH
+        exit()
+    sei S_1 = (p_1, ... , p_(n/2)), S_2 = (p_(n/2 + 1), ... , p_n)
+        berechne UCH(S_1), UCH(S_2) parallel
+    berechne die gemeinsame obere Tangente und bilde die konvexe Hülle
+end
+\end{verbatim}
+
+\subsubsection*{Frage:} Modell, Rechenzeit, \Work ? 
+
+%Todo: Bild "ConvexHull3" einfügen
+-----------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ende Vorlesung vom 22.04.05           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pipelining}
 
 2-3-B"aume ("ahnlich Top-Down-2-3-4-B"aumen)
