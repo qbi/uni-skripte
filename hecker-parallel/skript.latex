@@ -19,13 +19,6 @@
 %	 bleibt!
 %
 %  * Alle Bilder in center-environment
-%
-%  line 899: Bild "Merge" einfügen
-%  line 906: Bild "Merge2" einfügen
-%  line 1018: Bild "MergeTrick" einfügen
-%  line 1056: Bild "ConvexHull1" einfügen
-%  line 1061: Bild "ConvexHull2" einfügen
-%  line 1080: Bild "ConvexHull3" einfügen
 
 \documentclass[twoside]{scrreprt}
 
@@ -48,6 +41,22 @@
 	   {\newcommand{\texorpdfstring}[2]{#1}%
 	    \newcommand{\pdfbookmark}[3][]{}%
 	   }
+
+% Algorithmen:
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{INPUT:}}
+\renewcommand{\algorithmicensure}{\textbf{OUTPUT:}}
+\renewcommand{\algorithmiccomment}[1]{\textit{// #1}}
+\floatname{algorithm}{Algorithmus}
+\renewcommand{\listalgorithmname}{Algorithmenliste}
+%zum Umschalten auf pardo
+\newcommand{\pardo}{\renewcommand{\algorithmicdo}{\textbf{pardo}}}
+%zum Umschalten auf do
+\newcommand{\do}{\renewcommand{\algorithmicdo}{\textbf{do}}}
+
+\newcommand{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
 
 \usepackage{graphics}
 \usepackage{color}
@@ -294,18 +303,21 @@ Beispiel das Modell eines Feldrechners:
 	Dabei übernimmt jeder Prozessor $P_i$ genau $r$ Zeilen, d.h. $P_1$ rechnet mit
 	den Zeilen $1$ bis $r$, $P_2$ mit den Zeilen $r+1$ bis $2r$, usw.
 
-	Algorithmus: \\
-	Input: $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
+\begin{algorithm}
+\caption{hier muss nen Name hin}
+\begin{algorithmic}
+	\REQUIRE $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
 	Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
 
-	\begin{verbatim}
-	begin
-	    globalread( x , z ) // Alle Prozessoren lesen diesen Vektor
-	    globalread( A((i-1) r + 1 : ir , 1:n ), B)
-	    Berechne w = B z
-	    globalwrite( w , y((i-1)r+1:ir))
-	end
-	\end{verbatim}
+	%\BEGIN
+	    \STATE globalread( $x , z$ ) \COMMENT{Alle Prozessoren lesen diesen Vektor}\\
+	    \STATE globalread( $A((i-1) r + 1 : ir , 1:n ), B$)\\
+	    \STATE Berechne $w = B z$\\
+	    \STATE globalwrite( $w , y((i-1)r+1:ir)$)\\
+	%\END
+\end{algorithmic}
+\end{algorithm}
+
 	\begin{bemerk}
 		\begin{enumerate}
 			\item In der ersten Zeile wird von allen Prozessoren
@@ -321,52 +333,66 @@ Beispiel das Modell eines Feldrechners:
 	Zur Vereinfachung werden wir folgende Kurzschreibweise verwenden. Dies ist sinnvoll,
 	da die Ein- und Ausgabe nur jeweils $O(1)$ Schritte dauert, und deshalb ignoriert
 	werden kann.
-	\begin{verbatim}
-	   globalRead(B,x)
-	   globalRead(C,y)
-	   z = x + y
-	   globalWrite(z,A)
-	\end{verbatim}
-	wird ersetzt durch:
-	\begin{verbatim}
-	   A = B + C
-	\end{verbatim}
+\begin{algorithm}
+\caption{Vereinfachung}
+\begin{algorithmic}
+\STATE globalRead(B,x)
+\STATE globalRead(C,y)
+\STATE z := x + y
+\STATE globalWrite(z,A) \\
+\COMMENT{wird ersetzt durch:}
+\STATE A := B + C
+\end{algorithmic}
+\end{algorithm}
 \end{bsp}
 
 Wir verwenden in dieser Vorlesung das Modell eines Syncronen Rechners mit Shared Memory und Abstraktion Random Access ($O(1)$.)
 
 \begin{bsp}[Summenbeispiel]
-Programm für Prozessor $i$
-\begin{verbatim}
-begin
-    B(i) := A(i)
-    for h := 1 to log n do
-        if i < n / 2^h then
-            B(i) := B(2i-1) + B(2i)
-        if i := 1 then
-            S := B(1)
-end
-\end{verbatim}
+
+
+\begin{algorithm}[h]
+\caption{Programm für Prozessor $i$}
+\begin{algorithmic}[1]
+\STATE $B(i) := A(i)$
+\FOR{$h := 1$ to $\log n$}
+	\IF{$i < \frac{n}{2^h}$}
+		\STATE $B(i) := B(2i-1) + B(2i)$
+	\ENDIF
+	\IF{$i = 1$}
+		\STATE $S := B(1)$
+	\ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 \input{figures/add_tree.pdf_t}
 Ein Problem tritt auf, bei einer geringen Anzahl Prozessoren (im Verhältnis zur Anzahl der Eingabedaten). D.h. man benötigt eine sinnvolle Allokation der Prozessoren.
 
-Ein Rechner habe $p=2^q \leq n = 2^k$ Prozessoren.
-Sei $l := \frac{n}{p} = 2^{k-q}$ und $A$ das Inputarray, dann wäre ein Programm für Prozessor s:
-\begin{verbatim}
-begin
-    for j := 1 to l do
-        B(l*(s-1)+j) := A(l(s-1)+j)
-    for h := 1 to log n do
-        if (k-h-q) >= 0 then
-            for j := 2^(k-h-q) * (s-1)+1 to 2^(k-h-q) *s do
-                B(j) := B(2j-1) + B(2j)
-        else
-            if s <= 2^(k-h) then
-                B(s) := B(2s - 1) + B(2s)
-    if s = 1 then
-        S := B(1)
-end
-\end{verbatim}
+\begin{algorithm}
+\caption{Allokation}
+\begin{algorithmic}[1]
+%Ein Rechner habe $p=2^q \leq n = 2^k$ Prozessoren.
+\REQUIRE Sei $l := \frac{n}{p} = 2^{k-q}$ und $A$ das Inputarray, dann wäre ein Programm für Prozessor s:
+\FOR{$j := 1$ to $l$}
+	\STATE B(l*(s-1)+j) := A(l(s-1)+j)
+\ENDFOR
+\FOR{$h := 1$ to $\log n$}
+	\IF{$(k-h-q) \geq 0$}
+		\FOR{$j := 2^{k-h-q} * (s-1)+1$ to $2^{k-h-q} *s$}
+			\STATE B(j) := B(2j-1) + B(2j)
+		\ENDFOR
+	\ELSE
+		\IF{$s \leq 2^{k-h}$}
+			\STATE $B(s) := B(2s - 1) + B(2s)$
+		\ENDIF
+	\ENDIF
+\ENDFOR
+\IF{$s=1$}
+	\STATE $S := B(1)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
 Für $n=8$ und $p=4$ würde das folgendermaßen aussehen:\\
 \input{figures/sum_bsp.pdf_t}
 \end{bsp}
@@ -564,19 +590,22 @@ zusammengefasst werden, die gleichzeitig augef"uhrbar sind. \\
 
 \begin{bsp}
 
-
-INPUT: $n=2^{k}$-Zahlen in Array $A$
-OUTPUT: Summe $S$
-
-\begin{Verbatim}[numbers=left]
-begin
-    for i \le i \le n pardo B(i) := A(i)
-    for h=1 to \log n do
-        for 1 \le i \le \frac{n}{2^h} pardo
-            B(i) := B(2\,i-1)+B(2\,i)
-    S := B(1)
-end
-\end{Verbatim}
+\begin{algorithm}
+\caption{Summenalgorithmus}
+\begin{algorithmic}[1]
+\REQUIRE $n=2^{k}$-Zahlen in Array $A$
+\ENSURE Summe $S$
+\FOR{$i \le i \le n$ {\bf{par}}}
+	\STATE $B(i) := A(i)$
+\ENDFOR
+\FOR{$h=1$ to $\log n$}
+	\FOR{$1 \le i \le \frac{n}{2^h}$ {\bf{par}}}
+		\STATE $B(i) := B(2\,i-1)+B(2\,i)$
+	\ENDFOR
+\ENDFOR
+\STATE $S := B(1)$
+\end{algorithmic}
+\end{algorithm}
 $\to$ WT = $O(\log n)$
 \end{bsp}
 
@@ -689,25 +718,34 @@ Sei $W_i(n)$ die Anzahl der Operationen des Algorithmus in der TimeUnit $i$. Sim
 
 \section{Präfixsummen}
 
-Input: Array $A, n=2^k$\\
-Output: Array $C(0,j), 1\leq j \leq n$ - Präfixsummen
-\begin{verbatim}
-begin
-    for 1 <= j <= n pardo
-        B(0,j) := A(j)
-    for h := 1 to log n do
-        for 1 <= j <= n / 2^h pardo
-            B(h,j) := B(h-1, 2j-1) + B(h-q, 2j)
-    for h := log n to 0
-        for 1 <= j <= n / 2^h pardo
-            if ( j gerade) then
-                C(h,j) := C(h+1, j/2)
-            elsif j=1 then
-                C(h,1) := B(h,1)
-            else
-                C(h,j) := C(h+1, (j-1)/2) + B(h,j)
-end
-\end{verbatim}
+\begin{algorithm}
+\caption{Päfixsummen}
+\begin{algorithmic}[1]
+\REQUIRE Array $A, n=2^k$
+\ENSURE Array $C(0,j), 1\leq j \leq n$ - Präfixsummen
+\FOR{$1 <= j <= n$ {\bf{par}}}
+	\STATE $B(0,j) := A(j)$
+\ENDFOR
+\FOR{$h := 1$ to $\log n$}
+	\FOR{$1 <= j <= \frac{n}{2^h}$ {\bf{par}}}
+		\STATE $B(h,j) := B(h-1, 2j-1) + B(h-q, 2j)$
+	\ENDFOR
+\ENDFOR
+\FOR{$h := \log n$ to $0$}
+	\FOR{$1 <= j <= \frac{n}{2^h}$ {\bf{par}}}
+		\IF{j gerade}
+			\STATE $C(h,j) := C(h+1, \frac{j}{2})$
+		\ELSIF{$j=1$}
+			\STATE $C(h,1) := B(h,1)$
+		\ELSE
+			\STATE $C(h,j) := C(h+1, \frac{j-1}{2} + B(h,j)$
+		\ENDIF
+	\ENDFOR
+\ENDFOR
+
+\end{algorithmic}
+\end{algorithm}
+
 \begin{bsp}[n=8]
 \begin{eqnarray*}
 B(3,1) &=& a_1+\ldots + a_8 = C(3,1) \\
@@ -730,16 +768,19 @@ eines Disjoint Set Forests.
 \input{figures/ptr_jumping.pdf_t}
 \end{center}
 
-\underline{INPUT:} Forrest $(i, p(i)) : 1 \leq i \leq n$\\
-\underline{OUTPUT:} $\forall$ Knoten $i$ : ROOT $(S(i)$ 
-\begin{Verbatim}
-begin
-    for 1 \le i \le n pardo
-        S(i) := p(i)
-	while S(i) \not= S(S(i)) do
-	    S(i) := S(S(i))  << Pointer Jumping
-end.
-\end{Verbatim}
+\begin{algorithm}
+\caption{Pointerjumping}
+\begin{algorithmic}[1]
+\REQUIRE Forrest $(i, p(i)) : 1 \leq i \leq n$
+\ENSURE $\forall$ Knoten $i$ : ROOT $(S(i)$
+\FOR{$1 \le i \le n$ {\bf par}}
+	\STATE $S(i) := p(i)$
+	\WHILE{$S(i) \not= S(S(i))$}
+		\STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
+	\ENDWHILE
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 \begin{bemerk}
 Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Operationen.
@@ -750,19 +791,22 @@ Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Opera
 \begin{center}
 \input{figures/ptr_jumping_weight.pdf_t}
 \end{center}
-INPUT: Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$ \\
-OUTPUT: $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel
 
-(Seriell in $O(n)$ \Time)
-\begin{Verbatim}
-begin
-    For 1 \le i \le n pardo
-        s(i) := p(i)
-	while s(i) \not= i do
-	    W(i) := W(i) + W(S(i))
-	    S(i) := S(S(i))  << Pointer Jumping
-end.
-\end{Verbatim}
+\begin{algorithm}
+\caption{Pointer Jumping mit Knotengewichten}
+\begin{algorithmic}[1]
+\REQUIRE Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$
+\ENSURE $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel\\
+(Seriell in $O(n)$ \Time)\\
+\FOR{$1 \le i \le n$ {\bf par}}
+	\STATE $S(i) := p(i)$
+	\WHILE{$S(i) \not= S(S(i))$}
+		\STATE $W(i) := W(i) + W(S(i))$
+		\STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
+	\ENDWHILE
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Ende Vorlesung vom 19.04.05
@@ -894,14 +938,14 @@ Rang $(x: A \cup B)$, damit kennen wir den Platz von $x$ in $C$
 
 \underline{es genügt:} Rang $(B:A)$ und Rang $(A:B)$
 
-% ToDo: Bild "Merge" einfügen
+\todo{Bild Merge einfügen}
 
 \subsubsection*{Binäre Suche:} $O(\log n)$ pro Element 
 $\to$ parallel: $=(\log n)$ auf CREW\\
 
 $\to$ WORK $O(n\log n)$
 
-% ToDo: Bild "Merge 2" einfügen
+\todo{Bild Merge 2 einfügen}
 
 $\underbrace{\text{Mische } (B_i,A_i)}_{\text{"`Setzen der Pfeile"'}}$ untereinander und "`klebe"'.\\
 
@@ -953,22 +997,26 @@ $\underbrace{\text{Mische } (B_i,A_i)}_{\text{"`Setzen der Pfeile"'}}$ untereina
 %  \item[Strategie:] Partitioning
 % \end{description}
 
-INPUT: $A^{n}, B^{m}$ sortiert\\
-OUTPUT: Zerlegung: $k(m) (= \frac{m}{\log m})$ Paare $(A_i,B_i):\quad
+\begin{algorithm}
+\caption{Mischen}
+\begin{algorithmic}[1]
+\REQUIRE $A^{n}, B^{m}$ sortiert
+\ENSURE Zerlegung: $k(m) (= \frac{m}{\log m})$ Paare $(A_i,B_i):\quad
 |B_i| = \log m, \sum |A_i| = n$\\
 Alle Elemente $A_i$ bzw. $B_i$ sind größer oder gleich aller Elemente von $A_{i-1}$ bzw.
-$B_{i-1}\quad (1\leq i \leq k-1)$\\
+$B_{i-1}\quad (1\leq i \leq k-1)$
 
-\begin{verbatim}
-begin
-    j(0) := 0;   j(k(m)) := j(m/log n) := n
-    for 1 <= i <= k(m)-1 pardo
-        j(i) := Rang(b_(i log m) : A)  
-    for 0 <= i <= k(m)-1 pardo
-        B_i := (b_(i log (m+1)),...,b_((i+1) log m))
-        A_i := (a_(j(i)+1),...,a_(j(i+1)))
-end
-\end{verbatim}
+\STATE $j(0) := 0$
+\STATE $j(k(m)) := j(\frac{m}{\log n}) := n$
+\FOR{$1 \le i \le k(m)-1$ {\bf par}}
+	\STATE $j(i) :=$ Rang$(b_{i \log m} : A)$
+\ENDFOR
+\FOR{$0 \le i \le k(m)-1$ {\bf par}}
+	\STATE $B_i := (b_{i \log (m+1)},\ldots,b_{(i+1) \log m)}$
+	\STATE $A_i := (a_{j(i)+1},\ldots,a_{j(i+1)})$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 \begin{satz}
   Der Algo. ben"otigt $O(\log n)$ \Time und $O(n+m)$ \Work
@@ -1014,7 +1062,7 @@ $A^n$ (sortiert) und $B^n$ (sortiert) lassen sich in $O (\log n)$ Zeit optimal m
 	$O(n)$ \Work.
 \item [2. Fall:] 
 
-% ToDo: Bild "MergeTrick" einfügen
+\todo{Bild MergeTrick einfügen}
 
 Dann das analoge Vorgehen mit Vertauschung der Rollen für zu lange $A_i$! Rest wie im Fall 1.
 \end{description}
@@ -1052,27 +1100,26 @@ $\Rightarrow$ Optimaler paralleler Algorithmus, der aber nicht streng optimal is
 
 \section{Teile und Herrsche (Divide and Conquer)}
 Convex Hull:
-%ToDo: Bild "ConvexHull1" einfügen
+\todo{Bild ConvexHull1 einfügen}
 
 Komplexe Datenstrukturen für "`merge"' (Diss. Goodrich)\\
 Andere Möglichkeit:
 
-%ToDo: Bild "ConvexHull2" einfügen
+\todo{Bild ConvexHull2 einfügen}
 
-\underline{UCH(S):}\\
-INPUT: $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage \\
-OUTPUT: UCH
-
-\begin{verbatim}
-begin
-    if n <= 4 then 
-        bestimme UCH
-        exit()
-    sei S_1 = (p_1, ... , p_(n/2)), S_2 = (p_(n/2 + 1), ... , p_n)
-        berechne UCH(S_1), UCH(S_2) parallel
-    berechne die gemeinsame obere Tangente und bilde die konvexe Hülle
-end
-\end{verbatim}
+\begin{algorithm}
+\caption{UCH(S)}
+\begin{algorithmic}[1]
+\REQUIRE $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage
+\ENSURE UCH
+\IF{$n \le 4$}
+	\STATE Bestimme UCH
+	\STATE exit()
+\ENDIF
+\STATE sei $S_1 = (p_1, \ldots , p_{\frac{n}{2}}), S_2 = (p_{\frac{n}{2} + 1}, \ldots , p_n)$
+\STATE berechne die gemeinsame obere Tangente und bilde die konvexe Hülle
+\end{algorithmic}
+\end{algorithm}
 
 \subsubsection*{Frage:} Modell, Rechenzeit, \Work ? 
 
