@@ -50,10 +50,6 @@
 \renewcommand{\algorithmiccomment}[1]{\textit{// #1}}
 \floatname{algorithm}{Algorithmus}
 \renewcommand{\listalgorithmname}{Algorithmenliste}
-%zum Umschalten auf pardo
-\newcommand{\pardo}{\renewcommand{\algorithmicdo}{\textbf{pardo}}}
-%zum Umschalten auf do
-\newcommand{\do}{\renewcommand{\algorithmicdo}{\textbf{do}}}
 
 \newcommand{\help}[1]{\textcolor{green}{help: #1}}
 \newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
@@ -140,6 +136,9 @@
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
 \makeatother
+
+%somit wird nicht mehr eingerückt
+ \parindent 0mm
 
 \newcommand{\Time}{TIME\xspace}
 \newcommand{\Work}{WORK\xspace}
@@ -303,7 +302,7 @@ Beispiel das Modell eines Feldrechners:
 	Dabei übernimmt jeder Prozessor $P_i$ genau $r$ Zeilen, d.h. $P_1$ rechnet mit
 	den Zeilen $1$ bis $r$, $P_2$ mit den Zeilen $r+1$ bis $2r$, usw.
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{hier muss nen Name hin}
 \begin{algorithmic}
 	\REQUIRE $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
@@ -333,7 +332,7 @@ Beispiel das Modell eines Feldrechners:
 	Zur Vereinfachung werden wir folgende Kurzschreibweise verwenden. Dies ist sinnvoll,
 	da die Ein- und Ausgabe nur jeweils $O(1)$ Schritte dauert, und deshalb ignoriert
 	werden kann.
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Vereinfachung}
 \begin{algorithmic}
 \STATE globalRead(B,x)
@@ -351,7 +350,7 @@ Wir verwenden in dieser Vorlesung das Modell eines Syncronen Rechners mit Shared
 \begin{bsp}[Summenbeispiel]
 
 
-\begin{algorithm}[h]
+\begin{algorithm}[htb]
 \caption{Programm für Prozessor $i$}
 \begin{algorithmic}[1]
 \STATE $B(i) := A(i)$
@@ -368,7 +367,7 @@ Wir verwenden in dieser Vorlesung das Modell eines Syncronen Rechners mit Shared
 \input{figures/add_tree.pdf_t}
 Ein Problem tritt auf, bei einer geringen Anzahl Prozessoren (im Verhältnis zur Anzahl der Eingabedaten). D.h. man benötigt eine sinnvolle Allokation der Prozessoren.
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Allokation}
 \begin{algorithmic}[1]
 %Ein Rechner habe $p=2^q \leq n = 2^k$ Prozessoren.
@@ -590,7 +589,7 @@ zusammengefasst werden, die gleichzeitig augef"uhrbar sind. \\
 
 \begin{bsp}
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Summenalgorithmus}
 \begin{algorithmic}[1]
 \REQUIRE $n=2^{k}$-Zahlen in Array $A$
@@ -718,7 +717,7 @@ Sei $W_i(n)$ die Anzahl der Operationen des Algorithmus in der TimeUnit $i$. Sim
 
 \section{Präfixsummen}
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Päfixsummen}
 \begin{algorithmic}[1]
 \REQUIRE Array $A, n=2^k$
@@ -768,7 +767,7 @@ eines Disjoint Set Forests.
 \input{figures/ptr_jumping.pdf_t}
 \end{center}
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Pointerjumping}
 \begin{algorithmic}[1]
 \REQUIRE Forrest $(i, p(i)) : 1 \leq i \leq n$
@@ -792,7 +791,7 @@ Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Opera
 \input{figures/ptr_jumping_weight.pdf_t}
 \end{center}
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Pointer Jumping mit Knotengewichten}
 \begin{algorithmic}[1]
 \REQUIRE Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$
@@ -997,7 +996,7 @@ $\underbrace{\text{Mische } (B_i,A_i)}_{\text{"`Setzen der Pfeile"'}}$ untereina
 %  \item[Strategie:] Partitioning
 % \end{description}
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{Mischen}
 \begin{algorithmic}[1]
 \REQUIRE $A^{n}, B^{m}$ sortiert
@@ -1107,7 +1106,7 @@ Andere Möglichkeit:
 
 \todo{Bild ConvexHull2 einfügen}
 
-\begin{algorithm}
+\begin{algorithm}[htb]
 \caption{UCH(S)}
 \begin{algorithmic}[1]
 \REQUIRE $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage
@@ -1124,65 +1123,109 @@ Andere Möglichkeit:
 \subsubsection*{Frage:} Modell, Rechenzeit, \Work ? 
 
 %Todo: Bild "ConvexHull3" einfügen
------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ende Vorlesung vom 22.04.05           %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Gesucht ist die Tangente in $O(\log n)$ \Time
+
+\[
+	T(n) = T(\frac{n}{2}+\text{ const }\log n=O(\log^2n)
+\]
+\[
+W(n) = 2 W(\frac{n}{2}+\text{ const } n=O(n\log n)
+\]
+
+\subsubsection*{Ziel:} optimaler Algorithmus auf der CREW in $O(\log^2n)$ \Time (nicht streng optimal)
+
+\begin{itemize}
+\item [1. Fall, Tangente:] \todo{Bild einfügen}
+	$(p,v,v'')$ - Linksdrehung \\
+	$(p,v,v')$ - Linksdrehung \\
+	\begin{bemerk}
+	\[
+	\text{Linksdrehung} \Leftrightarrow 
+\begin{vmatrix}
+1 & p_x & p_y  \\ 
+1 & v_x & v_y \\ 
+1 & v''_x & v''_y
+\end{vmatrix}
+	\]
+	\end{bemerk}
+\item[2. Fall Reflex:] \todo{Bild einfügen}
+	\[
+	\neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}=\emptyset
+	\]
+\item[3. Fall Konkav:] \todo{Bild einfügen}
+	\[
+	\neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}\not=\emptyset
+	\]
+\end{itemize}
+
+\todo{Bild Tabelle Konkav Konvex einfügen }\\
+
+Einziges Problem ist der Fall konkav-konkav, da bei diesem die zu suchende Fläche nicht kleiner wird.
+
+\todo{Bild (mit Geraden u,l und Punkt p) einfügen} \\
+
+\begin{itemize}
+\item[1. Fall] $p$ liegt rechts von $l$
+\item[2. Fall] $p$ liegt links von $l$
+\end{itemize}
+
+-----------------------------------------
 \section{Pipelining}
 
-2-3-B"aume ("ahnlich Top-Down-2-3-4-B"aumen)
+2-3-B"aume ("ahnlich Top-Down-2-3-4-B"aumen, ausbalancierter Suchbaum mit Knoten aus zwei oder drei Elementen)\\
 
-$a_{1}<a_{2}<\ldots<a_{n}$ Blattsuchbaum innere Knoten: Pfad-Infos
+Gegeben: $A=(a_1,a_2,\ldots,a_n)\quad : \quad a_{1}<a_{2}<\ldots<a_{n}$ Blattsuchbaum\\
+Innere Knoten: Pfad-Infos $(L[v],M[v],R[v])$ - jeweils größter Knoten im linken (bzw. mittleren oder rechten) Teilbaum\\
 
-Knoten $v$: L(v) : gr"o"ster Wert des linken TB, M(v) gr"o"ster Wert des
-mittleren TB
+Wir wollen nun in diesen Baum $B={b_1,\ldots,b_k}\quad : \quad b_{1}<b_{2}<\ldots<b_{k}\quad k<<n$ einfügen:
 
-INSERT: $b_{1}<b_{2}<\ldots<b_{k}$ $k<<n$
+% \begin{description}
+%  \item[B Task] 100 Autos Teilaufgabe 1. Auto ($t_{1}, t_{2},t_{3}, \ldots)$
+%   2. Auto ($t_{2}, t_{3},\ldots$)
+%  \item[A Task $t$] 1 Auto, zerlege in Folge von Teilaufgaben ($t_{1},
+%   t_{2}, t_{3},\ldots)$
+% \end{description}
+% 
+% Nutzen dieser Idee zum Algorithmusentwurf
+% 
+% Beispiel: INSERT von ($b_{1}<b_{2}<\ldots<b_{k})$ in
+% ($a_{1}<a_{2}<\ldots<a_{n}$) $k=O(n)$, sogar $k<<n$
+% 
+% \begin{description}
+%  \item[Variante B] task: INSERT($b_{1}, b_{2},\ldots,b_{k})$
+%  \item[Variante A] task: INSERT einen Teil davon
+% \end{description}
+% 
+% Verwaltung der Werte in (2,3)-Suchbaum (-Blattsuchbaum)
+% 
+% Knoten $v$: L[v], M[v], R[v]
+% INSERT : SEARCH+ Einf"ugen
+% START: INSERT $b$: gesucht $i$: $a_{i}<b<a_{i+1}$
+% 
+% % Bild: Einf"ugen in 2-3-Baum
 
-Problem: Wie hilft hier ein paralleler Ansatz?
+\begin{defini}
+$B_i \subseteq B$ - Werte zwischen $a_i$ und $a_{i+1}$\\
+$|B_i| := k_i \quad (\to$ Summer der $k_i$ sind ergibt im wesentlichen $k-2$, nach dem ersten Schritt)
+\end{defini}
 
-Idee: 
-
-% 4.5.
-
-\begin{description}
- \item[B Task] 100 Autos Teilaufgabe 1. Auto ($t_{1}, t_{2},t_{3}, \ldots)$
-  2. Auto ($t_{2}, t_{3},\ldots$)
- \item[A Task $t$] 1 Auto, zerlege in Folge von Teilaufgaben ($t_{1},
-  t_{2}, t_{3},\ldots)$
-\end{description}
-
-Nutzen dieser Idee zum Algorithmusentwurf
-
-Beispiel: INSERT von ($b_{1}<b_{2}<\ldots<b_{k})$ in
-($a_{1}<a_{2}<\ldots<a_{n}$) $k=O(n)$, sogar $k<<n$
-
-\begin{description}
- \item[Variante B] task: INSERT($b_{1}, b_{2},\ldots,b_{k})$
- \item[Variante A] task: INSERT einen Teil davon
-\end{description}
-
-Verwaltung der Werte in (2,3)-Suchbaum (-Blattsuchbaum)
-
-Knoten $v$: L[v], M[v], R[v]
-INSERT : SEARCH+ Einf"ugen
-START: INSERT $b$: gesucht $i$: $a_{i}<b<a_{i+1}$
-
-% Bild: Einf"ugen in 2-3-Baum
-
-Vorschritt: INSERT $b_{1},b_{k}$ ($O(\log n)$ \Time) (Damit alle Elemente
+Vorschritt: Füge $b_{1},b_{k}$ ($O(\log n)$ \Time) (Damit alle Elemente
 zwischen zwei Elementen im Baum eingef"ugt werden und nicht vor dem
-linken oder nach dem rechten)
+linken oder nach dem rechten)\\
 
-Dann: Umbenennung: $a_{1}<\ldots<a_{n}$ neu = $a_{1},\ldots,a_{n}$ alt
-erg"anzt um $b_{1},b_{k}$
-Jetzt Def.: $B_{i}:= $ Teilkette der $b_{2},\ldots,b_{k-1}$ zwischen
-$a_{i}$ und $a_{i+1}$
+% Dann: Umbenennung: $a_{1}<\ldots<a_{n}$ neu = $a_{1},\ldots,a_{n}$ alt
+% erg"anzt um $b_{1},b_{k}$
+% Jetzt Def.: $B_{i}:= $ Teilkette der $b_{2},\ldots,b_{k-1}$ zwischen
+% $a_{i}$ und $a_{i+1}$
 \begin{enumerate}[1.\,{Fall}]
- \item $|B_{i}|\leq 1 \forall i=1,\ldots,n-1$
+ \item $|B_{i}|\leq 1 \quad\forall i=1,\ldots,n-1$
   
   WORSTCASE
-  % Bild: Worstcase bei Fall1
+  \todo{ Bild: Worstcase bei Fall1 einfügen}
   
   $\Rightarrow$ bei pardo insert ($b_{2},\ldots,b_{k-1})$ im Fall 1
   entstehen pro Knoten "uber der Blattebene max. 6 S"ohne
