@@ -8,8 +8,11 @@
 %  * Schlussfolgerungen ausschmücken
 %  * wichtige Begriffe mit \highl{} markieren
 %  * Indexeinträge machen
+%  * den Text mehr ausbauen, damit Tex die Möglichkeit zum Umbruch
+%    bekommt. Innerhalb von Matheumgebungen kann Tex keine richtige
+%    Stelle für einen Umbruch finden. Daher ist Text immer besser!
 
-\documentclass[draft,twoside]{scrreprt}
+\documentclass[german,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
 
@@ -58,9 +61,9 @@
 \usepackage{ngerman}
 %\usepackage{wasysym}  % \lightning
 
+\makeatletter
 % Zur Korrektur von \thref
 % <news:col095$me8$2@n.ruf.uni-freiburg.de>
-\makeatletter
 \ifthenelse{\boolean{withHyperref}}%
 {\def\thref#1{%
    \expandafter\ifx\csname r@#1@type\endcsname\None
@@ -96,6 +99,12 @@
        \hbox{\m@th\normalfont##1%
          \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
    \fi}
+
+% Korrektur für \autoref bei Gleichungen in Aufzählungen
+% <news:d6lcm8$f8u$04$1@news.t-online.com>
+\newcommand{\saved@equation}{}
+\let\saved@equation\equation
+\def\equation{\@hyper@itemfalse\saved@equation}
 
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
@@ -214,13 +223,13 @@
 \date{WS 2004/05}
 \maketitle
 
-\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\pdfbookmark[-1]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
 \clearpage
 
 % 12.10.04
 
-\pdfbookmark[0]{Litheraturverzeichnis}{litheraturverzeichnis}
+\pdfbookmark[-1]{Litheraturverzeichnis}{litheraturverzeichnis}
 \begin{thebibliography}{Hirzebruch}
  \bibitem{Triebel} H. Triebel: Höhere Analysis, Harri Deutsch 1980 (empfohlen)
  \bibitem{Werner} D. Werner: Funktionalanalysis, Springer 2004 (empfohlen)
@@ -383,9 +392,10 @@
 \end{defini}
 
 \begin{bemerk}
-  Die Räume $\R^{n}, \C^{n}$ mit der Norm $\norm{\cdot}_{2}$ und der Raum
-  $C([a,b]), \norm{\cdot}_{\infty})$ mit der Supremumsnorm $\norm{f}_{\infty} :=
-  \sup_{x\in[a,b]} \abs{f(x)}$ sind Banachräume (s.~Analysis~2).
+  Die Räume $\R^{n}, \C^{n}$ mit der euklidischen Norm $\norm{\cdot}_{2}$
+  und der Raum $(C([a,b]), \norm{\cdot}_{\infty})$ mit der Supremumsnorm
+  $\norm{f}_{\infty} := \sup_{x\in[a,b]} \abs{f(x)}$ sind Banachräume
+  (s.~Analysis~2).
 \end{bemerk}
 
 \begin{bemerk}
@@ -520,7 +530,7 @@
          a_{n}\in\K. \text{Setzen } a := (a_{n})_{n}.&
     \end{flalign*}
 
-    Zeigen: $a_{j}\rightarrow a$ in $l_{1}(\N)$. Aus Gleichung~\eqref{eq:1}
+    Zeigen: $a_{j}\rightarrow a$ in $l_{1}(\N)$. Aus \autoref{eq:1}
     folgt für jedes $N\in\N$:
     \begin{gather*}
       j,k\geq j_{0}(\epsilon): \sum_{n=1}^{N}\abs{a_{n}^{j}-a_{n}^{k}}\leq
@@ -552,7 +562,7 @@
   \begin{enumerate}
    \item $\Q\subset\R$ dicht $\Longrightarrow$ $\R$ separabel
    \item $\Q^{n}\subset\R^{n}$ dicht $\Longrightarrow$ $\R^{n}$ separabel
-   \item äquivalent zum Punkt~\ref{en1} in \thref{def:1.1.1/4} ist:
+   \item äquivalent zum \autoref{en1} in \thref{def:1.1.1/4} ist:
     \begin{equation*}
       \forall \epsilon>0\:\forall x\in E\:\exists x_{\epsilon} \in M:
       \norm{x-x_{\epsilon}}<\epsilon \Longleftrightarrow x_{\epsilon}\in
@@ -782,7 +792,7 @@ x\in U \exists r>0: K_{r}(x)\subset U$
            x\in A \exists U_{\alpha}: K_{\lambda}(x)\subset U_{\alpha}
       \end{equation*}
       
-      Ann: \eqref{eq:2} gilt nicht $\Longrightarrow$
+      Ann: \autoref{eq:2} gilt nicht $\Longrightarrow$
       \begin{equation*}
         \forall n\in \N\exists x_{n}\in A\forall U_{\alpha}:
            K_{\frac1n}(x_{n})\not\subset U_{\alpha}
@@ -815,9 +825,9 @@ x\in U \exists r>0: K_{r}(x)\subset U$
       \end{gather*}
       
       Beh.: $\exists n\in \N: A\setminus \bigcup_{j=1}^{n-1}
-      K_{\lambda}(y_{j})=\emptyset$ $(\Longrightarrow A\subset
+      K_{\lambda}(y_{j})=\emptyset$ ($\Longrightarrow A\subset
       \bigcup_{j=1}^{n} K_{\lambda}(y_{j})\subset \bigcup_{j=1}^{n}
-      U_{\alpha_{j}}$
+      U_{\alpha_{j}}$)
       
       Ann: $A\setminus \bigcup_{j=1}^{n-1} K_{\lambda}(y_{j})
       \not=\emptyset\; \forall n\in \N$ $\Rightarrow$ $\exists
@@ -854,7 +864,7 @@ x\in U \exists r>0: K_{r}(x)\subset U$
     
     $\Longrightarrow$ $M := \{ x_{k}^{j}: j\in \N, k=1,\ldots,n_{j}\}$ $M$
     ist abzählbar und dicht in $X$: $x\in X, \epsilon>0$ wähle
-    $j>\frac1{\epsilon}$ Aus (\ref{gl2}) folgt $\exists k$ mit $x\in
+    $j>\frac1{\epsilon}$ Aus \autoref{gl2} folgt $\exists k$ mit $x\in
     K_{\frac1j}(x_{k}^{j}) \Longrightarrow d(x,x_{k}^{j})<\epsilon$
     $\Longrightarrow$ Folgerung
   \end{proof}
@@ -1035,7 +1045,7 @@ x\in U \exists r>0: K_{r}(x)\subset U$
         \Longrightarrow&
            \sum_{l=1}^{n}\abs{b_{l}^{k}-a_{l}}\qquad\text{konvergent für}
            k\rightarrow\infty\\
-        \intertext{wählen $n$ so dass \ref{gl3} gilt}\\
+        \intertext{wählen $n$ so dass \autoref{gl3} gilt}\\
         \Longrightarrow& \sum_{l=1}^{\infty}\abs{b_{l}^{k}-b_{l}^{j}} =
            \underbrace{\sum_{l=1}^{n}\abs{b_{l}^{k}-
              b_{l}^{j}}}_{<\epsilon \text{für} j,k>j_{0}(\epsilon)} +
@@ -1132,7 +1142,7 @@ x\in U \exists r>0: K_{r}(x)\subset U$
       \norm{a_{1}x_{1}+\ldots+a_{n}x_{n}}_{E} &= \norm{a}_{1}
       \norm[\bigg]{\frac{a_{1}}{\norm{a}_{1}}x_{1}+\ldots+
       \frac{a_{n}}{\norm{a}_{1}}x_{n}}_{E}\\
-      &\geq \norm{a}_{1}\tilde{c}&&\text{nach \eqref{eq:3}}\\[3ex]
+      &\geq \norm{a}_{1}\tilde{c}&&\text{nach \autoref{eq:3}}\\[3ex]
          \norm{a_{1}} &\leq \frac1{\tilde{c}} \norm{a_{1}x_{1} + \ldots +
          a_{n}x_{n}}
     \end{align*}
@@ -1216,7 +1226,7 @@ x\in U \exists r>0: K_{r}(x)\subset U$
            \norm{x-y}x_{i}}_{=\tilde{y}\in F} +\norm{x-y}(z-x_{i})\\
         d \leq \norm{x-\tilde{y}}= \norm{x-y}
            \underbrace{\norm{z-x_{i}}}_{<\frac12} \leq \frac12 \norm{x-y}\\
-        \Longrightarrow \norm{x-y}\geq 2d\qquad\text{Widerspruch zu (\ref{gl5})}
+        \Longrightarrow \norm{x-y}\geq 2d\qquad\text{Widerspruch zur \autoref{gl5}}
       \end{gather*}
     \end{description}
   \end{proof}
@@ -1593,11 +1603,11 @@ $(X,d)$ metr. Raum, $(E, \norm{\cdot})$ Banachraum, $(B(X,E),
       \begin{equation*}
         \abs{g_{j}(x)-g_{k}(x)}\leq
            \underbrace{\abs{g_{j}(x) - g_{j}(x_{l})}}_{<\epsilon
-             \text{nach (\ref{gl7})}}
+             \text{nach \autoref{gl7}}}
            +\underbrace{\abs{g_{j}(x_{l})-g_{k}(x_{l})}}_{<\epsilon
-           \text{nach (\ref{gl8})}}
+           \text{nach \autoref{gl8}}}
            +\underbrace{\abs{g_{k}(x_{l})- g_{k}(x)}}_{<\epsilon
-           \text{nach (\ref{gl7})}} < 3\epsilon
+           \text{nach \autoref{gl7}}} < 3\epsilon
       \end{equation*}
       
       $\Longrightarrow$ $\norm{g_{j}-g_{k}}_{\infty}\leq 3\epsilon$
@@ -1640,7 +1650,7 @@ $(X,d)$ metr. Raum, $(E, \norm{\cdot})$ Banachraum, $(B(X,E),
       p_{n}(t) \leq \abs{t} &\Longrightarrow \abs{t}+p_{n}(t) \leq 2\abs{t}\\
       &\Longrightarrow 1-\frac{\abs{t}+p_{n}(t)}{2} \geq 1-\frac{2\abs{t}}{2} =
          1-\abs{t} \geq 0\\
-      \text{nach (\ref{eq:11})}&\Longrightarrow \abs{t}-p_{n+1}(t) \geq 0
+      \text{nach \autoref{eq:11}}&\Longrightarrow \abs{t}-p_{n+1}(t) \geq 0
     \end{align*}
     
     und:
@@ -1653,7 +1663,7 @@ $(X,d)$ metr. Raum, $(E, \norm{\cdot})$ Banachraum, $(B(X,E),
          \frac{2+n\abs{t}}{2+(n+1)\abs{t}}\label{eq:13}
     \end{align*}
     
-    Aus \eqref{eq:11} folgt mit \eqref{eq:13} durch Induktion:
+    Aus \autoref{eq:11} folgt mit \autoref{eq:13} durch Induktion:
     \begin{align}\label{eq:14}
      \begin{split}
         \abs{t}-p_{n+1}(t) &\leq (\abs{t}-p_{n}(t)) \frac{2+n\abs{t}}{2+(n+1)\abs{t}}\\
@@ -1665,7 +1675,7 @@ $(X,d)$ metr. Raum, $(E, \norm{\cdot})$ Banachraum, $(B(X,E),
     \end{align}
 
     \begin{gather*}
-      \abs{t} \leq 1 \text{ und \eqref{eq:14}}  \Longrightarrow 0 \leq \abs{t}-p_{n}(t)
+      \abs{t} \leq 1 \text{ und \autoref{eq:14}}  \Longrightarrow 0 \leq \abs{t}-p_{n}(t)
          \leq \frac{2\abs{t}}{2+n\abs{t}} \leq \frac{2\abs{t}}{2\abs{t}+n\abs{t}} =
          \frac{2}{2+n} \xrightarrow{n\rightarrow\infty} 0
     \end{gather*}
@@ -1682,7 +1692,7 @@ $(X,d)$ metr. Raum, $(E, \norm{\cdot})$ Banachraum, $(B(X,E),
     setzen $t:=\frac{f(x)}{\norm{f}_{\infty}} (x\in X) \Longrightarrow
     \abs{t}\leq 1$
     
-    Lemma \ref{lemma:1} $\Longrightarrow$ $\exists p_{n}(t)$ mit
+    \thref{lemma:1} $\Longrightarrow$ $\exists p_{n}(t)$ mit
     $\abs[\big]{p_{n}(t)-\abs{t}}\leq \frac{\epsilon}{\norm{f}_{\infty}} (\forall t)$
     
     $\Longrightarrow \forall x:
@@ -2635,6 +2645,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
 \begin{bemerk}
   \begin{enumerate}
    \item Als "`\highl{wesentliches Supremum}"' $\esssup$ bezeichnet man
+    \index{esssup@$\esssup$}
     \begin{equation*}
       \esssup_{x\in A}\abs{f(x)} := \norm{f}_{\infty} = \inf \bigl\{
       \sup_{x\in A\setminus N} \abs{f(x)}: \mu(N) =0\bigr\}
@@ -2671,7 +2682,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
     \end{equation}
     
     Vergleiche auch: \thref{lem:hoelder-sum} mit der Ungleichung für Summen
-    \eqref{eq:hoelder-sum}
+    \autoref{eq:hoelder-sum}
    \item $0<p \leq \infty$. Es seien $f,g\in L_{p}(A,\mu)$.
     
     Dann ist $f+g\in L_{p}(A,\mu)$ und
@@ -2754,7 +2765,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
     $\forall j \Longrightarrow \int_{A_{j}}
     \sum_{k=1}^{n}\abs{g_{k}(x)}\,d\mu \leq \norm{\sum_{k=1}^{n}
     \abs{g_{k}(x)}}_{p}\ \mu(A_{j})^{1-\frac1p}\leq c
-    \sum_{k=1}^{n}\norm{g_{k}(x)}_{p} <^{\eqref{eq:144}} \infty$
+    \sum_{k=1}^{n}\norm{g_{k}(x)}_{p} <^{\autoref{eq:144}} \infty$
     
     Aus dem Satz von B.\,Levi (\thref{satz:blevi}) folgt, dass die Summe
     $\sum_{k=1}^{\infty} \abs{g_{k}(x)}$ \fue auf $A_{j} (\forall j)$
@@ -2767,7 +2778,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
     \begin{gather*}
       \int_{A} \biggl(\sum_{k}^{n}\abs{g_{k}(x)}_{p}\biggr)^{p}\,d\mu =
          \Biggl(\norm[\bigg]{\sum_{k=1}^{n}\abs{g_{k}(x)}}_{p}\Biggr) \leq
-         \biggl(\sum_{k=1}^{n}\norm{g_{k}}_{p}\biggr)^{p} <^{\eqref{eq:144}} \infty\\
+         \biggl(\sum_{k=1}^{n}\norm{g_{k}}_{p}\biggr)^{p} <^{\autoref{eq:144}} \infty\\
       \intertext{Nach dem Satz von B.\,Levi (\thref{satz:blevi})}
       \Longrightarrow \exists
          \int_{A}\biggl(\sum_{k=1}^{\infty}\abs{g_{k}(x)}\biggr)^{p}\,d\mu =
@@ -2803,7 +2814,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
   
   In diesem Sinne gilt:
   $[f] = \{ g : g\sim f\}, [0] = \{ g: g=0\ \fue,
-  \norm{[0]}_{p} := \norm{f}_{p}$ falls $f\in [f]$
+  \norm{[0]}_{p} \} := \norm{f}_{p}$ falls $f\in [f]$
 \end{bemerk}
 
 \begin{satz}\label{satz:17}
@@ -2873,7 +2884,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
              \abs{f(x)}\label{eq:17}\\
           \intertext{und somit:}\\
           \abs{f_{k}^{\epsilon}(x) - f(x)} \leq \abs{f_{k}^{\epsilon}(x)}+ \abs{f(x)}
-             \leq^{\ref{eq:17}} \frac{3}{\epsilon} 3 \abs{g_{k}^{\epsilon}(x)-f(x)}\\
+             \leq^{\autoref{eq:17}} \frac{3}{\epsilon} 3 \abs{g_{k}^{\epsilon}(x)-f(x)}\\
           \Longrightarrow \norm{f_{k}^{\epsilon}-f^{\epsilon}}_{1}
              \xrightarrow{k\rightarrow\infty} 0\\
           \Longrightarrow \int_{A}\abs{f-f_{k}^{\epsilon}}^{p}\, d\mu &=
@@ -3210,7 +3221,7 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
   \begin{proof}
     \begin{enumerate}[zu (1)]
       \stepcounter{enumi}
-     \item Höldersche Ungleichung \eqref{eq:hoelder-int}
+     \item Höldersche Ungleichung \autoref{eq:hoelder-int}
       $\Longrightarrow$ $\int_{\R^{n}} \abs{f(x-y)} \abs{g(y)}\,dy =
       \norm{f}_{p}\cdot \norm{g}_{p'}$
       \begin{align*}
@@ -3234,11 +3245,11 @@ unabhängig von der Auswahl der Folge $(S_{k})_{k}$)
         $L_{1}$ ist Faltungsalgebra
        \item[$p>1$:] ($f\in L_{p}, g\in L_{1}$) folgt aus:
         \begin{align*}
-          \int_{\R^{n}} \abs{f(x-y} \abs{g(y)}\,dy &= \int_{\R^{n}} \abs{f(x-y)}
+          \int_{\R^{n}} \abs{f(x-y)} \abs{g(y)}\,dy &= \int_{\R^{n}} \abs{f(x-y)}
              \abs{g(y)}^{\frac1p} \abs{g(y)}^{\frac1{p'}}\,dy\\
           &\leq (\int_{\R^{n}} \abs{f(x-y)}^{p}
              \abs{g(x)}\,dy)^{\frac1p}\norm{g}^{\frac1{p'}}_{1}&&\text{nach
-             \eqref{eq:hoelder-int}}\\
+             \autoref{eq:hoelder-int}}\\
           \intertext{und}
              \norm{(\int_{\R^{n}} \abs{f(x-y)}^{p}
              \abs{g(y)}\,dy)^{\frac1p}}_{p}^{p} &= \int_{\R^{n}}
@@ -3455,7 +3466,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
            \phi(y) \bigl(f(x)-f(x-hy)\bigr)\,dy }^{p}\,dx\\
         % &\leq \int_{\Omega} \Bigl(\int_{\abs{y}\leq1}
         %    \abs[\big]{\phi(y)\: \bigl(f(x)-f(x-hy)\bigr)}\,dy \Bigr)^{p}\,dx\\
-        &\text{die Hölder'sche Unlgeichung \eqref{eq:hoelder-int} liefert}\\
+        &\text{die Hölder'sche Unlgeichung \autoref{eq:hoelder-int} liefert}\\
         &\leq \int_{\Omega} \Biggl(
            \Bigl(\int_{\abs{y}\leq1} \abs{\phi(y)}^{p'}\,dy\Bigr)^{p\frac{1}{p'}}
            \Bigl(\int_{\abs{y}\leq1} \abs{f(x)-f(x-hy)}^{p}\,dy\Bigr)^{p\frac{1}{p}}
@@ -3752,7 +3763,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
          \abs[\Big]{\int_{0}^{1}k(x,y)\,f(y)\,dy}}
          _{=\norm{T_{k(x,\cdot)}}_{C([0,1])\rightarrow C([0,1])}}\\
       &= \sup_{x\in[0,1]} \norm{k(x,\cdot)}_{1}&&\text{nach
-         \ref{en:linfunk2} in \thref{bsp:linfunk}}\\
+         \autoref{en:linfunk2} in \thref{bsp:linfunk}}\\
       &= \sup_{x\in[0,1]} \int_{0}^{1}\abs{k(x,y)}\,dy
     \end{align*}
   \end{proof}
@@ -3819,12 +3830,12 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
   \begin{align*}
     f\in L_{p}(A,\mu) &\Longrightarrow T_{f} := \int_{A}
        f(x)g(x)\,d\mu,\quad T_{f}\in (L_{p'}(A,\mu))'&&\text{nach
-       \eqref{eq:hoelder-int}}\\
+       \autoref{eq:hoelder-int}}\\
     \norm{f}_{p} & = \sup_{\norm{g}_{p'}}
        \abs[\Big]{\int_{A}f(x)g(x)\,d\mu}
   \end{align*}
   
-  Gleichheit in \eqref{eq:134} gilt genau dann wenn $1< p \leq\infty$.
+  Gleichheit in \autoref{eq:134} gilt genau dann wenn $1< p \leq\infty$.
   
   \textbf{Aber:}
   \begin{equation*}
@@ -4051,7 +4062,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
      \item $K\in L_{2}(\Omega\times\Omega), \norm{f}_{2} \leq 1$
       
       $\Longrightarrow$ $\norm{\mathcal{K}f}_{2} = \norm{\int_{\Omega} K(x,y)
-      f(y)\,dy}_{2} \leq^{\eqref{eq:hoelder-int}}
+      f(y)\,dy}_{2} \leq^{\autoref{eq:hoelder-int}}
       \underbrace{\norm{\Bigl(\int_{\Omega}\abs{k(x,y)}^{2}\,dy
       \Bigr)^{\frac12}}_{2}}_{=\norm{K}_{L_{2}(\Omega\times\Omega)}}
       \underbrace{\norm{f}_{2}}_{\leq 1}$
@@ -4186,7 +4197,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
     \{0,1,\ldots,k-1\}$ mit $j=kp_{j}+q_{j}$
     
     $\Longrightarrow$ $\forall j: a_{j} = a_{kp_{j}+q_{j}}
-    \leq^{\eqref{eq:124}} a_{kp_{j}} a_{q_{j}} \leq a_{k}^{p_{j}}
+    \leq^{\autoref{eq:124}} a_{kp_{j}} a_{q_{j}} \leq a_{k}^{p_{j}}
     \underbrace{\max\{a_{0},a_{1},\ldots,a_{k-1}\}}_{=: M} \leq M
     a_{k}^{p_{j}}$
     
@@ -4340,7 +4351,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
 
 \begin{satz}
   Ein normierter Vektorraum $H$ ist genau dann ein Prä-Hilbertraum, wenn die
-  Parallelogrammgleichung~\eqref{eq:parallelo} gilt. Das Skalarprodukt
+  Parallelogrammgleichung~\autoref{eq:parallelo} gilt. Das Skalarprodukt
   ist dann wie in (4) definiert
   
   \begin{proof}
@@ -4435,7 +4446,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
       = y_{k}-y_{j}, u+v = 2(x-\underbrace{\frac{y_{j}+y_{k}}2}_{\in K,
       \text{ da $K$ konvex}}$
       
-      Parallelogrammgleichung \eqref{eq:parallelo} $\Longrightarrow$
+      Parallelogrammgleichung \autoref{eq:parallelo} $\Longrightarrow$
       $\norm{u+v}^{2} + \norm{u-v}^{2} = 2\norm{u}^{2} + 2\norm{v}^{2}$\\
       $\Longrightarrow$ $\norm{y_{k}-y_{j}} = 2\norm{x-y_{j}}^{2} +
       2\norm{x-y_{k}}^{2} - 4 \norm{x-\frac{y_{j}+y_{k}}2}^{2} \leq
@@ -4666,7 +4677,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
       \sum_{j=1}^{\infty} \abs{\sprod{x,x_{j}}}^{2} \leq
          \norm{x}^{2}\taglabel{eq:bessel}
     \end{gather*}
-    Gleichung \eqref{eq:bessel} ist die \highl{Bessel'sche Ungleichung}.
+    \autoref{eq:bessel} ist die \highl{Bessel'sche Ungleichung}.
   \end{enumerate}
   
   \begin{proof}
@@ -4687,7 +4698,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
       \sum_{j=1}^{n} \alpha_{j} \overline{\alpha_{j}} =
       \norm{x}^{2} + \sum_{j=1}^{n} \abs{\alpha_{j} - \sprod{x, x_{j}}}^{2} -
       \sum_{j=1}^{n} \abs{\sprod{x, x_{j}}}^{2}\label{eq:299}$
-      $\Longrightarrow$ (3) und aus (3) folgt mit \eqref{eq:299} (4)
+      $\Longrightarrow$ (3) und aus (3) folgt mit \autoref{eq:299} (4)
     \end{enumerate}
   \end{proof}
 \end{satz}
@@ -4723,7 +4734,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
    \item $\forall x,y \in H$ gilt: $\sprod{x,y} =
     \sum_{j=1}^{\infty} \sprod{x, x_{j}} \sprod{x_{j}, y}$
    \item $\forall x\in H$ gilt: $\norm{x}^{2} = \sum_{j=1}^{\infty}
-    \abs{\sprod{x, x_{j}}}^{2}$ Parseval \eqref{eq:parseval}
+    \abs{\sprod{x, x_{j}}}^{2}$ Parseval \autoref{eq:parseval}
    \item $\{ x_{1}, x_{2},\ldots\}^{\perp} = \{0\}$, \Dh $\sprod{x,
     x_{j}} = 0\ \forall j \Longleftrightarrow x=0$
    \item $\Span\{ x_{1}, x_{2}, \ldots \}$ ist dicht in $H$.
@@ -4739,7 +4750,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
       \end{equation*}
      \item[$(2)\Rightarrow(3)$] setze $x=y$ in (2)
      \item[$(3)\Rightarrow(4)$] $\sprod{x, x_{j}} = 0 \forall j
-      \Longrightarrow^{Parseval \eqref{eq:parseval}} \norm{x}^{2} = 0 \Longrightarrow x=0$
+      \Longrightarrow^{Parseval \autoref{eq:parseval}} \norm{x}^{2} = 0 \Longrightarrow x=0$
      \item[$(4)\Rightarrow(5)$] $S := \{x_{1},\ldots,x_{n}\}, U := \Span
       S$ \thref{satz:2.1.2/1} $\Longrightarrow$ $H=\overline{U}\oplus
       \overline{U}^{\perp}$, außerdem $\overline{U}^{\perp} =
@@ -4756,7 +4767,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
       x_{j}} x_{j} \Longrightarrow (s_{n})_{n}$ ist Cauchyfolge,
       da nach Satz-1/1 gilt $n>m$ $\norm{s_{n}-s_{m}}^{2} = \sum_{j=m+1}^{n}
       \abs{\sprod{x, x_{j}}}^{2}$ und dieses konvergiert gegen 0 nach der
-      Bessel'schen Ungleichung \eqref{eq:bessel} aus \thref{satz:2.1.3/1}.
+      Bessel'schen Ungleichung \autoref{eq:bessel} aus \thref{satz:2.1.3/1}.
       
       $H$ vollständig $\Rightarrow$ $\exists, y\in H,
       y=\sum_{j=1}^{\infty} \sprod{x, x_{j}} x_{j}$
@@ -4815,7 +4826,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
      \item $J: H \rightarrow l_{2}(\N)$ mit $J(x) :=
       (\sprod{x,x_{j}})_{j=1}^{\infty}$ diese Abbildung ist nach
       \thref{satz:2.1.3/2} linear und injektiv. Die Parselval'sche
-      Gleichung \eqref{eq:parseval} sagt:
+      Gleichung (\autoref{eq:parseval}) sagt:
       $\norm{J(x)}_{l_{2}} = \norm{x}_{H}$ auch surjektiv: $(\alpha_{j}) \in
       l_{2} \Longrightarrow x=\sum_{j=1}^{\infty} \alpha_{j} x_{j}$
       (existiert!) $\Rightarrow$ $\alpha_{j} = \sprod{x, x_{j}}$
@@ -4884,7 +4895,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
     c_{0} &= a_{0}\\
     c_{-k} &= \frac12 (a_{k}+ib_{k})\\
     \norm{f}^{2} &= \pi \Big( \frac{a_{0}^{2}}2 + \sum_{k=1}^{\infty} (a_{k}^{2}
-       + b_{k}^{2}) \Big)&&&\text{Parseval'sche Gleichung \eqref{eq:parseval}}\\
+       + b_{k}^{2}) \Big)&&&\text{Parseval'sche Gleichung \autoref{eq:parseval}}\\
     f(x) &= \frac{a_{0}}2 + \sum_{k=1}^{\infty} (a_{k}\cos kx + b_{k}\sin
        kx)\\
     a_{k} &= \frac1\pi \int_{-\pi}^{\pi}f(x)\cos kx\,dx&&&k\in\N\\
@@ -5181,13 +5192,13 @@ Hilberträume
     
     \begin{equation*}\label{eq:235}
       \Longrightarrow \sprod{Ax, y} + \sprod{Ay + \sprod{Ay, x}}
-       \leq^{\eqref{eq:234}} \frac12 \alpha \big( \norm{x+y}^{2} +
-      \norm{x-y}^{2} \big) =^{\eqref{eq:parallelo}} \alpha (\norm{x}^{2} +
+       \leq^{\autoref{eq:234}} \frac12 \alpha \big( \norm{x+y}^{2} +
+      \norm{x-y}^{2} \big) =^{\autoref{eq:parallelo}} \alpha (\norm{x}^{2} +
       \norm{y}^{2})
     \end{equation*}
     
     Wir setzen $x=\beta u$ und $y = Au$, wobei die Norm $\norm{u}=1$ seien
-    soll und $\beta = \norm{Au}$. Aus \eqref{eq:235} folgt dann:
+    soll und $\beta = \norm{Au}$. Aus \autoref{eq:235} folgt dann:
     \begin{align*}
       \sprod{\beta Au, Au} + \sprod{A^{2} u, \beta u} &\leq
          \alpha (\beta^{2} + \beta^{2})\\
@@ -5254,7 +5265,7 @@ $P_{U}x := x_{1}$, falls $x= x_{1}+x_{2}$ mit $x_{1}\in U, x_{2}\in
 U^{\perp}$ $\Longleftrightarrow$ $\norm{x-x_{1}} = \inf_{u\in U}\norm{x-u},
 x_{1}\in U$
 
-siehe Abschnitt\,\ref{sec:2.1.2}: $P\in \mathcal{L}(H), \norm{P} = 1$
+siehe \autoref{sec:2.1.2}: $P\in \mathcal{L}(H), \norm{P} = 1$
 
 \begin{satz}
   $P\in \mathcal{L}(H)$. Dann sind äquivalent:
@@ -5301,7 +5312,7 @@ siehe Abschnitt\,\ref{sec:2.1.2}: $P\in \mathcal{L}(H), \norm{P} = 1$
       setzen: $y_{1} := x_{1}, y_{2} = -\frac{2}{\alpha} \norm{x_{1}}^{2}
       x_{2} \in N(P)$
       
-      \eqref{eq:321} $\Longrightarrow -\norm{x_{1}}^{2} = -\norm{y_{1}}^{2}
+      \autoref{eq:321} $\Longrightarrow -\norm{x_{1}}^{2} = -\norm{y_{1}}^{2}
       \leq \sprod{y_{1}, y_{2}} = \sprod{x_{1}, -\frac{2}{\alpha}
       \norm{x_{1}}^{2} x_{2}} = -\frac{2}{\alpha} \norm{ x_{1}}^{2}
       \underbrace{\sprod{x_{1},x_{2}}}_{=\overline{\alpha}} = -2
@@ -5348,14 +5359,14 @@ kompakt
 \end{lemma}
 
 \begin{satz}
+  Ein Operator $A\in \mathcal{L}(H)$ ist genau dann
+  \highl[Operator!kompakt]{kompakt}, wenn eine der beiden Aussagen gilt:
   \begin{enumerate}
-   \item $A\in \mathcal{L}(H)$ kompakt $\Longleftrightarrow$ es existiert
-    ein Folge $(A_{n})_{n}$ finiter Operatoren ($\dim R(A_{n} \leq
-    \infty$), die gegen $A$ konvergiert 
-   \item $A\in \mathcal{L}(H)$. Dann $A$ kompakt $\Longleftrightarrow$
-    $A^{\ast}$ kompakt
+   \item Es existiert eine Folge $(A_{n})_{n}$ finiter Operatoren ($\dim
+    R(A_{n})\leq\infty$), die gegen $A$ konvergiert.
+   \item $A^{\ast}$ ist kompakt.
   \end{enumerate}
-  
+
   \begin{proof}
     \begin{enumerate}
      \item
@@ -5415,7 +5426,7 @@ $(A-\lambda I)x =y$ ($\lambda \not=0$). Setzen wir \obda $\lambda=1$
 \end{equation*}
 
 \begin{bemerk}
-  Wir wissen aus Abschnitt~\ref{sec:2.2.1}: $H= \overline{R(A-I)}\oplus N(A^{\ast}-I) =
+  Wir wissen aus \autoref{sec:2.2.1}: $H= \overline{R(A-I)}\oplus N(A^{\ast}-I) =
   \overline{R(A^{\ast}-I)} \oplus N(A-I)$, \Dh $N(A-I)^{\perp} =
   \overline{R(A^{\ast}-I)}$
 \end{bemerk}
@@ -5438,10 +5449,10 @@ $(A-\lambda I)x =y$ ($\lambda \not=0$). Setzen wir \obda $\lambda=1$
     
     $Az_{jk} \xrightarrow{k\rightarrow\infty} y\in H$ $\Longrightarrow$
     $z_{jk} = Az_{jk} - (\underbrace{A z_{jk} - z_{jk}}_{\rightarrow 0
-    \text{nach \eqref{eq:333}}}) \rightarrow y$
+    \text{nach \autoref{eq:333}}}) \rightarrow y$
     
     $\Longrightarrow$ $y \in N(A-I)^{\perp}$ andererseits gilt
-    $(A-I)z_{jk} \rightarrow (A-I)y$ und nach \eqref{eq:333}
+    $(A-I)z_{jk} \rightarrow (A-I)y$ und nach \autoref{eq:333}
     $(A-I)z_{jk} \rightarrow 0$  $\Longrightarrow$ $y\in N(A-I)$
     
     $\Longrightarrow$ $y=0$ Widerspruch zu $\norm{y}=1$
@@ -5522,7 +5533,7 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
  \item 0 keine Eigenwert $\Rightarrow$  $(x_{j})_{j}$ ONB
   Es sei $x\in H$ $\Rightarrow ^{(x_{j}) ONB}$ $\sum_{j=1}^{\infty}
   \abs{\sprod{x, x_{j}}}^{2} < \infty$ (Beselsche Ungleichung
-  \eqref{eq:bessel})
+  \autoref{eq:bessel})
   
   $\Rightarrow$ $s_{n} = \sum_{j=1}^{n} \sprod{x, x_{j}} x_{j}$
   bilden Cauchyfolge in $H$
@@ -5570,7 +5581,7 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
   Sämtliche Lösungen sind durch $x+N(A-\lambda I)$ gegeben.
   
   \begin{proof}
-    Reihe in \eqref{eq:444} ist konvergent:
+    Reihe in \autoref{eq:444} ist konvergent:
     \begin{equation*}
       s_{n} = \sum_{j=1, \lambda_{j}\not=\lambda}^{n}
       \frac{\lambda_{j}}{\lambda-\lambda_{j}} \sprod{y, x_{j}}
@@ -5590,7 +5601,7 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
     \end{align*}
     $\Rightarrow$ $s_{n} \rightarrow s\in H$
     
-    Es sei $x$ wie in \eqref{eq:444} $\Rightarrow$ $(A-\lambda I)x =
+    Es sei $x$ wie in \autoref{eq:444} $\Rightarrow$ $(A-\lambda I)x =
     -\frac1{\lambda} (A-\lambda I) y - \frac1{\lambda}
     \sum_{\lambda_{j}\not=\lambda} \sprod{y, x_{j}}
     (\lambda_{j}-\lambda) x_{j} (da Ax_{j} = \lambda_{j} x_{j}) =
@@ -5775,7 +5786,7 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
   \begin{proof}
     Nach \thref{satz:4} ist $T=U\abs{T}$.
     
-    Aus den Betrachtungen in Abschnitt\,\ref{sec:2.2.3} folgt
+    Aus den Betrachtungen in \autoref{sec:2.2.3} folgt
     \begin{equation*}
       \abs{T}x = \sum_{k=1}^{\infty} s_{k} \sprod{x, e_{k}} e_{k}
     \end{equation*}
@@ -5792,7 +5803,7 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
 
 \begin{bemerk}
   Es gilt: $s_{1} = \norm{T}$, denn: $s_{1}^{2}=\norm{T^{\ast}T}$ (nach
-  Abschnitt\,\ref{sec:2.3.3}) $=\norm{T}^{2}$ (nach Abschnitt\,\ref{sec:2.2.2})
+  \autoref{sec:2.3.3}) $=\norm{T}^{2}$ (nach \autoref{sec:2.2.2})
 \end{bemerk}
 
 \begin{folger}
@@ -6140,7 +6151,7 @@ Konvergenz
     \end{equation}
     $\Longrightarrow (x_{j})_{j}$ ist Cauchyfolge $\Longrightarrow$
     $x_{j}\rightarrow x\in X$, da der metrische Raum vollständig ist. Aus
-    Gleichung~\eqref{eq:442} folgt mit \thref{lem:3.2.2/1} für
+    \autoref{eq:442} folgt mit \thref{lem:3.2.2/1} für
     $k\rightarrow\infty$, dass $d(x, x_{j}) \leq \epsilon_{j}$ für alle
     $j$. Daraus folgt wiederrum, dass $x\in \bigcap_{j=1}^{\infty} E_{j}$.
     
@@ -6168,13 +6179,13 @@ Konvergenz
       \cap (X\setminus A_{j}) \not= \emptyset
     \end{equation}
     
-    \eqref{eq:443} $\Longrightarrow$ $\exists y_{1}\subset
+    \autoref{eq:443} $\Longrightarrow$ $\exists y_{1}\subset
     K_{\epsilon_{0}}(x_{0})\cap (X\setminus A_{1})$ offen
     $\Longrightarrow$ $\exists\epsilon_{1}< 1$ $\exists$ abgeschlossene
     Kugel $E_{1} = \{ z : d(z,y_{1}) \leq \epsilon_{1} \} \subset 
     K_{\epsilon_{0}} \cap (X\setminus A_{1})$
                 
-    \eqref{eq:443} $\Longrightarrow$ $\exists y_{2}\in
+    \autoref{eq:443} $\Longrightarrow$ $\exists y_{2}\in
     K_{\epsilon_{1}}(y_{1}) \cap (X\setminus A_{2})$ offen
     $\Longrightarrow$ $\exists\epsilon_{2}<\frac{1}{2}$ $\epsilon$
     abgeschlossene Kugel $E_{2}= \{ z: d(z,y_{2})\leq \epsilon_{2}\}
@@ -6328,7 +6339,7 @@ Konvergenz
          \norm[\big]{T\bigl(\frac{dx}{2\norm{x}}+x_{0}\bigr)} +
          \frac{2}{d} \norm{x} \norm{T(x_{0})}\\
       &\leq \frac{2}{d} \norm{x} M + \frac{2}{d} \norm{x} \norm{Tx} &&\text{nach
-         \eqref{eq:414}}\\
+         \autoref{eq:414}}\\
       &\leq \tilde{M} \norm{x}
     \end{align*}
   \end{proof}
@@ -6432,7 +6443,7 @@ Konvergenz
   \end{folger}
   
   \begin{bsp}
-    $n$-te Partialsumme $s_{n}f$ wie in \eqref{eq:445}. $\norm{s_{n}f -
+    $n$-te Partialsumme $s_{n}f$ wie in \autoref{eq:445}. $\norm{s_{n}f -
     f}_{X} \xrightarrow{n\rightarrow\infty} 0$
     
     Ist $X= L_{1}$ oder $X= C_{2\pi}$, dann ist $\norm{s_{n}}_{X\rightarrow
@@ -6529,7 +6540,7 @@ Konvergenz
       \epsilon_{0}+\epsilon_{0} = \epsilon \Longrightarrow x\in
       U-K_{\epsilon}(0)$
       
-      Aus Gleichung \eqref{eq:446} folgt für $\eta_{n}\rightarrow0$,
+      Aus \autoref{eq:446} folgt für $\eta_{n}\rightarrow0$,
       \begin{equation*}
         y = \sum_{j=0}^{\infty} Tx_{j} = T(\sum_{j=0}^{\infty} x_{j}) =
         Tx \Longrightarrow y\in T(U)
@@ -6669,12 +6680,12 @@ klar: $A\in\mathcal{L}(X,Y)$ $\Longrightarrow$ $A$ abgeschlossen
 
 \subsubsection{Projektoren, komplementierte Teilräume}
 
-Aus Abschnitt\,\ref{sec:3.1.2} über Komplementärräume wissen wir, dass in
+Aus \autoref{sec:3.1.2} über Komplementärräume wissen wir, dass in
 einem Vektorraum $X$ und für einen Teilraum $U\subset X$ das
 algebraisches Komplement $V\subset X$ zu $U$ existiert und $X=U\oplus V$
 ist.
 
-In einem Hilbertraum $H$, so wissen wir aus Abschnitt\,\ref{sec:2.1.2}
+In einem Hilbertraum $H$, so wissen wir aus \autoref{sec:2.1.2}
 über den Riesz'schen Darstellungssatz, gibt es zu einem abgeschlossenen
 Teilraum $U\subset H$ ein orthogonales Komplement $U^{\perp}$, das
 ebenfalls abgeschlossen ist, und für das gilt: $H=U\oplus U^{\perp}$.
@@ -7309,7 +7320,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
       $\forall x\in X$
      \item[(2)$\Rightarrow$(1)] Annahme: $\overline{D(A)\not=X}$
       $\Longrightarrow$ $\exists x_{0}\in X, x\not\in \overline{D(A)},
-      d=\dist(x, \overline{D(A)}>0$ $\Longrightarrow$ nach Satz
+      d=\dist(x, \overline{D(A)})>0$ $\Longrightarrow$ nach Satz
       3.3.3/1\todo{link} $\exists\phi\in X'$ mit $\phi(x_{0})=1, \phi(x)
       = 0$ auf $\overline{D(A)}$, $\norm{\phi}_{X'}=\frac{1}{d}$
       
@@ -7502,7 +7513,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
       $(L_{p})' = L_{p'}$ mit $\frac{1}{p}+\frac{1}{p'} = 1$
     \end{bsp}
    \item $H_{1}, H_{2}$ Hilberträume, $A\in\mathcal{L}(H_{1}, H_{2})$,
-    $A^{\ast}\in\mathcal{L}(H_{2}, H_{1}$
+    $A^{\ast}\in\mathcal{L}(H_{2}, H_{1})$
     \begin{equation*}
       (Ax, y)_{H_{2}} = (x,A^{\ast}y)_{H_{1}}\qquad\forall x,y
     \end{equation*}
@@ -7525,7 +7536,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
 
 \chapter{Die Theorie von Riesz, Schauder und Fredholm}
 \section{Die Theorie von Riesz für kompakte Operatoren}
-\subsection{Die Riesz'schen Sätze}
+\subsection{Die Riesz'schen Sätze}\label{sec:4.1.1}
 
 $X$ normierter Vektorraum, $A\in\mathcal{L}(X)$, Problem: man löse
 Gleichungen der Form $Ax=y$ mit gegebenen $y\in X$.
@@ -7534,7 +7545,7 @@ Einfachster Fall (1.\,Semester): $\dim X<\infty: X=\R^{n}: A$ injektiv
 $\Longleftrightarrow$ $A$ surjektiv
 
 $H$ Hilbertraum: $A=I-K$ mit $I:H\rightarrow H$ identischer Operator und
-$K: H\rightarrow H$ kompakt \ref{sec:2.3.1} $\Longrightarrow$
+$K: H\rightarrow H$ kompakt \autoref{sec:2.3.1} $\Longrightarrow$
 \begin{itemize}
  \item $\dim N(I-K) < \infty$ (Nullraum endlichdimensional)
  \item $R(I-K)$ ist abgeschlossen (Wertebereich abgeschlossen)
@@ -7544,7 +7555,7 @@ $K: H\rightarrow H$ kompakt \ref{sec:2.3.1} $\Longrightarrow$
  \item $A$ ist surjektiv $\Leftrightarrow$ $A$ injektiv
 \end{itemize}
 
-\begin{satz}
+\begin{satz}\label{satz:4.1.1/1}
   Für einen normierter Vektorraum $X$ mit $I$ als identischen Operator in
   $X$ und einem kompakten Operator $K:X\rightarrow X$ ist der Nullraum
   $N(I-K)$ endlichdimensional.
@@ -7622,7 +7633,7 @@ $K: H\rightarrow H$ kompakt \ref{sec:2.3.1} $\Longrightarrow$
         \frac{\norm{Ax_{j_{n}}}}{y} \xrightarrow{n\rightarrow\infty} 0
       \end{equation*}
       $\Longrightarrow$ 
-      \begin{equation}\label{eq:446}
+      \begin{equation}\label{eq:46}
         \norm{A\psi_{n_{l}}} \rightarrow 0
       \end{equation}
       
@@ -7643,7 +7654,7 @@ $K: H\rightarrow H$ kompakt \ref{sec:2.3.1} $\Longrightarrow$
       \end{equation*}
       
       $\Longrightarrow$ $1\leq \norm{\psi_{n_{l}} -\eta}
-      \xrightarrow{nach\eqref{eq:447}} 0$ Widerspruch zu \eqref{eq:446}
+      \xrightarrow{nach\autoref{eq:447}} 0$ Widerspruch zu \autoref{eq:46}
      \item $(x_{j}-u_{j})_{j}$ hat konvergente Teilfolge
       $(x_{j}-u_{j})_{j}$ beschränkt nach 2.\,Schritt
       $K$ kompakt $\Longrightarrow$ $\exists$ Teilfolge
@@ -7657,7 +7668,7 @@ $K: H\rightarrow H$ kompakt \ref{sec:2.3.1} $\Longrightarrow$
   \end{proof}
 \end{satz}
 
-\begin{lemma}[Riesz]
+\begin{lemma}[Riesz]\label{lem:4.1.1/2}
   $(X,\norm{\cdot})$ normierter Vektorraum, $U\subsetneq X$ echter
   abgeschlossener Teilraum
   
@@ -7696,7 +7707,7 @@ $X=R(A^{1}) \supset R(A) \supset R(A^{2}) \supset \ldots  \supset
 R(A^{n}) \supset R(A^{n+1}) \supset \ldots$, denn $y\in R(A^{n+1})x =
 A^{n}(Ax)\in R(A^{n})$.
 
-\begin{satz}
+\begin{satz}\label{satz:4.1.1/3}
   $X$ normierter Vektorraum, $K:X\rightarrow X$ kompakt, $A:= I-K$.
   
   Dann existiert eine $r\in \N_{0}$ ("`\highl{Riesz-Zahl}"') mit
@@ -7817,9 +7828,227 @@ A^{n}(Ax)\in R(A^{n})$.
   \end{proof}
 \end{satz}
 
+% 19.5.05
+
+\begin{folger}\label{fol:4.1.1/1}
+  Für $A=I-K, K:X\rightarrow X$ kompakt und $r$ Riesz-Zahl ist
+  \begin{itemize}
+   \item $A: R(A^{r}) \rightarrow R(A^{r})$ bijektiv,
+   \item $A:N(A^{r}) \rightarrow N(A^{r})$ \highl{nilpotent}
+  \end{itemize}
+  $A^{r}$ ist ein \highl{Nulloperator}
+  
+  \begin{proof}
+    $x\in N(A^{r})$ $\Longrightarrow$ $A^{r}(Ax) = A(A^{r}x) = A\cdot 0 =
+    0$ $\Longrightarrow$ $Ax\in N(A^{r})$
+    
+    $A^{r}x = 0 \forall x\in N(A^{r}) \Longrightarrow
+    A^{r}\big|_{N(A^{r})} =0, A^{k}\big|_{N(A^{r})} \not=0 (k<r)$
+    
+    $y\in R(A^{r}) \Rightarrow y \in A^{r}x \Rightarrow Ay = A^{r+1}x \in
+    R(A^{r+1}) = R(A^{r})$, da $r$ Riesz-Zahl ist.
+    
+    $z\in R(A^{r}) = R(A^{r+1}) \Rightarrow z = A^{r+1}x = A(A^{r}x)
+    \Longrightarrow$ surjetktiv
+    
+    $y_{1},y_{2}\in R(A^{r+1})$ mit $Ay_{1} = Ay_{2} \Longrightarrow
+    A(y_{1}-y_{2}) = 0$ $\Longrightarrow$ $A(A^{r}x_{1} - A^{r}x_{2}) = 0
+    \Longrightarrow A^{r+1} (x_{1}-x_{2}) = 0 \Longrightarrow x_{1}-x_{2}
+    \in N(A^{r+1}) = N(A^{r}) \Longrightarrow A^{r}x_{1} = A^{r}x_{2}
+    \Longrightarrow y_{1} = y_{2}$
+  \end{proof}
+\end{folger}
+
+\begin{satz}
+  In einem normierten Vektorraum $X$ mit einem kompakten Operator
+  $K: X\rightarrow X$ gilt:
+  \begin{enumerate}
+   \item Ist $I-K$ injektiv, so existiert der inverse Operator
+    $(I-K)^{-1}\in \mathcal{L}(X)$, \Dh $I-K$ ist surjektiv und
+    $(I-K)^{-1}$ ist beschränkt (stetig).
+   \item Ist der inverse Operator $(I-K)^{-1}$ nicht injektiv, so ist der
+    Nullraum von $N-K$ nicht Null ($\dim N(I-K) <\infty$) und $R(I-K)\subsetneq X$
+    ein echter (abgeschlossener) Teilraum.
+  \end{enumerate}
+
+  \begin{proof}
+    Nach \thref{satz:4.1.1/3} bleibt noch zu zeigen, dass $(I-K)^{-1}$
+    beschränkt ist. Treffen wir die Annahme $A^{-1}=(I-K)^{-1}$ sei nicht
+    beschränkt. $Ax_{n} := y_{n}$
+    
+    Es existiert eine beschränkte Folge $(y_{n})_{n}\subset X$ mit
+    $\norm{y_{n}}=1$ und $\norm{x_{n}} = \norm{A^{-1}y_{n}} > n$. Setzen
+    wir $\overline{y_{n}} := \frac{y_{n}}{\norm{x_{n}}}$ und
+    $\overline{x_{n}} := \frac{x_{n}}{\norm{x_{n}}}$ ($\Rightarrow
+    \norm{\overline{x_{n}}}=1$), so bilden die $\overline{y_{n}}$ eine
+    Nullfolge
+    \begin{equation*}
+      \norm{\overline{y_{n}}} = \frac{\norm{y_{n}}}{\norm{x_{n}}} <
+      \frac{1}{n} \longrightarrow 0
+    \end{equation*}
+    
+    Da $K$ kompakt ist, existiert eine monotone Teilfolge
+    $(\overline{x_{n_{k}}})_{k}$ mit $K\overline{x_{n_{k}}} \rightarrow
+    \overline{x}$. Wir erhalten so
+    \begin{equation*}
+      \overline{x_{n_{k}}} = \frac{x_{n_{k}}}{\norm{x_{n_{k}}}} =
+      \frac{y_{n_{k}} + \overbrace{x_{n_{k}}-y_{n_{k}}}^{=(I-A)x_{n_{k}}}}
+      {\norm{x_{n}}} = \frac{y_{n_{k}}}{\norm{x_{n_{k}}}} + K
+      \frac{x_{n_{k}}}{\norm{x_{n_{k}}}} = \overline{y_{n_{k}}} + K
+      \overline{x_{n_{k}}} \xrightarrow{k\rightarrow\infty} \overline{x}
+    \end{equation*}
+    Hieraus ergibt sich, dass die Norm $\norm{\overline{x}} =1$ ist.
+    
+    $\Longrightarrow$ $(I-K)\overline{x} = \lim_{k\rightarrow\infty}
+    \overline{x_{n_{k}}}-k\overline{x_{n_{k}}}=0 \Rightarrow
+    \overline{x}\in (I-K) \Rightarrow \overline{x}=0$ Widerspruch zu der
+    Definition $\norm{\overline{x}}=1$
+  \end{proof}
+\end{satz}
+
+\begin{folger}
+  Satz4\todo{link} gilt auch für $T-K$, wobei
+  \begin{align*}
+    T &: X\rightarrow Y\in\mathcal{L}(X,Y)\\
+    T^{-1} &:Y\rightarrow X\in\mathcal{L}(Y,X)\\
+    K&:X \rightarrow Y\text{ kompakt}
+  \end{align*}
+  
+  \begin{proof}
+    $(T-K)x = y \Longleftrightarrow (I-T^{-1}K)x = T^{-1}y$,
+    $T^{-1}K:X\rightarrow X$ kompakt
+  \end{proof}
+\end{folger}
+
+\begin{satz}\label{satz:4.1.1/5}
+  In einem normierter Vektorraum $X$ mit einem kompakten Operator
+  $K:X\rightarrow X$ ist
+  \begin{equation*}
+    \dim N(I-K) = \codim R(A) <\infty
+  \end{equation*}
+  
+  \begin{proof}
+    \thref{satz:4.1.1/3} $\Rightarrow$ $X=R(A^{r})\oplus N(A^{r})=
+    V\oplus U$
+    $r$\ldots Riesz-Zahl, $A=I-K$
+    
+    aus \thref{satz:4.1.1/1} wissen wir: $\dim U < \infty$. Betrachten
+    $A\big|_{U}$. Dann gilt (lineare Algebra):
+    \begin{equation*}
+      \dim N(A\big|_{U}) + \dim R(A\big|_{U}) = \dim U
+    \end{equation*}
+    $U$ ist also darstellbar als eine direkte Summe $U=A(U) +W$ mit $\dim
+    W = \dim A\big|_{U}$
+    
+    Aus \thref{fol:4.1.1/1} folgt für $A: V\rightarrow V$ isomorph
+    $\Longrightarrow$ $N(A) = N(A\big|_{U})$ und $R(A) = A(V) \oplus A(U)
+    = V \oplus A(U)$
+    
+    $\Longrightarrow$ $X=V\oplus U = V\oplus(A(U)\oplus W) = (V\oplus
+    A(U)) \oplus W = R(A) \oplus W$ $\Longrightarrow$ $\codim R(A) = \dim
+    W = \dim N(A\big|_{U}) = \dim N(A)$
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  $A\in\mathcal{L}(X,Y)$ heißt \highl{Fredholmoperator} ($A\in
+  \operatorname{Fred}(X,Y)$) $:\Leftrightarrow$ $\dim N(A)< \infty$ und
+  $\codim R(A) < \infty$
+
+  $\ind A := \dim N(A) - \codim R(A)$ heißt \highl{Index} von $A$.
+  
+  Aus \thref{satz:4.1.1/5} $\Rightarrow$ $K$ kompakt, $A = I-K\in
+  \operatorname{Fred}(X,X), \ind A=0$
+
+  $\ind A<0$ $\Longrightarrow$ $\codim R(A) > \dim N(A) \geq 0$
+  $\Longrightarrow$ $R(A) \subsetneq Y$ die Gleichung Ax=y ist nicht
+  immer lösbar.
+  
+  $\ind A>0$ $\Longrightarrow$ $\dim N(A) > \codim R(A) \geq 0$, $Ax=y$
+  nicht eindeutig lösbar.
+\end{bemerk}
+
+\subsection{Das Spektrum kompakter Operatoren}
+
+$K: X\rightarrow X$ kompakt, $M_{K}  := \{\lambda \in \C: \exists
+(\lambda I-K)^{-1}\in\mathcal{L}(X)\}$ Resolventenmenge
+
+$S_{K}=\C\setminus M_{K}$ \highl{Spektrum}, vergleiche mit
+\thref{def:1.4.4/1}
+
+Satz 1.4.4\help{wo ist der Satz?}: $S_{K}\subset \{ \lambda:
+\abs{\lambda}\leq r(K)\} \subset \{ \lambda : \abs{\lambda} \leq
+\norm{K}\}$, $r(K) = \lim_{j\rightarrow\infty}
+\sqrt[j]{\norm{K^{j}}}$\ldots Spektralradium
+
+Satz 2.3.2\help{welcher ist hier gemeint?} $\Rightarrow$ $S_{K} = \{0\}
+\cup \{\text{Eigenwerte endlicher Vielfalt $\not=0$}\}$ höchstens
+abzählbar viele, $0$ ist einziger möglicher Häufungspunkt
+
+$\lambda\not=0, N(\lambda I-K) = N(I-\frac{1}{\lambda}K)$
+$\Longrightarrow^{\autoref{sec:4.1.1}}$ $\lambda EW$ von $K$
+$\Longrightarrow$ $\dim X < \infty$
+
+\begin{satz}
+  $X$ normierter Vektorraum, $K: X\rightarrow X$, $\dim X=\infty$. Dann
+  \begin{enumerate}
+   \item $0\in S_{K}$
+   \item $S_{K}\setminus\{0\}$ besteht aus höchstens abzählbar vielen
+    Eigenwerten endlicher Vielfachheit. $0$ ist einzig möglicher
+    Häufungspunkt.
+  \end{enumerate}
+  
+  \begin{proof}
+    $0\not\in S_{K}$ $\Longrightarrow$ $K^{-1}K = I\big|_{X\rightarrow
+    X}$ kompakt $\Longrightarrow$ $\dim X < \infty$
+    
+    $\lambda\not=0$ $\Longrightarrow$ $\lambda\in M_{K}, \dim N(\lambda
+    I-K)=0$ und $0<\dim N(\lambda I-K) < \infty$ $\Longrightarrow$
+    $\lambda$ ist Eigenwert.
+    
+    Es sei $R>0$. Noch zu zeigen, dass höchstens endlich viele EW
+    $\lambda$ mit $\abs{\lambda}\geq R$ existieren.
+    
+    Indirekt: Annahme: $\exists (\lambda_{j})_{j=1}^{\infty},
+    \lambda_{j}$ paarweise verschieden, $\abs{\lambda_{j}}\geq R$
+    
+    $(x_{j})_{j}$ Folge zugehöriger Eigenvektoren $k x_{j}
+    =\lambda_{j}x_{j}, x_{j}\not=0$ $\Longrightarrow$ $(x_{j})_{j}$
+    linear unabhängig (induktiv, erstes Semester)
+    
+    Es sei $X_{n} := \Span\{x_{1},\ldots,x_{n}\}, n\in\N, X_{n}
+    \subsetneq X_{n+1}$
+    
+    \thref{lem:4.1.1/2} mit $U= X_{n}, \ldots, X_{n+1} = X (\forall n)$
+    
+    $\Longrightarrow$ $\exists u_{n+1}\in X_{n+1}$ mit $\norm{u_{n+1}} =
+    1$ und $\norm{u_{n+1}-u} \geq \frac{1}{2}$ (*)\todo{eq} für alle
+    $u\in X_{n}$
+    
+    $u_{n}\in X_{n} \Longrightarrow$ $u_{n} = \sum_{k=1}^{n}
+    \alpha_{k}^{n} x_{k}$ und $(\lambda_{n} I-K) u_{n} =
+    \sum_{k=1}^{n-1}(\lambda_{n}-\lambda_{k}) \alpha_{k}^{n}x_{k}\in
+    X_{n-1} (\forall n)$
+
+    Dann gilt für $m<n$: $ku_{n}-ku_{m} = \lambda_{n}u_{n}-
+    (\underbrace{\lambda_{n}u_{n}-ku_{n}}_{\in
+    X_{n-1}}+\underbrace{ku_{m}}_{\in X_{m}\subset X_{n-1}, da m<n} =
+    \lambda_{n}u_{n}- \lambda_{n} \underbrace{(u_{n}- \frac{1}{\lambda_{n}} (
+    ku_{n}-ku_{m}))}_{=u\in X_{n-1}} = \lambda_{n}(u_{n}-u)$ mit $u\in
+    X_{n-1}$
+    
+    $\Longrightarrow$ $\norm{Ku_{n} -Ku_{m}} = \abs{\lambda_{n}}
+    \norm{u_{n}-u} \geq^{(*)} \frac{\abs{\lambda_{n}}}{2} \geq
+    \frac{R}{2}$.
+    
+    $\Longrightarrow$ $(Ku_{n})$ hat keine konvergente Teilfolge
+    $\Longrightarrow$ Widerspruch zu $K$ kompakt
+  \end{proof}
+\end{satz}
+
 \clearpage
 \appendix
-\pdfbookmark[0]{Index}{index}
+\pdfbookmark[-1]{Index}{index}
 \printindex
 
 \end{document}
