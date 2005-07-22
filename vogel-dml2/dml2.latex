@@ -1,0 +1,988 @@
+\documentclass[draft,twoside]{scrreprt}
+
+\usepackage{longtable}
+\usepackage{ifthen}
+
+% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
+% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
+% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
+% eine Druckversion ist das wichtig! Daher dieser Hack.
+% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
+% ohne die Option "`hyperref"' geladen.
+%
+% Achtung: Die Korrektur von \thref muss von Hand auskommentiert werden,
+% wenn hyperref nicht geladen wird!
+\newboolean{withHyperref}
+\setboolean{withHyperref}{true} % true, false
+\ifthenelse{\boolean{withHyperref}}{}%
+	   {\newcommand{\texorpdfstring}[2]{#1}%
+	    \newcommand{\pdfbookmark}[3][]{}%
+	   }
+
+\usepackage{makeidx}
+\usepackage[final]{graphicx}
+\usepackage{color}
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
+	   {}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage{nicefrac}
+\usepackage{ae}
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{helvet}
+\usepackage{xspace}
+\usepackage{longtable}
+\usepackage{slashbox}
+
+% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
+\ifthenelse{\boolean{withHyperref}}%
+	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
+	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
+
+% Zur Korrektur von \thref
+% <news:col095$me8$2@n.ruf.uni-freiburg.de>
+\makeatletter
+\def\thref#1{%
+   \expandafter\ifx\csname r@#1@type\endcsname\None
+     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
+       \thepage \space undefined}\G@refundefinedtrue
+     \else\csname r@#1@type\endcsname~\fi%
+   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
+}
+
+% Korrektur der Platzierung der Gleichungsnummer
+% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
+\def\SetOnlyEndMark{%
+   \global\tag@true
+   \iftagsleft@
+     \gdef\df@tag{%
+       \hfuzz\displaywidth
+       \hbox to 1sp{%
+         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
+   \else
+     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
+   \fi}
+\def\SetTagPlusEndMark{%
+   \iftagsleft@
+     \gdef\maketag@@@##1{%
+       \hfuzz\displaywidth
+       \hbox to 1sp{%
+         \hbox to \displaywidth{%
+           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
+       }%
+     }%
+   \else
+     \gdef\maketag@@@##1{%
+       \hbox{\m@th\normalfont##1%
+         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
+   \fi}
+
+% setzt / als Trenner zwischen Abschnitt und Satznummer
+\def\@thmcountersep{/}
+\makeatother
+
+\usepackage{paralist}
+\usepackage{ngerman}
+%\usepackage{wasysym}  % \lightning
+
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+\theoremstyle{nonumberbreak}
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{\textnormal{\scshape Beweis:}}
+\newtheorem{fakt}{Fakt}
+
+% \setdefaultenum{(1)}{(a)}{i.}{A.}
+\pagestyle{headings}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Prr}{\PP\mathrm{r}}  % The command \Pr already exists
+\newcommand{\Pa}{\PP\mathrm{a}}
+\newcommand{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
+\newcommand{\define}{\Leftrightarrow_{df}} %\define nur in $ $ benutzen!
+
+% Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
+% und in den Index aufgenommen werden.
+\newcommand{\highl}[1]{\textbf{#1}\index{#1}}
+
+% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
+\newcommand*{\taglabel}[1]{%
+  \refstepcounter{equation}\tag{\theequation}\label{#1}%
+}
+
+\newcommand{\obda}{o.\,B.\,d.\,A.\xspace}
+\newcommand{\sonst}{\text{sonst}}
+\newcommand{\leerz}{\ifthenelse{\boolean{mmode}}%
+			       {\text{\textvisiblespace}}%
+			       {\textvisiblespace}}
+
+\renewcommand{\epsilon}{\varepsilon}
+% \renewcommand{\phi}{\varphi}
+% \renewcommand{\tilde}{\widetilde}
+
+				   		
+\newcounter{schritt}
+\newenvironment{schritte}%
+	       {\begin{list}{\textit{\underline{\arabic{schritt}.\,Schritt:}}}%
+		      {\usecounter{schritt}%
+			\settowidth{\labelwidth}{\textit{\underline{99.\,Schritt:}}}%
+			\setlength{\leftmargin}{1cm}%
+			\setlength{\itemindent}{4mm}%
+			\addtolength{\itemindent}{\labelwidth}%
+			\addtolength{\itemindent}{-\leftmargin}%
+		      }}%
+	       {\end{list}}
+
+
+\newenvironment{mdescription}%
+	       {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+
+
+\setlength{\parindent}{0ex}
+\addtolength{\parskip}{1ex}
+
+\makeindex
+
+\begin{document}
+
+\title{Diskrete Mathematik und Logik 2}
+\author{J\"org Vogel}
+\date{SS 2005}
+\maketitle
+
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+\clearpage
+
+\chapter{Aussagenlogik}
+\section{Einf\"uhrung}
+
+Pr\"adikatenlogik: unser Schwerpunkt: 
+Sprachen der Pr\"adikatenlogik - als Beschreibungssprachen mathematischer
+Strukturen (jede Struktur hat ihre Sprache , die durch die Signatur bestimmt
+wird)
+
+Aussagenlogik: unser Schwerpunkt:
+\begin{itemize}
+\item logische Regeln/ Verkn\"upfungen und die Regeln des Schlussfolgerns
+\item Test auf Erf\"ullbarkeit: 
+   \begin{bsp}Verifikation von Schaltkreisen
+      \begin{itemize}
+	 \item Spezifikation $S$ eines Schaltkreises
+	 \item Realisierung $R$ eines Schaltkreises
+      \end{itemize}
+   $S$ und $R$ lassen sich beschreiben durch 0-1-wertige Funktionen (Boolsche 
+   Funktionen) $f_{s}$ und $f_{r}$\\
+   Frage: Stimmen die beiden Funktionen \"uberein?\\
+   Fakt: $f_s\ =\ f_{r}\ \Leftrightarrow\ f_{s}\ \oplus\ f_{r}\ =\ 0$\\
+   Test: Ist $f_{s}\ \oplus\ f_{r}$ unerf\"ullbar?\\
+   Antwort "`ja"': Realisierung $R$ wie gew\"unscht.\\
+   Antwort "`nein"': Realisierung \"andern.
+   \end{bsp}
+\end{itemize}
+
+\section{Syntax und Semantik der Aussagenlogik}
+
+Zun\"achst \underline{nicht formal}:\\
+Eine Aussage ist ein sprachliches Gebilde, von dem es sinnvoll ist zu sagen, 
+dass es entweder \underline{wahr} oder \underline{falsch} ist.
+
+\subsection{Prinzip der Zweiwertigkeit}
+\begin{bsp}
+\item
+\begin{tabular}{ll}
+Es gibt unendlich viele Primzahlen & \underline{wahr}\\
+Es gibt unendlich viele gerade Primzahlen & \underline{falsch}\\
+Es gibt unendlich viele Primzahlzwillinge & \underline{???}\\
+Diese Aussage ist falsch. & \underline{keine Aussage}\\
+Diese Aussage ist keine Aussage & \underline{falsch}\\
+"`Ist dies eine Aussage"' & \underline{keine Aussage}
+\end{tabular}
+\end{bsp}
+
+\subsection{Schl\"usse ziehen}
+\begin{bsp}
+Im Supermarkt stehen 136 Apfelsinenkisten, jede Kiste enth\"ahlt mindestens 
+140 Apfelsinen und h\"ochstens 166 Apfelsinen.\\
+Dann gibt es min. 6 Kisten mit der gleichen Anzahl Apfelsinen.\\
+(\emph{Schubkastenprinzip}: Existenzbeweis)\\
+Dies ist ein Beispiel f\"ur einen korrekten Schluss.
+
+Alle Senatoren sind alt.\\
+Alle Achtziger sind Senatoren.\\
+Also sind alle Achtziger alt.\\
+\emph{Korrekter} Schluss, obwohl die Pr\"amissen falsch sind und die Konklusion
+wahr ist.
+
+Einige Senatoren sind alt.\\
+Einige Gener\"ale sind Senatoren.\\
+Einige Gener\"ale sind alt.\\
+Dieser Schluss ist \emph{nicht} korrekt.
+\end{bsp}
+
+\subsection{Aussagenverkn\"upfung}
+In der Aussagenlogik werden Aussageverbindungen durch logische Junktoren
+beschrieben.
+\begin{bsp}
+"`Erfurt ist die Hauptstadt Th\"uringens."' \emph{und} "`$7=<3$"'
+\end{bsp}
+
+\subsection{Prinzip der Extensionalit\"at}
+Der Wahrheitswert einer Aussageverbindung h\"angt allein von den Wahrheitswerten
+der (Teil-)Aussagen ab - und nicht von deren Inhalten.
+
+\subsection{Syntax der Pr\"adikatenlogik}
+zweifache Reduktion
+\begin{enumerate}
+\item Aussagen werden ersetzt durch Platzhalter: Aussagevariablen;\\
+Bezeichnung: $A,B,C,D,\dots$ (eventuell mit Indizes)\\
+\emph{Bemerkung}:Feinstruktur der Aussagen geht verloren
+\item Aussageverbindungen werden durch logische Junktoren ersetzt.
+   \begin{bsp}
+      $A$ und $B$, sowohl $A$ als auch $B$, $A$ aber auch $B$ $\Rightarrow$
+      \emph{Konjunktionen}\\
+      $A$ gdw. $B$, $A$ dann und nur dann $B$ $\Rightarrow$ \emph{Bijunktionen}\\
+      wenn $A$, dann $B$, $A$ hat $B$ zur Folge $\Rightarrow$ \emph{Implikation}\\
+   \end{bsp}
+\emph{Bemerkung}: Durch diese Reduktionen wird die logische Struktur von
+zusammengesetzten Aussagen (Formeln) betont.
+\end{enumerate}
+Zeichenvorrat: Wir brauchen zwei Sorten von Zeichen:
+\begin{itemize}
+   \item Aussagevariablen: $A$,$B$,$C$,$D$
+   \item logische Junktoren: $\wedge\,,\vee\,,\rightarrow\,,\leftrightarrow\,,\neg$
+   \item Hilfssymbole: ( , )
+\end{itemize}
+
+\begin{defini}[induktive Definition der Syntax der Aussagenlogik]
+Induktionsanfang: Jede Aussagenvariable ist eine Aussagenlogische Formel
+
+Induktionsschritt: Falls $F$ und $G$ bereits aussagenlogische Formeln
+sind, dann sind auch 
+\begin{itemize}
+   \item $(F\,\wedge\,G)$ Konjunktion
+   \item $(F\,\vee\,G)$ Disjunktion
+   \item $(F\,\rightarrow\,G)$ Implikation
+   \item $(F\,\leftrightarrow\,G)$ Bijektion
+   \item $(\neg\,F)$ Negation
+\end{itemize}
+aussagenlogische Formeln
+
+Schluss: Sonst gibt es keine Formeln
+\end{defini}
+
+Vereinbarungen:
+\begin{enumerate}
+   \item $\mathcal{A}$ bezeichnet die Menge aller Aussagenvariablen
+   \item aussagenlogische Formeln bezeichnen wir durch $F$, $G$, $H$ (mit
+eventuellen Indizes)
+   \item Mengen von aussagenlogischen Formeln bezeichnen wir durch $X$, $Y$, $Z$
+(eventuell mit Indizes)
+   \item Sprechweise: Aussagevariablen hei\ss en \highl{Atome}.
+   \item Klammereinsparungsregeln:
+      \begin{itemize}
+	 \item Au\ss enklammern weglassen
+	 \item Bindungsst\"arke der Junktoren ist von links nach rechts mit abnehmender
+	 Priorit\"at: $\neg,\,\{\wedge,\,\vee\},\,\rightarrow,\,\leftrightarrow$
+      \end{itemize}
+   \item Sprechweise: $F$ hei\ss t Teilformel von $G$ $\leftrightarrow$
+      \begin{enumerate}
+	 \item $F$ und $G$ sind Formel
+	 \item $F$ ist ein Teilwort von $G$
+      \end{enumerate}
+   \emph{Beispiel}: Alle Teilformeln von $(A\,\rightarrow\,(B\vee\,\neg B))$
+   sind: $A$, $B$, $\neg B$, $(B\vee\,\neg B)$, $(A\,\rightarrow\,(B\vee\,\neg
+   B))$
+\end{enumerate}
+
+Die Menge der Wahrheitswerte bzw. Boolschen Werte wird bezeichnet durch
+$B=\{0,1\}$\\
+Dabei steht 0 f\"ur "`falsch"' und 1 f\"ur "`wahr"'.
+
+\begin{defini}[induktive Definition der Semantik]
+Eine Belegung $\beta$ der Variablen aus $\mathcal{A}$ ist eine Abbildung
+$\beta : \mathcal{A} \mapsto B$\\
+($\beta$ ordnet jedem Atom einen Wahrheitswert zu)
+\item Eine Interpretation $I_{\beta}$ der Formeln ist induktiv wie folgt
+definiert:
+\begin{description}
+   \item[IA] $I_{\beta}(A) = \beta(A)$ f\"ur alle $A \in \mathcal{A}$
+   \item[IS] Falls $I_{\beta}(F)$ und $I_{\beta}(G)$ bereits gegeben sind, dann
+ist\\
+      \begin{enumerate}
+	 \item $I(F\wedge G) := min\{I_{\beta}(F),\, I_{\beta}(G)\}$
+	 \item $I(F\vee G) := max\{I_{\beta}(F),\, I_{\beta}(G)\}$
+	 \item $I(F\rightarrow G) = 1\ gdw.\ I_{\beta}(F) \leq I_{\beta}(G)$
+	 \item $I(F\leftrightarrow G) = 1\ gdw.\ I_{\beta}(F) = I_{\beta}(G)$
+	 \item $I(\neg F) = 1-I_{\beta}(F)$
+      \end{enumerate}
+\end{description}
+\end{defini}
+
+\section{Modelle, \"Aquivalenzen, Normalformen}
+\begin{defini}
+Es sei $F$ eine Formel und $\beta$ eine Belegung von $F$.
+\item
+\begin{enumerate}
+\item $\beta$ hei\ss t \highl{Modell} von $F$ $\Leftrightarrow$ $I_{\beta}(F) = 1$
+\item $F$ hei\ss t \emph{erf\"ullbar} $\Leftrightarrow$ $F$ besitzt ein Modell
+\item $F$ hei\ss t g\"ultig oder \highl{Tautologie} $\Leftrightarrow$ jede
+Belegung ist ein Modell von $F$
+\item $F$ hei\ss t \emph{unerf\"ullbar} $\Leftrightarrow$ jede Belegung ist kein
+Modell von $F$ bzw. $F$ besitzt kein Modell.
+\end{enumerate}
+\end{defini}
+
+Bezeichnungen:\\
+\begin{tabular}{ll}
+$\mathcal{L}_{AL}(\mathcal{A})$ & bezeichnet die Menge aller
+aussagenlogischen Formeln mit der Menge der Atome $\mathcal{A}$.\\
+$SAT$ & Menge aller erf\"ullbaren Formeln\\
+$TAUT$ & Menge aller Tautologien\\
+$\overline{SAT}$ & Menge aller unerf\"ullbaren Formeln
+\end{tabular}
+
+\begin{defini}
+Es seien $F$ und $G$ Formeln.\\
+$F$ und $G$ hei\ss en \highl{semantisch \"aquivalent} $\Leftrightarrow$ f\"ur alle
+Belegungen stimmen die Wahrheitswerte von $F$ und $G$ \"uberein:
+$I_{\beta}(F)=I_{\beta}(G)$
+\item Schreibweise: $(F\models G) \wedge (G\models F)$ \help{[ARGH, wo ist das Zeichen
+f\"ur semantische \"Aquivalenz?]}
+\item Frage: Was hat "`semantische \"Aquivalenz"' mit der Bijunktion
+"`$\leftrightarrow$"' zu tun?\\
+"`$\leftrightarrow$"': Formel vs. "`$[GNA]$"': keine Formel, Aussage \"uber Formel
+\end{defini}
+
+\begin{satz}
+$F$ und $G$ Formeln.\\
+$F$ [GNA] $G$ gdw. $(F\leftrightarrow G) \in\,TAUT$
+
+\begin{proof}
+$F$ [GNA] $G$ \\
+$\Leftrightarrow$ f\"ur alle Belegungen $\beta$ gilt: $I_\beta(F)=I_\beta(G)$\\
+$\Leftrightarrow$ f\"ur alle Belegungen $\beta$ gilt: $I_\beta(F\leftrightarrow G)=1$\\
+$\Leftrightarrow$ $(F\leftrightarrow G) \in TAUT$
+\end{proof}
+\end{satz}
+
+\emph{Beobachtung}: Jede Formel definiert eine Boolsche Funktion $f$.\\
+Es seien $A_1, \ldots, A_n$ Atome in der Formel F.\\
+Schreibweise: $F(A_1,\ldots,A_n)$\\
+Ein solches $F$ definiert eine n-stellige boolsche Funktion 
+\begin{displaymath} f_F:\quad \{0,1\}^n \mapsto \{0,1\}, \end{displaymath}
+wobei gilt: $f_F(x_1,\ldots,x_n)=y \Leftrightarrow $ f\"ur $\beta(A_1)=x_1$
+und $\beta(A_2)=x_2$ und $\ldots$ und $\beta(A_n)=x_n$ gilt:
+\begin{displaymath} I_\beta(F)=y \end{displaymath}
+
+\begin{fakt}
+$F$ \"aq. $G$ $\Leftrightarrow$ $f_F=f_G$
+\end{fakt}
+
+\emph{Fazit}: Die semantische \"Aquivalenz "`[GNA]"' ist eine
+\highl{\"Aquivalenzrelation}
+auf der Menge $\mathcal{L}(\mathcal{A})$
+
+\begin{satz}[Regeln f\"ur semantisch \"aquivalentes umformen]
+F\"ur Formeln $F,G,H$ gilt:
+\item $(F\wedge G) [GNA] (G\wedge F)$, Disjunktion und Bijunktion genauso
+(Kommutivit\"at)
+\item $(F \wedge G)\wedge H) [GNA] F \wedge (G\wedge H)$, Disjunktion genauso
+(Assozivit\"at)
+\item $\begin{array}{l} F\wedge (F\vee G) [GNA] F\\ 
+F\vee (F\wedge G) [GNA] F\end{array}\Bigg\}$ Absorbtion
+\item $\neg\neg F [GNA] F$ (doppelte Negation)
+\item $\begin{array}{l}\neg(F\wedge G) [GNA] \neg F\vee \neg G \\
+\neg(F\vee G) [GNA] \neg F\wedge \neg G\end{array}\Bigg\}$ de Morgansche Regeln
+\item $\begin{array}{l}F\wedge (G\vee H) [GNA] (F\wedge G)\vee (F\wedge H)\\
+F\vee (G\wedge H) [GNA] (F\vee G)\wedge (F\vee H)\end{array}\Bigg\}$
+Distributivi\"at
+\item $\begin{array}{l}F \in TAUT\,:\quad F\wedge G [GNA] G\\
+F \in TAUT\,:\quad F\vee G [GNA] F\end{array}\Bigg\}$ Tautologieregeln
+\item $\begin{array}{l}F \in \overline{SAT}\,:\quad F\wedge G [GNA] F\\
+F \in \overline{SAT}\,:\quad F\vee G [GNA] G\end{array}\Bigg\}$
+Unerf\"ullbarkeitsregeln
+\item $F\wedge F [GNA] F$ und $F\vee F [GNA] F$ (Idempotenzregeln)
+\end{satz}
+
+\begin{satz}[Ersetzbarkeitstheorem]
+Es seien $F,E$ zwei semantisch \"aquivalente Formeln.\\
+$G$ sei eine Formel, die $F$ als Teilformel enth\"alt.\\
+$H$ sei eine Formel, die entsteht wenn irgendein Vorkommen von $F$ in $G$ durch
+$E$ ersetzt wird.\\
+Dann ist \begin{displaymath} G [GNA] H\end{displaymath}
+\begin{proof}
+durch Formelinduktion, wollen zeigen: alle Formeln $G \in
+\mathcal{L}_{AL}(\mathcal{A})$ besitzen die "`Ersetzbarkeitseigenschaft"'.
+\item[IA]: Es sei $G=A$ ein Atom $(A\in \mathcal{A})$.\\
+Dann gilt $F=A$ und damit $F=G$ und deshalb gilt: $G=F [GNA] E=H$
+\item[IS]: Es sei $G$ eine zusammengesetzte Formel.\\
+\begin{description}
+\item[1. Fall] Es sei $F=G$. Dann gilt wieder $G=F [GNA] E=H$
+\item[2. Fall] Es sei $F$ eine echte Teilformel von $G$.
+\begin{description}
+\item[2.1] Es sei $G=(G_1\wedge G_2) eine Konjunktion$\\
+Nach Induktionsvorraussetzung besitzen $G_1,_2$ bereits die
+Ersetzungseigenschaft. Da $F$ eine \underline{echte} Teilmenge von $G$ ist, ist
+$F$ eine Teilformel von $G_1$ oder $G_2$.
+\begin{description}
+\item[Fall a] $F$ sei Teilformel von $G_1$\\
+$H_1$ sei eine Formel die durch Ersetzung von $F$ durch $E$ aus $G_1$ entsteht.
+Dann $G_1 [GNA] H_1$. Dann gilt:\\
+$H=(H_1\wedge G_2)$ und \\
+$I_\beta(H)=\,min\{I_\beta(H_1),I_\beta(G_2)\}=\,min\{I_\beta(G_1),
+I_\beta(G_2)\}=I_\beta(G)$\\
+$\Rightarrow H [GNA] G$
+\item[Fall b] $F$ sei Teilformel von $G_2$: s. Fall a
+\end{description}
+\item[2.2] Es sei $G=(G_1\vee G_2)$ eine Disjunktion. Schluss wie bei 2.1
+\item[2.3] Es sei $G=(G_1\rightarrow G_2)$ eine Implikation.\\
+$F$ ist eine Teilformel von $G_1$ oder $G_2$.
+\begin{description}
+\item[Fall a] Sei $F$ Teilformel von $G_1$ und $H_1$ die Formel, die durch
+Ersetzung von $F$ durch $E$ aus $G_1$ entsteht: dann gilt $G_1 [GNA] H_1$.\\
+Weiter ist $H=(H_1\rightarrow G_2)$ und es gilt:\\
+$I_\beta(H)=1 \Leftrightarrow I_\beta(H_1)\leq I_\beta(G_2) \Leftrightarrow
+I_\beta(G_1)\leq I_\beta(G_2) \Leftrightarrow I_\beta(G)=1$\\
+$\Rightarrow H [GNA] G$
+\item[Fall b] wie oben mit $F$ Teilformel von $G_2$
+\end{description}
+\item[2.4] Es sei $G=(G_1\leftrightarrow G_2)$: wie 2.3
+\item[2.5] Es sei $G=\neg G'$ eine Negation\\
+Dann ist $F$ eine Teilformel von $G'$ und $H'$ sei eine Formel, die durch
+Ersetzung von $F$ durch $E$ aus $G'$ entsteht.\\
+Nach Induktionsvorraussetzung ist $G' [GNA] H'$ und damit:\\
+$I_\beta(H)=1-I_\beta(H')=1-I_\beta(G')=I_\beta(G)$ (da $H=\neg H'$)\\
+$\Rightarrow$ $H [GNA] G$
+\end{description}
+\end{description}
+\end{proof}
+\end{satz}
+
+\subsection{Disjunktive und konjunktive Normalform}
+\begin{defini}
+\begin{enumerate}
+\item Jedes Atom $A \in \mathcal{A}$ hei\ss t \highl{positives Literal}\\
+Jede Negation $\neg A$ hei\ss t \highl{negatives Literal}
+\item Eine Formel der Gestalt
+\begin{displaymath} (L_{11}\wedge L_{12}\wedge \ldots \wedge L_{1n_1})\vee
+(L_{21}\wedge L_{22}\wedge \ldots \wedge L_{2n_2})\vee \ldots \vee (L_{m1}\wedge
+L_{m2}\wedge \ldots \wedge L_{mn_m})\end{displaymath}
+oder kurz: $\bigvee_{i=1}^{m}(\bigwedge_{j=1}^{n_i} L_{ij})$, hei\ss t
+\highl{disjunktive Normalform} (\highl{DNF})
+\item Eine Formel der Gestalt
+\[\bigwedge_{i=1}^{m}(\bigvee_{j=1}^{n_i}L_{ij})\]
+wobei alle $L_{ij}$ Literale sind, hei\ss t \highl{konjunktive Normalform}
+(\highl{KNF})
+\end{enumerate}
+\end{defini}
+
+\begin{satz}
+Zu jeder Formel $F$ gibt es eine semantisch \"aquivalente Formel in DNF ($F_D$)
+und eine semantisch \"aquivalente Formel in KNF ($F_K$)
+\begin{proof}[durch Formelinduktion]
+wir beweisen simultan: jede Formel $F$ besitzt "`DNF"' und "`KNF"'
+\item[IA]: Es sei $F=A$ ein Atom. Dann ist $F$ ein Literal $L_{11}$ und somit in
+[D|K]NF
+\item[IS]: Es sei $F$ eine zusammengesetzte Formel.
+\begin{description}
+\item[Fall a]
+Es sei $F$ eine Negation $F=\neg F'$. $F'$ erf\"ullt die
+Induktionvorraussetzung und besitzt deshalb [D|K]NF.\\
+Es sei $F_D'=\bigvee_{i=1}^{m}(\bigwedge_{j=1}^{n_i}L_{ij})$.\\
+Dann gilt: 
+\begin{eqnarray*}
+F = \neg F_D' & = & \neg (\bigvee_{i=1}^{m}(\bigwedge_{j=1}^{n_i}L_{ij})\\
+& [GNA] & \bigwedge_{i=1}^{m}(\neg (\bigwedge_{j=1}^{n_i}L_{ij})\\
+& [GNA] & \bigwedge_{i=1}^{m}(\bigvee_{j=1}^{n_i}\neg L_{ij})\\
+& [GNA] & \bigwedge_{i=1}^{m}(\bigvee_{j=1}^{n_i}\overline{L_{ij}})
+\end{eqnarray*}
+wobei $\overline{L_{ij}} = \Bigg\{\begin{array}{l}\neg A\textrm{, falls }
+L_{ij}=A\\ A\textrm{, falls }L_{ij}=\neg A\end{array}$\\
+Dies ist eine Formel in KNF.
+\"Ahnlich $F_K'$: liefert eine zu $F$ semantisch \"aquivalente Formel in DNF.
+\item[Fall b]
+Es seien $F=(F'\wedge F'')$ eine Konjunktion. $F'$ und $F''$ erf\"ullen die IV 
+und so gilt $F' [GNA] F_D'$ in DNF und $F' [GNA] F_K'$ in KNF und $F'' [GNA]
+F_D''$ ind DNF und $F'' [GNA] F_K''$ in KNF.\\
+Zun\"achst 
+\begin{enumerate}
+\item KNF f\"ur $F$: $(F_K' \wedge F_K'')$ ist in KNF und es gilt: $F=(F'\wedge
+F'') [GNA] (F_K'\wedge F_K'')$
+\item semantisch \"aquivalente DNF f\"ur $F$: wir gehen aus von $F_D' [GNA] F'$
+und $F_D'' [GNA] F''$\\
+$F_D'$ hat die Gestalt $\bigvee_{i=1}^{m'}G_i$, dabei ist
+$G_i=\bigwedge_{j=1}^{n_i}L_{ij}$ und $F_D''$ hat die Gestalt
+$\bigvee_{k=1}^{m''} H_k$, dabei ist $H_k=\bigwedge_{j=1}^{n_k}L_{ij}$ und es
+gilt (mit Distributivgesetz):
+\begin{eqnarray*}
+F=(F'\wedge F'') & [GNA] & F_D'\wedge F_D''=(\bigvee_{i=1}^{m'}G_i)\wedge
+(\bigvee_{k=1}^{m''} H_k)\\
+& [GNA] & \bigvee_{i=1}^{m'}\Big(G_i \wedge (\bigvee_{k=1}^{m''} H_k)\Big)\\
+& [GNA] & \bigvee_{i=1}^{m'}\Big(\bigvee_{k=1}^{m''}(\underbrace{G_i\wedge
+H_k}_{\textrm{Konjugation von Literalen}})\Big)
+\end{eqnarray*}
+Dies ist eine DNF.
+\end{enumerate}
+\item[Fall c] Disjunktionen: Es sei $F=(G\vee H)$.\\
+Es gilt: $F [GNA] \neg \neg (G\vee H) [GNA] \neg (\neg G \wedge \neg H)$\\
+Weiter wie in Fall a und b.
+\item[Fall d] Implikation: Es sei $F=(G\rightarrow H)$.\\
+Dann ist $F [GNA] \neg G \vee H$. Weiter wie Fall c.
+\item[Fall e] Bijunktionen: Es sei $F=(G\leftrightarrow H)$.\\
+Dann ist $F [GNA] (G\wedge H)\vee (\neg G \wedge \neg H)$. Weiter wie in Fall
+a, b, c.
+\end{description}
+\end{proof}
+\end{satz}
+
+Der Beweis ist zugleich Nachweis der Korrektheit des folgenden Algorithmus.
+\subsubsection{1. Verfahren zur Bestimmung der Normalform}
+\begin{description}
+\item[1. Schritt:] Ersetze alle "`$\leftrightarrow$"' gem\"a\ss{}
+$G\leftrightarrow H [GNA] (G\rightarrow H)\wedge (H\rightarrow G)$
+\item[2. Schritt:] Ersetze alle Pfeile "`$\rightarrow$"' gem\"a\ss{}
+$(G\rightarrow H) [GNA] (\neg G \vee H)$\\
+Nun ergibt sich eine Formel, die nur aus Konjunktionen und Disjunktionen
+besteht.
+\item[3. Schritt:] Negation "`nach innen"' ziehen, gem\"a\ss{} $\neg(G\wedge H)
+[GNA] \neg G \vee \neg H$ und $\neg (G\vee H) [GNA] \neg G \wedge \neg H$
+\item[4. Schritt:] \begin{description} \item[a] f\"ur eine KNF:\\
+Disjunktionen nach "`innen"' ziehen, gem\"a\ss{} $F\vee(G\wedge H) [GNA] (F\vee
+G)\wedge (F\vee H)$
+\item[b] f\"ur eine DNF:\\
+Konjunktionen nach "`innen"' ziehen, gem\"a\ss{} $F\wedge (G\vee H) [GNA]
+(F\wedge G)\vee (F\wedge H)$
+\end{description}
+Nach Schritt 4 ergibt sich eine Formel in KNF/DNF
+\item[5. Schritt:] K\"urzen
+\begin{description}
+\item[a] f\"ur KNF
+\begin{description}
+\item[a.1] $\ldots \wedge (A\vee B\vee \ldots \vee B\vee B\vee A)\wedge \ldots
+[GNA] \ldots \wedge (A\vee B)\wedge \ldots$ lasse alle Mehrfachvorkommen in
+Disjunktionen weg.
+\item[a.2] $\ldots \wedge(A\vee \ldots \vee \neg A)\wedge \ldots [GNA] w$
+streiche komplette Klammer, da Tautologie.
+\end{description}
+\item[b] f\"ur DNF
+\begin{description}
+\item[b.1] genauso wie 5.a.1 gem\"a\ss{} Idempotenzregel.
+\item[b.2] $\ldots \vee(A\wedge \ldots \wedge \neg A)\vee \ldots$ komplette
+Klammer weglassen, da Konjunktion immer falsch.
+\end{description}
+\end{description}
+Schreibweise: $w := A\vee \neg A$ und $f := A\wedge \neg A$\\
+$w$ und $f$ sind \emph{keine} Formeln, sondern Abk\"urzungen f\"ur Formeln.
+\end{description}
+
+\subsubsection{2. Verfahren zur Bestimmung der Normalform}
+Ausgangspunkt f\"ur dieses Verfahren ist die Wahrheitswerttabelle.\\
+Es sei $F(A_1,\ldots,A_n)$ eine Formel.
+Wahrheitswerttabelle f\"ur $f_F$:\\
+\begin{tabular}{cccccc}
+& $\beta(A_1)$ & $\beta(A_2)$ & $\ldots$ & $\beta(A_n)$ & $I_\beta(F)$\\
+Zeile 0 & 0 & $\ldots$ & 0 &\\
+$\vdots$ & & & &$\vdots$\\
+Zeile j & $x_1$ & $x_2$ & $\ldots$ & $x_n$ & $y$\\
+$\vdots$ & & & & $\vdots$\\
+Zeile $2^n-1$ & 1 & 1 & $\ldots$ & 1 &
+\end{tabular}
+
+Wir definieren zwei Mengen:\\
+$E:=\big\{(x_1,\ldots,x_n) \in \{0,1\}^n | \textrm{ wenn }\beta(A_1)=x_1 \textrm{ und }
+\beta(A_2)=x_2 \textrm{ und } \ldots \textrm{ und } \beta(A_n)=x_n \textrm{ dann
+ist } I_\beta(F)=1\big\}$\\
+$N:=\big\{(x_1,\ldots,x_n) \in \{0,1\}^n | \textrm{ wenn }\beta(A_1)=x_1 \textrm{ und }
+\beta(A_2)=x_2 \textrm{ und } \ldots \textrm{ und } \beta(A_n)=x_n \textrm{ dann
+ist } I_\beta(F)=0\big\}$\\
+Klar ist: $E \cap N = \varnothing$ und $E \cup N = \{0,1\}^n$\\
+$E$ und $N$ bilden eine Zerlegung der Menge aller 0-1-Tupel.\\
+F\"ur
+\begin{description}
+\item[DNF:] f\"ur $(x_1,\ldots,x_n)\in \{0,1\}^n$ definieren wir:
+\begin{equation*} A_1^{x_1}\wedge A_2^{x_2} \wedge \ldots \wedge
+A_n^{x_n} \textrm{ durch }\\
+A_i^{x_i}:= \Bigg\{\begin{array}{l}A_i \textrm{ falls }x_i=1\\\neg A_i \textrm{
+falls }x_i=0\end{array}
+\end{equation*}
+\emph{Bemerkung}: $A_i^{x_i}$ ist stets ein Literal und eine Formel der obigen
+Gestalt hei\ss t \highl{Elementarkonjunktion}.
+
+\begin{fakt} $I_\beta(A_i^{x_i})=1 \Leftrightarrow \beta(A_i)=x_i \textrm{ und
+damit } I(A_1^{x_1}\wedge A_2^{x_2}\wedge \ldots \wedge A_n^{x_n})
+\Leftrightarrow \bigwedge_{1\leq i \leq n}\beta(A_i)=x_i$\\
+Also: $F [GNA] \bigvee_{(x_1,\ldots,x_n)\in E}(A_1^{x_1}\wedge \ldots \wedge
+A_n^{x_n})$.\\
+Eine solche DNF hei\ss t \highl{kanonische DNF (DKNF)}
+\end{fakt}
+
+\item[KNF:] f\"ur $(x_1,\ldots,x_n)\in \{0,1\}^n$ definieren wir:
+\begin{equation*} A_1^{\overline{x_1}}\vee A_2^{\overline{x_2}} \vee \ldots \vee
+A_n^{\overline{x_n}} \textrm{ durch }\\
+A_i^{\overline{x_i}}:= \Bigg\{\begin{array}{l}\neg A_i \textrm{ falls }x_i=1\\ A_i \textrm{
+falls }x_i=0\end{array}
+\end{equation*}
+\emph{Bemerkung}: $A_i^{\overline{x_i}}$ ist ein Literal und eine Formel der obigen
+Gestalt hei\ss t Elementarkonjunktion.
+
+\begin{fakt} $I_\beta(A_i^{\overline{x_i}})=0 \Leftrightarrow \beta(A_i)=x_i \textrm{ und
+damit } I(A_1^{\overline{x_1}}\vee A_2^{\overline{x_2}}\vee \ldots \vee
+A_n^{\overline{x_n}}) =0 \Leftrightarrow \beta(A_1)=x_i \textrm{ und } \ldots
+\textrm{ und } \beta(A_n)=x_n$\\
+Also: $F [GNA] \bigwedge_{(x_1,\ldots,x_n)\in N}(A_1^{\overline{x_1}}\vee \ldots
+\vee A_n^{\overline{x_n}})$.\\
+Eine solche KNF hei\ss t \highl{kanonische KNF (KKNF)}
+\end{fakt}
+\end{description}
+
+\subsubsection{Codenummern von Wahrheitswertfunktionen}
+Es sei $f: \{0,1\}^n \mapsto \{0,1\}$ (d.h. $f$ n-stellige Funktion, n fix)\\
+Wahrheitswertabelle:
+\begin{tabular}{cccccc}
+& $x_1$ & $x_2$ & \ldots & $x_n$ & $f(x_1,x_2,\ldots,x_n)$\\
+Zeile 0: & 0 & 0 & \ldots & 0 & $y_0$\\
+\vdots & & & \vdots & \vdots & \vdots\\
+Zeile $i$ & $x_1^*$ & $x_2^*$ & \ldots & $x_n^*$ & $y_i$\\
+\vdots & & & \vdots & \vdots & \vdots\\
+Zeile $2^n-1$ & 1 & 1 & \ldots & 1 & $y_{2^n-1}$
+\end{tabular}\\
+Dann gilt: \\
+$\begin{array}{lll}i & = & x_1^*\cdot 2^{n-1}+x_2^*\cdot 2^{n-2}+\ldots +x_{n-1}^*\cdot 2^1+
+x_n^*\cdot 2^0\\
+& = & \sum_{j=1}^n (x_j^*\cdot 2^{n-j})
+\end{array} $
+$f$ ist festgelegt durch die Eintragungen $y_0,y_1, \ldots, y_{2^n-1}$ und wir
+definieren f\"ur dieses n-stellige $f$
+\begin{defini}
+\[ \textrm{Code}(f) := \sum_{k=0}^{2^n-1}(y_k\cdot 2^k) \]
+\end{defini}
+
+\begin{bsp}
+$Code(seq) =1\cdot 2^0+1\cdot 2^1+0\cdot 2^2+1\cdot 2^3=11$\\
+\begin{center}\begin{tabular}{cc|c}
+$x_1$ & $x_2$ & $f(x_1,x_2)=seq(x_1,x_2)$\\
+\hline
+0 & 0 & 1\\
+0 & 1 & 1\\
+1 & 0 & 0\\
+1 & 1 & 1
+\end{tabular}
+\end{center}
+\end{bsp}
+Alle Informationen \"uber $F$ bzw. $f_F$ sind in Code($f$) gespeichert.
+
+\subsection{HORN-Formeln}
+\begin{defini}
+Eine Formel $F$ ist eine \highl{HORN-Formel} $\Leftrightarrow$
+\begin{enumerate}
+   \item $F$ ist in KNF
+   \item Jede Disjunktion ent\"alt \emph{h\"ochstens} ein positives Literal
+\end{enumerate}
+\end{defini}
+
+\begin{bsp}
+Eine g\"ultige HORN-Formel: $(A\vee \neg B\vee \neg C)\wedge (C\vee \neg
+D)\wedge (\neg A\vee \neg B)$
+\end{bsp}
+
+\emph{Frage}: Gibt es f\"ur jede KNF eine semantisch \"aquivalente
+HORN-Formel?\\
+\emph{Anwort}: Nein!
+
+HORN-Formeln sind aus zwei Gr\"unden von Bedeutung:
+\begin{enumerate}
+   \item Sie lassen sich als PROLOG-Anweisung auffassen
+   \item Sie besitzen einen effizienten Erf\"ullbarkeitstest
+\end{enumerate}
+
+\emph{zu 1}: prozedurale Deutung am (obigen) Beispiel:\\
+$(A\vee \neg B\vee \neg C) [GNA] (\neg (B\wedge C)\vee A) [GNA] (B\wedge
+C)\rightarrow A$\\
+$(C\vee \neg D) [GNA] (\neg D\vee C) [GNA] (D\rightarrow C)$\\
+$\neg A\vee \neg B [GNA] \neg (A\wedge B) [GNA] \neg (A\wedge B)\vee f [GNA] A\wedge B\rightarrow f$
+
+\emph{zu 2}: Algorithmus
+\begin{description}
+   \item[1. Schritt:] Markiere alle Vorkommen von Atomen, die in Implikationen
+   der Gestalt $(w \rightarrow A)$ auftreten
+   \item[2. Schritt:] \underline{while} es gibt Teilformeln der Gestalt
+   \begin{description}
+      \item[i] $A_1\wedge \ldots \wedge A_n \rightarrow B$ oder
+      \item[ii] $A_1\wedge \ldots \wedge A_n \rightarrow f$
+   \end{description}
+   , wobei alle Atome $A_1,\ldots,A_n$ bereits markiert sind\\
+   \underline{do if} Fall i \underline{then} markiere alle Vorkommen von B\\
+   \underline{else} \underline{return} Ausgabe "`unerf\"ullbar"'
+   \item[3. Schritt:] \underline{return} Ausgabe "`erf\"ullbar"'
+\end{description}
+
+\begin{satz}
+\begin{enumerate}
+   \item Der Markierungsalgorithmus ist f\"ur HORN-Formeln als Eingabe korrekt.
+   \item Falls die Ausgabe "`erf\"ullbar"' erreicht wird, dann ist die Belegung
+   $\beta(A)=1$ f\"ur alle markierten Atome $A$ ein Modell f\"ur die Formel.
+   \item F\"ur die Formel $F$ mit n Atomen liefert der Algorithmus nach
+   h\"ochstens n Durchl\"aufen eine Ausgabe. D.h. der Algorithmus hat
+   \underline{linearen Aufwand}.
+\end{enumerate}
+\begin{proof}
+\begin{description}
+   \item[zu 3:] In jedem Durchlauf wird ein Atom markiert. Nach h\"ochstens n
+   Durchl\"aufen ist nichts mehr zu markieren und eine Ausgabe erscheint.
+   \item[zu 2:] 
+   \begin{lemma}F\"ur alle Belegungen $\beta$ der Formel $F$ gilt:
+   falls $\beta$ ein Modell von $F$ ist, dann gilt f\"ur alle Atome in $F$:
+   falls $A$ markiert ist, dann ist $\beta(A)=1$.
+   \begin{proof}
+   \begin{description}
+      \item[a] die Behauptung gilt f\"ur alle Atome $A$ die in Teilformeln der
+      Gestalt $(w\rightarrow A)$ auftreten. Solche Atome werden im ersten
+      Schritt markiert.\\
+      Andererseits gilt: eine KNF ist wahr, gdw. jede Disjunktion der KNF ist
+      wahr, insb. diejenigen, die die nur aus einem positiven Literal bestehen,
+      also genau die mit $(w\rightarrow A)$.
+      \item[b] Die Behauptung gilt auch f\"ur alle Atome B, die im 2. Schritt
+      markiert werden: wir betrachten eine Teilformel der Gestalt
+      $A_1\wedge\ldots\wedge A_n\rightarrow B$\\
+      $B$ wird nur markiert, falls alle $A_i$ markiert sind. Dies bedeutet f\"ur
+      jedes Modell $\beta: \beta(A_1)=\ldots =\beta(A_n)=1$.\\
+      Damit gilt: $I_\beta(A_1\wedge \ldots \wedge A_n \rightarrow B)=1
+      \Leftrightarrow \beta(B)=1$
+   \end{description}
+   \end{proof}
+   \end{lemma}
+   \item[zu 1:]
+   \begin{description}
+      \item[a] die Ausgabe "`unerf\"ullbar"' ist \underline{korrekt}
+      \begin{proof}[indirekt]
+      Angenommen, diese Aussage sei falsch. Dann hat die Formel $F$ ein Modell
+      $\beta$. Die Ausgabe "`unerf\"ullbar"' erfolgt im 2. Schritt f\"ur
+      $A_1\wedge\ldots\wedge A_n\rightarrow f$, wobei alle $A_1,\ldots,A_n$
+      markiert sind.\\
+      Wegen des Lemmas gilt $\beta(A_1)=\ldots = \beta(A_n)=1$. Dann gilt
+      \begin{gather*}I_\beta(A_1\wedge\ldots\wedge A_n \rightarrow f)=0\end{gather*} 
+      im Widerspruch zur Annahme, dass $\beta$ ein Modell ist.\\
+      $\Rightarrow$ $F$ hat kein Modell.
+      \begin{gather*}\end{gather*}\end{proof}
+      \item[b] Die Ausgabe "`erf\"ullbar"' ist korrekt.\\
+      Es sei $G$ eine beliebige Disjunktion ("`Klausel"') von $F$.
+      \begin{description}
+	 \item[1. Fall:] $G [GNA] A$ (d.h. $G=w\rightarrow A)$\\
+	 $A$ wird im ersten Schritt markiert und $\beta(A)=1$ ist ein Modell von
+	 $G$.
+	 \item[2. Fall:] Es sei $G=A_1\wedge\ldots\wedge A_n \rightarrow B$ und
+	 alle Atome $A_1,\ldots,A_n$ sind markiert\\
+	 Dann wird im 2. Schriit $B$ markiert und $\beta(A_1)=\ldots
+	 =\beta(A_n)=1=\beta(B)$ ist ein Modell von $G$.
+	 \item[3. Fall:] Es sei $G=A_1\wedge\ldots\wedge A_n \rightarrow B$ aber
+	 nicht alle Atome $A_1,\ldots,A_n$ sind markiert. \obda sei $A_1$ nicht
+	 markiert.\\
+	 Dann ist $\beta(A_1)=0$ ein Modell von $G$, denn
+	 $I_\beta(A_1\wedge\ldots\wedge A_n \rightarrow B)=1$
+	 \item[4. Fall:] Es sei $G=A_1\wedge\ldots\wedge A_n \rightarrow f$ und
+	 die Atwort "`unerf\"ullbar"' sei nicht erfolgt. Dann sind nicht alle
+	 Atome $A_1,\ldots,A_n$ makriert. Dann ist wie in Fall 3
+	 $I_\beta(A_1\wedge\ldots\wedge A_n \rightarrow f)=1$.
+      \end{description}
+   \end{description}
+\end{description}
+\end{proof}
+\end{satz}
+
+\section{Die Folgerungsrelation und der Endlichkeitssatz}
+wollen formal beschreiben: aus einer Formel $F$ folgt eine Formel $G$.\\
+inhaltlich: immer wenn $F$ gilt, dann muss auch $G$ gelten.
+
+\begin{defini}
+$G$ hei\ss t \highl{Folgerung} aus $F$ $\Leftrightarrow$ jedes Modell von $F$ auch
+Modell von $G$.
+
+\emph{Schreibweise:} $F \models G$\\
+D.h. f\"ur alle Belegungen $\beta$ gilt:
+$\begin{array}{ccc}
+I_\beta(F)=1 & \rightarrow & I_\beta(G)=1\\
+I_\beta(F) & \leq & I_\beta(G)\\
+f_F & \leq & f_G
+\end{array}$
+\end{defini}
+
+\begin{bsp}
+1. M\"oglichkeit: "`Argumentation \"uber Wahrheitswerttabelle"'\\
+$F := A\wedge (\neg A \vee B)$ und $G:= B$\\
+$\begin{array}{ccccc}
+I_\beta(A) & I_\beta(B) & I_\beta(\neg A\vee B) & I_\beta(F) & I_\beta(G)\\
+0 & 0 & 1 & 0 & 0\\
+0 & 1 & 1 & 0 & 1\\
+1 & 0 & 0 & 0 & 0\\
+1 & 1 & 1 & 1 & 1
+\end{array}$
+Man sieht: $f_F \leq f_G$.
+
+2. M\"oglichkeit: "`Argumentation \"uber Modell"'\\
+Es sei $\beta$ ein Modell von $F$.\\
+Dann gilt: $\beta$ ist ein Modell von $A$ und Modell von $(\neg A\vee B)$. Da
+$I_\beta(A)=1$, ist $I_\beta(\neg A)=1-I_\beta(A)=0$.\\
+Andererseits ist $I_\beta(\neg A\vee B)=1=\max\{I_\beta(\neg
+A),I_\beta(B)\}=\max\{0,I_\beta(B)\}=1$\\
+Also ist $I_\beta(B)=1$, $\beta$ also Modell von $G$.
+\end{bsp}
+
+\emph{Frage:} Welche Beziehungen bestehen zwischen der Implikation
+"`$\rightarrow$"' und der Folgerungsrelation "`$\models$"'?\\
+\emph{klar ist:} f\"ur Formeln $F$ und $G$ ist
+\begin{description}
+   \item[i] $F\rightarrow G$ wieder eine Formel, aber
+   \item[ii] $F\models G$ ist \emph{keine} Formel, sondern eine Aussage \"uber
+   Formeln.
+\end{description}
+
+\begin{fakt}\mbox{}\\\vspace{-1cm}
+\begin{eqnarray*}
+F \models G & \Leftrightarrow & F \rightarrow G \in TAUT\\ 
+% Beweis folgend
+F \models G & \Leftrightarrow & \bigwedge_\beta(I_\beta(F) \leq I_\beta(G))\\
+& \Leftrightarrow & \bigwedge_\beta(I_\beta(F \rightarrow G)=1)\\
+& \Leftrightarrow & F \rightarrow G \in TAUT
+\end{eqnarray*}
+\end{fakt}
+
+\begin{fakt}
+\begin{eqnarray*}
+F [GNA] G & \Leftrightarrow & (F \models G \textrm{ und } G \models F)\\
+% Beweis
+F [GNA] G & \Leftrightarrow & \bigwedge_\beta(I_\beta(F)=I_\beta(G))\\
+& \Leftrightarrow & \bigwedge_\beta(I_\beta(F) \leq I_\beta(G) \textrm{ und }
+I_\beta(G) \leq I_\beta(F))\\
+& \Leftrightarrow & F \models G \textrm{ und } G \models F
+\end{eqnarray*}
+\end{fakt}
+
+Wir werden einen Test auf Unerf\"ullbarkeit entwickeln.\\
+Es gilt:
+\begin{description}
+   \item[a] $F \models G \Leftrightarrow  (F \rightarrow G) \in TAUT
+   \Leftrightarrow \neg(F \rightarrow G)\in \overline{SAT} \Leftrightarrow
+   (F\wedge \neg G) \in \overline{SAT}$
+   \item[b] $F [GNA] G \Leftrightarrow (F\leftrightarrow G) \in TAUT
+   \Leftrightarrow \neg (F\leftrightarrow G)\in \overline{SAT}$
+   \item[c] $F \in TAUT \Leftrightarrow \neg F \in \overline{SAT}$
+   \item[d] $F \in SAT \Leftrightarrow \neg F \notin \overline{SAT}$
+\end{description}
+
+$F \models G$ formalisiert "`aus $F$ l\"asst sich $G$ beweisen"'.
+
+1. Beobachtung: Im allgemeinen werden aus mehreren Vorraussetzungen
+Schlussfolgerungen gezogen.\\
+2. Beobachtung: Jeder konkrete Beweis ist endlich.
+
+\begin{defini}
+Es sei $X$ eine Menge von Formeln uns es sei $F$ eine Formel.
+\begin{enumerate}
+   \item $X$ besitzt ein Modell $\define$ es gibt eine Belegung $\beta$,
+   die alle Formeln aus $X$ erf\"ullt.
+   \item $X$ ist erf\"ullbar $\define$ $X$ besitzt ein Modell
+   \item $F$ ist eine Folgerung von X $\define$ jedes Modell von $X$ ist auch
+   Modell von $F$\\
+   \emph{Schreibweise:} $X \models F$
+   \item Es sei $Y$ eine Formelmenge.\\
+   $Y$ folgt aus $X$ $\define$ jedes Modell von $X$ ist Modell f\"ur jede Formel
+   in $Y$ ($X \models Y$)
+\end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+\begin{description}
+   \item[a] Es gilt nicht: $X$ ist erf\"ullbar $\Leftrightarrow$ alle Formeln
+   aus $X$ sind erf\"ullbar.
+   \begin{bsp} $X=\{A,\neg A\}$\\
+   Dann gilt:
+   \begin{description}
+      \item[i] $A$ ist erf\"ullbar f\"ur $\beta(A)=1$\\
+      $\neg A$ ist erf\"ullbar f\"ur $\beta(A)=0$, aber
+      \item[ii] $X$ besitzt kein Modell! $X$ ist unerf\"ullbar.
+   \end{description}
+   \end{bsp}
+   \item[b] $X \models Y$ $\Leftrightarrow$ f\"ur jede Belegung $\beta$ gilt:
+   falls $\beta$ Modell f\"ur \underline{alle} Formeln aus $X$ ist, dann gilt
+   f\"ur jede Formel $F\in Y$: $\beta$ ist Modell von $F$!
+\end{description}
+\end{bemerk}
+
+\begin{bemerk}[Eigenschaften der Folgerungsrelation]
+\begin{enumerate}
+   \item $\models$ ist \emph{reflexiv}, d.h. $X \models X$ (es gilt: $X
+   \supseteq Y$, dann ist $X \models Y$)
+   \item $\models$ ist \emph{transitiv}, d.h. $X \models Y \wedge Y \models Z
+   \rightarrow X \models Z$
+   \item $Fl(X) := \{G\ |\ G \in \mathcal{L}_{Al} \textrm{ und } X \models G \}$
+   hei\ss t \highl{Folgerungsh\"ulle} von $X$.
+\end{enumerate}
+\end{bemerk}
+
+Die Folgerungsh\"ulle besitzt folgende Eigenschaften:
+\begin{enumerate}
+   \item Einbettung: $X \subseteq Fl(X)$
+   \item Monotonie: $X \subseteq Y \rightarrow Fl(X) \subseteq Fl(Y)$
+   \item Abgeschlossenheit: $Fl(Fl(X)) = Fl(X)$
+\end{enumerate}
+
+Diese 3 Eigenschaften charakterisieren die Abbildung
+\begin{equation*}
+Fl:\ \mathcal{P}(\mathcal{L}_{Al}) \mapsto \mathcal{P}(\mathcal{L}_{Al})
+\end{equation*}
+als \highl{H\"ullenoperator}.
+
+\begin{bsp}
+f\"ur eine \emph{unendliche} Formelmenge $X=\{A_1,A_1 \rightarrow A_2, A_2
+\rightarrow A_3, \ldots \}$\\
+Frage: Folgt $A_17$ aus $X$?\\
+Antwort: ja.
+\begin{proof}
+\help{hier ist ein wenig zuviel platz?}
+\begin{align*}
+   \textrm{1. Schritt: } &\{ A_1, A_1 \rightarrow A_2 \} \models A_2\ (A_2 \in
+   Fl(X))\\
+   \textrm{2. Schritt: } &\{ A_2, A_2 \rightarrow A_3 \} \models A_3\ (A_3 \in
+   Fl(X))\\
+   \vdots & \\
+   \textrm{16. Schritt: } &\{ A_{16}, A_{16} \rightarrow A_{17} \} \models
+   A_{17}\ (A_{17}
+   \in Fl(X))\\
+\end{align*}
+\help{irgendwas ist mit dem setzen der Beweisendeteile nicht in Ordnung!?}
+Also  $X \models A_{17}$
+\end{proof}
+\end{bsp}
+
+\subsection{Endlichkeitssatz}
+\begin{satz}
+Es seien $X$ eine (beliebige unendliche) Formelmenge und es sei $F$ eine
+Formel.\\
+\begin{equation*}
+   X \models F \textrm{ gdw.  es gibt eine endliche Teilmenge } X_{FIN} \textrm{
+   von } X \textrm{, s.d. } X_{FIN} \models F
+\end{equation*}
+\end{satz}
+\end{document}
