@@ -1166,4 +1166,180 @@ Indexmenge $I$
 \begin{bemerk} Die Konstruktion sichert \underline{die Existenz} eines Modells
 $\beta$, sie ist kein Algorithmus zur Berechnung von $\beta$!
 \end{bemerk}
+
+\section{Das Resolutionskalk\"ul}
+Ziel: Test auf Unerf\"ullbarkeit einer Formel $F$.
+
+Eingabe: \help{hier muss ein Bild hin, dass eine Formel F als Eingabe in eine
+Blackbox "`Resolutionskalk\"ul zeigt, die die Ausgaben JA und NEIN hat.}
+
+Im Allgemeinen hat jedes Kalk\"ul die Form $K=(Ob.\ ;\ Reg)$. Dabei steht $Ob$
+f\"ur eine Menge von Objekten (hier: $Ob$ ist die Menge aller Formeln) und $Reg$
+steht f\"ur eine Menge von Regeln (hier: $Reg$ besteht aus einer syntaktischen
+Regel: Formelmanipulation)
+
+Jedes Kalk\"ul ist in Bezug auf eine konkrete Aufgabe definiert (hier: Test auf
+Unerf\"ullbarkeit).
+
+Jedes Kalk\"ul, dass funktioniert, muss in Bezug auf seine Aufgabe zwei
+Eigenschaften erf\"ullen:
+\begin{enumerate}
+   \item Korrektheit: keine erf\"ullbare Formel wird als unerf\"ullbar berechnet
+   \item Vollst\"andigkeit: Alle unerf\"ullbaren Formeln werden als
+   unerf\"ullbare Formeln erkannt.
+\end{enumerate}
+
+Eingabe f\"ur den Test: beliebige Formel $F$.\\
+Frage: in welcher Form ist $F$ gegeben?
+
+Wissen: zu jeder Formel $F$ gibt es eine KNF (die \"aquivalent ist)
+\[\bigwedge_{i=1}^{m}(\bigvee_{j=1}^{n_i} L_{ij})\]
+Dies schreiben wir in der Form:
+\[\{\{L_{11},L_{12},\ldots,L_{1n_1}\},\{L_{21},\ldots,L_{2n_2}\},\ldots,\{L_{m1},\ldots,L_{mn_m}\}\}\]
+Dies ist eine Menge von Mengen von Literalen. Letzteres hei\ss t
+\highl{"`Klausel"'}. Also schreiben wir die KNF als \highl{Klauselmenge}.
+
+\begin{bsp}
+Wir betrachten die folgenden Formeln in KNF:
+\begin{eqnarray*}
+(A_1\vee \neg A_2)\wedge (A_1\vee A_3\vee \neg A_4)\\
+(A_1\vee A_1\vee \neg A_2)\wedge (A_1\vee A_3\vee \neg A_4)\wedge (A_1\vee
+A_3\vee A_1\vee \neg A_4)\\
+(A_1\vee \neg A_2\vee \neg A_2)\wedge (A_1\vee A_3\vee \neg A_4\vee A_1)\wedge
+(A_1\vee \neg A_2)
+\end{eqnarray*}
+Diese drei Formeln liefern folgende Klauselmenge:
+\[\{\{A_1, \neg A_2\},\{A_1, A_3, \neg A_4\}\}\]
+Diese Zuordnung ist nicht umkehrbar eindeutig!\\
+Aber es gilt: falls zwei Formeln $F_1$ und $F_2$ die selbe Klauselmenge liefern,
+dann sind sie semantisch \"aquivalent. ($F_1\semaeq F_2$)
+
+Insbesondere gilt: $F_1\in \overline{SAT}\leftrightarrow F_2\in
+\overline{SAT}$.\\
+D.h. in Bezug auf den Test "`Unerf\"ullbarkeit"' gehen durch die Reduktion keine
+Informationen verloren.
+\end{bsp}
+
+\begin{defini}
+Es sei $F$ eine Formel gegeben als Klauselmenge. Eine Klausel $R$ hei\ss t
+\highl{Resolvent} von $F \define$ es gibt zwei Klauseln $K_1$ und $K_2$ in $F$
+und es gibt ein Literal $L$ mit der Eigenschaft $L\in K_1$ und $\overline{L}\in
+K_2$ und es gilt $R=(K_1\mminus\{L\})\cup (K_2\mminus\{\overline{L}\})$.
+
+Schreibweise: \help{das Bild hier zeigt K1 und K2 \"uber und verbunden mit R}\\
+Dies symbolisiert die einzige Regel des Kalk\"uls.
+\end{defini}
+
+\begin{bsp}
+$K_1=\{A_1, \neg A_2, A_3, A_4\},\ K_2=\{\neg A_1, A_2, A_3, A_5, A_6\}$\\
+$K_1$ und $K_2$ liefern $R'=\{\neg A_2, A_3, A_4, A_2, A_5, A_6\}$ und $R''=\{
+A_1, A_3, A_4, \neg A_1, A_5, A_6\}$
+\end{bsp}
+
+F\"ur die Anwendung der Resolutionsregel gibt es eine besondere Situation:\\
+zwei Klauseln der Gestalt: $K_1=\{L\}$ und $K_2=\{\overline{L}\}$ liefern
+$R=\{L\mminus\{L\}\}\cup \{\overline{L}\mminus\{\overline{L}\}\}=\varnothing$
+
+Die leere Resolution ist das Ergebnis eines solchen Resolutionsschrittes und nur
+in dieser Situation tritt die leere Menge auf.
+
+Eine Belegung $\beta$ ist Modell von $F$ gdw. $\beta$ Modell von allen Klauseln
+von $F$ ist.
+
+Falls in $F$ zwei Klauseln $K_1=\{L\}$ und $K_2=\{L\}$ vorkommen, dann ist kein
+$\beta$ Modell von $K_1$ \underline{und} $K_2$ und damit kein $\beta$ Modell von
+$F$. ($F$ unerf\"ullbar)
+
+Dies bedeutet: der leere Resolvent ist ein Indiz f\"ur die Unerf\"ullbarkeit.
+
+\begin{satz}
+Es sei $F$ gegeben als Klauselmenge und es sei $R$ ein Resolvent von $F$. Dann
+gilt: 
+\[F\semaeq F\cup \{R\}\]
+\begin{proof}
+es gen\"ugt z.z.:
+\begin{enumerate}
+   \item $F\models F\cup \{R\}$
+   \item $F\cup \{R\}\models F$ (klar: $Y\models X$ f\"ur jede $X\subseteq Y$)
+\end{enumerate}
+zu 1: (klar ist: $F\models F$)\\
+es gen\"ugt z.z.:
+\[ F\models R \]
+Es seien $K_1, K_2\in F$ mit $L\in K_1$ und $\overline{L}\in K_2$ und
+$R=(K_1\mminus\{L\})\cup (K_2\mminus\{\overline{L}\})$
+
+Es sei $\beta$ ein Modell von $F$ und damit von $K_1$ und $K_2$.
+\begin{description}
+   \item[1. Fall] $\beta$ ist Modell von $L$. Dann ist $\beta$ kein Modell von
+   $\overline{L}$, aber von $K_2$ und damit auch von
+   $K_2\mminus\{\overline{L}\}$ und damit von $R$.
+   \item[2. Fall] $\beta$ ist kein Modell von $L$, aber von $K_1$ und damit von
+   $(K_1\mminus\{L\})$ und von $R$.
+\end{description}
+\end{proof}
+\end{satz}
+
+\begin{defini}
+Es sei $F$ eine Klauselmenge.
+\begin{description}
+   \item[a] Dann ist $Res(F):= F\cup \{R| R \textrm{ ist Resolvent zweier Klauseln
+   von }F\}$
+   \item[b] Wir definieren induktiv f\"ur alle $k\in \mathbb{N}$: 
+   \begin{eqnarray*}Res^{0}(F):=F\\ Res^{k+1}(F):=Res(Res^{k}(F)\end{eqnarray*}
+   \item[c] Wir definieren die \highl{Resolutionsh\"ulle} \[Res^{*}(F):=
+   \bigcup_{k\in \mathbb{N}}Res^{k}(F)\]
+\end{description}
+\end{defini}
+
+\underline{Kommentare:}
+\begin{enumerate}
+   \item $Res^{k}(F)$ ist f\"ur alle $K$ definiert und es gilt
+   \begin{enumerate}
+      \item $Res^{0}=F$ und
+      \item $Res^1(F)=Res(F)$ und
+      \item $Res^0(F)\subseteq Res^1(F)\subseteq \ldots \subseteq Res^*(F)$
+   \end{enumerate}
+   \item Das Resolutionslemma liefert: $F\semaeq Res(F)$ und damit $F\semaeq
+   Res^0(F)\semaeq Res^1(F)\semaeq \ldots \semaeq Res^*(F)$\\
+   D.h. insbesondere $F$ ist unerf\"ullbar gdw. die Resolutionsh\"ulle
+   $Res^*(F)$ ist unerf\"ullbar.
+   \item Die Resolutionsh\"ulle $Res^*(F)$ besitzt die char. Eigenschaften eines
+   H\"ullenoperators:
+   \begin{enumerate}
+      \item $F\subseteq Res^*(F)$ Einbettung
+      \item $F\subseteq G \rightarrow Res^*(F)\subseteq Res^*(G)$ Monotonie
+      \item $Res^*(Res^*(F))=Res^*(F)$ Abgeschlossenheit
+   \end{enumerate}
+   \item \begin{lemma} Falls $F$ eine endliche Klauselmenge ist, dann gibt es
+   ein $k\in \mathbb{N}$, s.d. $Res^{k+1}(F)=Res^{k}(F)$
+   \begin{proof} Es seien $A_1,\ldots, A_n$ die Atome von $F$.\\
+   \underline{Frage:} Wieviele Klauseln mit diesen Atomen gibt es h\"ochstens?\\
+   F\"ur eine Klausel $K$ gibt es in Bezug auf ein fixes Atom $A_i$ vier
+   M\"oglichkeiten:
+   \begin{enumerate}
+      \item (nur) $A_i$ kommt in $K$ vor
+      \item (nur) $\neg A_i$ kommt in $K$ vor
+      \item $A_i$ und $\neg A_i$ kommen in $K$ vor
+      \item weder $A_i$ noch $\neg A_i$ kommen in $K$ vor
+   \end{enumerate}
+   D.h. es gibt h\"ochstens $4^n$ verschiedene Klauseln mit den Atomen
+   $A_1,\ldots,A_n$.
+
+   Der Effekt des Resultierens ist es neue Klauseln zu produzieren. Nach
+   h\"ochstens $k\leq 4^n$ Stufen ist nichts neues mehr zu resultieren.
+
+   D.h. $Res^k(F)=Res^{k+1}(F)$ [Dabei ist $k=4^n$ eine grobe obere Schranke]
+   \end{proof}
+   \end{lemma}
+   \item Folgerung: F\"ur jede endliche Klauselmenge $F$ gilt: es gibt eine
+   stufe $k$ mit $Res^*(F)=Res^k(F)$
+   \begin{proof}Es sei $Res^k(F)=Res^{k+1}(F)$.\\ Dann gilt:\begin{eqnarray*}
+   Res^{k+2}(F)&=&Res(Res^{k+1}(F))=Res(Res^k(F))\\&=&Res^{k+1}(F)=Res^k(F)\end{eqnarray*}
+
+   Also gilt: \[Res^0(F)\subseteq \ldots \subseteq
+   Res^k(F)=Res^{k+1}(F)=Res^{k+l}\] und damit
+   \[ Res^*(F)=\bigcup_{l=0}^{\infty}Res^l(F)=\bigcup_{l=0}^{k}Res^l(F)=Res^k(F) \]
+   \end{proof}
+\end{enumerate}
+
 \end{document}
