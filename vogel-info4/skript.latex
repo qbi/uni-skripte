@@ -1,36 +1,16 @@
 % TODO:
-%   * einen \befehl für \texttt{\underline{ und alles im Text ersetzen
+%   * einen \befehl für \texttt{\underline{}} und alles im Text ersetzen
 %   * eine Umgebung für Schreibweisen/Notationen
 
-\documentclass[draft,twoside]{scrreprt}
+\documentclass[german,draft,twoside]{scrreprt}
 
 \usepackage{longtable}
 \usepackage{ifthen}
 
-% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
-% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
-% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
-% eine Druckversion ist das wichtig! Daher dieser Hack.
-% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
-% ohne die Option "`hyperref"' geladen.
-%
-% pdflatex '\def\ifwithHyperref{\iffalse}\input{skript.latex}'
-\ifthenelse{\isundefined{\ifwithHyperref}}%
-	   {\newboolean{withHyperref}
-	     \setboolean{withHyperref}{true} % true, false
-	   }{}
-
-\ifthenelse{\boolean{withHyperref}}{}%
-	   {\newcommand{\texorpdfstring}[2]{#1}%
-	    \newcommand{\pdfbookmark}[3][]{}%
-	   }
-
 \usepackage{makeidx}
 \usepackage[final]{graphicx}
 \usepackage{color}
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
-	   {}
+\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 % \usepackage{nicefrac}
@@ -39,56 +19,13 @@
 \usepackage[intlimits,leqno]{amsmath}
 \usepackage{amscd}
 \usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{helvet}
 \usepackage{xspace}
 \usepackage{longtable}
 \usepackage{slashbox}
 
-% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
-	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
-
-% Zur Korrektur von \thref
-% <news:col095$me8$2@n.ruf.uni-freiburg.de>
 \makeatletter
-\ifthenelse{\boolean{withHyperref}}{%
-\def\thref#1{%
-   \expandafter\ifx\csname r@#1@type\endcsname\None
-     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
-       \thepage \space undefined}\G@refundefinedtrue
-     \else\csname r@#1@type\endcsname~\fi%
-   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
-}%
-}{}
-
-% Korrektur der Platzierung der Gleichungsnummer
-% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
-\def\SetOnlyEndMark{%
-   \global\tag@true
-   \iftagsleft@
-     \gdef\df@tag{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
-   \else
-     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
-   \fi}
-\def\SetTagPlusEndMark{%
-   \iftagsleft@
-     \gdef\maketag@@@##1{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{%
-           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
-       }%
-     }%
-   \else
-     \gdef\maketag@@@##1{%
-       \hbox{\m@th\normalfont##1%
-         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
-   \fi}
-
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
 \makeatother
@@ -97,19 +34,27 @@
 \usepackage{ngerman}
 %\usepackage{wasysym}  % \lightning
 
+\newtheoremstyle{break}{3pt}{3pt}{}{}{\bfseries}{}{\newline}{}
+
 \theoremstyle{break}
-\theorembodyfont{\normalfont}
 \newtheorem{satz}{Satz}[chapter]
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
 
-\theoremstyle{nonumberbreak}
-\theoremsymbol{\ensuremath{_\blacksquare}}
-% \theoremsymbol{q.\,e.\,d.}
-\newtheorem{proof}{\textnormal{\scshape Beweis:}}
-\newtheorem{fakt}{Fakt}
+\renewcommand{\qedsymbol}{\ensuremath{_\blacksquare}}
+% \renewcommand{\qedsymbol}{q.\,e.\,d.}
+\renewcommand{\proofname}{\textnormal{\scshape Beweis:}}
+\newtheorem*{fakt}{Fakt}
+
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\proofautorefname}{Beweis}
+\newcommand*{\faktautorefname}{Fakt}
 
 % \setdefaultenum{(1)}{(a)}{i.}{A.}
 \pagestyle{headings}
@@ -144,9 +89,7 @@
 			       {\text{n.\,def.}}%
 			       {n.\,def.\xspace}}
 
-% verlängertes vdash für Arme; funktioniert nicht immer
-% \let\vdashorig\vdash
-% \renewcommand{\vdash}{\vdashorig\!\!\!\raisebox{.3mm}{\textbf{--}}}
+\renewcommand{\vdash}{\mathrel{|\mkern-4mu-}\mathrel{\mkern-10mu-}}
       
 \renewcommand{\epsilon}{\varepsilon}
 % \renewcommand{\phi}{\varphi}
@@ -180,7 +123,8 @@
 
 \begin{document}
 
-\title{Grundlagen der theoretischen Informatik}
+\title{Grundlagen der theoretischen Informatik
+  \thanks{$LastChangedRevision$ vom $LastChangedDate$}}
 \author{Jörg Vogel}
 \date{SS 2003}
 \maketitle
@@ -268,7 +212,7 @@ Ein konkreter Algorithmus ist der \highl{Euklidische Algorithmus}
 \end{satz}
 
 \begin{bemerk}
-  \thref{satz:1} rechtfertigt die folgende Bezeichnung:
+  \autoref{satz:1} rechtfertigt die folgende Bezeichnung:
   \begin{enumerate}
    \item $q = x \div y$
    \item $r = x \mod y$
@@ -369,9 +313,9 @@ Eine besondere Rolle spielt das "`\highl{leere Wort}"' der Länge Null.
 $\Sigma^{\ast}$ bezeichnet die \highl{Menge aller endlichen Wörter}
 (inkl.~$\lambda$). Angenommen die Buchstaben $a_{1},\ldots,a_{n}$ von
 $\Sigma$ sind geordnet:
-\begin{equation*}
+\begin{gather*}
   a_{1} < a_{2} < \ldots a_{n}
-\end{equation*}
+\end{gather*}
 Dann ergibt sich hieraus eine kanonische Ordnung für $\Sigma^{\ast}$.
 \begin{align*}
   w_{1}< w_{2} \Longleftrightarrow& |w_{1}| < |w_{2}| \text{ oder}\\
@@ -429,9 +373,9 @@ Die $n$-te Potenz einer Sprache besteht also aus all denjenigen Wörtern,
 die das $n$-fache Produkt irgendwelcher Wörter aus $L$ sind.
 
 Für $L\subseteq \Sigma^{\ast}$ heißt
-\begin{equation*}
+\begin{gather*}
   L^{\ast}:= \bigcup_{n=0}^{\infty} L^{n}
-\end{equation*}
+\end{gather*}
 die \highl{Kleene-Hülle} von $L$.
 
 \subsection{Spezielle Alphabete}
@@ -450,18 +394,18 @@ die \highl{Kleene-Hülle} von $L$.
 
 Wir definieren für Wörter $w\in \Sigma_{bool}^{\ast}$ der Form
 $x_{1}\ldots x_{n}$ die Funktion 
-\begin{equation*}
+\begin{gather*}
   No(w): \Sigma_{bool}^{\ast} \rightarrow \N,
   w \mapsto \sum_{i=1}^{n}x_{i} 2^{n-i}
-\end{equation*}
+\end{gather*}
 
 Das kürzeste Wort~$w$ mit der Eigenschaft $No(w)=n$ heißt
 \highl{Binärdarstellung} von $n$. Schreibweise: $bin(n) := w$.
 
 Für Wörter $w\in\Sigma_{dezi}^{\ast}$ definiert man analog:
-\begin{equation*}
+\begin{gather*}
   No(w) := \sum_{i=1}^{n} x_{i} 10^{n-i}
-\end{equation*}
+\end{gather*}
 und die \highl{Dezimaldarstellung} $dezi(n)$ als das kürzeste Wort $w$
 mit $No(w) := n$.
 
@@ -555,7 +499,7 @@ $Q\cap\Gamma\emptyset$.
   Relation $\vdash \subseteq (\Gamma^{\ast}\cdot Q\cdot\Gamma^{\ast})
   \times (\Gamma^{\ast}\cdot Q\Gamma^{\ast})$
   
-  \begin{equation*}
+  \begin{gather*}
     a_{1}a_{2}\ldots a_{m} \underbrace{q}_{\makebox[0pt]{$\in Q$}}
     b_{1}b_{2}\ldots b_{n} \vdash
     \begin{cases}
@@ -566,21 +510,21 @@ $Q\cap\Gamma\emptyset$.
       a_{1}a_{2}\ldots q'a_{m}cb_{2}\ldots b_{n}&: \delta(q,b_{1}) =
       (q',c,L)
     \end{cases}
-  \end{equation*}
+  \end{gather*}
   
   Zwei Sonderfälle:
   \begin{enumerate}
    \item Der Lese-Schreib-Kopf steht am rechten Rand und bewegt sich nach
     rechts:
-    \begin{equation*}
+    \begin{gather*}
       a_{1}\ldots a_{m}qb_{1} \mapsto a_{1}\ldots a_{m}cq'\Box
-    \end{equation*}
+    \end{gather*}
     falls $\delta(q,b_{1}) = (q',c,R)$.
    \item Der Lese-Schreib-Kopf steht am linken Rand und bewegt sich nach
     links:
-    \begin{equation*}
+    \begin{gather*}
       qb_{1}b_{2} \ldots b_{n} \mapsto q'\Box b_{2} \ldots b_{n}
-    \end{equation*}
+    \end{gather*}
     falls $\delta(q,b_{1}) = (q',c,L)$.
   \end{enumerate}
 \end{defini}
@@ -728,9 +672,9 @@ Ziffern $\{0,1,\ldots,b-1\}$
 
 Fakt: Jede natrüliche Zahl $n\geq0$ besitzt ein eindeutige Darstellung
 der Form
-\begin{equation*}
+\begin{gather*}
   m=x_{m}b^{m}+ x_{m-1}b^{m-1} + \ldots + x_{2}b^{2} + x_{1}b+x_{0}
-\end{equation*}
+\end{gather*}
 wobei $x_{m},\ldots,x_{0}\in\{0,\ldots,b-1\}$ und $x_{m}\not=0$ sind.
 
 Schreibweise: $bnaer(n) = x_{m}x_{m-1}\ldots x_{2}x_{1}x_{0}$
@@ -747,9 +691,9 @@ Ziffern $\{1,2,\ldots,b\}$
 
 \begin{fakt}
   jede natürliche Zahl $n>0$ besitzt eine eindeutige Darstellung der Form
-  \begin{equation*}
+  \begin{gather*}
     n=y_{n}b^{n}+ y_{n-1}b^{n-1}+\ldots + y_{1}b^{1} + y_{0}
-  \end{equation*}
+  \end{gather*}
   wobei $y_{n},y_{n-1},\ldots,y_{0}\in\{1,2,\ldots,b\}$
 \end{fakt}
 
@@ -773,10 +717,10 @@ heißt
  \item Für $(w_{1},w_{2},\ldots,w_{n})\in \bigl(\Sigma^{\ast}\bigr)^{n}$
   sei $f$ definiert und für die Startkonfiguration\\
   $q_{0}w_{1}\#w_{2}\#\ldots\#w_{n}$ gilt:
-  \begin{equation*}
+  \begin{gather*}
     q_{0}w_{1}\#w_{2}\#\ldots\#w_{n} \vdash^{\ast}
     q_{F}f(w_{1},w_{2},\ldots,w_{n})
-  \end{equation*}
+  \end{gather*}
   mit $q_{F}\in F$.
  \item Falls $f$ für $(w_{1},w_{2},\ldots,w_{n})\in
   \bigl(\Sigma^{\ast}\bigr)^{n}$ nicht definiert ist, dann ausgehend von\\
@@ -794,22 +738,22 @@ heißt
   Eine Zahlenfunktion $g:\N^{n}\rightarrow\N$ heißt
   \highl{Turing-berechenbar} $:\Longleftrightarrow$ $g$ ist bei dyadischer
   Codierung $f_{g}$ ($f_{g}$ ist eine Wortfunktion) Turing-brechenbar, d.\,h. 
-  \begin{equation*}
+  \begin{gather*}
     f_{g}(y_{1}, y_{2}, \ldots, y_{n}) = dya\Bigl(g
     \bigl(dya^{-1}(y_{1}), \ldots, dya^{-1}(y_{n}) \bigr) \Bigr)
-  \end{equation*}
+  \end{gather*}
 \end{defini}
 
 \begin{defini}\label{def:2}
   Eine Sprache $L\subseteq\Sigma^{\ast}$ heißt
   \highl{Turing-entscheidbar} $:\Longleftrightarrow$ die
   \highl{charakteristische Funktion} $\chi_{L}$ Turing-berechenbar ist
-  \begin{equation*}
+  \begin{gather*}
     \chi_{L}(w) = \begin{cases}
 		 1&:w\in L\\
 		 0&:w\not\in L
 	       \end{cases}
-  \end{equation*}
+  \end{gather*}
 \end{defini}
 
 \begin{defini}\label{def:3}
@@ -817,12 +761,12 @@ heißt
   \highl{Turing-semientscheidbar} $:\Longleftrightarrow$ die
   \highl{partielle charakteristische Funktion} $\chi_{L}^{p}$ ist
   Turing-berechenbar
-  \begin{equation*}
+  \begin{gather*}
     \chi_{L}^{p}(w) = \begin{cases}
 			1&: w\in L\\
 			\ndef&: w\not\in L
 		      \end{cases}
-  \end{equation*}
+  \end{gather*}
 \end{defini}
 
 \begin{defini}
@@ -896,25 +840,25 @@ $\N$ identifiziert werden.
   \end{tabular}
 \end{bsp}
 
-Wir haben in \thref{def:1} folgende Festlegung getroffen:
+Wir haben in \autoref{def:1} folgende Festlegung getroffen:
 Eine Zahlenfunktion $f:\N^{n} \rightarrow\N$ heißt 
 Turing-berechenbar $:\Longleftrightarrow$ die folgende Funktion $f'$
 Turing-berechenbar ist:
-\begin{equation*}
+\begin{gather*}
   f': \{1,2\}^{\ast} \rightarrow \{1,2\}^{\ast}, f(y_{1},\ldots,y_{n}) =
   dya\Bigl(f\bigl(dya^{-1}(y_{1}), \ldots,dya^{-1}(y_{n}) \bigr)\Bigr)
-\end{equation*}
+\end{gather*}
 Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
 \begin{defini}
   Eine Zahlenfunktion $f:\N^{n}\rightarrow\N$ heißt
   \highl{Turing-berechenbar} $:\Longleftrightarrow$ zwei natürliche
   Zahlen $b_{1},b_{2} >1$ und eine Turing-berechenbare Funktion
-  \begin{equation*}
+  \begin{gather*}
     f'': (\{1,\ldots,b_{1}\}^{\ast})^{n} \rightarrow
     \{1,\ldots,b_{2}\}^{\ast}, (z_{1}, \ldots,z_{n}) \mapsto
     b_{2}ad\Bigl( f \bigl(b_{1}ad^{-1}(z_{1}), \ldots,
     b_{1}ad^{-1}(z_{n}) \bigr) \Bigr)
-  \end{equation*}
+  \end{gather*}
   existieren.
 \end{defini}
 
@@ -964,10 +908,10 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
 \end{description}
 
 \begin{defini}
-  \begin{equation*}
+  \begin{gather*}
     \mathcal{TM} = \{f:\N^{n}\rightarrow\N \big| f \text{ ist
     Turing-berechenbar}\}
-  \end{equation*}
+  \end{gather*}
   $\mathcal{TM}$ ist die \highl{Klasse aller Turing-berechenbarer
   Funktionen}
 \end{defini}
@@ -1006,7 +950,7 @@ Funktionen und damit spezielle Formulierungen der Berechenbarkeit.
 
 \subsection{Turing-Maschinen als Akzeptoren und Erkenner}\label{sec:2}
 Eine Sprache $L$ ist Turing-entscheidbar $\Longleftrightarrow$
-$\chi_{L}$ ist Turing-berechenbar (vgl. \thref{def:2}), d.\,h. falls eine
+$\chi_{L}$ ist Turing-berechenbar (vgl. \autoref{def:2}), d.\,h. falls eine
 Eingabe $w\in\Sigma^{\ast}$ zu $L$ gehört, endet die Berechnung einer Turing-Maschine
 in der Konfiguration $\Box q_{F}1\Box$ und falls $w\not\in L$ endet die
 Berechnung in $\Box q_{F}0\Box$.
@@ -1027,7 +971,7 @@ dem akzeptierenden Finalzustand $q_{+}$ und dem ablehnenden Finalzustand
 $q_{-}$.
 
 $L$ ist Turing-semientscheidbar $\Longleftrightarrow$ $\chi_{L}^{p}$ ist
-berechenbar (vgl. \thref{def:3}).
+berechenbar (vgl. \autoref{def:3}).
 
 Analog definieren wir einen akzeptierenden Zustand $q_{+}$ als denjenigen
 Finalzustand von $\Box q_{F}1\Box\vdash \Box q_{F}\Box\Box$. Es gibt
@@ -1039,9 +983,9 @@ der Sprache $L$.
 
 Die Daten einer endlichen Datenmenge $D$ können durch folgenden Trick in
 das "`Gedächtnis"' der Turing-Maschine eingeführt werden:
-\begin{equation*}
+\begin{gather*}
   Q_{neu} = Q_{alt} \times D
-\end{equation*}
+\end{gather*}
 
 \begin{bemerk}\label{bem:1}
   Dies ist keine Änderung des bisherigen Begriffs Turing-Maschine, sondern lediglich
@@ -1050,13 +994,13 @@ das "`Gedächtnis"' der Turing-Maschine eingeführt werden:
 
 \begin{bsp}
   Für $w\in\Sigma^{\ast}$ bezeichnet $|w|$ die Länge von $w$, d.\,h. $w$
-  hat $|w|$ viele Buchstaben. (vgl. Beginn von Abschnitt\,\ref{sec:1})
+  hat $|w|$ viele Buchstaben. (vgl. Beginn von \autoref{sec:1})
   
   Wir betrachten die folgende Sprache
-  \begin{equation*}
+  \begin{gather*}
     L= \{w=w_{1}w_{2}\ldots w_{|w|}: w_{1} \not= w_{j}, j=2,\ldots,|w|\}
     \subseteq \Sigma^{\ast}
-  \end{equation*}
+  \end{gather*}
   
   Wir konstruieren folgende Turing-Maschine $M$:
   $\Sigma=\{a,b,c\}, \Gamma = \Sigma\cup\{\Box\}$\\
@@ -1085,14 +1029,14 @@ Mehrspurmaschinen:
  \item[informell:] Das Turing-Band ist in mehrere Zeilen
   bzw. Spuren unterteilt
  \item[formal:]
-  \begin{equation*}
+  \begin{gather*}
     \Gamma_{neu} = \Sigma \cup \Gamma_{alt}^{(k)}
-  \end{equation*}
+  \end{gather*}
   Dabei ist $\Box^{k}$ das neue Blanksymbol
 \end{mdescription}
 
 \begin{bemerk}
-  Analog zu \thref{bem:1} ist dies keine Änderung des Begriffs Turing-Maschine.
+  Analog zu \autoref{bem:1} ist dies keine Änderung des Begriffs Turing-Maschine.
 \end{bemerk}
 
 \begin{bsp}[Addition mehrstelliger Zahlen in dyadischer
@@ -1115,31 +1059,31 @@ Mehrspurmaschinen:
     \end{align*}
     
     wir erhalten so:
-    \begin{equation*}
+    \begin{gather*}
       \begin{array}{ccccc}
 	\Box&dya(x) & \#& dya(y) & \Box\\
 	\Box&\Box\ldots\Box& \Box & \Box\ldots\Box & \Box\\
 	\Box&\Box\ldots\Box& \Box & \Box\ldots\Box & \Box
       \end{array}
-    \end{equation*}
+    \end{gather*}
    \item Übertragung von $dya(y)$ in die 2.\,Spur:
     wir erhalten:
-    \begin{equation*}
+    \begin{gather*}
       \begin{array}{ccc}
 	\Box&dya(x) & \Box\\
 	\Box&dya(y) & \Box\\
 	\Box&\Box\ldots\Box & \Box
       \end{array}
-    \end{equation*}
+    \end{gather*}
    \item Stellenweise Addition:
     wir erhalten:
-    \begin{equation*}
+    \begin{gather*}
       \begin{array}{ccc}
 	\Box&dya(x) & \Box\\
 	\Box&dya(y) & \Box\\
 	\Box&dya(x+y) & \Box
       \end{array}
-    \end{equation*}
+    \end{gather*}
    \item Normierung:
     eine Spur $(\gamma_{1}, \gamma_{2}, \gamma_{3}) \mapsto \gamma_{3}$
   \end{enumerate}
@@ -1220,7 +1164,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
 \begin{bsp}
   $k=2, L= \{w\in\{a,b\}^{\ast}: w =w^{R}\}$
   
-  Wir wissen bereits aus \thref{bsp:1}, dass $L$ Turing-entscheidbar
+  Wir wissen bereits aus \autoref{bsp:1}, dass $L$ Turing-entscheidbar
   durch eine gewöhnliche (1-Band-) Turing-Maschine ist.
   
   Idee:
@@ -1328,9 +1272,9 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
 \begin{bsp}[Multiplikation von natürlichen Zahlen in unärer Darstellung]
   \begin{description}
    \item[Eingabe:] der Form $1^{n}\#1^{m}$
-    \begin{equation*}
+    \begin{gather*}
       \Box \underbrace{1\ldots1}_{n-\text{mal}}\# \underbrace{1\ldots1}_{m-\text{mal}}\Box
-    \end{equation*}
+    \end{gather*}
    \item[Resultat:] $1^{n\cdot m}$
    \item[Idee:] Kopiere ersten Block ($1^{n}$) so oft, wie es der zweite
     Block angibt. Konstruiere eine 3-Band-Turing-Maschine
@@ -1398,10 +1342,10 @@ Es seien $M_{i}=(Q_{i}, \Sigma, \Gamma_{i}, \delta_{i}, q_{0_{i}}, F_{i})$
 $M=(Q_{1}\cup Q_{2}, \Sigma, \Gamma_{1}\cup \Gamma_{2}, \delta,
 q_{0_{1}}, F_{2})$ realisiert ein hintereinanderschalten von $M_{1}$ und $M_{2}$.
 Dabei gilt:
-\begin{equation*}
+\begin{gather*}
   \delta = \delta_{1}\cup\delta_{2}\cup\{(q_{1},a) \mapsto (q_{0_{2}},
   a', 0): q_{1}\in F_{1}, a\in\Gamma_{1}, a'\in\Gamma_{2}\}
-\end{equation*}
+\end{gather*}
 
 \begin{description}
  \item[Notation:] $start \rightarrow M_{1} \rightarrow M_{2} \rightarrow
@@ -1409,10 +1353,10 @@ Dabei gilt:
 \end{description}
 
 \begin{bsp}
-  \begin{equation*}
+  \begin{gather*}
     \underbrace{start \rightarrow \fbox{i:=i+1} \rightarrow \fbox{i:=i+1}
       \rightarrow stopp}_{i:=i+2}
-  \end{equation*}
+  \end{gather*}
 \end{bsp}
 
 \begin{bsp}[Fallunterscheidung]
@@ -1486,7 +1430,7 @@ Dabei gilt:
   \highl{Turing-erkennbar mit der Zeitbeschränkung} $t$ und der
   \highl{Speicherplatzbeschränkung} $s$ $\Longleftrightarrow$ ein
   Erkenner $M_{t}$ (Turing-Maschine ohne Ausgabe;
-  s.\,Abschn.\,\ref{sec:2}) und ein Erkenner $M_{s}$ existieren, die
+  s.\,\autoref{sec:2}) und ein Erkenner $M_{s}$ existieren, die
   folgende Bedingungen erfüllen:
   \begin{gather*}
     M_{t}(w\in L)= q_{+}, M_{t}(w\not\in L) = q_{-}, TIME_{M_{t}} \leq t\\
@@ -1501,9 +1445,9 @@ Dabei gilt:
   Zeitbeschränkung $O(s\cdot t)$ und der Platzbeschränkung $O(s)$
   entschieden werden.
   
-  \begin{equation*}
+  \begin{gather*}
     \mathcal{P} = \{L: \exists p, p \text{ ist Polynom}, TIME_{M} \leq p\}
-  \end{equation*}
+  \end{gather*}
   $\mathcal{P}$ sind alle die Sprachen, die sich von einer Turing-Maschine in
   Polynomialzeit entscheiden lassen.
 \end{satz}
@@ -1527,13 +1471,13 @@ Dabei gilt:
   
   Für $b\not=0$ lässt sich die Funktion rekursiv auf folgende Weise
   berechnen:
-  \begin{equation*}
+  \begin{gather*}
     \mod(a,b) = \text{\texttt{\underline{if}} } a < b
     \text{\texttt{ \underline{then}} } a \text{\texttt{
     \underline{else}}} \mod(a-b, b)
-  \end{equation*}
+  \end{gather*}
   
-  Vergleiche mit \thref{fes:1}
+  Vergleiche mit \autoref{fes:1}
 \end{bsp}
   
 Das zugrundeliegende Schema ist folgendes:
@@ -1545,7 +1489,7 @@ Das zugrundeliegende Schema ist folgendes:
   einfacher Funktionen) bestimmt.
 \end{itemize}
 
-In unserem \thref{bsp:2} sind dies: $A=\{0,\ldots,b-1\}, B_{n}=\{n-b\}$.
+In unserem \autoref{bsp:2} sind dies: $A=\{0,\ldots,b-1\}, B_{n}=\{n-b\}$.
 
 Ein besonders einfacher Fall liegt vor, wenn $A=\{0\}$ und
 $B_{n}=\{n-1\}$.
@@ -1593,10 +1537,10 @@ $B_{n}=\{n-1\}$.
   Funktionen $g_{i}\!:\N^{n}\rightarrow\N$ ($i=1,\ldots,m$). Die Funktion
   $f\!:\N^{n}\rightarrow\N$ geht aus den Funktionen $h$ und $g_{i}$ durch
   \highl{Einsetzung} hervor $:\Longleftrightarrow$
-  \begin{equation*}
+  \begin{gather*}
     f(x_{1},\ldots,x_{n}) = h(g_{1}(x_{1},\ldots,x_{n}),\ldots,
     g_{m}(x_{1},\ldots,x_{n}))
-  \end{equation*}
+  \end{gather*}
   Schreibweise: $f=SUB^{m}(h; g_{1},\ldots,g_{m})$
   
   Es sei $F\subseteq\{f:\N^{n}\rightarrow\N, n\geq0\}$ eine Menge von
@@ -1658,9 +1602,9 @@ $B_{n}=\{n-1\}$.
 
   Die Klasse der primitiv-rekursiven Funktionen lässt sich damit als
   algebraische Hülle schreiben:
-  \begin{equation*}
+  \begin{gather*}
     \Prr = \Gamma_{\{SUB,PR\}}(G)
-  \end{equation*}
+  \end{gather*}
   Dabei steht $SUB$ für $SUB = \{SUB^{m}:m\in\N\}$
 \end{defini}
 
@@ -1750,16 +1694,16 @@ Wir benutzen folgende Form: $A:\N^{2}\rightarrow\N$
 \begin{bemerk}\label{bem:2}
   Jede primitiv-rekursive Funktion lässt sich durch einen Ausdruck
   endlicher Länge über einem gegebenen Alphabet beschreiben:
-  \begin{equation*}
+  \begin{gather*}
     \Sigma = \{I,C,N, |, \#, ), ,, (, x, SUB, PR\}
-  \end{equation*}
+  \end{gather*}
 \end{bemerk}
 
 \begin{bsp}
   Hatten: $plus= PR(I_{1}^{1}, SUB^{1}(N, I^{3}_{3}))$ es ergibt sich:
-  \begin{equation*}
+  \begin{gather*}
     plus = PR(I\#|\#|\#,SUB\#|\#(N,I\#|||\#|||\#))
-  \end{equation*}
+  \end{gather*}
   Dies ist ein Wort über dem Alphabet $\Sigma$
 \end{bsp}
 
@@ -1775,9 +1719,9 @@ Die hat folgende weitere Konsequenzen:\\
 Es sei $\phi_{0}, \phi_{1}, \phi_{2},\ldots$ eine Nummerierung aller
 einstelligen primitiv-rekursiven Funktionen. Wir definieren durch
 \emph{Diagonalisierung} ein Funktion $\psi$
-\begin{equation*}
+\begin{gather*}
   \psi(n) = \phi_{n}(n)+1\qquad(n\in\N)
-\end{equation*}
+\end{gather*}
 Klar ist: $\psi$ ist (intuitiv) berechenbar, aber $\psi$ ist nicht
 primitiv-rekursiv.
 
@@ -1792,10 +1736,10 @@ aber es gilt: $\phi_{k}(k) = \psi(k) = \phi_{k}(k)+1$.
 	{$\boldsymbol{\mu}$-rekursive Funktionen}
 
 Programmiersprachen mit Schleifen:
-\begin{equation*}
+\begin{gather*}
   \text{\texttt{\underline{while}} } Bedingung
   \text{ \texttt{\underline{do}} } Anweisung \text{ \texttt{\underline{end}}}
-\end{equation*}
+\end{gather*}
 wollen solche Schleifen simulieren
 
 \begin{defini}
@@ -1803,7 +1747,7 @@ wollen solche Schleifen simulieren
   $f:\N^{k}\rightarrow\N$ entsteht aus $g$ durch das Schema der
   \highl{$\mu$-Rekursion} $:\Longleftrightarrow$ für alle
   $(x_{1},\ldots,x_{k})\in\N^{k}$ gilt:
-  \begin{equation*}
+  \begin{gather*}
     f(x_{1},\ldots,x_{k}) =
     \begin{cases}
       \min\{t\in\N: g(x_{1},\ldots,x_{k},t)=0\}&
@@ -1812,7 +1756,7 @@ wollen solche Schleifen simulieren
       definiert ist}}\\
       \ndef&\sonst
     \end{cases}
-  \end{equation*}
+  \end{gather*}
 \end{defini}
 Schreibweise: $f=\mu R(g)$
 
@@ -1849,12 +1793,12 @@ als Schleife:\\
 \end{bemerk}
 
 \begin{bsp}
-  \begin{equation*}
+  \begin{gather*}
     d(m,n) = \begin{cases}
 	       \frac{n}{m}&\text{falls Teiler existiert}\\
 	       \ndef& \sonst
 	     \end{cases}
-  \end{equation*}
+  \end{gather*}
   Zunächst zeigen wir, dass die Signumfunktion, Potenzfunktion und die
   Betragsfunktion primitiv-rekursiv sind.
   
@@ -1900,12 +1844,12 @@ als Schleife:\\
 
 \begin{bsp}
   Die Funktion $wurz:\N\rightarrow\N$ ist partiell-rekursiv
-  \begin{equation*}
+  \begin{gather*}
     wurz(n) := \begin{cases}
 		 \sqrt{n}&:\sqrt{n}\in\N\\
 		 \ndef&:\sonst
 	       \end{cases}
-  \end{equation*}
+  \end{gather*}
   
   Wir betrachten folgende zweistellige Funktion $h$
   \begin{align*}
@@ -1951,7 +1895,7 @@ als Schleife:\\
   weitere notwendige Hilfssymbole enthält.
   
   Vergleiche das Alphabet $\Sigma$ für primitiv-rekursive Funktionen in
-  \thref{bem:2} und füge "`$\mu R$"' als neues Symbol hinzu!
+  \autoref{bem:2} und füge "`$\mu R$"' als neues Symbol hinzu!
   
   Die kanonische (quasilexikographische) Auflistung aller dieser Terme
   liefert eine \emph{effektive Nummerierung} aller partiell-rekursiven
@@ -1974,10 +1918,10 @@ ist $wurz:\big|_{D wurz} = wurz$
 
 Wenn $\mathbb{F}$\index{$\mathbb{F}$} die Menge aller Zahlenfunktionen
 bezeichnet, dann gilt:
-\begin{equation*}
+\begin{gather*}
   \emptyset \subseteq \Prr \subseteq \Pa \subseteq
   \PP \subseteq \mathbb{F}
-\end{equation*}
+\end{gather*}
 
 \begin{fakt}
   Alle Inklusionen sind echt:
@@ -2018,23 +1962,23 @@ Funktionen:\\
 $\phi_{0},\phi_{1},\phi_{2},\ldots$ ist eine Nummerierung der
 partiell-rekursiven Funktionen, die sich aus einer Auflistung aller
 zugehörigen Terme ergibt. Wir definieren nun die folgende Funktion
-\begin{equation*}
+\begin{gather*}
   \psi(n) := \phi_{n}(n) +1 =
   \begin{cases}
     \phi_{n}(a)+1&: \text{falls } \phi_{n}(n)\text{ definiert ist}\\
     \ndef&\sonst
   \end{cases}
-\end{equation*}
+\end{gather*}
 $\psi$ ist eine berechenbare Funktion, d.\,h. $\psi$ kommt in der Liste
 vor und hat den Index $k$ mit $\psi=\phi_{k}$! wir untersuchen den Wert
 von $\psi$ an der Stelle $k$:
-\begin{equation*}
+\begin{gather*}
   \phi_{k}(k) = \psi(k) = \phi_{k}(k)+1 = 
   \begin{cases}
     \phi_{n}(a)+1&: \text{falls } \phi_{n}(n)\text{ definiert ist}\\
     \ndef&\sonst
   \end{cases}
-\end{equation*}
+\end{gather*}
 Die Auflösung dieses "`Widerspruchs"' besteht in der Konsequenz, dass $\psi$
 an der Stell $k$ nicht definiert seien kann. $\phi_{k}(k)$ ist nicht
 definiert.
@@ -2064,9 +2008,9 @@ $\psi$.
     wäre auch $g(n) = f(n)+1$ eine allgemein-rekursive Funktion und es
     gäbe einen Index $m$ mit $g=f_{m}$. Dies führt jedoch zu dem
     Widerspruch:
-    \begin{equation*}
+    \begin{gather*}
       f_{m}(m) = g(m) = f_{m}(m)+1
-    \end{equation*}
+    \end{gather*}
   \end{proof}
 \end{fakt}
 
@@ -2079,13 +2023,13 @@ Ausgangspunkt is die ungewisse Vermutung:
 \begin{quote}
   Für jede natürliche Zahl $n\geq1$ führt die wiederholte Anwendung
   folgender Regel nach endlich vielen Schritten auf die Zahl 1:
-  \begin{equation*}
+  \begin{gather*}
     n \mapsto
     \begin{cases}
       \frac{n}{2} & n \text{ ist gerade}\\
       3n+1& n \text{ ist ungerade}
     \end{cases}
-  \end{equation*}
+  \end{gather*}
 \end{quote}
 
 Ein Beispiel hierzu:
@@ -2109,13 +2053,13 @@ Wir fassen alle Zahlen, für die diese Vermutung zutrifft als Menge $B =
 Frage: Ist $B=\N$?
 
 Die einmalige Anwendung der Regel entspricht folgender Funktion
-\begin{equation*}
+\begin{gather*}
   f (n) =
     \begin{cases}
       \frac{n}{2} & n \text{ ist gerade}\\
       3n+1& n \text{ ist ungerade}
     \end{cases}
-\end{equation*}
+\end{gather*}
 $f$ ist definiert durch primitiv-rekursive Funktionen mittels
 Fallunterscheidung! Deshalb ist auch $f$ primitiv-rekursiv.
 
@@ -2129,20 +2073,20 @@ $g$ ist also eine primitv-rekursive Funktion mit $PR(I_{1}^{1},
 SUB(f,I_{3}^{3}))$.
 
 Wir definieren nun
-\begin{equation*}
+\begin{gather*}
   h(n) =
   \begin{cases}
     \mu t(g(n,t) = 1) &: \text{ ein solches $t$ existiert}\\
     \ndef &:\sonst
   \end{cases}
-\end{equation*}
+\end{gather*}
 $h$ ist partiell-rekursiv und für den Definitionsbereich gilt: $D_{n}=B$
 
 Aber es gibt keine Beschreibung von $h$ (oder einer Fortsetzung) als
 primitv-rekursive Funktion
-\begin{equation*}
+\begin{gather*}
   g(n,t) = 1 \Longleftrightarrow g(n,t) -1 = 0
-\end{equation*}
+\end{gather*}
 
 \section{Einfache Eigenschaften primitiv-rekursiver Funktionen}
 \begin{satz}[stückweise definierte Funktionen]
@@ -2158,7 +2102,7 @@ primitv-rekursive Funktion
   eine Funktion $g_{i}=0$).
   
   Dann ist die Funktion $h:\N^{n}\rightarrow\N$ mit
-  \begin{equation*}
+  \begin{gather*}
     h(x_{1},\ldots,x_{n}) :=
     \begin{cases}
       f_{1}(x_{1},\ldots,x_{n}) &: g_{1}(x_{1},\ldots,x_{n})=0\\
@@ -2167,7 +2111,7 @@ primitv-rekursive Funktion
       f_{k}(x_{1},\ldots,x_{n}) &: g_{k}(x_{1},\ldots,x_{n})=0\\
       f_{k+1}(x_{1},\ldots,x_{n}) &: \sonst
     \end{cases}
-  \end{equation*}
+  \end{gather*}
   primitiv-rekursiv.
 \end{satz}
 
@@ -2176,9 +2120,9 @@ primitv-rekursive Funktion
   primitiv-rekursiv. Ferner sei $f=\mu R(g)$ die durch $\mu$-Rekursion
   aus $g$ entstehende Funktion mit der Eigenschaft, dass für alle
   $(x_{1},\ldots,x_{n})\in\N^{n}$ gilt:
-  \begin{equation*}
+  \begin{gather*}
     f(x_{1},\ldots,x_{n}) \leq h(x_{1},\ldots,x_{n})
-  \end{equation*}
+  \end{gather*}
   (d.\,h. $f$ ist für alle Tupel $(x_{1},\ldots,x_{n})$ definiert und es
   gilt die Ungleichung).
   
