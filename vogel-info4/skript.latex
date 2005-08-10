@@ -25,14 +25,18 @@
 \usepackage{longtable}
 \usepackage{slashbox}
 
+\usepackage{paralist}
+\usepackage{ngerman}
+%\usepackage{wasysym}  % \lightning
+
 \makeatletter
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
 \makeatother
 
-\usepackage{paralist}
-\usepackage{ngerman}
-%\usepackage{wasysym}  % \lightning
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
 
 \newtheoremstyle{break}{3pt}{3pt}{}{}{\bfseries}{}{\newline}{}
 
@@ -73,7 +77,9 @@
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
-\newcommand{\highl}[1]{\textbf{#1}\index{#1}}
+\newcommand{\highl}[2][]{\textbf{#2}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
 
 % <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
 \newcommand*{\taglabel}[1]{%
@@ -90,6 +96,8 @@
 			       {n.\,def.\xspace}}
 
 \renewcommand{\vdash}{\mathrel{|\mkern-4mu-}\mathrel{\mkern-10mu-}}
+\newcommand{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand{\norm}[2][]{#1\lVert#2#1\rVert}
       
 \renewcommand{\epsilon}{\varepsilon}
 % \renewcommand{\phi}{\varphi}
@@ -305,7 +313,7 @@ Es sei $\Sigma$ eine endliche Menge, z.\,B. $\Sigma=\{a_{1},a_{2},
 \highl{Buchstabe}. Jede endliche Folge $x_{1},\ldots,x_{m}$ von
 Buchstaben aus $\Sigma$ heißt \highl{Wort} über dem Alphabet $\Sigma$.
 Die Anzahl $m$ der Buchstaben eines Wortes $w$ heißt \highl{Länge des
-Wortes} und wird mit $|w|$ bezeichnet.
+Wortes} und wird mit $\abs{w}$ bezeichnet.
 
 Eine besondere Rolle spielt das "`\highl{leere Wort}"' der Länge Null.
 (also kein Buchstabe). Die Bezeichnung dafür ist $\lambda(\epsilon)$
@@ -318,8 +326,8 @@ $\Sigma$ sind geordnet:
 \end{gather*}
 Dann ergibt sich hieraus eine kanonische Ordnung für $\Sigma^{\ast}$.
 \begin{align*}
-  w_{1}< w_{2} \Longleftrightarrow& |w_{1}| < |w_{2}| \text{ oder}\\
-  & \big(|w_{1}| = |w_{2}| \text{ und für die erste Stelle, an der sich
+  w_{1}< w_{2} \Longleftrightarrow& \abs{w_{1}} < \abs{w_{2}} \text{ oder}\\
+  & \big(\abs{w_{1}} = \abs{w_{2}} \text{ und für die erste Stelle, an der sich
      $w_{1}$ und $w_{2}$ unterscheiden,}\\
   &\quad\text{gilt: der Buchstabe von $w_{1} <$ dem Buchstaben von
      $w_{2}$}\big)
@@ -336,7 +344,7 @@ Es sei $\Sigma$ ein Alphabet. Dann bezeichnet
   \Sigma^{\ast} &= \bigcup_{n=0}^{\infty} \Sigma^{n}\\
   \Sigma^{+} &:= \Sigma^{\ast}\setminus \{\lambda\}
 \end{align*}
-Für $w\in\Sigma$ gilt: $|w| = n$.
+Für $w\in\Sigma$ gilt: $\abs{w} = n$.
 
 Für zwei Wörter $u,v\in\Sigma^{\ast}$ mit $u=x_{1}\ldots x_{m}$ und
 $v=y_{1} \ldots y_{n}$ bezeichnet die \highl{Konkatenation}
@@ -386,7 +394,7 @@ die \highl{Kleene-Hülle} von $L$.
   \Sigma_{Tastatur} &:= \{
      a,\ldots,z,A,\ldots,Z,0,\ldots,9,-,+,:,\ldots\} \cup \{ \leerz \}
 \end{align*}
-\textbf{Achtung:} Es gilt $|\leerz|=1$!
+\textbf{Achtung:} Es gilt $\abs{\leerz}=1$!
 
 \begin{bemerk}
   Jeder Roman ist ein Wort über diesem Alphabet
@@ -801,7 +809,7 @@ Als berechenbare Funktionen werden auch solche angesehen, die nicht
   $\delta(q_{F},\ast)$ ist die Verfollständigung der
   Überführungsfunktion, obwohl $q_{F}$ nie erreicht wird.
   
-  $M$ berechnet die \highl{"`nirgends definierte"' Funktion}
+  $M$ berechnet die \highl[Funktion!nirgends definierte]{"`nirgends definierte"' Funktion}
   $f:\Sigma^{\ast} \rightarrow\Sigma^{\ast}$
   \begin{align*}
     f(w) = \text{ \ndef (Symbol $\perp$)}&&\forall w\in\Sigma^{n}
@@ -912,8 +920,8 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
     \mathcal{TM} = \{f:\N^{n}\rightarrow\N \big| f \text{ ist
     Turing-berechenbar}\}
   \end{gather*}
-  $\mathcal{TM}$ ist die \highl{Klasse aller Turing-berechenbarer
-  Funktionen}
+  $\mathcal{TM}$ ist die \highl[Klasse!Turing-ber.\,Fkt.]{Klasse aller
+  Turing-berechenbarer Funktionen}
 \end{defini}
 
 \subsection{Entscheidbarkeit, Semientscheidbarkeit und Aufzählbarkeit}
@@ -993,12 +1001,12 @@ das "`Gedächtnis"' der Turing-Maschine eingeführt werden:
 \end{bemerk}
 
 \begin{bsp}
-  Für $w\in\Sigma^{\ast}$ bezeichnet $|w|$ die Länge von $w$, d.\,h. $w$
-  hat $|w|$ viele Buchstaben. (vgl. Beginn von \autoref{sec:1})
+  Für $w\in\Sigma^{\ast}$ bezeichnet $\abs{w}$ die Länge von $w$, d.\,h. $w$
+  hat $\abs{w}$ viele Buchstaben. (vgl. Beginn von \autoref{sec:1})
   
   Wir betrachten die folgende Sprache
   \begin{gather*}
-    L= \{w=w_{1}w_{2}\ldots w_{|w|}: w_{1} \not= w_{j}, j=2,\ldots,|w|\}
+    L= \{w=w_{1}w_{2}\ldots w_{\abs{w}}: w_{1} \not= w_{j}, j=2,\ldots,\abs{w}\}
     \subseteq \Sigma^{\ast}
   \end{gather*}
   
@@ -1407,12 +1415,12 @@ Dabei gilt:
   \begin{align*}
     TIME_{M}(n) &:=
        \begin{cases}
-	 \max_{|w|\leq n} time_{M}(w)& time_{M}(w) \text{ definiert}\\
+	 \max_{\abs{w}\leq n} time_{M}(w)& time_{M}(w) \text{ definiert}\\
 	 \ndef& $M$\sonst
        \end{cases}\\
     SPACE_{M}(n) &:=
        \begin{cases}
-	 \max_{|w|\leq n}space_{M}(w)&space_{M}(w)\text{ ist definiert}\\
+	 \max_{\abs{w}\leq n}space_{M}(w)&space_{M}(w)\text{ ist definiert}\\
 	 \ndef& $M$\sonst
        \end{cases}
   \end{align*}
@@ -1728,12 +1736,7 @@ primitiv-rekursiv.
 Ann.: $\psi\in\Prr$ $\Rightarrow$ Dann existiert $k\in\N: \psi=\phi_{k}$,
 aber es gilt: $\phi_{k}(k) = \psi(k) = \phi_{k}(k)+1$.
 
-% Die Zeichen im Mathemodus werden nicht fett dargestellt, daher
-% \boldsymbol (s. Amsmath-Doku). Da jedoch die Zeichen in der Überschrift
-% und im Inhaltsverzeichnis normal seien sollen, muss der optionale
-% Parameter sein.
-\section[\texorpdfstring{$\mu$}{\textmu}-rekursive Funktionen]%
-	{$\boldsymbol{\mu}$-rekursive Funktionen}
+\section{\texorpdfstring{$\mu$}{\textmu}-rekursive Funktionen}
 
 Programmiersprachen mit Schleifen:
 \begin{gather*}
@@ -1745,7 +1748,7 @@ wollen solche Schleifen simulieren
 \begin{defini}
   Es sei $g:\N^{k+1}\rightarrow\N$ eine Funktion mit $k>0$. Die Funktion
   $f:\N^{k}\rightarrow\N$ entsteht aus $g$ durch das Schema der
-  \highl{$\mu$-Rekursion} $:\Longleftrightarrow$ für alle
+  \highl[mu-Rekursion@$\mu$-Rekursion]{$\mu$-Rekursion} $:\Longleftrightarrow$ für alle
   $(x_{1},\ldots,x_{k})\in\N^{k}$ gilt:
   \begin{gather*}
     f(x_{1},\ldots,x_{k}) =
@@ -1772,8 +1775,9 @@ als Schleife:\\
    \item Eine Klasse $\mathbb{F}$ von Funktionen heißt abgeschlossen
     bzgl. $\mu$-Rekursion $:\Longleftrightarrow$ für alle
     $g\in\mathbb{F}$ ist $f=\mu R(g)\in\mathbb{F}$.
-   \item Die Klasse $\PP$ der partiell-rekursiven Funktionen
-    \index{Klasse|part.-rek.\,Fkt} ist die kleinste Klasse, die $\Prr$
+   \item Die \highl[Klasse!part.-rek.\,Fkt]{Klasse $\PP$ der
+    partiell-rekursiven Funktionen} \index{P@$\PP$|see{Klasse!part.-rek.\,Fkt}}
+    die kleinste Klasse, die $\Prr$
     umfasst und abgeschlossen bzgl. $\mu$-Rekursion ist. Anders
     dargestellt: $\PP=\Gamma_{\{\mu R\}}(\Prr)$
   \end{enumerate}
@@ -1806,7 +1810,7 @@ als Schleife:\\
     sgn: \N\rightarrow\N, n \mapsto
        \begin{cases}0&:n=0\\1&:n>0\end{cases}\\
     exp:\N^{2}\rightarrow\N, (m,n)\mapsto m^{n}\quad (0,0)\mapsto1\\
-    ab:\N^{2}\rightarrow\N, (m,n)\mapsto |m-n|
+    ab:\N^{2}\rightarrow\N, (m,n)\mapsto \abs{m-n}
   \end{gather*}
   
   \begin{align*}
@@ -1822,11 +1826,11 @@ als Schleife:\\
 
   Damit ist $f:\N^{3}\rightarrow\N$ primitiv-rekursiv
   \begin{align*}
-    f(k,m,n) &= |k\cdot m-n|^{sgn(m)}\\
+    f(k,m,n) &= \abs{k\cdot m-n}^{sgn(m)}\\
     \intertext{setzen $f$ in $\mu R(f)$ ein:}
     [\mu R(f)](m,n) &=
        \begin{cases}
-	 \mu k(|k\cdot m-n|=0)&: \text{falls ein solches $k$ existiert
+	 \mu k(\abs{k\cdot m-n}=0)&: \text{falls ein solches $k$ existiert
 	 und $m\not=0$}\\
 	 \ndef&:\sonst
        \end{cases}\\
@@ -1853,11 +1857,11 @@ als Schleife:\\
   
   Wir betrachten folgende zweistellige Funktion $h$
   \begin{align*}
-    h(m,n) &= |m-n^{2}|&&h\in\Prr\\
+    h(m,n) &= \abs{m-n^{2}}&&h\in\Prr\\
     \intertext{Wir bestimmen $\mu R(h)$:}
     [\mu R(h)](m) &=
        \begin{cases}
-	 \mu n(|m-n^{2}|=0)&:\exists n\\
+	 \mu n(\abs{m-n^{2}}=0)&:\exists n\\
 	 \ndef&:\sonst
        \end{cases}\\
     &= \begin{cases}
@@ -1882,7 +1886,7 @@ als Schleife:\\
   Also gilt:
   \begin{align*}
     gw(m) &= \mu n(m < (n+1)^{2})\\
-    &= \mu n(|(n+1)^{2}- (m+1)|=0)
+    &= \mu n(\abs{(n+1)^{2}- (m+1)}=0)
   \end{align*}
   Weiter gilt: $gw(m) = wurz(m)$ falls $wurz(m)$ definiert ist und $gw$
   ist total definiert. Damit ist $gw$ eine Fortsetung von $wurz$ und $gw$
@@ -1912,8 +1916,9 @@ ist $wurz:\big|_{D wurz} = wurz$
   Eine partiell-rekursive Funktion $f$ heißt \highl{allgemein-rekursiv}
   $:\Longleftrightarrow$ $f$ total definiert ist.
   
-  $\Pa$\index{$\Pa$} bezeichnet die Menge aller allgemein
-  rekursiven Funktionen.
+  $\Pa$\index{Pa@$\Pa$|see{Klasse!allg.-rek.\,Fkt.}} bezeichnet die
+  \highl[Klasse!allg.-rek.\,Fkt.]{Klasse aller allgemein-rekursiven
+  Funktionen}.
 \end{defini}
 
 Wenn $\mathbb{F}$\index{$\mathbb{F}$} die Menge aller Zahlenfunktionen
@@ -2148,7 +2153,7 @@ primitv-rekursive Funktion
 
 \begin{satz}[Wertverlaufsfunktionen]
   Es sei $A=\{0,1,\ldots,l\}$ und ferner sei
-  $B_{n}\subseteq\{0,\ldots,n-1\}$ mit der Eigenschaft $|B_{n}|=k$.
+  $B_{n}\subseteq\{0,\ldots,n-1\}$ mit der Eigenschaft $\abs{B_{n}}=k$.
   Ferner sei $g_{0},\ldots,g_{l}:\N^{n-1}\rightarrow_{t}\N$ und
   $h:\N^{n+k}\rightarrow_{t}\N$ primitv-rekursiv.
   
@@ -2209,4 +2214,9 @@ primitv-rekursive Funktion
     \end{enumerate}
   \end{proof}
 \end{satz}
+
+\clearpage
+\appendix
+\pdfbookmark[0]{Index}{index}
+\printindex
 \end{document}
