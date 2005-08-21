@@ -117,9 +117,12 @@
 \newcommand{\Pa}{\PP\mathrm{a}}
 \newcommand{\help}[1]{\textcolor{green}{help: #1}}
 \newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
+\newcommand{\edefine}{=_{df}}
 \newcommand{\define}{\Leftrightarrow_{df}} %\define nur in $ $ benutzen!
 \newcommand{\semaeq}{\mathrel|\joinrel=\joinrel\mathrel|} %semantische Aequivalenz
 \newcommand{\mminus}{\backslash} %Mengenrelation minus
+\newcommand{\card}{\textrm{ card}}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
@@ -1481,4 +1484,228 @@ ist eine Folge $K_1,\ldots, K_l$ von Klauseln, f\"ur die gilt: entweder ist
 $K_i\in F$ (Startklausel) oder es gibt $\alpha, \beta < i$ und \help{Resolution
 $K_\alpha, K_\beta$ zu $K_i$}
 \end{defini}
+
+\begin{bsp}
+\help{Resolutionsbaum $F=\big\{\{A,B,C,D\},\{A,B,C,\neg D\},\{A,B,\neg
+C\},\{A,\neg B\},\{\neg A\}\big\}$ jeweils resolviert: $\{A,B,C\},\ \{A,B\},\
+\{A\},\ \{\varnothing\}$}\\
+Ableitungen: $K_1=\{A,B,C,D\},\ K_2=\{A,B,C,\neg D\},\ K_3=\{A,B,\neg C\},\
+K_4=\{A,\neg B\},\ K_5=\{\neg A\},\ K_6=\{A,B,C\},\ K_7=\{A,B\},\ K_8=\{A\},\
+K_9=\{\varnothing\}$
+\end{bsp}
+
+Beispiele dieser Art ben\"otigen etwa soviele Schritte wie Atome (linearer
+Aufwand)\\
+\underbar{ABER}: Es gibt Beispiele, die erfordern expotentiellen Aufwand.
+
+Der Induktionsbeweis liefert folgenden Algorithmus:
+
+\highl{Algorithmus von Gilmore}
+\help{das muss linksgerichtet sein!}
+\begin{gather*}
+n:=0\\
+Res[n]:=F\\
+\underline{\textrm{repeat}}\ n:=n+1\\
+\ \ \ Res[n]:= Res(Res[n-1])\\
+\underline{\textrm{until}}\ (\varnothing\in Res[n]) \textrm{ or }
+(Res[n]=Res[n-1])\\
+\underline{\textrm{if }}\ (\varnothing\in Res[n]) \underline{\textrm{ return }}
+\textrm{unerf\"ullbar}\\
+\underline{\textrm{else return}} \textrm{ erf\"ullbar}
+\end{gather*}
+
+\chapter{Einf\"uhrung in die Kombinatorik}
+\emph{Frage:} Wie viele Elemente enth\"alt eine gegebene Menge?\\
+Die "`\emph{Kunst des Z\"ahlens}"'
+
+\section{Elementare Abz\"ahlregeln}
+\subsection{Summenregel}
+Gegeben seien $a_1$ Elemente vom Typ $A_1$ und $a_2$ Elemente vom Typ $A_2$.\\
+Dabei schlie\ss en sich diese Typen gegenseitig aus.
+
+\emph{Frage}: Auf wie viele Weisen l\"asst sich ein Element vom Typ $A_1$ oder
+$A_2$ w\"ahlen?
+
+\emph{Antwort}: $a_1+a_2$
+
+\emph{Begr\"undung}: Bilden 
+\begin{gather*}
+   M_1\define \{x\ |\ x \textrm{ vom Typ } A_1\}\\
+   M_2\define \{y\ |\ y \textrm{ vom Typ } A_2\}
+\end{gather*}   
+Dann gilt: $M_1\cap M_2 = \varnothing$ und es gilt: $\textrm{card}(M_1\cup
+M_2)=\textrm{card}M_1+\textrm{card} M_2$.
+
+\underline{Sprechweise}: Falls gilt $\textrm{card}M=n$ f\"ur $n\in \mathbb{N}$ dann
+hei\ss t $M$ $n$-Menge.
+
+\underline{Verallgemeinerung}: Die Summenregel gilt f\"ur jede endliche Anzahl
+$k\geq 2$ von Typen.
+
+\subsection{Produktregel}
+Gegeben seien $a_1$ Elemente vom Typ $A_1$ und $a_2$ Elemente vom Typ $A_2$.
+
+\emph{Frage}: Auf wie viele Weisen l\"asst sich ein Paar mit der ersten Komponente
+von $A_1$ und mit der zweiten Komponente vom Typ $A_2$ bilden?
+
+\emph{Antwort}: $a_1\cdot a_2$
+
+\emph{Begr\"undung}: Wir betrachten \[ M_1\times M_2 \define \{(x,y)\ |\ x\in
+M_1 \textrm{ und } y\in M_2\}\]
+und es gilt: $\card M_1\times M_2 = \card M_1 \cdot \card M_2=a_1\cdot a_2$
+
+\underline{Verallgemeinerung}: Die Produktregel gilt f\"ur jede endliche Anzahl
+$k\geq 2$ von Typen.
+
+\begin{bsp} Wie viele Schriften erlaubt ein gegebener PC?
+
+"`Schrift "' hat folgende Komponenten:
+\begin{enumerate}
+   \item "`Schriftart"': Arial,\dots Dies seien 20.
+   \item "`Schriftgr\"o\ss e: \dots,12 Pkt,\dots Dies seien 27.
+   \item "'Schriftsatz"`: fett, kursiv, unterstrichen\\
+   Dies sind 3 Komponenten, die unabh\"anig voneinander gew\"ahlt werden 
+   k\"onnen.\\ F\"ur jede Komp. gibt es zwei M\"oglichkeiten: (an/aus) 
+   $2\cdot 2\cdot 2\cdot =8$
+\end{enumerate}
+Also insgesamt: $20\cdot 27\cdot 8$ M\"oglichkeiten.
+\end{bsp}
+
+Ein zweiter Blick auf die Produktregel als "`Entscheidungsbaum"'.\\
+Wir haben einen $k$-stufigen Entscheidungsprozess:
+
+1. Stufe: $a_1$ verschiedene Alternativen\\
+\vdots\\
+k. Stufe: $a_k$ verschiedene Alternativen
+
+\subsection{Gleichheitsregel}
+Gegeben seien zwei verschiedene Mengen $X$ und $Y$. Falls es eine Bijektion
+zwischen diesen beiden Mengen gibt, dann gilt: $\card X=\card Y$.
+\begin{bsp}
+Gegeben sei die Menge $M=\{x_1,\dots,x_m\}$ (also ist $M$ eine $m$-Menge) und
+wir definieren \[X\edefine \big\{f\ |\ f:\,M\mapsto \{0,1\}\big\}=\{0,1\}^M\]
+
+Es gilt: \[\card M=\card \{0,1\}^M=(\card\{0,1\})^{\card M}=2^m\]
+Wir betrachten nun $Y\edefine \{N\ |\ N\subseteq M\}=\mathcal{P}(M)$.
+
+\emph{Behauptung}: Es gibt eine Bijektion $\varphi$ von $X$ und $Y$.
+
+\emph{Folgerung}: $\card (\mathcal{P})=\card (\{0,1\}^M)=2^{\card M}=2^m$
+
+Wir definieren: $\varphi(N)\edefine \psi_N\ \ (N\subseteq M)$\\
+Dabei ist $\psi_N(x) \edefine \Big\{ \begin{array}{ll}1 & \textrm{ falls } x\in N\\
+0 & \textrm{ falls } x\notin N\end{array}$ die \highl{charakteristische
+Funktion} von $N$.
+
+Es gilt: Definitionsbereich $D_\varphi = \mathcal{P}(M)$, $\psi_N\in \{0,1\}^M$
+
+Bleibt zu zeigen: $\varphi$ inj. und surj.
+\begin{enumerate}
+   \item $\varphi$ injektiv: $\varphi(N_1)=\varphi(N_2) \Rightarrow N_1=N_2$
+   
+   Es sei also $\varphi(N_1)=\varphi(N_2)$. Dann gilt: 
+   \[x\in N_1 \leftrightarrow \psi_{N_1}(x)=1\leftrightarrow \psi_{N_2}(x)=1
+   \leftrightarrow x\in N_2\]
+   \item $\varphi$ surjektiv: f\"ur jedes $f\in \{0,1\}^M$ gibt es ein $N\in
+   \mathcal{P}(M)$ mit $\varphi(N)=f$.
+
+   Es sei also $f\in \{0,1\}^M$.\\
+   Wir definieren $N:=\{x\ |\ x\in M \textrm{ und } f(x)=1\} =: f^{-1}(1)$
+
+   Damit gilt: $f(x)=1 \leftrightarrow x\in f^{-1}(1)\leftrightarrow x\in
+   N\leftrightarrow \psi_N(x)=1$
+
+   Also gilt: $\varphi(N)=\psi_N=f$
+\end{enumerate}
+\end{bsp}
+
+\subsection{Regel vom zweifachen Abz\"ahlen}
+Gegeben seien eine $n$-Menge $A=\{a_1,\dots,a_n\}$ und eine $m$-Menge
+$B=\{b_1,\dots,b_m\}$ und eine bin\"are Relation $R\subseteq A\times B$ zwischen
+$A$ und $B$.
+
+Ferner sei $r(a_i)$ die Anzahl der Elemente aus $B$, die mit $a_i$ in Relation
+stehen; und es sei $r(b_j)$ die Anzahl der Elemente aus $A$, die mit $b_j$ in
+Relation stehen.
+
+\begin{align*}
+r(a_j) &= \card\{(a_i,b)\ |\ (a_i,b)\in R\}\\
+& = \card\{b\ |\ b\in B \wedge (a_i,b)\in R\}\\
+r(b_j) &= \card\{a\ |\ a\in A \wedge (a,b_j)\in R\}
+\end{align*}
+
+Begr\"undung: Darstellung als Rechteckschema:
+
+\begin{tabular}{c c c c c c c}
+ & $b_1$ & $b_2$ & \dots & $b_j$ & \dots & $b_m$\\
+$a_1$ & 1 & 0 & \dots & 1 & \dots & 0\\
+\vdots & & & \vdots & & \vdots\\
+$a_i$ & 0 & 0 & \dots & 1 & \dots & 0\\
+\vdots & & & \vdots & & \vdots\\
+$a_n$ & 1 & 1 & \dots & 0 & \dots & 0
+\end{tabular}
+
+$r(a_1)$: Anzahl "`1"'en in Zeile $1$,\\
+$r(a_i)$: Anzahl "`1"'en in Zeile $i$,\\
+$r(b_j)$ analog.
+
+Eintr\"age: 
+\begin{gather*}
+   m_{ij}=1 \leftrightarrow (a_i,b_j)\in R\\
+   m_{ij}=0 \leftrightarrow (a_i,b_j)\notin R
+\end{gather*}
+
+Dann gilt: $\sum_{i=1}^n r(a_i) = \sum_{j=1}^m r(b_j)$
+
+\begin{bsp}
+$A=B=\{1,2,\dots,10\}$ und $R$ als $R$ als Teilerrelation.
+\[ (i,j)\in R \leftrightarrow i\setminus j\]
+Frage: Wie sieht dann das Rechteckschema aus?\\
+Frage: Wie viele Teiler hat eine nat. Zahl im Mittel?
+
+\begin{tabular}{c c c c c c c c c c c}
+  & 1 & 2   & 3	  & 4	& 5   & 6   & 7	  & 8	& 9   & 10\\
+1 & 1 & 1   & 1	  & 1	& 1   & 1   & 1	  & 1	& 1   & 1\\
+2 &   &	1   &	  & 1	&     & 1   &	  & 1	&     & 1\\
+3 &   &	    & 1	  &	&     & 1   &	  &	& 1   &  \\
+4 &   &	    &	  & 1	&     &	    &	  & 1	&     &	 \\
+5 &   &	    &	  &	& 1   &	    &	  &	&     & 1\\
+6 &   &	    &	  &	&     & 1   &	  &	&     &  \\
+7 &   &	    &	  &	&     &	    & 1	  &	&     &  \\
+8 &   &	    &	  &	&     &	    &	  & 1	&     &  \\
+9 &   &	    &	  &	&     &	    &	  &	& 1   &  \\
+10 & & & & & & & & & & 10
+\end{tabular}
+
+$\begin{array}{c c c c c c c c c c c}
+t(j) & 1 & 2 & 2 & 3 & 2 & 4 & 2 & 4 & 3 & 4\\
+\overline{t(j)} & 1 & 3/2 & 5/3 & 8/4 & 10/5 & 14/6 & 16/7 & 20/8 & 23/9 & 27/10
+\end{array}$
+
+$t(j)$ - Anzahl der Teiler von $j$\\
+$\overline{t(j)}$ - Anzahl der Teiler von $j$ im Mittel
+\[ \overline{t(n)} = 1/n \sum_{j=1}^n t(j)\]
+\end{bsp}
+
+$t(j)$ ist v\"ollig unregelm\"a\ss ig.\\
+$t(prim)=2$,\\
+$t(2^k)=k+1$
+
+Blick auf die Zeilen:\\
+in Zeile $i$ stehen an den Stellen $1\cdot i,2\cdot i,3\cdot i,\dots$ solange
+bis $k\cdot i \leq n$: das gr\"o\ss te $k$ ist $k=\frac{n}{\floor{i}}$\\
+d.h. $r(i)=\frac{n}{\lfloor i\rfloor}$ und es gilt:
+\[ \overline{t(n)}= 1/n \cdot \sum_{j=1}^n t(j)= 1/n\cdot \sum_{i=1}^n r(i)=
+1/n\cdot \sum_{i=1}^n \frac{n}{\floor{i}}\]
+f\"ur das gr\"o\ss te ganze $\floor{x}$ gilt:
+\[ x-1 < \floor{x} \leq x \]
+also gilt $\floor{x} \sim x$ und der Fehler ist kleiner als 1.
+
+Also:
+\[ 1/n \cdot \sum_{i=1}^n n/\floor{i} = 1/n\cdot \sum_{i=1}^n n/i = 1\cdot
+\sum_{i=1}^n 1/i :=\ H_n\]
+$H_n$ wird als $n$-te harmonische Zahl bezeichnet und es gilt $H_n \sim \ln{n}$
+
+\subsection{Kominatorische Grundaufgaben}
+
 \end{document}
