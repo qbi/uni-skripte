@@ -1,0 +1,2816 @@
+% $Id: EWMS.tex 60 2005-08-18 12:31:23Z jens $
+
+% TODO
+% This document ist work in progress. I expect it to be stable at the
+% end of August 2005
+%
+% + Brueche auf nicefrac oder frac pruefen
+
+\documentclass[titlepage]{scrbook}
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts,makeidx}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{paralist}
+\usepackage{pst-plot}
+\usepackage{nicefrac}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\CF}{\mathcal{F}}
+\newcommand{\CO}{\mathcal{O}}
+\newcommand{\FA}{\mathfrak{A}}
+\newcommand{\FB}{\mathfrak{B}}
+\newcommand{\FE}{\mathfrak{E}}
+\newcommand{\FP}{\mathfrak{P}}
+\newcommand{\FX}{\mathfrak{X}}
+\newcommand{\fmineins}{f^{-1}}
+\newcommand{\hmineins}{h^{-1}}
+\newcommand{\chiai}{\chi_{A_i}}
+\newcommand{\limn}{\lim_{n\rightarrow\infty}}
+\newcommand{\ofmu}{[\Omega,\CF,\mu]}
+\newcommand{\rbel}{[\R,\FB,\ell]}
+\newcommand{\pxi}{P\circ\xi^{-1}}
+
+\theoremstyle{plain}
+\newtheorem{satz}{Satz}[section]
+\newtheorem*{satz*}{Satz o.B}
+
+\theoremstyle{definition}
+\newtheorem*{definition}{Definition}
+%\newtheorem{proof}{Beweis}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Bemerkung}
+\newtheorem*{beispiel}{Beispiel}
+
+\makeindex
+
+\begin{document}
+\tableofcontents
+
+\chapter{Maß- und allgemeine Integrationstheorie}
+
+\section{Einführung in die Maßtheorie}
+
+\subsection{Das Grundmodell der Wahrscheinlichkeitsrechnung}
+
+Die Wurzeln der Wahrscheinlichkeitsrechnung liegen zu Zeiten des
+30-jährigen Krieges. In den Gefechtspausen veranstalteten die
+Offiziere oft Glücksspiele. Diese haben naturgemäß einen
+zufälligen Ausgang und einige Spieler machten sich Gedanken über
+den Verlauf und wie der Ausgang beeinflusst werden kann. Hiervon
+stammen einige der ersten praktischen Überlegungen zu dem
+Themengebiet.
+
+Der Mathematiker David Hilbert stellte am 08.~August~1900 eine Liste
+von 23 bis dahin ungelösten Problemen der Mathematik auf. 
+
+
+\subsection{Mathematische Modell für  zufällige Vorgänge}
+
+Das mathematische Modell besteht aus den drei Faktoren:
+$[\Omega, \CF, P]$. Diese haben folgende Bedeutung:
+\begin{enumerate}[1)]
+\item Raum der Elementarereignisse\index{Elementarereignis} - $\Omega$\\
+Dies ist eine nichtleere Menge ($\Omega\neq\emptyset$), die mögliche
+Versuchsausgänge klassifiziert.\\
+Beispiel: Würfel $\rightarrow \Omega = \{1,2,3,4,5,6\}$, Messung
+$\rightarrow M\subseteq \R$, Münzwurf $\rightarrow \Omega =\{W, Z\}=
+\{0, 1\}$
+\item System der Ereignisse - $\CF$\\
+Die Menge $\CF$ beinhaltet zulässige Aussagen über das
+Versuchsergebnis und es gilt $\CF\subseteq 2^\Omega$\footnote{Die
+  Potenzmenge\index{Potenzmenge} wird auch mit $\FP$ bezeichnet. Damit gilt hier: $\CF
+  \subseteq \FP(\Omega)$}\\
+Beispiel: Würfel $\rightarrow A=\{2,4,6\}\subseteq\Omega$ entspricht
+der Aussage "`Ich würfle eine gerade Zahl."'
+\item Eintrittswahrscheinlichkeit\index{Eintrittswahrscheinlichkeit} - $P$\\
+$P$ ist eine Abbildung $P:\CF\rightarrow[0,1]$ und $P(A)$ bezeichnet
+die Wahrscheinlichkeit mit der das Ereignis $A\in\CF$ eintritt.\\
+Beispiel: Würfel $\rightarrow \Omega=\{1,2,3,4,5,6\}, A=\{2,4,6\},
+P(A)=0,5, P(\{k\})=\frac{1}{6}, k=1,\ldots,6$
+\end{enumerate}
+
+
+\subsection{Eigenschaften von $\CF$}
+
+\begin{itemize}
+\item Grundidee: Logische Operatoren werden zu entsprechenden
+  mengentheoretischen Operatoren: $A_1\vee A_2 \leftrightarrow A_1\cup
+  A_2, \neg A\leftrightarrow A^c$\footnote{Komplement\index{Komplement}}
+\item $\CF\neq\emptyset$
+\item $\forall A_1,A_2\in\CF (A_1\cup A_2\in\CF\wedge A_1\cap A_2\in\CF)$
+\item $\forall A_1,A_2,\ldots\in\CF (\bigcup_{k=1}^\infty A_k\in\CF)$
+\item $\forall A \in\CF (A^c\in\CF)$
+\end{itemize}
+
+
+\subsection{Eigenschaften von $P(A)$}
+
+\begin{itemize}
+\item Beispiel: $n$-mal Würfeln: $h_n(a)=\frac{\text{Anzahl des
+      Eintretens von } A}{n}\xrightarrow{n\rightarrow\infty} =:P(A)$
+\item $0\leq h_N(A)\leq 1\Rightarrow 0\leq P(A)\leq 1$
+\item $h_N(\Omega)=1=P(\Omega)$
+\item $A\cap B=\emptyset\Rightarrow h_n(A\cup B)=h_n(A)+h_n(B)
+  \Rightarrow P(A\cup B)=P(A)+P(B)$
+\item $A_1, A_2,\ldots\in\CF\wedge A_j\cap a_K=\emptyset (k\neq j)
+  \Rightarrow P(\bigcup_{k=1}^\infty A_k)=\sum_{k=1}^\infty P(A_k)$
+\end{itemize}
+
+\section{$\sigma$-Algebra}
+
+Im folgenden gilt immer:
+\begin{itemize}
+\item $\Omega\neq\emptyset$
+\item $\FP (\Omega)$ - Potenzmenge
+\item $\CF\subseteq\FP(\Omega)$
+\end{itemize}
+
+\begin{definition}
+  $\CF$ heißt Algebra\index{Algebra}, wenn gilt:
+  \begin{enumerate}[(1)]
+  \item $\emptyset\in\CF$
+  \item $A\in\CF\Rightarrow A^c\in\CF$
+  \item $A,B\in\CF\Rightarrow A\cup B\in\CF$
+  \end{enumerate}
+$\CF$ heißt $\sigma$-Algebra\index{$\sigma$-Algebra}, wenn die
+Punkte (1) und (2) gelten und zusätzlich\\
+ (3') $A_1, A_2, \ldots\in\CF
+\Rightarrow \bigcup A_k\in\CF$ gilt.
+\end{definition}
+ 
+\begin{satz}
+\label{satz:s-alg}
+  Jede $\sigma$-Algebra ist eine Algebra.
+\end{satz}
+\begin{proof}
+  Zum Beweis genügt es zu zeigen, dass eine beliebige
+  $\sigma$-Algebra $\CF$ den Punkt (3) der Definition erfüllt. Es
+  gelten die Eigenschaften (1), (2) und (3'). Man setzt nun $A_1=A,
+  A_2=B, A_n=\emptyset (n=3,4,\ldots)$. Dann gilt $A_1, A_2,
+  \ldots\in\CF \Rightarrow \bigcup A_k$
+\end{proof}
+
+\begin{remark}
+  \begin{itemize}
+  \item Die Umkehrung von Satz \ref{satz:s-alg} ist in der Regel
+    falsch, d.h. es gibt Algebren, die keine $\sigma$-Algebra
+    sind. Das klassiche Beispiel hierfür ist: 
+    \[\Omega=\N; \CF:=\{A\subseteq\N| A\vee A^c\text{ endlich}\}\]
+    Eigenschaften:
+    \begin{enumerate}[(1)]
+    \item klar
+    \item Denn sei $A\in\CF$. Dann ist zu zeigen, dass entweder $A^c\in\CF$
+      oder $(A^c)^c$ endlich ist. Falls $A^c$ endlich, ist nichts weiter
+      zu zeigen. Wenn $A$ endlich ist, dann ist nichts zu $A^c$
+      ausgesagt. Allerdings ist $(a^c)^c=A$. Somit gilt auch Eigenschaft 2.
+    \item Für $A,B\in\CF$ ist zu zeigen, dass $(A\cup B)$ endlich
+      bzw. $(A\cup B)^c\in\CF$ endlich sind.
+      \begin{enumerate}[1. F{a}ll]
+      \item $A,B$ endlich $\Rightarrow A\cup B$ endlich
+      \item $A^c, B^c$ endlich $\Rightarrow A^c\cap B^c\subseteq A^c$
+        endlich $\Rightarrow (A\cap B)^c$ endlich $\Rightarrow A\cup
+        B\in\CF$
+      \item $A,B^c$ endlich $\Rightarrow A^c\cap B^c\subseteq B^c$
+        endlich $\Rightarrow (A\cap B)^c$ endlich $\Rightarrow A\cap B
+        \in\CF$
+      \item $A^c,B$ endlich $\Rightarrow A^c\cap B^c\subseteq A^c$
+        endlich $\Rightarrow (A\cap B)^c$ endlich $\Rightarrow A\cap B
+        \in\CF$
+      \end{enumerate}
+    \end{enumerate}
+  \item Jede endliche Algebra ist eine $\sigma$-Algebra.
+  \item Jede $\sigma$-Algebra ist bezüglich der (symmetrischen)
+    Differenz abgeschlossen.
+  \end{itemize}
+\end{remark}
+
+\begin{satz}
+  Sei $\CF$ eine Algebra. Dann ist $\Omega\in\CF$ und für alle
+  Folgen $A_1,\ldots,A_n\in\CF (n\in\N)$ gelten:
+  \begin{enumerate}[a)]
+  \item $\bigcup_{k=1}^\infty A_k\in\CF$
+  \item $\bigcap_{k=1}^\infty A_k\in\CF$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{itemize}
+  \item $\Omega$ ist ein Element von $\CF$. Denn nach (1) gilt
+    $\emptyset\in\CF$ und nach (2) folgt $\emptyset^c=\Omega\in\CF$.
+  \item[zu a)] Nach Eigenschaft (3) gilt der Punkt a) für $n=2$.\\
+    Annahme: $\bigcup_{k=1}^\infty A_k\in\CF
+    (A_1,\ldots,A_n\in\CF)$\\
+    Beweis: $A_1,\ldots,A_{k+1}\in\CF (\bigcup_{k=1}^{n+1}
+    A_k=\bigcup_{k=1}^n A_k\cup A_{n+1})\Rightarrow
+    \bigcup_{k=1}^{n+1} A_{n+1}\in\CF$
+  \item[zu b)] Nach Eigenschaft (3) kann folgender Schluss gezogen
+    werden $A_1,\ldots,A_n\in\CF\Rightarrow A_1^c,\ldots,A_n^c\in\CF
+    \Rightarrow \bigcup_{k=1}^n A_k^c\in\CF$. Nach den deMorganschen
+    Regeln bedeutet dies: $\left(\bigcup_{k=1}^n A_k\right)^c
+    \Rightarrow \bigcup_{k=1}^n A_k\in\CF$
+  \end{itemize}
+\end{proof}
+
+\begin{satz}
+\label{satz:s-alg-abg-123}
+  Sei $\CF$ eine $\sigma$-Algebra. Dann gilt $\bigcup_{k=1}^\infty
+  A_k\in\CF (A_1,A_2,\ldots\in\CF)$ (Beweis wie oben mit $n=\infty$)
+\end{satz}
+
+\begin{remark}
+  Eine $\sigma$-Algebra ist \emph{nicht} gegenüber
+  überabzählbarer Vereinigung abgeschlossen.
+\end{remark}
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item Die "`kleinste"' Algebra/$\sigma$-Algebra ist
+    $\CF=\{\emptyset, \Omega\}$.
+  \item Die "`größte"' $\sigma$-Algebra ist $\CF=\FP(\Omega)$.
+  \item Sei $\emptyset\subset A\subset\Omega, \CF=\{\emptyset, \Omega,
+    A, A^c\}$.
+  \end{enumerate}
+\end{beispiel}
+
+\begin{satz}
+\label{satz:s-erzeug}
+  Sei $(\CF_i)_{i\in I}$ eine Familie von $\sigma$-Algebren. Dann ist
+  $\bigcap_{i\in I} \CF_i$ eine $\sigma$-Algebra.
+\end{satz}
+\begin{proof}
+  $\bigcap_{i\in I}\CF_i\subseteq\FP(\Omega)$
+  \begin{itemize}
+  \item[zu (1)] für $\CF_i$ gilt, dass $\emptyset\in\CF_i
+    \Rightarrow \emptyset\in\bigcap_{i\in I} \CF_i$
+  \item[zu (2)] Sei $A\in\bigcap_{i\in I}\CF_i$. Es ist zu zeigen,
+    dass $A^c\in\bigcap_{i\in I}\in\CF_i$:\\
+    $A\in\CF_i\Rightarrow A^c\in\CF_i\Rightarrow A^c\in\bigcap_{i\in
+      I} \CF_i$
+  \item Sei $A_1,A_2,\ldots\in\bigcap_{i\in I}\CF_i \Rightarrow
+    A_k\in\CF_i (k=1,2,\ldots) \Rightarrow \bigcup_{k=1}^\infty A_k
+    \in\CF_i \Rightarrow \bigcup_{k=1}^\infty A_k\in\bigcap_{i\in I} \CF_i$
+  \end{itemize}
+\end{proof}
+
+\begin{definition}
+  Sei $\FE\subseteq\FP(\Omega)$ und $\CF$ eine $\sigma$-Algebra.
+  \[\sigma(\FE):=\bigcap_{\FE\subseteq\CF} \CF\]
+  heisst die von $\FE$ erzeugte
+  $\sigma$-Algebra\index{$\sigma$-Algebra!von $\FE$ erzeugte}. Gilt
+  für eine $\sigma$-Algebra $\FB$ die Beziehung
+  \[\FB=\sigma(\FE)\]
+  so heißt $\FE$ Erzeugendensystem\index{Erzeugendensystem} von $\FB$.
+\end{definition}
+
+\begin{remark}
+  Aus Satz \ref{satz:s-erzeug} folgt $\sigma(\FE)$ ist eine
+  $\sigma$-Algebra. Gleiche Konstruktion ist auch für alle
+  Algebren. möglich. 
+\end{remark}
+
+\begin{beispiel}
+  \begin{align*}
+    \sigma(\{\emptyset\})&=\{\emptyset,\Omega\} &
+    \sigma(\{A\})&=\{\emptyset,\Omega,A,A^c\} (\emptyset\subset
+    A\subset \Omega)
+  \end{align*}
+\end{beispiel}
+
+\begin{definition}
+  Sei $\Omega=M$ ein metrischer Raum. Wir setzen $\FE=\{A\subseteq M|
+  A \text{ offen}\}$. $\sigma(\FE)$ heißt $\sigma$-Algebra der
+  Borelmengen\index{Borelmenge} aus $M$. $\FB_n$ ist die
+  $\sigma$-Algebra der Borelmengen in $\R^n$ und $\FB$ ist die
+  $\sigma$-Algebra der Borelmengen in $\R$.
+\end{definition}
+
+\begin{satz}
+\label{satz:b-erzeugen}
+  Jedes der folgenden Mengensysteme ist ein Erzeugendensystem für
+  $\FB$ ( Es gilt: $\FE_1,\ldots,\FE_8$ sind abzählbar.):
+  \begin{align*}
+    \FE_1&:=\{(\alpha,\beta)|\alpha,\beta\in\R \text{ und rational}\}\\
+    \FE_2&:=\{[\alpha,\beta)|\alpha,\beta\in\R \text{ und rational}\}\\
+    \FE_3&:=\{(\alpha,\beta]|\alpha,\beta\in\R \text{ und rational}\}\\
+    \FE_4&:=\{[\alpha,\beta]|\alpha,\beta\in\R \text{ und rational}\}\\
+    \FE_5&:=\{(-\infty,\beta)|\beta\in\R \text{ und rational}\}\\
+    \FE_6&:=\{(-\infty,\beta]|\beta\in\R \text{ und rational}\}\\
+    \FE_7&:=\{(\alpha,\infty)|\alpha\in\R \text{ und rational}\}\\
+    \FE_8&:=\{[\alpha,\infty)|\alpha\in\R \text{ und rational}\}
+  \end{align*}
+\end{satz}
+\begin{proof}
+  \begin{itemize}
+  \item[zu $\FE_1$] Sei $\FE=\{A\subseteq\R| A \text{
+      offen}\}\Rightarrow \FB=\sigma(\FE)$. Nach der Definition gilt
+    $\FE_1\subseteq\FE\Rightarrow\sigma(\FE_1)\subseteq\sigma(\FE)=\FB$. Damit
+    ist noch zu zeigen, dass $\FB\subseteq\sigma(\FE_1)$. Sei
+    $A\in\FE$. Setzen $K_r(x)=(x-r,x+r)\Rightarrow A=
+    \bigcup_{K_r(x)\subseteq A}K_r(x)$\\
+    $K_r(x)\in\FE_1\subseteq \sigma(\FE_1)\Rightarrow A\in\sigma
+    (\FE_1)\Rightarrow\FE\subseteq\sigma(\FE_1)\Rightarrow \sigma(\FE)
+    =\FB\subseteq\sigma(\sigma(\FE_1))=\sigma(\FE_1)$
+  \item[zu $\FE_6$] $\forall\beta ((-\infty,\beta]^c=(\beta,\infty)
+    \in\FE\subseteq\sigma(\FE))\Rightarrow\FE_6=(-\infty,\beta]
+    \subseteq\sigma(\FE)\Rightarrow\sigma(\FE_6)\subseteq \sigma(\FE)$
+    Beweis fuer $\sigma(\FE)\subseteq\sigma(\FE_6)$ fehlt noch.
+  \end{itemize}
+\end{proof}
+
+
+\section{Maße}
+
+Im folgenden gilt immer: $\Omega\neq\emptyset$ und $\CF$ ist eine
+$\sigma$-Algebra über $\Omega$.
+
+\begin{definition}
+  \begin{itemize}
+  \item Das Tupel $[\Omega,\CF]$ heißt messbarer Raum.\index{Raum!messbarer}
+  \item Eine nichtnegative Funktion $\mu$ auf
+    $\CF$\footnote{$\mu:\CF\rightarrow [0,+\infty]$} heißt
+    \index{Maß}Maß auf $[\Omega,\CF]$, wenn gilt 
+    \begin{inparaenum}[1.]
+    \item $\mu(\emptyset)=0$
+    \item Für paarweise disjunkte Folgen $(A_k)_{k=1}^\infty$ aus
+      $\CF$ gilt:
+      \[\mu\left(\bigcup_{k=1}^\infty A_k\right)=\sum_{k=1}^\infty \mu(A_k)\]
+    \end{inparaenum}
+  \item Das Tripel $[\Omega,\CF,\mu]$ heißt Maßraum. \index{Maßraum}
+  \end{itemize}
+\end{definition}
+
+\begin{beispiel}
+  \begin{enumerate}[(1)]
+  \item Nullmaß\index{Nullma\ss} $\CO: \CO(A)=0\,(a\in\CF)$
+  \item Dirac-Maße\index{Dirac-Maße}: Sei
+    $\omega\in\Omega$. Setzen $\delta_\omega(A)=
+    \begin{cases}
+      1 & \omega\in A\\
+      0 & \omega\not\in A
+    \end{cases}$
+  \item Sei $\Omega$ abzählbar und $\CF=\FP(\Omega)$. Dann ist das
+    Zählmaß\index{Zählma\ss} $\mu(A):=\#(A)$ die Anzahl der
+    Teilmengen $A$ aus $\Omega$.
+  \end{enumerate}
+\end{beispiel}
+
+\begin{satz}
+\label{satz:massfamilie-131}
+  Sei $(\mu_i)_{i\in I}$ eine abzählbare Familie von Maßen auf
+  $[\Omega,\CF]$ und $(\alpha_i)_{i\in I}$ eine Familie nichtnegativer
+  reller Zahlen. Durch
+  \[\mu(A):=\sum_{i\in I} \alpha_i \mu_i(A)\quad (A\in\CF)\]
+  ist ein Maß auf $[\Omega,\CF]$ definiert.\footnote{Schreibweise:
+  $\mu=\sum_{i\in I}\alpha_i\mu_i$}
+\end{satz}
+\begin{proof}
+  Diese Funktion ist nichtnegativ, da alle $\alpha_i$ nichtnegativ
+  sind und die $\mu_i(A)$ per Definition ebenfalls positiv sind. Die
+  Summenbildung ändert nichts.
+  \begin{itemize}
+  \item[zu 1)] $\mu(\emptyset)=\sum_{k=1}^\infty \alpha_i\mu_i
+    (\emptyset)=0$
+  \item[zu 2)] Seien $(A_k)_{k=1}^\infty$ paarweise disjunkt aus
+    $\CF$.\\
+    $\mu(\bigcup_{k=1}^\infty A_k)=\sum_{i\in I}\alpha_i
+    \underbrace{\mu_i \left(\bigcup_{k=1}^\infty A_k\right)}_{\sum_{k=1}^\infty
+      \mu_i (A_k)}= \sum_{i\in I} \alpha\sum_{k=1}^\infty \mu_i (A_k)$
+    Nach dem großen Umordnungssatz folgt: $\sum_{k=1}^\infty
+    \underbrace{\sum_{i\in I} \alpha_i \mu_i(A_k)}_{\mu(A_k)} =
+    \sum_{k=1}^\infty \mu(A_k)$
+  \end{itemize}
+\end{proof}
+
+\begin{satz}
+\label{satz:folgenmass}
+  Sei $\mu$ ein Maß auf $[\Omega,\CF]$. Für alle Folgen
+  $A_1,\ldots, A_n\in\CF$, die paarweise disjunkt sind, gilt:
+  \[\mu\left(\bigcup_{k=1}^n A_k\right)=\sum_{k=1}^n \mu(A_k)\]
+\end{satz}
+\begin{proof}
+  Wir setzen $B_k:=
+  \begin{cases}
+    A_k & k=1,\ldots,n\\
+    \emptyset & k>n
+  \end{cases}$. Damit ist folgendes bekannt:
+  \begin{enumerate}
+  \item $\forall k\in \N (B_k\in\CF)$
+  \item $\bigcup_{k=1}^\infty B_k=\bigcup_{k=1}^n A_k$
+  \item $A_i\cap A_j=A_k\cap B_k=\emptyset \, (i\neq j)$
+  \item $\mu(A_k)=\mu(B_k) \, (k=1,\ldots,n)$
+  \item $\mu(B_k)=0 \, (k>n)$
+  \end{enumerate}
+  Damit folgt nun: $\mu(\bigcup_{k=1}^n A_k)\overset{(2)}{=} \mu
+  (\bigcup_{k=1}^\infty B_k)\overset{(1),(3)}{=} \sum_{k=1}^\infty
+  \mu(B_k) \overset{(5)}{=} \sum_{k=1}^n \mu(B_k) \overset{(4)}{=}
+  \sum_{k=1}^n \mu(A_k)$
+\end{proof}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Die Eigenschaften aus Satz \ref{satz:folgenmass} heißt
+    \emph{endliche Additivität \index{Additivität!endliche}}.
+  \item Die zweite Eigenschaft in der Definition des Maßes heißt
+    \emph{$\sigma$-Additivität \index{$\sigma$-Additivität}}.
+  \item Satz \ref{satz:folgenmass} impliziert, dass aus der
+    $\sigma$-Additivität die endliche Additivität folgt. Die
+    Umkehrung ist jedoch falsch.
+  \item \index{Subadditivität}Subadditivität: Für alle
+    $A_1,\ldots, A_n\in\CF$ gilt: $\mu(\bigcup_{k=1}^n A_k)\leq
+    \sum_{k=1}^n \mu(A_k)$
+  \end{enumerate}
+\end{remark}
+
+\begin{satz}[elementare Eigenschaften]
+\label{satz:elemEigen}
+  Sei $[\Omega,\CF,\mu]$ ein Maßraum und $A,B\in\CF$. Dann gilt:
+  \begin{enumerate}[(a)]
+  \item $\mu(A \cup B)\leq\mu(A)+\mu(B)$
+  \item $A\subseteq B\Rightarrow \mu(A)\subseteq\mu(B)$
+  \item $A\subseteq B, \mu$ endlich $\Rightarrow \mu(B\backslash A) =
+    \mu(B) -\mu(A)$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{itemize}
+  \item[zu (b) und (c)] $A\subseteq B\Rightarrow B=A\cup(B\backslash
+    A) \Rightarrow\mu(B)=\mu(a\cup(B\backslash
+    A))\overset{\ref{satz:folgenmass}}{=} \mu(A)+\mu(B\backslash A)$
+    Wir haben $\mu(B\backslash A)\geq 0\Rightarrow\mu(A)\leq\mu(B)$
+    Durch Umstellen erhält man $\mu(B\backslash A)=\mu(B) -
+    \mu(A)$. Hierzu muss $\mu(A)<+\infty$ sein.
+  \item[ zu (a)] $A\cup B=A\cup (B\backslash A)\Rightarrow \mu(A\cup
+    B)= \mu(A)\cup\mu(B\backslash A)=\mu(A)+\mu(B\backslash A)$\\
+    Es gilt: $B\backslash A\subseteq B\overset{(b)}{\Rightarrow}
+    \mu(B\backslash A)\subseteq\mu(B)\Rightarrow\mu(A\cup B)\leq
+    \mu(A) +\mu(B)$
+  \end{itemize}
+\end{proof}
+
+\begin{satz}
+\label{satz:stetigkeit}
+  Seien $\mu$ ein endliches Maß ($\mu(\Omega)<+\infty$) und
+  $(A_n)_{n=1}^\infty$ eine Folge aus $\CF$. Dann gelten:
+  \begin{enumerate}[(a)]
+  \item (Stetigkeit von unten): Ist $(A_n)_{n=1}^\infty$ monoton
+    wachsend, so gilt:
+    \[\mu\left(\bigcup_{n=1}^\infty
+      A_n\right)=\lim_{n\rightarrow\infty} \mu(A_n)\]
+  \item (Stetigkeit von oben):  Ist $(A_n)_{n=1}^\infty$ monoton
+    fallend, so gilt:
+    \[\mu\left(\bigcap_{n=1}^\infty
+      A_n\right)=\lim_{n\rightarrow\infty} \mu(A_n)\]
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{itemize}
+  \item[zu a)] Setzen $B_1:=A_1, B_{n+1}=A_{n+1}\backslash A_n$. Damit
+    gelten folgende Tatsachen:
+    \begin{enumerate}
+    \item Alle $B_k$ sind paarweise disjunkt.
+    \item $B_k\in\CF$
+    \item $\bigcup_{k=1}^\infty A_k=\bigcup_{k=1}^\infty B_k$
+    \item $\bigcup_{k=1}^\infty B_k=A_n$
+    \end{enumerate}
+    Somit folgt: $\mu(\bigcup_{k=1}^\infty A_k)\overset{3.}{=}
+    \mu(\bigcup_{k=1}^\infty B_k)\overset{1,2}{=} \sum_{k=1}^\infty
+    \mu(B_k) =\lim_{n\rightarrow\infty} \sum_{k=1}^n \mu(B_k)
+    \overset{(1)}{=} \lim_{n\rightarrow\infty} \mu(\bigcup_{k=1}^n
+    B_k) \overset{4.}{=}\lim_{n\rightarrow\infty} \mu(A_n)$
+  \item[zu b)] $A_n\supseteq A_{n+1}\Rightarrow A_n^c\subseteq
+    A_{n+1}^c$, d.h. die Folge der Komplemente ist monoton
+    wachsend. Nach (a) gilt nun: $\mu(\bigcup_{n=1}^\infty A_n^c) =
+    \lim_{n\rightarrow\infty} \mu(A_n^c)$\\
+    $\mu(\bigcup_{n=1}^\infty A_n^c)=\mu((\bigcap_{n=1}^\infty
+    A_n)^c)= \mu(\Omega\backslash(\bigcap_{n=1}^\infty A_n))
+    \overset{\ref{satz:elemEigen} c}{=} \mu(\Omega)-\mu(\bigcap
+    A_n)$\\
+    $\mu(A_n^c)=\mu(\Omega\backslash A_n)=\mu(\Omega)-\mu(A_n)
+    \Rightarrow \lim_{n\rightarrow\infty} \mu(A_n)$
+  \end{itemize}
+\end{proof}
+
+
+\section{Produkte von Maßräumen}
+
+Im folgenden gilt immer: $[\Omega_1,\CF_1,\mu_1],\ldots,
+\Omega_n,\CF_n,\mu_n]$ eine Folge von Maßräumen. Wir betrachten
+direkte Produkte von Mengen: $\times_{i=1}^n A_i:=\{[w_1,\ldots, w_n]|
+w_i\in A_i (i=1,\ldots,n)\}$. Das Ziel ist es, einen Maßraum mit
+der Grundmenge $\Omega=\times_{i=1}^n \Omega_i$ zu bauen.
+
+\begin{definition}
+  \begin{itemize}
+  \item Die Menge \[\otimes_{i=1}^n \CF_i:=\sigma(\{\times_{i=1}^n
+    A_i|A_i\in \CF_i (i=1,\ldots,n)\})\]
+    heißt Produkt der $\sigma$-Algebren\index{$\sigma$-Algebra!Produkt
+      der} $\CF_1,\ldots,\CF_n$.
+  \item Die Menge \[\times_{i=1}^n [\Omega_i,\CF_i]:=[\times_{i=1}^n
+    \Omega_i, \otimes_{i=1}^n \CF_i]\]
+    heißt Produkt der messbaren Räume $[\Omega_1,\CF_1,\ldots,
+    \Omega_n,\CF_n]$.
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item $\otimes \CF_i$ ist eine $\sigma$-Algebra auf $\times_{i=1}^n
+    \Omega_i$.
+  \item $n=2\rightarrow$ Schreibweise: $\Omega_1\times\Omega_2,
+    \CF_1\otimes\CF_2$ 
+  \end{enumerate}
+\end{remark}
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item $\CF_i=\{\emptyset,\Omega_i\}\Rightarrow\otimes_{i=1}^n
+    \CF_i=\{\emptyset, \times_{i=1}^n \Omega_i\}$
+  \item Sei $\Omega_1$ bis $\Omega_n$ abzählbar:
+    $\CF_i=\FP(\Omega_i)\Rightarrow\otimes_{i=1}^n \CF_i=\FP
+    (\times_{i=1}^n \Omega_i)$. Denn wegen der Abzählbarkeit der
+    $\Omega_i$ gilt, dass auch $\times_{i=1}^n \Omega_i$ abzählbar
+    sind. Diese sind eine Obermenge von $A=\bigcup_{\omega\in A}
+    \{\omega\}$ und die Vereinigung ist wieder abzählbar. Nun
+    genügt es zu zeigen, dass
+    $\{\underbrace{[\omega_1,\ldots,\omega_n]}_{\times_{i=1}^n
+      \{\omega_i\}}\} \in
+    \otimes_{i=1}^n \CF_i (\omega_i\in\Omega, i=1,\ldots,n)$. Der Rest
+    ist klar, denn $\{\omega_i\}\in\CF_i=\FP(\Omega_i)$
+  \item Lässt man oben den Zusatz "`abzählbar"' weg, gibt es
+    Probleme.
+  \end{enumerate}
+\end{beispiel}
+
+\begin{definition}
+  Ein Maß $\mu$ auf $\times_{i=1}^n [\Omega_i,\CF_i]$ heißt
+  Produkt der Maße\index{Produkt der Maße} $\mu_1,\ldots,
+  \mu_n$\footnote{$\mu=\times_{i=1}^n \mu_i$}, wenn gilt
+  $\mu(\times_{i=1}^n A_i) =\prod_{i=1}^n \mu_i(A_i)$.
+\end{definition}
+
+\begin{satz*}
+  Für endliche Maße $\mu_1,\ldots,\mu_n$ existiert das
+  Produktmaß und ist eindeutig bestimmt.
+\end{satz*}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Die Forderung, dass die $\mu_1,\ldots,\mu_n$ endlich sein
+    sollen, kann man abschwächen (siehe hierzu auch Lebesguesches
+    Ma\ss).
+  \item Der Fall $n=+\infty$ ist für Wahrscheinlichkeitsmaße
+    interessant. 
+  \end{enumerate}
+\end{remark}
+
+\begin{definition}
+  Sei $\FB_n$ die $\sigma$-Algebra der Borelmengen auf $\R^n$. Ein
+  Maß $\ell_n$ auf $[\R^n,\FB_n]$ heißt $n$-dimensionales
+  \emph{Lebesguesches Maß\index{Maß!Lebeguesches}}, wenn gilt:
+\[\ell_n\left(\times_{i=1}^n [a_i,b_i)\right)=\prod_{i=1}^n
+(b_i-a_i)\quad (a_1<b_i, i=1,\ldots,n)\]
+\end{definition}
+
+\begin{satz*}
+  Das Lebeguesche Maß $\ell_n$ existiert und ist eindeutig
+  bestimmt. Weiterhin gilt:
+  \[[\R^n,\FB_n,\ell_n]=\times_{i=1}^n [\R,\FB,\ell]=
+  [\R,\FB,\ell]^{nx} =[\R^n,\FB_n,\ell^{nx}]\]
+\end{satz*}
+
+\begin{remark}
+  Die Bemerkungen sind gleichzeitig Beweisideen für den oben
+  angegebenen Satz.
+  \begin{itemize}
+  \item $\FB_n=\otimes_{i=1}^n \FB=\FB^{n\otimes}$. Weiterhin ist
+    klar, dass $\R\supseteq A_1,\ldots,A_n$ offen. Damit ist auch
+    $\times_{i=1}^n A_i$ offen.
+  \item Wir haben $\ell_n(\times_{i=1}^n A_i)=\ell^{n\otimes}
+    (\times_{i=1}^n A_i)$ für Mengen $A_i=[a_i,b_i)$. Ferner wissen
+    wir, dass diese Mengen $\FB$ erzeugen (siehe auch Satz
+    \ref{satz:b-erzeugen}). Die allgemeine Theorie führt zur
+    Behauptung des oben stehenden Satzes.
+  \end{itemize}
+\end{remark}
+
+\begin{satz}
+  \label{satz:ell}
+  Sei $x\in\R$. Dann gilt: $\ell(\{x\})=0$.
+\end{satz}
+\begin{proof}
+  Wir haben $\ell([a,b))=b-a\,(a<b)$. Nun betrachten wir die
+  Mengenfolge $B_k:=[x,x+\frac{1}{n})\Rightarrow B_k\supseteq B_{k+1}
+  \Rightarrow \bigcap_{k=1}^\infty B_k=\{x\}$. Wegen der Stetigkeit
+  von oben (siehe Satz \ref{satz:stetigkeit}) folgt nun: $\ell(\{x\})=
+  \ell(\bigcap_{k=1}^\infty B_k)=\lim_{k\rightarrow\infty} \ell(B_k) =
+  \lim_{k\rightarrow\infty}
+  \underbrace{\ell([x,x+\frac{1}{k}))}_{\frac{1}{k}}
+  =\lim_{k\rightarrow\infty} \frac{1}{k}=0$
+\end{proof}
+
+\begin{satz}[Folgerung aus \ref{satz:ell}]
+  Seien $a<b\rightarrow \ell([a,b])=\ell((a,b)) = \ell((a,b]) =
+  \ell([a,b)) = b-a$
+\end{satz}
+\begin{proof}
+  Es gilt $[a,b]=[a,b)\cup\{b\}$. Die Vereinigung beider Mengen ist
+  leer ($[a,b)\cap\{b\}=\emptyset$). Damit folgt: $\ell([a,b])=
+  \ell([a,b)\cup \{b\})= \ell([a+b))+\ell(\{b\})=b-1+0$
+  %Rest des Beweises fehlt noch
+\end{proof}
+
+\begin{satz}
+  Für alle $A\subseteq\R^n$ mit $A$ abzählbar gilt:
+  \[\ell^{(n)} (A)=0\]
+\end{satz}
+\begin{proof}
+  $A=\bigcup_{x\in A} \{x\}=\bigcup_{[x_1,\ldots,x_n]\in A}
+  \{[x_1,\ldots, x_n]\}$\\
+  Da $A$ abzählbar ist, folgt $\ell^{(n)}(A)=\sum_{x\in A}
+  \ell^{(n)} \{[x]\}$. Nunmehr ist noch zu zeigen, dass $\ell^{(n)}
+  (\{[x_1,\ldots,x_n]\}) =0$. Dies ist gleich: $\ell^{(n)}
+  \times_{i=1}^n \{x_i\}= \prod_{i=1}^n \ell (\{x_i\})=0$
+\end{proof}
+
+
+\section{Wahrscheinlichkeitsmaße und Verteilungsfunktion}
+
+\begin{definition}
+  Ein Maß $P$ auf einem meßbaren Raum $[\Omega,\CF]$ heißt
+  Wahrscheinlichkeitsmaß\index{Wahrscheinlichkeitsma\ss}, wenn
+  gilt: \[P(\Omega)=1\]
+  In diesem Fall heißt $[\Omega,\CF,P]$
+  \index{Wahrscheinlichkeitsraum}Wahrscheinlichkeitsraum.
+\end{definition}
+
+\begin{satz}
+  Sei $P$ ein Wahrscheinlichkeitsmaß auf $[\Omega,\CF]$. Dann
+  gelten:
+  \begin{enumerate}[(a)]
+  \item $0\leq P(B)\leq 1\,(b\in\CF)$
+  \item $P(B^c)=1-P(B)\,(B\in\CF)$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[(a)]
+  \item klar, da $P(\emptyset)\leq P(B)\leq P(\Omega)\Rightarrow 0\leq
+    P(B)\leq 1$
+  \item $B^c=\Omega\backslash B, B\subseteq\Omega\Rightarrow P(B^c)=
+    P(\Omega)-P(B)\Rightarrow P(B^c)=1-P(B)$ 
+  \end{enumerate}
+\end{proof}
+
+\begin{definition}
+  Sei $P$ ein Wahrscheinlichkeitsmaß auf $[\R^n,\FB_n]\, (n\geq
+  1)$. Eine Abbildung $F:\R^n\rightarrow[0,1]$ heißt
+  \emph{\index{Verteilungsfunktion}Verteilungsfunktion} von (zu) $P$,
+  wenn gilt:
+  \[F(x_1,\ldots,x_n)=P(\times_{i=1}^n (-\infty,x_i))\]
+\end{definition}
+
+\begin{satz*}
+  Ein Wahrscheinlichkeitsmaß ist durch seine Verteilungsfunktion
+  eindeutig bestimmt.
+\end{satz*}
+
+\begin{satz}
+\label{satz:eigensch-vert-152}
+  Eine Verteilungsfunktion $F$ eines Wahrscheinlichkeitsmaßes $P$
+  auf $[R,\FB]$ hat folgende Eigenschaften:
+  \begin{enumerate}[(F1)]
+  \item $F(x)\leq F(y)\quad (x\leq y)$ (monoton nicht fallend bzw. wachsend)
+  \item $\lim F(x_n)=F(x)\,(x\in\R, x_n\uparrow x)$ (linksseitig stetig)
+  \item $\lim_{x\rightarrow+\infty} F(x)=1$
+  \item $\lim_{x\rightarrow-\infty} F(x)=0$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[(F1)]
+  \item Sei $F(x):=P((-\infty,x))$ mit $x\in\R$. Dann gilt $(-\infty,
+    x\subseteq (-\infty, y)$, da $x\leq y$. Nach Satz
+    \ref{satz:elemEigen} Punkt b hat man $P((-\infty, x))\leq
+    P((-\infty, y))\Rightarrow F(x)\leq F(y)$
+  \item Seien $x\in\R$ und $x_n\leq x_{n+1}, \lim x_n=x$. Damit folgt:
+    $(-\infty, x_n)\subseteq (-\infty, x_{n+1})$ und $(-\infty, x)=
+    \bigcup_{n=1}^\infty (-\infty, x_n)$. Unter Zuhilfenahme von Satz
+    \ref{satz:stetigkeit} a erhält man $F(x)=P((-\infty,
+    x))=P(\bigcup_{n=1}^\infty(-\infty, x_n))=\lim P((-\infty, x_n))=
+    \lim F(x_n)$
+  \item Sei $x_n \uparrow +\infty$\footnote{d.h. $x_n\subseteq
+      x_{n+1}, x_n\xrightarrow{n\rightarrow\infty}+\infty$}. Damit
+    gilt wieder die schon oben angeführte Teilmengenbeziehung und es
+    folgt: $\bigcup_{n=1}^\infty (-\infty, x_n)=\R$. Wie bereits oben
+    erhält man nun durch den Satz \ref{satz:stetigkeit} a, dass
+    $1=P(\R)=P(\bigcup_{n=1}^\infty (-\infty, x_n))=\lim P((-\infty,
+    x_n))$
+  \item Sei nun $x_n\downarrow -\infty\Rightarrow (-\infty,
+    x_n)\supseteq (-\infty, x_{n+1}\Rightarrow\bigcap_{n\in\N}
+    (-\infty, x_n)=\emptyset$. Damit ist nun $P(\emptyset)=0=\lim
+    F(x_n)$
+  \end{enumerate}
+\end{proof}
+
+\begin{satz*}
+  Sei $F:\R\rightarrow[0,1]$ mit den Eigenschaften (F1) bis (F4). Dann
+  existiert genau ein Wahrscheinlichkeitsmaß $P$ auf $[\R^n, \FB_n]$
+  mit $F(x)=P((-\infty, x))$. Dies bedeutet, dass $F$ die
+  Verteilungsfunktion von $P$ ist.
+\end{satz*}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Sei $F$ die Verteilungsfunktion zu einem
+    Wahrscheinlichkeitsmaß $P$ auf $[\R^n,\FB_n]$. Dann gelten
+    folgende Eigenschaften:
+    \begin{enumerate}[($\hat{F}$1)]
+    \item $F(x_1,\ldots,x_n)\leq F(y_1,\ldots,y_n)\, (x_k\leq y_k,
+      k=1,\ldots, n)$
+    \item $x_k^{(m)}\uparrow x_k\Rightarrow \lim_{m\rightarrow\infty}
+      F(x_1^{(m)}, \ldots, x_n^{(m)})=F(x_1,\ldots,x_m)$
+    \item $x_k^{(m)}\uparrow+\infty\Rightarrow
+      \lim_{m\rightarrow\infty} F(x_1^{(m)},\ldots,x_n^{(m)})=1$
+    \item $x_k^{(m)}\uparrow-\infty\Rightarrow
+      \lim_{m\rightarrow-\infty} F(x_1^{(m)},\ldots,x_n^{(m)})=0$
+    \end{enumerate}
+  \item Sei nun $F:\R^n\rightarrow[0,1]$ mit den Eigenschaften
+    ($\hat{F}$1) bis ($\hat{F}$4). Dann muss nicht notwendigerweise
+    ein Wahrscheinlichkeitsmaß $P$ auf $[\R^n,\FB_n]$ mit der
+    Verteilungsfunktion $P$ existieren. Somit kann der obenstehende
+    Satz nicht auf $\R^n$ verallgemeinert werden.
+  \end{enumerate}
+\end{remark}
+
+\begin{beispiel}
+  Sei $\lambda>0$. Wir setzen $F(x):=
+  \begin{cases}
+    1-e^{-\lambda x} & x>0\\
+    0 & x \leq 0
+  \end{cases}$. Die Eigenschaften (F1) bis (F4) gelten hier und sind
+  auch trivial nachzuweisen. Das Wahrscheinlichkeitsmaß $Ex_\lambda$
+  mit der Verteilungsfunktion $F$ heißt
+  \emph{\index{Exponentialverteilung}Exponentialverteilung} mit dem
+  Parameter $\lambda$.
+\end{beispiel}
+
+\begin{definition}
+  Sei $A\in\FB_n$ mit $0<\ell^{(n)}(A)\leq +\infty$. Wir setzen:
+  \[Gl_A(B):=\frac{\ell^{(n)}(A\cap B)}{\ell^{(n)} (A)}\quad
+  (B\in\FB_n)\]
+  Dann heißt $Gl_A$ die
+  \emph{\index{Gleichverteilung}Gleichverteilung} zu $A$.
+\end{definition}
+
+\begin{remark}
+  Die Gleichverteilung ist ein Wahrscheinlichkeitsmaß auf
+  $[\R^n,\FB_n]$. Denn es gilt:
+  \begin{eqnarray*}
+    Gl_A(\emptyset)&=& \frac{\ell^{(n)}(A\cap \emptyset)}{\ell^{(n)}
+      (A)} =0\\
+    Gl_A(\R^n)&=& \frac{\ell^{(n)}(A\cap \R)}{\ell^{(n)} (A)}=
+    \frac{\ell^{(n)}(A)}{\ell^{(n)} (A)} =1\\
+    Gl_A\left(\bigcup_k B_K\right)&=& \frac{\ell^{(n)}((\bigcup
+      B_k)\cap A)}{\ell^{(n)} (A)}= \frac{\ell^{(n)}(\bigcup (B\cap
+      A)}{\ell^{(n)} (A)}= \frac{\sum_k\ell^{(n)} (B_k\cap
+      A)}{\ell^{(n)} (A)}\\
+    &=&\qquad \sum_k Gl_A(B_k)
+  \end{eqnarray*}
+\end{remark}
+
+\begin{satz}
+  Sei $P$ ein Wahrscheinlichkeitsmaß auf $[\R,\FB]$ für $k=1,\ldots,n$
+  mit der Verteilungsfunktion $F_k$ und $P=\times_{k=1}^n P_k$. Dann
+  ist $P$ ein Wahrscheinlichkeitsmaß auf $[\R^n,\FB_n]$ und die
+  Verteilungsfunktion $F$ zu $P$ hat die Gestalt:
+  \[F(x_1,\ldots,x_n)=\prod_{k=1}^n F_k(x_k)\quad (x_1,\ldots, x_n\in\R)\]
+\end{satz}
+\begin{proof}
+  $P(\R^n)=P(\R^{nx})=(\times_{k=1}^n P_k)(\R^{nx})=\prod_{k=1}^n
+  \underbrace{P_k(\R)}_{=1}=1$\\
+  $F(x_1,\ldots,x_n)=P(\times_{k=1}^n(-\infty, x_k))=\times_{k=1}^n
+  P_k (\times_{k=1}^n (\infty,x_k))=\prod_{k=1}^n P_k((-\infty,x_k))=
+  \prod_{k=1}^n F_k(x_k)$.
+\end{proof}
+
+\begin{satz}
+  Sei $F$ eine Verteilungsfunktion eines Wahrscheinlichkeitsmaßes $P$
+  auf $[\R,\FB]$. Dann gelten:
+  \begin{enumerate}[(1)]
+  \item $P([a,b))=F(b)-F(a)$ für $(a<b)$
+  \item $P(\{a\})=F(a+0)-F(a)$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[zu (1)]
+  \item $(-\infty, b)\backslash (-\infty, a)= [a,b)$ und $(-\infty,
+    a)\subseteq (-\infty, b)$. Nach Satz \ref{satz:elemEigen}~c ist
+    $P([a,b))= P((-\infty, b))\backslash (-\infty, a))=P((-\infty,
+    b))- P((-\infty, a))= F(b)-F(a)$
+  \item $\{a\}=\bigcap_{n\geq 1} [a,a+\frac{1}{n})$ und
+    $[a,a+\frac{1}{n}) \supseteq [a,a+\frac{1}{n+1})$. Wegen Satz
+    \ref{satz:stetigkeit} ist $P(\{a\})=p(\bigcap_{n\geq 1}
+    [a,a+\frac{1}{n})) = \lim
+    P([a,a+\frac{1}{n}))=\lim_{n\rightarrow\infty} F(a+\frac{1}{n})
+      -F(a) =F(a+0)-F(a)$
+  \end{enumerate}
+\end{proof}
+
+\begin{satz}
+  Seien $I$ abzählbar, $P_i$ ein Wahrscheinlichkeitsmaß auf
+  $[\R,\FB]$, $\alpha\geq 0\,(i\in I)$ und $P=\sum_{i\in I} \alpha_i
+  P_i$. Dann ist $P$ genau dann ein Wahrscheinlichkeitsmaß, wenn gilt 
+  \[\sum_{i\in I} \alpha_i=1\]
+  In diesem Fall gilt für die Verteilungsfunktion $F$ von $P$
+  \[F(x)=\sum_{i\in I} \alpha_i F_i(x)\quad (x\in\R)\]
+  wobei $F_i$ die Verteilungsfunktion zu $P_i$ ist.
+\end{satz}
+\begin{proof}
+  Es ist klar, dass $P$ ein Maß auf $[\R,\FB]$ ist (Folgerung aus
+  Satz~\ref{satz:massfamilie-131}). Nun verbleibt zu zeigen, dass
+  $P(\R)=1$. Dies ist genau dann der Fall, wenn gilt $\sum \alpha_i
+  =1$:
+  $P(\R)=\sum_{i\in } \alpha_i P_i(\R)=\sum_{i\in I} \alpha_i=1$. Nach
+  der Definition gilt $F(x)=P((-\infty, x))=\sum_{i\in I} \alpha_i
+  \underbrace{P_i((\infty, x))}_{=F_i(x)}$
+\end{proof}
+
+\begin{beispiel}
+  Dies sind im wesentlichen Anwendungen zum oben genannten Satz:
+  \begin{itemize}
+  \item Für jedes $y\in\R$ ist $\delta_y$ ein Wahrscheinlichkeitsmaß
+    auf $[\R,\FB]$.
+  \item \emph{\index{Binomialverteilung}Binomialverteilung}: Gegeben
+    ist $0\leq p\leq 1, n\in\N$. Hierzu bilden wir 
+    \[B_{n,p}:= \sum_{i=0}^n \binom{n}{i} p^i (1-p)^{n-i} \delta_i\]
+    Aus dem oben angeführten Satz folgt, dass die Binomialverteilung
+    ein Wahrscheinlichkeitsmaß auf $[\R,\FB]$
+    ist.\footnote{$(a+b)^n=\sum_{i=0}^n \binom{n}{i} a^i b^{n-i}; a=p,
+      b=1-p\Rightarrow (a+b)^n=1)$}
+  \item \emph{\index{Poissonverteilung}Poissonverteilung} Gegeben ist
+    $\lambda> 0$. Wir definieren:
+    \[\pi_\lambda:= \sum_{i=0}^\infty \frac{\lambda^i}{i!}
+    e^{-\lambda} \delta_i\]
+    Wieder aus dem obigen Satz folgt und aus $\sum_{i=0}^\infty
+    \frac{\lambda^i}{i!} =e^\lambda\Rightarrow
+    e^\lambda e^{-\lambda}=1$ folgt, dass das ein
+    Wahrscheinlichkeitsmaß ist.
+  \item \emph{Geometrische \index{Verteilung!geometrische}Verteilung}:
+    Gegeben ist $0<q<1$. 
+    \[G_q:=\sum_{i=1}^\infty q^{i-1} (1-q) \delta_i\]
+    Auch dies ist ein Wahrscheinlichkeitsmaß, da $\lim \sum q^{i-1}=
+    \frac{1}{1-q}$.
+  \end{itemize}
+\end{beispiel}
+
+
+\chapter{Integrationstheorie}
+
+stetige Funktionen auf einer offenen Menge
+
+
+\section{Messbare Funktionen}
+
+Im folgenden gilt immer, dass $[\Omega,\CF,\mu]$ ein Maßraum  und
+$[X,\FX]$ ein messbarer Raum ist. Wir betrachten $f:\Omega\rightarrow
+X$ und definieren $\fmineins(A):=\{\omega\in\Omega| f(\omega)\in
+A\}\,(A\subseteq X)$. Dies ist nicht zu verwechseln mit inversen
+Abbildungen.\footnote{Falls es eine inverse Abbildung gibt, gilt
+  $\fmineins (A)=\{\fmineins (x)|x\in A\}$}
+
+\begin{satz}[Elementare Eigenschaften des Urbilds]
+  Es gelten
+  \begin{enumerate}[a)]
+  \item $\fmineins(\emptyset)=\emptyset, \fmineins(X)=\Omega$
+  \item $\fmineins(A^c)=(\fmineins(A))^c\quad (\forall A\subseteq X)$
+  \item $\fmineins(\bigcup_{i\in I} A_i)= \bigcup_{i\in I} \fmineins
+    (A_i)$
+  \item $\fmineins(\bigcap_{i\in I} A_i)= \bigcap_{i\in I} \fmineins
+    (A_i)$ (Für beide Fälle gilt, dass die $(A_i)_{i\in I}$ Folgen von
+    Teilmengen aus $X$ sind.)
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[zu a)]
+  \item $f(\omega)\in\emptyset$ für jedes $\omega\in\Omega\Rightarrow
+    \fmineins (\emptyset)=\emptyset$\\
+    $f(\omega)\in X$ ist richtig $\forall\omega\in\Omega\Rightarrow
+    \fmineins (X)=\Omega$
+  \item $\omega\in\fmineins(A^c)\Leftrightarrow f(\omega)\in A^c
+    \Leftrightarrow \neg f(\omega)\in A\Leftrightarrow \neg \omega\in
+    \fmineins (A)\Leftrightarrow \omega\in (\fmineins(A))^c
+    \Rightarrow \fmineins(A^c)=(\fmineins(A))^c$
+  \item selbst in Uebung
+  \end{enumerate}
+\end{proof}
+
+\begin{definition}
+  Sei $f:\Omega\rightarrow X$. Die Abbildung $f$ heißt
+  $(\CF,\FX)$-messbar\index{$(\CF,\FX)$-messbar}\index{messbar}, wenn
+  gilt:
+  \[\fmineins(A)\in\CF\quad (A\in\FX)\footnote{Schreibweise:
+    $f:[\Omega, \CF]\rightarrow [X,\FX]$}\]
+  In diesem Fall heißt das Maß $\mu\circ\fmineins$, definiert durch
+  $\mu\circ\fmineins(A)=\mu(\fmineins(A)) \,(\forall A\in\FX)$
+  \index{Bildmaß}Bildmaß von $\mu$ bezüglich $f$.
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}[1.)]
+  \item Es existiert eine formale Ähnlichkeit zwischen der Definition
+    der Stetigkeit und der der Messbarkeit.
+  \item Im Fall das $\Omega, X$ metrische Räume sind und $\CF, \FX$
+    der $\sigma$-Algebra der Borelmengen entsprechen, folgt aus der
+    Stetigkeit von $f$, dass $f$ auch messbar ist. Der Beweis hierzu
+    ist lang. In beiden Fällen wird die $\sigma$-Algebra der
+    Borelmengen durch die Stetigkeit erzeugt.
+  \item Sei $\fmineins: \FP(X)\rightarrow\FP(\Omega)$ mit $\mu:
+    \CF\subset \FP(\Omega)\rightarrow[0,+\infty]$\\
+    Die Definition von $\mu\circ\fmineins$ ist \emph{nur möglich},
+    wenn $f$ als $(\CF,\FX)$-messbar vorausgesetzt wird.
+  \item Ist $\mu\circ\fmineins$ ein Maß auf $[X,\FX]$. Hierzu ist
+    klar, dass $\mu\circ\fmineins:\FX\rightarrow[0,+\infty]$. Es ist
+    $\mu\circ\fmineins(\emptyset)= \mu(\fmineins(\emptyset))=
+    \mu(\emptyset)= 0$. Im folgenden ist die zweite 
+    Maßeigenschaft zu prüfen. Sei dazu $(A_i)_{i=1}^\infty \subseteq
+    \FX, A_i\cap A_j=\emptyset, i\neq j\Rightarrow \fmineins (A_i)
+    \cap \fmineins(A_j)=\fmineins(\emptyset)=\emptyset\Rightarrow
+    \mu\circ\fmineins (\bigcup A_i)=\mu(\fmineins(\bigcup A_i))=
+    \mu(\bigcup \fmineins(A_i))=\sum\mu(\fmineins(A_i))=
+    \sum\mu\circ\fmineins(A_i)$
+  \end{enumerate}
+\end{remark}
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item $f(\omega)=c\in X:\fmineins(A)=
+    \begin{cases}
+      \emptyset & c\not\in A\\
+      \Omega & c\in A
+    \end{cases}$ Da nun die leere Menge und auch $\CF$ Element von
+    $\Omega$ sind, gilt $\fmineins(A)\in\CF$. Damit ist die Funktion
+    $(\CF, \FX)$-messbar.
+  \item Sei $\CF=\{\emptyset,\Omega\}, [X,\FX]=[\R,\FB]$. Zu zeigen
+    ist, ob $f$ $(\R,\FB)$-messbar ist. Dies ist genau dann der Fall,
+    wenn ein $c\in\R$ mit $f(\omega)=c$ existiert ...
+  \item Sei $\CF=\FP(\Omega)$. Dann ist jede Abbildung
+    $f:\Omega\rightarrow X$ messbar.
+  \end{enumerate}
+\end{beispiel}
+
+\begin{satz}
+  \label{satz:verkn-messbar212}
+  Seien $f_1:[\Omega_1,\CF_1]\rightarrow[\Omega_2,\CF_2]$ und $f_2:
+  [\Omega_2, \CF_2]\rightarrow[\Omega_3,\CF_3]$. Dann gilt $f_2\circ
+  f_1: [\Omega_1,\CF_1]\rightarrow[\Omega_3,\CF_3]$.
+\end{satz}
+\begin{proof}
+  Sei $A\in\CF_3$. Es ist nun zu zeigen, dass $(f_2\circ f_1)^{-1} (A)
+  \in \CF$. Dazu stellen wir fest, dass $(f_2\circ f_1)^{-1} (A)=
+  \{\omega\in\Omega | f_2\circ f_1(\omega)\in A\}$. Für die
+  Verknüpfung der Funktionen gilt $f_2(f_1(\omega))\Rightarrow
+  f_1(\omega) \in f_2^{-1}(A)\Rightarrow \omega\in f_1^{-1}(f_2^{-1}
+  (A))$. Damit ist gezeigt: $(f_2\circ f_1)^{-1}(A)= f_1^{-1}(f_2^{-1}
+  (A)) \Rightarrow A\in\CF_3\Rightarrow f_2^{-1} (A)\in\CF_2
+  \Rightarrow f_1^{-1}(f_2^{-1}(A))\in\CF_1\Rightarrow (f_2\circ
+  f_1)^{-1} (A)\in\CF_1$
+\end{proof}
+
+Für die folgenden Aussagen gilt immer $[X,\FX]=[\R,\FB]$ und wir
+bezeichnen $(\CF,\FB)$-messbar als messbar.
+
+\begin{satz}
+  \label{satz:messb-eigensch213}
+  Die Abbildung $f:\Omega\rightarrow\R$ ist genau dann messbar, wenn
+  eine der folgenden Aussagen richtig ist ($x, x_1, x_2$ sind dabei
+  immer rational):
+  \begin{enumerate}[(1)]
+  \item $\{\omega\in\Omega|f(\omega)<x\}$
+  \item $\{\omega\in\Omega|f(\omega)\leq x\}$
+  \item $\{\omega\in\Omega|f(\omega)>x\}$
+  \item $\{\omega\in\Omega|f(\omega)\geq x\}$
+  \item $\{\omega\in\Omega|x_1\leq f(\omega)<x_2\}$
+  \item $\{\omega\in\Omega|x_1< f(\omega)<x_2\}$
+  \item $\{\omega\in\Omega|x_1\leq f(\omega)\leq x_2\}$
+  \item $\{\omega\in\Omega|x_1< f(\omega)<x_2\}$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  Die ist eine Beweisidee für (1). Die weiteren Beweise sind analog zu
+  führen: Nach dem Satz \ref{satz:b-erzeugen} wissen wir, dass die
+  Menge $\{(-\infty,x)|x\in\Q\}$ ein durchschnittsabgeschlossenes
+  Erzeugendensystem für $\FB$ ist. Wenn $\FE$ ein solches
+  Systemmit $\fmineins(B)\in\CF$ ist, dass ist $f$ messbar. Es gilt:
+  $\{\omega\in\R | f(\omega)<x\}=\fmineins((-\infty,x))$. Aus der
+  Kombination beider Aussagen folgt der Satz.
+\end{proof}
+
+\begin{satz}
+\label{satz:verkn-messbar-fkt-214}
+  Seien $f,g$ messbare Funktionen. Dann sind die Funktionen $f+g$ und
+  $fg$ ebenfalls messbare Funktionen.
+\end{satz}
+\begin{proof}
+  Seien $f,g:\Omega\rightarrow\R^2$. Diese Funktionen werden wie folgt
+  umgewandelt: $h:=[f,g]:\Omega\rightarrow\R^2, [f,g](\omega)=
+  [f(\omega), g(\omega)]$. Ist nun $h$ messbar?
+  \begin{align*}
+    h^{-1} (A\times B) &= \{\omega\in\Omega|[f(\omega),g(\omega)]\in
+    A\times B\}\\
+    &\Rightarrow f(\omega)\in A\wedge g(\omega)\in B\\
+    &= \{\omega\in\Omega|f(\omega)\in A\}\cap \{\omega\in\Omega|
+    g(\omega)\in B\}\\
+    &= \fmineins(A)\cap g^{-1}(B)
+  \end{align*}
+  Damit ist gezeigt, dass $f,g$ messbar sind und es gilt, dass
+  $\fmineins (A)\in\CF\wedge g^{-1}(B)\in\CF$. Wegen der
+  Abgeschlossenheit gegenüber Durchschnitten ($\fmineins(A)\cap
+  g^{-1}(B)\in\CF$) gilt für alle $A,B\in\FB: h^{-1}(A\times B)\in
+  \CF$. Und es folgt weiter $\sigma(\{A\times B|A\in\FB, B\in\FB\}) =
+  \FB_2$. Damit ist $h$ messbar.\\
+  Wir setzen nun $a(x_1,x_2)=x_1+x_2, b(x_1,x_2)=x_1x_2$. Also ist
+  $f+g=a\circ h$ und $fg=b\circ h$. Da $a,b$ stetig sind, sind sie
+  auch messbar und nach Satz \ref{satz:verkn-messbar212} ist die
+  Verknüpfung beider Abbildungen wieder messbar.
+\end{proof}
+
+\begin{satz}
+  Sei $(f_i)_{i\in I}$ eine abzählbare Familie messbarer Funktionen,
+  so dass die Mengen $\{\omega\in\Omega|\sup f_i(\omega)<+\infty\}=
+  \Omega$ bzw. $\{\omega\in\Omega|\inf f_i(\omega)<-\infty\}= \Omega$
+  sind. Dann ist $\sup f_i$ bzw. $\inf f_i$
+  messbar.\footnote{Erläuterung: $(\sup f_i)(\omega):= \sup
+    f_i(\omega)$ mit $\omega\in\Omega$}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[1. F{a}ll]
+  \item Sei $f:\sup f_i$. Dann ist $f$ eine Abbildungen von $\Omega$
+    nach $\R$. Wegen des Satz \ref{satz:messb-eigensch213} genügt es
+    zu zeigen, dass $\{\omega\in\Omega|f(\omega)\leq x\}\in\CF$. Dazu
+    $f(\omega)\leq x\Leftrightarrow f_i(\omega)\leq x\Rightarrow
+    \{\omega\in\Omega| f(\omega)\leq x\}=\bigcap_{i\in I}
+    \{\underbrace{\omega\in\Omega|f_i(\omega)\leq x}_{\fmineins_i
+      ((-\infty, x))\in\CF}$. Damit folgt, dass $f_i$ messbar
+    ist. Nach Satz \ref{satz:s-alg-abg-123} ist es gegenüber
+    Vereinigung abgeschlossen und es folgt somit: $\{\omega\in\Omega :
+    f(x)\leq x\}=\bigcap_{i\in I} \fmineins_i ((-\infty,x))\in\CF$
+  \item $f:=\inf f_1\Rightarrow f:\Omega\rightarrow\R$. Wegen Satz
+    \ref{satz:messb-eigensch213} (4) genügt es zu zeigen, dass
+    $\{\omega\in\Omega | f(\omega)\geq x\}\in\CF$. Dazu $f(\omega)\geq
+    x\Leftrightarrow f_i(\omega)\geq x (i\in I)\Rightarrow
+    \{\omega\in\Omega | f(\omega)\geq x\}=\bigcup_{i\in I}
+    \{\underbrace{\omega\in\Omega | f_i(\omega)\geq x}_{\fmineins_i
+      ((x,+\infty))\in\CF}\}$
+  \end{enumerate}
+\end{proof}
+
+\begin{satz}
+  Sei $f$ eine messbare Funktion. Dann gelten:
+  \begin{enumerate}[(1)]
+  \item $af+b$ ist messbar. $(a,b\in\R)$
+  \item $f^+:=\max (f,0)$ ist messbar.
+  \item $f^-:=\min (f,0)$ ist messbar.
+  \item $|f|$ ist messbar.
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[zu (1)]
+  \item Wir wissen, dass "`konstante"' Funktionen immer messbar
+    sind. Damit wie auch nach Satz \ref{satz:verkn-messbar-fkt-214}
+    gilt die Behauptung.
+  \item Wir setzen $f_1=f, f_2=0$. Beide Funktionen sind messbar und
+    wegen des obigen Satzes ist auch $\sup f_i=f^+$ messbar.
+  \item Beweis erfolgt analog zu (2).
+  \item $|f|=f^+-f^-=f^++(-1)f^-\Rightarrow$ messbar.
+  \end{enumerate}
+\end{proof}
+
+\begin{satz}
+  Sei $(f_n)_{n=1}^\infty$ eine Folge messbarer Funktionen und
+  $\limsup f_n$ oder $\liminf f_n$ existieren als reelle
+  Funktionen. Dann sind diese messbar. Falls $\lim f_n$ existiert, so
+  ist auch er messbar.
+\end{satz}
+\begin{proof}
+  selbst
+\end{proof}
+
+\begin{satz}
+\label{satz:indimess-218}
+  Sei $A\subseteq\Omega$. Die Indikatorfunktion $\chi_A$ ist genau
+  dann messbar, wenn $A\in\CF$.
+\end{satz}
+\begin{proof}
+  Es ist $\chi_A^{-1}(B)$ zu prüfen:
+  \[\chi_A^{-1}(B)=
+  \begin{cases}
+    \emptyset & 0,1 \not\in B\\
+    A & 1\in B \wedge 0 \not\in B\\
+    A^c & 1\not\in B\wedge 0\in B\\
+    \Omega & 1\in B\wedge 0\in B
+  \end{cases}\]
+  Wegen $\emptyset, \Omega\in\CF$ erhalten wir: $\chi_A^{-1}(B)\in\CF
+  \Leftrightarrow \chi_A^{-1}(\{0\}),\chi_A^{-1}(\{1\})\in\CF
+  \Leftrightarrow A^c,A\in\CF\Leftrightarrow A\in\CF$
+\end{proof}
+
+\begin{beispiel}
+  $\Omega=\R, A=\{x\in\R|x\text{ rational}\}\Rightarrow A$
+  abzählbar. Da alle abzählbaren Mengen in der Borelmenge liegen.
+\end{beispiel}
+
+\begin{definition}
+  Sei $f:\Omega\rightarrow\R$. Die Funktion $f$ heißt
+  \emph{einfach\index{einfach}\index{Funktion!einfache}}, wenn
+  existieren: $n\geq 1, a_1,\ldots,a_n\in\R, A_1,\ldots,A_n\in\CF$ mit
+  \[f=\sum_{i=1}^n a_1\chi_{A_i}\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Das Wort "`einfach"' bezieht sich auf die gegebenen
+    $\sigma$-Algebren $\CF$ und $\FB$.
+  \item Einfache Funktionen sind messbar. Denn nach dem vorhergehenden
+    Satz folgt, dass $\chiai$ messbar sind und die Linearkombinationen
+    messbarer Funktionen sind wieder messbar.
+  \end{enumerate}
+\end{remark}
+
+\begin{satz}
+  Sei $f:\Omega\rightarrow\R$. Dann gelten
+  \begin{enumerate}[(1)]
+  \item Wenn  $f$ einfach ist, dann existieren $n\geq 1, b_1,\ldots,
+    b_n\in\R, B_1,\ldots,B_n\in\CF$ mit $b_i\neq b_j (i\neq j),
+    B_i\cap B_j=\emptyset, \bigcup_{i=1}^n B_i=\Omega \footnote{$B_i$ sind
+      messbare Zerlegungen von $\Omega$.}, f=\sum_{i=1}^n
+    b_i\chi_{B_i}$. Diese Darstellung von $f$ ist bis auf Permutation
+    des Indexbereichs eindeutig bestimmt.
+  \item $f$ ist genau dann einfach, wenn $f$ messbar ist und die
+    Anzahl des Wertebereichs \footnote{$\#\{f(\omega)|\omega\in\Omega\}
+    <+\infty$} endlich ist.
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[zu (1)]
+  \item Der Beweis hierzu ist im untenstehenden Beweis enthalten.
+  \item
+    \begin{itemize}
+    \item["`$\Rightarrow$"'] Wegen der Bemerkung und der Definition
+      folgt aus einfach auch die Messbarkeit. Auch die zweite
+      Bedingung geht sofort aus der Definition hervor.
+    \item["`$\Leftarrow$"'] Setzen $\{b_1,\ldots,b_n\}=\{f(\omega)|
+      \omega\in\Omega\}$ und $B_i=\fmineins(\{b_i\})$. Damit folgt
+      $\{b_i\}\in\FB$. Wegen der Messbarkeit gilt weiter $B_i=
+      \fmineins(\{b_i\})\in\CF$. Es ist trivial, dass $B_i\cap B_j=
+      \emptyset$ und klar, dass $f=\sum_{i=1}^n b_i\chi_{B_i}$. Daraus
+      folgt, dass $f$ einfach ist.
+    \end{itemize}
+  \end{enumerate}
+\end{proof}
+
+\begin{satz}
+\label{satz:limfolge-2110}
+  Sei $f$ messbar und nichtnegativ\footnote{$f=f^+$}. Dann existiert
+  eine Folge nichtnegativer einfacher Abbildungen $(f_n)_{n=1}^\infty$
+  mit $f_n\leq f_{n+1}$ und $f=\limn f_n (f_n \uparrow f)$
+\end{satz}
+\begin{proof}
+  Der Beweis erfolgt konstruktiv, d.h. man konstruiert eine spezielle
+  Folge $(f_n)_{n=1}^\infty$:
+  \[f_n:=\sum_{i=0}^{4^n-1} \frac{i}{2^n}
+  \chi_{\fmineins([\frac{i}{2^n}, \frac{i+1}{2^n}))} +2^n
+  \chi_{\fmineins ([2^n,-\infty))}\]
+
+  \begin{pspicture}(8,6)
+    \psaxes[labels=none,tickstyle=bottom,ticks=y](7,5)
+    \psbezier(0,0)(1,0.5)(2,1.5)(3,3.7)(5,4)(7,4.5)
+    \psline[linestyle=dotted](0,4)(5,4)
+    \psline(5,4)(7,4)
+    \psline[linestyle=dotted](0,3)(3.1,3)
+    \psline[linestyle=dotted](0,2)(2.2,2)
+    \psline[linestyle=dotted](0,1)(1.4,1)
+    \psline[linestyle=dashed](1.4,0)(1.4,1)
+    \psline[linestyle=dashed](2.3,0)(2.3,2)
+    \psline[linestyle=dashed](3.1,0)(3.1,3)
+    \psline[linestyle=dashed](5,0)(5,4)
+    \psline(1.4,1)(2.3,1)
+    \psline(2.3,2)(3.1,2)
+    \psline(3.1,3)(5,3)
+    \rput[B](7.5,4.5){$f(\omega)$}
+    \rput[B](7.5,4){$f_n(\omega)$}
+    \rput[l](-0.5,4){$\frac{4^n}{2^n}$}
+    \rput[l](-0.5,1){$\frac{i}{2^n}$}
+    \rput[l](-0.5,2){$\frac{i+1}{2^n}$}
+  \end{pspicture}
+  
+  Damit ergibt sich $0\leq f_n\leq f_{n+1}\leq f$. Wenn $f$ messbar
+  ist, folgt, dass $f$ auch einfach ist. Die Differenz $f(\omega)-
+  f_n(\omega)\leq\frac{1}{2^n}$\footnote{$\omega\in\Omega$ mit
+    $f(\omega) \leq2^n$} und es folgt, dass $\lim f_n(\omega)=
+  f(\omega)$
+\end{proof}
+
+\section{Einführung des Integrals}
+
+Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
+[\Omega, \CF]\rightarrow[\R,\FB]$. Das Integral $\int f(\omega)\mu
+(d\omega) \hat{=} \int fd\mu$ wird in drei Stufen eingeführt:
+
+\begin{definition}[1. Stufe]
+  Sei $f\geq 0$ und einfach, d.h. wir haben eine Darstellung der Form
+  $f=\sum_{i=1}^n a_i \chiai$ mit $n=1, a_1,\ldots,a_n\geq 0,
+  A_i\in\CF$. Dann setzen wir 
+  \[\int f(\omega)\mu(d\omega):=\sum_{i=1}^n
+  a_i\mu(A_i)\footnote{Vereinbarung: Es kann sein, dass $\mu=\infty$
+    und es kann $0\cdot\infty$ auftauchen. Dann setzen wir
+    $0\cdot\infty =0$}\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item $\int fd\mu\geq 0$
+  \item Die Definition des Integrals ist eindeutig, d.h. unabhängig
+    von der betrachteten Darstellung als Linearkombination von
+    messbaren Indikatorfunktionen:\\ $f=\sum_{i=1}^n
+    a_i\chiai=\sum_{k=1}^m b_k\chi_{B_k}\Rightarrow\sum_{i=1}^n
+    a_i\mu(A_i) = \sum_{k=1}^m b_k\mu(B_k)$
+  \item Das Integral ist linear, d.h. $f,g=0$ und einfach,
+    $\alpha,\beta \geq 0\Rightarrow\int(\alpha f+\beta g)d\mu=
+    \alpha\int fd\mu+\beta\int gd\mu$. Denn sei $f=\sum a_i\chiai$ und
+    $g=\sum b_j \chi_{B_j}$. Dann ist $\alpha f + \beta g=\sum \alpha
+    a_i \chiai+\sum\beta b_j\chi_{B_j}\Rightarrow\int (\alpha f+\beta
+    g) d\mu=\sum\alpha a_i\mu(A_i)+\sum\beta b_j\mu(B_j)=\alpha \int
+    fd\mu +\beta\int gd\mu$
+  \item Wenn $f,g\geq 0$ einfach und $f\leq g$, dann folgt, dass $\int
+    fd\mu\leq\int gd\mu$. Das Integral ist monoton. Denn da $f\leq g$
+    ist, ist auch $g-f\geq 0$ und da beide Funktionen einfach sind,
+    ist auch die Differenz wieder einfach. Es gilt:
+    $g=f+(g-f)\Rightarrow \int gd\mu=\int fd\mu+\underbrace{\int (g-f)
+      d\mu}_{\geq 0}\Rightarrow \int gd\mu\geq \int fd\mu$
+  \item Sei $(f_n)_{n=1}^\infty$ eine Folge nichtnegativer einfacher
+    Funktionen mit $f_n\leq f_{n+1}$. Dann existiert $\limn \int
+    f_nd\mu$. Dabei ist auch $+\infty$ möglich. Aus dem vierten Punkt
+    folgt $0\leq\int f_n d\mu\leq\int f_{n+1}d\mu$
+  \item Seien $(f_n), (g_n)$ Folgen nichtnegativer einfacher
+    Funktionen mit $f_n\leq f_{n+1}, g_n\leq g_{n+1}, \lim f_n\leq
+    \lim g_n$. Dann gilt $\lim\int f_n d\mu\leq\lim\int g_n d\mu$. Zum
+    Beweis muss die zusätzliche Voraussetzung $f_n\leq g_n$ benutzt
+    werden. Denn nach dem vierten Punkt folgt: $\int f_nd\mu\leq\int
+    g_nd\mu$ und wegen fünftens existieren $\lim\int f_nd\mu, \lim\int
+    g_nd\mu$. Damit ist $\lim\int f_nd\mu\leq\lim\int g_nd\mu$.
+  \end{enumerate}
+\end{remark}
+
+\begin{definition}[2. Stufe]
+  Sei $f\geq 0$ und messbar. Dann existieren nach Satz
+  \ref{satz:limfolge-2110} $(f_n)_{n=1}^\infty, 0\leq f_n\leq
+  f_{n+1}, f=\lim f_n, f_n$ einfach. Wir setzen:
+  \[\int fd\mu := \limn\int f_nd\mu\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Die Definition ist "`sinnvoll"', weil das Integral nach der
+    Definition erster Stufe definiert ist und der Limes nach der
+    obigen Bemerkung 5 existiert.
+  \item Die Definition ist auch eindeutig, d.h. wenn wir haben: $0\leq
+    f_n\leq f_{n+1}, 0\leq g_n\leq g_{n+1}, f=\lim f_n=\lim g_n$ und
+    beide sind einfach, dann folgt daraus: $\lim\int f_nd\mu=\lim\int
+    g_nd\mu$. Dies ist eine direkte Folgerung aus der Bemerkung 6 oben.
+  \item Die Definition zweiter Stufe ist eine Erweiterung der
+    Definition erster Stufe.
+  \item Das so definierte Integral ist linear.\\
+    Beweis: Sei $\alpha,\beta\in\R\geq 0, f,g\geq 0$ und
+    messbar. Weiter seien $f=\lim f_n, g=\lim g_n, 0\leq f_n\leq
+    f_{n+1}, 0\leq g_n\leq g_{n+1}$ alle einfach, d.h. $\int fd\mu=
+    \limn\int f_nd\mu$ und $\int gd\mu=\limn\int g_nd\mu$.\\
+    $\alpha f+\beta g=\limn(\alpha f_n+\beta g_n)\Rightarrow \int
+    (\alpha f+\beta g)d\mu=\limn\int(\alpha f_n+\beta g_n) d\mu=
+    \limn(\alpha \int f_nd\mu+\beta\int g_nd\mu)=\alpha\int fd\mu
+    +\beta\int gd\mu$
+  \item Für $0\leq f\leq g$ gilt: $0\leq \int fd\mu\leq\int gd\mu$,
+    denn $g=f+(g-f)\Rightarrow \int gd\mu=\int fd\mu+\int(g-f)d\mu
+    \Rightarrow\int gd\mu\geq\int fd\mu$
+  \end{enumerate}
+\end{remark}
+
+\begin{definition}[3. Stufe]
+  Sei $f$ messbar und bezüglich $\mu$ integrierbar, d.h. $\int
+  f^+d\mu$ und $\int(-f^-)d\mu<+\infty$. Dann gilt:
+  \[\int fd\mu:=\int f^+d\mu-\int(-f^-)d\mu\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item klar: $|f|=f^++(-f^-)\Rightarrow\int|f|d\mu=\int f^+d\mu +\int
+    (-f^-)d\mu$
+    \[\fbox{$f$ ist genau dann $\mu$-integrierbar, wenn $\int|f|d\mu
+      <\infty$}\]
+  \item $\int fd\mu$ für $f\geq 0$ und messbar existiert immer. Es ist
+    allerdings der Fall $+\infty$ möglich. Das Integral $\int fd\mu$
+    im Falle $f$ messbar und nicht notwendigerweise $\geq 0$ ist nach
+    der Definition dritter Stufe nur für $\mu$-integrierbare
+    Funktionen erklärt.
+  \item Die Eigenschaften Monotonie und Linearität des Integrals
+    übertragen sich von der zweiten zur dritten Stufe. %Beweis hierzu fehlt
+  \end{enumerate}
+\end{remark}
+
+\begin{satz}[Integral bezüglich diskreter Maße]
+  Seien $(\alpha_i)_{i\in I}$ eine abzählbare Familie nichtnegativer
+  reeller Zahlen und $(\omega_i)_{i\in I}\subseteq\Omega$ und $\mu=
+  \sum_{i\in I}\alpha_i \delta_{\omega_i}$\footnote{Maße von diesem
+    Typ heißen \emph{diskrete Maße\index{Maß!diskretes}}}. Eine
+  messbare Funktion $f$ ist genau dann $\mu$-integrierbar, wenn gilt
+  $\sum_{i\in I} \alpha_i |f(\omega_i)|<\infty$. In diesem Fall gilt:
+  \[\int fd\mu=\sum_{i\in I} \alpha_i f(\omega_i)\]
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[1. F{a}ll]
+  \item Sei $f=\chi_A (A\in\CF)$\\
+    $\int fd\mu=\int\chi_Ad\mu=\mu(A)=\sum_{i\in I} \alpha_i
+    \delta_{\omega_i}(A)=\sum_{i\in I}\alpha_i \chi_A(\omega_i)=
+    \sum_{i\in I} \alpha_i f(\omega_i)$
+  \item Sei $f=\sum_{k=1}^n a_k \chi_{A_k}$ mit $a_k\geq 0,
+    A_k\in\CF$. Dann ist $\int fd\mu=\sum_{k=1}^n a_k\mu(A_k)=\int
+    \sum_{k=1}^n a_k \chi_{A_k}d\mu=\sum_{k=1}^n a_k
+    \int\chi_{A_k}d\mu = \sum_{k=1}^n a_k \sum_{i\in I} \alpha_i
+    \chi_{A_k}(\omega_i)=$\\
+    $\sum_{i\in I}\alpha_i
+    \underbrace{\sum_{k=1}^n a_k \chi_{A_k}(\omega_i)}_{f(\omega_i)}=
+    \sum_{i\in I} \alpha_i f(\omega_i)$
+  \item Seien $f\geq 0$ und messbar, $0\leq f_m\uparrow f$
+    einfach. Nach der Definition zweiter Stufe folgt nun, dass $\int
+    fd\mu=\limn\int f_md\mu$. Nach dem vorigen Fall folgt:
+    $\limn\sum_{i\in I}\alpha_i f_m(\omega_i)$.Da die Funktion monoton
+    wachsend ist, kann der Limes und die Summe vertauscht werden:
+    $\sum_{i\in I} \alpha_i \limn f_m(\omega_i)=\sum_{i\in I} \alpha_i
+    f(\omega_i)$. Nunmehr muss noch die $\mu$-Integrierbarkeit
+    untersucht werden. Nach der Bemerkung 1 der Definition dritter
+    Stufe ist $f$ genau dann $\mu$-integrierbar, wenn gilt $\int |f|
+    d\mu <\infty\Leftrightarrow \sum_{i\in I} \alpha_i |f(\omega_i)|<
+    \infty$
+  \item Wenn $f$ $\mu$-integrierbar ist, dann folgt aus der Definition
+    dritter Stufe: $\int fd\mu=\int f^+-(-f^-)d\mu=\sum_{i\in I}
+    \alpha_i f^+(\omega_i)-\sum_{i\in I} \alpha_i (-f^-)(\omega_i)=
+    \sum_{i\in I} \alpha_i (f^+(\omega_i)-(-f^-)(\omega_i))=
+    \sum_{i\in I} \alpha_i (f^+(\omega_i)+f^-(\omega_i))=\sum_{i\in I}
+    \alpha_i f(\omega_i)$
+  \end{enumerate}
+\end{proof}
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item Sei $\mu=\delta_{\omega_0}$ und ein $\omega_0\in\Omega$
+    gegeben. Dann ist jede messbare Funktion $f$ $\mu$-integrierbar
+    und es gilt: $\int fd\mu=\int fd\delta_{\omega_0}=f(\omega_0)$
+  \item Wir betrachten die Reihe $\sum_{k=0}^m a_k$. Dabei ist auch
+    der Fall $m=\infty$ möglich. Nun wählen $\Omega=\{0,1,\ldots,n\},
+    \CF=\FP(\Omega), \mu=\sum_{i=0}^n \delta_i$ und das Zählmaß
+    $\mu(A)= \#A$. Setzen $f:\Omega\rightarrow\R$ mit $f(k):=a_k
+    (k\in\Omega)\Rightarrow\int fd\mu=\sum_{k=0}^m a_k$ und $f$ ist
+    bezüglich $\mu$ genau dann integrierbar, wenn $\sum_{k=0}^m |a_k|
+    <\infty$. Für den Fall $m=\infty$ muss die Reihe absolut
+    konvergent sein.
+  \end{enumerate}
+\end{beispiel}
+
+\begin{satz}[Riemannintegral\index{Riemannintegral} stetiger
+  Funktionen]
+\label{satz:riemann-222}
+  Seien $f:\R\rightarrow\R$ stetig und $a<b$. Dann ist $f\chi_{[a,b]}$
+  bezüglich $\ell$ integrierbar und es gilt:
+  \[\int f\chi_{[a,b]}d\ell=\int_a^b f(x)dx\]
+\end{satz}
+\begin{proof}
+  Der Fall, dass die Funktion einfach ist, wird nicht betrachtet. Denn
+  alle stetigen Funktionen (außer Konstanten) sind nicht einfach.
+
+  Sei nun $f\geq 0$ und stetig. Dann ist $f$ auch messbar und
+  $f\chi_{[a,b]}$ ebenfalls. Nach der Definition zweiter Stufe wissen
+  wir, dass $\int f\chi_{[a,b]}d\ell=\limn\int f_nd\ell$, falls $0\leq
+  f_n \uparrow f$ und $f_n$ einfach. Im folgenden wird $f_n$ als
+  untere Darbouxsche Summe konstruiert:
+
+  \begin{pspicture}(6,8)
+    \psaxes[tickstyle=bottom,labels=none,ticks=none]{->}(5,7)
+    \psplot{1}{4.5}{x x mul 3 div}
+    \psline[linestyle=dashed](1,0)(1,0.33)
+    \psline[linestyle=dashed](1.5,0)(1.5,0.75)
+    \psline[linestyle=dashed](2,0)(2,1.33)
+    \psline[linestyle=dashed](2.5,0)(2.5,2.08)
+    \psline[linestyle=dashed](3,0)(3,3)
+    \psline[linestyle=dashed](3.5,0)(3.5,4.08)
+    \psline[linestyle=dashed](4,0)(4,5.33)
+    \psline[linestyle=dashed](4.5,0)(4.5,6.75)
+    \psline(1,0.33)(1.5,0.33)
+    \psline(1.5,0.75)(2,0.75)
+    \psline(2,1.33)(2.5,1.33)
+    \psline(2.5,2.08)(3,2.08)
+    \psline(3,3)(3.5,3)
+    \psline(3.5,4.08)(4,4.08)
+    \psline(4,5.33)(4.5,5.33)
+    \rput[B](5,6.5){$f(x)$}
+    \rput[t](1,0){$a$}
+    \rput[t](2.5,0){$z_k^{(n)}$}
+    \rput[t](4.5,0){$b$}
+  \end{pspicture}
+
+  \[z_{k+1}^{(n)}-z_k^{(n)}=\frac{b-a}{2^n} f_n(x)=0\, (x\not\in[a,b])\]
+  %Formeln noch weiter ergänzen
+  \[\Rightarrow \int
+  f_nd\ell=\int\sum_{k=0}^{2^{n-1}}a_k\chi_{[z_k,z_{k+1}]} d\ell=
+  \sum_{k=0}^{2^{n-1}} a_k\ell([z_k^{(n)}, z_{k+1}^{(n)}])\]
+  \fbox{\parbox{0.4\linewidth}{\[=\frac{b-a}{2^n}
+      \sum_{k=0}^{2^{n-1}} a_k\]}}
+
+  Es ist bekannt, dass das Riemannsche Integral der Limes der
+  Darbouxschen Summen ist. Somit haben wir $\limn\int f_nd\ell=
+  \int_a^b f(x)dx$. Weiter ist klar, dass $f_n\leq f_{n+1}$. Denn die
+  Feinheit wird verkleinert, wenn die Intervalle vergrößert
+  werden. Damit strebt $f_n$ für $n\rightarrow\infty$ nach
+  $f\chi_{[a,b]}$ und nach der Definition zweiter Stufe folgt, $\int
+  f_n d\ell\xrightarrow{n\rightarrow\infty}\int f\chi_{[a,b]}d\ell$
+\end{proof}
+
+\begin{remark}
+  \begin{enumerate}[1)]
+  \item Die Behauptung gilt auch dann, wenn nur vorausgesetzt wird,
+    dass $f$ auf $[a,b]$ riemannsch integrierbar ist.
+  \item Der Satz ist ausdehnbar auf die Fälle $a=-\infty,
+    b=\infty$. Dabei ist die Forderung, dass $f$ auf $[a,b]$
+    $\ell$-integrierbar ist, notwendig.
+  \end{enumerate}
+\end{remark}
+
+\begin{satz}[Übertragungssatz]
+  \label{satz:uebertrsatz-228}
+  Seien $[\Omega_1,\CF_1,\mu]$ ein Maßraum, $[\Omega_2,\CF_2]$ ein
+  messbarer Raum, $h:[\Omega_1,\CF_1]\rightarrow[\Omega_2,\CF_2],
+  f:[\Omega_2, \CF_2]\rightarrow[\R,\FB]$, wobei $f$ bezüglich $\mu$
+  integrierbar ist. Dann ist $f\circ h :\Omega_1\rightarrow\R$
+  bezüglich $\mu$ integrierbar und es gilt:
+  \begin{equation}
+    \label{eq:uesatz}
+    \int f\circ h d\mu=\int fd\mu\circ\hmineins
+  \end{equation}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[1. F{a}ll]
+    \setcounter{enumi}{-1}
+  \item Sei $f=\chi_A (A\in\CF_2)$ und damit messbar. Die Verknüpfung
+    $f\circ h(\omega)=\chi_A(h(\omega))$. Es ist klar, dass
+    $\chi_A\circ h$ eine Indikatorfunktion auf $\Omega_1$ sein muss,
+    d.h. $\exists B\subseteq\Omega_1$ mit $\chi_A\circ h=\chi_B$\\
+    $\chi_B(\omega)=1\Leftrightarrow \chi_A(h(\omega))=1
+    \Leftrightarrow h(\omega)\in A\Leftrightarrow w\in\hmineins(A)
+    \Rightarrow B=\hmineins(A)\in\CF_1$
+    \[\Rightarrow \chi_A \circ h = \chi_{\hmineins(A)}\]
+    $\int f\circ h d\mu=\int\chi_{\hmineins(A)}d\mu=\mu(\hmineins(A))
+    =\mu\circ\hmineins(A)=\int\chi_Ad\mu\circ\hmineins=\int fd\mu\hmineins=$
+  \item Sei $f\geq 0$ und einfach, d.h. $f=\sum_{i=1}^n a_i
+    \chiai$ mit $A_i\in\CF_2, a_i\geq 0$. Das Integral $\int fd\mu
+    \circ\fmineins$ entspricht wegen der Linearität die Summe
+    $\sum_{i=1}^n a_i\int \chiai d\mu\circ\hmineins=\sum_{i=1}^n a_i
+    \int \chiai \circ\hmineins d\mu=\int\sum_{i=1}^n a_i \chiai \circ
+    \hmineins d\mu=\int f\circ hd\mu$
+  \item Wir wählen $(f_n)_{n=1}^\infty$ mit $0\leq f_n\leq f_{n+1},
+    f=\lim f_n$ und $f_n$ einfach. Somit folgt $\int f_n
+    d\mu\circ\hmineins=\lim \int f_n d\mu\circ\hmineins=\lim\int
+    f_n\circ h d\mu$. Es ist klar, dass $g_n:=f_n\circ h$ die
+    folgenden Bedingungen erfüllt: $0\leq g_n\leq g_{n+1}, \lim g_n =
+    f\circ h, g_n$ einfach.\footnote{Wenn $f_n$ nur endliche viele
+      Werte annimmt, nimmt $g_n$ ebenfalls nur endlich viele Werte
+      an.} 
+    $\Rightarrow \limn \int g_n d\mu=\int f\circ h d\mu\Rightarrow
+    \int f\circ h d\mu=\int fd\mu\circ \hmineins$
+  \end{enumerate}
+  Die Behauptung, dass $f\circ h$ $\mu$-integrierbar ist, folgt sofort
+  aus der $\mu\circ\hmineins$-Integrierbarkeit von $f$ und der
+  Gleichung (\ref{eq:uesatz}) im bewiesenen Fall nichtnegativer
+  Funktionen.
+\end{proof}
+
+\begin{beispiel}
+  Sei $\Omega_2=\R, h:\Omega_1\rightarrow\R, f(x)=x,
+  f:\R\rightarrow\R$. Dann gilt $\int h(\omega)\mu(d\omega)=\int
+  x\mu\circ \hmineins(dx)$.
+\end{beispiel}
+
+\begin{definition}
+  Seien $f$ und $g$ messbare Funktionen. $f$ und $g$ sind
+  \emph{$\mu$-fast-überall-gleich}\index{fast überall
+    gleich}\index{gleich!fast überall}, wenn gilt:
+  \[\mu(\{\omega\in\Omega|f(\omega)\neq g(\omega)\})x\]
+\end{definition}
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item Sei $\mu=\delta_{\omega_0}\Rightarrow f=g\Leftrightarrow
+    f(\omega_0)=g(\omega_0)$
+  \item $\ofmu=\rbel, f=\chi_\Q$ Da die rationalen Zahlen abzählbar
+    sind, ist klar, dass $\ell(\Q)=0$. Somit ist auch $\chi_\Q\equiv
+    0$, da $\ell(\{\omega\in\Omega|\chi_\Q(\omega)\neq 0\})=\ell(\Q)$
+  \end{enumerate}
+\end{beispiel}
+
+\begin{remark}
+  Die Fast-Überall-Gleichheit ist eine Äquivalenzrelation. Die Klasse
+  aller messbaren Funktionen zerfällt in von $\mu$ abhängigen
+  Äquivalenzklassen. 
+\end{remark}
+
+\begin{satz}
+  Seien $f,g$ $\mu$-fast überall gleich ($f=_\mu g$). Weiter seien
+  $f,g$ $\mu$-integrierbar. Dann gilt:
+  \[\int fd\mu=\int gd\mu\]
+\end{satz}
+\begin{proof}
+  $f=_\mu g\Leftrightarrow f-g=_\mu 0=h$
+  \begin{itemize}
+  \item Wegen $\int(f-g)d\mu=\int fd\mu-\int gd\mu$ genügt es zu
+    zeigen, dass $h=0$ messbar und aus $h=_\mu 0$ folgt $\int hd\mu=0$
+  \item Wir wissen: $\int hd\mu=\lim\int f_nd\mu$ für $0\leq f_n\leq
+    f_{n+1}, h=\lim f_n$ und $f_n$ einfach. Damit folgt,
+    $h=f_n\Rightarrow \int hd\mu\geq \int f_nd\mu$. Nun genügt es zu
+    zeigen, dass $0\leq f$ einfach: $f\leq h\Rightarrow \int
+    fd\mu=0$. Wir haben: Falls $h\geq f$ und $h=_\mu 0\Rightarrow
+    f=_\mu 0$. Damit genügt es zu zeigen, dass $0\leq f$ einfach und
+    $f=_\mu 0\Rightarrow\int fd\mu=0$. Sei nun $f=\sum_{i=1}^n a_i
+    \chiai$. Alle $a_i\geq )$ und die $A_i$ sind paarweise disjunkt
+    und messbar. Klar ist:
+    \begin{itemize}
+    \item $\int\chiai d\mu=\mu(A_i)=0\Rightarrow \int fd\mu=0$
+    \item $f\geq a_i \chiai\Rightarrow$ genügt zu zeigen: $\chi_A
+      =_\mu 0\Rightarrow\int\chi_Ad\mu=0$
+    \end{itemize}
+    Dazu ist $\chi_A=_\mu 0\Leftrightarrow
+    \mu(\{\underbrace{\omega\in\Omega|\chi_A(\omega)\neq 0}_{A}\})=0=
+    \mu(A)$\\
+    $\int\chi_Ad\mu=\mu(A)=0$
+  \end{itemize}
+\end{proof}
+
+
+\section{Absolute Stetigkeit von Maßen}
+
+\begin{definition}
+  Seien $\mu,\nu$ Maße auf $[\Omega,\CF]$ und $0\leq
+  f:[\Omega,\CF]\rightarrow[\R,\FB]$. Dann heißt $\nu$ \emph{absolut
+    stetig}\index{absolut stetig}\index{stetig!absolut} bezüglich
+  $\mu$ mit Dichte $f$\footnote{Schreibweise: $\nu=\mu f$}, wenn gilt:
+  \[\nu(A)=\int f\chi_Ad\mu\quad(A\in\CF)\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+    \setcounter{enumi}{-1}
+  \item Schreibweisen: $\int_A fd\mu:=\int f\chi_Ad\mu, \nu\ll\mu$
+  \item $\mu f(A)=\int_A fd\mu$ definiert ein Maß auf $[\Omega,\CF]$\\
+    Beweis:
+    \begin{itemize}
+    \item Fall: $A=\emptyset: \mu f(\emptyset)=\int f\chi_\emptyset
+      d\mu=\int 0d\mu=0$
+    \item klar: $\mu f(A)=\int f \chi_A d\mu\geq 0$
+    \item Die $(A_i)$ sind paarweise disjunkt: $A_i\in\CF\Rightarrow
+      \mu f(\bigcup A_i)=\int f \chi_{\bigcup A_i} d\mu=\int\sum
+      f\chiai d\mu=\sum\int f\chiai d\mu=\sum \mu f(A_i)$
+    \end{itemize}
+  \item $\mu f$ ist endlich. Es ist per Definition: $\mu f(\Omega)<+
+    \infty=\int f\chi_\Omega d\mu=\int fd\mu\Leftrightarrow f$ ist
+    $\mu$-integrierbar. 
+  \end{enumerate}
+  $\mu f$ ist Wahrscheinlichkeitsmaß. Per Definition ist $\mu
+  f(\Omega)=1=\int fd\mu$. $f$ heißt
+  \emph{Wahrscheinlichkeitsdichte}\index{Wahrscheinlichkeitsdichte}
+  bezüglich $\mu$.
+\end{remark}
+
+\begin{beispiel}
+  Sei $\Omega=\N_0, \CF=\FP(\N_0),\mu:=\sum_{i=1}^\infty \delta_i$.\\
+  Behauptung: Jedes Maß $\nu$ auf $[\N_0,\FP(\N_0)]$ ist absolut
+  stetig bezüglich $\mu$ ($\nu\ll\mu$) mit der Dichte
+  $f(i):=\nu(\{i\})$.\\
+  Beweis: $\nu(A)=\sum_{i\in A} \nu(\{i\})=\sum_{i\in\N_0} \nu(\{i\})
+  \chi_A(i)=\sum_{i\in\N_0} f(i)\chi_A(i)=$\\
+  $\int f(i)\chi_A(i)\mu(di)$
+\end{beispiel}
+
+\begin{remark}
+  Seien $f,g\geq 0$ und messbar. Dann ist $\mu f=\mu g$ genau dann
+  wenn, $f=_\mu g$.\\
+  Beweis:\footnote{Der Beweis erfolgt einschränkend für Mengen mit
+    endlichem Maß.} $\mu f=\mu g\Leftrightarrow \int_A fd\mu=\int_A
+  gd\mu\Leftrightarrow \int_A (f-g)d\mu=0=\int (f-g)\chi_Ad\mu$
+  \begin{itemize}
+  \item["`$\Leftarrow$"'] Sei $f=_\mu g\Rightarrow f-g=_\mu
+    0\Rightarrow (f-g)\chi_A=_\mu =0\Rightarrow \int (f-g)\chi_A
+    d\mu=0\Rightarrow \mu f=\mu g$
+  \item["`$\Rightarrow$"'] Angenommen $\neg f=_\mu g$,
+    d.h. $\mu(\{\omega\in\Omega|f(\omega)\neq g(\omega)\})=0
+    \Rightarrow \mu(\{\omega\in\Omega|f(\omega)>g(\omega)\})>0\vee
+    \mu(\{\omega\in\Omega|f(\omega)<g(\omega)\})<0$. O.B.d.A. gelte
+    die erste Gleichung und sei $A_n:=\{\omega\in\Omega|f(\omega)\geq
+    g(\omega)+\frac{1}{n}\}\Rightarrow A_n\subseteq A_{n+1}$. Wegen
+    der Stetigkeit von unten folgt: $\lim \mu(A_n)=\mu(\bigcup A_n)=
+    \mu(\{\omega\in\Omega|f(\omega)>g(\omega)\})>0\Rightarrow \exists
+    n_0: \mu(A_{n_0})>0=\mu(\{f(\omega)\geq g(\omega)+\frac{1}{n_0}\})=
+    \mu(\{\omega\in\Omega|f(\omega)-g(\omega)\geq \frac{1}{n_0}\})
+    \Rightarrow \int (f-g)\chi_{A_{n_0}} d\mu\geq \int \frac{1}{n_0}
+    \chi_{A_{n_0}} d\mu=\frac{1}{n_0}\mu(A_{n_0}>0$. Somit folgt, dass
+    \emph{nicht} gilt: $\mu f=\mu g$
+    \qed
+  \end{itemize}
+\end{remark}
+
+\begin{satz}
+  Sei $P$ ein Wahrscheinlichkeitsmaß auf $[\R,\FB]$ mit stetig
+  differenzierbarer Verteilungsfunktion $F(x)=P((-\infty,x))$. Dann
+  gilt: 
+  \[P=\ell F\]
+\end{satz}
+\begin{proof}
+  \footnote{Für die Gültigkeit der Behauptung reicht die Forderung,
+    dass $F'$ stückweise stetig ist. Der Beweis wird hierdurch jedoch
+    sehr umfassend, sodass auf die schwächere Bedingung
+    zurückgegriffen wird.}
+  Wir definieren ein Maß $\nu:=\ell F'$. $F$ ist eine
+  Verteilungsfunktion und monoton wachsend. Damit ist die Ableitung
+  immer positiv. Zu prüfen ist nun, ob $\nu$ ein
+  Wahrscheinlichkeitsmaß ist und ob dies mit $P$ zusammen fällt.
+  \begin{enumerate}
+  \item Dazu $\nu(\R)=\int_\R F'(x)\ell(dx)$. Da $F$ stetig ist und
+    Satz \ref{satz:riemann-222} gilt: $\int_{-\infty}^\infty F'(x)dx=
+    \lim_{a\rightarrow-\infty} \lim_{b\rightarrow\infty} \int_a^b
+    F'(x) dx=\lim_{a\rightarrow-\infty} \lim_{b\rightarrow\infty}
+    (F(b)- F(a))$. Wegen des Satz \ref{satz:eigensch-vert-152} Punkt 3
+    und 4 gilt $1-0\cdot 1$. Weiterhin ist zu zeigen, dass
+    $P=\nu$. Hier genügt es zu zeigen, dass beide die gleiche
+    Verteilungsfunktion haben: Die Verteilungsfunktion $F$ von $P$ ist
+    gleich der Verteilungsfunktion $G$ von $\nu$. Wir haben $G(x)=\nu
+    ((-\infty,x))=\int_{(-\infty,x)} F'(x)\ell(dy)$. Wiederum nach
+    Satz \ref{satz:riemann-222} ist $\int_{-\infty}^x F'(y)dy=
+    \lim_{a\rightarrow-\infty} (F(x)-F(a))=F(x)$
+  \end{enumerate}
+\end{proof}
+
+\begin{beispiel}
+  Wir betrachten die
+  Exponentialverteilung\index{Exponentialverteilung}:
+  \begin{align*}
+    Ex_\lambda\rightarrow F(x)&=    
+    \begin{cases}
+      0 & x\leq 0\\
+      1-e^{-\lambda x} & x>0
+    \end{cases} &\\
+    F'(x)&=
+    \begin{cases}
+      0 & x\leq 0\\
+      \lambda e^{-\lambda x} & x>0
+    \end{cases} &
+    Ex_\lambda &= \ell F'(x)
+  \end{align*}
+\end{beispiel}
+
+\begin{satz}
+  Seien $\mu$ ein Maß auf $[\Omega,\CF],f,g:[\Omega,\CF]\rightarrow
+  [\R,\FB], f\geq 0$. Ist $f\cdot g$ bezüglich $\mu$ integrierbar, so
+  ist $g$ allein bezüglich $\mu$ mit Dichte $f$ integrierbar und es
+  gilt: 
+  \[\int gd\mu f=\int fgd\mu\]
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[1. F{a}ll]
+    \setcounter{enumi}{-1}
+  \item $g=\chi_A\,(A\in\CF)$: Es gilt zu zeigen, dass $\int gd\mu
+    f=\int fgd\mu=\int\chi_A d\mu f=\mu f(A)=\int_A fd\mu= \int
+    f\chi_A d\mu=\int fgd\mu$
+  \item $g=\sum a_i \chiai$\\
+    Die weiteren Schritte können wie bereits gehabt mittels der
+    Linearität und Limes genzeigt werden.
+  \end{enumerate}
+\end{proof}
+
+\begin{beispiel}
+  Eine vielfache Anwendung stellt folgendes Beispiel dar:\\
+  $\mu=\ell,
+  [\Omega, \CF]=[\R,\FB], P=\ell f, f$ ist (stückweise) stetig,
+  $g:[\R,\FB]\rightarrow[\R,\FB]$ bezüglich $P$ integrierbar und
+  stetig. Daraus folgt: $\int gdP=\int_{-\infty}^\infty f(x)g(x)dx$
+\end{beispiel}
+
+
+\section{Der Satz von Fubini}
+\begin{definition}
+  Sei $\ofmu$ ein Maßraum. Das Maß $\mu$ heißt
+  \emph{$\sigma$-endlich\index{endlich}\index{Maß!endliches}}, wenn
+  eine messbare Zerlegung\footnote{d.h. $A_k\cap A_j=\emptyset\wedge
+    \bigcup A_k=\Omega$} $(A_k)_{k=1}^\infty$ von $\Omega$ existiert
+  mit $\mu(A_k)<+\infty\,(k=1,2,\ldots)$.
+\end{definition}
+
+\begin{remark}
+  Spezialfälle:
+  \begin{itemize}
+  \item Alle Wahrscheinlichkeitsmaße und alle endlichen Maße
+  \item Lebesguesche Maße (jede Dimension); Wähle z.B. $A_k=[k,k+1)\,
+    (k\in\Z)\Rightarrow \bigcup A_k\R,A_k\cap A_j=\emptyset,
+    \ell(A_k)=1$
+  \item Zählmaß auf abzählbaren Mengen $\Omega$, Wähle
+    $A_\omega=\{\omega\}$. Es ist klar, dass
+    $\mu(A_\omega)=\sum_{\omega\in\Omega} \delta_\omega(A_\omega)=
+    \sum_{\omega\in\Omega} \delta_\omega(\{\omega\})=1$
+  \end{itemize}
+\end{remark}
+
+Im folgenden seien $\Omega_1, \CF_1, \mu_1], \ldots, [\Omega_n, \CF_n,
+\mu_n]$ Maßräume und $\mu_1,\ldots,\mu_n$ $\sigma$-endlich.
+
+\begin{satz}[Satz von Fubini]
+  Sei $f:\times_{i=1}^n [\Omega_i, \CF_i]\rightarrow[\R,\FB]$
+  bezüglich $\times_{i=1}^n \mu_i$ integrierbar. Weiter sei $(i_1,
+  \ldots, i_n)$ eine Permutation der Zahlen $\{1,\ldots, n\}$. Dann
+  gilt:
+  \[\int fd\times_{i=1}^n \mu_i=\int\cdots\int f(\omega_1,\ldots,
+  \omega_n) \mu_{i_1}(d\omega_{i_1})\ldots \omega_{i_n}(d\omega_{i_n})\]
+\end{satz}
+
+\begin{beispiel}
+  Wir wissen, $[\R^n, \FB_n,
+  \ell^{(n)}]=[\R,\FB,\ell]^{n\times}$. 
+  Wenn $f(x_1,\ldots,x_n)$ stetig, ist sie in jeder Variablen stetig
+  und $\int_{-\infty}^\infty\cdots\int_{-\infty}^\infty |f(x_1,\ldots,
+  x_n)| dx_1\ldots dx_n<+\infty$. Es gilt:
+  \[\int fd\ell^{(n)}=\int_{-\infty}^\infty\cdots\int_{-\infty}^\infty
+  f(x_1, \ldots, x_n) dx_1\ldots dx_n\]
+\end{beispiel}
+
+\begin{satz}
+  Seien $[\Omega_1,\CF_1,\mu_1],\ldots, [\Omega_n,\CF_n,\mu_n]$
+  Maßräume mit $\sigma$-endlichen Maßen. Weiterhin seien $f_i:
+  [\Omega_1, \CF_i]\rightarrow[\R,\FB], f_i\geq 0, \int f_i
+  d\mu_i=1$\footnote{d.h. $f_i$ ist Wahrscheinlichkeitsdichte
+    bezüglich $\mu_i$ bzw. $\mu_i f_i$ ist Wahrscheinlichkeitsmaß.}.
+  Setzen $f(\omega_1,\ldots,\omega_n):=\prod_{i=1}^n
+  f_i(\omega_i)$. Dann gilt:
+  \[\mu f=\times_{i=1}^n \mu_i f_i\quad\text{wobei }
+  \mu=\times_{i=1}^n \mu_i\]
+\end{satz}
+\begin{proof}
+  \begin{align*}
+    \mu f(\times_{j=1}^n A_j)&=\int\chi_{\times_{j=1}^n A_j}
+    d(x\mu_i)f\\
+    &= \int\cdots\int \underbrace{\chi_{\times_{j=1}^n
+        A_j}}_{\prod_{j=1}^n \chi_{A_j} (\omega_j)} (\omega_1,\ldots,
+    \omega_n) \mu_1(d\omega_1)\ldots \mu_n(d\omega_n)\\
+    &= \int\cdots\int \prod_{j=1}^n \chi_{A_j} (\omega_j)
+    \prod_{k=1}^n f_k(\omega_k) \mu_1(d\omega_1)\ldots
+    \mu_n(d\omega_n)\\
+    &= \int\cdots\int \prod_{j=1}^n (\chi_{A_j}
+    (\omega_j) f_j(\omega_j)) \mu\ldots\mu\\
+    &= \prod_{j=1}^n \int \chi_{A_j}(\omega_j) f_j(\omega_j)
+    \mu_j(d\omega_j) = \prod_{j=1}^n \mu_j f_j(A_j)
+  \end{align*}
+\end{proof}
+
+
+\chapter{Wahrscheinlichkeitsräume}
+
+Das Anliegen dieses Kapitels ist es, die Grundtypen von
+Wahrscheinlichkeitsräumen zu vermitteln und die Bildung von Modellen
+zu trainieren. Weiterhin werden wichtige Typen von Verteilungen auf
+$[\R,\FB]$ abgeleitet.
+
+\section{Der klassische Wahrscheinlichkeitsraum}
+
+Dieser Wahrscheinlichkeitsraum war der erste, der in der Historie
+benutzt wurde. Wie schon in der Einleitung geschrieben, haben Spieler
+die Wahrscheinlichkeit zuerst gefühlsmäßig wahrgenommen und versucht,
+dies genauer zu errechnen. Dies geschah um im Anschluß eventuell eine
+Strategie zu entwickeln. Im 18.~Jahrhundert kam dann ein französischer
+Mathematiker auf die Idee, den Zufall mit gleichen
+Wahrscheinlichkeiten zu modellieren. Dies ist die Wurzel des
+klassischen Wahrscheinlichkeitsraumes.
+
+Bei der Betrachtung ergibt sich die folgende Situation: Gegeben sei
+ein Experiment oder Versuch mit $n$-möglichen Ergebnissen. Dabei
+bezeichnet das Wort "`Experiment"' die prinzipielle Möglichkeit der
+Wiederholung. Weiterhin darf kein bestimmtes Ereignis gegenüber einem
+anderen bevorzugt werden. Abstrakt hat man dann,
+$\Omega=\{\omega_1,\ldots, \omega_n\}$ als die Klasse der möglichen
+Ereignisse. Weiterhin ist $\CF=\FP(\Omega)$ das System aller möglichen
+Ereignisse und $A\in\CF$ ist eine Aussage über ein Ereignis.
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item Münzwurf: $\Omega=\{W, Z\}=\{0,1\}$
+  \item Würfel: $\Omega=\{1,2,3,4,5,6\}$
+  \end{enumerate}
+\end{beispiel}
+
+Ein Ansatz für ein Wahrscheinlichkeitsmaß ist:
+$P(A)=\frac{\#A}{\#\Omega}$. Dieses Modell nimmt an, dass alle
+Ereignisse gleich verteilt sind: $P(\{\omega_i\})=P(\{\omega_j\})$ für
+alle $i,j=1,2,\ldots$. Das Wahrscheinlichkeitsmaß hier ist:
+$P(\Omega)=1 =P(\bigcup_{i=1}^n \{\omega_i\})\sum_{i=1}^n 1=
+P(\{\omega_k\}) n\Rightarrow
+P(\{\omega_k\})=\frac{1}{n}=\frac{1}{\#\Omega}$. Somit folgt dann
+$P(A)= \sum_{\omega\in A} P(\{\omega\})=\sum_{\omega\in A}
+\frac{1}{\#\Omega} =\frac{\# A}{\#\Omega}$.
+
+\begin{definition}
+  Ein Wahrscheinlichkeitsraum $[\Omega,\CF, P]$ heißt
+  \emph{klassisch}\index{klassisch}\index{Wahrscheinlichkeitsraum!klassischer},
+  wenn gilt
+  \begin{itemize}
+  \item $\Omega$ ist endlich und nichtleer
+  \item $\CF=\FP(\Omega)$
+  \item $P(A)=\frac{\#A}{\#\Omega}\,(A\in\CF\Leftrightarrow A\subseteq
+    \Omega)$
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  In klassischen Wahrscheinlichkeitsräumen wird $P$ in der Regel wie
+  folgt dargestellt: Sei $\mu$ ein Zählmaß auf $\Omega$. Dann kann man
+  das normierte Zählmaß\index{Zählmaß!normiertes} als
+  $P(A)=\frac{1}{\mu(\Omega)} \mu$ darstellen. Allgemeiner gilt: Sei
+  $\mu$ ein endliches Maß auf $[\Omega,\CF]$ mit $\mu(\Omega)=0$. Dann
+  kann man $Q:=\frac{1}{\mu(\Omega)}\mu$ setzen.
+\end{remark}
+
+\begin{beispiel}
+  \begin{enumerate}
+  \item Münzwurf: $\Omega=\{0,1\}\Rightarrow
+    P(\{\omega\})=\frac{1}{2}$
+  \item Würfel: $\Omega=\{1,\ldots,6\}\Rightarrow
+    P(\{\omega\})=\frac{1}{6}$
+  \item "`kompliziertere"' Modelle:
+    \begin{itemize}
+    \item $n$-facher Münzwurf: "`Menge der Möglichen Protokolle"'
+      $\Omega=\{[\omega_1, \ldots, \omega_n]|\omega_i\in\{0,1\}, i=1,
+      \ldots, n\}$
+    \item $n$-mal Würfeln: $\Omega=\{1,\ldots,6\}^{n\times}$
+    \end{itemize}
+  \end{enumerate}
+\end{beispiel}
+
+
+\paragraph{Kombinatorische Formeln}
+
+Dies stellt nur einen Einschub dar. In der Regel sollten diese Regeln
+dem Student bekannt sein.
+
+Die kombinatorischen Formeln drücken die Auswahl von $k$ Elementen
+einer $n$-elementigen Menge aus. Dabei kann man sich vorstellen, dass
+aus eine Urne mit insgesamt $n$ numerierten Kugeln nach bestimmten
+Kriterien Kugeln gezogen werden.
+\begin{enumerate}[1. V{a}r{i}{a}nte]
+\item Auswahl \emph{mit} Berücksichtigung der Reihenfolge und
+  \emph{mit} Zurücklegen\\
+  Menge der Auwahlen: $A_{k,n}^{mWmR}:= \{[\omega_1,\ldots, \omega_k]|
+  \omega_i\in \{1,\ldots, n\}, i=1,\ldots, n\}= \{1,\ldots,n\}^k
+  \Rightarrow A_{k,n}^{mWmR}=n^k$
+\item Auswahl \emph{mit} Berücksichtigung der Reihenfolge und
+  \emph{ohne} Zurücklegen $(k\leq n)$\\
+  $A_{k,m}^{oWmR}:=\{[\omega_1,\ldots,\omega_k]| \{\omega_1,\ldots,
+  \omega_k\}\in \{1,\ldots,n\}\}=m(n-1)(n-2)\ldots (n-k+1)=
+  \frac{n!}{(n-k)!}$
+\item Auswahl \emph{ohne} Berücksichtigung der Reihenfolge und
+  \emph{ohne} Zurücklegen\\
+  $A_{k,n}^{oWoR}:=\{\{\omega_1,\ldots,\omega_k\}| \{\omega_1, \ldots,
+  \omega_k\} \subseteq \{1,\ldots,n\}\}=\#A_{k,n}^{oWmR}\frac{1}{k!}=
+  \frac{n!}{k!(n-k)!} =\binom{n}{k}$
+\item Auswahl \emph{ohne} Berücksichtigung der Reihenfolge und
+  \emph{mit} Zurücklegen\\
+  $A_{k,n}^{oWmR}=\binom{k+n}{n}$
+\end{enumerate}
+
+\begin{beispiel}
+  $n$-facher Münzwurf: $\Omega=\{0,1\}^n =A_{n,2}^{mWmR}\Rightarrow
+  \#\Omega=2^n$. Wir betrachten das Ereignis $k$-mal wird Zahl
+  geworfen. Dies entspricht $\{[\omega_1,\ldots,\omega_n]\in\Omega|
+  k=\sum_{i=1}^n \omega_i\}=A_{k,n}^{oWoR}\Rightarrow
+  P("`A_k"')=\frac{\#A_k}{\#\Omega}=\frac{\binom{n}{k}}{2^n}$.
+
+  Das Ereignis $B_k$ entspricht der Aussage "`beim $k$-ten Wurf wird
+  erstmalig Zahl geworfen"':
+  \[B_k=\{[\omega_1,\ldots,\omega_n]\in\Omega| \omega_1, \ldots,
+  \omega_{k-1}, \omega_k=1\}\]
+  \[P("`B_k"')=\frac{\# B_k}{\#\Omega}=\frac{2^{n-k}}{2^n}=2^{-k}\]
+\end{beispiel}
+
+
+\subsubsection{Hypergeometrisches Modell}
+
+Zentrum der Betrachtung ist in der Regel eine Urne. Dabei steht dies
+für ein Behältnis, dass von außen nicht einsehbar ist und in dem alle
+Kugeln gleiche Oberflächeneigenschaften haben.\footnote{Untersuchungen
+während des Zweiten Weltkrieges ergaben, dass Menschen Kugeln anhand
+ihrer Oberflächen unbewusst wiedererkennen und dann Präferenzen
+ausbilden. Dies sollte bei den Experimenten immer ausgeschlossen werden.}
+
+In der Urne befinden sich $N$ Kugeln. Darunter sind $M$\footnote{Wobei
+gilt: $M\leq N$.} rote und $N-M$ weiße Kugeln. Nun werden aus der Urne
+"`auf gut Glück"' $n$ Kugeln herausgegriffen. Wir betrachten das
+Ereignis $A_k$, welches für "`genau $k$ der $n$ Kugeln sind rot"'
+steht. Als Hilfe nehmen wir an, dass die Kugeln nummeriert sind und
+zwar von 1 bis $M$ für die roten und $M+1$ bis $N$ für die weißen
+Kugeln. Mathematisch wird dies wie folgt ausgedrückt:
+\begin{align*}
+  \Omega:= \{\{\varepsilon_1,\ldots,\varepsilon_n\}| \{\varepsilon_1,
+  \ldots, \varepsilon_n\}\subseteq \{1, \ldots, N\}\}\\
+  \CF =\FP(\Omega)\qquad P(A):=\frac{\# A}{\# \Omega}\\
+  A_k = \{\{\varepsilon_1, \ldots, \varepsilon_n\}|\# (\{\varepsilon_1,
+  \ldots, \varepsilon_n\}\cap \{1, \ldots, M\})=k\wedge \\
+  \qquad \# (\{\varepsilon_1, \ldots, \varepsilon_n\} \cap \{M+1,
+  \ldots, N\})=n-k\}
+\end{align*}
+Somit ist $A_k=\emptyset$, wenn $k<0\vee k>M\vee k>n\vee n-k>N-M
+\Leftrightarrow k<n+M-N$. Wir betrachten nun, $\max(0, n+M-N)\leq
+k\leq \min(M,n)$.
+\begin{align*}
+  \#A_k &= \# A_{k,M}^{oWoR}\cdot \# A_{n-k, N-M}^{oWoR}-\binom{M}{k}
+  \binom{N-M}{n-k}\\
+  \#\Omega &= \# A_{n,M}^{oWoR}=\binom{N}{n}\\
+  \Rightarrow P(A_k) &=
+  \begin{cases}
+    \frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}} & k \text{ mit
+    }\max(0, n+M-N)\leq k\leq \min(M,n)\\
+    0 & \text{sonst}
+  \end{cases}
+\end{align*}
+
+Aus der obigen Tatsache folgt nun: 
+\[\sum_{k=\max(0,n+M-N)}^{\min(M,n)} \binom{M}{k} \binom{N-M}{n-k} =
+\binom{N}{n}\] 
+Zum Beweis dieser Aussage wissen wir, dass $A_k\cap A_j=\emptyset$ und
+$\bigcup_{k} A_k=\Omega$\footnote{Für $k$ gilt $\max(0, n+M-N)\leq
+k\leq \min(M,n)$} ist. Somit folgt, dass $P(\Omega)=1=\sum_k P(A_k)=
+\sum \frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}$. 
+
+Weiterhin kann man schlussfolgern:
+\[H_{N,M,n}:= \sum_{k=\max(0,n+M-n)}^{\min(M,n)}
+\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}} \delta_k\]
+ist ein Wahrscheinlichkeitsmaß auf $[\R,\FB]$.
+
+
+\section{Das Bernoullischema}
+
+\begin{definition}
+  Seien $n\geq 1$ mit $n\in\N$ und $0\leq p\leq 1$. Der
+  Wahrscheinlichkeitsraum $[\Omega,\CF,P]=[\{0,1\},\FP(\{0,1\}),
+  p\delta_1 + (1-p)\delta_0]^{n\times}$ heißt (endliches)
+  Bernoullischema\index{Bernoullischema} zu $n$ Versuchen mit der
+  Erfolgswahrscheinlichkeit $p$.
+\end{definition}
+
+\begin{remark}
+  \setcounter{enumi}{-1}
+  \begin{enumerate}
+  \item $[\Omega,\CF,P]=[\{0,1\}^{n\times},\FP(\{0,1\}^{n\times}),
+    (p\delta_1 + (1-p)\delta_0)^{n\times}]$
+  \item $\Omega= \{[\omega_1,\ldots, \omega_n]|\omega_i\in \{0,1\},
+    i=1,\ldots,n\}$
+  \item $\CF=\FP(\Omega)$
+  \item $P(\{[\omega_1,\ldots,\omega_n]\})= (p\delta_1+ (1-p)
+    \delta_0)^{n\times} (\times_{i=1}^n \{\omega_i\})= \prod_{i=1}^n
+    (p\delta_1+ (1-p)\delta_0)(\{\omega_i\})= \prod_{i=1}^n
+    p^{\omega_i} (1-p)^{1-\omega_i}= p^{\sum \omega_i} (1-p)^{n-\sum
+      \omega_i}$
+  \end{enumerate}
+\end{remark}
+
+\begin{beispiel}
+  Als Beispiel soll der $n$-fache Münzwurf mit einer
+  Erfolgswahrscheinlichkeit von $p=\nicefrac{1}{2}$ dienen. Wir
+  betrachten die Ereignisse $A_k$ und $B_k$. Dabei entspricht $A_k$
+  der Aussage "`$k$-mal Erfolg bei $n$ Versuchen"' und $B_k$ der
+  Aussage "`erstmalig beim $k$-ten Versuch Misserfolg"'.
+  \begin{align*}
+    A_k &= \{[\omega_1,\ldots, \omega_n]| \sum \omega_i=k\}\\
+    B_k &= \{\underbrace{[1,\ldots,1,0]}_{\{0,1\}^k}\times
+    \{0,1\}^{n-k}\\
+    P(A_k) &= \sum_{[\omega_1,\ldots,\omega_n]\in A_k}
+    p^{\sum\omega_i} (1-p)^{n-\sum\omega_i}\\
+    &= \sum p^k (1-p)^{n-k}= p^k(1-p)^{n-k} \#A_k\\
+    &= p^k(1-p)^{n-k}\binom{n}{k}
+  \end{align*}
+  Damit folgt, dass $\sum_{k=1}^n p^k(1-p)^{n-k}\binom{n}{k}=1$. Denn
+  die $A_k$ sind disjunkt und ihre Vereinigung ergibt gerade $\Omega$.
+\end{beispiel}
+
+Die Binomialverteilung\index{Binomialverteilung} zu $n$ Versuchen mit
+der Erfolgswahrscheinlichkeit $p$ ist wie folgt definiert:
+\[B_{n.p} := \sum_{k=0}^n \binom{n}{k} p^k (1-p)^{n-k} \delta_k\]
+\begin{beispiel}
+  Weiterführung des obigen Beispiels:\\
+  Es ist klar, dass $P(B_0)=0$. Für $P(B_k)$ gilt:
+  \begin{align*}
+    P(B_k) &= (p\delta_1 + (1-p)\delta_0)^{n\times} (\{[1, \ldots, 1,
+    0]\} \times \{0,1\}^{n-k})\\
+    % stimmt die Formel unten so? Falls ja, warum?
+    % das k\times irritiert mich
+    &= (p\delta_1+ (1-p)\delta_0)^{k\times} (\{[1,\ldots, 1,0]\})
+    (p\delta_1+
+    \underbrace{(1-p)\delta_0)^{n-k}(\{0,1\}^{n-k})}_{=1}\\
+    &= p^{k-1} (1-p)
+  \end{align*}
+  Zur Erinnerung: Die Verteilung 
+  \[G_p := \sum_{k=1}^\infty p^k (1-p)\delta_k\]
+  heißt geometrische Verteilung\index{Verteilung!geometrische}.
+\end{beispiel}
+
+
+\paragraph{Strategien beim wiederholten Glücksspiel}
+
+Im Rahmen derartiger Spiele wird beabsichtigt, einen Gewinn $K$ zu
+erzielen. Dabei kann man mit folgender Strategie vorgehen:
+\begin{enumerate}[1. Schr{i}tt]
+\item Setze $K$. Bei Erfolg wird der Gewinn $K$
+  realisiert. Andernfalls gehe zum nächsten Schritt.
+\item Setze $(1+1)K$. Bei Erfolg wird Gewinn $K$
+  realisiert. Andernfalls gehe zum nächsten Schritt.
+\item Setze $(1+2+1)K$. Bei Erfolg wird Gewinn $K$
+  realisiert. Andernfalls gehe zum nächsten Schritt.
+\end{enumerate}
+Im $n$ Schritt wird also immer ein Betrag von $2^{n-1}K$ gesetzt und
+im Gewinnfall wird schliesslich $K$ ausgeschüttet.
+
+Im Falle $n=10$ sind $512K$ einzusetzen. Sei nun
+$p=\nicefrac{1}{2}$. Dann ergibt sich eine Gewinnwahrscheinlichkeit
+von $(1-p)\sum_{k=0}^9 p^k=(1-p)\frac{(1-p^9)}{(1-p)}=1-p^9\approx
+0,999$
+
+\begin{beispiel}
+  \begin{description}
+  \item[radioaktiver Zerfall] Wir betrachten die Zeit $t$. Zu Beginn
+      dieser Zeit existieren $n$ Atome des  radioaktiven
+      Stoffes. Diese sind mit $1,\ldots, n$ nummeriert. Das Ereignis
+      $\omega_k=1$ entspricht der Aussage, "`Atom $k$ ist in der Zeit
+      $t$ zerfallen"' und das Ereignis $\omega_k=0$ entspricht der
+      Aussage, "`Atom $k$ ist in der Zeit $t$ nicht zerfallen"'. Die
+      Anzahl der zerfallenen Atome berechnet sich durch $\sum_{k=1}^n
+      \omega_k$. 
+    \item[Genetik] Hierbei wird die Teilung eines DNA-Stranges
+      beobachtet. Solch ein Strang teilt und "`kopiert"' sich. Dabei
+      entsteht keine 1:1-Kopie, sondern an endlich vielen Stellen
+      treten Fehler auf. Nach Ansicht der Neodarwinisten erfolgt auf
+      diesem Wege die Evolution.
+
+      Insgesamt existieren $n$ Verbindungen\footnote{Beim Mensch
+        entspricht das $n$ ungefähr 100~Millionen.}. Das Ereignis
+      $\omega_k=1$ entspricht einem Fehler an der $k$-ten Stelle und
+      das Ereignis $\omega_k=0$ sagt aus, dass an der $k$-ten Stelle
+      kein Fehler ist.
+  \end{description}
+
+  Will man nun bei beiden Beispielen versuchen, nach dem bisher
+  gelernten die Wahrscheinlichkeit zu errechnen, wird man sehr schnell
+  auf Probleme stossen. So ist im Beispiel der Genetik
+  $P("`k\text{-mal Erfolg}"')=\binom{n}{k} p^k (1-p)^{n-k}=
+  \binom{100000000}{25} p^{25} (1-p)^{\approx
+    100000000}\approx\infty\cdot 0$.
+\end{beispiel}
+
+
+\section{Der Poissonsche Grenzwertsatz}
+
+Wir betrachten die Binomialverteilung $B_{n,p}$, d.h. 
+\[B_{n,p}(\{k\})=
+\begin{cases}
+  \binom{n}{k} p^k (1-p)^{n-k} & 0\leq k\leq n\\
+  0 & \text{sonst}
+\end{cases}\]
+oder
+\[B_{n,p}=\sum_{k=0}^n \binom{n}{k} p^k (1-p)^{n-k}\delta_k\]
+und weiter die Poissonverteilung
+\[\Pi_\lambda(\{k\})=\frac{\lambda^k}{k!}e^{-\lambda}\qquad(\lambda>0)\]
+
+\begin{satz}[Poissonsche Grenzwertsatz]
+  Sei $(p_n)_{n=1}^\infty$ eine Folge mit $0\leq p\leq 1 \,(\forall
+  n=1,2,\ldots)$ und $0<\lambda=\lim_{n\rightarrow\infty} np_n$.
+  %oder gilt oben \lambda>0=\lim ...?
+  Dann gilt:
+  \[\lim_{n\rightarrow\infty} B_{n,p} (\{k\})=\Pi_\lambda(\{k\})\quad
+  (k=0,1,\ldots)\]
+\end{satz}
+\begin{proof}
+  in der Übung
+\end{proof}
+
+\begin{beispiel}
+  Seien $n=10^{11}, p=c\cdot 10^{-11}\Rightarrow np=c$. Es gilt die
+  Annahme, $B_{n,p}(\{k\})\approx \Pi_c(\{k\})$. Wir betrachten
+  $k=0,1,2,3,4,5$:
+  \[B_{n,p}(\{p\})\approx \Pi_1(\{5\})=\nicefrac{1}{5!}e^{-1}=
+  \nicefrac{1}{120\cdot e}\leq \nicefrac{1}{250}\]
+\end{beispiel}
+
+
+\section{Ein kontinuierliches Analogon des klassischen Wahrscheinlichkeitsraumes}
+
+Im kontinuierlichen Modeel ist $\Omega\subseteq \R^n, 0\leq \ell^{(n)}
+(\Omega)< +\infty$:
+\[\Rightarrow Gl_\Omega :=\frac{\ell^{(n)}}{\ell^{(n)}(\Omega)}\]
+
+
+\chapter{Bedingte Wahrscheinlichkeit und Unabhängigkeit}
+
+\section{Bedingte Wahrscheinlichkeit}
+
+Wenn man einer Lottoziehung zuschaut und feststellt, dass man
+nacheinander die gezogenen Zahlen auch getippt hat, verändern sich die
+Wahrscheinlichkeiten kontinuierlich. Im folgenden soll dies erklärt
+werden. 
+
+Im folgenden gilt immer, dass $[\Omega, \CF, P]$ ein
+Wahrscheinlichkeitsraum ist.
+
+\begin{definition}
+  Seien $A,B\in\CF$ mit $P(B)>0$. Dann heißt
+  \[P(A|B):=\frac{P(A\cap B)}{P(B)}\]
+  bedingte Wahrscheinlichkeit\index{Wahrscheinlichkeit!bedingte} von
+  $A$ unter der Bedingung $B$.
+\end{definition}
+
+\begin{beispiel}
+  Als Beispiel dient hier wieder der Würfel:\\
+  \[\Omega=\{1,2,3,4,5,6\}, P(\{k\})=\nicefrac{1}{6}, k\in\Omega,
+  A=\{6\}, B=\{4,5,6\}\]
+  \[P(A|B)=\frac{P(\{6\}\cap\{4,5,6\})}{P(\{4,5,6\})}=
+  \frac{P(\{6\})}{P(\{4,5,6\})}=
+  \frac{\nicefrac{1}{6}}{\nicefrac{3}{6}}= \frac{1}{3}\]
+\end{beispiel}
+
+\begin{satz}[Elementare Eigenschaften]
+  Sei $B\in\CF, P(B)>0$. Dann gelten:
+  \begin{enumerate}[(a)]
+  \item $0\leq P(A|B)\leq 1$
+  \item $P(B|B)=P(\Omega|B)=1$
+  \item $P(\bigcup_{i=1}^\infty A_i|B)=\sum_{i=1}^\infty P(A_i|B)$ für
+    alle $(A_i)_{i=1}^\infty\in\CF$ mit $A_i\cap A_j\neq\emptyset$
+    ($i\neq j$)
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[(a)]
+  \item Nach der Definition ist klar, dass $P(A|B)\geq 0$
+    gilt. Weiterhin ist $A\cap B\subseteq B$. Nach der Monotonie von
+    $P$ folgt damit, dass $P(A\cap B)\leq P(B)$. Durch Umstellen
+    erhält man nun $\frac{P(A\cap B)}{P(B)}\leq 1$.
+  \item $P(\Omega|B)=\frac{P(B)}{P(B)}=1=P(B|B)$
+  \item Seien die $(A_i)$ aus $\CF$ paarweise disjunkt. Dann sind auch
+    $(A_i\cap B)$ paarweise disjunkt und es folgt,
+    $P(\bigcup_{i=1}^\infty (A_i\cap B))=\sum_{i=1}^\infty P(A_i\cap
+    B)$. Somit hat man damit:
+    \[\frac{P(\bigcup_{i=1}^\infty A_i \cap B)}{P(B)}=
+    \frac{\sum_{i=1}^\infty P(A_i\cap B)}{P(B)}\]
+  \end{enumerate}
+\end{proof}
+
+\begin{satz}[Formel bzw. Satz über die totale Wahrscheinlichkeit]
+  Sei $(B_i)_{i\in I}$ eine abzählbar messbare Zerlegung von
+  $\Omega$. Dann gilt:
+\[P(A)=\sum_{i\in I} P(A|B_i)P(B_i)\qquad A\in\CF\footnote{zusätzlich
+  muss $P(B_i)>0$ gefordert werden.}\]
+\end{satz}
+\begin{proof}
+  \begin{align*}
+    \sum_{i\in I} P(A|B_i)P(B_i)&= \sum_{i\in I} \frac{P(A\cap
+      B_i)}{P(B_i)} P(B_i)&= \sum_{i\in I} P(A\cap B_i)\\
+    P(\bigcup_{i\in I} (A\cap B_i))&= P(A\cap \bigcup_{i\in I} B_i) &=
+    P(A\cap \Omega)=P(A)
+  \end{align*}
+\end{proof}
+
+% Vorlesung bis zum Satz 4.2.1 fehlt
+
+
+\paragraph{Typisches Verhalten der Sterberate $r_Q$}
+
+\begin{enumerate}
+\item technische/mechanische Systeme (Reibung, allg. Abnutzung)
+\item Elektronische Bauteile
+\item Biologische Systeme (höher organisiert, insbesondere Mensch)
+\end{enumerate}
+
+
+\section{Unabhängigkeit von Ereignissen}
+
+Im folgenden gilt immer, dass $[\Omega,\CF,P]$ ein
+Wahrscheinlichkeitsraum ist.
+
+\begin{definition}
+  Seien $A,B\in\CF$. $A$ und $B$ heißen
+  \emph{unabhängig\index{unabhängig}}, wenn gilt
+  \[P(A\cup B)=P(A)\cdot P(B)\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Sei $P(B)>0\Rightarrow A,B$ unabhängig $\Leftrightarrow P(A|B)
+    =P(A)$. Denn $P(A)=P(A|B)=\frac{P(A\cap B)}{P(B)}\Leftrightarrow
+    P(A)P(B)=P(A\cap B)$
+  \item Sei $P(B)=0\Rightarrow A,B$ unabhängig für beliebige
+    $A\in\CF$. Denn $P(B)=0\Rightarrow P(A)P(B)=0; A\cap B\subseteq
+    B\Rightarrow 0=P(A\cap B)\leq P(B)=0$
+  \item $P(B)=1\Rightarrow A,B$ unabhängig. Zum Beweis hierfür siehe
+    auch den folgenden Satz: $P(B)=1\Leftrightarrow P(B^c)=0
+    \Rightarrow A,B^c$ unabhängig $\Rightarrow A, (B^c)^c$ unabhängig.
+  \end{enumerate}
+\end{remark}
+
+\begin{satz}
+\label{satz:b-unabh}
+  $A,B$ sind genau dann unabhängig, wenn $A,B^c$ unabhängig.
+\end{satz}
+\begin{proof}
+  Rein mengentheoretisch ist klar, dass gilt $A= (A\cap B)\cup (A\cap
+  B^c)$ und $(A\cap B)\cap (A\cap B^c)=\emptyset$. 
+  \begin{align*}
+    P(A) &= P(A\cap B)+P(A\cap B^c)\\
+    &= P(A)P(B)+P(A\cap B^c)\\
+    P(A\cap B^c) &= P(A)-P(A)P(B)= P(A)(\underbrace{1-P(B)}_{P(B^c)})=
+    P(A)P(B^c)
+  \end{align*}
+\end{proof}
+
+\begin{definition}
+  Sei $\FA\subseteq\CF$. Dann heißt $\FA$ \emph{(vollständig)
+    unabhängig\index{unabhängig!vollständig}}, wenn $\forall \{A_1,
+  A_2, \ldots, A_n\}\subseteq\FA$ gilt
+  \[P\left(\bigcap_{k=1}^n A_k\right)=\prod_{k=1}^n P(A_k)\]
+  Weiter heißt $\FA$ \emph{paarweise
+    unabhängig\index{unabhängig!paarweise}}, wenn $\forall \{A,B\}
+  \subseteq\FA$ gilt
+  \[P(A\cap B)=P(A)P(B)\]
+\end{definition}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Aus der Tatsache, dass $\FA$ (vollständig) unabhängig ist,
+    folgt, dass $\FA$ auch paarweise unabhängig ist. Die Umkehrung
+    hingegen ist falsch.
+  \item Wenn $\FA=\{A,B\}\Rightarrow\FA$ vollständig unabhängig
+    $\Leftrightarrow\FA$ paarweise unabhängig $\Leftrightarrow A,B$
+    unabhängig. 
+  \item Sei $\FA=\{A_1,A_2,A_3\}$. Aus $P(A_1\cap A_2\cap A_3)= P(A_1)
+    P(A_2) P(A_3)$ folgt im allgemeinen nicht, dass $\FA$ vollständig
+    unabhängig ist.
+  \item $\FA$ ist genau dann vollständig unabhängig, wenn $\forall
+    \{A_1, \ldots, A_n\}\subseteq A$ gilt: $A_1, \bigcap_{k=2}^n A_k$
+    unabhängig. Beweisidee: Die betrachtete Unabhängigkeit heißt:
+    $P(A_1\cap \bigcap_{k=2}^n A_k)=P(A_1)P(\bigcup_{k=2}^n A_k)$.
+  \item $\FA$ ist genau dann vollständig unabhängig, wenn $\forall
+    \{A_1, \ldots, A_n\}\subseteq A$ gilt, dass $\{A_1, \ldots, A_n\}$
+    vollständig unabhängig. Dabei werden keine beliebigen Systeme
+    betrachtet, sondern wir beschränken uns auf abzählbare Mengen
+  \end{enumerate}
+\end{remark}
+
+\begin{beispiel}
+  Sei $A\in\CF, P(A)\not\in\{0,1\}$. Setzen $A_1=A_2=A, A_3=\emptyset
+  \Rightarrow P(A_1\cap A_2\cap A_3)= P(A_1)P(A_2)P(A_3)=0$. Aber
+  $P(A_1\cap A_2)=P(A)\neq (P(A))^2=P(A_1)\cdot P(A_2)$
+\end{beispiel}
+
+\begin{satz}
+  Wenn $\FA$ vollständig unabhängig ist, dann ist $\tilde{\FA}:=
+  \{A^c| A\in\FA\}$ vollständig  unabhängig.
+\end{satz}
+\begin{proof}
+  Nach der obigen Bemerkung 5 genügt es,  für den Fall $\FA= \{A_1,
+  \ldots, A_n\}$ die Unabhängigkeit zu zeigen. Dies ist jedoch nach
+  der Bemerkung 4 und Satz \ref{satz:b-unabh} klar.
+\end{proof}
+
+\begin{satz}
+\label{satz:unendlEreignisse}
+  Sei $(A_i)_{i=1}^\infty$ vollständig unabhängig und
+  $\sum_{i=1}^\infty P(A_i)=+\infty$. Dann gilt:
+  \[P\left(\bigcap_{n=1}^\infty \bigcup_{i\geq n} A_i\right)=1\]
+\end{satz}
+\begin{proof}
+  Es genügt zu zeigen, dass $P((\bigcap_{n=1}^\infty \bigcup_{i\geq n}
+  A_i)^c) =0$. Es ist klar, dass $P((\bigcap_{n=1}^\infty \bigcup_{i\geq n}
+  A_i)^c) = P(\bigcup_{n\geq 1} \bigcap_{i\geq n} A_i^c)\leq
+  \sum_{n\geq 1} P(\bigcup_{i\geq n} A_i^c)$. Damit genügt zu zeigen,
+  dass $P(\bigcup_{i\geq n} A_i^c)=0= \bigcup_{k=n}^\infty
+  \bigcup_{i=n}^k A_i^c\Rightarrow P(\bigcup_{i\geq n} A_i^c)=
+  P(\bigcup_{k=n}^\infty \bigcup_{i=n}^k A_i^c)$.  Wegen der
+  Stetigkeit von oben ist $\lim_{k\rightarrow\infty} P(\bigcup_{i=n}^k
+  A_i^c)$. Da $A_i$ unabhängig ist, ist auch $A_i^c$ unabhängig. Daraus
+  folgt, dass $\lim_{k\rightarrow\infty} \prod_{i=n}^k P(A_i^c)=
+  \lim_{k\rightarrow\infty} \prod_{i=n}^k (1-P(A_i))$. Somit genügt es
+  noch zeigen, dass $\sum_{i=n}^\infty
+  -\ln(1-P(A_i))=+\infty$. Weiterhin wissen wir, dass $\sum
+  P(A_i)=+\infty$. Somit muss nur noch gezeigt werden, dass
+  $-\ln(1-P(A_i))\geq P(A_i)$. Wir haben allgemein somit die
+  Ungleichung $-\ln (1-x)\geq x$ oder $e^{-\ln(1-x)}\geq e^x$. Durch
+  die Ableitung erhält man: $\frac{1}{1-x}\geq 1$ für $0\leq x\leq 1$.
+\end{proof}
+
+\begin{beispiel}
+  Man stelle sich ein unendliches Lottospiel vor. Dann entspricht
+  $A_i$ der Aussage, dass beim $i$-ten Spiel 6 Richtige gezogen
+  werden und $\bigcap_{n=1}^\infty \bigcup_{i\geq n} A_i$ entspricht
+  unendlich oft 6 Richtigen. Es ist klar, dass die $A_i$ unabhängig
+  sind und dass $P(A_i)=c>0$.
+\end{beispiel}
+
+\begin{remark}
+  Ohne die Forderung nach Unabhängigkeit gilt die Aussage in Satz
+  \ref{satz:unendlEreignisse} im Allgemeinen nicht. Denn wähle
+  beispielsweise $A_i=A$ und sei $P(A)\not\in\{0,1\}$. Dann ist die
+  Summe aller $A_i=+\infty$, aber $P(\bigcup_{n=1}^\infty
+  \bigcap_{i\geq n})=P(A)$ ist ungleich eins.
+\end{remark}
+
+\begin{satz}
+  Sei $(A_i)_{i=1}^\infty$ eine Folge aus $\CF$ mit $\sum_{i\geq 1}
+  P(A_i)< +\infty$. Dann gilt
+  \[P\left(\bigcup_{n\geq 1} \bigcap_{i\geq n} A_i\right) =0\]
+\end{satz}
+\begin{proof}
+  Trivialerweise ist: $\bigcup_{n\geq 1} \bigcap_{i\geq n}
+  A_i\subseteq \bigcap_{i\geq k} A_i$.
+  \begin{align*}
+    &\Rightarrow 0\leq P\left(\bigcup\bigcap A_i\right)\leq
+    P\left(\bigcap_{i\geq k} A_i\right)\\
+    &\Rightarrow 0\leq P\left(\bigcup\bigcap A_i\right)\leq
+    \lim_{k\rightarrow\infty} P\left(\bigcup_{i\geq k} A_i\right)\\
+    P\left(\bigcup_{i\geq k} A_i\right) &\leq \sum_{i\geq k} P(A_i)
+    \xrightarrow{k\rightarrow\infty} 0
+  \end{align*}
+  Beim letzten Schritt wurde die Subadditivität ausgenutzt.
+\end{proof}
+
+\begin{remark}
+  Aus den obigen beiden Sätzen kann folgende Folgerung gemacht
+  werden: Sei $(A_i)_{i=1}^\infty$ vollständig unabhängig. Dann gelten:
+  \begin{inparaenum}[a)]
+  \item $P(\bigcap_{n\geq 1} \bigcup_{i\geq n} A_i)\in \{0,1\}$ ($0,1$-Gesetz)
+  \item $P(\bigcap_{n\geq 1} \bigcup_{i\geq n} A_i)\Leftrightarrow
+    P(A_i) =+\infty$ (Lemma von Borel-Cantelli)
+  \end{inparaenum}
+\end{remark}
+
+
+\chapter{Zufallsgrößen}
+
+\section{Zufallsvariablen}
+
+\begin{definition}
+  Seien $[\Omega,\CF,P]$ ein Wahrscheinlichkeitsraum und $[X,\FX]$ ein
+  messbarer Raum.
+  \begin{itemize}
+  \item Eine messbare Abbildung $\xi: [\Omega,\CF]\rightarrow[X,\FX]$
+    heißt \emph{Zufallsvariable\index{Zufallsvariable}} über $[\Omega,
+    \CF, P]$ mit Werten in $[X,\FX]$.
+  \item $P_\xi:=\pxi$ heißt
+    \emph{Verteilungsgesetz\index{Verteilungsgesetz}} von $\xi$.
+  \item Ist $[X,\FX]=[\R,\FB]$, so heißt $\xi$
+    \emph{Zufallsgröße\index{Zufallsgröße}}.
+  \end{itemize}
+\end{definition}
+
+Um sich dies etwas genauer vorzustellen, kann man annehmen, dass man
+ein zufälliges System hat. Dies ist ein Vorgang, der bei mehreren
+Versuchen wechselwirkungsfrei andere Ergebnisse bringt. Als
+Realisierung erhält man $\omega\in\Omega$. Daraus folgt die Abbildung
+$\xi(\omega)$. Das $P$ muss die Verteilung $P_\xi$ haben. Das Anliegen
+der Statistik ist die Bestimmung von $P_\xi$.
+
+\begin{beispiel}
+  \begin{align*}
+    [\Omega, \CF, P] &= [\{0,1\}, \FP(\{0,1\}), p\delta_1+ (1-p)
+    \delta_0]^{n\times}\\
+    \Omega &= \{[\varepsilon_1, \ldots, \varepsilon_n]| \varepsilon_i
+    \in \{0,1\}, i=1,\ldots,n\}
+  \end{align*}
+  Nun fixieren wir ein $i$ und betrachten das Tupel
+  $\xi_i([\varepsilon_1, \ldots, \varepsilon_n])=\xi_i$. Es ist klar,
+  dass $\xi_i$ eine Zufallsgröße ist.
+  \begin{align*}
+    P_{\xi_i}(A) &= P(\xi^{-1}_i(A))\\
+    \xi^{-1}_i &= \{[\varepsilon_1, \ldots, \varepsilon_n]|
+    \xi_i([\varepsilon_1, \ldots, \varepsilon_n])\in A\}=
+    \{0,1\}^{(i-1)\times} \times A \times \{0,1\}^{(n-1)\times}\\
+    P(\xi^{-1}_i (A)) &= P(\{0,1\}^{(i-1)\times} \times A \times
+    \{0,1\}^{(n-1)\times})\\
+    &= (p\delta_1+(1-p)\delta_0)^{n\times} (\{0,1\}^{(i-1)\times}
+    \times A\times \{0,1\}^{(n-1)\times})\\
+    &= \underbrace{(p\delta_1+(1-p)\delta_0)^{(i-1)\times}
+      (\{0,1\})^{(i-1)\times})}_{=1} (p\delta_1+(1-p)\delta_0)A\\
+    &\qquad\underbrace{(p\delta_1+(1-p) \delta_0)
+      (\{0,1\})^{(n-1)\times})}_{=1} \\
+    &= (p\delta_1+(1-p)\delta_0)(A)=B_{1,p}(A)\\
+    &\Rightarrow P_{\xi_i}=B_{1,p}=p\delta_1+(1-p)\delta_0
+  \end{align*}
+  Im allgemeinen Fall gilt: Wenn $P=\times_{k=1}^n P_k$  und $\xi_i$ die
+  Projektion in $\times_{k=1}^n P_k$ ist, dann ist $P_{\xi_i}=P_i$
+\end{beispiel}
+
+\begin{satz}
+  Sei $Q$ ein Wahrscheinlichkeitsmaß auf $[\R, \FB]$ mit stetiger und
+  streng monoton wachsender Verteilungsfunktion $F_Q$. Dann ist
+  $\xi_i=F_Q^{-1}$ eine Zufallsgröße\index{Zufallsgröße} über dem
+  Wahrscheinlichkeitsraum $[(0,1),\FB\cap (0,1), Gl_{(0,1)}]$ mit
+  $P_\xi=Q$.
+\end{satz}
+\begin{proof}
+  Die strenge Monotonie und Stetigkeit bedingen, dass die
+  Umkehrfunktion wieder stetig und damit messbar ist. Weiter ist
+  bekannt, dass das Wahrscheinlichkeitsmaß auf $[\R,\FB]$ durch seine
+  Verteilungsfunktion eindeutig bestimmt ist. Damit genügt es zu
+  zeigen, dass $F_{P_\xi}=F_Q$.
+
+  Dazu ist  nach Definition $F_{P_\xi}=P_\xi((-\infty, x))$. Weiterhin
+  ist:
+  \begin{align*}
+    P_\xi((-\infty, x)) &=  P(\underbrace{\xi^{-1}(-\infty,
+      x)}_{\{y\in (0,1)|\xi y\in(-\infty, x)\}=\{y\in(0,1)|
+      \xi(y)<x\}}) = P(\{y\in (0,1)|\xi(y)<x\})\\
+    &= P(\{y\in(0,1)|F_Q^{-1}(y)<x\})= P(\{y\in(0,1)|y<F_Q(x)\})\\
+    &= P((0, F_Q(x)))
+  \end{align*}
+  Wegen $P=Gl_{(0,1)}$ gilt $Gl_{(0,1)}((0,F_Q(x)))=
+  \frac{\ell((0,F_Q(x)))}{\ell((0,1))}= \frac{F_Q(x)}{1}=F_Q(x)
+  \Rightarrow F_{P_\xi}(x)=F_Q(x)$
+\end{proof}
+
+\begin{remark}
+  Schreibweise: $F_\xi:= F_{P_\xi}$ und $P(\xi^{-1}(A))=: P("`\xi\in
+  A"') := P(\{\omega\in\Omega| \xi(\omega)\in A\}) \Rightarrow
+  F_\xi(x) = P("`\xi\in(-\infty,x)"')=P("`\xi< x"')$
+\end{remark}
+
+
+\section{Unabhängige Zufallsgrößen}
+
+Im folgenden Abschnitt gilt immer, dass $[\Omega, \CF, P]$ ein
+Wahrscheinlichkeitsraum und eine Familie $(\xi_i)_{i\in I}$ mit Werten
+in $[X_i, \FX_i]$ ist.
+
+\begin{definition}
+  $(\xi_i)_{i\in I}$ heißt unabhängig\index{unabhängig}, wenn für alle
+  Folgen $B_i\in\FX_i\,(i\in I)$ die Familie $\{\xi_i^{-1}(B)|i\in
+  I\}\subseteq \CF$ (vollständig) unabhängig ist.
+\end{definition}
+
+\begin{satz}
+\label{satz:chiiunab-521}
+  Wegen der Bemerkung h nach Definition von unabhängigen
+  Ereignissystemen ist klar: $(\xi_i)_{i\in I}$ ist genau dann
+  unabhängig, wenn für alle $n\geq 2$ gilt, dass $\{\xi_1, \ldots,
+  \xi_n\}\subseteq \{\xi_i|i\in I\}$ unabhängig ist.
+\end{satz}
+
+\begin{satz}
+  Sei $(A_i)_{i\in I}\subseteq\CF$. Die Aussage $(A_i)_{i\in I}$ ist
+  genau dann (vollständig)  unabhängig, wenn die Familie der
+  Zufallsgrößen $(\chi_{A_i})_{i\in I}$ unabhängig ist.
+\end{satz}
+\begin{proof}
+  Da die $A_i$ in $\CF$ liegen, folgt wegen des
+  Satz~\ref{satz:indimess-218}, dass auch die $\chiai$ messbar 
+  und somit Zufallsgrößen sind.
+  \begin{itemize}
+  \item["`$\Leftarrow$"'] Es sei vorausgesetzt, dass die
+    $(\chiai)_{i\in I}$ unabhängig sind. Daraus folgt nach Definition,
+    dass die $(\chiai^{-1}(B_i))_{i\in I}$ für alle $B_i \in \FB$
+    vollständig unabhängig sind. Wir wählen speziell $B_i=\{1\}$ und
+    es folgt, dass $\chiai(\{1\})=A_i$. Dies liefert, dass
+    $(A_i)_{i\in I}$ (vollständig) unabhängig sind.
+  \item["`$\Rightarrow$"'] Wir setzen voraus, dass die $(A_i)_{i\in
+      I}$ (vollständig) unabhängig sind und wissen, dass
+    $\chiai^{-1}(B_i) \in \{\emptyset, \Omega, A_i, A_i^c\}$. Die
+    leere und die gesamte Menge müssen nicht betrachtet werden, da
+    beide unabhängig sind. Somit genügt es zu zeigen, dass die
+    $(c_i)_{i\in I}$ in den Fällen $c_i=A_i$ oder $c_i=A_i^c$
+    unabhängig sind. Dem Satz~\ref{satz:432} folgend gilt hierfür die
+    Behauptung.
+    %%Referenz auf den richtigen Satz muss noch eingefuegt werden.
+  \end{itemize}
+\end{proof}
+
+\begin{remark}
+  Wegen dem Satz~\ref{satz:chiiunab-521} werden folgend nur endliche
+  Folgen $\xi_1,\ldots, \xi_n$ von Zufallsvariablen betrachtet.
+  \begin{itemize}
+  \item Schreibweise: $\overline{\xi}(\omega):= [\xi_1(\omega),
+    \ldots, \xi_n(\omega)]$\\
+    $\overline{\xi}$ heißt $n$-dimensionaler \emph{zufälliger
+      Vektor\index{Vektor!zufälliger}}.
+  \item Frage: Ist $P_{\overline{\xi}}$ durch $P_{\xi_1}, \ldots,
+    P_{\xi_n}$ eindeutig bestimmt? Im allgemeinen nicht. Dies gilt nur
+    im Spezialfall, dass $\xi_1, \ldots, \xi_n$ unabhängig sind.
+  \end{itemize}
+\end{remark}
+
+\begin{satz}
+  \label{satz:523}
+  $(\xi_i)_{i=1}^n$ ist genau dann unabhängig, wenn
+  $P_{\overline{\xi}} = \times_{i=1}^n P_{\xi_i}$
+\end{satz}
+\begin{proof}
+  Der Beweis zeigt, dass der Satz auch im allgemeinen Fall von
+  Zufallsvariablen $\xi_1, \ldots, \xi_n$ gilt.
+  \begin{itemize}
+  \item["`$\Rightarrow$"'] Wir haben die Unabhängigkeit von $\xi_1,
+    \ldots, \xi_n$ gegeben und es ist zu zeigen, dass
+    $P_{\overline{\xi}} (\times_{i=1}^n B_i)= \prod_{i=1}^n
+    P_{\xi_i}(B_i)$. Dazu wissen wir:
+    \begin{align*}
+      P_{\overline{\xi}}(\times_{i=1}^n B_i) &=
+      P(\overline{\xi_1^{-1}}(\times_{i=1}^n B_i))= P("`[\xi_1,
+      \ldots, \xi_n]\in\times_{i=1}^n B_i"')= P("`\xi_i\in B_i "')\\
+%%Probleme mit dem Ausfuehrungszeichen, wird als 1 dargestellt.
+      &=P\left(\bigcap_{i=1}^n \xi_i^{-1}(B_i)\right)= \prod_{i=1}^n
+      (\xi_i^{-1}(B_i))\\
+      &= \prod_{i=1}^n P_{\xi_i}(B_i)
+    \end{align*}
+  \item["`$\Leftarrow$"'] Wir haben die Aussage,
+    $P_{\overline{\xi}}(\times_{i=1}^n B_i)=\prod_{i=1}^n
+    P_{\xi_i}(B_i)$ und es ist zu zeigen, dass
+    $(\xi_i^{-1}(B_i))_{i=1}^n$ vollständig unabhängig sind. Das
+    heißt, für $\{i_1, \ldots, i_k\}\subseteq\{i_1, \ldots, i_n\}$
+    muss $P(\bigcap_{j=1}^k \xi_{ij}^{-1}(B_{ij}))= \prod_{j=1}^k
+    P(\xi_{ij}^{-1}(B_{ij}))$ gelten. Wir setzen, $A_j:= \R$ mit
+    $j\not\in\{i_1, \ldots, i_k\}$ und $A_{ij}:=B_{ij}$ mit $j=1,
+    \ldots, k$.
+    \begin{align}
+      \label{eq:5231}
+      \Rightarrow P_{\overline{\xi}}\left(\times_{i=1}^n A_i\right) &=
+      \prod_{i=1}^n P_{\xi_i}(A_i)
+    \end{align}
+    Wegen der obigen Feststellungen ist klar:
+    \begin{align}
+      \label{eq:5232}
+      P_{\overline{\xi}} (\times_{i=1}^n A_i)&= P\left(\bigcap_{i=1}^n
+        \xi_i^{-1} (A_i)\right)=
+      P\left(\bigcap_{j=1}^k \xi_i^{-1}(B_{ij})\right)
+    \end{align}
+    Falls $A_i=\R$, dann ist $\xi_i^{-1}(A_i)=\Omega$ und kann
+    weggelassen werden.
+    \begin{align*}
+      P_{\xi_i}(A_i)&= P(\xi_i^{-1}(A_i))=
+      \begin{cases}
+        1 & i\not\in\{i_1, \ldots, i_k\}\\
+        P(\xi_i^{-1}(B_i)) & i\in \{i_1, \ldots, i_k\}
+      \end{cases}
+    \end{align*}
+    \begin{align}
+      \label{eq:5233}
+      \Rightarrow\prod_{i=1}^k P_{\xi_i}(A_i)&= \prod_{j=1}^k
+      P(\xi_{ij}^{-1}(B_{ij}))= \prod_{j=1}^k P_{\xi_{ij}}(B_{ij})
+    \end{align}
+    Aus den Gleichungen~(\ref{eq:5231}), (\ref{eq:5232}) und
+    (\ref{eq:5233}) folgt die Behauptung.
+  \end{itemize}
+\end{proof}
+
+\begin{remark}
+  Als Folgerung lässt sich festhalten, dass die $\xi_1, \ldots, \xi_n$
+  genau dann unabhängig sind, wenn gilt $P(\bigcap_{i=1}^n
+  \xi_i^{-1}(B_i)) = \prod_{i=1}^n P(\xi_i^{-1}(B_i))$ mit $B_1,
+  \ldots, B_n\in\FB$.
+\end{remark}
+
+\begin{beispiel}
+  Sei $[\Omega, \CF, P]= [\{0,1\}, \FP(\{0,1\}),
+  B_{1,p}]^{n\times}$. Wir betrachten $\xi_k([\varepsilon_1, \ldots,
+  \varepsilon_n])= \varepsilon_k$ mit $\varepsilon_1, \ldots,
+  \varepsilon_n\in \{0,1\}$. Hieraus folgt, dass $P_{\xi_k}=
+  B_{1,p}$ und es ist klar, $\overline{\xi}([\varepsilon_1, \ldots,
+  \varepsilon_n])= [\varepsilon_1, \ldots, \varepsilon_n]$ (identische
+  Abbildung). Somit folgt, $P_{\overline{\xi}}=P=\times_{i=1}^n
+  B_{1,p}= \times_{i=1}^n P_{\xi_i}$ und in Verbindung mit
+  Satz~\ref{satz:523} ergibt sich, dass die $\xi_1, \ldots, \xi_n$
+  unabhängig sind.
+\end{beispiel}
+
+
+\section{Summen unabhängiger Zufallsgrößen}
+
+\begin{definition}
+  Seien $P_1, P_2$ Wahrscheinlichkeitsmaße auf $[\R, \FB]$.
+  \[P_1*P_2 := \int P_1(\underbrace{B-x}_{\{y-x|y\in B\}})
+  P_2(dx)\qquad (B\in\FB)\]
+  heißt \emph{Faltung\index{Faltung}} von $P_1$ und $P_2$.
+\end{definition}
+
+\begin{remark}
+  Die Faltung $P_1*P_2$ ist ein Wahrscheinlichkeitsmaß auf
+  $[\R,\FB]$. Denn die Eigenschaften lassen sich wie folgt nachweisen:
+  \begin{enumerate}[1)]
+  \item Da das Integral nie negativ werden kann, ist $P_1*P_2(B)\geq 0$
+  \item $P_1*P_2(\R)=\int P_1(\R-x)P_2(dx)=\int P_1(\R)P_2(dx)= \int 1
+    P_2(dx)= P_2(\R)=1$\\
+    $P_1*P_2(\emptyset)=\int P_1(\emptyset-x)P_2(dx)=\int
+    P_1(\emptyset)P_2(dx)= \int 0 P_2(dx)=0$
+  \item Seien die $(B_i)_{i=1}^\infty$ paarweise disjunkt und
+    $B_i\in\FB$. Dann sind auch die $(B_i-x)_{i=1}^\infty$ paarweise
+    disjunkt und $\bigcup_{i=1}^\infty(B_i-x)=(\bigcup_{i=1}^\infty
+    B_i)-x$. Somit folgt, $P_1*P_2(\bigcup_{i=1}^\infty B_i)= \int P_1
+    (\bigcup_{i=1}^\infty (B_1-x))P_2(dx)= \int\sum_{i=1}^\infty
+    P_1(B_i-x) P_2(dx)=\sum_{i=1}^\infty\int P_1(B_1-x)P_2(dx)=
+    \sum_{i=1}^\infty P_1*P_2(B_i)$.
+  \end{enumerate}
+\end{remark}
+
+\begin{satz}
+  \label{satz:pchiadd-531}
+  Seien $\xi_1, \xi_2$ unabhängige Zufallsgrößen. Dann  gilt
+\[P_{\xi_1+\xi_2} = P_{\xi_1}+P_{x_2}\]
+\end{satz}
+\begin{proof}
+  Wir setzen $h(x_1, x_2)=x_1+x_2$. Die $x_1, x_2$ sind aus $\R$ und
+  somit ist die Abbildung $h$ eine Abbildung von $\R^2$ nach $\R$
+  ($h:\R^2\rightarrow\R$), die stetig und damit messbar ist.
+  \begin{align*}
+    \xi_1+\xi_2&= h\circ \overline{\xi}\Rightarrow
+    (\xi_1+\xi_2)^{-1}(B)= \overline{\xi^{-1}} (h^{-1}(B))\\
+    &\Rightarrow P_{\xi_1+\xi_2}(B)= P((\xi_1+\xi_2)^{-1}(B))=
+    P(\overline{\xi^{-1}} (h^{-1}(B)))\\
+    &= P_{\overline{\xi}}(h^{-1}(B))=P_{\overline{\xi}} (\{[x_1,
+    x_2]|x_1+x_2\in B\})\\
+    &= \int \chi_{\{[x_1, x_2]|x_1+x_2\in B\}}(y_1, y_2)
+    P_{\overline{\xi}}(d[y_1, y_2])= \int \chi_{B-y_2} (y_1)
+    P_{\overline{\xi}} ([y_1, y_2])\\
+    &= \iint \chi_{B-y_2} (y_1) P_{\xi_1}(dy_1) P_{\xi_2}(dy_2)= \int
+    P_{\xi_1}(B-y_2) P_{\xi_2}(dy_2)\\
+    &= P_{\xi_1}*P_{\xi_2}
+  \end{align*}
+\end{proof}
+
+\begin{remark}
+  $*$ ist kommutativ und assoziativ (siehe auch
+  Satz~\ref{satz:pchiadd-531}). Somit ist für $P_1, \ldots, P_n$:
+  \begin{align}
+    \label{eq:5311}
+    *_{i=1}^n P_i= (((P_1*P_2)*P_3)*\cdots*P_n)
+  \end{align}
+\end{remark}
+
+\begin{satz}[Verallgemeinerung von Satz~\ref{satz:pchiadd-531}]
+\label{satz:verallg-533}
+  Seien $\xi_1, \ldots, \xi_n$ unabhängige Zufallsgrößen:
+\[\Rightarrow P_{\sum_{i=1}^n \xi_i}=*_{i=1}^n P_i\]
+\end{satz}
+\begin{proof}
+  Der Beweis erfolgt durch vollständige Induktion. Für $n=2$ ist die
+  Behauptung richtig und wir nehmen an, dass die
+  Gleichung~(\ref{eq:5311}) für gewisse $n$ gilt. Dann ist zu zeigen,
+  dass, wenn $\xi_1, \ldots, \xi_i$ unabhängige Zufallsgrößen sind,
+  folgt, $*_{i=1}^n P_i= (((P_1*P_2)*P_3)*\cdots*P_n)$. Seien $\xi_1,
+  \ldots, \xi_n$ unabhängig und $[\xi_1, \ldots, \xi_n], \xi_{n+1}$
+  unabhängig sowie $\sum_{i=1}^n \xi_i, \xi_{n+1}$ ebenfalls
+  unabhängig\footnote{Der Beweis hierfür findet sich in der gängigen
+    Lektüre zum Thema.}. Dann folgt, $P_{\sum_{i=1}^n \xi_i}=
+  *_{i=1}^n P_{\xi_i}$. Unter Anwendung des
+  Satzes~\ref{satz:pchiadd-531} ergibt sich, $P_{\sum_{i=1}^n
+    \xi_i+\xi_{i+1}}= *_{i=1}^n P_{\xi_i}*P_{\xi_{n+1}}\Rightarrow
+  P_{\sum_{i=1}^{n+1}} = *_{i=1}^{n+1} P_{\xi_i}$
+\end{proof}
+
+\begin{satz}
+  Seien $\xi_1, \xi_2$ unabhängige Zufallsgrößen. Dann gilt:
+  \[F_{\xi_1+\xi_2} (y)=\int F_{\xi_1}(x-y) P_{\xi_2}(dx)\]
+\end{satz}
+\begin{proof}
+  Wir wenden den Satz~\ref{satz:pchiadd-531} mit $B=(-\infty, y)$ an
+  und haben:
+  \begin{align*}
+    F_{\xi_1+\xi_2} &= P_{\xi_1+x_2}((-\infty, y))=P_{\xi_1}*P_{\xi_2}
+    ((-\infty, y))\\
+    &= \int P_{\xi_1}((-\infty, y)-x)P_{\xi_2}(dx)= \int P_{\xi_1}
+    ((-\infty, y-x)) P_{\xi_2}(dx)\\
+    &= \int F_{\xi_1} (y-x)P_{\xi_2}(dx)
+  \end{align*}
+\end{proof}
+
+\begin{satz}
+  Seien $\xi_1, \xi_2$ unabhängige Zufallsgrößen mit $P_\xi=\ell f_i$
+  ($i=1,2$). Dann gilt:
+  \[P_{\xi_1+x_2}=\ell f_1*f_2\]
+  wobei $f_1*f_2(x):= \int f_1(x-y)f_2(y)\ell(dy)$.
+\end{satz}
+\begin{proof}
+  Der Beweis erfolgt weniger mathematisch streng. Da der Aufwand
+  hierfür unangemessen hoch ist. Für streng mathematische Rechnungen
+  sei der Leser an weitere Lektüre verwiesen.
+
+  Wegen des Satz~\ref{satz:verallg-533} ist $F_{\xi_1+\xi_2}(x)= \int
+  F_1(x-y) P_{\xi_2}(dy)$ und wegen $P_{\xi_2}=\ell f_2$ ergibt sich
+  $\int F_1(x-y)f_2(y)\ell(dy)$\footnote{Der Sachverhalt wurde früher
+    bewiesen.}. Man geht nun davon aus, dass die Funktion
+  differenzierbar ist. Alle Fälle, wo die Funktion nicht überall
+  differenzierbar ist, werden nicht mit abgedeckt.
+  
+  Somit folgt, dass $F_{\xi_1+\xi_2}'(x)=\int F_1'(x-y)f_2(y)\ell(dy)$
+  die Dichte von $P_{\xi_1+\xi_2}$ ist (nach Definition). Dies ist
+  aber $\int f_1(x-y)f_2(y)\ell(dy)=f_1*f_2(y)$
+\end{proof}
+
+\begin{satz}
+\label{satz:535}
+  Seien $\xi_1, \xi_2$ unabhängige Zufallsgrößen mit $P_{\xi_i}(\Z)=1$
+  ($i=1,2$), d.h. $P_{\xi_1}=\sum_{k\in\Z} a_k\delta_k, P_{\xi_2}=
+  \sum_{k\in\Z} b_k\delta_k, a_k, b_k \geq 0, \sum a_k=\sum
+  b_k=1$. Dann gilt:
+  \begin{align*}
+    P_{\xi_1+\xi_2}(\Z) &= 1\\
+    P_{\xi_1+\xi_2}(\{n\}) &= \sum_{k\in\Z} P_{\xi_1}(\{n-k\})
+    P_{\xi_2} (\{k\})
+  \end{align*}
+  D.h. $P_{\xi_1+\xi_2}=\sum_{k\in\Z} c_k\delta_k$ mit $c_k=\sum
+  a_{n-k} b_k$.
+\end{satz}
+\begin{proof}
+  Nach Satz~\ref{satz:pchiadd-531} wissen wir, dass $P_{\xi_1+\xi_2}
+  (B)= \int P_{\xi_1}(B-x)P_{\xi_2}(dx)$ ist und wählen
+  $B=\{n\}$. Somit erhalten wir nun, $P_{\xi_1+\xi_2} (\{n\})=\int
+  P_{\xi_1} (\{n-x\})P_{\xi_2}(dx)=\sum_{k\in\Z} P_{\xi_1}(\{n-k\})
+  P_{\xi_2}(\{k\})$.
+\end{proof}
+
+\begin{beispiel}
+  Seien $\xi_1, \xi_2$ unabhängig und $P_{\xi_i}=B_{n_i,p}$ mit
+  $i=1,2$. Zur Bestimmung von $P_{\xi_1+x_2}$ wäre es jetzt möglich,
+  Satz~\ref{satz:535} anzuwenden:
+  \begin{align*}
+    P_{\xi_1+\xi_2}(\{n\}) &= \sum_{k\in\Z} P_{\xi_1}(\{n-k\})
+    P_{\xi_2}(\{k\})= \sum_{k\in\Z} B_{n_1,p}(\{n-k\})
+    B_{n_2,p}(\{k\})\\
+    &= \sum_{0\leq k\leq n_2} \binom{n_1}{n-k}
+    p^{n-k}(1-p)^{n_1-(n-k)} \binom{n_2}{k}p^k (1-p)^{n_2-k}\\
+    &=
+    \begin{cases}
+      \binom{n_1+n_2}{n}p^n (1-p)^{n_1+n_2-n} & 0\leq n\leq n_1+n_2\\
+      0 & \text{sonst}
+    \end{cases}\\
+    = B_{n_1+n_2,p}(\{n\})
+  \end{align*}
+  Diese Rechnung ist relativ kompliziert und es existieren weitere
+  Möglichkeiten zur Bestimmung. Wir betrachten das Bernoullischema zu
+  $n_1+n_2,p$ und haben durch $[\{0,1\},\FP(\{0,1\}),
+  B_{1,p}]^{n_1+n_2}$ ein Bernoullischema gegeben. Dabei stellen
+  $\hat{\xi_1}:= \sum_{i=1}^{n_1} \pi_i$ und $\hat{\xi_2}:=
+  \sum_{i=n_i+1}^{n_1+n_2} \pi_i$ die Anzahl der Erfolge im
+  Bernoullischema dar. Wir wissen, dass $P_{\hat{\xi_1}}=B_{n_1,p},
+  P_{\hat{\xi_2}}=B_{n_2,p}, \hat{\xi_1}, \hat{\xi_2}$ unabhängig
+  sind. Daraus folgt: $P_{\xi_1+\xi_2}=P_{\hat{\xi_1}+\hat{\xi_2}}$
+  und es ist klar, dass $\hat{\xi_1}+\hat{\xi_2}= \sum_{i=1}^{n_1+n_2}
+  \pi_i \Rightarrow P_{\hat{\xi_1}+\hat{\xi_2}}=B_{n_1+n_2,p}$
+\end{beispiel}
+
+
+
+\section{Der Erwartungswert}
+
+Im folgenden sind immer $[\Omega, \CF, P]$ ein Wahrscheinlichkeitsraum
+und wir betrachten die Zufallsgrößen $\xi, \eta, \zeta$.
+
+\begin{definition}
+  Sei $\xi$ eine Zufallsgröße, so dass $E\xi:=
+  \int\xi(\omega)P(d\omega)$ existiert. Dann heißt $E\xi$
+  \emph{Erwartungswert\index{Erwartungswert}} von $\xi$.
+\end{definition}
+
+\begin{remark}
+  \begin{itemize}
+  \item In älteren Büchern wird $E\xi$ auch manchmal als $M\xi$ bezeichnet.
+  \item $E\xi$ existiert, wenn $\xi\geq 0$ oder $\xi$ $P$-integrierbar
+    ist. Der letztere stellt einen wichtigen Fall dar.
+  \item $E\xi$ ist ein fundamentales, aber grobes Kennzeichen der
+    Verteilung $P_\xi$. Die Definition lässt sich allein mit $P_\xi$
+    aufschreiben.
+  \end{itemize}
+\end{remark}
+
+\begin{satz}
+  Sei $\xi$ eine Zufallsgröße mit endlichen
+  Erwartungswert\footnote{Die Aussage gilt auch für unendlichen
+    Erwartungswert. Doch der hierzu zu führende Beweis ist deutlich
+    aufwendiger.}. Dann gilt:
+  \[E\xi=\int x P_\xi(dx)=\left(\int \iota dP_\xi\right)\]
+\end{satz}
+\begin{proof}
+  Zum Beweis kommt der Übertragungssatz
+  (Satz~\ref{satz:uebertrsatz-228}) zur Anwendung. Wir haben
+  $[\Omega_1, \CF_1, \mu]:= [\Omega,\CF,P], [\Omega_2,
+  \CF_2]=[\R,\FB], h:[\Omega_1,\CF_1]\rightarrow [\Omega_2,\CF_2],
+  f:[\Omega_2,\CF_2]\rightarrow [\R,\FB]$. Speziell sind $h=\xi$ und
+  $f=\iota$. Somit folgt, $\int f\circ hd\mu= \int f d\mu\circ h^{-1}$
+  und in unserem Fall: $\int\xi dP=\int\iota dP_\xi$
+\end{proof}
+
+\printindex
+\end{document}
