@@ -10,12 +10,16 @@ clean:
             skript.log skript.out skript.pdf skript.toc skript.thm
 
 mrproper: clean
-	$(FIG:.fig=.pdf) $(FIG:.fig=.pdf_t)
+	rm $(FIG:.fig=.pdf) $(FIG:.fig=.pdf_t)
 
 full: skript.ind
-	while grep -q Rerun skript.log; do \
+	mkdir tmp 2>/dev/null || rm tmp/*
+	while ! [ -e tmp/skript.aux ] || \
+	  !(for i in tmp/*; do cmp --quiet $${i#*/} $$i || return 1; done); do \
+	    cp skript.* tmp; rm tmp/skript.log tmp/skript.pdf; \
 	    rm skript.pdf; $(MAKE) skript.pdf; \
-	done
+	done; \
+	rm -r tmp
 
 .PRECIOUS: $(FIG:.fig=.pdf)
 
