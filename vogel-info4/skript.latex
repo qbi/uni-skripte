@@ -16,9 +16,15 @@
 \usepackage[latin1]{inputenc}
 % \usepackage{nicefrac}
 
-\usepackage{times}
-% \usepackage{lmodern}
+% Schrift, die als serifen-Schrift (normale Text) verwendet wird
+\usepackage{times}		% Times
+% \usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}		% cm-super
+
+% Schrift, die für serifenlose Schrift (\textsf{}) verwendet wird
 \usepackage{helvet}
+
+% T1-Schriften verwenden -- besser für PDFs
 \usepackage[T1]{fontenc}
 
 \usepackage[intlimits,leqno]{amsmath}
@@ -410,12 +416,11 @@ von $L$ folgendermaßen definiert:
 Die $n$-te Potenz einer Sprache besteht also aus all denjenigen Wörtern,
 die das $n$-fache Produkt irgendwelcher Wörter aus $L$ sind.
 
-Für $L\subseteq \Sigma^{\ast}$ heißt
+Für eine Sprache $L\subseteq \Sigma^{\ast}$ bezeichnet
 \begin{gather*}
   L^{\ast}:= \bigcup_{n=0}^{\infty} L^{n}
 \end{gather*}
-die \highl{Kleene-Hülle} von $L$. \help{Ist $\Sigma^{\ast}$ die
-Kleene-Hülle von $\Sigma$?}
+die \highl{Kleene-Hülle} von $L$.
 
 \subsection{Spezielle Alphabete}
 \begin{align*}
@@ -438,7 +443,7 @@ $x_{1}\ldots x_{n}$ die Funktion
   w \mapsto \sum_{i=1}^{n}x_{i} 2^{n-i}
 \end{gather*}
 
-Das kürzeste Wort~$w$ mit der Eigenschaft $No(w)=n$ heißt
+Das kürzeste Wort~$w$ mit der Eigenschaft $No_{2}(w)=n$ heißt
 \highl{Binärdarstellung} von $n$. Schreibweise: $bin(n) := w$.
 
 Für Wörter $w\in\Sigma_{dezi}^{\ast}$ definieren wir analog:
@@ -446,7 +451,7 @@ Für Wörter $w\in\Sigma_{dezi}^{\ast}$ definieren wir analog:
   No_{10}(w) := \sum_{i=1}^{n} x_{i} 10^{n-i}
 \end{gather*}
 und die \highl{Dezimaldarstellung} $dezi(n)$ als das kürzeste Wort $w$
-mit $No(w) := n$.
+mit $No_{10}(w) := n$.
 
 Eine Abbildung $f:\Sigma^{\ast} \rightarrow \Delta^{\ast}$ heißt
 \highl{Homomorphismus} von $\Sigma^{\ast}$ in $\Delta^{\ast}$ \gdwdef für
@@ -809,7 +814,7 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
 \begin{defini}\label{def:4}
   Eine Sprache $L\subseteq\Sigma^{\ast}$ heißt \highl{Turing-aufzählbar}
   \gdwdef eine total definierte Turing-berechenbare
-  Funktion $f:\Sigma^{\ast} \rightarrow\Sigma^{\ast}$ existiert, so dass
+  Funktion $f:\Sigma^{\ast} \rightarrow_{t}\Sigma^{\ast}$ existiert, so dass
   $f(\Sigma^{\ast}) = L$.
 \end{defini}
 
@@ -818,8 +823,8 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
   \begin{gather*}
     f(w) =
        \begin{cases}
-         w & w\in L\\
-         u & w\not\in L
+         w & :w\in L\\
+         u & :w\not\in L
        \end{cases}
   \end{gather*}
   $u$ ist dabei ein bekanntes festes Wort aus $L$. Dies könnte z.\,B.
@@ -969,10 +974,10 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
     Turing-berechenbar}\}
   \end{gather*}
   \TM\index{TM@\TM} ist die \highl[Klasse!Turing-ber.\,Fkt.]{Klasse aller
-  Turing-berechenbarer Funktionen}
+  Turing-berechenbarer Funktionen}.
 \end{defini}
 
-\subsection{Entscheidbarkeit, Semientscheidbarkeit und Aufzählbarkeit}
+\subsection{Entscheidbarkeit, Semientscheidbarkeit und Aufzählbarkeit}\label{sec:5}
 Alle diese Begriffen sind zurückgeführt auf die Berechenbarkeit gewisser
 Funktionen und damit spezielle Formulierungen der Berechenbarkeit.
 
@@ -1246,7 +1251,9 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
 
 \begin{bemerk}
   Dies ist eine Erweiterung der bisherigen Definition der Turing-Maschine. \help{Wieso
-  das auf einmal?}
+  das auf einmal? Weil sich die Abbildungsfunktion geändert hat. Vorher
+  wurden die Mengen $Q$ und $\Gamma$ immer nur uminterpretiert, jetzt
+  wird richtig was geändert.}
 \end{bemerk}
 
 \begin{bsp}
@@ -1407,7 +1414,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
     \input{transition.pdf_t}\\
     \textit{Die Maschine "`$i:=i+1$"'}
   \end{center}
-  Dieser (Mega-)Knoten lässt dich in ein weiteres Transitionsdiagramm
+  Dieser (Mega-)Knoten lässt sich in ein weiteres Transitionsdiagramm
   (einer größeren Turing-Maschine) einsetzen.
 \end{bsp}
 
@@ -1556,7 +1563,7 @@ berechenbar sind, und Schemata, die aus "`einfachen"' Funktionen neue
 "`komplexe"' Funktionen konstruieren, aufbaut.
 
 \begin{bsp}[Modulo-Funktion]\label{bsp:2}
-  \hspace{-3.5mm} $\mod:\N\times\N \rightarrow\N$\\
+  $\mod:\N\times\N \rightarrow\N$\\
   $\mod(a,b) =$ Rest bei der ganzzahligen Division von $a$ und $b$\\
   $\mod(a,0) = \mod(0,b) = \mod(0,0) = 0$
 
@@ -1609,7 +1616,6 @@ $B_{n}=\{n-1\}$.
       &&\bigl((x_{1},\ldots,x_{n})\in\N^{n}, n\geq1, k\geq 0)
     \end{align*}
     Die Menge aller Konstanten $\{C_{k}^{n}: n\geq 1, k\geq 0\}$
-    \help{$=\N$?}
    \item[Nachfolgerfunktion]
     \begin{align*}
       N(x) = x+1 &&(x\in\N)
@@ -1768,30 +1774,44 @@ Wir benutzen folgende Form: $A:\N^{2}\rightarrow\N$
   \end{align*}
 \end{bsp}
 
-\begin{fakt}\help{könnte man das nicht als Satz machen?}
+\begin{satz}
   Die Ackermannfunktion ist (intuitiv) berechenbar, aber nicht
   primitiv-rekursiv.
 
-  Idee: Definition einer Folge von Funktionen $f_{n}:
-  \N\rightarrow\N$
-  \begin{align*}
-    f_{0}(y) &= y+1\\
-    f_{n+1}(0) &= f_{n}(1)\\
-    f_{n+1}(y+1) &= f_{n}(f_{n+1}(y))\\
-    \intertext{mit dem Effekt}
-    f_{n+1}(y+1) &= f_{n}(f_{n+1}(y)) = f_{n}(f_{n}(f_{n+1}(y-1))) =
-       \ldots\\
-    \intertext{von $y$ ineinander geschachtelten Rekursionen}
-  \end{align*}\help{Wieso kann das nicht prim.-rek. sein?}
+  \begin{proof}
+    Die Idee des Beweises ist folgende Beobachtung:  Setzt man die
+    Definition der Ackermann-Funktion wiederholt in die allgemeine Form
+    ein (\autoref{eq:5}), so sieht man, dass die Anzahl der ineinander
+    geschachtelten Rekursionen von den Parametern $x$ und $y$ abhängt.
+    Mit Primitiver-Rekursion kann man jedoch nur einfache Rekursion (mit
+    konstanter Schachtelungstiefe) erreichen.
 
-  Haben $\Prr = \Gamma_{\{SUB,PR\}}(G)$, d.\,h. jede primitiv-rekursive
-  Funktion lässt sich darstellen aus den Grundfunktionen und endlich oft
-  nötiger Anwendung des Schemas der Einsetzung und des Schemas der
-  primitiven Rekursion.
+    \begin{gather}\label{eq:5}
+      A(x+1, y+1) = A(x, A(x+1, y)) = A\big(x, A(x, A(x+1, y-1)) \big) =
+         A\big(x, A\big(x, A(x A(x+1, y-2)) \big) \big)
+    \end{gather}
 
-  Für jede konkrete Funktion ergibt sich eine konkrete Darstellung mit
-  einer festen Anzahl von Einsetzungen und primitiven Rekursionen.
-\end{fakt}
+    % Idee: Definition einer Folge von Funktionen $f_{n}:
+    % \N\rightarrow\N$
+    % \begin{align*}
+    %   f_{0}(y) &= y+1\\
+    %   f_{n+1}(0) &= f_{n}(1)\\
+    %   f_{n+1}(y+1) &= f_{n}(f_{n+1}(y))\\
+    %   \intertext{mit dem Effekt}
+    %   f_{n+1}(y+1) &= f_{n}(f_{n+1}(y)) = f_{n}(f_{n}(f_{n+1}(y-1))) =
+    %      \ldots\\
+    %   \intertext{von $y$ ineinander geschachtelten Rekursionen}
+    % \end{align*}\help{Wieso kann das nicht prim.-rek. sein?}
+  \end{proof}
+\end{satz}
+
+Haben $\Prr = \Gamma_{\{SUB,PR\}}(G)$, d.\,h. jede primitiv-rekursive
+Funktion lässt sich darstellen aus den Grundfunktionen und endlich oft
+nötiger Anwendung des Schemas der Einsetzung und des Schemas der
+primitiven Rekursion.
+
+Für jede konkrete Funktion ergibt sich eine konkrete Darstellung mit
+einer festen Anzahl von Einsetzungen und primitiven Rekursionen.
 
 \begin{bemerk}\label{bem:2}
   Jede primitiv-rekursive Funktion lässt sich durch einen Ausdruck
@@ -1858,8 +1878,7 @@ wollen solche Schleifen simulieren
 \end{defini}
 Schreibweise: $f=\mu R(g)$
 
-Damit gilt: Wenn $g$ berechenbar ist, dann ist auch $f$ (intuitiv)
-berechenbar.
+Damit gilt: Wenn $g$ berechenbar ist, dann ist auch $f$ berechenbar.
 
 als Schleife:\\
 \verb|t := 0|\\
@@ -2012,7 +2031,7 @@ als Schleife:\\
 
   Die kanonische (quasilexikographische) Auflistung aller dieser Terme
   liefert eine \emph{effektive Nummerierung} aller partiell-rekursiven
-  Funktionen. $\PP$ ist also abzählbar unendlich.
+  Funktionen. $\PP$ ist also aufzählbar und abzählbar unendlich.
 \end{satz}
 
 \section{Allgemein-rekursive Funktionen}
@@ -2050,18 +2069,16 @@ bezeichnet, dann gilt:
   \begin{proof}
     \begin{enumerate}
      \item z.\,B. ist $nachfolger\in\Prr$ --- \autoref{def:8}
-     \item Ackermann-Funktion --- \autoref{sec:4} \help{Wieso ist die
-      Ackermannfunktion $\in\PP$?}
+     \item Ackermann-Funktion --- \autoref{sec:4}
      \item $wurz\in\PP\setminus\Pa$ --- \autoref{bsp:5}
      \item Es gibt Funktionen aus $\mathbb{F}\setminus\PP$, die nicht
       berechenbar sind:
 
       Wir wissen aus \autoref{satz:7}, dass $\PP$ eine effektive Numerierung
       besitzt, d.\,h. es gibt höchstens abzählbar unendlich
-      viele partiell rekursive Funktionen. Aber es gibt überabzählbar
+      viele partiell-rekursive Funktionen. Aber es gibt überabzählbar
       viele Zahlenfunktionen, z.\,B. ist bereits $\{0,1\}^{\N}$
       überabzählbar.
-
     \end{enumerate}
   \end{proof}
 \end{satz}
@@ -2086,7 +2103,7 @@ zugehörigen Terme ergibt. Wir definieren nun die folgende Funktion
   \psi(n) := \phi_{n}(n) +1 =
   \begin{cases}
     \phi_{n}(n)+1&: \text{falls } \phi_{n}(n)\text{ definiert ist}\\
-    \ndef&\sonst
+    \ndef&:\sonst
   \end{cases}
 \end{gather*}
 $\psi$ ist eine berechenbare Funktion, d.\,h. $\psi$ kommt in der Liste
@@ -2096,12 +2113,13 @@ $\psi=\phi_{k}$. Dies führt uns jedoch zu dem Problem:
   \phi_{k}(k) = \psi(k) = \phi_{k}(k)+1 =
   \begin{cases}
     \phi_{k}(k)+1&: \text{falls } \phi_{k}(k)\text{ definiert ist}\\
-    \ndef&\sonst
+    \ndef&:\sonst
   \end{cases}
 \end{gather*}
-als dessen Konsequenz nur gelten kann, dass $\psi$ an der Stell $k$ nicht
+als dessen Konsequenz nur gelten kann, dass $\psi$ an der Stelle $k$ nicht
 definiert seien kann. $\psi(n)\in\PP$ ist also an min. einer Stelle $k$ nicht
-definiert und somit nicht allgemein-rekursiv ($\not\in\PP$).
+definiert und somit nicht allgemein-rekursiv ($\not\in\Pa$).
+\help{Damit ist doch keine Aussage über die Fortsetzung gemacht}
 
 Die Eigenschaft partiell-rekursiv sein zu können, ist unverzichtbar
 für die Definition von Berechenbarkeit. Dies führt zu einer negativen
@@ -2122,27 +2140,43 @@ $\psi$.
   Die Menge $\Pa$ der allgemein-rekursiven Funktionen besitzt
   keine effektive Nummerierung!
 
-  \help{Wie kann das sein? $\PP$ ist aufzählbar, aber $\Pa\in\PP$ ist
-    nicht aufzb.?}
-
   \begin{proof}
     (durch Diagonalisierung) Annahme: es existiert eine Liste
     $f_{0},f_{1},f_{2},\ldots$ über allgemein-rekursive Funktionen. Dann
-    wäre auch $g(n) = f(n)+1$ eine allgemein-rekursive Funktion und es
-    gäbe einen Index $m$ mit $g=f_{m}$. Dies führt jedoch zu dem
-    Widerspruch:
-    \begin{gather*}
+    wäre auch die total berechenbare Funktion $g(n) = f(n)+1$ in der
+    Liste enthalten und es gäbe einen Index $m$ mit $g=f_{m}$. Dies führt
+    jedoch zu einem Widerspruch (\autoref{eq:6}), als dessen Konsequenz
+    nur gelten kann, dass es eine solche Liste -- eine effektive
+    Nummerierung -- nicht gibt.
+    \begin{gather}\label{eq:6}
       f_{m}(m) = g(m) = f_{m}(m)+1
-    \end{gather*}
+    \end{gather}
   \end{proof}
 \end{satz}
 
+Frage: Kann man eine nicht berechenbare Funktion aus $\mathbb{F}\setminus
+\PP$ angeben?
+
+Erinnern wir uns zurück: Eine Sprache $L\subseteq\Sigma^{\ast}$ heißt
+entscheidbar \gdw die charakteristische Funktion $\chi_{L}$ berechenbar
+ist. (\autoref{def:2}) Die Menge $\Pa$ der allgemein-rekursiven
+Funktionen ist nicht aufzählbar und damit ist nach \autoref{sec:5} die
+Menge nicht entscheidbar. Die charakteristisch Funktion der
+allgemein-rekursiven Funktionen ist also nicht berechenbar
+\begin{gather}\label{eq:7}
+  \chi_{\Pa} : \N \rightarrow \N\qquad
+     \chi_{\Pa}(n) = \begin{cases}1: \text{die Turing-Maschine
+                       $TM_{n}$ aus $\PP$ ist total ($\in\Pa$)}\\
+                       0: \text{sonst}
+                     \end{cases}
+\end{gather}
+
 Gibt es ein anschauliches Beispiel einer partiell-rekursiven (d.\,h.
 berechenbaren) Funktion, von der es nicht offensichtlich ist, dass sie
-selbst oder eine ihrer Fortsetzungen primitv-rekursiv ist?
+selbst oder eine ihrer Fortsetzungen nicht primitv-rekursiv ist?
 
 % Ein Kandidat für eine solche Funktion wird jetzt beschrieben.
-% Ausgangspunkt is die ungewisse Vermutung:
+% Ausgangspunkt ist die ungewisse Vermutung:
 \begin{quote}
   Für jede natürliche Zahl $n\geq1$ führt die wiederholte Anwendung
   folgender Regel nach endlich vielen Schritten auf die Zahl 1:
@@ -2190,10 +2224,10 @@ Die $t$-malige Anwendung der Regel wird durch die folgende Funktion
 beschrieben
 \begin{align*}
   g(n, 0) &= n && I_{1}^{1}(n)\\
-  g(n,t+1) &= f(g(n,t)) = h(n, t, g(n,t)) &&SUB(f,I_{3}^{3})
+  g(n,t+1) &= f(g(n,t)) = f'(n, t, g(n,t)) &&SUB(f',I_{3}^{3})
 \end{align*}
 $g$ ist also eine primitv-rekursive Funktion mit $PR(I_{1}^{1},
-SUB(f,I_{3}^{3}))$.
+SUB(f',I_{3}^{3}))$.
 
 Wir definieren nun
 \begin{gather*}
@@ -2205,9 +2239,9 @@ Wir definieren nun
 \end{gather*}
 $h$ ist partiell-rekursiv und für den Definitionsbereich gilt: $D_{n}=B$.
 Aber es gibt keine Beschreibung von $h$ (oder einer Fortsetzung) als
-primitv-rekursive Funktion
+primitv-rekursive Funktion \help{Woran sieht man das?}
 \begin{gather*}
-  g(n,t) = 1 \Longleftrightarrow g(n,t) -1 = 0
+  g(n,t) = 1 \gdw g(n,t) -1 = 0
 \end{gather*}
 
 \subsection{Eigenschaften primitiv-rekursiver Funktionen}
@@ -2384,7 +2418,7 @@ primitv-rekursive Funktion
 \end{satz}
 
 \begin{satz}
-  Jede Turing-berechenbare funktion ist partiell-rekursiv. $\TM\subseteq\PP$
+  Jede Turing-berechenbare Funktion ist partiell-rekursiv. $\TM\subseteq\PP$
 
   \begin{proof}
     Die Idee dabei ist, die Arbeitsweise von Turing-Maschinen durch
@@ -2434,9 +2468,9 @@ primitv-rekursive Funktion
 
     Anfang:
     \begin{align*}
-      Z(w,t) &= q_{0}\\
-      R(w,t) &= \sum_{0}^{n} w_{i}m^{i}&&w=w_{1}w_{2}\ldots w_{n}\\
-      L(w,t) &= 0
+      Z(w,0) &= q_{0}\\
+      R(w,0) &= \sum_{0}^{n} w_{i}m^{i}&&w=w_{1}w_{2}\ldots w_{n}\\
+      L(w,0) &= 0
     \end{align*}
 
     Schritt an der Stelle $t\rightarrow t+1$:\\
@@ -2457,7 +2491,7 @@ primitv-rekursive Funktion
       R(w,t+1) &= \begin{cases}
                    R(w,t) \div m&: \text{nach rechts}\\
                    R(w,t) - x +x'&: \text{stehenbleiben}\\
-                   (R(w,t) - x +x')m+y_{0} &:\text{nach links}
+                   \big(R(w,t) - x +x'\big)m+y_{0} &:\text{nach links}
                  \end{cases}\\
       L(w,t+1) &= \begin{cases}
                    L(w,t)m + x' &: \text{nach rechts}\\
@@ -2519,7 +2553,7 @@ Dann ist eine Funktion $h: \N^{n}\rightarrow\N$ primitiv-rekursiv, wobei
   \begin{align*}
     h'(x_{1},\ldots,x_{n},z) &= \mu y(y\leq z \wedge
        f(x_{0},\ldots,x_{n},y) = 0)\\
-    &:= \sum_{i=0}^{z} sign \bigl( \prod_{j=0}^{i}
+    &:= \sum_{i=0}^{z} sgn \bigl( \prod_{j=0}^{i}
        f(x_{1},\ldots,x_{n},j) \bigr)
   \end{align*}
 
@@ -2650,7 +2684,6 @@ Startsymbol $S$.
     $w_{l}$ und $w_{r}$ gibt, die das Wort $w$ bilden als
     $w=w_{l}pw_{r}$, eine Produktion $p\rightarrow q$ exsistiert und es
     gilt $w' = w_{l}qw_{r}$
-    \help{Kann $n=0$ sein?}
 
     \begin{description}
      \item[\underline{Schreibweise:}] $w \rightarrow w'$
@@ -3226,7 +3259,7 @@ Frage nach einem effizienten Parser.
 Klar ist: $CH(2) \subseteq CH(0)$ und $CH(1) \subseteq CH(0)$, aber gilt
 auch $CH(2)\subseteq CH(1)$?
 
-An zwei Beispielen zeigen wir, dass nicht jede kontextfreie Grammatik ist
+An zwei Beispielen zeigen wir, dass nicht jede kontextfreie Grammatik
 kontextsensitiv ist.
 
 \begin{bsp}
@@ -3293,7 +3326,6 @@ kontextsensitiv ist.
          (C\rightarrow u)\in P \wedge\\
       \text{$u'$ entsteht durch weglassen min. eines Symbols aus $M_{k}$} \}
     \end{multline*}
-    \help{Das funktioniert nicht mit der Dyck-Sprache}
   \end{proof}
 \end{satz}
 
@@ -3542,7 +3574,8 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
   gibt Sprachen vom Typ-0, die nicht entscheidbar sind.
 
   \begin{proof}
-    Im Kapitel über Aufzählbarkeit und Entscheidbarkeit \todo{ergänzen}
+    Im Kapitel über Aufzählbarkeit und Entscheidbarkeit \todo{Link
+    ergänzen; Den Beweis gibt es nicht}
   \end{proof}
 \end{satz}
 
