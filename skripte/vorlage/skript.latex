@@ -1,4 +1,11 @@
-\documentclass[german,draft,twoside]{scrreprt}
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
 \usepackage{index}
@@ -26,7 +33,8 @@
 
 \usepackage[intlimits,leqno]{amsmath}
 \usepackage{amssymb}     % wird für \R, \C,... gebraucht
-\usepackage{amsthm}      % wird weiter unten gebraucht
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
 \usepackage{xspace}      % wird weiter unten gebraucht
 \usepackage{slashbox}    % für schräge Striche im links oben in der
                          % Tabelle; s. texdoc slashbox
@@ -34,15 +42,23 @@
 \usepackage{paralist}    % besseres enumerate und itemize und neue
                          % compactenum/compactitem; s. texdoc paralist
 
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \addtokomafont{sectioning}{\boldmath}
 
-% amsthm bringt keinen Stil für Theorem, die nach dem Kopf einen
-% Zeilenumbruch haben, mit. Aber man kann es leicht selbst definieren.
-\newtheoremstyle{break}{3pt}{3pt}{}{}{\bfseries}{}{\newline}{}
-
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
 \theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[chapter]
@@ -51,22 +67,16 @@
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
 
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
 % Das Zeichen am Ende eines Beweises
-\renewcommand*{\qedsymbol}{\ensuremath{_\blacksquare}}
-% \renewcommand{\qedsymbol}{q.\,e.\,d.}
-
-% Der Name im Kopf der Beweisumgebung
-\renewcommand*{\proofname}{\textnormal{\scshape Beweis:}}
-
-% Da die proof-Umgebung aus amsthm keinen Umbruch nach dem Kopf machen
-% kann, definieren wir sie hier einfach um, so dass ein Umbruch nach dem
-% Kopf ist
-\renewenvironment*{proof}[1][\proofname]{%
-  \pushQED{\qed}%
-  \normalfont
-  \trivlist%
-  \item[\hskip\labelsep\itshape #1]\mbox{}\newline\ignorespaces%
-}{\popQED\endtrivlist}
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
 
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
@@ -76,7 +86,6 @@
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
 \newcommand*{\proofautorefname}{Beweis}
-
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -105,11 +114,6 @@
 % optionales Argument selbst bestimmt werden.
 \newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
   \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
-}
-
-% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
-\newcommand*{\taglabel}[1]{%
-  \refstepcounter{equation}\tag{\theequation}\label{#1}%
 }
 
 % Definition für Xindy für die Trennung der einzelnen Abschnitte im
@@ -151,32 +155,77 @@
 		 \begin{description}}%
 		 {\end{description}}
 
-% Keinen Absatzeinzug, aber dafür einen Abstand zwischen den Absätzen.
-% Dies macht sich besser, wenn es wenig Text gibt und ein Absatz/Satz
-% kaum eine Zeile füllt.
-\setlength{\parindent}{0ex}
-\addtolength{\parskip}{1ex}
-
 \makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
 
 \begin{document}
 
-\title{Name der Vorlesung
-  \thanks{$LastChangedRevision$ vom $LastChangedDate$}}
-     % dafür muss in SVN noch das Flag svn:keywords auf
-     % "LastChangedRevision LastChangedDate" gesetzt werden
+\title{Name der Vorlesung}
 \author{Name des Dozenten}
 \date{Semester: SS 200X, WS 200X/0Y}
 \maketitle
 
+\clearpage
+\chapter*{Vorwort}
+{\itshape
+
+  Dieses Skript ist im Rahmen des
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
+  "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
+  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
+  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis die Internetadresse
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/} des Projekts
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist unter
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/pdf/} verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder selbst
+  einzupflegen -- einfach eine eMail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse des Projekts verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Person \texttt{<email>}} (Jahr)
+  \end{itemize}
+}
+
+\clearpage
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
 \clearpage
 
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegunden}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
 \chapter{Erstes Kapitel}
 \section{Erster Abschnitt}
 
-\begin{satz}\label{satz:1}
+\begin{satz}[Toller Satz]\label{satz:1}
   Dies ist ein ganz toller und wichtiger Satz mit einer ganz einfachen
   Formel
   \begin{gather*}
@@ -188,7 +237,7 @@
     \begin{align*}
       a\cdot 0 &= a\cdot(1-1)\\
       &= a-a&\text{durch ausmultiplizieren}\\
-      &= 0&\text{n.\,Definition v.\,Inversen der Addition}
+      &= 0&\text{n.\,Definition d.\,Inversen d.\,Addition}
     \end{align*}
   \end{proof}
 \end{satz}
