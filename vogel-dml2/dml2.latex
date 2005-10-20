@@ -3107,4 +3107,185 @@ dies entspricht der $n$-Partition von $k$.
 \end{bsp}
 
 \subsection{Rekurrenzen - am Beispiel der FIBONACCI-Zahlen}
+\subsubsection{Rekursionsschema}
+\begin{align}\label{fibo}
+u_0 &= 0\, ,\ u_1 = 1\\
+u_n &= u_{n-1} + u_{n-2} && (n\geq 2)
+\end{align}
+
+Dieses Schema liefert folgende Werte:
+\begin{tabular}{c | l l l l l l l l l l l}
+n     & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10\\
+$u_n$ & 0 & 1 & 1 & 2 & 3 & 5 & 8 & 13 & 21 & 34 & 55
+\end{tabular}
+
+\underline{Anliegen}: Bestimme eine explizite Formel für die Werte $u_n$, d.h.
+$u_n$ bekommt eine Darstellung von $n$ (aber \emph{nicht} von den
+Vorgängerwerten). 
+
+Das obige Schema ist ein lineares und homogenes Rekursionsschema mit konstanten
+Koeffizienten. Zur Realisierung des Anliegens geben wir ein prinzipielles
+Verfahren, dass sich auf weitere Bsp. übertragen lässt.
+
+Das Verfahren vollzieht sich in den folgenden Schritten:
+
+\underline{1. Schritt}: Stelle das Schema \eqref{fibo} durch eine einzige
+Gleichung dar!
+
+Dazu setzen wir: $u_n := 0$ für $n<0$
+
+Damit gilt auch für $n=0\,:\ u_n = u_{n-1} + u_{n-2}$\\
+aber für $n=1\,:\ u_n = u_{n-1} + u_{n-2} + 1$\\
+und für $n>1\,:\ u_n = u_{n-1} + u_{n-2}$
+
+Dies schreiben als:
+\begin{gather}\label{fibo2}
+u_n = u_{n-1} + u_{n-2} + \text{Wert-I}_a^n(" n=1\mathaccent)
+\end{gather}
+\help{Anführungszeichen im Math-Mode?}
+\underline{2. Schritt}: Bestimme mit Hilfe formaler Potenzreihen eine erzeugende
+Funktion für Schema \eqref{fibo2}!
+
+\underline{1. Ansatz}:
+\[ g(x) := \sum_{n=0}^\infty u_n\, x^n \]
+Wegen \eqref{fibo2} gilt:
+\begin{align*}
+g(x) &= \sum_{n=0}^\infty u_n\, x^n = \sum_{n=0}^\infty \left(u_{n-1} + u_{n-2} +
+\text{Wert-I}_a^n\left(" n=1 ''\right)\right)\, x^n\\
+ &= \sum_{n=0}^\infty u_{n-1}\, x^n + \sum_{n=0}^\infty u_{n-2}\,x^n + \sum
+ \text{Wert-I}_a^n(''n=1'')\cdot x^n\\
+ &= x\cdot \sum_{n=1}^\infty u_{n-1}\cdot x^{n-1} + x^2\cdot \sum_{n=2}^\infty
+ u_{n-2}\, x^{n-2} + x\\
+ &= x\cdot \sum_{n^{'}=0}^\infty u_{n^{'}}\cdot x^{n^{'}=0} + x^2 \cdot
+ \sum_{n^{''}=0}^\infty u_{n^{''}}\, x^{n^{''}} + x\\
+ &= x\cdot g(x) + x^2\cdot g(x) + x
+\end{align*}
+
+wir haben: 
+\begin{align*}
+g(x) &= x\cdot g(x) + x^2\cdot g(x) + x\\
+x &= g(x)[x + x^2-1]\\
+\end{align*}
+und damit:
+\begin{equation}\label{fibo3}
+g(x) = \frac{-x}{x^2 + x -1}
+\end{equation}
+$g(x)$ ist die erzeugende Funktion für das Schema \eqref{fibo2}
+
+\underline{3. Schritt}: Entwickle die rechte Seite von \eqref{fibo3} in eine
+formale Potenzreihe und bestimme deren Koeff.!
+(Aufgrund des 1. Ansatzes sind die gerade die gesuchten $u_n$!)
+
+Dies geschieht in mehreren Teilschritten:\\
+$g(x)$ besitzt die Darstellung als rationale Funktion, d.h. ist von der Form
+
+\underline{2. Ansatz}: $g(x)= \frac{p(x)}{q(x)}$, dabei ist $p(x)$ das
+\emph{Zählerpolynom} und $q(x)$ das \emph{Nennerpolynom}.
+
+\underline{Schritt 3.1}: Bestimme die Nullstellen des Nennerpolynoms:
+\[ q(x) = x^2 + x -1 \]
+Die Lsg. sind
+\begin{gather}
+\alpha = -1/2 + \sqrt{(1/2)^2 +1} = \frac{-1 +\sqrt{5}}{2}\\
+\beta = -1/2 - \sqrt{(1/2)^2 + 1} = \frac{-1 - \sqrt{5}}{2}
+\end{gather}
+und es gilt:
+\begin{equation}
+q(x) = (x-\alpha)\,(x-\beta) = (x + \frac{1-\sqrt{5}}{2})\,(x + \frac{1 +
+\sqrt{5}}{2})
+\end{equation}
+
+\underline{Schritt 3.2}: Realisiere gemäß des 2. Ansatzes eine Darstellung von
+$g(x)$ durch Partialbruchzerlegung.
+\begin{equation}\label{fibo4}
+g(x) = \frac{p(x)}{q(x)} = \frac{p(x)}{(x-\alpha)\,(x-\beta)} \stackrel{!}{=}
+\frac{A}{(x-\alpha)} + \frac{B}{(x-\beta)}
+\end{equation}
+
+\underline{3. Ansatz}:\\
+\underline{Schritt 3.3}: Bestimme die Koeff. $A$ und $B$!
+
+\underline{Schritt 3.4}: Bestimme die gesuchten Koeff. $u_n$ (gemäß Ansatz 1)
+durch Einsetzen in die formale Potenzreihe.
+
+Denn es gilt: $g(x) = \frac{A}{x-\alpha} + \frac{B}{x-\beta}$\\
+Erweitern wir den 1. Bruch mit $-1/\alpha$, den 2. Bruch mit $-1/\beta$
+
+Damit gilt:
+\begin{align*}
+g(x) &= \frac{(-1/\alpha)\cdot A}{(-1/\alpha)\cdot (x-\alpha)} +
+\frac{(-1/\beta) \cdot B}{(-1/\beta)\cdot (x-\beta)}\\
+ &= \left(-1/\alpha\right)\, A \cdot \frac{1}{1-(1/\alpha)\cdot x} +
+ \left(-1/\beta\right) \cdot B\cdot \frac{1}{1-(1/\beta)\cdot x}\\
+ &= -A/\alpha \cdot \sum_{n=0}^\infty \left(\frac{1}{\alpha}\right)^n\, x^n -
+ B/\beta \cdot \sum_{n=0}^\infty \left( \frac{1}{\beta}\right)^n\, x^n\\
+ &= \sum_{n=0}^\infty \left[ -\frac{A}{\alpha^{n+1}} - \frac{B}{\beta^{n+1}}
+ \right]\, x^n
+\end{align*}
+
+Damit gilt:
+\begin{equation}\label{fibo5}
+u_n = -\frac{A}{\alpha^{n+1}} - \frac{B}{\beta^{n+1}}
+\end{equation}
+
+Nun \underline{Schritt 3.3} (wir starten mit \eqref{fibo4})
+\begin{align*}
+g(x) &= \frac{p(x)}{(x-\alpha)\,(x-\beta)} = \frac{-x}{\left(x +
+\frac{1-\sqrt{5}}{2} \right)\, \left( x + \frac{1+\sqrt{5}}{2} \right) }
+\stackrel{!}{=} \frac{A}{ \left( x + \frac{1-\sqrt{5}}{2} \right) } + \frac{B}{
+  \left( x + \frac{1-\sqrt{5}}{2} \right) }\\ 
+&= \frac{A\, \left( x + \frac{1+\sqrt{5}}{2} \right) + B\, \left( x+
+\frac{1-\sqrt{5}}{2} \right) }{ \left( x + \frac{1-\sqrt{5}}{2} \right) \,
+\left( x + \frac{1+\sqrt{5}}{2} \right) }\\
+&= \frac{ (A+B)\, x + A\, \left( \frac{1+\sqrt{5}}{2} \right) + B\, \left(
+\frac{1-\sqrt{5}}{2} \right) }{ \left( x + \frac{1-\sqrt{5}}{2} \right)\, \left(
+x+ \frac{1+\sqrt{5}}{2} \right) }
+\end{align*}
+
+Ein Koeff.vergleich liefert:
+\begin{gather}
+\label{fibo6.1} A+B = -1\\
+\label{fibo6.2} A\,\left(\frac{1+\sqrt{5}}{2}\right) +
+B\,\left(\frac{1-\sqrt{5}}{2}\right) = 0
+\end{gather}
+\eqref{fibo6.1} ergibt: $A= -1 -B$, insetzen in \eqref{fibo6.2}:
+
+\begin{align*}
+(-1 - B)\,(\frac{1+\sqrt{5}}{2}) + B(\frac{1-\sqrt{5}}{2}) &= 0\\
+-\frac{1+\sqrt{5}}{2} - B \cdot \frac{1+\sqrt{5}}{2} + B\, \frac{1-\sqrt{5}}{2}
+&=0\\
+B\,\left[ -1/2 - \sqrt{5}/2 + 1/2 - \sqrt{5}/2\right] &= 1/2 + \sqrt{5}/2\\
+B\,(-\sqrt{5}) &= \frac{1+\sqrt{5}}{2}\\
+B &= -1/\sqrt{5} \cdot \frac{1+\sqrt{5}}{2}
+\end{align*}
+
+haben: $B = -1/\sqrt{5} \cdot \frac{1+\sqrt{5}}{2}$ in \eqref{fibo6.1} liefert:
+\begin{equation}\label{fibo7}
+A=\frac{1}{\sqrt{5}} \cdot \frac{1-\sqrt{5}}{2}
+\end{equation}
+Um \eqref{fibo5} darstellen zu können, benutzen wir noch folgende Beziehungen:
+
+haben: $\alpha = \frac{-1 + \sqrt{5}}{2} = -\frac{1-\sqrt{5}}{2}$. Dann ist
+\[ \frac{1}{\alpha} = \frac{-2}{1-\sqrt{5}} = \frac{-2\, (1+\sqrt{5}}{
+  (1+\sqrt{5})\, (1-\sqrt{5})} = \frac{-2\,(1 + \sqrt{5})}{-4} =
+  \frac{1+\sqrt{5}}{2} = -\beta \]
+entsprechend liefert
+\[ \beta = \frac{-1 - \sqrt{5}}{2} = -\frac{1+\sqrt{5}}{2} \text{ für }
+\frac{1}{\beta} = -\alpha \]
+
+Dies setzen wir in \eqref{fibo5} ein:
+\begin{align*} 
+u_n =& -\left(\frac{1}{\sqrt{5}}\cdot \frac{1-\sqrt{5}}{2} \right) \left(
+\frac{1+\sqrt{5}}{2} \right) \left( \frac{1+\sqrt{5}}{2} \right)^n\\ 
+&+ \left( \frac{1}{\sqrt{5}}\cdot \frac{1+\sqrt{5}}{2} \right) \left(
+\frac{1-\sqrt{5}}{2} \right) \left( \frac{1-\sqrt{5}}{2} \right)^n 
+\end{align*}
+
+\begin{equation}
+u_n = \frac{1}{\sqrt{5}}\cdot \left( \frac{1 + \sqrt{5}}{2} \right)^n -
+\frac{1}{\sqrt{5}}\cdot \left( \frac{1 - \sqrt{5}}{2} \right)^n
+\end{equation}
+
+\chapter{Einblicke in die Zahlentheorie}
+\section{Natürliche Zahlen}
 \end{document}
