@@ -1,0 +1,400 @@
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+\usepackage[final]{graphicx}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+% Schrift, die als serifen-Schrift (normale Text) verwendet wird
+%  Ich finde Times sieht kräftiger aus, als die beiden anderen, was sich
+%  IMO vorteilhaft bei 2 auf 1-Drucken auswirkt
+\usepackage{times}		% Times
+% \usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}		% cm-super
+
+% Schrift, die für serifenlose Schrift (\textsf{}) verwendet wird
+\usepackage{helvet}
+
+% T1-Schriften verwenden -- notwendig für PDFs
+\usepackage[T1]{fontenc}
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche im links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\proofautorefname}{Beweis}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriff im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+               {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+
+\DeclareMathOperator{\Div}{div}		% Differgent
+\DeclareMathOperator{\grad}{grad}	% Gradient
+\DeclareMathOperator{\rot}{rot}		% Rotation
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Analysis 3}
+\author{Prof.\,Dr.\,Hans-Jürgen Schmeißer}
+\date{Semester: WS 2005/06}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+{\itshape
+
+  Dieses Skript ist im Rahmen des
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
+  "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
+  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
+  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis die Internetadresse
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/} des Projekts
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist unter
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/pdf/} verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder selbst
+  einzupflegen -- einfach eine eMail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse des Projekts verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2005)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+\clearpage
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegunden}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\setcounter{chapter}{7}
+
+\chapter{Vektoranalysis, Integralsätze}
+\section{Vektorfelder}
+\subsection{Differentialoperatoren-Rechenregeln}
+
+\begin{defini}
+  $\Omega\subseteq\R^{n}$ offen, $x=(x_{1},\ldots,x_{n})\in\Omega$,
+  $\{\vec{e_{1}}, \ldots,\vec{e_{n}} \}$ kanonische Basis,
+  $u:\Omega\rightarrow\R$ $u$ ist einmal stetig differenzierbar $u\in
+  C^{1}(\Omega)$, u ist ein \highl{skalares Feld}, $\vec{v} = v_{1}
+  (\times) \vec{e_{1}} + \ldots+ \vec{v_{n}} (\times) \vec{e_{n}} =
+  (v_{1}(x), \ldots, v_{n}(x))$ oder
+  $\begin{bmatrix}v_{1}(x)\\\vdots\\v_{n}(x)\end{bmatrix}, v_{j}\in
+  C^{1}(\Omega), j=1,\ldots,n$ $C^{1}$-Vektorfeld
+
+  \begin{enumerate}
+   \item
+    \begin{align*}
+      \grad u &= \nabla u = \partial_{1}u\vec{e_{1}}
+         +\ldots+\partial_{n}u\vec{e_{n}}&&\text{wobei }\partial_{j} =
+         \frac{\partial}{\partial x_{j}}\\
+      &= \begin{bmatrix}\partial_{1}u\\\vdots\\\partial_{n}u\end{bmatrix}
+         &\text{Gradient von }u
+    \end{align*}
+   \item
+    \begin{gather*}
+      \Div \vec{v} := \partial_{1}v_{1} +
+         \partial_{2}v_{2}+\ldots+\partial_{n}v_{n} (=\nabla \vec{v})
+    \end{gather*}
+    Divergent von $\vec{v}$.
+   \item $n=3$
+    \begin{align*}
+      \rot \vec{v} &= (\partial_{2}v_{3}-\partial_{3}v_{2})\vec{e_{1}} +
+         (\partial_{3}v_{1}-\partial_{1}v_{3})\vec{e_{2}} +
+         (\partial_{1}v_{2}-\partial_{2}v_{1})\vec{e_{3}}\\
+      (&= \nabla \times \vec{v} =
+         \begin{vmatrix}
+           \vec{e_{1}}&\partial_{1}& v_{1}\\
+           \vec{e_{2}}&\partial_{2}& v_{2}\\
+           \vec{e_{3}}&\partial_{3}& v_{3}
+           \end{vmatrix})
+    \end{align*}
+    Rotation von $\vec{v}$
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  Gilt für $\vec{v}$ $\Div \vec{v} = 0$ auf $\Omega$, dann nennt man
+  $\vec{v}$ ein \highl{quellenfreies Vektorfeld}. Ist $\rot \vec{v}=0$
+  auf $\Omega$, so nennt man es ein \highl{wirbelfreies Vektorfeld}.
+\end{bemerk}
+
+\begin{defini}
+  Für $u\in C^{2}(\Omega)$ und $\vec{v}$ ein $C^{2}$-Vektorfeld auf
+  $\Omega\subseteq\R^{3}$ bezeichnet
+  \begin{enumerate}
+   \item
+    \begin{gather*}
+      \Delta u := \sum_{j=1}^{n}\partial_{j}^{2}u = \sum_{j=1}^{n}
+         \frac{\partial^{2}u}{\partial u_{j}^{2}}
+    \end{gather*}
+    den \highl{Laplace-Operator}.
+   \item $\Delta\vec{v} := \Delta v_{1}\vec{e_{1}} + \Delta
+    v_{2}\vec{e_{2}} + \Delta v_{3} \vec{e_{3}}$
+  \end{enumerate}
+\end{defini}
+
+\begin{satz}
+  $\Omega\subseteq\R^{n}$ offen, $u\in C^{2}(\Omega)$ und
+  $\vec{v}$-$C^{2}$-Vektorfeld.
+  \begin{enumerate}
+   \item $\rot(\grad u) = 0$
+   \item $\Div(\rot \vec{v}) = 0$
+   \item $\Div(\grad u) = \Delta u$
+   \item $\rot(\rot \vec{v}) = \grad(\Div \vec{v})-\Delta \vec{v}$
+  \end{enumerate}
+
+  \begin{proof}
+    \begin{mdescription}
+      \item[(4)] \todo{aus Übungsserie 29 Aufgabe 1 ergänzen}
+      \begin{align*}
+        to be done
+      \end{align*}
+      \item[(1)--(3)] durch elementare Rechnung unter Anwendung des Satz
+      von Schwarz
+    \end{mdescription}
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Rechenregeln für Differenzialoperatoren]
+  $f,g \in C^{1}(\Omega), \vec{H}, \vec{K} C^{1}$-Vektorfeld
+  \begin{enumerate}
+   \item $\Div, \grad, \rot$ sind linear
+   \item $\grad(f\cdot g) = g(\grad f) + f(\grad g)$
+   \item $\Div(f\cdot \vec{H} = f\Div\vec{H} + (\grad f)\cdot\vec{H}$
+   \item $\Div(\vec{H}\times \vec{K}) = (\rot\vec{H}) \cdot \vec{K} -
+    \vec{H}\cdot (\rot\vec{K})$
+   \item $\rot (f\cdot\vec{H}) = f(\rot\vec{H})+(\grad f)\times \vec{H}$
+  \end{enumerate}
+
+  \begin{proof}
+    (4) und (5) \todo{ergänzen aus Übung 29/1}, zu (3):
+    \begin{align*}
+      \Div(f\vec{H}) &= \partial_{1}(f H_{1}) + \partial_{2}(f H_{2}) +
+         \partial_{3}(f H_{3})\\
+      &= f(\partial_{1}H_{1} + \partial_{2}H_{2}+\partial_{3}H_{3}) +
+         (\partial_{1}f) H_{1} + (\partial_{2}f)H_{2} +
+         (\partial_{3}f)H_{3} &\text{mit Produktregel}\\
+      &= f\Div \vec{H} + (\grad f)\cdot \vec{H}
+    \end{align*}
+    Analog (2)
+  \end{proof}
+\end{satz}
+
+\subsection{Hauptsatz für Kurvenintegrale und skalare Potentiale}
+
+Eine kurze Widerholung auf Abschnitt\,7.2
+\begin{itemize}
+ \item $(\Gamma, \phi)$ bezeichnet eine \highl{glatte Jordankurve}
+  \gdwdef $\phi: [a,b] \rightarrow \R^{n}$ stetig differenzierbar,
+  $\Gamma=\{\phi(t): t\in[a,b]\}$, $\phi$ ist indjektiv auf $(a,b)$,
+  der \highl{Tangentenvektor} $\dot{\phi(t)} \not=0$ für $t\in(a,b)$
+
+  $(\Gamma, \phi)$ heißt \highl{geschlossen} \gdwdef $\phi(a) = \phi(b)$
+ \item $\Omega\subseteq\R^{n}$ offen, $(\Gamma, \phi)$ \highl{glatte
+  Jordankurve}, $\Gamma\subseteq\Omega$, $\vec{V}: \Omega\rightarrow\R$
+  stetiges Vektorfeld
+  \begin{gather*}
+    \int_{\Gamma} \vec{V}\cdot\vec{dx} := \int_{a}^{b}
+       \vec{V}(\phi(t))\cdot \dot{\phi(t)}\,dt
+  \end{gather*}
+  Anmerkung: Die Physik definiert dieses Integral "`Arbeit"'
+\end{itemize}
+
+\begin{defini}
+  $(\Gamma, \phi)$ heißt stückweise glatte Kurve oder kurz Kurve \gdwdef
+  $\phi:[a,b]\rightarrow\R^{n}$ stetig und $\Gamma=\{\phi(t):t\in[a,b]\}$
+  und es existieren endlich viele Teilungspunkte $a=t_{0}<t_{1}<\ldots
+  <t_{N}=b$ und für jedes $j=1,\ldots,n$ ist $(\Gamma_{j},
+  \phi\big|_{[t_{j-1},t_{j}]})$ ist eine glatte Jordankurve, wobei
+  $\Gamma_{j} = \{\phi(t): [t_{j-1}, t_{j}]\}$.
+
+  Auch solche Kurven nennen wir \highl{geschlossen}, wenn Anfangs- und Endpunkt
+  zusammenfallen: $\phi(a) =\phi(b)$.
+\end{defini}
+
+\begin{bsp}[Polygonenzug]
+  Einer Folge $x^{0},x^{1},\ldots,x^{N}\in\R^{n}$ wobei
+  $x^{j-1}\not=x^{j}$ wird ein \highl{Polygonenzug}
+  \begin{align*}
+    \phi_{j}(t) &= x^{j-1}+t(x^{j}-x^{j-1}) &t\in[0,1]
+  \end{align*}
+  zugeordnet. $[x^{0} x^{1}\ldots x^{N}]$.
+
+  Dies ist ein Beispiel für eine stückweise stetige Kurve.
+\end{bsp}
+
+\begin{defini}
+  $(\Gamma, \phi)$ Kurve, $\vec{V}$ stetiges Vektorfeld auf
+  $\Omega\subseteq \R^{n}$
+  \begin{gather*}
+    \int_{\Gamma} \vec{V}\cdot\vec{dx} := \sum_{j=1}^{N}
+       \int_{\Gamma_{j}} \vec{V}\cdot \vec{dx}
+  \end{gather*}
+\end{defini}
+
+\pdfbookmark[0]{Litheraturverzeichnis}{litheraturverzeichnis}
+\begin{thebibliography}{Hirzebruch}
+ \bibitem{Triebel} H. Triebel: Höhere Analysis, Harri Deutsch 1980 (empfohlen)
+\end{thebibliography}
+
+\clearpage
+\appendix
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
