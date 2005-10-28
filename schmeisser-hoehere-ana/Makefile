@@ -2,33 +2,38 @@
 FIG = sobolev1.fig sobolev2.fig trennsatz1.fig lebesgue-integral.fig \
      riemann-integral.fig satz2-diagramm.fig
 
-PDFMODE = --interaction batchmode
+LATEXMODE = --interaction batchmode
 
 all: skript.pdf
 
 clean:
 	rm -f skript.aux skript.idx skript.ilg skript.ind skript.log skript.out \
-	    skript.pdf skript.thm skript.toc 1x.pdf 1x.pdf_t \
-	    $(FIG:.fig=.pdf) $(FIG:.fig=.pdf_t)
+	    skript.pdf skript.thm skript.toc
+
+mrproper: clean
+	$(FIG:.fig=.pdf) $(FIG:.fig=.pdf_t) 1x.pdf 1x.pdf_t
 
 full: skript.ind
-	pdflatex $(PDFMODE) skript.latex
-	pdflatex $(PDFMODE) skript.latex
+	mkdir tmp 2>/dev/null || rm tmp/*
+	while ! [ -e tmp/skript.aux ] || \
+	  !(for i in tmp/*; do cmp --quiet $${i#*/} $$i || return 1; done); do \
+	    cp skript.* tmp; rm tmp/skript.log tmp/skript.pdf; \
+	    rm skript.pdf; $(MAKE) skript.pdf; \
+	done; \
+	rm -r tmp
 
 .PRECIOUS: $(FIG:.fig=.pdf)
 
 skript.pdf: skript.latex $(FIG:.fig=.pdf_t) 1x.pdf_t
-	pdflatex $(PDFMODE) $<
+	pdflatex $(LATEXMODE) $<
 
 .PRECIOUS: %.idx
 
-%.idx: %.pdf
-	mv $@ $@2
-	sed 's/\\"/"/' $@2 > $@
-	rm $@2
+%.idx: %.latex
+	pdflatex $(LATEXMODE) $<
 
 %.ind: %.idx
-	makeindex $<
+	texindy -q -g -L german-din -M indexstyle $<
 
 %.pdf_t: %.gplot
 	gnuplot $<
