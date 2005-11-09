@@ -36,6 +36,7 @@
                          % auf "LastChangedRevision LastChangedDate"
                          % gesetzt werden
 \usepackage{enumerate}   % Für "`Spezialnummerierungen"'
+\usepackage{nicefrac}    % kleine Brüche besser aussehen lassen
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -133,8 +134,8 @@
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
-\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+\newcommand*{\abs}[2][]{#1\left\lvert#2#1\right\rvert}
+\newcommand*{\norm}[2][]{#1\left\lVert#2#1\right\rVert}
 \newcommand*{\sprod}[3][]{#1\langle #2,#3 #1\rangle}
 
 % Das original Epsilon sieht nicht so toll aus
@@ -596,6 +597,7 @@ Die Umkehrung von \autoref{lem:8.1.2/11} gilt im allgemeinen \emph{nicht}.
 \end{bsp}
 
 \begin{satz}
+\label{satz:VFaequi}
   Sei $\Omega\subseteq \R^n$ offen und sternförmig, d.\,h. $\exists x^0\in
   \Omega\,\forall x\in \Omega\,\forall t\in (0,1): x^0+t(x-x^0)\in\Omega$.
   Weiter sei $\vec{v}$ ein $C^1$-Vektorfeld über $\Omega$. Dann sind folgende
@@ -637,7 +639,222 @@ Die Umkehrung von \autoref{lem:8.1.2/11} gilt im allgemeinen \emph{nicht}.
   \end{proof}
 \end{satz}
 
-\todo{hier fehlen zwei Vorlesungen}
+\begin{bsp}
+  Für alle $x\in \R^n\setminus\{0\}$ sei $\vec{v}(x)= \kappa(\norm{x})
+  \frac{x}{\norm{x}}=\kappa(r)\frac{x}{r}$ mit $r=\norm{x}=
+  \sqrt{x_1^2+\ldots +x_n^2}$ ein konservatives Vektorfeld. Ein
+  typisches Beispiel dafür ist $\kappa(r)=-\frac{mMG}{r^2}$, wobei
+  $\kappa(r)$ stetig auf $\R^n\setminus\{0\}$ ist. Dabei sind $m,M$
+  Massen und $G$ die Gravitationskonstante. In dem Falle ist $\vec{v}$
+  konservativ ($\vec{v}=\grad u(r)$).  Denn $\frac{\partial
+    r}{\partial x_j}= \frac{x_j}{r}$:
+  \begin{align*}
+    \frac{\partial u(r)}{\partial x_j} &= u'(r)\frac{x_j}{r}=
+    \frac{\kappa(r) x_j}{r} \Rightarrow \grad u(r)= \kappa(r)
+    \frac{x_j}{r} = \vec{v}
+  \end{align*}
+\end{bsp}
+
+\begin{bemerk}
+ \autoref{satz:VFaequi} gilt auch für eine größere Klasse von Gebieten
+ (aber nicht für alle Gebiete). Er ist auch für einfach zusammen
+ hängende Gebiete wahr. Wobei ein einfach zusammen hängendes Gebiet
+ dadurch charaktiersiert ist, dass sich jede geschlossene Kurve in
+ $\Omega$ auf einen Punkt zusammenziehen lässt. Somit hat $\Omega$
+ keine "`Löcher"'.
+\end{bemerk}
+
+\begin{bemerk}
+  Wie bestimmt man ein Potential?
+  \begin{enumerate}
+    \item $u(x)=\int_{\Gamma} \vec{v} \vec{dx}$\\
+    Beispiel:
+    \begin{align*}
+      \vec{v}(x,y) &= \int_{(0,0)}^{(x,0)} \vec{v} \vec{dx} +
+      \int_{(x,0)}^{(x,y)} \vec{v} \vec{dx} = \int_0^x
+      \begin{bmatrix}
+        0\\t^2
+      \end{bmatrix}
+      \begin{bmatrix}
+        1\\0
+      \end{bmatrix} dt + \int_0^y
+      \begin{bmatrix}
+        2xt+t^2\\x^2+2xt
+      \end{bmatrix}
+      \begin{bmatrix}
+        0\\1
+      \end{bmatrix} dt\\
+      &= 0+ int_0^y (x^2+2xt)dt= x^2y+xy^2
+    \end{align*}
+    \item Stammfunktion ermitteln:\\
+    \begin{align*}
+      \frac{\partial u}{\partial x} = v_1 \wedge \frac{\partial
+        u}{\partial y} = v_2 &\Leftrightarrow \frac{\partial
+        u}{\partial y}= x^2+2xy\\
+        &\Leftrightarrow x^2+2xy+c'(y) =
+        x^2+2yx \Leftrightarrow c'(y)=0 \Leftrightarrow
+        c(y)=\text{konstant}\\
+        \frac{\partial u}{\partial x} = 2xy+y^2 &\Leftrightarrow
+        u(x,y)= x^2y+y^2x+c(y)\Rightarrow u(x,y) = x^2y+y^2x+c
+    \end{align*}
+  \end{enumerate}
+\end{bemerk}
+
+\subsection{Vektorpotentiale}
+
+\begin{defini}
+  Sei $\vec{v}:\Omega\rightarrow\R$ ein $C^1$-Vektorfeld, $\Omega
+  \subseteq \R^3$ offen, $\vec{w}$ ein $C^2$-Vektorfeld. $\vec{w}$
+  heißt genau dann \emph{Vektorpotential\index{Vektorpotential}} von
+  $\vec{v}$, wenn $\vec{v}=\rot{\vec{w}}$
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}[(1)]
+    \item Notwendige Bedingung: $\vec{v}=\rot{\vec{w}}\Rightarrow \div
+    \vec{v}= 0$
+    \item Wenn $\vec{w}$ ein Vektorpotential von $\vec{v}$ ist und
+    $\Phi\in C^2(\Omega)$, dann ist $\vec{w}+\grad \Phi$ wieder ein
+    Vektorpotential.
+    \item Sei $\Omega$ sternförmig und $\vec{w}, \vec{b}$
+    Vektorpotentiale von $\vec{v}$. Dann ist $\rot (\vec{w}-\vec{b})
+    =0$. Denn aus \autoref{satz:VFaequi} folgt, $\vec{w}-\vec{b}=
+    \grad \Phi$.
+  \end{enumerate}
+\todo{Beweis noch einfügen}
+\end{bemerk}
+
+\section{Integralsätze}
+
+\subsection{Die Greensche Formel im $\R^2$}
+
+Das Ziel ist, einen Zusammenhang zwischen dem Flächenintegral und dem
+Kurvenintegral herzustellen:\\
+Sei $B\subset\Omega\subset\R^2, \Omega$ offen, $B$ kompakt, $\vec{v}:
+\Omega\rightarrow \R^2$ ein $C^1$-Vektorfeld:
+\begin{gather*}
+  \Rightarrow \int_B (\partial_1v_2-\partial_2v_1)dx= \int_{\partial
+    B} \vec{v}\vec{dx}
+\end{gather*}
+
+\begin{lemma}
+  Sei $G\subset \R^{n+1}$ offen, $(x,t)\in G, x\in\R^n, t\in\R, f:G
+  \rightarrow\R$ stetig, $\exists \frac{\partial f}{\partial t}$
+  stetig auf $G$, $B\subset \R^n$ kompakt und jordanmessbar, $B\times
+  [\alpha, \beta]\subset G$
+  \begin{gather*}
+    \Rightarrow\frac{d}{dt} \underbrace{\int_B f(x,t) dx}_{=:F(t)} =
+    \int_B \frac{\partial}{\partial t} f(x,t) dx \qquad \forall t\in
+    (\alpha, \beta)
+  \end{gather*}
+  \begin{proof}
+    \begin{align}
+      \label{eq:82}
+      \abs{\frac{F(t+h)-F(t)}{h}- \int_B \frac{\partial}{\partial t}
+        f(x, t)dx} &\leq \int_B\abs{\underbrace{\frac{f(x,t+h)
+            -f(x,t)}{h}}_{\frac{\partial f}{\partial x} (x, t+\theta
+          h) \text{ mit } 0<\theta<1} -\frac{\partial f}{\partial x}
+        (x,t)}dx\\
+      \label{eq:83}
+      &\leq \int_B \abs{\underbrace{\frac{\partial f}{\partial x}
+          (x,t+\theta h)-\frac{\partial f}{\partial x} (x,t)}_{\leq
+          \epsilon \text{ falls } \abs{h}\leq\delta(\epsilon)}}dx\leq
+      \epsilon\mu(B)
+    \end{align}
+    Die Folgerung in \ref{eq:82} ergibt sich nach dem Mittelwertsatz
+    der Differentialrechnung und \ref{eq:83} folgt aus der
+    gleichmäßigen Stetigkeit.
+  \end{proof}
+\end{lemma}
+
+\begin{folger}
+  Für $n=1$ im obigen Lemma folgt:
+  \begin{gather*}
+    \frac{d}{dt} \int_{\phi(t)}^{\psi(t)} f(x,t)dx =
+    \int_{\phi(t)}^{\psi(t)} \frac{\partial f}{\partial t} (x,t) dx+
+    f(\psi(t), t)\dot{\psi}(t)-f(\phi(t),t)\dot{\phi} (t)
+  \end{gather*}
+  \begin{proof}
+    Mittels der Hilfsfunktion: $F(u,v,t):= \int_u^v f(x,t)dx$:
+    \begin{align*}
+      \Rightarrow \frac{d}{dt} \int_{\phi(t)}^{\psi(t)} f(x,t)dx &=
+      \frac{d}{dt} F(\phi(t), \psi(t), t)\\
+      &= \frac{\partial F}{\partial u} (\phi(t), \psi(t),
+      t)\dot{\phi}(t) + \frac{\partial F}{\partial v} (\phi(t),
+      \psi(t), t)\dot{\psi} (t)+ \frac{\partial F}{\partial t}
+      (\phi(t), \psi(t), t)\\
+      &= -f(\phi(t), t)\dot{\phi}(t)+ f(\psi(t), t)\dot{\psi}(t) +
+      \int_{\phi(t)}^{\psi(t)} \frac{\partial f}{\partial t} (x,t)dt
+    \end{align*}
+  \end{proof}
+\end{folger}
+
+\todo{Skizze mit Normalbereich einfügen}
+
+\begin{satz}
+  \label{satz:821-3}
+  Sei $\Omega\subset\R^2$ offen, $B\subset \Omega$ ein Normalbereich
+  und $\vec{v}$ ein $C^1$-Vektorfeld auf $\Omega$. Dann gilt:
+  \begin{gather*}
+    \int_B (\partial_1v_2-\partial_2v_1)dx=\int_{\partial B} \vec{v}
+    \vec{dx}
+  \end{gather*}
+  \begin{proof}
+    Nach dem Satz von Fubini für Normalbereiche gilt:
+    \begin{align*}
+      \int_B \partial_1 v_2 dx &= \int_a^b
+      \left(\int_{\phi(x_1)}^{\psi(x_1)} \frac{\partial v_2}{\partial
+          x_1} (x_1,x_2)dx_2\right) dx_1\\
+      &= \int_a^b \left(\frac{d}{dx_1} \int_{\phi(x_1)}^{\psi(x_1)}
+        v_2 (x_1, x_2)dx_2\right) dx_1 + \int_a^b v_2(x_1, \phi(x_1))
+      \dot{\phi} (x_1)dx_1\\
+      &\qquad- \int_a^b v_2(x_1, \psi(x_1))\dot{\psi}
+      (x_1)dx_1\\
+      &= \int_{\phi(b)}^{\psi(b)} v_2(b,x_2)dx_2-
+      \int_{\phi(a)}^{\psi(a)} v_2(a,x_2)dx_2+ \int_{\Gamma_1} v_2dx_2
+      + \int_{\Gamma_3} v_2dx_2\\
+      &= \int_{\Gamma_2} v_2dx_2+ \int_{\Gamma_4} v_2dx_2+
+      \int_{\Gamma_1} v_2dx_2+ \int_{\Gamma_3}v_2dx_2= \int_{\partial
+        B} v_2dx_2
+    \end{align*}
+    Außerdem ist:
+    \begin{align*}
+      -\int_B \partial_2 v_1dx &= \int_a^b \left(
+        \int_{\phi(x_1)}^{\psi(x_1)} \frac{\partial v_1}{\partial x_2}
+        (x_1, x_2) dx_2\right) dx_1\\
+      &= -\int_a^b v_1(x_1, \psi(x_1))dx_1+ \int_a^b v_1(x_1,
+      \phi(x_1)) dx_1= \int_{\Gamma_3} v_1dx_1+\int_{\Gamma_1} v_1dx_1
+    \end{align*}
+    Der letzte Schluss ergibt sich daraus, dass $\int_{\Gamma_2} v_1
+    dx_1 = \int_{\Gamma_4} v_1dx_1=0$ ist.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  \begin{itemize}
+    \item \autoref{satz:821-3} gilt auch für allgemeinere Gebiete. Dabei
+    reicht es, wenn $\phi$ und $\psi$ nür stückweise differenzierbar
+    sind.
+    \item Der Flächeninhalt kann als Kurvenintegral über den Rand der
+    Flächen interpretiert werden:\\
+    \begin{align*}
+      \vec{v}=
+      \begin{bmatrix}
+        -x_2\\x_1
+      \end{bmatrix}
+      &\Rightarrow \partial_1 v_2-\partial_2 v_1=2\Rightarrow
+      2\int_Bdx= \int_{\partial B}
+      \begin{bmatrix}
+        -x_2\\x_1
+      \end{bmatrix}
+      \begin{bmatrix}
+        dx_1\\dx_2
+      \end{bmatrix}
+      \Rightarrow \mu(B)\\
+      \mu(B) &= \nicefrac{1}{2} \int_{\partial B} x_1dx_2-x_2dx_1
+    \end{align*}
+  \end{itemize}
+\end{bemerk}
 
 \begin{bsp}[Zylindermantel]
 % \begin{figure}
@@ -696,7 +913,7 @@ Die Umkehrung von \autoref{lem:8.1.2/11} gilt im allgemeinen \emph{nicht}.
 
   \begin{enumerate}
    \item $S:= g(B) = \{g(u,v): (u,v)\in B\}$\\ $(S,g)$ ist eine
-    \highl{kompakte Fläche} \gdwdef $\exists N\subseteq B$ Jordanische
+    \highl{kompakte Fläche} \gdwdef $\exists N\subseteq B$ Jordansche
     Nullmenge mit
     \begin{enumerate}
      \item $g$ injektiv auf $B\setminus N$ und
