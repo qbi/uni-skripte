@@ -1,0 +1,1900 @@
+%        File: zsfsg.tex
+%     Created: Di Aug 16 06:00  2005 C
+% Last Change: Di Aug 16 06:00  2005 C
+%
+\documentclass[a4paper]{book}
+%\documentclass[twoside]{scrreprt}
+
+\usepackage{ngerman}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{epsfig,color}
+\usepackage{hyperref}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage{ae}
+\usepackage{amsmath}
+
+\parindent 0mm
+
+% no color :-( why?
+\newcommand{\todo}[1]{\textcolor{red}{ {\sl {\bf TODO:} #1}}}
+
+% mini cmds
+\newcommand{\fpga}{{\tt FPGA }}
+\newcommand{\fpgas}{{\tt FPGA's }}
+\newcommand{\asic}{{\tt ASIC }}
+\newcommand{\asics}{{\tt ASIC's }}
+\newcommand{\gpp}{{\tt GPP }}
+\newcommand{\gpps}{{\tt GPP's }}
+\newcommand{\clb}{{\tt CLB }}
+\newcommand{\clbs}{{\tt CLB's }}
+
+
+\begin{document}
+
+\tableofcontents
+
+\chapter{Spezialprozessoren}
+
+\noindent Im Unterschied zu Universalprozessoren sind Spezialprozessoren
+weniger flexibel einsetzbar, können dafür jedoch mit einer größeren
+Leistungsfähigkeit bei speziellen Problemen aufwarten.
+
+\begin{center}
+\includegraphics[scale=1]{proz_ueb}
+\end{center}
+
+Unter den Spezialprozessoren werden die \emph{Eingebetteten Systeme},
+die \emph{digitalen Signalprozessoren} (als Spezialfall eingebetteter
+Systeme), sowie \emph{rekonfigurierbare Hardware} behandelt.\\
+
+Die Universalprozessoren stellen Hochleistungsprozessoren für allgemeine
+Computeranwendungen mit PC's oder Workstations. Sie sind nützlich für
+allgemeine Software und existieren mit komplexen Betriebssystemen. Die
+Frage ist, ob der PC/Workstation die Lösung für alle Probleme ist?
+
+\section{Eingebettete Systeme}
+
+Einen Großteil der Anwendungen digitaler Systeme findet man in
+elektronischen Alltagsgegenständen verborgen wieder. Sie treten der
+Umwelt mit \emph{analogen Schnittstellen} entgegen und ihre
+Rechenfunktionalität wird von außen nicht wahrgenommen. Trotzdem sind in
+ihrem Inneren leistungsfähige Rechner verborgen: {\bf Eingebettete
+Systeme}.
+
+\subsection{Mikrocontroller}
+
+Mikrocontroller stellen einen Vertreter eingebetteter Systeme dar. Sie
+sind vor allem für \emph{steuerungsdominante} Anwendungen interessant. Sie
+sind darauf ausgerichtet besonders \emph{Kontrollfluss-orientierten}
+Code auszuführen, weniger jedoch arithmetische Operationen. Weitere
+Merkmale sind ein \emph{geringer Datendurchsatz}, \emph{Multitasking},
+\emph{geringe Kosten} und dementsprechend \emph{hohe Stückzahlen}.
+Mikrocontroller arbeiten auf \emph{niedrigen Bitbreiten}, üblich sind
+8Bit. Es werden viele \emph{Bit und Logikoperationen} ausgeführt und
+Register werden oft als RAM realisiert. \emph{Kontextwechsel} werden
+durch Zeigeroperationen durchgeführt, woraus eine minimale (durch
+Unterbrechungen hervorgerufene) \emph{Latenz} resultiert.
+Mikrocontroller weisen die höchsten Stückzahlen auf. Meist sind
+periphere Einheiten direkt auf dem Mikrocontroller integriert, etwa A/D,
+D/A-Wandler und dergleichen.\\\\
+Einfache, kostengünstige Mikrocontroller arbeiten mit 4/8Bit-Prozessoren
+und die Codegröße nimmt den meisten Platz auf der Chipfläche ein und
+dominiert damit die Kosten des $\mu$C. Die Anforderungen an seine
+Rechenleistung sind eher gering. Die Klasse der Hochleistungs-$\mu$C
+hingegen arbeitet mit 16/32/64 Bit Prozessoren und wird in
+steuerungsrelevanten Anwendungen, die zusätzlich hohe Datenraten
+erfordern, eingesetzt, z.Bsp. in der Automobiltechnik oder in der
+Telekommunikation. An diese $\mu$C werden hohe Berechnungsanforderungen
+gestellt, etwa in der Regelungstechnik oder der Signalverarbeitung.
+Diese $\mu$C bilden oft den Kern eines \emph{System-On-A-Chip}.
+
+\begin{center}
+\includegraphics{proz_kosten_leistung}
+\end{center}
+
+Wie auf der Abbildung ersichtlich stellen eingebettete Systeme die
+Möglichkeit dar, \emph{anwendungsspezifische} Architekturen auch für
+hohe Leistung bereitzustellen.
+
+\subsection{Bestandteile eingebetteter Systeme}
+
+Allgemein gilt für eingebettete Systeme, dass sie in größere Umgebungen
+integriert sind. Mit der Definition von Ernst: "`\ldots ein
+Computersystem, was in ein technisches System eingebettet ist, jedoch
+selbst nicht als Computer erscheint."' Das wichtigste Merkmal ist, dass
+diese Systeme in \emph{analoge Umgebungen} eingebettet sind und mit der
+Umwelt über Sensoren Kontakt aufnehmen. Diese Systeme werden
+\emph{anwendungsspezifisch} entworfen und führen innerhalb des
+Gesamtsystems genau definierte Funktionen aus. Als Prozessoren kommen in
+eingebetteten Systemen Mikrocontroller, Mikroprozessoren oder eigens für
+einen bestimmten Zweck entworfene Schaltkreise zum Einsatz.
+
+\begin{center}
+\includegraphics{emb_bestandteile}
+\end{center}
+
+Eingebettete Systeme spielen eine \emph{wichtige} Rolle in der
+industriellen Automation, bei Werkzeugmaschinen, in der Robotik und der
+Unterhaltungsindustrie. In Europa, speziell in Deutschland überwiegt der
+Einsatz von solchen Systemen.
+
+\subsection{Entwurf eingebetteter Systeme}
+
+Bei dem Entwurf dieser Systeme spielen eine Reihe von Faktoren eine
+wichtige Rolle.
+
+\paragraph{Komplexe Funktionalität.} Mikroprozessoren erreichen
+mittlerweile sehr hohe Funktionalität und stellen somit sehr komplexe
+Gebilde dar. Heutige Systeme enthalten mehrere 10 Millionen Transistoren
+und bearbeiten mehrere 10000 Zeilen Hochsprachencode. Es werden
+\emph{Methoden aus der Softwaretechnik} auch für den Entwurf von
+eingebetteten Systemen angewendet.
+
+\paragraph{Benutzerschnittstellen.} Mehrfach-Menus, kleine
+Anzeigeflächen bestimmen hier. Scrollende Karten bei GPS-Geräten wären
+ein Beispiel für die wachsende Komplexität der Benutzerinterfaces.
+
+\paragraph{Realzeitoperation.} Das Nicht-Einhalten der zeitlichen
+Randbedingungen kann hier ein \emph{Versagen} darstellen (\emph{harte
+Anforderungen}), oder aber lediglich als \emph{Leistungseinbruch}
+betrachtet werden (\emph{weiche Anforderungen}). Eine besondere
+Herausforderung stellt das \emph{deadline-driven programming} dar, also
+die Programmierung von Anwendungen mit festem Ausführungszeitrahmen.
+Dies muß trotz unvorhersagbaren Verhaltens (Caches, etc.) eingehalten
+werden. Ein weiterer Punkt ist die \emph{Multiratenverarbeitung}, also
+die gleichzeitige Verarbeitung von Daten verschiedener Anwendungen.
+Hierfür müssen dann Schedulingmechanismen o.ä. von Betriebssystemen
+herangezogen werden. 
+
+\paragraph{Niedriger Energieverbrauch.} Die Kapazität der
+Spannungsversorgung ist durch die Faktoren \emph{Gewicht, Kosten} oder
+\emph{Rauschen} beschränkt. Die Lebenszeit von Batterie/Akku soll
+möglichst lang sein, ebenso die Einsatzzeit. Diese Faktoren wirken sich
+natürlich auf die Kosten aus. 
+
+\paragraph{Kosten.} Es handelt sich bei eingebetteten Systemen häufig um
+Massenware, die per se niedrige Kosten erforderlich macht. Die Kosten
+werden bestimmt durch die Art des eingebetteten Prozessors, Speichers
+und E/A-Einheiten. 
+
+\paragraph{Entwicklungszeit.} Diese sogenannte \emph{time to market}
+wird mit 6 Monaten angegeben. Es wird HW/SW-Codedesign angewendet.
+
+\paragraph{Beispiel:} Das \emph{rate-monotonic scheduling} stellt eine
+Strategie für die Ablaufplanung eines Echtzeit-Systems dar. Sie ist
+\emph{statisch}, da den Prozessen feste Prioritäten zugewiesen werden. 
+Es wird von einer einfachen Struktur ausgegangen, die folgende
+Grundlagen hat:
+
+\begin{enumerate}
+\item Alle Prozesse laufen \emph{periodisch} auf \emph{einer} CPU.
+\item Die Kontextwechselzeit wird ignoriert.
+\item Zwischen den Prozessen herrscht keinerlei Datenabhängigkeit.
+\item Die Ausführungszeit der einzelnen Prozesse bleibt konstant.
+\item Alle \emph{deadlines} befinden sich am Ende einer Periode.
+\item Der Prozess mit der höchsten Priorität wird zur Ausführung ausgewählt.
+\end{enumerate}
+
+\begin{center}
+\includegraphics{rms_bsp}
+\end{center}
+
+\emph{Bewertung:} Eine relativ einfache Strategie ist optimal. Die
+Prioritäten werden nach Größe der Perioden vergeben. Optimal bedeutet,
+dass bei einer möglichst großen CPU-Auslastung die \emph{deadlines} der
+einzelnen Prozessen dennoch eingehalten werden können. Jedoch gibt es
+keine 100 prozentige CPU-Auslastung, daher sind \emph{dynamische}
+Strategien interessant.
+
+\paragraph{Auswahl von Prozessoren für eingebettete Systeme.} Viele
+\emph{Universalprozessoren} werden nicht für universelle Aufgaben,
+sondern in eingebetteten Systemen eingesetzt. Diese Lösung ist möglich,
+kann jedoch sehr kostenintensiv werden. Für den Einsatz in
+\emph{steuerungsdominanten} Anwendungen sind \emph{Mikrocontroller}
+prädestiniert. Für spezielle Aufgaben aus der \emph{digitalen
+Signalverarbeitung} werden \emph{digitale Signalprozessoren eingesetzt}.
+Hingegen werden \emph{anwendungsspezifische Prozessoren}, sogenannte
+{\tt ASIP's} (\emph{application specific instruction processors}), für
+klar umrissene Anwendungen entworfen, für die auf dem Markt keine
+Prozessorlösung vorhanden ist und für die ein eigens entwickelter
+Befehlssatz notwendig ist.\\
+
+Was spricht also für eine Anwendung von Mikroprozessoren und was für
+kundenspezifische Lösungen? Für die \emph{Mikroprozessoren} spricht die
+höhere Effizienz, die Möglichkeit zur Schaffung von Produktfamilien, wie
+sie in der \emph{Generizität} der Mikroprozessoren begründet liegt und
+weiterhin die Geschwindigkeitsvorteile, die mit dem
+\emph{Mikroprozessorparadoxon} erklärt werden können. Es besagt, dass
+trotz des höheren Aufwandes an Logik, der zur Erfüllung einer Funktion
+aufgebracht werden muß, die Geschwindigkeit besser ist als in der
+kundenspezifischen Lösung. Dies resultiert aus der optimierten
+Architektur ({\tt RISC}, Parallelverarbeitung), den großen
+Entwicklungsteams um diese Prozessoren sowie des Einsatzes neuester {\tt
+VLSI-}Technologien. Für \emph{kundenspezifische Lösungen} spricht der
+niedrigere Leistungsverbrauch, die geringere Größe, und die Möglichkeit
+spezielle Anforderungen direkt zu realisieren, etwa eine integrierte
+Signalerfassung ({\tt OPTO-ASIC}).\\
+
+Beim Entwurf stellen sich unter anderem diese Fragestellungen:
+
+\begin{center}
+\includegraphics{entwurf_fragen}
+\end{center}
+
+Den in diesen Fragen steckenden Problemstellungen begegnet man mit einer
+geeigneten \emph{Entwurfsmethodik}. Warum ist dies so? Entwurfsmethodik
+bietet die Möglichkeit einer \emph{Bewertung}, etwa ob die
+Anforderungen, also \emph{Funktionalität, Userinterfaces,
+Herstellungskosten, Leistungsverbrauch, \ldots}, erfüllt werden. Sie
+ermöglicht die Verwendung von {\tt CAE/CAD}-Werkzeugen, also die
+Aufteilung des gesamten Entwicklungsprozesses in überschaubare
+Teilschritte. Weiterhin ist mit der Entwurfsmethode auch die
+\emph{Kommunikation} im Entwicklerteam definiert. 
+
+\begin{center}
+\includegraphics{abstrakt_ebenen}
+\end{center}
+
+\paragraph{Der Entwurfsprozess} wird in \emph{Abstraktionsebenen}
+unterteilt, die eine schrittweise Verfeinerung während eines
+\emph{top-down}-Prozesses und die Überprüfung der Randbedingungen durch
+einen folgenden \emph{bottom-up}-Prozess ermöglichen. Wir gehen nun kurz
+auf die einzelnen Ebenen ein und nennen wesentliche Bestandteile und
+Mechanismen, die in jeder Ebene betrachtet werden sollten.\\
+
+Die {\bf Anforderungsebene} stellt zunächst eine informelle Beschreibung
+der Kundenwünsche dar. Dann werden \emph{funktionale} von
+\emph{nicht-funktionalen} Anforderungen getrennt. Ersteres beschreibt
+die Ausgabe als Funktion der Eingabe, letzteres hingegen
+
+\begin{itemize}
+\item wie lang es dauert, bis die Ausgabe verfügbar ist,
+\item Größe, Gewicht und Kosten,
+\item Leistungsverbrauch,
+\item Zuverlässigkeit.
+\end{itemize}
+
+In der Anforderungsphase wird weiterhin ein Modell, oder Attrappe des
+Endprodukts erstellt, um dem Kunden einen Eindruck von Gewicht und
+Dimensionen des Gerätes zu vermitteln. Schliesslich wird ein
+\emph{Pflichtenheft} angelegt, dass die Anforderungen grob definiert und
+als Ausgangspunkt für den weiteren \emph{top-down-}Prozess verwendet
+wird.\\
+
+Auf der folgenden {\bf Spezifikationebene} wird eine \emph{detaillierte}
+Beschreibung des Systems vorgenommen, die als ein Vertrag zwischen dem
+Kunden und Systemarchitekt verstanden wird. Sie sollte ausformuliert
+sein, oder als mathematische Beschreibung, etwa durch  {\tt
+UML-}Diagramme, Kontroll- und Datenflussgraphen ({\tt CDFG}),
+Statecharts oder Automaten, vorliegen.\\
+
+Nun wird auf der {\bf Architekturebene} der Plan für die gesamte
+Systemarchitektur erstellt. Während die Spezifikation die Frage nach dem
+"`\emph{was}"' beantwortet hat, wird hier auf das "`\emph{wie}"'
+eingegangen. Dabei werden die \emph{wichtigsten Operationen} in einem
+Blockdiagramm erfasst. Beispielsweise könnte für ein {\tt GPS-}System
+das Blockdiagramm wie folgt aussehen: 
+
+\begin{center}
+\includegraphics{bsp_gps}
+\end{center}
+
+Im nächsten Schritt auf der Architekturebene wird das Blockdiagramm
+jeweil für die \emph{Hardware} und für die \emph{Software}
+spezialisiert. Neben diesen \emph{funktionalen} Beschreibungen müssen
+auch \emph{nicht-funktionale} Randbedingungen auf der Architekturebene
+beachtet werden. Diese basieren meist auf \emph{Erfahrung} und aus dem
+\emph{bottom-up}-Prozess, sowie aus Simulationsergebnissen.\\
+
+Die {\bf Komponentenentwurfsebene} dient zur Abschätzung der
+Möglichkeiten, ob man bereits \emph{verfügbare Komponenten} einbinden
+kann, oder ob diese aus vorhergehenden Entwürfen entnehmbar sind. Hier
+wird dann auch die Schaffung einer neuen Komponente realisiert, falls
+dies notwendig ist.\\
+
+Schliesslich wird auf der {\bf Systemintegrationsebene} eine
+Zusammenführung aller Komponenten vorgenommen. Hier werden dann viele
+Fehler erstmals sichtbar.
+
+\section{Signalprozessoren}
+
+\begin{center}
+\includegraphics{anw_dsp}
+\end{center}
+
+Die wichtigste Klasse eingebetteter Systeme stellen die sogenannten
+digitalen Signalprozessoren ({\tt DSP's}) dar. Diese könnte man
+definieren als "`\emph{elektronische Systeme zur digitalen
+Signalverarbeitung}"'.\\
+
+Wesentliches Charakteristikum von digitaler Signalverarbeitung ist
+die Anwendung \emph{mathematischer Operationen} auf
+\emph{digital-repräsentierte}, ursprünglich analoge, Signale. Diese
+Signale werden als Folgen von Abtastwerten, sogenannten \emph{Samples},
+aufgenommen. Man erhält sie aus \emph{physischen} Signalen durch die
+Anwendung von \emph{Transducern}\footnote{Gerät, das Töne, Temperaturen,
+Druck, Licht oder andere Signale von/nach elektronische Signale
+konvertiert.} oder {\tt AD-}Wandlern.\\
+
+Das Aufzeichnen von analogen Signalen ist mit einem \emph{Verlust von
+Information} behaftet, da das Aufzeichnen wie ein Filter wirkt.
+Demhingegen hat die \emph{digitale} Aufzeichnung, also die
+Repräsentation der Signale durch Zahlen, den Vorteil einer
+\emph{stabilen} Speicherung. Man kann ohne Verzerrungen speichern,
+übertragen, wiedergeben und eine \emph{(De-)Kodierung} wird
+simplifiziert. Auch bei niedrigen Frequenzen sind analoge Filter zur
+Speicherung schwierig zu realisieren, digitale dagegen recht einfach.\\
+
+Eingesetzte Algorithmen drehen sich um \emph{Filterung im
+Frequenzbereich}, \emph{Frequenz-Zeit-Transformation} und
+\emph{Korrelation}. Wesentliche Aufgaben umfassen \emph{iterative,
+numerische} Berechnungen mit Beachtung numerischer Präzision, eine durch
+Arrayzugriffe hohe Speicherbandbreite und natürlich
+Realzeit-Verarbeitung. {\tt DSP's} müssen ihre Aufgaben effizient
+ausführen bei gleichzeitiger Minimierung von Kosten, Leistungsverbrauch,
+Speicherbedarf und Entwicklungszeit.\\
+
+Da {\tt DSP-}intensive Aufgaben heutzutage den Flaschenhals in vielen
+Rechneranwendungen darstellen und unter Berücksichtigung des
+Kostenfaktors sind \emph{general-purpose processors} ({\tt GPP's}) nicht
+zum Einsatz in diesem Bereich geeignet. {\tt DSP's} werden gewöhnlich
+für \emph{ein} Programm entwickelt, daher fällt die Komplexität für das
+zugehörige Betriebssystem relativ niedrig aus. Sie müssen häufig
+\emph{harten Realzeitanforderungen} genügen und sie verarbeiten einen
+potentiell unendlichen Datenstrom. Trotz der Kostenbeschränkungen finden
+in einigen Bereichen auch {\tt GPP's} zunehmend Betätigungsfelder, etwa
+Sprach- und Audiodatenkompression, Filterung, Modulation,
+Spracherkennung oder Signalsynthese und v.m. Mit dem {\tt LINGO} wurde
+ein graphisches Format zur Darstellung von {\tt DSP-}bezogenen Formeln
+geschaffen.
+
+\subsection{Algorithmen für {\tt DSP's}}
+
+In {\tt DSP's} sind Algorithmen fest-verdrahtete, oder auch
+Firmwareimplementierungen zur Berechnung von \emph{Standardfunktionen},
+ohne die Multiplikation. Wichtige Algorithmen sind \emph{CORDIC-} und
+\emph{Bit-}Algorithmen. Ein wesentliches Ziel war die \emph{Vermeidung
+von Multiplikationen} um kostenträchtige Chipfläche einzusparen. Heute
+werden jedoch immer mehr schnelle Multiplizierer, etwa der {\tt
+Radix-4-} Multiplizierer\footnote{Vorlesung, Rechnerarchitektur I.}
+eingesetzt. Für die Zukunft ist jedoch wieder mit einem Rückgang der
+Multiplikationen zugunsten \emph{massiv-paralleler} Signalprozessoren
+auf \emph{einem} Chip zu rechnen.\\
+
+Zu den angesprochenen \emph{Standardfunktionen} gehören trigonometrische
+Funktionen, Logarithmus- und Exponentialfunktionen, Quadratwurzelbildung
+und Division/Multiplikation. Die Berechnung ist grundsätzlich mit drei
+Verfahren realisierbar:
+
+\begin{enumerate}
+\item Reihenentwicklung
+\item Interpolationsverfahren
+\item {\bf Konvergenzverfahren}
+\end{enumerate}
+
+
+\paragraph{Der {\tt CORDIC-}Algorithmus} stellt ein solches
+Konvergenzverfahren dar, dass auf dem Prinzip der
+\emph{Koordinatentransformation} aufbaut. Der Vorteil gegenüber
+Reihenentwicklungen besteht in Berechnungen ohne Multiplikationen und
+der Beschränkung auf \emph{einfache} Operationen, wie Addition,
+Subtraktion und Schiebeoperationen. {\tt CORDIC-}Prozessoren sollen eine
+Möglichkeit schaffen mit ein und derselben Hardwarestruktur eine Menge
+von Standardfunktionen berechnen zu können. \todo{Cordic-Verfahren
+angucken!}\\
+
+\paragraph {Die Bitalgorithmen} stellen eine weitere Klasse von
+Konvergenzalgorithmen dar. Sie bauen auf der Erkenntnis auf, dass die
+Abarbeitung häufig auf einzelne Bits zugreift. Die grundlegende
+Strategie ist, geeignete Iterationsvorschriften für die Iterationswerte
+$x_i$ und $y_i$ zu finden, sodass eine ebenfalls zu definierende
+\emph{charakteristische Funktion $\Phi$} für alle Iterationspaare
+$(x_i,y_i)$ den gleichen Funktionswert liefert:
+
+\begin{center}
+$\Phi(x_{i+1},y_{i+1}) = \Phi(x_i,y_i)$
+\end{center}
+
+\paragraph{Vergleich.} Vorteilhaft beim {\tt CORDIC-}Algorithmus ist die
+einheitliche Berechnungsvorschrift für eine Vielzahl von Funktionen, die
+eine reguläre und einfache Hardwarestruktur ermöglicht. Nachteilig ist,
+dass die Berechnung nicht-trigonometrischer Funktionen oftmals eine
+zweimalige Anwendung des Algorithmus' benötigt. Der Vorteil von
+Bitalgorithmen ist, dass die Berechnungsvorschriften mit $n$-Iterationen
+auskommen und er ist somit bei der Berechnung von Exponential-,
+Logarithmus- oder Wurzelfunktion dem {\tt CORDIC-}Algorithmus überlegen.
+Die Einheitlichkeit der Hardwarestruktur ist jedoch bei ihm nicht
+gegeben. 
+
+\section{Rekonfigurierbare Hardware}
+
+Der Begriff der \emph{Rekonfigurierbarkeit} bedeutet, dass Hardware
+sowohl hinsichtlich der Verbindungen, als auch der Funktionalität
+\emph{umprogrammierbar} ist. Die bekanntesteten Vertreter stellen die
+\fpga (\emph{field programmable gate arrays}) dar. \fpgas
+sind zwischen den \asics und den \gpps einzuordnen.
+
+\paragraph{Vergleich.} Während \gpps durch ein breites Sortiment
+unterschiedlicher Befehle gekennzeichnet sind, die nahezu jede logische
+und mathematische Operation ausführen können, so gilt für {\tt ASIC},
+dass sie nur bestimmte Probleme lösen. Dies erledigen sie jedoch
+schneller, kostengünstiger, leistungsärmer und auch mit geringerem
+Platzbedarf als jeder Universalprozessor. Die Herstellung und
+Veränderung besitzt bei \asics \emph{hohe Fixkosten} und der
+entsprechende Aufwand muß sich bereits bei geringen Stückzahlen
+amortisieren. Der \fpga nimmt zwar Instruktionen entgegen, jedoch
+nur zur Änderung seiner internen Konfiguration. Instruktionen sind somit
+\emph{Konfigurationsdaten} und nach einer Änderung gilt für den \fpga 
+der selbe Aufwand, wie für einen {\tt ASIC}.\\
+
+\subsection{Aufbau von \fpgas}
+
+Obwohl es von Hersteller zu Hersteller Unterschiede im Design der \fpgas
+gibt, so läßt sich eine Grundstruktur festhalten. Ein \fpga besteht aus
+
+\begin{enumerate}
+\item konfigurierbaren Verdrahtungsressourcen,
+\item regelmäßigen konfigurierbaren Logikblöcken ({\tt CLB}) und
+\item spezielle I/O-Blöcke für die Ein- und Ausgabe.
+\end{enumerate}
+
+\begin{center}
+\includegraphics{fpga_clb}
+\end{center}
+
+Die {\tt CLB's} werden durch \emph{Schaltmatrizen} gesteuert. Diese
+Matrizen können mittels
+\emph{fuse/antifuse}-Techniken
+oder SRAM/EPROM-Speicherzellen geschalten werden. An den
+Leitungskreuzungen stehen also Schalter zur Verfügung und die
+konfigurierbaren Logikblöcke können \emph{fein} oder {grob-granular}
+bezüglich der Funktionalität sein. Das Haupteinsatzgebiet von \fpgas
+besteht im \emph{rapid prototyping}, also dem Test von {\tt ASIC's}.
+
+\subsection{Konfiguration von Logikblöcken und Verbindungen}
+
+\todo{Unmaskieren auf Folie 127, kap1/03}. Vorteil der SRAM-Technik ist,
+dass mit ihr der Chip \emph{beliebig oft} programmierbar ist, womit der Chip
+für viele Entwurfssituationen \emph{wiederverwendbar} wird. Ein weiterer
+Pluspunkt ist, dass der Baustein während der Anwendung umprogrammierbar
+ist, also \emph{dynamisch rekonfigurierbar} ist. Ein Nachteil dieser
+Technik ist die \emph{Flüchtigkeit} des Speichers. Es muss nachjedem
+Neustart der Speicher neu geladen werden. Ausserdem werden mit der
+SRAM-Technik pro Speicherzelle 5 Transistoren benötigt, was man in der
+Folge als \emph{flächenintensiv} bezeichnen kann.\\
+
+Bei der fuse/antifuse-Technik werden hochohmige Kontakte durch eine
+überhöhte Programmierspannung \emph{irreversibel} niederohmig gemacht.
+Die Irreversibilität stellt auch einen Nachteil neben den benötigten
+großen Transistoren zur Bereitstellung der hohen Programmierspannung
+dar. Positiv ist der dennoch geringe Platzbedarf und der niedrige
+Widerstand beim Schalten (nachdem die Isolationsschicht im
+Kreuzungsgebiet gezielt zerstört wird).
+
+\subsection{Entwurfszyklus von \fpgas}
+
+\fpgas werden in einem \emph{top-down-}Entwurfszyklus designed. 
+
+\begin{center}
+\includegraphics{fpga_entwurf}
+\end{center}
+
+Für die {\bf Systemspezifikation} gibt es zwei Methoden. Zum einen eine
+hardwarenahe \emph{Strukturbeschreibung} und zum anderen eine
+abstraktere, funktionalere \emph{Verhaltensbeschreibung}. Bei der
+Strukturbeschreibung wird die Funktionalität in Form von einzelnen
+Modulen spezifiziert, die durch Signale verbunden sind. Diese Module
+werden vom Hersteller der Zielhardware in Bibliotheken bereitgestellt.
+Neben einfachen logischen Gattern, Speicherzellen werden auch komplexe
+Funktionen (arithmetische Funktionen, Speicherschnittstellen,
+I/O-Bus-Interfaces) zur Verfügung gestellt. Zur Beschreibung kann
+entweder ein Schaltplan-Editor verwendet werden um diese zu zeichnen,
+oder man erstellt die Strukturbeschreibung durch eine
+Systementwurfsprache wie {\tt VHDL}, {\tt Verilog} oder {\tt SystemC}.
+Die Strukturbeschreibung ist \emph{hardwarenah}, daher wird vom
+Entwickler ein hohes Maß an Hardwarekenntnissen der Zielarchitektur
+verlangt. Demhingegen wird bei der \emph{Verhaltensbeschreibung} vom
+Entwickler keine spezielle Kenntnis der Zielhardware erwartet.
+Bei der {\bf Hardwaresynthese} wird die Funktionspezifikation unter
+Verwendung von {\tt EDA-}Werkzeugen (\emph{electronic design
+automation}) in eine Gatternetzliste umgewandelt. Dabei wird wiederum
+auf Bibliothekselemente des Hardwareherstellers zurückgegriffen. Nun
+kann mit herstellerspezifischen Werkzeugen aus der Gatternetzliste eine
+Layoutnetzliste erstellt werden. Durch {\bf Verifikation}, also durch
+Simulation und der Programmierung geeigneter Testumgebungen werden
+möglicherweise Fehler sichtbar und es müssen unter Umständen einzelne
+Syntheseschritte wiederholt werden. 
+
+\subsection{Dynamische Rekonfigurierung}
+
+Zur Zeit wird dynamische Rekonfigurierung hauptsächlich in der Form des
+\emph{rapid prototyping} angewendet. Allgemein ist die Möglichkeit der
+dynamischen Umprogrammierung von Hardware insofern interessant, als dass
+man versucht, die Funktionalität eines \gpp mit beschränkten
+Hardwareressourcen zu erreichen. Dazu gibt es einen Forschungsbereich
+für sogenannte {\tt DISC}-Prozessoren (\emph{dynamic instruction set
+computers}).\\
+
+\chapter{HW/SW-Codesign}
+
+Unter HW/SW-Codesign versteht man den Entwurf eines digitalen Systems,
+in dem Teile in Software \emph{und} Hardware spezifiziert und
+abgewickelt werden. Dieser Denkansatz ensteht aus dem Wunsch eine
+mit dem Softwareentwickler abgestimmte Entwicklung von Hardware zu
+gewährleisten und die sowohl die Hardware, als auch die Software
+\emph{parallel} zu erstellen. Der Wert eines Rechensystems wird durch
+folgende Eigenschaften bestimmt:
+
+\begin{enumerate}
+\item Leistung
+\item Kosten 
+\item Einfachheit der Programmierung
+\item Möglichkeit der Reprogrammierung
+\end{enumerate}
+
+Das HW/SW-Codesign zielt darauf ab diese Eigenschaften bereits auf der
+\emph{Systemebene} zu verbessern. Dies soll durch \emph{Interaktion} zu
+\emph{Synergieeffekten} zwischen Hardware und Software führen. Das
+Codesign kann für \emph{eingebettete Systeme}, \emph{ISA-Architekturen}
+oder \emph{rekonfigurierbare Hardware} angewendet werden, verläuft durch
+die verschiedenen Anforderungen jedoch unterschiedlich.
+
+\section{Anwendungsorte}
+
+\paragraph{Eingebettete Systeme} verfolgen verschiedene Ansätze. Der
+\emph{Null-Kosten-}Ansatz läßt kaum Spielraum für das Codesign. Der
+{Null-Leistungsverbrauch}-Ansatz für bspw. batteriebetriebene
+Anwendungen ist auch noch nicht durch Codesign vertreten. Die
+\emph{Null-Verzögerung}-Anwendungen hingegen sind sehr interessant aus
+Sicht des HW/SW-Codesigns. 
+
+\paragraph{ISA-Architektur} (\emph{instruction set architecture}) ist
+für hohe Rechenleistung konzipiert. Es ist hier im Mittelpunkt der
+Betrachtung die \emph{Wechselwirkung} zwischen Compilertechnologie und
+Instruktionssatz. Man könnte die Compilerentwicklung als eine frühe Form
+des Codesigns ansehen, jedoch stellt das Codesign höhere Anforderungen
+an den Compiler: Es muß eine Variation des Zielbefehls- und
+Registersatzes (\emph{retargetable}) ermöglicht werden und weiterhin
+muß der Compiler \emph{hochoptimierend} sein, um die
+Leistungszielsetzung zu erfüllen. 
+
+\paragraph{Rekonfigurierbare Hardware} hat ebenfalls hohe Rechenleistung
+im Sinn. Sie ist quasi prädestiniert für das HW/SW-Codesign und wurde
+vor allem dafür entworfen. Operative Eigenschaften rekonfigurierbarer
+Hardware wird unterschieden in \emph{statische}, während einer Anwendung
+unabänderlicher Hardware und in \emph{dynamische} Hardware, die zur
+Laufzeit rekonfigurierbar ist. Es kommen zwei Einsatzgebiete in Frage:
+
+\begin{enumerate}
+\item HW-Beschleuniger
+\item Rapid-Prototyping
+\end{enumerate}
+
+Für \emph{HW-Beschleuniger} besteht das Codesign aus
+\emph{Programmanalyse, Laufzeitmessungen,} Umsetzung
+\emph{zeitkritischer} Berechnungen in Hardware. Zeitunkritische Teile
+verbleiben in der Software. Das Codesign selbst besteht aus viel
+Handarbeit, also dem Aufspüren der zeitkritischen Anteile. Der
+Geschwindigkeitsgewinn wird durch \emph{sukkzessive} Verbesserung
+erreicht. Das \emph{Rapid-Prototyping} ist meist rechnergestützt und
+dient zur \emph{Validierung von Hardware}, der \emph{prototypischen
+Realisierung} von Hardware oder besitzt seine Zielstellung im Bereich
+einer Einzelfallapplikation. 
+
+\section{Durchführung von HW/SW-Codesign}
+
+\begin{center}
+\includegraphics{codesign_entwurf}
+\end{center}
+
+Der Designprozess umfaßt mehrere Schritte. Zunächst wird während der
+\emph{Modellierungs- und Partitionierungsphase} von einem Konzept
+ausgegangen und mit der permanenten Verfeinerung der Spezifikation eine
+\emph{Hardware- und Softwaremodellbildung} geschaffen, die Grundlage für
+die folgende \emph{Validierung} ist. Damit ist das Erreichen eines
+bestimmten Grades an \emph{Vertrauen} gemeint, indem auf logische
+Korrektheit und Einhalten der Randbedingungen geprüft wird.
+Abschliessend erfolgt in der \emph{Implementierungsphase} die technische
+Umsetzung des Designs in Form einer \emph{Übersetzung} für den
+Softwareteil und der \emph{Synthese} für den Hardwareteil.
+
+\subsection{Erfassen und Simulieren}
+
+Die grobe Struktur des zu entwerfenden Systems ist zu spezifizieren und
+dann zu \emph{verfeinern}, von einer Blockstruktur zu Logikstruktur, bis
+hin zu einer Transistornetzliste. Während dieser Verfeinerung muss durch
+Simulation die Validierung gewährleistet werden. Auf der
+\emph{Systemebene} wird eine noch höhere Abstraktion von HW/SW
+\emph{gemeinsam} in einer Platform entworfen. Dazu sollte die
+Partitionierung am besten \emph{automatisch} erfolgen.
+
+\subsection{Beschreiben und Synthetisieren}
+
+\paragraph{Bei der Logiksynthese} wird eine \emph{automatische}
+Generierung von funktionalen und Steuerungseinheiten aus Boolschen
+Gleichungen und endlichen Automaten vorgenommen. Verfahren sind die aus
+RA I bekannten \emph{Minimierung boolscher Gleichungen},
+\emph{Zustandsminimierungen} und \emph{Technologieabbildung}. 
+
+\paragraph{Unter Architektursynthese} versteht man die Synthese einer
+\emph{Strukturbeschreibung} aus einer Verhaltensbeschreibung. Diese
+Strukturbeschreibung ist eine integrierte Schaltung und besteht aus
+Operationswerk (Datenpfad) und Steuerwerk (Kontrollpfad). Verfahren
+hierfür sind \emph{Allokation, Ablaufplanung} und \emph{Bindung}. Zum
+Einsatz kommen formale Beschreibungsmittel, wie \emph{Daten- und
+Kontrollflussgraphen}.
+
+\paragraph{Während der Softwaresynthese} wird aus einem Quellprogramm
+ein Maschinencode. Für parallele Zielarchitekturen wird dann auch hier
+Allokation, Ablaufplanung und Bindung notwendig. Der Unterschied ist,
+dass hier die Zielarchitektur gegeben ist. 
+
+\paragraph{Die Systemsynthese} ist schwieriger zu realisieren. Das
+Hauptproblem besteht in der Partitionierung und der
+Schnittstellensynthese. Gründe hierfür sind in der Frage der Aufteilung
+von HW/SW, der allgemeinen Heterogenität bei Hardware (unterschiedliche
+Prozessortypen) und das das Prozedere unter den Anforderungen Kosten,
+Zeit und Leistungsverbrauch betrachtet werden muss, zu finden. Folgende
+Definition werden nun benötigt:
+
+\paragraph{Definition. } Ein {\bf Problemgraph} $G(V,E)$ ist
+\emph{gerichtet} und \emph{azyklisch}. Er besteht aus der Knotenmenge
+$V$ und der Kantenmenge $E \subseteq V \times V$. Jeder Knoten $v_i \in V$
+stellt eine Aufgabe (Prozess, Anweisung, Elementaroperation) dar. Jede
+Kante $e=(v_i,v_j)$ steht für eine Datenabhängigkeit zwischen zwei
+Aufgaben $v_i,v_j$.
+
+\paragraph{Definition. } Ein {\bf Ressourcengraph} $G_R(V_R, E_R)$ ist
+\emph{bipartit}. Die Knotenmenge $V_R = V \cup  V_\gamma $ besteht aus der
+Knotenmenge $V$ eines $\rightarrow$ Problemgraphen und der Menge von
+Knoten $r \in V_\gamma $, die Ressourcen darstellen (Speicher, Prozessor,
+Multiplizierer, Addierer). Für die Kantenmenge gilt: $E_R \subseteq V \times
+V_\gamma$.
+Dabei beschreibt eine Kante $e = (v_j, r_k) \in E_R$ die
+\emph{Realisierbarkeit} einer Aufgabe $v_j$ auf dem Ressourcentyp $r_k$.
+Eine \emph{Kostenfunktion} $c: V_\gamma \rightarrow _0+ $ ordnet jedem
+Ressourcentyp $r_k$ Kosten $c(r_k)$ zu. Eine \emph{Gewichtsfunktion} $w:
+E_R \rightarrow _0+$ ordnet jeder Kante $(v_i, r_k)$ Berechnungszeit zu:
+$w(v_i, r_k)=d_i$, mit $w_{i,k}=_{def}d_i$.  
+
+\paragraph{Definition. } Ein Paar $( G(V,E), G_R(V_R, E_R))$ heißt {\bf
+Spezifikation}.\\
+
+Hier ein Beispiel für eine \emph{Spezifikation}. Links der Problemgraph
+mit der vertikalen Zeitachse, rechts der Ressourcengraph mit einem
+Beispiel für die Multiplikationsressource.
+
+\begin{center}
+\includegraphics{prob_res_graph}
+\end{center}
+
+\paragraph{Allokation. }
+
+Die \emph{Allokation} dient zur Bestimmung der \emph{Anzahl und Art} der
+Komponenten, etwa wie viele Registerbänke, Speicherbänke, Zahl und Art
+der internen Busse, Aussagen über die funktionalen Einheiten und sie
+dient zur \emph{Kostenabschätzung}.
+
+\paragraph{Ablaufplanung. }
+
+Die \emph{Ablaufplanung} legt die \emph{Startzeiten} unter
+Berücksichtigung der Datenabhängigkeiten im Problemgraphen fest. Dabei
+werden die spezifizierten Aufgaben Zeitintervallen zugewiesen und
+geplant, wann welche Operation ausgeführt werden kann unter Beachtung
+der Datenabhängigkeiten.
+
+\paragraph{Bindung. }
+
+Die \emph{Bindung} dient zur \emph{Kopplung} von Ablaufplanung und Allokation.
+Sie spezifiziert, auf welcher Instanz und welchem Ressourcentyp eine
+Aufgabe implementiert wird. Jede Aufgabe auf einem Problemgraphen muss
+mit mindestens einem Ressourcentyp lösbar sein. Weiterhin erledigt die
+Bindung die \emph{Zuordnung} von Daten zu Speicherzellen, von
+Operationen zu funktionalen Einheiten und von Kommunikationen zu Bussen. 
+
+\paragraph{Zielstellung. }
+
+Die Ablaufplanung, die Allokation von Ressourcen und die Bindung von
+Aufgaben an Ressourcen soll so geschehen, dass eine spezielle
+\emph{Zielfunktion}, etwa die Ausführungszeit, optimiert wird. Im
+folgenden wird etwas genauer auf die Ablaufplanung und Partitionierung
+eingegangen.
+
+\subsection{Ablaufplanung}
+
+\paragraph{Ablaufplanung ohne Ressourcenbeschränkung.} Dies sind
+Probleme, die in polynomieller Zeit lösbar sind. Ziel der Betrachtung
+ist die \emph{Minimierung der Latenz}. Formal ausgedrückt bedeutet dies:
+
+\begin{center}
+$min\{L|\tau(v_i) - \tau(v_j) \geq d_i, \forall (v_i,v_j) \in E\}$
+\end{center}
+
+\begin{center}
+mit (Latenz) $L=max_{v_i \in V}\{\tau(v_i) - d_i\} - min_{v_i \in V}\{\tau(v_i)\}$
+\end{center}
+
+Es existieren zum einen der {\tt ASAP}-Algorithmus und zum anderen der
+{\tt ALAP}-Algorithmus.  Die Idee des {\tt ASAP}-A. ist jede Operation
+so \emph{früh} wie möglich zu starten und liefert damit die gesuchte
+\emph{minimale Latenz }$L^S$. Der {\tt ALAP}- A. startet jede Operation
+so \emph{spät} wie möglich und man erhält eine obere Latenzschranke. Man
+erhält ein Intervall für mögliche Startzeitpunkte aller Knoten, genannt
+\emph{Mobilität} $\mu$. Dies dient als Ausgangspunkt für Algorithmen
+\emph{mit} Ressourcenbeschränkung.
+
+\paragraph{Ablaufplanung mit Ressourcenbeschränkung.} Hierbei handelt es
+sich um Optimierungsprobleme zur Ablaufplanung, die {\tt NP-hart} sind.
+Es gibt den \emph{heuristischen} Ansatz mit
+Listscheduling\footnote{Berücksichtigen von globalen Kriterien für die
+Knotenauswahl, etwa die Anzahl der Nachfolgeknoten oder das Gewicht des
+längsten Pfades.} und Kräftemodell\footnote{Berechnen von Kräften für
+Kanten im Ressourcengraph und Auswahl der kräftigsten.}. Ein exaktes
+Verfahren dagegen ist das {\tt ILP} (\emph{integer linear programming}).
+Dabei wird aus den durch {\tt ASAP/ALAP}-berechneten Werten ein
+Ungleichungssystem aufgestellt und gelöst.
+
+\subsection{Partitionierung}
+
+Die HW/SW-Partitionierung gehört zur Systemsynthese. Die
+\emph{Systemsynthese} bedeutet die Abbildung \emph{von} einer
+Verhaltensbeschreibung von funktionale Objekten mit der Granularität von
+Algorithmen, Prozeduren, Tasks und Prozessen \emph{in} eine strukturelle
+Beschreibung mit Objekten aus Prozessoren, ASICs, Bussen und
+Speicherzellen. Die Systemsynthese trennt die Spezifikation bezüglich
+des Hardware und Softwareanteils. Folglich kann dann die Hardware durch
+Logik- und Architektursynthese verfeinert werden, während die Software
+der Softwaresynthese zugeführt wird. 
+
+\begin{center}
+\includegraphics{hwsw_part}
+\end{center}
+
+Zur HW/SW-Partitionierung gibt es \emph{konstruktive} und
+\emph{iterative} Verfahren. Erste bestehen aus \emph{bottom-up
+clustering}-Verfahren, wie dem \emph{hierarchischen Clustering}. Dieses
+Verfahren dient Gruppierung von Objekten und anschliessender Berechnung
+von \emph{closeness}-Funktionen. Eine andere Art eines konstruktiven
+Verfahrens ist die \emph{Zufallsgruppierung}. Hierbei werden Objekte
+zufällig an Komponenten gebunden. Dies kostet $O(n)$ Aufwand und bildet
+eine Grundlage für \emph{iterative} Verfahren. Darunter versteht man
+Verfahren, die eine iterative Verbesserung einer gegebenen Partition zur
+Berechnung einer Zielfunktion vornehmen. Vorraussetzung für beide
+Verfahrenstypen ist die bereits abgeschlossene Allokation. Nachteile von
+konstruktiven Verfahren bestehen in Schwierigkeiten von relativen
+closeness-Werten auf absolute Metriken schliessen zu können; in der
+fehlenden Überprüfbarkeit von globalen Entwurfsbeschränkungen. Weiterhin
+ist der Entwurf der closeness-Funktionen schwierig.
+
+\paragraph{Iterative Verfahren.}Das \emph{Kernigan-Lin}-Verfahren ist
+geeignet für Bipartitionen. Ausgehend von einer zufälligen Gruppierung
+wird versuchsweise die \emph{Umgruppierung} eines Objektes von einer
+Partition in eine andere versucht. Schliesslich wird die Umgruppierung
+verwendet, die die \emph{Kostenfunktion} am besten voranbringt. Ein
+anderes Verfahren, das \emph{Simulated-Annealing}, ist dem
+Kernigan-Lin-Verfahren ähnlich. Der Ausgangspunkt hier ist ebenfalls die
+Bi-Partition $P=(P_{SW}, P_{HW})$. In Abhängigkeit der Ausgangssituation
+werden \emph{komplexe} Funktionen in Software und 
+performanzkritische Funktionenen in Hardware realisiert. Beim
+hardwareorientierten Ansatz gilt für die Anfangspartition $P_{HW}=O,
+P_{SW}=\{\}$. Analog gilt für den Softwareansatz $P_{SW}=O,
+P_{HW}=\{\}$. Desweiteren gibt es noch Greedy-, Gupta und evolutionäre
+Algorithmen. Letztere dienen dazu die optimale Implementierung
+(Allokation, Bindung, Ablaufplanung) zu finden. 
+
+\chapter{Intellectual Property}
+
+Der Produktivitätszuwachs des Schaltungsentwurfes liegt hinter dem
+Zuwachs an zur Verfügung stehender Halbleiterfläche zurück. In diesem
+Zusammenhang spricht man von der \emph{Designkrise} und {\tt IP's}
+(\emph{intellectual properties}) werden als Lösung dafür betrachtet. Es
+werden bereits entworfene und verifizierte Schaltungsblöcke
+(\emph{design reuse}) wiederverwendet. Dies gilt in zunehmenden Maß auch
+für hochkomplexe integrierte Schaltungen. Diese Schaltungsblöcke werden
+als IP's angeboten. Dabei werden Schaltungsblöcke, ein gesamtes Bauteil
+oder eine Funktion als Baustein standardisiert geboten. Entsprechend dem
+\emph{Entwurfsgrades} werden diese eingeteilt in \emph{Soft, Firm,
+Hard-Ip's}.
+
+\paragraph{Soft-IP.} Diese werden in einer Hardwarebeschreibungssprache
+beschrieben und sind vollständig synthetisierbar, sehr flexibel und
+können unbegrenzt portiert werden. Ein Schutz des IP ist nicht möglich.
+
+\paragraph{Firm-IP.} Hier werden HDL-Beschreibungen und Netzlisten
+angeboten. Sie sind teilweise synthetisierbar und in einem gewissen Maß
+flexibel einsetzbar. Portierbar sind sie innerhalb einer Bibliothek.
+Auch hier gibt es keinen IP-Schutz.
+
+\paragraph{Hard-IP.} Damit werden komplette Layouts für eine
+Zielarchitektur angeboten. Synthetisierbarkeit gibt es nicht mehr, da
+keine HDL-Beschreibungen verfügbar sind. Dementsprechend gelten sie als
+unflexibel und die Portierbarkeit beschränkt sich auf eine Abbildung
+innerhalb eines Prozesses. Ein IP-Schutz ist hier gegeben und die
+Vorhersagbarkeit des Verhaltens ist (im Gegensatz zu soft und firm) klar
+definiert. 
+
+\chapter{Parallelrechner}
+
+\begin{itemize}
+	\item Menge von Verarbeitungseinheiten, die in einer koordinierten
+		Art und Weise teilweise zeitgleich zusammenarbeiten um einer
+		Aufgabe zu lösen
+	\item Prinzipien der Paralleltechnik in Mikroprozessoren und auch in
+		der PC-Parallelverarbeitung
+		\begin{itemize}
+			\item Eingebettete Systeme als spezialisierte Parallelrechner
+			\item Superskalare Prozessoren und da das Befehlspipelining
+			\item One-Chip Multiprozessoren
+			\item Mehrfädige Prozessoren
+			\item VLIW-Prozessoren
+			\item oder PC-Parallelverarbeitung: zeitliches Überlappen
+				von Mikroprozessor und DMA-Einheit beispielsweise
+		\end{itemize}
+		
+	\item Wichtig jedoch: Klassifikation nach Flynn:
+		\begin{itemize}
+			\item SISD: Universalrechenautomat
+			\item SIMD: Vektorrechner
+			\item MISD: spekulative Befehlsausführung
+			\item MIMD: Multiprozessorsysteme 
+		\end{itemize}
+\end{itemize}
+
+\section{Theoretische Grundlagen}
+
+\begin{center}
+	\includegraphics{ram_model}
+\end{center}
+
+\begin{itemize}
+	\item RAM-Model für Einprozessorsysteme
+	\item besteht aus Recheneinheit, Programm, Lese- Schreibspeicher,
+		der abzählbar vielen Registern $L[0],\dots$ entspricht, und Ein-
+		und Ausgabeband
+	\item Arbeitet auf den natürlichen Zahlen
+\end{itemize}
+
+\begin{center}
+	\includegraphics{pram_model}	
+\end{center}
+
+\begin{itemize}
+	\item PRAM-Modell: Modell eines idealisierten speichergekoppelten
+		Parallelrechners
+	\item bestehend aus identischen n-Prozessoren die alle auf einen
+		gemeinsamen Speicher $G[0],\dots$ zugreifen können
+	\item gemeinsamer Takt, führen zu einem Zeitpunkt diesselben oder
+		auch verschiedenartige Rechenoperationen aus
+	\item es entstehen Zugriffskonflikte
+		\begin{itemize}
+			\item Befehlszyklus aufsplitten in Speicher lesen, Operation
+				Ausführen, Speicher Schreiben
+			\item Nach jedem Schritt Synchronisierung (lock-step)
+			\item d.h. Konflikte treten nur noch bei gemeinsamen
+				Speicher lesen/schreiben auf
+		\end{itemize}
+	\item EREW-PRAM: exklusiv Lesen und Schreiben
+	\item CREW-PRAM: gleichzeitig Lesung und exklusiv Schreiben
+	\item ERCW-PRAM, CRCW, analog
+	\item Bei CW und Schreibkonflikten auflösung nach:
+		 \begin{itemize}
+			 \item C-CRCW: nur erlauben wenn alle Prozessoren den
+			 	 gleichen Wert in die Speicherzelle schreiben wollen
+			 \item A-CRCW: ein schreibender Prozessor gewinnt, die
+			 	 anderen werden ignoriert
+			 \item P-CRCW: der Prozessor mit dem kleinsten
+			 	 Prioritätsindex darf schreiben
+		 \end{itemize}
+\end{itemize}
+
+Die PRAM ist also ein \emph{speichergekoppeltes}, idealisiertes
+Parallelrechnermodell, bei dem Speicherzugriff und Programmausführung
+ohne zusätzliche Kosten realisiert werden. Der Realität kommt das
+CREW-Modell am Nächsten.
+
+\begin{center}
+	\includegraphics{bsp_model}
+\end{center}
+
+\begin{itemize}
+	\item BSP - \emph{bulk synchronous parallel computer}
+	\item berücksichtig Kosten für Kommunikation
+	\item beinhaltet ein nachrichtengekoppeltes Maschinenmodell
+	\item Skalierbarkeit der Architektur, Lieferant für Entwicklung
+		architekturunabhängiger, portabler Software für Parallelrechner
+	\item Maschinenmodell, Programmiermodell
+		\begin{itemize}
+			\item Maschinenmodell siehe Bild:
+			\item Prozessor-Speicher-Paare, Netzwerk für
+				P2P-Kommunikationsverbindungen, Mechanismus zur
+				Synchronisation aller bzw. einer Teilmenge der
+				Prozessoren (\emph{Barrierensynchronisierung})
+				\begin{center}
+					\includegraphics{bsp_progmodell}
+				\end{center}
+			\item Programmiermodell:
+			\item Prinzip der supersteps (Superschritte)
+			\item gewisse Anzahl Superschritte wird parallel und
+				unabhängig voneinander auf verschiedenen Prozessoren
+				durchgeführt
+			\item Superschritt:
+				\begin{itemize}
+					\item feste Anzahl Berechnungsschritte auf lokalen
+						Variablen
+					\item Senden und Empfangen von Nachrichten
+					\item folgende Barrieresynchronisation, dann neuer
+						Superschritt
+				\end{itemize}
+			\item Superschritte sorgen für Entkopplung von Berechnung
+				und Kommunikation
+		\end{itemize}
+\end{itemize}
+
+Das BSP ist von Relevanz für \emph{Architekturen mit Verteiltem
+Speicher}, \emph{Multiprozessoren mit gemeinsamen Speicher} und
+Netzwerken von Workstations, etwa \emph{Cluster-Computing}.
+
+\begin{itemize}
+	\item Leistungsbewertung des BSP:
+	\item Leistung bestimmt durch Zeit für Berechnung, Zeit für
+		Kommunikation
+	\item Leistung wird durch diese Parameter beeinflusst:
+		\begin{itemize}
+			\item Anzahl Prozessoren $p$
+			\item Kosten für Daten beim Nachrichtenaustausch $g$ [Schritte pro
+				Wort]
+			\item Kosten für Barrieresynchronisierung $l$ [Anzahl
+				Schritte]
+			\item Kosten für einen Superschritt:
+				\begin{itemize}
+					\item Prozessorindex $i$, Datenvolumen eines
+						Prozessors $h$, Maß für die in einem Prozessor
+						durchgeführten Berechnungen $w$
+					\item $Kosten(Superschritt)=MAX_i {w_i} + MAX_i
+						{h_i} * g + l$
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+Es gibt einen (standardisierten) Befehlssatz für BSP (aka oxford toolbox
+set). Merkmale: 
+\begin{itemize}
+	\item überschaubarer Befehlssatz (20 Befehle)
+	\item frei verfügbar, entworfen von internationalem Team
+	\item Kommunikationsbefehle:
+		\begin{enumerate}
+			\item direct remote access $\rightarrow$ Prozessor kann
+				direkt auf den Speicher eines anderen Prozessors
+				zugreifen (ohne dessen Mithilfe)
+			\item bulk synchronous message passing $\rightarrow$
+				Prozessor schickt seine Daten in die Warteschlange des
+				anderen Prozessors, der diese zum nächsten Superschritt
+				entgegennimmt und bearbeitet
+		\end{enumerate}
+\end{itemize}
+
+\begin{center}
+	\includegraphics{logp_modell}
+\end{center}
+
+\begin{itemize}
+	\item LogP-Model: nachrichtengekoppeltes Maschinenmodell
+	\item Berücksichtigung von Asynchronizität
+	\item Abstraktion von der konkreten Ausprägung des Netzwerkes
+	\item {\bf L}atenzzeit $L$ ist die maximal benötigte Zeit um eine
+		kleine Nachricht zu übertragen
+	\item {\bf o}verhead $o$ ist der Zeitbedarf für das Senden/Empfangen
+		(beim Senden/Empfangen ist ein Prozessor gesperrt für andere
+		Operationen)
+	\item {\bf g}ap $g$ ist untere Schranke für die Zeit, die jeder
+		Prozessor bis zum Absenden einer neuen Nachricht abwarten muss
+	\item {\bf P}rozessoren $P$, jeder kann optional einen lokalen
+		Speicher besitzen
+\end{itemize}
+
+\begin{itemize}
+	\item Zusammenfassung:
+	\item PRAM: taktsynchrones, speichergekoppeltes Modell, gut
+		programmierbar
+	\item BSP: Synchronisierung mit Superschritten, nachrichten- und
+		speichergekoppeltes Modell
+	\item LogP: asynchron, nachrichtengekoppeltes Modell, geeignet für
+		Laufzeitabschätzungen
+\end{itemize}
+
+\section{Grundprinzipien}
+
+\subsection{Funktionales Trennen}
+$\rightarrow$ für unterschiedliche Operationen stehen unterschiedliche
+ALU's zur Verfügung, wobei einzelne ALU's für ihre Aufgabe optimiert
+sind und zeitlich parallel arbeiten können.
+
+\subsection{Pipelining}
+
+\begin{itemize}
+	\item meistverbreitetste Methode der Parallelverarbeitung
+	\item Zerlegung einzelner Operationen in Elementaroperationen
+	\item Aufbau einer Pipeline:
+	\item linear (nacheinander werden alle Stufen durchlaufen, keine
+		wird ausgelassen)
+	\item nicht-linear (Rückkopplung und Überholvorgange möglich,
+		höhere Komplexität, Lösung für Datenhazards)
+	\item Funktionalitätsklassen von Pipelines:
+	\item unifunktional (für spezielle Aufgaben- etwa Pipelines für
+		Addition)
+	\item multifunktional (flexible für unterschiedliche Aufgaben)
+		\begin{itemize}
+			\item müssen Konfiguriert werden, entweder statisch oder
+				dynamisch
+			\item statisch: zu Beginn einer Operation
+			\item dynamisch: zur Laufzeit
+		\end{itemize}
+\end{itemize}
+
+\subsection{Datenparallelität}
+
+$\rightarrow$ Anwendung gleicher Operationen auf Vektor-, Matrix- oder
+Gitterstrukturen. Entspricht dem klassischen SIMD-Prinzip. 
+
+\section{Vektorrechner}
+
+\begin{itemize}
+	\item Prinzip des Pipelining hier besonders ($\rightarrow
+		Pipelinerechner$)
+	\item Arbeitet nicht auf skalarem, sondern gleichzeitig auf allen
+		Elementen eines Vektors
+	\item SIMD-Rechner
+\end{itemize}
+
+\begin{center}
+	\includegraphics{vektor_proz}
+\end{center}
+
+\begin{itemize}
+	\item Paralleler Vektorprozessor:
+		\begin{itemize}
+			\item Ideal: Anzahl ALUs gleich Anzahl Vektorelemente 
+			\item aus kostengründen anfangs nicht tragbar
+		\end{itemize}
+	\item Pipelined Vektorprozessor:
+		\begin{itemize}
+			\item mit arithmetisch/logischer Pipeline versehen
+		\end{itemize}
+\end{itemize}
+
+\section{Feldrechner}
+
+{\bf Eigenschaften:}
+
+\begin{itemize}
+	\item Menge gleicher Recheneinheiten bilden einen Feldrechner
+	\item Verbunden über Netzwerk, oder über einfache Leitungen ein-
+		oder mehrdimensional verbunden
+	\item Recheneinheiten besitzen lokalen Speicher
+	\item Kontrolle einer zentralen Steuereinheit
+		\begin{itemize}
+			\item RE führen gleichzeitig die selbe Operation auf
+				verschiedenen Daten aus ({\bf SIMD})
+		\end{itemize}
+	\item Ideal: Pro Zeitschritt bei n-RE gibt es n Rechenergebnisse
+	\item Maskierung um einzelne RE auszuschliessen
+	\item Aufbau:
+		\begin{center}
+			\includegraphics{feldrechner}
+		\end{center}
+	\item Möglich ist \emph{lokal zugeordneter} und \emph{gemeinsam
+		genutzter} Speicher
+\end{itemize}
+
+{\bf Anwendungen:}
+
+\begin{itemize}
+	\item Signal- und Bildverarbeitung
+	\item numerische Aufgabenstellungen
+	\item Datenbank und Textretrival
+	\item {\bf datenparallele} Algorithmen
+\end{itemize}
+
+{\bf Programmierung:}
+
+\begin{itemize}
+	\item Automatisierung schwierig
+	\item direkte Abbildung eines für einen seriellen Rechner
+		vorliegenden Programmes:
+		\begin{enumerate}
+			\item Erkennen und Neuprogrammierung offensichtlicher
+				Parallelität (Bsp. Iterationen)
+			\item Erkennen und Neuprogrammierung versteckter
+				Parallelität (Bsp. Matrixbearbeitung) 
+			\item Betrachten des Lösungsalgorithmus (Änderungen am
+				Algorithmus- nicht am seriellen Programm)
+		\end{enumerate}
+	
+\end{itemize}
+
+{\bf Beispielrechner:}
+\begin{itemize}
+	\item ILLIAC IV:
+		\begin{itemize}
+			\item Superrechner von 72-81, für numerische Probleme
+			\item 64 parallele Verarbeitungseinheiten, Steuereinheit
+				(SE)
+			\item 40ns Taktzyklus, lokaler Speicher 2K*64Bit
+			\item NEWS-Netzwerk(North-East-West-South)
+			\item SE: Kompilierung Userprogramm, Verteilung Befehlskode,
+				Ausführung Systemsoftware
+			\item Magnettrommel mit 122MB
+		\end{itemize}
+	\item DAP:
+		\begin{itemize}
+			\item 1-Bit Prozessorelemente, Volladdierer
+			\item gemeinsamer Speicher 
+			\item Matrizenrechner, logische Ops auf Matrizen, Nutzung
+				der Nachbarschaftsbeziehungen
+		\end{itemize}
+	\item MasParI und II.
+		\begin{itemize}
+			\item MP1/2 bis 90iger in betrieb
+			\item Vorrechner, Steuerfeldeinheit, Feld aus 16384 PE's
+			\item PE: 32Bit Architektur mit 4Bit Datenpfaden
+			\item MP2: 32Bit Datenpfade
+			\item lokales Netz: Verbindung der Nachbar-PE's
+			\item globales Netz: 3-stufiges CLOS-Netzwerk
+		\end{itemize}
+\end{itemize}
+
+{\bf Neue Entwicklung: On-Chip SIMD-Architekturen}
+
+\begin{itemize}
+	\item Klassischer Feldrechner hat ausgedient
+	\item Aber: Renaissance des Prinzips für Spezielle Anwendungen
+		(CMOS-Kamera)
+	\item Parallele Bildaufnahme und -verarbeitung auf einem Chip
+	\item Anwendung: Hochgeschwindigkeitskameras
+	\item smart pixel technologie
+		\begin{itemize}
+			\item jedes pe wendet gleiche operation an und arbeitet mit
+				der lokalen nachbarschaft
+		\end{itemize}
+	\item Berechnung der Erosion:
+		\begin{center}
+			$f_{erode}(x,y)=A(x,y) \cup A(x-1,y) \cup A(x,y-1) \cup
+			A(x-1,y-1)$
+		\end{center}
+\end{itemize}
+
+{\bf Beispiel III: Earth Simulator}
+
+\begin{itemize}
+	\item MIMD-Rechner, gemeinsamer, verteilter Speicher
+	\item Prozessorknoten sind eng-gekoppelte Vektorprozessoren
+	\item Speicher 10TB, 16GB pro Knoten
+\end{itemize}
+
+\section{Multiprozessorsysteme}
+
+\begin{itemize}
+	\item nach Flynn: MIMD
+	\item Unterschied zu Feldrechnern: unterschiedliche Befehle pro
+		Prozessorelement, Strukturunterschiede bei Feldrechnern geringer
+	\item Unterscheidung in speichergekoppelte und nachrichtengekoppelte
+		Multiprozessorsysteme
+		\begin{center}
+			\includegraphics{mp_sys}
+		\end{center}
+	\item Speichergekoppelt:
+		\begin{itemize}
+			\item gemeinsamer Adressraum für alle PE
+			\item Kommunikation und Synchronisation über gemeinsame
+				Variablen
+				\begin{itemize}
+					\item SMP: Symmetrischer Multiprozessor- ein
+						globaler Speicher, gleiche Zugriffszeit für alle
+						Prozessoren
+					\item DSM: Distributed Shared Memory System-
+						physikalisch verteilter Speicher, aber
+						gemeinsamer Adressraum
+				\end{itemize}
+		\end{itemize}
+	\item Nachrichtengekoppelt:
+		\begin{itemize}
+			\item nur physikalisch verteilte Speicher und
+				prozessorlokale Adressräume
+			\item Kommunikation via Nachrichtenaustausch
+		\end{itemize}
+\end{itemize}
+
+\subsection{Speichergekoppelte Multiprozessoren}
+
+\begin{itemize}
+	\item Gemeinsamer Adressraum, Kommunikation/Synchronisation über
+		gemeinsame Variablen
+	\item {\tt UMA} - \emph{uniform memory access model}:
+		\begin{itemize}
+			\item alle cpus greifen gleichermaßen auf gemeinsamen
+				Speicher zu
+			\item Zugriffszeit aller Prozessoren auf gemeinsamen
+				Speicher ist gleich
+			\item Lokaler Cache pro cpu möglich
+			\item typisch: Symmetrische Multiprozessoren
+		\end{itemize}
+	\item {\tt NUMA} - \emph{non-uniform memory access model}: 
+		\begin{itemize}
+			\item Speichermodule des gemeinsamen Speichers auf die
+				Prozessoren physikalisch aufgeteilt
+			\item $\rightarrow$ Zugriffszeit unterschiedlich (abhängig
+				vom Ort des Zugriffs)
+			\item typisch: Distributed-Shared-Memory-Systeme
+		\end{itemize}
+	\item Weiter Unterscheidung von {\tt NUMA} bzgl Cache-Zugriff:
+		\begin{itemize}
+			\item {\tt CC-NUMA}: \emph{cache coherent} für das gesamte
+				System
+			\item {\tt NCC-NUMA}: \emph{non-cache coherent} - CC nur
+				innerhalb eines Knotens
+			\item {\tt COMA}: \emph{cache only memory architecture}:
+				Gesamter Speicher besteht nur aus Cache
+		\end{itemize}
+\end{itemize}
+
+\subsection{Cache Kohärenz.}
+
+\begin{itemize}
+	\item Linderung der "`memory gap"', Cache ist Standard in
+		Mikroprozessoren!
+	\item Inkonsistenz: Speicher vs. Cache $\rightarrow$ \emph{noch
+		kritischer} in MP-Systemen:
+		\begin{itemize}
+			\item Kopien des gleichen Datums existieren mehrfach
+		\end{itemize}
+	\item Monoprozessoren haben \emph{write through} und \emph{write
+		back}-Strategien, MP-Systeme benötigen dagegen \emph{Cache
+		Coherence Strategies}, a.k.a. Cacheprotokolle
+	\item CCS in Hardware und Software möglich
+	\item CCS in Software:
+		\begin{itemize}
+			\item via Compiler und OS
+			\item Zusatzaufwand auf Kosten der Compilezeit
+			\item komplexere Software
+			\item Prinzip: gemeinsame ("`neuralgische"') Variablen
+				finden und als nicht-cachebar markieren
+			\item nicht besonders effizient
+		\end{itemize}
+	\item CCS in Hardware:
+		\begin{itemize}
+			\item erlauben dynamische Lösungen
+			\item transparent für den Programmierer
+			\item \emph{Verzeichnis-, Snoopy-}Protokolle
+		\end{itemize}
+\end{itemize}
+
+\paragraph{directory cache coherence protocols}
+
+\begin{center}
+	\includegraphics{directory_cache}
+\end{center}
+
+\begin{itemize}
+	\item Prinzip: Sammeln und Verwalten von Informationen zum
+		Aufenthaltsort von Cacheinhalten
+	\item Strukturen: zentraler Cachecontroller, lokale Cachecontroller,
+		im Speicher abgelegtes Verzeichnis
+	\item Traditional Directories:
+		\begin{itemize}
+			\item Variante 1: p+1 Bits pro Block; drei Zustände pro
+				Block (1. Invalid - no bit set, 2. shared read only - p
+				bits set, extra bit not set, 3. exclusive - extra bit is
+				set and \emph{one} of the others)
+			\item Variante 2: 2 Bits invalidation; 1 bit für
+				Gültigkeitsstatus, 1 Bit für exklusiv-Status; muss
+				ungültigkeits nachrichten an alle versenden (traffic!)
+			\item Variante 3: n-pointers + rundruf; verbesserte variante
+				2: zusätzlicher Platz für n Zahlen der ProzessorID's, 
+			\item Variante 4: Verlinkte Liste: Basiszeiger für jeden
+				Block, Verlinkte Liste auf alle Prozessoren, die sich
+				den Speicher teilen; Ungültigkeitsnachrichten können
+				dann an alle Prozessoren direkt verschickt werden (in
+				der Liste)
+		\end{itemize}
+	\item Fazit: Hohes Kommunikationsaufkommen, Skaliert gut bei großem
+		Speicher, 
+\end{itemize}
+
+\paragraph{snoopy cache coherence protocols}
+
+\begin{center}
+	\includegraphics{snoop_cache}
+\end{center}
+
+\begin{itemize}
+	\item dezentrale Kontrolle auf alle lokalen Cachecontroller
+	\item Cache muss erkennen, dass eine Cachezeile gemeinsam mit
+		anderen Caches benutzt wird $\rightarrow$ Abhören der
+		Kommunikation notwendig!
+	\item Neuschreiben einer Zeile per Broadcast an alle lokalen
+		Cachecontroller mitteilen
+	\item Primär geeignet für Busgekoppelte MP-Systeme; alle Controller
+		lauschen auf dem Bus
+	\item ABER: Traffic auf dem Bus wird erhöht $\rightarrow$ wird
+		unsinnig wenn der Bustraffic durch den Cachetraffic gemindert
+		wird
+	\item \emph{write invalidate}
+		\begin{itemize}
+			\item \emph{schreib}aktion auf dem bus, die lokale cache
+				kopie des eintrags betrifft $\rightarrow$  ungültig
+				machen des Eintrags
+		\end{itemize}
+	\item  \emph{write update/broadcast}
+		\begin{itemize}
+			\item \emph{schreib}aktion auf dem bus, die lokale cache
+				kopie des eintrags betrifft $\rightarrow$ aktualisieren
+				der kopien in den anderen caches
+		\end{itemize}
+	\item für beide Varianten gilt: beim nächsten Zugriff des Prozessors
+		auf den Block
+		\begin{itemize}
+			\item entweder: cache miss durch Ungültigkeit $\rightarrow$
+				Zeile neulesen
+			\item oder: Block ist aktuell durch das vorhergehende update
+		\end{itemize}
+	\item Beispiel: {\tt MESI}-Protokoll
+		\begin{center}
+			\includegraphics{mesi_proz}
+		\end{center}
+		\begin{center}
+			\includegraphics{mesi_snoop}
+		\end{center}
+		\begin{itemize}
+			\item write-invalidate-Variante
+			\item jede Cachezeile kann 4 Zustände annehmen:
+				\begin{itemize}
+					\item {\bf M}odified: Zeile im Cache modifiziert,
+						nur lokal verfügbar
+					\item {\bf E}xclusive: Zeile identisch mit
+						Hauptspeichereintrag, nur lokal verfügbar
+					\item {\bf S}hared: Zeile identisch mit
+						Hauptspeichereintrag, evtl. auf mehreren Caches
+						verfügbar
+					\item {\bf I}nvalidate: Zeile enthälte ungültige
+						Daten
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+\subsection{Nachrichtengekoppelte Multiprozessorsysteme}
+
+\begin{itemize}
+	\item {\tt NORMA}: \emph{no remote memory access model}
+	\item {\bf \tt UCA}: \emph{uniform communication architecture}
+		\begin{itemize}
+			\item Zwischen allen Prozessoren können gleichlange
+				Nachrichten mit einheitlicher Übertragungszeit gesendet
+				werden.
+		\end{itemize}
+	\item {\bf \tt NUCA}: \emph{non uniform communication architecture}
+		\begin{itemize}
+			\item Die Übertragungszeit des Nachrichtentransfers ist je
+				nach Sender und Empfängerprozessor unterschiedlich.
+		\end{itemize}
+\end{itemize}
+
+\subsection{Zusammenfassung Speicher- und Nachrichtenkopplung}
+
+\begin{center}
+	\includegraphics{uebersicht_mps}
+\end{center}
+
+\begin{itemize}
+	\item Speichergekoppelte Systeme gelten als leichter zu
+		programmieren als die nachrichtegekoppelten
+	\item Enge Kopplung bei SMP und DSM erlaubt effiziente Ausführung
+		kommunikationsreicher Paralleler Programme
+	\item Skalierung:
+		\begin{itemize}
+			\item SMP: < 30 Knoten
+			\item DSM: < 256 Knoten
+			\item Message Passing: theoretisch unbegrenzt!
+		\end{itemize}
+	\item Vorraussetzung für den Einsatz von nachrichtengekoppelten
+		Multiprozessorsystemen:
+		\begin{itemize}
+			\item Parallelisierbarkeit des Problems auf Prozessebene mit
+				wenig Kommunikationsaufwand
+		\end{itemize}
+\end{itemize}
+
+\section{Cluster Computing}
+
+\paragraph{Definition.} Ein {\bf Cluster} ist ein \emph{paralleles,
+verteiltes} Rechensystem, dass
+\begin{itemize}
+	\item aus einer Menge \emph{für sich allein funktionierender
+		Rechner} besteht, die
+	\item miteinander über ein \emph{Netzwerk verbunden} sind und die
+	\item zusammen als eine \emph{integrierte Rechenressource} arbeiten.
+\end{itemize}
+
+\paragraph {Argumentation pro Cluster:}
+
+\begin{itemize}
+	\item PCs werden ständig leistungsstärker
+	\item Zunahme der Bandbreite, Abnahme der Latenz bei der
+		Kommunikation
+	\item PCs sind einfacher in bestehende Strukturen zu integrieren als
+		spezielle Parallelrechner
+	\item geringe Auslastung von einzelnen PCs durch Besitzer
+	\item Einzelne Entwicklungswerkzeuge sind häufig ausgereifter als
+		spezielle Software für Parallelrechner
+	\item Kostengünstiger!
+	\item Einfache Ausbaufähigkeit
+\end{itemize}
+
+\paragraph {Architektur von Clustern}
+\begin{itemize}
+	\item mehrere Rechner
+	\item Cluster-Betriebssystem
+	\item Hochgeschwindigkeitsnetzverbindung, Switch
+	\item Ethernet, SCI, Myrinet (Hardware)
+	\item Active Messages, Fast Messages, VIA, Infiniband (überwiegend
+		Software)
+\end{itemize}
+
+\paragraph {Vermittlungstechniken - switching\\\\}
+
+\begin{itemize}
+	\item \emph{store and forward}
+		\begin{itemize}
+			\item Paketvermittlung
+			\item Paketgröße begrenzt
+			\item Zwischenspeicherung und Auswertung der Zieladresse 
+		\end{itemize}
+	\item \emph{cut through/wormhole switching}
+		\begin{itemize}
+			\item Weiterleiten nach Auswerten des Headers
+			\item niedrige Latenz und kleine Puffer
+			\item Nachrichtengröße variable
+			\item ABER: schwierige Fehlererkennung
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Wegewahl - routing}
+
+\begin{itemize}
+	\item Empfängeradresse im Header
+	\item deterministisches und adaptives routing
+		(\emph{source-path-routing/table based routing}
+\end{itemize}
+
+\subsection{Kommunikationsprotokolle in Clustern}
+
+\begin{itemize}
+	\item Schnelle Hardware? Flaschenhals bei der Software, den
+		Protokollen!
+	\item Ziel: Schnelle Protokolle 
+	\item Verringerung der Kopieroperationen auf dem Datenpfad
+	\item Probleme von TCP/IP in Clustern:
+		\begin{itemize}
+			\item Schichtenstruktur: große Anzahl an Speicher zu
+				Speicher Kopieroperationen
+			\item in jeder Schicht Aufruf von Funktionen
+			\item Ergo: hoher Zeitaufwand und Performanzverschlechterung
+		\end{itemize}
+	\item nach Eintreffen einer negativen Quittung $\rightarrow$
+		Neuanforderung der Dateneinheit und folgender Dateneinheiten
+	\item \emph{active messages}:
+		\begin{itemize}
+			\item Sender kann immer Daten schicken unabhängig von der
+				 Aktivität des Empfängers
+			 \item Trennung von Berechnung/Kommunikation
+			 \item Schlanker Datenpfad (eliminiert Zwischenspeicherung,
+			 	 braucht spezielle NIC)
+			 \item \emph{receiver handler} (sofort nach Empfang der
+			 	 Nachricht Aufruf von benutzerdefinierter Funktion)
+			 \item Alle Knoten haben den gleichen Adressraum (SPMD)
+		\end{itemize}
+	\item \emph{virtual interface architecture}
+		\begin{itemize}
+			\item einheitliche Schnittstelle zwischen Userspace und Nic
+			\item hohe Bandbreite 1Gb/s, geringe Latenzzeit
+			\item große HW-Unterstützung
+			\item Einheitliches Programmiermodell durch
+				FUnktionsspezifikation
+		\end{itemize}
+\end{itemize}
+
+\subsection {Cluster Middle Ware - Betriebssysteme}
+
+\begin{itemize}
+	\item {\tt SSI}: (\emph{single systeme image})
+		\begin{itemize}
+			\item Darstellung eines \emph{einheitlichen} Systemabbildes
+		\end{itemize}
+	\item {\tt SAI}; (\emph{system availability infrastructur})
+		\begin{itemize}
+			\item Verfügbarkeit innerhalb unabhängiger aber miteinander
+				über ein Netzwerk verbundene Rechner herstellen
+			\item Aufgaben: Fehlertoleranz, Recovery
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Verfügbarkeitsfunktionen.}
+\begin{itemize}
+	\item Einheitlicher E/A-Raum $\rightarrow$ jeder Knoten hat auf
+		beliebige Peripheriezugriff ohne zu wissen wo die ist
+	\item Einheitlicher Prozessraum $\rightarrow$ jeder Prozess kann auf
+		beliebigem Knoten ablaufen, Kommunikation der Prozess erfolgt
+		über Signale,Pipes, etc
+	\item Check-Punkte und Prozess Migration $\rightarrow$
+		Prozesszustände und Zwischenergebnisse in den Speicher
+		schreiben, dadurch Lastverteilung und Fehlertoleranz 
+\end{itemize}
+
+\section{Leistungsbewertung von Parallelrechnersystemen}
+
+$\rightarrow$ Blickpunkt: Algorithmen und Architekturen
+
+\subsection{Leistungsmaße}
+
+\begin{itemize}
+	\item Speed-Up:
+		\begin{center}
+			$S=\frac{T_1}{T_P}=\frac{T_{seriell}}{T_{parallel}}$
+		\end{center}
+	\item Effizenz:
+		\begin{center}
+			$E=\frac{S}{P}=\frac{speed-up}{anzahl-prozessoren}$ und es
+			gilt: $\frac{1}{P}\leq E \leq 1$
+		\end{center}
+		\vspace{1cm}
+	\item Speed-Up: \emph{speziell}:
+		\begin{center}
+			$S(n,p)=\frac{T_{seriell}(n)+T_{parallel}(n)}{T_O(n,p)+T_{seriell}(n)+\frac{T_{parallel}(n)}{P}}$
+		\end{center}
+		\begin{itemize}
+			\item $n$: Problemgröße
+			\item $P$: Anzahl der Prozessoren
+			\item $T_O$: Zeitaufwand Overhead
+			\item $T_{seriell}$: serieller Zeitaufwand
+			\item $T_{parallel}$: paralleler Zeitaufwand
+		\end{itemize}
+\end{itemize}
+
+\subsection {Gesetz von {\tt Amdahl}}
+
+\begin{itemize}
+	\item Frage: Welcher Speed-Up ist maximal erreichbar für Problem mit
+		fester Größe $n$ bei $P$ Prozessoren, wenn der serielle
+		Programmanteil $s$ \% beträgt?
+	\item $T_O(n,p)=0$ !
+		\begin{center}
+			$T_1(n)=T_{seriell}(n) + T_{parallel}(n) = s * T_1(n) +
+			(1-s)*T_P(n)$\\
+			$T_P(n,p)=s*T_1(n)+(1-s)*T_p(n)/p$
+		\end{center}
+\end{itemize}
+
+\subsection{Gustaffson-Barsis}
+
+\begin{itemize}
+	\item geht vom parallelen Programm als Analyseursprung aus
+	\item Wie hoch darf im parallelen Programm der Serielle Anteil sein?
+	\item Zusatzaufwand vernachlässigt, wie Amdahl
+	\item Lösung: \emph{skalierter Speed-Up}:
+		\begin{center}
+			$S(n,p) \leq p+(1-p)*s^* = p - (p-1)*s^* $
+		\end{center}
+\end{itemize}
+
+\subsection{Karp-Flatt-Maß}
+\begin{itemize}
+	\item explizite Berücksichtigung des Overheads $T_O$
+	\item Karp-Flatt-Maß e
+		\begin{itemize}
+			\item experimentell bestimmter serieller Anteil
+				\begin{center}
+					$e=\frac{T_{ser}(n)+T_O(n,p)}{T_{ser}(n)*T_{par}(n)}$
+				\end{center}
+			\item dabei gilt:
+				\begin{center}
+					$e=\frac{(1/S)-(1/P)}{1-1/P}$
+				\end{center}
+		\end{itemize}
+\end{itemize}
+
+\section{Algorithmen für Parallelrechner}
+
+\begin{itemize}
+	\item Blockstreifenzerlegung
+	\item Schachbrettzerlegung
+\end{itemize}
+
+\chapter{Netzwerke}
+
+\section{Interne Kommunikation}
+$\rightarrow$ Betrachten Kommunikationsstrukturen für: CPU-CPU, CPU-LokalerSpeicher,
+CPU-GlobalerSpeicher
+
+\subsection{Direkte Kopplung- P2P}
+\begin{itemize}
+	\item \emph{Registerkopplung}:
+		\begin{itemize}
+			\item Register zwischen zwei Prozessoren sind verbunden
+			\item schnelle Übertragung
+			\item Unflexibel gegenüber Änderung der Topologie
+		\end{itemize}
+	\item \emph{Speicherkopplung}:
+		\begin{itemize}
+			\item Zwei oder mehr Prozessoren sind über gemeinsamen
+				Speicher entweder über \emph{direkte} Leitungen oder
+				Busse verbunden
+			\item Beide Prozessoren können lesen/schreiben $\rightarrow$
+				Zugriffskonflikte müssen beachtet werden!
+			\item langsamer als Registerkopplung, aber flexibler
+		\end{itemize}
+	\item \emph{Kanalkopplung}: {\tt DMA-}Kopplung:
+		\begin{itemize}
+			\item zusätzlicher DMA-Kontroller für Arbeitsspeicher
+			\item Prozessor stößt Kommunikation an (übermittelt
+				Anfangsadresse und Datenmenge an Kontroller)
+			\item Gleichzeitige Bearbeitung des Prozessors der Daten und
+				des Kontrollers der Kommunikation
+			\item Kontroller optimiert für Kommunikation $\rightarrow$
+				hohe Datenübertragungsraten möglich
+		\end{itemize}
+\end{itemize}
+
+\subsection{Bussysteme}
+
+\begin{itemize}
+	\item Mehrere Prozessoren an einem Bussystem angeschlossen
+	\item Langsamer aber wesentlich flexibler als Direktkopplung bei der
+		Topologieänderung
+	\item Strategien für Buszugriff:
+	\item \emph{time shared}:
+		\begin{itemize}
+			\item Zeitscheibenmethode für jeden Prozessor
+		\end{itemize}
+	\item \emph{token}:
+		\begin{itemize}
+			\item Token wandert von CPU zu CPU
+			\item Besitzer darf auf dem Bus senden
+		\end{itemize}
+	\item \emph{random access}
+		\begin{itemize}
+			\item Aloha-Verfahren
+			\item Bus frei? $\rightarrow$ Einer darf senden
+			\item Notwendig: CSMACD zur Sicherung
+		\end{itemize}
+	\item \emph{Priorität}
+		\begin{itemize}
+			\item Rangordnungen von Stationen mit gleichzeitigem
+				Sendewunsch
+		\end{itemize}
+	\item {\bf FAZIT:} Flexibel, aber zu langsam und auch zu aufwendig
+		für Parallelrechner $\rightarrow$ besser: Verbindungsnetzwerke,
+		statisch oder dynamisch
+	\end{itemize}
+
+\subsection{Statische Verbindungsnetzwerke}
+
+\begin{itemize}
+	\item starre Pfade
+	\item Basis: Permutationen
+\end{itemize}
+
+\paragraph{Exchange Permutation}.
+
+\begin{itemize}
+	\item k-tes bit der Permutation wird vertauscht
+		\begin{center}
+			$E_k(x)=(x_i,x_{i-1},\dots,\overline{x_k},\dots,x_1,x_0)$
+		\end{center}
+\end{itemize}
+
+\paragraph{Perfect Shuffle Permutation}
+
+\begin{itemize}
+	\item Zyklische Linksverschiebung um ein bit
+		\begin{center}
+			$PS(x)=(x_{i-1},x_{i-2},\dots,x_0,x_i)$
+		\end{center}
+\end{itemize}
+
+\paragraph{Butterfly Permutation}
+
+\begin{itemize}
+	\item Für FFT angewendet
+	\item Vertausch von MSB und LSB
+		\begin{center}
+			$BP(x)=(x_0,x_{i-1},\dots,x_1,x_i)$
+		\end{center}
+\end{itemize}
+
+\paragraph{Bit Reversed Permutation}
+
+\begin{itemize}
+	\item Umkehrung der Bitreihenfolge
+		\begin{center}
+			$BR(x)=(x_0,x_1,\dots,x_{i-1},x_i)$
+		\end{center}
+\end{itemize}
+
+\begin{itemize}
+	\item mit Hilfe dieser Permutationen $\rightarrow$ Aufbau von
+		\emph{statischen} Verbindungsnetzwerken
+	\item Wesentliches Merkmal: Keine expliziten Schalterstufen!
+	\item weitere statische Netzwerke: Feldstrukturen und
+		Würfelstrukturen
+\end{itemize}
+
+\paragraph{Hyperwürfelstrukturen}
+\begin{center}
+	\includegraphics{hypercube}
+\end{center}
+\begin{itemize}
+	\item Rekursives Konstruktionsprinzip:
+		\begin{itemize}
+			\item HW mit Dimension $d=0$: Einfacher Rechner
+			\item HW mit Dimension $d=i$:
+				\begin{itemize}
+					\item Nimm Zwei Würfel der Dimension $i-1$ und
+						verbinde äquivalente Ecken (Binärdarstellung der
+						Adressen unterscheidet sich in genau einer
+						Dimension)
+				\end{itemize}
+		\end{itemize}
+	\item Anzahl Ecken $n=2^d$
+	\item Maximale Weglänge $d=ld (n)$
+	\item $\rightarrow$ viele Wegalternativen, hohe Redudanz,
+		unterstützt Parallelität
+	\item Routing im Hypercube
+		\begin{itemize}
+			\item Startadresse $SA=01010$, Zieladresse $ZA=10101$
+			\item Maske $M=xor(SA,ZA)=11111$ 
+				\begin{table}[h!]
+					\centering
+					{\tt 
+					\begin{tabular}{|r|r|r|}\hline
+						Maske & Zwischenadresse alt & Zwischenadresse
+						neu\\\hline
+						1111{\bf1} & 0101{\bf 0} & 0101{\bf 1}\\
+						111{\bf1}1 & 010{\bf 1}1 & 010{\bf 0}1\\
+						11{\bf1}11 & 01{\bf 0}01 & 01{\bf 1}01\\
+						1{\bf1}111 & 0{\bf 1}101 & 0{\bf 0}101\\
+						{\bf1}1111 & {\bf 0}0101 & {\bf 1}0101\\\hline
+								   &             & \\
+								   &             & {\bf 10101}\\\hline
+					\end{tabular}
+					} % \tt
+					\caption{Routingprozess im Hypercubus}
+					\label{tab:blubb}
+				\end{table}
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Weitere statische Verbindungsnetzwerke}
+
+\begin{itemize}
+	\item Cube-Connected Cycle
+	\item Baumstrukturen
+\end{itemize}
+
+\subsection{Dynamische Verbindungsnetzwerke}
+
+\begin{itemize}
+	\item zusätzliche zu statischen Verbindungen: Einbau von
+		\emph{Schaltern} $\rightarrow$ Schaltnetzwerke
+	\item Abwechselnd: Schalterstufe, Permutationsstufe
+	\item 1. Unterscheidung in \emph{Einstufige, Mehrstufige}
+		Schaltnetzwerke anhand der Anzahl der Schaltstufen
+	\item 2. Unterscheidung anhand der Wegewahl in
+		\emph{selbst-konfigurierende, nicht-selbstkonfigurierende}
+		Schaltnetzwerke
+\end{itemize}
+
+\paragraph{Einstufige Schaltnetzwerke.}
+
+\begin{itemize}
+	\item Bekannt: \emph{Kreuzschienenverteiler}
+	\item n Eingänge, n Ausgänge, $n^2$ Schalter, alle $n!$
+		Permutationen schaltbar
+	\item Problem wenn $n$ groß
+	\item alle weiteren einstufigen Schaltnetzwerke sind Modifikationen
+		des Kreuzschienenverteilers:
+		\begin{itemize}
+			\item Anzahl Eingänge ungleich Anzahl Ausgänge
+			\item Konzentration, Expansion
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Mehrstufige Schaltnetzwerke.}
+
+\begin{itemize}
+	\item Mehrere einfache (2x2) Kreuzschienenverteiler
+		hintereinanderschalten
+	\item Benes:
+		\begin{itemize}
+			\item Ein $n$-E/A-Kreuzschienenverteiler ersetzbar durch
+				$\frac{n}{2}$-E/A-Kreuzschienenverteile + 2
+				Exchange-Netzwerke
+			\item rekursiv fortsetzbar bis nur noch
+				2x2-Kreuzschienenverteiler übrig sind
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Binäres Benes Netzwerk}
+\begin{itemize}
+	\item universell, alle $n!$-Permutationen schaltbar
+	\item Anzahl Kreuzschinenverteiler: $n*ld(n)-\frac{n}{2}$
+	\item Pro Stufe $n/2$ Verteiler $\rightarrow$ $2*ld(n)-1$ Stufen
+		nötig
+\end{itemize}
+
+\paragraph{Omega Netzwerk}
+\begin{itemize}
+	\item Perfect Shuffle zwischen allen Stufen
+	\item $ld(n)$ Stufen erforderlich
+	\item nicht alle Permutationen möglich $\rightarrow$ nicht
+		universell
+	\item \emph{selbstkonfigurierend} - einfacher Routingalgo:
+		\begin{itemize}
+			\item in Schaltstufe k wird der obere Ausgang geschalten,
+				wenn quell xor ziel am kten bit ne 0 hat
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Binäres n-Cube Netzwerk}
+
+\begin{itemize}
+	\item ld(n) Stufen
+	\item Routing-Algo:
+		\begin{itemize}
+			\item Unterscheiden sich quell und ziel an k-ter stelle so
+				wird die k-te stufe kreuzgeschaltet
+		\end{itemize}
+\end{itemize}
+
+\paragraph{Banyan Netzwerk}
+
+\begin{itemize}
+	\item wie n-cube, aber:
+	\item gespiegelt, Keine Kollisionen, falls die Adressen der Pakete
+		in aufsteigender Reihenfolge anliegen
+\end{itemize}
+
+\paragraph {Batcher Sortier Netzwerk}
+\begin{itemize}
+	\item Anzahl Stufen: $ld(n)*(1+ld(n))/2$
+	\item keine Binären Schalter!
+\end{itemize}
+
+
+\section{Lokale Netze}
+
+\subsection{Ethernet}
+
+\begin{itemize}
+	\item dezentrale Kontrolle, unempfindlich gegen Knotenausfälle (vgl.
+		Token Ring)
+	\item Zugriffsverfahren: CSMA/CD
+	\item Aloha-Verfahren (CSMA): lauschen am Bus, wenn nachricht für
+		einen knoten bestimmt, dann kann dieser empfangen
+\end{itemize}
+
+\section{Optische Netzwerke}
+
+\todo{}
+
+\section{Drahtlose Netze}
+
+\todo{}
+
+\chapter{Verteilte Systeme}
+
+\todo {}
+
+\end{document}
+

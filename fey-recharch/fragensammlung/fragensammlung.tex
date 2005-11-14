@@ -1,0 +1,1384 @@
+\documentclass[a4paper]{book}
+
+\usepackage{ngerman}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{epsfig,color}
+%\usepackage{hyperref}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage{ae}
+\usepackage{amsmath}
+
+\newcommand{\frage}[1]{
+\begin{tabular}[]{ll}
+	{\bf \textcolor{red}{ Frage:} } & {\sl \textcolor{red}{#1}}\\
+\end{tabular}
+
+}
+\parindent 0mm
+
+\newcommand{\antw}[1]{
+{\bf Antwort: } #1\\\\
+} 
+
+\begin{document}
+
+
+\chapter{Rechnerarchitektur Teil 1}
+
+\section{Formale Entwurfsmethoden}
+%
+\frage{Wozu gibt es formale Entwurfsmethoden?}
+\begin{itemize}
+	\item Unterstützung beim Entwurf von Rechnern (Hardware \emph{und}
+		Software)
+	\item Automatische Ableitung von Hardware aus Beschreibungen
+		(\emph{Synthese})
+	\item Beherrschung der Komplexität durch \emph{Modul- und
+		Hierarchiebildung}
+	\item Eindeutige Beschreibung der Spezifikation (Funktionalität)	
+\end{itemize}
+%
+\frage{Welche formalen Entwurfsmethoden haben sie in der Vorlesung
+kennengelernt?}
+\begin{itemize}
+	\item endliche Automaten, Statecharts, Petrinetze, SDF, CSP und
+		natürlich Hardwarebeschreibungssprachen wie SystemC oder VHDL
+		
+\end{itemize}
+
+%
+\frage{Nennen sie die Eigenschaften von Petrinetzen? Wofür eignen sie
+sich?}
+\begin{itemize}
+	\item formales Beschreibungmodell speziell für Systeme mit
+		\emph{asynchronen} und \emph{nebenläufigen} Prozessen
+	\item Entwurf von sowohl (asynchroner) HW als auch SW
+	\item Definition:
+		\begin{itemize}
+			\item 6-Tupel $G=(P,T,F,K,W,M_0)$ mit
+				\begin{itemize}
+					\item $P\cap T = \{\}$ 
+					\item und $F \subseteq (P \times T) \cup (T \times
+						P)$ Flussrelation
+					\item wobei:
+					\item $P=\{p_1,p_2,\dots,p_m\}$ Menge der Plätze
+					\item $T=\{t_1,t_2,\dots,t_n\}$ Menge der
+						Transitioenn
+					\item $K: P \longrightarrow N \cup \{\infty\}$ Kapazität der
+						Stellen
+					\item $W: F \longrightarrow N$ Gewicht der Kanten
+						in $F$
+					\item $M_0: P \longrightarrow N_0$
+						Anfangsmarkierung, es gilt: 
+							$\forall p \in P: M_0(p) \leq K(p)$
+				\end{itemize}
+		\end{itemize}
+	\item \emph{nicht statisch}, Veränderung, wenn sich Marken durch das
+		Netz bewegen
+	\item Zustand eines Netzes: $M: P \longrightarrow N_0$, sd. $M(p)$
+		Anzahl der Marken an der Stelle $p$
+	\item Vor- und Nachbereich für Netzknoten $x$:\\ $*x =
+		\{y|(y,x)\in F\}\\  x*=\{y|(x,y)\in F\}$
+		
+		\begin{itemize}
+			\item Definition: \emph{Schaltbereitschaft} einer Transition
+				$t \in T$ unter der Markierung $M$, also
+				$M[t$>
+				\begin{enumerate}
+					\item $\forall p \in *t \setminus t*: M(p) \geq W(p,t)$ 
+						\begin{itemize}
+							\item {\sl alle p aus dem Vorbereich von t
+								haben mind. die benötigten Markierungen
+								der Kante von p nach t}
+						\end{itemize}
+					\item $\forall p \in t* \setminus *t: M(p) \leq
+						K(p)-W(t,p)$ 
+						\begin{itemize}
+							\item {\sl in alle p aus dem Nachbereich von t
+								passen mind. soviele Markierungen wie
+								das Gewicht von $(t,p)$}
+						\end{itemize}
+					\item $\forall p \in t* \cap *t: (M(p) \leq K(p) -
+						W(t,p) + W(p,t)) \land (M(p)+W(t,p) - W(p,t)
+						\geq 0)$
+						\begin{itemize}
+							\item {\sl für alle p, die sowohl Vor- als auch
+								Nachbereich sind genügt der Platz für
+								die Differenz von eingehenden und
+								ausgehenden Marken {\bf und} nach dem
+								Schiessen ist die Markierungsanzahl
+								größer/gleich 0}
+						\end{itemize}
+				\end{enumerate}
+			\item Definition: \emph{Durchschalten} einer Transition
+				$t \in T$ von $M$ nach $M_{neu}$: $M[t$>$M_{neu}$
+				\begin{itemize}
+					\item $M_{neu}(p)=$
+						\begin{enumerate}
+							\item $M(p)-W(p,t)$ falls $p \in *t\setminus
+								t*$
+								\begin{itemize}
+									\item falls p im Vorbereich von t,
+										dann 
+								\end{itemize}<++>
+							\item $M(p)+W(t,p)$ falls $p \in
+								t*\setminus *t$ 
+							\item $M(p)+W(t,p)-W(p,t)$ falls $p \in *t
+								\cap t*$
+							\item $M(p)$ sonst.
+						\end{enumerate}
+				\end{itemize}
+		\end{itemize}
+
+	\item \emph{Mächtigkeit von Petrinetzen}
+		\begin{itemize}
+			\item Sequentialität, Synchronisation,
+				nicht-deterministische Verzweigung, Ressourcenkonflikt,
+				Nebenläufigkeit
+		\end{itemize}
+\end{itemize}%
+\frage{Geben sie die Definition eines endlichen Automaten an?}
+\begin{itemize}
+	\item 6-Tupel $(X,Y,Z,\alpha,\delta,\gamma)$
+	\item $X,Y$: Ein- und Ausgabealphabet
+	\item $Z$: Menge von Zuständen
+	\item $\alpha \in Z$: Anfangszustand
+	\item $\delta : Z \times X \rightarrow Z$
+		Zustandsüberführungsfunktion
+	\item $\gamma$: Ausgabefunktion - Unterscheidung in \emph{Mealy, Moore}-Automat:
+		\begin{itemize}
+			\item Mealy: $\gamma : Z \times X \rightarrow Y$
+			\item Moore: $\gamma : Z \rightarrow Y$
+		\end{itemize}
+\end{itemize}
+%
+\frage{Was können endliche Automaten und was nicht?}
+
+\begin{itemize}
+	\item geeignet zur Modellierung von Steuerungen oder Schaltwerken
+	\item Beschreibung von Systemen mit Gedächtnis
+	\item endliche Menge von Zuständen $\rightarrow$ endlicher Automat
+	\item Ungeeignet für:
+	\item Modellierung von Nebenläufigkeit
+	\item Hierarchiebildung
+	\item Daher Lösung mittels Automatenerweiterungen: \emph{SDL, CSP,
+		Statecharts}
+\end{itemize}
+
+\frage{Wie überführt man vom Mealy zum Moore Automaten und umgekehrt?}
+
+\begin{itemize}
+	\item graphisch lösen!
+\end{itemize}
+
+\frage{Wie überführt man einen Mealy-Automaten in ein Petrinetz?}
+
+\begin{itemize}
+	\item jeder Zustand erhält eine Stelle
+	\item jeder Zustandsübergang wird durch eine die entsprechenden
+		Stellen verbindende Transition modelliert
+	\item jeder einem Anfangszuständ repräsentierende Stelle wird eine
+		Markierung gegeben
+\end{itemize}
+
+\frage{Beschreiben sie CSP!}
+\begin{itemize}
+	\item Ziel: Spezifikation, Entwurf, Verifikationi und
+		Implementierung von
+		Kommunikationsprotokollen
+	\item Grundidee: Zerlegung des Systems in parallel arbeitende
+		Teilsysteme, die miteinander und mit der Umgebung kommunizieren
+	\item Korrektheit mit mathematischen Gesetzen beweisen
+\end{itemize}
+%
+\frage{Erläutern sie SDF!}
+
+\begin{itemize}
+	\item Steuerung durch Verfügbarkeit von Daten, dadurch:
+	\item geeignet für Systeme mit harten Realzeitanforderungen (DSP)
+	\item Systeme mit Teilkomponenten mit unterschiedlichen Datenraten
+	\item Prüfen auf Periodizität $\rightarrow$ keine unendlichen
+		Datenmengen
+	\item Periodizität gegeben, aber: Verklemmungen möglich
+		\begin{itemize}
+			\item Algorithmus von LEE
+		\end{itemize}
+	\item Definition: \emph{SDF-Graph}
+		\begin{itemize}
+			\item 5-Tupel $G=(V,E,cons,prod,d)$ mit
+				\begin{itemize}
+					\item $V$: Anzahl Knoten
+					\item $E \subseteq V \times V$
+					\item $cons: E \longrightarrow N_0$ (konsumierte
+						Marken beim Feuern)
+					\item $prod: E \longrightarrow N_0$ (produzierte
+						Marken beim Feuern)
+					\item Anfangsmarkierung $d \in N_0^{card(E)}$
+					\item Topologiematrix $C=Z^{card(V) \times card(E)}$
+						\begin{itemize}
+							\item verläuft $e_j$ von $v_i$ nach $v_k$,
+								dann sind alle Einträge der Spalte $c_j$
+								identisch null ausser:
+							\item $c_{i,j}=-prod(v_i,v_k)$ und
+							\item $c_{k,j}=cons(v_i,v_k)$
+						\end{itemize}
+				\end{itemize}
+			\item Dynamik der Markierungen: $d*=d-C^T\gamma$, wobei
+				$\gamma \in N_0$
+			\item Notwendige Bedingung: $rang(C)=|V|-1$
+			\item Lösen von $C^T\gamma=0$, falls $\gamma$ \emph{trivial}
+				$\rightarrow$ kein periodische Ablauf!
+			\item Für LEE:
+				\begin{itemize}
+					\item minimaler Repetitionsvektor $\gamma^*$
+						\begin{itemize}
+							\item kleinster,positiver, ganzzahliger
+								Vektor, der wieder zur anfänglichen
+								Tokenverteilung führt
+						\end{itemize}
+					\item zum Auflösen von Verklemmungen (System kann
+						während Aktionen nicht mehr feuern)
+					\item konstruktives Verfahren:
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+\frage{Wie kann man einen Automaten synthetisieren?}
+\begin{itemize}
+	\item Zustände binär codieren
+	\item Wertetabelle erstellen und DNF entnehmen
+	\item Boolsche gleichung minimieren (KV-Tafel oder Algebraisch)
+	\item Schaltung entwerfen
+\end{itemize}
+
+%
+\frage{Was sind die Grenzen von Automaten?}
+\begin{itemize}
+	\item Sie können keine Nebenläufigkeit und Hierarchie modellieren.
+\end{itemize}
+
+\frage{Mit welchen Methoden kann man die Einschränkungen von Automaten
+aufheben?}
+
+\begin{itemize}
+	\item Statecharts
+	\item Petrinetze
+\end{itemize}
+
+\frage{Was leisten Statecharts?}
+
+\begin{itemize}
+	\item liefern Zustandsdiagramme
+	\item Hierarchie
+	\item Nebenläufigkeit
+	\item Broadcast-Kommunikation
+\end{itemize}
+
+\frage{Wie funktionieren Statecharts?}
+
+\begin{itemize}
+	\item Hierarchiebildung: Durch Super- und Subzustände
+	\item Nebenläufigkeit: Durch AND-Dekomposition
+	\item Ereignisse entweder elementar oder logisch verknüpft
+\end{itemize}
+
+%
+\frage{Wie kann man in Statecharts (nebenläufigen Prozessen)
+Synchronizität erreichen?}
+\begin{itemize}
+	\item Anwendung gleicher Eingabealphabete (?) 
+\end{itemize}
+%
+\frage{Wie synthetisiert man Statecharts?}
+\begin{itemize}
+	\item Umweg über Automaten, der Produktautomat.
+\end{itemize}
+%
+\frage{Was ist der Unterschied zwischen System- und
+Rechnerentwurfssprachen?}
+\begin{itemize}
+	\item Systementwurfssprachen: für HW+SW (Bsp. SystemC)
+		($\rightarrow$
+		HW/SW-Codesign)
+		\begin{itemize}
+			\item Algorithmische Ebene
+			\item Processor-Memory-Switch-Ebene
+			\item Befehlsebene
+			\item Aber auch die folgenden Ebenen:
+		\end{itemize}
+	\item Rechnerentwurfssprachen: HW (Bsp. VHDL)
+		\begin{itemize}
+			\item Register-Transfer-Ebene
+			\item Logik-Ebene
+			\item Schaltkreisebene
+		\end{itemize}
+\end{itemize}
+%
+\frage{Erklären sie den Aufbau von VHDL!}
+
+\begin{itemize}
+	\item Grobstruktur:
+		\begin{itemize}
+			\item \emph{use} - Bereitstellung von Bibliotheken
+			\item \emph{entity} - Entwurfsobjekt und
+				Schnittstellenbeschreibung
+			\item \emph{architecture} - Implementierung der entity
+			\item \emph{configuration} - Zuordnung von architekturen zu
+				entitys 
+		\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+	\item Feinstruktur:
+		\begin{itemize}
+			\item Kernelement ist die entity (spezifiziert die
+				Schnittstelle)
+				\begin{itemize}
+					\item Ports, Generics
+				\end{itemize}
+			\item dazu gehören zwei Hauparten der Architektur:
+				\begin{enumerate}
+					\item \emph{strukturell}
+						\begin{itemize}
+							\item Definition der Schaltung der
+								Unterkomponenten
+						\end{itemize}
+					\item \emph{verhaltensorientiert} 
+						\begin{itemize}
+							\item gleichzeitig (immer)
+							\item sequentiell (mit {\tt process}-Modifizierer)
+							\item Datenflussbeschreibung (boolsche
+								Ebene)
+						\end{itemize}
+				\end{enumerate}
+			\item \emph{design entity} = entity + architecture
+			\item configuration
+				\begin{itemize}
+					\item Zuweisung von Architekturalternativen zu
+						Entities
+					\item Unterstützen Parametrisierung und Flexibilität
+						beim Entwurf
+				\end{itemize}
+			\item Variablen: kein Gegenstück in Hardware, Signale:
+				Hardwareleitungen
+			\item {\bf Fazit:}
+				\begin{itemize}
+					\item mächtige Sprache $\rightarrow$ schwierige
+						Synthese
+					\item viele Datentypen, starke Typisierung
+					\item Definition von Konstanten, Variablen, SIgnalen
+						möglich (auch eigene Typen!)
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+\begin{itemize}
+	\item Vorteile von VHDL:
+		\begin{itemize}
+			\item Standardisiert!
+			\item Langfristigkeit wahrscheinlich
+			\item umfangreiche Modellierungsmöglichkeiten
+		\end{itemize}
+\end{itemize}
+
+\frage{Erläutern sie den Unterschied von Struktur-, Datenfluss- und
+Verhaltensbeschreibung in VHDL!}
+
+
+\frage{Auf welchen Ebenen existiert die Synthese?}
+
+\begin{itemize}
+	\item Architektursynthese
+		\begin{itemize}
+			\item Input: Menge von Prozessen, die über Nachrichten
+				kommunizieren
+			\item Output: Struktur von Prozessoren, Speichern,
+				Interface-Komponenten
+			\item ist ein Beispiel für die Struktursynthese
+		\end{itemize}
+	\item Register-Transfer-Synthese
+		\begin{itemize}
+			\item Input: Beschreibung eines endlichen Automaten
+			\item Output: Datenpfad und Steuerwerk
+			\item Datenpfad bestimmt Ein- und Ausgänge
+			\item Steuerwerk berechnet Zustandsübergänge und speichert
+				Zustände
+		\end{itemize}
+	\item Logiksynthese
+		\begin{itemize}
+			\item Input: Boolsche Netzliste
+			\item Output: Gatternetzliste von Bibliothekskomponenten
+		\end{itemize}
+	\item Schaltungssynthese
+		\begin{itemize}
+			\item Input: Spezifikation einer Schaltung
+			\item Output: Transistornetzliste (bzw. Layout)
+		\end{itemize}
+\end{itemize}
+%
+
+\frage{Welche Unterscheidung existiert bezüglich des
+Syntheseergebnisses?}
+
+\begin{itemize}
+	\item \emph{Schaltnetz} - kombinatorische Schaltung
+	\item \emph{Schaltwerk} - sequentielle Schaltung
+\end{itemize}
+
+\frage{Beschreiben sie wie Technologieabbildung funktioniert!}
+
+\begin{itemize}
+	\item {\bf Aufgabe:}
+		\begin{itemize}
+			\item Abbildung einer \emph{technologieunabhängigen}
+				Optimierung einer Boolschen Netzliste {\bf auf} eine
+				vom Hersteller der Zielarchitektur
+				\emph{technologieabhängigen} Zielstruktur
+		\end{itemize}
+	\item {\bf Strategie:}
+		\begin{itemize}
+			\item Rückführung des Boolschen Netzes auf gemeinsame
+				standardisierte Form
+			\item Versuch der Überdeckung der Schaltung mit
+				Bibliothekselementen (mit Rücksicht auf die
+				Kostenfunktion)
+		\end{itemize}
+\end{itemize}
+
+\frage{Worin besteht der Unterschied zwischen SystemC und VHDL?}
+\begin{itemize}
+	\item SystemC: Systementwurfssprache (HW+SW)
+	\item VHDL: Rechnerentwurfssprache (HW)
+\end{itemize}
+%
+\frage{Wie mächtig sind Petrinetze?}
+
+\begin{itemize}
+	\item Mächtigstes Werkzeug, bildet die Obermenge aller formalen
+		Beschreibungen
+	\item ermöglichen einen \emph{asynchronen} Entwurf
+	\item kann formulieren: 
+		\begin{itemize}
+			\item Sequentialität
+			\item Synchronisieren
+			\item nicht deterministische Verzweigung
+			\item Ressourcenkonflikt
+		\end{itemize}
+\end{itemize}
+
+%
+\frage{Für welche Fragestellungen eignen sich deterministische endliche
+Automaten?}
+
+\begin{itemize}
+	\item Modellierung von Schaltwerken oder Steuerungen 
+	\item Beschreibung von Systemen mit ``Gedächtnis''
+\end{itemize}
+%
+\frage{Wie lassen sich Nebenläufigkeit und Hierarchiebildung mit
+Statecharts darstellen?}
+\begin{itemize}
+	\item mit Superzuständen und Subzuständen, sowie {\tt
+		AND}-Dekomposition
+	\item mehr siehe oben $\uparrow$
+\end{itemize}
+%
+\frage{Was sind Produktautomaten (bezüglich Statecharts) und wozu kann
+man sie einsetzen?}
+
+\begin{itemize}
+	\item enstehen bei Auflösung der {\tt AND}-Dekomposition von
+		Subzuständen
+	\item Zustände des PA gleich der Anzahl aller möglichen
+		Konfigurationen der Zustände (aber gemeinsame Ereignisse können
+		zusammengefasst werden)
+	\item Möglichkeit das Statechart synthesefähig zu machen TODO:
+		stimmt das?
+\end{itemize}
+%
+\frage{Zählen sie die sechs Ebenen zur Rechnerbeschreibung auf!}
+\begin{itemize}
+	\item Algorithmische Ebene (Spezifikation eines Algorithmus zur
+		Lösung eines Problems)
+	\item PMS-Ebene (Process, Memory, Switch - Beschreibung durch die
+		Hauptelemente eines Rechners)
+	\item Befehlsebene (Beschreibung durch die Struktur der Befehle)
+	\item Register-Transfer-Ebene (Beschreibung durch Register und
+		Operationen auf diesen Registern)
+	\item Logik-Ebene (Logische Gatter + FlipFlops)
+	\item Schaltkreisebene (Transistoren, Widerstände, Dioden)
+\end{itemize}
+
+\frage{Welche Aufgaben haben Systementwurfssprachen?}
+
+\begin{itemize}
+	\item Synthese 
+		\begin{itemize}
+			\item sollen Hilfsmittel für physikalische Beschreibung und
+				automatische Ableitung eines Chiplayouts aus Abstrakter
+				beschreibung ermöglichen
+		\end{itemize}
+	\item Spezifikation schaffen
+	\item Validierung eines Systems durch Verifikation
+	\item Austauschbarkeit gewährleisten ($\rightarrow$Intellectual
+		Properties)
+\end{itemize}
+
+\section{Halbleitertechnologie}
+
+%
+\frage{Was besagt Moore's Gesetz und wie lange wird es noch gültig sein?
+Warum?}
+\begin{itemize}
+	\item Moore: Verdopplung der Bauelemente auf einem Chip alle 18-24
+		Monate
+	\item Schätzung: ca. 20 weitere Jahre gültig, aber dann:
+		\begin{itemize}
+			\item natürliche Grenze: Leitungen können nicht geringer
+				sein als die Elektronen, die sich darin bewegen
+		\end{itemize}
+\end{itemize}
+
+\frage{Was bedeutet Skalierung?}
+\begin{itemize}
+	\item Bauelementeparameter werden um Faktor $\alpha$>$1$ skaliert
+	\item Ziel: elektrische Feldstärke konstant halten (typisch
+		$\alpha=1,4$)
+	\item jedoch: nicht alle Parameter werden skaliert (z.Bsp.
+		Versorgungsspannung)
+\end{itemize}
+%
+\frage{Was bedeutet ``interconnection crisis''?}
+\begin{itemize}
+	\item zu langsame globale Verbindungen für schnelle Transistoren
+		\begin{itemize}
+			\item RC-Konstante bei Leitungen trotz Skalierung konstant
+		\end{itemize}
+	\item zu wenige externe Verbindungen für Kommunikation zwischen
+		Baugruppen und integrierten Schaltkreisen
+		\begin{itemize}
+			\item quadratischer Anstieg bei Anzahl Bauelemente
+				\emph{vs.} linearer Anstieg der externen Verbindungen
+		\end{itemize}
+\end{itemize}
+%
+\frage{Welche Bedeutung hat die Regel von Rent?}
+\begin{itemize}
+	\item empirisch gewonnener Ausdruck (wie Moore)
+	\item Antwort auf die Frage:
+		\begin{center}
+			``Wie hängt die Pinanzahl mit der Anzahl der Bauelemente
+			zusammen?''
+		\end{center}
+	\item benötigte externe Anschlüsse $P$
+	\item Anzahl der Verwendeten Gatter $N$
+	\item Schaltkreisspezifische Konstanten $B$ und $s$
+		\begin{center}
+			$P=B*N^S$
+		\end{center}
+	\item für Prozessoren gilt der ``Rent-Koeffizient'' s=0.7
+		$\rightarrow$ Bedarf an Pins steigt stärker als vorhanden
+		$\rightarrow$ Flaschenhals bei den Chipexternen Verbindungen
+\end{itemize}
+
+
+\frage{Welche Gegenmaßnahmen gibt es für die ``interconnect crisis''?}
+
+\begin{itemize}
+	\item Laufzeitverzögerung auf ``langen Leitungen''
+	\item dazu: Materialien mit geringeren Widerständen verwenden
+		$\rightarrow$ Verringerung der $RC$-Konstante
+	\item Andere Möglichkeit: System-On-Chip $\rightarrow$ Möglichst
+		viele Bauelemente auf dem Chip integrieren
+\end{itemize}
+
+
+\frage{Was beschreibt die $RC$-Konstante?}
+
+\begin{itemize}
+	\item Für on-chip Leitung gilt: $t_{line}=RC*\frac{l^2}{2}$
+	\item Bei der Skalierung bleibt $RC$ konstant, warum:
+		\begin{itemize}
+			\item $\alpha$>$1$ und $l_n=\frac{l}{\alpha}, A_n=\frac{A}{\alpha^2}$
+			\item $R=s_{Materialkonstante}*\frac{l}{A} \longrightarrow
+				R_n=s*\frac{l_n}{A_n}*\alpha \longrightarrow
+				R_n=R*\alpha$
+			\item $C_n=\frac{C}{\alpha}$
+			\item Damit ist $R_n*C_n=R*C$, konstant!
+		\end{itemize}
+\end{itemize}
+
+%
+
+
+\section{Komponenten eines Rechners}
+
+\frage{Nennen Sie die 7 Prinzipien des URA-Konzepts!}
+\begin{enumerate}
+	\item Der Rechner besteht aus 4 Werken
+		\begin{itemize}
+			\item Speicherwerk
+			\item RechenWerk
+			\item Leitwerk
+			\item E/A-Werk
+		\end{itemize}
+	\item Die Struktur des Rechners ist unabhängig vom Problem!
+		(\emph{Programmsteuerung})
+	\item Programme sind Daten, die andere Daten verarbeiten!
+	\item Hauptspeicher ist in Zellen gleicher Größe eingeteilt, die
+		fortlaufend adressiert sind!
+	\item Ein Programm besteht aus einer Folge von Befehlen!
+		\begin{itemize}
+			\item \emph{Prinzip der Sequentialität}
+		\end{itemize}
+	\item Es gibt bedingte und unbedingte Sprungbefehle!
+	\item Es wird das duale Zahlensystem verwendet!
+\end{enumerate}
+
+
+\frage{Vergleichen Sie CISC/RISC?}
+
+\begin{itemize}
+	\item CISC:
+		\begin{itemize}
+			\item Kosten für Software übersteigen die der HW
+			\item Ansteigende Komplexität durch Hochsprachen
+			\item Semantische Lücke 
+				\begin{itemize}
+					\item Die Unterschiede/Konflikte beim Umsetzen von
+						einer höheren Abstraktionsebene auf eine
+						niedrigere, konkretere Ebene.
+				\end{itemize}
+			\item Folge: 
+				\begin{itemize}
+					\item Anschwellen der Befehlssätze
+					\item Einbau von Hochsprachenkonstrukten in Hardware
+					\item Mehrere Adressierungsarten
+				\end{itemize}
+			\item Ziele:
+				\begin{itemize}
+					\item Vereinfachung für Compilerbauer
+					\item Verbesserung der Ausführungseffizienz
+					\item Unterstützung für Hochsprachen
+				\end{itemize}
+		\end{itemize}
+	\item RISC:
+		\begin{itemize}
+			\item Patterson-Studie (82)
+				\begin{itemize}
+					\item Untersuchung bestimmter Eigenschaften bei
+						Ausführung von Hochsprachenprogrammen
+						\begin{itemize}
+							\item Operationen, Operanden,
+								Ausführungssequenzen $\leftarrow$ wie
+								oft werden diese benutzt
+							\item Ergebnis: Register für Variablen und
+								Prozeduraufrufe optimieren/minimieren
+						\end{itemize}
+				\end{itemize}
+			\item Folge:
+				\begin{itemize}
+					\item \emph{Register}: speichern lokaler Variablen in Registern
+						(Speicherzugriffe minimieren) $\rightarrow$
+						großen Registersatz schaffen
+					\item oder in Software: RISC-Compiler müssen
+						Register optimal allokieren ($\rightarrow$
+						Graphfärbungsalgorithmus)
+					\item \emph{Prozeduren}: wenige Parameter, begrenzte
+						Aufruftiefe, kleine Registermengen
+					\item Registerfenster für schnelles Umschalten der
+						kleinen Registermengen
+				\end{itemize}
+			\item Eigenschaften:
+				\begin{itemize}
+					\item pro Takt eine Instruktion
+					\item Operationen nur auf Registern 
+					\item nur Lade und Speicherbefehle können auf den
+						Speicher zugreifen
+					\item wenige, einfache Adressierungsarten
+					\item wenige, einfache Befehlsformate
+					\item fixes Befehlsformat
+					\item keine Mikroprogrammierung
+					\item erfordert mehr Compilezeit
+				\end{itemize}
+		\end{itemize}
+	\item CISC: Vor allem auf Kompatibilität, RISC: eher Leistungsstark
+\end{itemize}
+%
+
+%
+\frage{Was sagt die Patterson-Studie aus und welche Folge hatte sie?}
+
+\begin{itemize}
+	\item Ausführungseigenschaften bezüglich Operanden, Operationen
+	\item Weg vom CISC, hin zum RISC
+	\item HW: Registeranzahl erhöhen
+	\item SW: Registerallokation optimieren (Compiler)
+
+		
+\end{itemize}
+
+
+\frage{Beschreiben sie den Maschinenbefehlszyklus!}
+\begin{itemize}
+	\item Befehlsholphase
+		\begin{itemize}
+			\item Befehlszähler auslesen und entsprechende Instruktion
+				ins Instruktionsregister laden
+		\end{itemize}
+	\item Dekodierungsphase
+		\begin{itemize}
+			\item Operationskode dekodieren und Steuersignale generieren
+		\end{itemize}
+	\item Operandenholphase
+		\begin{itemize}
+			\item holt die Operanden gemäß des Instruktionsbefehls
+				(evtl. parallel zur Dekodierphase)
+		\end{itemize}
+	\item Ausführungsphase
+		\begin{itemize}
+			\item die Operanden werden in den Registern des
+				Rechenwerksverknüpft
+		\end{itemize}
+	\item Rückschreibephase
+		\begin{itemize}
+			\item Ergebnisse der Ausführungsphase werden in die
+				vorgesehenen Speicherstellen (Speicher,Register)
+				zurückgeschrieben
+		\end{itemize}
+	\item Adressierungsphase
+		\begin{itemize}
+			\item evtl. parallel mit einer der vorigen Phasen, Adresse
+				des nächsten Befehlsbestimmen und in den Befehlszähler
+				laden
+		\end{itemize}
+\end{itemize}
+
+%
+\frage{Erklären Sie Pipelining, Superpipelining und superskalares
+Pipeling!}
+\begin{itemize}
+	\item Pipelining
+		\begin{itemize}
+			\item überlappende Abarbeitung des Maschinenbefehlszyklus
+			\item dazu: Maschinenbefehlszyklus aufteilen in Stufen
+			\item Dauer eines Befehls(Latenz): Gleichbleibend, ABER: Durchsatz
+				wird erhöht (ideal: n-fach bei n-Stufen)
+		\end{itemize}
+	\item Superpipelining
+		\begin{itemize}
+			\item Pipelining in modernen Prozessoren $\rightarrow$
+				Anzahl der Stufen ist mindestens ein dutzend
+		\end{itemize}
+	\item Superskalarität
+		\begin{itemize}
+			\item Gruppierung von mehreren Befehlen, die gleichzeitig
+				nach dem Pipelining abgearbeitet werden
+			\item notwendig: mehrere Rechenwerke, Befehlsgruppierer
+				(d.h. Umordnung sequentiell einlaufender Befehle -
+				\emph{dynamische Parallelisierung} zur Laufzeit
+				$\leftarrow$ Allgemeines Prinzip bei Superskalaren
+				Rechnern
+		\item Prinzip von Vektorrechnern entnommen: gleichzeitige
+				Anwendung von Operationen auf einzelne Elemente eines
+				Vektors
+				\begin{itemize}
+					\item zwar nicht alle Operationen Vektorops, aber
+						dennoch sind mehrere Rechenwerke besser
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+\frage{Welche Leistungssteigerung ist durch Pipeling theoretisch
+möglich?}
+
+\begin{itemize}
+	\item Anzahl der Pipelinestufen $k$
+	\item Verzögerung bedingt durch Zwischenspeichern $d$
+	\item Maximale Verzögerung aller Stufen $\tau_m = max(\tau_i)$ mit
+		$1 \leq i \leq k$
+	\item Zykluszeit $\tau = \tau_m * k + d$ (\emph{bestimmt den Takt!})
+	\item Gesamtzeit zur Bearbeitung von $n$ Instruktionen
+		\begin{center}
+			$T_k=(k+ (n-1)) * \tau$
+		\end{center}
+	\item Erreichbarer Speed-Up:
+		\begin{center}
+			$S_k=\frac{T_1}{T_k}=\frac{nk\tau}{k+(n-1)\tau}$
+		\end{center}
+\end{itemize}
+
+%
+\frage{Welche Probleme können beim Pipelining auftreten?}
+
+\begin{itemize}
+	\item Strukurhazards
+		\begin{itemize}
+			\item Bsp. zuwenig Speicherports um mehrfachen
+				Speicherzugriff zu ermöglichen 
+			\item Gegenmaßnahmen:
+				\begin{itemize}
+					\item stalls einfügen
+					\item zusätzliche Hardware einbauen
+				\end{itemize}
+		\end{itemize}
+	\item Steuerhazards
+		\begin{itemize}
+			\item Problem bei Sprungbefehlen, wenn die Folgeinstruktion
+				nicht die sequentiell nächste ist
+			\item bedingte Sprunganweisung: muss die pipelinestufen bis
+				zur auswertung durchlaufen, erst dann entscheidet sich
+				ob "`branch taken"' oder "`branch not taken"'
+				$\rightarrow$ auf jedenfall Strafzeit!
+			\item Gegenmaßnahme: \emph{Spekulative Befehlsausführung}
+				\begin{itemize}
+					\item mehrfache Befehlsausführung
+					\item prefetch branch target - Sprungziel vorher
+						speichern (mit loop buffer)
+					\item static/dynamic branch prediction -
+						Verzweigungsvorhersage
+					\item delayed branch - Sprungverzögerung
+				\end{itemize}
+		\end{itemize}
+	\item Datenhazards
+		\begin{itemize}
+			\item ergeben sich aus der Reihenfolge der Ausführung von
+				Befehlen
+			\item RAW - I2 liest R1, bevor I1 es geschrieben hat
+			\item WAR - I2 schreibt R1, bevor I1 es gelesen hat
+			\item WAW - I2 schreibt R1, I1 überschreibt 
+		\end{itemize}
+\end{itemize}
+
+%
+\frage{Nennen sie fünf Gegenmaßnahmen bei Steuerungshasards!}
+\begin{itemize}
+	\item Spekulative Befehlsausführung (mehrfache Befehlsausführung)
+		\begin{itemize}
+			\item Probleme: 
+				\begin{itemize}
+					\item könnten weitere Verzweigungen in einem Strang
+						sein
+					\item könnten Strukturhazards auftreten
+					\item Kosten! Zusätzliche HW notwendig
+				\end{itemize}
+		\end{itemize}
+	\item loop buffer
+		\begin{itemize}
+			\item Idee: Einmal angesprungenes Ziel wird vermutlich
+				häufiger angesprungen (Schleife, Unterprogramm)
+			\item Pufferspeicher für zuletzt angesprungene Adressen
+			\item gespeichert wird: angesprungener Befehl und folgende
+				Befehle
+			\item findet in der Befehlsholephase statt
+				\begin{itemize}
+					\item Aus dem instruction cache in den instruction
+						buffer (fifo) und von da in das instruction
+						register
+					\item Funktion ähnlich Cache (mit dessen Vorzügen),
+						aber es werden nur aufeinanderfolgende BEfehle
+						gespeichert
+					\item "`if then else"' branches befinden sich im
+						puffer $\rightarrow$ unterstützt schnellem
+						cachezugriff
+				\end{itemize}
+		\end{itemize}
+	\item delayed branching 
+		\begin{itemize}
+			\item Idee:
+				\begin{itemize}
+					\item CPU soll was sinnvolles machen in der Zeit,
+						wenn stalls vorkommen
+					\item dazu: die unmittelbare Instruktion wird auf
+						jedenfall in die pipeline genommen und die
+						ausführungsreihenfolge wird erst geändert, wenn
+						"`branch taken"'
+				\end{itemize}
+		\end{itemize}
+	\item branch prediction
+		\begin{itemize}
+			\item {\bf statisch}:
+			\begin{itemize}
+				\item führen keine history über die vergangenen branches
+				\item "`branch always taken"' - immer Sprungzielbefehl
+					laden
+				\item "`branch never taken"' - immer Folgebefehl laden
+			\end{itemize}
+		\item {\bf dynamisch}:
+			\begin{itemize}
+				\item "`one-bit-prediction"' - in Abhängigkeit des
+					letzten Sprungbefehls agieren
+				\item "`two-bit-prediction"' - Guthabenmethode,
+					Automaten zeichen!
+				\item branch history table:
+					\begin{itemize}
+						\item Verzweigungsadresse (oder gar den
+							kompletten Befehl - speicheraufwendig!) in
+							der tabelle speichern
+						\item 1-bit/2-bit Verfahren müssen
+							Verzweigungsadresse erst dekodieren, falls
+							"`branch taken"' - hier nicht mehr nötig
+					\end{itemize}
+			\end{itemize}
+		\end{itemize}
+\end{itemize}
+%
+\frage{Erläutern sie Datenhazards unter Verwendung eines Beispiels!}
+\begin{itemize}
+	\item RAW - I2 liest Operanden, den I1 noch nicht geschrieben hat
+		(Annahme: DIV dauert länger als ADD)
+		\begin{center}{\tt
+		DIV	R1,R2,R3\\
+		ADD	R3,R1,R1\\	
+		}
+		\end{center}
+	\item WAR - I2 schreibt Operanden, den I1 noch nicht gelesen hat
+		(erst durch Befehlsumordnungen möglich $\rightarrow$
+		Superskalarität)
+	\item Beispiel: ADDD kann F0 nicht lesen und auch F8 nicht, aber der
+		SUBD überschreibt F8, bevor ADD es lesen kann
+		\begin{center}
+			
+			{\tt
+			DIVD F0,F2,F4\\
+			ADDD F10,{\bf F0},F8\\
+			SUBD F8,F8,F14\\
+			}
+			
+		\end{center}
+	\item WAW - I1 überschreibt Operanden, den I2 früher schon
+		geschrieben hat	
+	\item d.h. die letzte Änderung geht verloren, Beispiel: ADDD wird
+		später fertig als LOAD, in folge steht ein "`falscher"' Wert in
+		F1
+		\begin{center}
+			ADDD F1,F2,F3\\
+			LOAD F1,F4
+		\end{center}
+\end{itemize}
+%
+%
+\frage{Wie funktioniert das Forwarding? Wozu ist es gut?}
+
+\begin{itemize}
+	\item by-pass, load forwarding
+	\item \emph{by-pass}: zusätzliche Rückkopplung von ALU-Ergebnissen an die Eingänge
+		der ALU zur direkten Verwendung in den Folgebefehlen
+	\item \emph{load-forward}: Speicher direkt an die ALU anschliessen
+		(ohne Registerübergang)
+	\item Wozu? hilft bei Datenhasards, neben ($\rightarrow$ Umordnung
+		der Befehlsreihenfolge und $\rightarrow$ dynamischer
+		Ablaufplanung (scoreboards,tomasolu))
+\end{itemize}
+
+
+%
+\frage{Erläutern sie Scoreboard genauer!}
+\begin{itemize}
+	\item Grundprinzip: \emph{Verwalten von Instruktionsfolgen mit dem
+		Ziel ihre Ausführungsreihenfolge zu ändern}
+	\item Ziel: Anhalten der Pipeline verhindern
+	\item Ablauf: (4-stufig)
+		\begin{enumerate}
+			\item Instruktion dekodieren, Strukturhasards erkennen und
+				ggfs. stalls einfügen
+			\item Operanden lesen, zuvor jedoch warten bis keine
+				Datenhasards vorliegen
+				\begin{itemize}
+					\item Quelloperanden werden nutzbar, wenn eine auf
+						ihn schreibende Instuktion endet, oder wenn das
+						Operandenregister gar nicht benutzt wird
+					\item Dadurch: Beseitung des RAW-Hasards durch
+						Umstrukturierung der Befehlsreihenfolge
+				\end{itemize}
+			\item Ausführungsphase
+				\begin{itemize}
+					\item bei Multizyklusops an dessen Ende das
+						Scoreboard benachrichtigen
+				\end{itemize}
+			\item Rückschreibephase
+				\begin{itemize}
+					\item Test auf WAR-Hasards, evtl. stalls einfügen
+				\end{itemize}
+		\end{enumerate}
+\end{itemize}
+
+%
+\frage{Worin unterscheiden sich Scoreboard und Tomasolu-Algorithmus?}
+\begin{itemize}
+	\item Scoreboard unternimmt \emph{out-of-order-commit} und erzeugt
+		damit stärkere Tendenz zu WAR und WAW
+	\item RAW-Konflikte werden ausgeschlossen 
+	\item Tomasulo nimmt Scoreboard-Prinzip auf und erweitert dies um
+		das Prinzip der \emph{Registerumbenennung}
+	\item durch gemeinsamen Datenbus ist das Ergebnis einen Takt früher
+		verfügbar als beim Scoreboard (forwarding)
+\end{itemize}
+%
+
+\frage{Wie funktioniert die Tomasulo-Architektur?}
+\begin{itemize}
+	\item Wesentlich: Steuerung und Zwischenspeichereinheiten sind
+		verteil
+	\item Mittel: Reservierungsstationen, gemeinsamer Datenbus
+	\item Ablauf: (3-stufig)
+		\begin{enumerate}
+			\item Befehl installieren - (BH+DE)
+				\begin{itemize}
+					\item Reservierungsstation frei (
+						kein Struktureller Hazard) $\rightarrow$
+						Operanden übertragen
+						(\emph{Registerumbenennung})
+				\end{itemize}
+			\item Ausführung (BA)
+				\begin{itemize}
+					\item beide Operanden nutzbar $\rightarrow$ starte
+						Ausführung
+					\item falls nein: CDB (\emph{common data bus})
+						beobachten
+				\end{itemize}
+			\item Rückschreiben (RS) 
+				\begin{itemize}
+					\item Ergebnis über CDB an alle wartenden
+						Funktionseinheiten verteilen
+					\item busy status für Reservierungsstation entfernen
+				\end{itemize}
+		\end{enumerate}
+\end{itemize}
+
+\frage {Was bedeutet Registerumbenennung bei der Tomasulo-Architektur?}
+
+\begin{itemize}
+	\item Mechanismus, bei dem Registerreferenzen ersetzt werden durch 
+		\begin{itemize}
+			\item Zeiger auf Reservierungstationen oder
+			\item konkrete Daten
+		\end{itemize}
+	\item dadurch: Ausschluss von WAW und WAR-Konflikte
+\end{itemize}
+%
+\frage{Was ist ein Cache?}
+\begin{itemize}
+	\item Zwischenspeicher, in CPU-Nähe schneller/kleiner
+	\item dient zur Zwischenspeicherung von Befehlen/Daten um
+		schnelleren Zugriff zu gewährleisten
+	\item Zwei Probleme:
+		\begin{enumerate}
+			\item \emph{Platzierungsproblem}
+			\item \emph{Identifikationsproblem}
+		\end{enumerate}
+\end{itemize}
+%
+\frage{Beschreiben Sie eine typische Speicher-Hierarchie!}
+
+\begin{itemize}
+	\item CPU-Register, L1-Cache, L2-Cache, Hauptspeicher, Peripherer
+		Speicher
+	\item Speicher der niedrigeren Hierarchiestufe enthält Ausschnitt
+		des nächstgrößeren
+\end{itemize}
+%
+\frage{Nennen sie die drei Organisationsformen von Caches und
+beschreiben sie kurz!}
+\begin{itemize}
+	\item {\bf 1-fach-Assoziativ (direct mapping)}
+		\begin{itemize}
+			\item jeder Adresse A eines Hauptspeicherblocks wird direkt ein
+				Block B aus dem Cache zugewiesen
+			\item Z.Bsp. $B=A\%N$, wobei N $\dots$ Anzahl der Cacheblöcke
+		\end{itemize}
+	\item {\bf n-fach assoziative Abbildung}
+		\begin{itemize}
+			\item $S$ Cache-Blöcke in $s$ n-Mengen teilen: 
+				\begin{center}
+					$s=N/n$
+				\end{center}
+			\item n=1: Direkte Abbildung
+			\item n=N: Vollassoziativ
+				\begin{itemize}
+					\item jede Hauptspeicheradresse kann in jeden
+						Cacheblock abgebildet werden 
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+\frage{Wie wird eine Hauptspeicheradresse im Cache identifiziert?}
+
+\begin{itemize}
+	\item Identifikationsproblem
+	\item Caches haben für jeden Block ein Adress-Tag
+	\item dies enthält die Blockadresse des Eintrags im Hauptspeicher
+	\item Aufbau:
+		\begin{itemize}
+			\item {\tt | 24 Bit Tag | 6 Bit Index | 2 Bit Offset |}
+			\item Zusätzlich noch ein Valid-Bit für die Gültigkeit
+			\item Offset: Auswahl der Daten im Block
+			\item Index: bezeichner der Menge im Cache
+			\item Tag: dient zum Vergleich (Eintrag vorhanden? ja|nein)
+		\end{itemize}
+	\item n-fach ass. $\rightarrow$ n Komparatoren
+	\item Verglichen wird nur der Adresstag, Index/Block sind ja
+		eindeutig im Cache
+\end{itemize}
+
+\frage{Was bedeuten Ersetzungs- und Aktualisierungsstrategien bei
+Caches?}
+\begin{itemize}
+	\item Inkonsistenz zwischen Hauptspeicher und Cache $\rightarrow$
+		Aktualisierung
+	\item \emph{write through}
+		\begin{itemize}
+			\item Änderung sofort im Hauptspeicher aktualisieren
+			\item Konsistenz immer da, aber CPU-Speicherbusbelastung
+		\end{itemize}
+	\item \emph{write back}
+		\begin{itemize}
+			\item Erst bei Verdrängung findet eine Aktualisierung statt
+			\item dirty bit flag um unnötiges rückschreiben zu
+				verhindern
+		\end{itemize}
+	\item Wann müssen Werte im Cache verändert werden? $\rightarrow$
+		Ersetzungsstrategie
+		\begin{itemize}
+			\item Cache miss tritt auf $\rightarrow$ aus HS nachladen,
+				CPU anhalten
+		\end{itemize}
+	\item Welche Werte werden verändert? (\emph{replacement problem})
+		\begin{itemize}
+			\item Welche Zeile im Cacheblock wird ersetzt?
+				\begin{itemize}
+					\item LFU,LRU,FIFO,RANDOM
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+%
+\frage{Was können sie über das Verhältnis von Cachegröße zu Cache-miss,
+also Fehlzugriffen sagen?}
+
+\begin{itemize}
+	\item Zunahme der Cachegröße $\rightarrow$ Abnahme der Cache misses
+\end{itemize}
+
+\frage{Wie wird die Leistung von Caches gemessen?}
+\begin{itemize}
+	\item mittlere effektive Speicherzugriffszeit
+		\begin{center}
+			$T_a=T_h + m*Tm$
+		\end{center}
+	\item $m$ \dots miss rate
+	\item $T_m$ \dots miss penalty (Nachladezeit)
+	\item $T_h$ \dots hit time (Cache-Zugriffszeit)
+	\item Optimierung des Caches besteht in der Minimierung von $m$, der
+		miss rate
+		\begin{itemize}
+			\item durch Erhöhung der Cache-Kapazität oder des Grades an
+				Assoziativität 
+		\end{itemize}
+	\item Andere Optimierung: \emph{prefetching}, vorausgreifendes Laden
+		von Cacheeinträgen
+\end{itemize}
+%
+\frage{Geben sie die Klassifikation von Fehlzugriffen bei Caches an!}
+\begin{itemize}
+	\item \emph{compulsory}
+		\begin{itemize}
+			\item Kaltstart-miss, erstmaliges Laden vom Block
+		\end{itemize}
+	\item \emph{capacity}
+		\begin{itemize}
+			\item Cache zu klein um komplette Befehlsfolge zu cachen 
+			\item neben compulsory einzige miss-quelle für vollassoziative
+				caches
+		\end{itemize}
+	\item \emph{conflict}
+		\begin{itemize}
+			\item in nicht voll-assoziativen caches 
+			\item durch Adresskonflikte  werden Blöcke überschrieben
+		\end{itemize}
+\end{itemize}
+%
+\frage{Beschreiben sie das Verhaltnis der Cachegrößen bei 2-Ebenen
+Speicher! (Folie)}
+
+
+\frage{Welche Merkmale besitzt die VLIW-Architektur?}
+
+\begin{itemize}
+	\item \emph{very long instruction word}-Architektur
+	\item ebenso wie $\rightarrow$ Multithreading: Ziel ist die
+		Beseitigung der Beschränkung des Parallelismus bei
+		Superskalararchitekturen
+	\item VLIW: Optimierung zur Compilephase, Erzeugen langer
+		Instruktionen um jeder ALU einen Maschinenbefehl zuzuordnen
+	\item Bsp. Implementierung, EPiC-Architektur:
+		\begin{itemize}
+			\item spekulative BA, spekulatives Laden
+		\end{itemize}
+\end{itemize}
+
+\frage{Was bedeutet Multithreading?}
+
+\begin{itemize}
+	\item wie VLIW: Versuch Beschränkungen der Parallelisierung bei
+		Superskalararchitekturen beizukommen ($\rightarrow$ VLIW)
+	\item Programm in unabhängige Teile (\emph{threads}) zerlegen (durch
+		Programmierer oder Compiler)
+	\item pro Prozessor ein thread, lokaler Speicher pro Thread,
+		Globaler Speicher zum Syncen, einfacher Prozesskontext (um
+		Schalten nicht zu verteuern)
+	\item Bsp. Implementierung: Intels Hyperthreading: 
+		\begin{itemize}
+			\item mehrere logische Prozessoren auf einem physikalischen
+				Prozessor
+		\end{itemize}
+\end{itemize}
+\section{Leistungsbewertung}
+
+\frage{Welche Methoden der Leistungsbewertung gibt es?}
+\begin{itemize}
+	\item analytische Methoden
+		\begin{itemize}
+			\item mathematisch, Warteschlangenmodelle
+			\item zur Berechnung quantitativer Leistungsmasse wie
+				Mittelwerte, Durchsatz, Verweilzeit
+		\end{itemize}
+	\item Simulation 
+		\begin{itemize}
+			\item Verkehrsverhalten eines Rechners auf einem anderen
+				nachbilden
+			\item sinnvoll zum Entwurf von Rechnern, oder Auswahl von
+				Konfigurationsänderungen
+		\end{itemize}
+	\item Messung
+		\begin{itemize}
+			\item beobachtende Leistungsbewertung von einzelnen
+				Komponenten oder ganzen Rechenanlagen
+			\item monitoring
+				\begin{itemize}
+					\item Aufzeichnung von interessanten Sachen mit
+						Messgeräten (ereignis-(un)abhängig
+						) 
+					\item HW/SW-Monitoring (SW schlecht, da Ergebnis
+						verfälscht)
+				\end{itemize}
+			\item benchmarking
+				\begin{itemize}
+					\item Reale Programme, Kernels, Spielzeuge
+					\item synthetische Benchmarks zum Testen spezieller
+						Sets von Instruktionen (wheatstone, dhrystone,
+						linpack, specint, specfp)
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+%
+\section{Fehlertoleranz}
+
+\frage{Faseln sie was zur Fehlertoleranz zusammen!}
+
+\begin{itemize}
+	\item Zuverlässigkeit R eines Systems (bedingte Wahrscheinlichkeit,
+		dass es in dem Zeitintervall überlebt)
+	\item Ausfallrate $\gamma$
+	\item mittlere Ausfallrate $1/\gamma$
+	\item Verbesserung durch Redundanztechniken
+		\begin{itemize}
+			\item Fehlerdiagnose und Behandlung
+			\item RAID - Fehlertolerante Architektur
+		\end{itemize}
+\end{itemize}
+%%%
+%%%%%%
+\chapter{Rechnerarchitektur Teil 2}
+
+\section{Spezialprozessoren}
+%
+\frage{Welche Arten von Prozessoren kennen sie?}
+\antw{Universalprozessoren, \ldots}
+%
+
+\section{HW/SW-Codesign}
+
+\frage{Was versteht man unter HW/SW-Codesign}
+%
+\frage{Erläutern Sie die Ablaufplanung beim Codesign!}
+%
+\frage{Welche Algorithmen haben wir bei der Ablaufplanung besprochen?}
+%
+\frage{In welchen Phasen läuft der Designprozess ab?}
+%
+\frage{Erklären sie Logik-, Software-, Hardware- und Systemsynthese!}
+%
+\frage{Erläutern Sie Allokation, Ablaufplanung und Bindung beim
+Codesign!}
+%
+\frage{Was sind nicht-ressourcenbeschränkte Ablaufplanungsalgorithmen?}
+%
+\frage{Was sind ressourcenbeschränkte Ablaufplanungsalgorithmen?}
+%
+\frage{Wie funktionieren ASAP, ALAP und ILP? Was sind die Unterschiede?}
+\section{Intellectual Property}
+%
+\frage{Erläutern sie kurz IP}
+%
+\frage{Welche Arten von IP gibt es? Welche Unterschiede haben diese?}
+\antw{hard, firm, soft}
+%
+
+\section{Parallelrechner}
+
+%
+\frage{Welche Parallelrechnerstrukturen haben wir kennengelernt?}
+%
+\frage{Ordnen Sie die Strukturen nach Flynn zu!}
+\antw{SISD= normaler Rechner, SIMD=Feldrechner (Vektorrechner),
+MIMD=Multiprozessorsysteme, MISD=indirekt bei spekulativer
+Befehlsausführung beim Pipelining}
+%
+\frage{Was ist ein Feldrechner? Welche Vor- und Nachteile hat er?}
+%
+\frage{Was ist SIMD/MIMD? Was ist einfacher zu bauen?}
+%
+\frage{Wie sind Multiprozessorsysteme verbunden?}
+\antw{Speicher und Nachrichtenkopplung.}
+%
+\frage{Wie sieht das Leitwerk bei Vektorrechnern aus?}
+%
+\frage{Was sind Vor- und Nachteile von Speicherkopplung?}
+%
+\frage{Warum skaliert Speicherkopplung irgendwann nicht mehr?}
+%
+\frage{Wie werden Parallelrechner gekoppelt?}
+%
+
+\section{Netzwerke}
+%
+\frage{Erklären Sie Aufbau, Nachteil und Lösung bei mehrstufigen
+Netzen!}
+%
+\frage{Wie funktioniert ein Kreuzschienenverteiler?}
+%
+\frage{Erläutern sie die Arbeitsweise des Benes-Netzwerks!}
+%
+\frage{Was ist ein 2x2-Verteiler?}
+%
+\frage{Leiten sie den n-dimensionalen Hypercube grafisch her!}
+%
+\frage{Was ist der Vorteil bei der Hypercube-Vernetzung?}
+\antw{Vorteil: max. Weglänge d, mehrfache Wege zwischen zwei Knoten;
+Nachteil: Knotengrad = d - (d - \#dimensionen)}
+%
+\frage{Beschreiben sie den Sunshine-Switch!}
+\antw{Batcher-Sortiernetzwerk wichtig für Banyon, weil es dann keine
+Konflikte mehr gibt.}
+%
+\frage{Was ist Wellenlängenmultiplexing?}
+%
+
+\section{Verteilte Systeme}
+
+\end{document}
+
