@@ -8,7 +8,6 @@
 
 \usepackage[latin1]{inputenc}
 \usepackage{ngerman}
-% \usepackage{nicefrac}
 % \usepackage{tabularx}
 
 \usepackage{times}		% Times
@@ -43,8 +42,30 @@
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \addtokomafont{sectioning}{\boldmath}
 
+\setdefaultenum{(1)}{(a)}{i.}{A.}
+
 \makeatletter
 \def\@thmcountersep{/}
+% Anpassung, damit ntheorem in der Satzübersicht genügend Platz für die
+% Satznummer und den Namen lässt; einfach aus ntheorem.sty kopiert und
+% den dritten Parameter von \@dottedtocline vergrößert
+\def\thm@@thmline@name#1#2#3#4#5{%
+     \ifx\\#5\\%
+         \@dottedtocline{-2}{0em}{3.5em}%
+             {#1 \protect\numberline{#2}#3}%
+             {#4}
+     \else
+         \ifHy@linktocpage\relax\relax
+             \@dottedtocline{-2}{0em}{3.8em}%
+                 {#1 \protect\numberline{#2}#3}%
+                 {\hyper@linkstart{link}{#5}{#4}\hyper@linkend}%
+         \else
+             \@dottedtocline{-2}{0em}{3.8em}%
+                 {\hyper@linkstart{link}{#5}%
+                   {#1 \protect\numberline{#2}#3}\hyper@linkend}%
+                 {#4}%
+         \fi
+     \fi}
 \makeatother
 
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
@@ -238,28 +259,29 @@
   Sei $\Omega\subseteq\R^{n}$ offen, $x=(x_{1},\ldots,x_{n})\in\Omega$,
   $\{\vec{e_{1}}, \ldots,\vec{e_{n}} \}$ kanonische Basis,
   $u:\Omega\rightarrow\R$ ist einmal stetig differenzierbar, $u\in
-  C^{1}(\Omega)$, u ist ein \highl{skalares Feld}, $\vec{v} = v_{1}
-  (\times) \vec{e_{1}} + \ldots+ \vec{v_{n}} (\times) \vec{e_{n}} =
-  (v_{1}(x), \ldots, v_{n}(x))$ oder
+  C^{1}(\Omega)$, u ist ein \highl{skalares Feld}, $\vec{v}(x) = v_{1}
+  (x) \vec{e_{1}} + \ldots+ \vec{v_{n}} (x) \vec{e_{n}} =
+  (v_{1}(x), \ldots, v_{n}(x))$ oder als Spaltenvektor
   $\begin{bmatrix}v_{1}(x)\\\vdots\\v_{n}(x)\end{bmatrix}, v_{j}\in
   C^{1}(\Omega), j=1,\ldots,n$ $C^{1}$-Vektorfeld. Dann gilt:
 
   \begin{enumerate}
-   \item
+   \item Als den \highl[Gradient]{Gradienten} oder \highl{Nabla} einer
+    Funktion $u$ bezeichnet man
     \begin{align*}
       \grad u &= \nabla u = \partial_{1}u\vec{e_{1}}
-         +\ldots+\partial_{n}u\vec{e_{n}}&&\text{wobei }\partial_{j} =
+         +\ldots+\partial_{n}u\vec{e_{n}}&\text{wobei }\partial_{j} =
          \frac{\partial}{\partial x_{j}}\\
       &= \begin{bmatrix}\partial_{1}u\\\vdots\\\partial_{n}u\end{bmatrix}
-         &\text{Gradient von }u
     \end{align*}
-   \item
+   \item Als \highl[Divergent]{Divergenten} eines Vektorfeldes $\vec{v}$
+    bezeichnet man
     \begin{gather*}
       \Div \vec{v} := \partial_{1}v_{1} +
          \partial_{2}v_{2}+\ldots+\partial_{n}v_{n} (=\nabla \vec{v})
     \end{gather*}
-    Divergenz von $\vec{v}$.
-   \item $n=3$
+   \item Die \highl{Rotation} eines Vektorfeldes $\vec{v}$ im $R^{3}$ ist
+    definiert als
     \begin{align*}
       \rot \vec{v} &= (\partial_{2}v_{3}-\partial_{3}v_{2})\vec{e_{1}} +
          (\partial_{3}v_{1}-\partial_{1}v_{3})\vec{e_{2}} +
@@ -271,7 +293,6 @@
            \vec{e_{3}}&\partial_{3}& v_{3}
            \end{vmatrix})
     \end{align*}
-    Rotation von $\vec{v}$
   \end{enumerate}
 \end{defini}
 
@@ -345,12 +366,12 @@
 
 \subsection{Hauptsatz für Kurvenintegrale und skalare Potentiale}
 
-Eine kurze Widerholung auf Abschnitt\,7.2
+Eine kurze Wiederholung aus Abschnitt\,7.2
 \begin{itemize}
  \item $(\Gamma, \phi)$ bezeichnet eine \highl{glatte Jordankurve}
   \gdwdef $\phi: [a,b] \rightarrow \R^{n}$ stetig differenzierbar,
   $\Gamma=\{\phi(t): t\in[a,b]\}$, $\phi$ ist indjektiv auf $(a,b)$,
-  der \highl{Tangentenvektor} $\dot{\phi(t)} \not=0$ für $t\in(a,b)$
+  der \highl{Tangentenvektor} $\dot{\phi}(t) \not=0$ für $t\in(a,b)$
 
   $(\Gamma, \phi)$ heißt \highl{geschlossen} \gdwdef $\phi(a) = \phi(b)$
  \item $\Omega\subseteq\R^{n}$ offen, $(\Gamma, \phi)$ \highl{glatte
@@ -358,7 +379,7 @@ Eine kurze Widerholung auf Abschnitt\,7.2
   stetiges Vektorfeld
   \begin{gather*}
     \int_{\Gamma} \vec{v}\cdot\vec{dx} := \int_{a}^{b}
-       \vec{v}(\phi(t))\cdot \dot{\phi(t)}\,dt
+       \vec{v}(\phi(t))\cdot \dot{\phi}(t)\,dt
   \end{gather*}
   Anmerkung: Die Physik definiert dieses Integral "`Arbeit"'
 \end{itemize}
@@ -403,7 +424,7 @@ Eine kurze Widerholung auf Abschnitt\,7.2
     x^{1} &= (1,0,0)\\
     x^{2} &= (1,1,0)\\
     x^{3} &= (1,1,1)\\
-    \vec{v}(x) = \begin{bmatrix}x_{1}\\x_{1}x_{2}\\x_{1}x_{2}x_{3}\end{bmatrix}
+    \vec{v}(x) &= \begin{bmatrix}x_{1}\\x_{1}x_{2}\\x_{1}x_{2}x_{3}\end{bmatrix}
   \end{align*}
 
   \begin{align*}
@@ -490,13 +511,15 @@ Eine kurze Widerholung auf Abschnitt\,7.2
   Für ein Gebiet $\Omega\subseteq\R^{n}$ und ein stetiges Vektorfeld
   $\vec{v}:\Omega\rightarrow\R^{n}$, gilt:
   \begin{enumerate}
-   \item $\vec{v}$ konservativ $\Rightarrow$ $\exists u\in
-    C^{1}(\Omega)$, sodass $\vec{v} = \grad u$
+   \item Für ein konservatives Vektorfeld $\vec{v}$ existiert eine
+    $C^{1}(\Omega)$-Abbildung $u$, sodass $\vec{v} = \grad u$.
 
-    Konservative Vektorfelder besitzen ein Potential.
-   \item $\vec{v}$ konservativ $\Rightarrow$ $u$ aus (1) ist bis auf eine
-    additive Konstante bestimmt. ($\grad u = \grad \tilde{u} \Rightarrow
-    u=\tilde{u}+const$)
+    Konservative Vektorfelder besitzen ein \highl{Potential}.
+   \item Die Abbildung $u$ ist für ein konservatives Vektorfeld $\vec{v}$
+    ist bis auf eine additive Konstante bestimmt.
+    \begin{gather*}
+      \grad u = \grad \tilde{u} \Rightarrow u=\tilde{u}+const
+    \end{gather*}
   \end{enumerate}
 
   $-u$ heißt in der Physik \highl{Potential} des Vektorfelds $\vec{v}$.
@@ -859,12 +882,14 @@ Sei $B\subset\Omega\subset\R^2, \Omega$ offen, $B$ kompakt, $\vec{v}:
   \end{itemize}
 \end{bemerk}
 
+% 9.11.05
+
 \begin{bsp}[Zylindermantel]
-% \begin{figure}
-%   \input{Zylinder-Normbereich.pdf_t}
-   \todo{gnuplot-Bild mit einem halben Zylinder, Höhe 1, radius 1}
-%   \caption{Abbildung des Normalbereichs auf die Zylindermantelfläche}
-% \end{figure}
+  \begin{figure}
+%     \input{Zylinder-Normbereich.pdf_t}
+    \todo{gnuplot-Bild mit einem halben Zylinder, Höhe 1, radius 1}
+    \caption{Abbildung des Normalbereichs auf die Zylindermantelfläche}
+  \end{figure}
   \begin{gather*}
     \left.\begin{aligned}
       S: x_{1} &= \cos \phi\\
@@ -1109,10 +1134,593 @@ Sei $B\subset\Omega\subset\R^2, \Omega$ offen, $B$ kompakt, $\vec{v}:
          v_{2}(\phi(t))\dot{\phi_{1}}\,dt\\
       &= \int_{a}^{b} \vec{v}(\phi(t))\cdot
          \underbrace{\begin{bmatrix}\dot{\phi_{2}}(t)\\-\dot{\phi_{1}}(t)
-           \end{bmatrix}}_{=\vec{n}(\phi(t))\cdot\norm{\dot{\phi}(t)}}
+           \end{bmatrix}}
+         _{\makebox[0pt]{$=\vec{n}(\phi(t))\cdot\norm{\dot{\phi}(t)}$}}
          \,dt = \int_{\partial B} \vec{v} \cdot \vec{n}\,ds
     \end{align*}
   \end{proof}
+\end{bemerk}
+
+\begin{bemerk}
+  Wir setzen im folgenden voraus:
+  \begin{gather*}
+    G=\{(x_{1},x_{2}): a\leq x_{1}\leq b, \phi(x_{1})\leq x_{2}\leq
+       \psi(x_{2})\}
+  \end{gather*}
+  wobei $\phi,\psi : [a,b]\rightarrow\R$ stetig differenzierbar.
+  $G\subseteq U$, $U\subseteq \R^{2}$ offen, $g,h: U\rightarrow \R$,
+  $g,h\in C^{1}(U)$
+  \begin{gather*}
+    B:= \{(x,_{1},x_{2},x_{3}): (x_{1},x_{2})\in G, g(x_{1},x_{2})\leq
+       x_{3}\leq h(x_{1},x_{2})\}
+  \end{gather*}
+  Normalbereich im $\R^{3}$ (Jordan-messbar)
+\end{bemerk}
+
+\begin{bemerk}
+  Parametrisierung:
+  \begin{enumerate}
+   \item
+    \begin{figure}
+      \caption{\label{fig:2}\todo{Bild}}
+    \end{figure}
+    Wir betrachten zuerst den Normalbereich $G$ in der Ebene
+    (s.\,\autoref{fig:2}). Der Rand $\partial G$ setzt sich aus bis zu
+    vier Teilkurven ($\Gamma_{2}$ und $\Gamma_{4}$ können zu einem Punkt
+    entarten) zusammen. $\partial G=\Gamma_{1}+\Gamma_{2}+\Gamma_{3}
+    +\Gamma_{4}$. $\Gamma_{1}:
+    \begin{bmatrix}x_{1}\\\phi(x_{1})\end{bmatrix}, a\leq x_{1}\leq b$.
+    Der Normalenvektor an $\phi$ ist $\vec{\nu}_{\phi} =
+    \frac{1}{\sqrt{1+\phi'^{2}(x_{1})}}
+    \begin{bmatrix}\phi'(x_{1})\\-1\end{bmatrix}$
+
+    analog: $\Gamma_{2},\Gamma_{3},\Gamma_{4}$
+   \item Der Normalbereich $B$ ist ein säulenförmiger Körper im $\R^{3}$
+    dessen Querschnitt $G$ ist. Der Rand $\partial B$ von $B$ sind
+    6~Flächen. Bezeichnen wir den Boden mit $S^{u}$, den Deckel mit
+    $S^{o}$ und die verbleibenden Flächen mit $S^{1}\ldots S^{4}$.
+    \begin{gather*}
+      \partial B = S^{u}+S^{o}+S^{1}+S^{2}+S^{3}+S^{4}
+    \end{gather*}
+    Die Normalenvektoren $\vec{n}^{u}, \vec{n}^{o}, \vec{n}^{1},\ldots,
+    \vec{n}^{4}$ der Flächen müssen jeweils so orientiert werden, dass
+    sie nach außen (vom Körper weg) zeigen.
+    \begin{gather*}
+      S^{o} : \begin{bmatrix}x_{1}\\x_{2}\\h(x_{1},x_{2})\end{bmatrix},
+         (x_{1}, x_{2})\in G\\
+      \vec{n}^{o} = \frac{1}{\sqrt{1+\partial_{1} h^{2}+
+         \partial_{2}h^{2}}}
+         \begin{bmatrix}-\partial_{1}h\\\partial_{2}h\\1\end{bmatrix}\\
+      \vec{n}^{o}dS =
+         \begin{bmatrix}-\partial_{1}h\\-\partial_{2}h\\1\end{bmatrix}
+         d(x_{1},x_{2})
+         \qquad\text{(Oberflächenelement)}\\
+      -S^{u} : \begin{bmatrix}x_{1}\\x_{2}\\g(x_{1},x_{2})\end{bmatrix},
+         (x_{1}, x_{2})\in G\\
+      % \vec{n}^{u} = \frac{1}{\sqrt{1+\partial_{1} g^{2}+
+      %    \partial_{2}g^{2}}}
+      %    \begin{bmatrix}-\partial_{1}g\\\partial_{2}g\\1\end{bmatrix}\\
+      \vec{n}^{u}dS =
+         \begin{bmatrix}-\partial_{1}g\\-\partial_{2}g\\1\end{bmatrix}
+         \qquad\text{(Oberflächenelement)}\\
+      S^{1}: \begin{bmatrix}x_{1}\\\phi(x_{1})\\x_{3}\end{bmatrix}, a\leq
+         x_{1}\leq b\\
+    \end{gather*}
+    Wir erhalten für $S^{1}$ in der $x_{1}$-$x_{3}$-Ebene einen Normalbereich
+    \begin{gather*}
+      A := \{(x_{1}, x_{3}): a\leq x_{1}\leq b, g(x_{1},\phi(x_{1}))\leq
+         x_{3}\leq h(x_{1},\phi(x_{1}))\}
+    \end{gather*}
+    Das Oberflächenelement $\vec{n}dS =
+    \begin{bmatrix}\phi'(x_{1})\\-1\\0\end{bmatrix} d(x_{1},x_{3})$
+
+    analog: $S^{2}, S^{3}$ und $S^{4}$.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{satz}[Gauß für $n=3$]
+  $B$ Normalbereich, $\partial B$ Rand, $\vec{n}$ äußerer
+  Normaleneinheitsvekor an $\partial B$. $B\subseteq \Omega\subset
+  \R^{3}$, $\Omega$ offen, $\vec{v}$ $C^{1}$-Vektorfeld auf $\Omega$.
+
+  Dann gilt:
+  \begin{gather*}
+    \int_{B}\Div \vec{v}\,dx =\int_{\partial B}\vec{v}\cdot\vec{n}\,dS
+  \end{gather*}
+
+  \begin{proof}
+    $\vec{n} = \begin{bmatrix}n_{1}\\n_{2}\\n_{3}\end{bmatrix}$.
+    Ausreichend zu zeigen
+    \begin{gather*}
+      \int_{B} \Div \vec{v}\,dx = \int_{B} \sum_{l=1}^{3} \partial_{l}
+         v_{l}\,dx = \int_{\partial B} v_{l} n_{l}\,dS
+    \end{gather*}
+    Wir brauchen also nur zu zeigen, dass die Gleichheit für jeweil einen
+    Summanden gilt. \obda sei $l=1$. Dann ist
+    \begin{gather*}
+      \int_{B} \frac{\partial v_{1}}{\partial x_{1}}dx = \int_{G} \Bigg(
+         \underbrace{\int_{g(x_{1},x_{2})}^{h(x_{1},x_{2})}
+           \frac{\partial}{\partial x_{1}} v_{1}(x_{1}, x_{2}, x_{3})}
+         _{=: f(x_{1},x_{2})}\Bigg)d(x_{1},x_{2})
+    \end{gather*}
+
+    Aus \todo{link: Lemma 8.2.1/1} folgt mit $F(u,v,x_{1},x_{2}) :=
+    \int_{u} v_{1}(x_{1},x_{2},x_{3})\,dx_{3}$
+
+    \begin{gather*}
+      \frac{\partial}{\partial x_{1}}
+         \int_{g(x_{1},x_{2})}^{h(x_{1},x_{2})}
+         v_{1}(x_{1},x_{2},x_{3})\,dx_{3} = -v_{1}(x_{1},x_{2},
+         g(x_{1},x_{2}))\partial_{1} g + v_{1}(x_{1},x_{2},
+         h(x_{1},x_{2}))\partial_{1} h +
+         \underbrace{\int_{g(x_{1},x_{2})}^{h(x_{1},x_{2})}
+           \frac{\partial}{\partial x_{1}} v_{1}(x_{1},x_{2},x_{3})
+           \,dx_{3}}_{=f(x_{1},x_{2})}
+    \end{gather*}
+    einsetzen:
+    \begin{align*}
+      \int_{B} \frac{\partial v_{1}}{\partial x_{1}}dx &= \int_{G}
+         v_{1}(x_{1},x_{2}, g(x_{1},x_{2}))\partial_{1} g(x_{1},x_{2})
+         d(x_{1},x_{2}) - \int_{G} v_{1}(x_{1},x_{2},
+         h(x_{1},x_{2}))\partial_{1} h(x_{1},x_{2}) d(x_{1},x_{2})\\
+      &\quad +\int_{G} \frac{\partial}{\partial x_{1}} \underbrace{
+         \int_{g(x_{1},x_{2})}^{h(x_{1},x_{2})} v_{1}(x)dx_{3}}
+         _{:=w_{1}(x_{1},x_{2})} d(x_{1},x_{2})\\
+      &= \int_{S^{u}} v_{1}n^{u}_{1}dS - \int_{S^{o}} v_{1}n^{o}_{1}dS +
+         \int_{G}\partial_{1} w_{1}d(x_{1},x_{2}) = \int_{S^{u}+S^{o}} v_{1}n^{u}_{1}dS
+         + \int_{G}\partial_{1} w_{1}d(x_{1},x_{2})
+    \end{align*}
+    Nach \todo{link: Vorbem 1} (Gauß für $n=2$) gilt:
+    \begin{gather*}
+      \int_{G} \partial_{1}w_{1}d(x_{1},x_{2}) = \int_{\partial G}
+         w_{1}\cdot \nu_{1}\,dS
+    \end{gather*}
+    wir zeigen:
+    \begin{gather*}
+      \int_{\partial G} w_{1}\cdot \nu_{1}\,dS =
+         \int_{S^{1}+\ldots+S^{4}} v_{1}\cdot n_{1}\,dS
+    \end{gather*}
+    Es ist:
+    \begin{align*}
+      \int_{\Gamma_{1}} w_{1}\cdot\nu_{1}\,dS &= \int_{a}^{b}
+         w_{1}(x_{1},\phi(x_{1}))\cdot \phi'(x_{1})\,dx_{1} =
+         \int_{a}^{b} \int_{g(x_{1},x_{2})}^{h(x_{1},x_{2})}
+         v_{1}(x_{1}, \phi(x_{1}), x_{3})\,dx_{3} \phi'(x_{1})\,dx_{1}\\
+      &= \int_{A} v_{1}(x_{1},\phi(x_{1}),
+         x_{3})\phi'(x_{1})\,d(x_{1},x_{3}) = \int_{S^{1}} v_{1}n_{1}\,dS
+    \end{align*}
+    analog zeigt man $\int_{\Gamma_{i}} w_{1}\nu_{1}\,dS = \int_{S^{i}}
+    v_{1}n_{1}\,dS$ für $i=2,3,4$
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Der Satz \todo{link} gilt für alle $n\geq 2$ und für allgemeiner
+    Bereiche $B$!
+   \item als einen \highl{zulässigen Bereich} bezeichnen wir einen
+    Bereich, für den der gauß'sche Satz\todo{link} gilt
+   \item Für $\vec{v} = \begin{bmatrix}0\\0\\x_{3}\end{bmatrix}$ ist
+    $\Div \vec{v} = 1$ und der Satz\todo{link} liefert
+    \begin{gather*}
+      \underbrace{\int_{B}dx}_{=\mu(B)} = \int_{\partial B} x_{3}\cdot
+         n_{3}\,dS = \frac{1}{3} \int_{\partial B} x\cdot\vec{n}\,dS
+    \end{gather*}
+    $\mu(B)$ ist das Volumen des Körpers
+  \end{enumerate}
+\end{bemerk}
+
+\begin{satz}[Die Green'schen Sätze]
+  Es sei $B\subseteq \Omega$ ein zulässiger Bereich in einer offenen
+  Menge $\Omega$. $u,v\in C^{2}(\Omega)$. Dann gilt:
+  \begin{gather*}
+    \int_{B} u\,\Delta v\,dx = \int_{\partial B}\cdot \frac{\partial
+       v}{\partial \vec{n}}dS - \int_{B} \grad u\cdot\grad v\,dx\\
+    \int_{B}(u\,\Delta v -v\,\Delta u)\,dx = \int_{\partial B} u\cdot
+       \frac{\partial v}{\partial \vec{n}} - v
+       \frac{\partial u}{\partial \vec{n}}\,dS
+  \end{gather*}
+
+  \begin{proof}
+    Die zweite Gleichung folgt sofort aus der ersten, indem man einmal
+    $u$ und $v$ vertauscht und die beiden von einander anzieht.
+    \begin{gather*}
+      \todo{machen}
+    \end{gather*}
+
+    Die erste Gleichung ergibt sich durch Anwendung des Satz von
+    Gauß\todo{link} auf das Vektorfeld $\vec{w} := u\grad v$
+    $\Rightarrow$ $\Div \vec{w} = u\,\Delta v + \grad u\cdot \grad v$
+  \end{proof}
+\end{satz}
+
+% 15.11.05
+
+\section{Ergänzungen}
+\subsection{Flächenintegrale im $\R^{n}$ und die Oberfläche der
+  Einheitskugel im $\R^{n}$}
+
+Bisher hatten wir für Flächen im $\R^{3}$ die folgenden Definitionen
+gemacht:
+\begin{itemize}
+ \item $S=g(B)$ mit $B\subseteq G\subseteq \R^{2}$, wobei $B$ eine
+  kompakte Menge und $G$ eine offene Menge ist, und der $C^{1}$-Abbildung
+  $g:G\rightarrow\R^{3}$, wobei $g$ injektiv auf $B\setminus N$
+  (Jordansche Nullmenge)
+  \begin{gather*}
+    Rang Dg = Rang \begin{bmatrix}
+                     \partial_{u}g_{1}& \partial_{v}g_{1}\\
+                     \partial_{u}g_{2}& \partial_{v}g_{2}\\
+                     \partial_{u}g_{3}& \partial_{v}g_{3}
+                     \end{bmatrix} = 2 \text{ auf } B\setminus N
+  \end{gather*}
+ \item
+  \begin{align*}
+    dS &= \norm{g_{u}\times g_{v}} d(u,v)&\text{Oberflächenelement}\\
+    &= \sqrt{
+       \begin{vmatrix}
+         g_{u}\cdot g_{u} & g_{u}\cdot g_{v}\\
+         g_{u}\cdot g_{v} & g_{v}\cdot g_{v}
+       \end{vmatrix}
+         } d(u,v) &\text{Lemma 7.3.2/3}
+  \end{align*}
+  \begin{gather*}
+    \int_{S} F\,dS := \int_{B} F(g(u,v))\sqrt{\ldots} d(u,v)
+  \end{gather*}
+  in explizieter Darstellung $S=\{(x_{1},x_{2},f(x_{1},x_{2})):
+  (x_{1},x_{2})\in B\}$
+  \begin{gather*}
+    dS = \sqrt{1+ f_{x_{1}}^{2}+ f_{x_{2}}^{2}} d(x_{1},x_{2})\\
+    \vec{n} = \frac{1}{\sqrt{\ldots }} \begin{bmatrix}
+                                         -f_{x_{1}}\\
+                                         -f_{x_{2}}\\
+                                         1
+                                       \end{bmatrix}
+  \end{gather*}
+\end{itemize}
+
+Jetzt wollen wir $m$-Flächen im $\R^{n}$ mit $m<n$ beschreiben. $S=g(B)$
+mit $B\subseteq G\subseteq \R^{m}$, $G$ offen, $B$ Normalbereich,
+$g:G\rightarrow\R^{n}$ $C^{1}$-Abbildung, injektiv, $Rang Dg = m$
+\begin{gather*}
+  dS := \sqrt{\det(g_{ik})} d(u_{1},\ldots,u_{m})
+\end{gather*}
+wobei
+\begin{gather*}
+  g_{ik} = \sprod{\frac{\partial g}{\partial u_{i}}} {\frac{\partial
+     g}{\partial u_{k}}}\qquad i,k=1,\ldots,m
+\end{gather*}
+Damit können wir das Integral über eine $m$-Fläche $S$ erklären:
+\begin{gather*}
+  \int_{S} F\,dS = \int_{B} F(g(u_{1},\ldots,u_{m})) \sqrt{det(g_{ik})}
+     d(u_{1},\ldots,u_{m})
+\end{gather*}
+
+Für den Fall $m=n-1$ spricht man von einer \highl{$(n-1)$-dimensionale
+Hyperfläche}. Dieser Fall tritt z.\,B. auf, wenn man den Rand
+$S=\partial\Omega$ eines Normalbereichs $\Omega\subseteq\R^{n}$
+betrachtet. Oder für den Fall, dass die Fläche eine expliziete
+Darstellung $S=\{x: x'=(x_{1},\ldots,x_{n-1})\in B\subseteq \R^{n-1},
+f(x') = x_{n}\}$ erhält man
+\begin{align*}
+  dS = \sqrt{1+f_{x_{1}}^{2}+\ldots+f_{x_{n-1}}^{2}}
+     d(x_{1},\ldots,x_{n-1})\\
+  \vec{n} := \frac{1}{\sqrt{\ldots}}
+     \begin{bmatrix}
+       -f_{x_{1}}\\ -f_{x_{2}}\\\vdots\\-f_{x_{n-1}}\\1
+     \end{bmatrix}\qquad\text{äußerer Normalenvektor}\\
+  \int_{S} F\,dS = \int_{B} F(x_{1},\ldots,x_{n-1},
+     f(x_{1},\ldots,x_{n-1})) \sqrt{1+f_{x_{1}}+\ldots+f_{x_{n-1}}}
+     d(x_{1},\ldots,x_{n-1})
+\end{align*}
+
+Der Satz von Gauß \todo{link finden} und alle Folgerungen daraus lassen
+sich auch für den $\R^{n}$ verallgemeinern. $\vec{v}:\Omega\rightarrow
+\R^{n}, \Omega\subseteq\R^{n}, \Omega$ Normalbereich
+\begin{gather*}
+  \int_{\Omega} \div\vec{v}\,dx = \int_{\partial\Omega} \sprod{\vec{v},
+     \vec{n}}\,dS
+\end{gather*}
+
+\subsubsection{Die Oberfläche der Einheitskugel im $\R^{n}$}
+
+Die Oberfläche der Einheitskugel im $\R^{n}$ wurde beschrieben mit $w_{n}
+:=\{x:x_{1}^{2}+\ldots+x_{n}^{2}=0\}$. Wir führen dazu die
+Polarkoordinaten im $\R^{n}$ ein
+\begin{align*}
+  \Phi:\quad x_{1} &= r\cos\phi \sin\theta_{1} \sin\theta_{2} \ldots
+     \sin\theta_{n-2}\\
+  x_{2} &= r\sin\phi \sin\theta_{1} \sin\theta_{2} \ldots
+     \sin\theta_{n-2}\\
+  x_{3} &= r\cos\theta_{1}\sin\theta_{2}\ldots \sin\theta_{n-2}\\
+  \ldots\\
+  x_{n-1} &= r\cos\theta_{n-3}\sin\theta_{n-2}\\
+  x_{n} &= r \cos\theta_{n-2}
+\end{align*}
+wobei $r\geq 0, 0\leq\phi\leq 2\pi, 0\leq\theta_{i}\leq\pi$. Daraus
+ergibt sich $x^{2}_{1}+x^{2}_{2}+\ldots+x^{2}_{n} = r^{2}$. Für Beweise
+und weitere Ausführungen siehe Walter, Analysis 2, Seite 254.
+
+Noch ein paar Worte zur Jacobi-Determinante:
+\begin{gather*}
+     \frac{\partial(x_{1},\ldots,x_{n})}{\partial(r,\phi,\theta_{1},
+     \ldots,\theta_{n-2})} = r^{n-1}
+     \sin\theta_{1}\sin^{2}\theta_{2}\ldots \sin^{n-2}\theta_{n-2}
+\end{gather*}
+
+Auf die Einheitskugel bezogen ergibt sich so das Oberflächenelement als
+\begin{gather*}
+  dw_{n} = \sin\theta_{1}\sin^{2}\theta_{2}\ldots \sin^{n-2}\theta_{n-2}
+     \,d\phi d\theta_{1}\ldots d\theta_{n-2}\\
+  \int_{w_{n}} F\,dw_{n} = \int_{0}^{2\pi}\int_{0}^{2\pi}\ldots
+     \int_{0}^{2\pi} F(\Phi(1,\phi,\theta_{1},\ldots,\theta_{n-2}))
+     \sin\theta_{1}\sin^{2}\theta_{2}\ldots \sin^{2}\theta_{n-2}
+     \,d\phi d\theta_{1}\ldots d\theta_{n-2}\\
+  \abs{w_{n}} := \int_{w_{n}} 1\,dw_{n}\qquad\text{Flächeninhalt von
+     $w_{n}$}
+\end{gather*}
+
+Folgerungen daraus:
+\begin{gather*}
+  \int_{\R^{n}} F\,dx = \int_{0}^{\infty}\int_{w_{n}} r^{n-1}
+     F(\Phi(r,\phi,\theta_{1},\ldots,\theta_{n-2}))\,dw_{n} dr\\
+  \tilde{f}=f(r), r=\norm{x} \Rightarrow
+     \int_{\R^{n}} \tilde{f}\,dx = \abs{w_{n}} \int_{0}^{\infty} r^{n-1}
+     f(r)\,dr
+\end{gather*}
+
+\begin{satz}
+  $n\geq2$. Dann gilt:
+  \begin{gather*}
+    \abs{w_{n}} = \frac{2\pi^{\nicefrac{n}{2}}}{\Gamma(\frac{n}{2})} =
+       2\pi^{\nicefrac{n}{2}} \begin{cases}
+                                \frac{1}{(\frac{n}{2}-1)!} & :n\text{
+                                gerade}\\
+                                \sqrt{\pi}(\frac{n}{2}-1)(\frac{n}{2}-2)
+                                \ldots \frac{1}{2}&:n \text{ ungerade}
+                              \end{cases}
+  \end{gather*}
+
+  \begin{proof}
+    Aus Analysis 2 wissen wir bereits
+    \begin{gather*}
+      I = \int_{-\infty}^{\infty} e^{-t^{2}}\,dt = \sqrt{\pi}
+    \end{gather*}
+    Also ist
+    \begin{align*}
+      \pi^{\frac{n}{2}} &= \Bigg( \int_{-\infty}^{\infty} e^{-t^{2}}\,dt
+         \Bigg)^{n}\\
+      &= \int_{\R^{n}} e^{-\abs{x}^{2}}\,dx&\text{nach Satz von Fubini}\\
+      \abs{\omega_{n}} \int_{0}^{\infty} r^{n-1} e^{-r^{2}}\,dr\\
+      &= \frac{1}{2} \abs{\omega_{n}} \int_{0}^{\infty} e^{-\rho}
+         \rho^{\frac{n}{2}-1}\,d\rho &\text{mit } r^{2}=\rho,
+         2r\,dr=d\rho\\
+      &= \frac{1}{2}\abs{\omega_{n}}\Gamma\big(\frac{n}{2}\big)
+    \end{align*}
+    $\Rightarrow = \frac{2 \pi^{\frac{n}{2}}} {\Gamma\big(\frac{n}{2}\big)}$ Außerdem ist
+      $\Gamma\big(\frac{1}{2}\big) = \sqrt{\pi}$, da
+    \begin{gather*}
+      \Gamma\big(\frac{1}{2}\big) = \int_{0}^{\infty} t^{-\frac{1}{2}}
+         e^{-t}\,dt = 2 \int_{0}^{\infty} e^{-r^{2}}\,dr =
+         \int_{-\infty}^{\infty} e^{-r^{2}}\,dr
+    \end{gather*}
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $\lim_{n\rightarrow\infty} \abs{\omega_{n}} = 0$
+   \item $\abs{w_{2}} = 2\pi, \abs{w_{3}} = 4\pi, \abs{w_{4}} = 2\pi^{2},
+    \abs{w_{5}} = \frac{8}{3}\pi^{2}, \abs{w_{6}} = \pi^{3}
+    \abs{w_{7}} = \frac{16}{15} \pi^{3} = \max_{n} \abs{w_{n}}$
+  \end{enumerate}
+\end{bemerk}
+
+\subsection{Differentialoperatoren in krummlinigen Koordinaten}
+$n=3$: \highl{Krumlinige Koordinaten} auf $\Omega\subseteq\R^{3}$,
+$\Omega$ offen: $g: G\rightarrow \Omega$ bijektive $C^{1}$-Abbildung
+(\highl{Diffeomorphismus}), d.\,h. $x=g_{1}(u,v,w), y=g_{2}(u,v,w),
+z=g_{3}(u,v,w)$
+
+setzen:
+\begin{gather*}
+  \partial_{u} g = \begin{bmatrix}
+                     \partial_{u}g_{1}\\ \partial_{u}g_{2}\\
+                     \partial_{u}g_{3}
+                   \end{bmatrix}
+     \qquad \vec{e}_{u} = \frac{1}{\norm{\partial_{u}g}}\partial_{u}g
+\end{gather*}
+
+analog: $\partial_{v}g, \vec{e}_{v}, \partial_{w}g, \vec{e}_{w}$
+
+mit:
+\begin{gather*}
+  \frac{\partial(x,y,z)}{\partial(u,v,w)} > 0\ \text{auf}\ G
+\end{gather*}
+
+Schreibweise: $h_{u} := \norm{\partial_{u}g}, h_{v} :=
+\norm{\partial_{v}g}, h_{w} := \norm{\partial_{w}g}$
+
+Die Koordinaten $(u,v,w)$ (wie oben) heißen \highl{orthogonal} \gdwdef
+\begin{gather*}
+  \forall u,v,w: \sprod{\partial_{u}g}{\partial_{v}g} = 0,
+     \sprod{\partial_{u}g}{\partial_{w}g} = 0,
+     \sprod{\partial_{v}g}{\partial_{w}g} = 0
+\end{gather*}
+dann bilden $\vec{e}_{u}, \vec{e}_{v}, \vec{e}_{w}$ ein
+\highl{Orthonormalsystem} im $\R^{3}$.
+
+\begin{satz}
+  Für ein skalares Feld $f=f(u,v,w)$ bezüglich der Koordinaten $(u,v,w)$
+  und ein Vektorfeld $\vec{F} = F_{u} \vec{e}_{u} + F_{v}\vec{e}_{v} +
+  F_{w}\vec{e}_{w}$ ebenfalls bezüglich der Koordinaten $(u,v,w)$ gilt:
+  \begin{gather}
+    \label{eq:4}
+    \highl{\grad} f = \frac{1}{h_{u}} \partial_{u} f \vec{e}_{u} +
+       \frac{1}{h_{v}} \partial_{v} f \vec{e}_{v} +
+       \frac{1}{h_{w}} \partial_{w} f \vec{e}_{w}\\
+    \label{eq:5}
+    \highl{\Div} \vec{F} = \frac{1}{h_{u}h_{v}h_{w}}
+       \big(\partial_{u}(h_{v}h_{w}F_{u}) +
+       \partial_{v}(h_{u}h_{w}F_{v}) + \partial_{w}(h_{u}h_{v}F_{w})
+       \big)\\
+    \label{eq:6}
+    \highl{\Delta} f = \Div \grad f =
+       \frac{1}{h_{u}h_{v}h_{w}}
+       \big(\partial_{u}(\frac{h_{v}h_{w}}{h_{u}}\partial_{u}f) +
+       \partial_{v}(\frac{h_{u}h_{w}}{h_{v}}\partial_{v}f) +
+       \partial_{w}(\highl{h_{u}h_{v}}{h_{w}}\partial_{w}f)
+       \big)\\
+    \notag
+    \highl{\rot}\vec{F} = \frac{1}{h_{u}h_{v}h_{w}}
+       \begin{bmatrix}
+         h_{u} \vec{e}_{u} & \partial_{u} & h_{u} F_{u}\\
+         h_{v}\vec{e}_{v} & \partial_{v} & h_{v} F_{v}\\
+         h_{w}\vec{e}_{w} & \partial_{w} & h_{w} F_{w}
+       \end{bmatrix}\qquad\text{\emph{formal!}}
+  \end{gather}
+
+  \begin{proof}
+    zu \autoref{eq:4}: $\{\vec{e}_{u}, \vec{e}_{v}, \vec{e}_{w}\}$ ONS.
+    z.\,z.
+    \begin{gather*}
+      \frac{1}{h_{u}}\partial_{u}f = \sprod{(\grad f)}{\vec{e}_{u}},\ldots
+    \end{gather*}
+    Da $g$ bijektiv ist gelten die folgenden Beziehungen:
+    \begin{gather*}
+      f(u,v,w) = f(g^{-1}(x,y,z)) =: \tilde{f}(x,y,z) = \tilde{f}(g(u,v,w))
+    \end{gather*}
+    wir erhalten dann
+    \begin{align*}
+      \grad f &= \grad \tilde{f} =
+         \begin{bmatrix}\partial_{x}\tilde{f}\\ \partial_{y}\tilde{f}\\
+           \partial_{z}\tilde{f}
+         \end{bmatrix}\\
+      \sprod{(\grad f)}{\vec{e}_{u}} &= \frac{1}{h_{u}}
+         (\partial_{x} \tilde{f} \partial_{u} g_{1} +
+         \partial_{y}\tilde{f} \partial_{u}g_{2} + \partial_{z}\tilde{f}
+         \partial_{u} g_{3})
+         &= \frac{1}{h_{u}} \partial_{u} f(u,v,w)&\text{mit Kettenregel}
+    \end{align*}
+    analog für $v,w$
+
+    \autoref{eq:5} + \autoref{eq:6} Übungsserie 32 \todo{ergänzen}
+  \end{proof}
+\end{satz}
+
+Wir betrachten als ersten Spezialfall ein gedrehtes Koordinatensystem,
+also eine lineare Transformation.
+\begin{folger}
+  $T\in SO(3)$ \highl{Drehung} (orthogonale Matrix, $\det T=1$). Damit
+  sind $h_{u}=h_{v}=h_{w}=1$. Daraus folgt, dass der Divergent, Gradient,
+  Rotation und der Laplace-Operator invariant bezüglich einer Drehung
+  sind.
+\end{folger}
+
+\begin{folger}[Der Laplace-Operator für Kugelkoordinaten]
+  \begin{gather*}
+    x = r\sin\theta\cos\phi, y=r\sin\theta\sin\phi, z=r\cos\theta\\
+    \Rightarrow h_{r}=1, h_{\theta}=r, h_{\phi}= r\sin\theta
+  \end{gather*}
+  (Beweis Übungsserie 32\todo{ergänzen})
+
+  $\Rightarrow$
+  \begin{gather*}
+    \Delta f = \frac{1}{r^{2}}\partial_{r}(r^{2}\partial_{r}f) +
+       \frac{1}{r^{2}\sin\theta}\partial_{\theta}(\sin\theta
+       \partial_{\theta} f) + \frac{1}{r^{2}\sin^{2}\theta}
+       \partial^{2}_{\phi} f
+  \end{gather*}
+\end{folger}
+
+\begin{folger}[Der Laplace-Operator für Zylinderkoordinaten]
+  \begin{gather*}
+    x = \rho\cos\phi, y =\rho\sin\phi, z=z\\
+    \Rightarrow h_{\rho}=1, h_{\phi}=\rho, h_{z}=1\\
+    \Rightarrow\Delta f = \frac{1}{\rho}(\partial_{\rho}(\rho
+       \partial_{\rho}f)) + \frac{1}{\rho^{2}} \partial^{2}_{\phi} f +
+       \partial^{2}_{z} f
+  \end{gather*}
+\end{folger}
+
+\begin{folger}[Der Laplace-Operator für Polarkoordinaten]
+  \begin{gather*}
+    x = r\cos\phi, y =r\sin\phi\\
+%    \Rightarrow h_{\rho}=1, h_{\phi}=\rho, h_{z}=1\\
+    \Rightarrow\Delta f = \frac{1}{r}(\partial_{r}(r
+       \partial_{r}f)) + \frac{1}{r^{2}} \partial^{2}_{\phi} f
+  \end{gather*}
+\end{folger}
+
+\subsection{Die Maxwell'schen Gleichungen}
+
+Wir betrachten gewisse Vektorfelder $\vec{E}(x,t)$ (elektrische
+Feldstärke), $\vec{B}(x,t)$ (magnetische Induktion), $\vec{D}(x,t)$
+(dielektrische Verschiebung) und $\vec{H}(x,t)$ (magnetische Feldstärke),
+die von einem Ortsvektor $x$ und der Zeit $t$ abhängen. Dazu sind einige
+Quellen $\vec{j}(x,t)$ (Stromdichte) und $\vec{\rho}(x,t)$
+(Ladungsdichte) gegeben mit denen man das Verhalten der Vektorfelder über
+die Zeit hin betrachten will.
+
+Materialgleichungen mit den Stoffkonstanten $\epsilon_{0}$ und $\mu_{0}$
+\begin{align*}
+  \vec{D}(x,t) &= \epsilon_{0} \vec{E}(x,t)\\
+  \vec{B}(x,t) &= \mu_{0} \vec{H}(x,t)\\
+\end{align*}
+
+\subsubsection{Grundgleichungen von Maxwell (1864)}
+\begin{gather}
+  \rot \vec{E} + \frac{\partial}{\partial t}\vec{B} = 0\label{eq:7}\\
+  \Div \vec{D} = \rho\label{eq:8}\\
+  \rot \vec{H} - \frac{\partial}{\partial t} \vec{D} = \vec{j}\label{eq:12}\\
+  \Div \vec{B} = 0\label{eq:13}
+\end{gather}
+
+\begin{bemerk}[Integrale Form der Maxwell'schen Gleichung]
+  Mithilfe des satz von Stoke \todo{link finden} kann man die
+  \autoref{eq:7} auch mit Integralen schreiben:
+  \begin{gather*}
+    \int_{\partial S} \vec{E} \vec{dx}+ \frac{d}{dt}\int_{S}
+       \vec{B}\vec{dS} = 0
+  \end{gather*}
+
+  \autoref{eq:8} Satz von Gauß \todo{link}
+  \begin{gather*}
+    \int_{\partial \Omega} \sprod{\vec{D}}{\vec{n}} \vec{dS} =
+       \int_{\Omega}\rho\,dx
+  \end{gather*}
+\end{bemerk}
+
+\begin{bemerk}[Elektrostatik (Zeitunabhängigkeit, keine Ströme)]
+  \autoref{eq:7} und \autoref{eq:8} wird zu
+  \begin{gather}
+    \rot \vec{E} = 0\label{eq:9}\\
+    \Div \vec{D} = \rho(x)\label{eq:10}\\
+    \vec{D}(x) = \epsilon_{0}\vec{E}(x)\label{eq:11}
+  \end{gather}
+  Aus \todo{link: Abschnitt 8.1.2} wissen wir, dass wenn die Rotation 0
+  (\autoref{eq:9})
+  ist, wir ein konservatives Vektorfeld haben und damit ein Potential
+  $u(x)$ existiert. $\vec{E}(x) = -\grad u(x)$. Mithilfe der
+  materialgleichung \autoref{eq:11} ergibt sich $-\grad u(x) =
+  \frac{1}{\epsilon_{0}}\vec{D}(x)$. Mithilfe von \autoref{eq:10} ergibt
+  sich eine partielle Differenzialgleichung ?ter Ordnung $-\Delta u =
+  \frac{1}{\epsilon_{0}} \rho(x)$ (\highl{Laplace-Poisson-Gleichung},
+  \highl{Potentialgleichung})
+\end{bemerk}
+
+\begin{bemerk}[allgmeiner Fall der Maxwell'schen Gleichungen]
+  ($\epsilon_{0}=\mu_{0}=1$) Dann ergibt sich aus
+  \autoref{eq:7}--\autoref{eq:13}
+  \begin{gather*}
+    \vec{H} = \rot\vec{A}\\
+    \vec{E} = -\grad u - \frac{\partial}{\partial u} \vec{A}\\
+    \Div \vec{A} + \frac{\partial u}{\partial t} = 0\\
+    \frac{\partial^{2}u}{\partial t^{2}} -\Delta u - \rho(x,t) \qquad
+       \text{Wellengleichung im $\R^{3}$}\\
+    \frac{\partial^{2}\vec{A}}{\partial t^{2}} - \Delta\vec{A} =
+       \vec{j}(x,t)
+  \end{gather*}
 \end{bemerk}
 
 \pdfbookmark[0]{Litheraturverzeichnis}{litheraturverzeichnis}
