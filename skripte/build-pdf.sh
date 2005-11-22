@@ -17,7 +17,7 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
   fichtner-ewms hecker-parallel linde-stochastik lischke-form-sprachen \
   schmeisser-ana3 schmeisser-hoehere-ana vogel-dml2 vogel-info4; do
 
-    echo "***Repo: $i"
+    echo "I: Repo $i"
 
     stamp=
     for ext in pdf ps; do
@@ -27,10 +27,10 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
         fi
     done
 
-    if [ -n "$stamp" ] && [ "$stamp" -lt \
+    if [ -n "$stamp" ] && [ "$stamp" \< \
        "$(svn info $URL/$i |sed -n '/^Last Changed Date:/{s/^.*: //; s/ .*//; p;}')" \
        ]; then
-        echo "$i is up to date"
+        echo "I: $i is up to date"
         continue
     fi
 
@@ -40,21 +40,25 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
     elif [ -r $i/skript.tex ]; then
         src=$i/skript.tex
     else
-        echo "No latex file found in $i" >&2
+        echo "E: No latex file found in $i"
         continue
     fi
 
     cp $WEB/../sty/* $i
     for ext in pdf ps; do
         if rubber --$ext $src && [ -e ${src%.*}.$ext ]; then
+            echo "I: installing ${src%.*}.$ext as $i.$ext"
             rm $WEB/$i.$ext
-            cp skript.pdf $WEB/$i.$ext
+            cp ${src%.*}.$ext $WEB/$i.$ext
+        else
+            echo "E: building ${src%.*}.$ext failed"
         fi
     done
 
     rm -r $TMP/*
 
-    echo "...done"
+    echo "I: ...done"
+    echo "I:"
 done
 
 rmdir $TMP
