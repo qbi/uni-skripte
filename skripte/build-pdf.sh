@@ -9,6 +9,9 @@ exec >$WEB/build.log 2>&1
 
 export LANG=C
 
+printf "I: "
+date
+
 TMP=$(mktemp -d)
 
 cd $TMP
@@ -17,38 +20,38 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
   fichtner-ewms hecker-parallel linde-stochastik lischke-form-sprachen \
   schmeisser-ana3 schmeisser-hoehere-ana vogel-dml2 vogel-info4; do
 
-    echo "I: Repo $i"
+    echo "I: Repository $i"
 
     stamp=
     for ext in pdf ps; do
         if [ -f "$WEB/$i.$ext" ]; then
-            stamp=$(ls -l $WEB/$i.$ext | cut -c38-47)
-            break
+            stamp="$(stat -c %y $WEB/$i.$ext)"
+            stamp="${stamp%% *}"
         fi
     done
 
-    if [ -n "$stamp" ] && [ "$stamp" \< \
-       "$(svn info $URL/$i |sed -n '/^Last Changed Date:/{s/^.*: //; s/ .*//; p;}')" \
-       ]; then
+    if [ -n "$stamp" ] && [ "$stamp" \> \
+         "$(svnlook info ${URL#*://}/$i |sed -n '2{s/ .*//; p;}')" ]; then
         echo "I: $i is up to date"
         continue
     fi
 
     svn export $URL/$i
     if [ -r $i/skript.latex ]; then
-        src=$i/skript.latex
+        src=skript.latex
     elif [ -r $i/skript.tex ]; then
-        src=$i/skript.tex
+        src=skript.tex
     else
         echo "E: No latex file found in $i"
         continue
     fi
+    echo "I: using $src as source file"
 
     cp $WEB/../sty/* $i
     for ext in pdf ps; do
-        if rubber --$ext $src && [ -e ${src%.*}.$ext ]; then
+        if rubber --$ext $i/$src && [ -e ${src%.*}.$ext ]; then
             echo "I: installing ${src%.*}.$ext as $i.$ext"
-            rm $WEB/$i.$ext
+            rm -f $WEB/$i.$ext
             cp ${src%.*}.$ext $WEB/$i.$ext
         else
             echo "E: building ${src%.*}.$ext failed"
@@ -57,8 +60,7 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
 
     rm -r $TMP/*
 
-    echo "I: ...done"
-    echo "I:"
+    echo "I: ...done."
 done
 
 rmdir $TMP
