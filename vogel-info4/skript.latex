@@ -1,9 +1,9 @@
 % TODO:
 %   * eine Umgebung für Schreibweisen/Notationen
 %   * Algorithmen in eine eigene Umgebung und einheitlich formatieren
-%   * Verzeichnis für Sätze, Bemerkungen, Definitionen
+%   * einen Abstract -- Kurzzusammenfassung des Inhalts
 
-\documentclass[german,draft,twoside]{scrreprt}
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
 \usepackage{tabularx}
 \usepackage{longtable}
@@ -30,41 +30,41 @@
 \usepackage[intlimits,leqno]{amsmath}
 \usepackage{amscd}
 \usepackage{amssymb}
-\usepackage{amsthm}
+\usepackage[thmmarks,hyperref]{ntheorem}
 \usepackage{xspace}
 \usepackage{slashbox}
 
 \usepackage{paralist}
 \usepackage{ngerman}
+\usepackage{svn}
+\usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
 %\usepackage{wasysym}  % \lightning
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \addtokomafont{sectioning}{\boldmath}
 
-\newtheoremstyle{break}{3pt}{3pt}{}{}{\bfseries}{}{\newline}{}
+% \newtheoremstyle{break}{3pt}{3pt}{}{}{\bfseries}{}{\newline}{}
 
 \theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
 \newtheorem{satz}{Satz}[chapter]
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
 
-\renewcommand{\qedsymbol}{\ensuremath{_\blacksquare}}
-% \renewcommand{\qedsymbol}{q.\,e.\,d.}
-\renewcommand{\proofname}{\textnormal{\scshape Beweis:}}
-\newtheorem*{fakt}{Fakt}
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
 
-% This redefines the proof environment from amsthm in that way that a
-% linebreak happens after the \proofname -- I didn't find out how this
-% can be done with amsthm
-\renewenvironment*{proof}[1][\proofname]{%
-  \pushQED{\qed}%
-  \normalfont %\topsep6\p@\@plus6\p@\relax%
-  \trivlist%
-  \item[\hskip\labelsep\itshape #1]\mbox{}\newline\ignorespaces%
-}{\popQED\endtrivlist}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
 
 \newcommand*{\satzautorefname}{Satz}
 \newcommand*{\bemerkautorefname}{Bemerkung}
@@ -96,7 +96,7 @@
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
-\newcommand{\highl}[2][]{\textbf{#2}%
+\newcommand{\highl}[2][]{\textbf{\boldmath{#2}}%
   \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
 }
 
@@ -160,23 +160,71 @@
                {\tabularx{#1}{r@{\;\ldots\;}X}}%
                {\endtabularx}
 
-
-\setlength{\parindent}{0ex}
-\addtolength{\parskip}{1ex}
-
 \makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
 
 \begin{document}
 
-\title{Grundlagen der theoretischen Informatik
-  \thanks{$LastChangedRevision$ vom $LastChangedDate$}}
+\title{Grundlagen der theoretischen Informatik}
 \author{Dr.\,Jörg Vogel}
 \date{SS 2003}
 \maketitle
 
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
+
 \clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegunden}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\clearpage
+\chapter*{Vorwort}
+{\itshape
+
+  Dieses Skript ist im Rahmen des
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
+  "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
+  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
+  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis die Internetadresse
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/} des Projekts
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist unter
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/pdf/} verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder
+  selbst einzupflegen -- einfach eine eMail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse des Projekts verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2005)
+  \end{itemize}
+}
 
 \chapter{Berechenbarkeit}
 \section{Was ist ein Algorithmus?}
@@ -270,7 +318,7 @@ Frage: Ist diese Festlegung sinnvoll? Was ist das Resultat?
 \begin{mdescription}
  \item[Eingabe:] zwei natürliche Zahlen $a$ und $b$
  \item[Ausgabe:] $r_{k-1}$
-\end{mdescription}\listlinebreak
+\end{mdescription}
 \begin{schritte}
  \item Bestimmt $r = a \mod b$\\
   Falls $r=0$, dann gib $b$ aus, sonst gehe zum nächsten Schritt.
@@ -955,7 +1003,7 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
 \begin{bemerk}[Verkettung von Funktionen]
   zur Verkettung von Funktionen:
   \begin{center}
-    \input{verkettung.pdf_t}\\
+    \ifpdf\input{verkettung.pdf_t}\else\input{verkettung.eps_t}\fi\\
     $c = g(b) = g(f(a)) = (f\circ g)(a)$
   \end{center}
 
@@ -968,13 +1016,13 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
   und Zahlenfunktionen, unabhängig von der Darstellung.
 \end{description}
 
-\begin{defini}\listlinebreak\vspace{-3\parskip}
+\begin{defini}
+  \TM\index{TM@\TM} ist die \highl[Klasse!Turing-ber.\,Fkt.]{Klasse aller
+  Turing-berechenbarer Funktionen}.
   \begin{gather*}
     \TM = \{f:\N^{n}\rightarrow\N \big| f \text{ ist
     Turing-berechenbar}\}
   \end{gather*}
-  \TM\index{TM@\TM} ist die \highl[Klasse!Turing-ber.\,Fkt.]{Klasse aller
-  Turing-berechenbarer Funktionen}.
 \end{defini}
 
 \subsection{Entscheidbarkeit, Semientscheidbarkeit und Aufzählbarkeit}\label{sec:5}
@@ -987,13 +1035,13 @@ Funktionen und damit spezielle Formulierungen der Berechenbarkeit.
   $L\subseteq\Sigma^{\ast}$ ist Turing-entscheidbar \gdw
   $\overline{L}=\Sigma^{\ast}\setminus L$ ist Turing-entscheidbar
 
-  \hspace{2cm}\input{t-entsch1.pdf_t}
+  \hspace{2cm}\ifpdf\input{t-entsch1.pdf_t}\else\input{t-entsch1.eps_t}\fi
  \item[2.\,Beobachtung:] Die Sprache
   $L\subseteq\Sigma^{\ast}$ ist Turing-entscheidbar \gdw
   die Sprache $L$ und die Komplementsprache $\overline{L}$
   Turing-semientscheidbar sind.
 
-  \hspace{2cm}\input{t-entsch2.pdf_t}
+  \hspace{2cm}\ifpdf\input{t-entsch2.pdf_t}\else\input{t-entsch2.eps_t}\fi
  \item[3.\,Beobachtung:] Eine Sprache $L\subseteq\Sigma^{\ast}$ ist
   Turing-semientscheidbar \gdw $L$ ist aufzählbar.
 
@@ -1365,7 +1413,6 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
 \end{defini}
 
 \begin{bsp}[Multiplikation von natürlichen Zahlen in unärer Darstellung]
-  \listlinebreak\vspace{-\parskip}
   \begin{description}
    \item[Eingabe:] der Form $1^{n}\#1^{m}$
     \begin{gather*}
@@ -1411,7 +1458,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
   Maschine werden als Knoten in einem Diagramm dargestellt. Die
   Überführungsfunktion mittels bewerteter Kanten.
   \begin{center}
-    \input{transition.pdf_t}\\
+    \ifpdf\input{transition.pdf_t}\else\input{transition.eps_t}\fi\\
     \textit{Die Maschine "`$i:=i+1$"'}
   \end{center}
   Dieser (Mega-)Knoten lässt sich in ein weiteres Transitionsdiagramm
@@ -1422,7 +1469,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
   Eine Turing-Maschine, die testet, ob der Bandinhalt "`0"' ist oder nicht (binäre
   Darstellung)
   \begin{center}
-    \input{transition2.pdf_t}\\
+    \ifpdf\input{transition2.pdf_t}\else\input{transition2.eps_t}\fi\\
     \textit{Die Maschine "`$i=0$"'}
   \end{center}
   Die Anschlüsse für dieses Unterprogramm (Knoten) führen in den
@@ -1471,7 +1518,7 @@ Dabei gilt:
 \begin{bsp}[while-Schleifen]
   \mbox{}
   \begin{center}
-    \input{while.pdf_t}\\
+    \ifpdf\input{while.pdf_t}\else\input{while.eps_t}\fi\\
     \textit{Maschine "`\algokeyword{while} $i\not=0$
       \algokeyword{do} $M$"'}
   \end{center}
@@ -1602,7 +1649,6 @@ $B_{n}=\{n-1\}$.
 \end{bemerk}
 
 \begin{defini}[Grundfunktionen]\index{Grundfunktionen} \label{def:8}
-  \listlinebreak\vspace{-3\parskip}
   \begin{description}
    \item[Projektion]\index{Projektion}
     \begin{align*}
@@ -1648,7 +1694,7 @@ $B_{n}=\{n-1\}$.
 
 \begin{figure}
   \centering
-  \input{n-einsetzung.pdf_t}
+  \ifpdf\input{n-einsetzung.pdf_t}\else\input{n-einsetzung.eps_t}\fi
   \parbox{10cm}{\caption{$M_{f}$ als Komposition aus $M_{h}$ und
     $M_{g_{1}},\ldots,M_{g_{m}}$ zur Nachbildung des "`Schemas der
     Einsetzung"'}}
@@ -1884,7 +1930,7 @@ als Schleife:\\
 \verb|t := 0|\\
 \verb|while |$g(x_{1},\ldots,x_{n}, t)\not=0$\verb| do t := t+1 end|
 
-\begin{defini}\label{def:9}\listlinebreak\vspace{-3\parskip}
+\begin{defini}\label{def:9}
   \begin{enumerate}
    \item Eine Klasse $\PP$ von Funktionen heißt abgeschlossen
     bzgl. $\mu$-Rekursion \gdwdef für alle
@@ -2323,7 +2369,7 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
   primitiv-rekursiv.
 \end{satz}
 
-\begin{bsp}[Fibonacci-Zahlen]\listlinebreak\vspace{-3\parskip}
+\begin{bsp}[Fibonacci-Zahlen]\listlinebreak
   \begin{align*}
     F(0) &= F(1) = 1\\
     F(n+1) &= F(n)+F(n-1)&&n \geq 2\\[1.5ex]
@@ -3560,7 +3606,7 @@ Wir wissen bereits:
 \end{satz}
 
 \section{Das Wortproblem für Sprachen vom Typ-%
-  \texorpdfstring{$i$ ($i=0,\ldots,3$)}{i (i=0,\ldots,3)} }
+  \texorpdfstring{$i$ ($i=0,1,2,3$)}{i (i=0,1,2,3)} }
 
 \underline{Wiederholung:} Als Wortproblem bezeichnet man die Frage, ob
 für eine Eingabe $w$ und eine Sprache $L\subseteq \Sigma^{\ast}$ vom
@@ -3674,7 +3720,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 
     \begin{figure}
       \centering
-      \input{pumpcf-ablbaum.pdf_t}
+      \ifpdf\input{pumpcf-ablbaum.pdf_t}\else\input{pumpcf-ablbaum.eps_t}\fi
       \caption{Allgemeiner Ableitungsbaum einer kontextfreien Grammatik.}
       \label{fig:4}
     \end{figure}
@@ -3806,7 +3852,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 
     \begin{figure}
       \centering
-      \input{pumpreg-ablbaum.pdf_t}
+      \ifpdf\input{pumpreg-ablbaum.pdf_t}\else\input{pumpreg-ablbaum.eps_t}\fi
       \caption{Ableitungsbäume für linkslineare Grammatiken sehen wie
         eine Raupe mit der Haarlänge 1 aus \todo{Die Zeichnung könnte
       noch flacher sein}}
@@ -4179,7 +4225,7 @@ Wäre $SAT\in P$, so wäre $P=NP$. Damit ist $SAT$ ein
 \highl[NP-schwer@$NP$-schwer]{$NP$-schweres Problem}. $SAT$ ist
 \highl[NP-vollständig@$NP$-vollständig]{$NP$-vollständig}.
 
-\begin{bsp}[Hamiltonkreis-Problem]\listlinebreak\vspace{-3\parskip}
+\begin{bsp}[Hamiltonkreis-Problem]\listlinebreak
   \begin{gather*}
     HC = \{ G: G=(E,V) \ \text{einfacher ungerichter Graph und $G$
        besitzt Hamiltonkreis}\}
@@ -4227,7 +4273,7 @@ w\triangleleft$) rückwärts die Ableitung einer nichtverkürzenden Grammatik
 
 Motivation: Wir betrachen Linksableitungen von kontextfreien Grammatiken
 (\autoref{sec:Gr+S-T3}) in Normalform (\autoref{def:7}).
-\begin{bsp}\listlinebreak\vspace{-3\parskip}
+\begin{bsp}\listlinebreak
   \begin{align*}
     G &= (N,T,S,P)\\
     N &= \{S, A, B\}\\
@@ -4472,7 +4518,7 @@ Hilfe eines Algorithmus' berechenbare Funktion ist berechenbar.
    \item $L$ wird von einer Typ-0-Grammatik erzeugt
   \end{enumerate}
 
-  \begin{proof}\listlinebreak
+  \begin{proof}
     \begin{mdescription}
      \item[1. $\Rightarrow$ 2.]\listlinebreak
       \begin{enumerate}
@@ -4653,7 +4699,7 @@ Wir betrachten Turing-Maschinen mit $\{0,1\}\subseteq \Sigma$.
   \highl{Halteproblem} für Turing-Maschinen.
 \end{defini}
 
-\begin{satz}[Anhaltesatz]\listlinebreak\vspace{-3\parskip}
+\begin{satz}[Anhaltesatz]
   \begin{enumerate}
    \item $H$ ist aufzählbar
    \item $H$ ist nicht entscheidbar
@@ -4669,8 +4715,10 @@ Wir betrachten Turing-Maschinen mit $\{0,1\}\subseteq \Sigma$.
 \begin{bemerk}
   $H\in CH(0)\setminus CH(1)$
 \end{bemerk}
+
 \clearpage
 \appendix
+
 \pdfbookmark[0]{Index}{index}
 \printindex
 \end{document}
