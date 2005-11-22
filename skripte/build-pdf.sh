@@ -41,8 +41,12 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
         src=skript.latex
     elif [ -r $i/skript.tex ]; then
         src=skript.tex
+    elif [ "$(ls $i/*.latex $i/*.tex 2>/dev/null | wc -l)" -eq 1 ]; then
+        src=$(ls $i/*.latex $i/*.tex 2>/dev/null)
+        src=${src#$i/}
     else
         echo "E: No latex file found in $i"
+        rm -r $TMP/*
         continue
     fi
     echo "I: using $src as source file"
