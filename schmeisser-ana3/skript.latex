@@ -157,9 +157,12 @@
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-\newcommand*{\abs}[2][]{#1\left\lvert#2#1\right\rvert}
-\newcommand*{\norm}[2][]{#1\left\lVert#2#1\right\rVert}
-\newcommand*{\sprod}[3][]{#1\langle #2,#3 #1\rangle}
+\newcommand*{\abs}[2][]{#1\lvert#2%
+  \ifthenelse{\equal{\protect #1}{\protect \left}}{\right}{#1}\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2%
+  \ifthenelse{\equal{\protect #1}{\protect \left}}{\right}{#1}\rVert}
+\newcommand*{\sprod}[3][]{#1\langle #2,#3%
+  \ifthenelse{\equal{\protect #1}{\protect \left}}{\right}{#1}\rangle}
 
 % Das original Epsilon sieht nicht so toll aus
 \renewcommand*{\epsilon}{\varepsilon}
@@ -249,6 +252,15 @@
 \section*{Definitionen und Festlegungen}
 % \theoremlisttype{all}
 \listtheorems{defini,festl}
+
+\clearpage
+\pdfbookmark[0]{Litheraturverzeichnis}{litheraturverzeichnis}
+\begin{thebibliography}{99}
+ \bibitem{Jost} I. Jost: Partielle Differentialgleichungen, Springer 1998
+ \bibitem{Wuest} R. Wüst: Höhere Mathematik für Physiker, Teil 2, de
+  Gruyter, 1995
+ \bibitem{Evans} L. Evans: Partial differential equations, AMS, 1998
+\end{thebibliography}
 
 \setcounter{chapter}{7}
 
@@ -807,7 +819,7 @@ Die Umkehrung von \autoref{lem:8.1.2/11} gilt im allgemeinen \emph{nicht}.
 
 \begin{bemerk}
   \begin{enumerate}
-    \item Notwendige Bedingung: $\vec{v}=\rot{\vec{w}}\Rightarrow \div
+    \item Notwendige Bedingung: $\vec{v}=\rot{\vec{w}}\Rightarrow \Div
     \vec{v}= 0$
     \item Wenn $\vec{w}$ ein Vektorpotential von $\vec{v}$ ist und
     $\Phi\in C^2(\Omega)$, dann ist $\vec{w}+\grad \Phi$ wieder ein
@@ -1474,33 +1486,34 @@ Damit können wir das Integral über eine $m$-Fläche $S$ erklären:
      d(u_{1},\ldots,u_{m})
 \end{gather*}
 
-Für den Fall $m=n-1$ spricht man von einer \highl{$(n-1)$-dimensionale
+Für den Fall $m=n-1$ spricht man von einer \highl{$(n\!-\!1)$-dimensionale
 Hyperfläche}. Dieser Fall tritt z.\,B. auf, wenn man den Rand
 $S=\partial\Omega$ eines Normalbereichs $\Omega\subseteq\R^{n}$
 betrachtet. Oder für den Fall, dass die Fläche eine expliziete
 Darstellung $S=\{x: x'=(x_{1},\ldots,x_{n-1})\in B\subseteq \R^{n-1},
 f(x') = x_{n}\}$ erhält man
 \begin{align*}
-  dS = \sqrt{1+f_{x_{1}}^{2}+\ldots+f_{x_{n-1}}^{2}}
+  dS &= \sqrt{1+f_{x_{1}}^{2}+\ldots+f_{x_{n-1}}^{2}}
      d(x_{1},\ldots,x_{n-1})\\
-  \vec{n} := \frac{1}{\sqrt{\ldots}}
+  \vec{n} &:= \frac{1}{\sqrt{\ldots}}
      \begin{bmatrix}
        -f_{x_{1}}\\ -f_{x_{2}}\\\vdots\\-f_{x_{n-1}}\\1
      \end{bmatrix}\qquad\text{äußerer Normalenvektor}\\
-  \int_{S} F\,dS = \int_{B} F(x_{1},\ldots,x_{n-1},
-     f(x_{1},\ldots,x_{n-1})) \sqrt{1+f_{x_{1}}+\ldots+f_{x_{n-1}}}
-     d(x_{1},\ldots,x_{n-1})
+  \int_{S} F\,dS &= \int_{B} F(x_{1},\ldots,x_{n-1},
+     f(x_{1},\ldots,x_{n-1})) \sqrt{\ldots} %1+f_{x_{1}}+\ldots+f_{x_{n-1}}}
+     \;d(x_{1},\ldots,x_{n-1})
 \end{align*}
 
 Der Satz von Gauß (\autoref{satz:gauss}) und alle Folgerungen daraus lassen
 sich auch für den $\R^{n}$ verallgemeinern. $\vec{v}:\Omega\rightarrow
 \R^{n}, \Omega\subseteq\R^{n}, \Omega$ Normalbereich
 \begin{gather*}
-  \int_{\Omega} \div\vec{v}\,dx = \int_{\partial\Omega} \sprod{\vec{v},
-     \vec{n}}\,dS
+  \int_{\Omega} \Div\vec{v}\,dx = \int_{\partial\Omega} \sprod{\vec{v}}
+     {\vec{n}}\,dS
 \end{gather*}
 
 \subsubsection{Die Oberfläche der Einheitskugel im $\R^{n}$}
+\label{sec:1}
 
 Die Oberfläche der Einheitskugel im $\R^{n}$ wurde beschrieben mit
 $\omega_{n} :=\{x:x_{1}^{2}+\ldots+x_{n}^{2}=0\}$. Wir führen dazu die
@@ -1756,7 +1769,7 @@ Materialgleichungen mit den Stoffkonstanten $\epsilon_{0}$ und $\mu_{0}$
 \end{gather}
 
 \begin{bemerk}[Integrale Form der Maxwell'schen Gleichung]
-  Mithilfe des satz von Stoke \todo{link finden} kann man die
+  Mithilfe des Satz von Stoke (\autoref{satz:stokes}) kann man die
   \autoref{eq:7} auch mit Integralen schreiben:
   \begin{gather*}
     \int_{\partial S} \vec{E} \vec{dx}+ \frac{d}{dt}\int_{S}
@@ -1801,10 +1814,247 @@ Materialgleichungen mit den Stoffkonstanten $\epsilon_{0}$ und $\mu_{0}$
   \end{gather*}
 \end{bemerk}
 
-\pdfbookmark[0]{Litheraturverzeichnis}{litheraturverzeichnis}
-\begin{thebibliography}{Hirzebruch}
- \bibitem{Triebel} H. Triebel: Höhere Analysis, Harri Deutsch 1980 (empfohlen)
-\end{thebibliography}
+% 22.11.05
+
+\chapter{Partielle Differentialgleichungen}
+\section{Die Laplace-Poisson-Gleichung}
+\subsection{Einleitung}
+
+Laplace-Gleichung:
+\begin{gather*}
+  \Delta n(x) = 0\quad \forall x\in\Omega\subseteq \R^{n}
+\end{gather*}
+Laplace-Poisson-Gleichung:
+\begin{gather*}
+  -\Delta u(x) = f(x)\quad\forall x\in\Omega\quad(f\ \text{gegeben})
+\end{gather*}
+Helmholzgleichung:
+\begin{gather*}
+  \Delta u+k^{2} u=0\quad\text{auf}\ \Omega
+\end{gather*}
+
+Spezialfälle davon:
+\begin{gather*}
+  -\Div\big(A(x) \grad u(x)\big)+\vec{b}(x)\grad u(x) + c(x)u(x) = f(x)\\
+  \text{wobei:}\quad A(x) = \Big(A_{ij}(x)\Big), \vec{b}(x) =
+     \begin{bmatrix}b_{1}\\\vdots\\b_{n}(x)\end{bmatrix}, c(x), f(x)
+\end{gather*}
+heißt \highl{elliptische Differentialgleichung 2.\,Ordnung}, falls die
+Matrix $A(x)$ positiv definit auf $\Omega$ ist.
+
+\highl{Randwertproblem}:\\
+\highl{Dirichlet-Problem}:
+\begin{gather*}
+  -\Delta u(x) = f(x)\quad x\in\Omega
+     u\big|_{\partial\Omega} = g
+\end{gather*}
+
+\highl{Neumann-Problem}:
+\begin{gather*}
+  -\Delta u(x) = f(x)\quad x\in\Omega
+     \frac{\partial u}{\partial\vec{n}}\Big|_{\partial\Omega} = g
+\end{gather*}
+
+\begin{bemerk}
+  $\Omega\subseteq\R^{n}$ zulässiges Gebiet, d.\,h. es gilt der Satz von
+  Gauß (\autoref{satz:gauss})
+  \begin{gather*}
+    \int_{\Omega}\Div \vec{w}\,dx = \int_{\partial\Omega}
+       \sprod{\vec{w}}{\vec{n}}\,dS
+  \end{gather*}
+\end{bemerk}
+
+\begin{bemerk}
+  \begin{gather*}
+    C^{m}(\Omega) := \{u: \exists D^{\alpha}u, \abs{\alpha}\leq m,
+       \text{stetig auf}\ \Omega\}
+  \end{gather*}
+  $\Omega$ offen und $m\in \N_{0}$
+  \begin{gather*}
+    C^{m}(\overline{\Omega}) := \{u\in C^{m}(\Omega): \forall\alpha \abs{\alpha}\leq m,
+       \exists\ \text{stetigig Fortsetzung auf dem Rand}\ \partial\Omega\}
+  \end{gather*}
+  dann: $D^{\alpha} u(x^{0}) :=\lim_{x\rightarrow x_{0}} D^{\alpha}u(x)$
+  für $x^{0}\in\partial\Omega$
+  \begin{gather*}
+    \frac{\partial u}{\partial \vec{n}} (x^{0}) := \sprod{\nabla
+       u(x^{0})}{\vec{n}},\quad \abs{\vec{n}}=1
+  \end{gather*}
+\end{bemerk}
+
+\begin{bemerk}
+  $\Omega\subseteq\R^{n}$ zulässiges Gebiet. Nach Gauß
+  \autoref{satz:gauss} ist (vgl. \todo{link: abschn 8.2.3}\help{es gibt
+  keinen Abschnitt 8.2.3 was stand da nochmal an der Tafel?})
+  \begin{enumerate}
+   \item $u\in C^{2}(\overline{\Omega}), v\in C^{1}(\overline{\Omega})$ $\Rightarrow$
+    \begin{gather}\label{eq:14}
+      \int_{\Omega} v\,\Delta u\,dx = -\int_{\Omega} \sprod{\nabla
+         u}{\nabla v}\,dx + \int_{\partial\Omega} v\frac{\partial
+         u}{\partial\vec{n}}\,dS
+    \end{gather}
+
+    \begin{proof}
+      \begin{gather*}
+        \vec{w} = v\nabla u \Rightarrow \Div \vec{w} = \sprod{\nabla
+           v}{\nabla u} + v \Delta u\\
+        v\Delta u = \Div\vec{w} - \sprod{\nabla u}{\nabla v}
+      \end{gather*}
+    \end{proof}
+   \item $u,v\in C^{2}(\overline{\Omega})$ $\Rightarrow$
+    \begin{gather}\label{eq:15}
+      \int_{\Omega} v\Delta u - u\Delta v\,dx = \int_{\partial\Omega}
+         v\frac{\partial u}{\partial\vec{n}} - u\frac{\partial
+         v}{\partial\vec{n}}\,dS
+    \end{gather}
+  \end{enumerate}
+\end{bemerk}
+
+\begin{defini}
+  Sei wieder $\Omega\subseteq\R^{n}$ ein offenes Gebiet. Eine Funktion
+  $u$ heißt \highl{harmonisch} auf $\Omega$ \gdwdef $u\in C^{2}(\Omega)$
+  und $\Delta u(x)=0$ auf $\Omega$.
+\end{defini}
+
+\begin{bemerk}[Beispiele für harmonische Funktionen]
+  \begin{gather*}
+    u(x) = x^{2}_{i} - x^{2}_{j} \Rightarrow \Delta u=0\ \text{auf}\
+       \R^{n}\\
+    u(x) = x_{1}x_{2}x_{3} \Rightarrow \Delta u=0\ \text{auf}\
+       \R^{3}
+  \end{gather*}
+
+  Harmonische Funktionen bilden einen Vektorraum. Jetzt: Alle
+  harmonischen Funktionen der Form: $u(x) = v(\abs{x}), r=\abs{x}=
+  (x^{2}_{1}+\ldots+x^{2}_{n})^{\nicefrac{1}{2}}$
+\end{bemerk}
+
+\begin{lemma}
+  ($n\geq2$) $u(x) =v(\abs{x})$ ist harmonisch auf $\R^{n}\setminus\{0\}$
+  \gdw
+  \begin{gather*}
+    u(x) = \begin{cases}
+             b\ln r+c&: n=2\\
+             \frac{b}{r^{n-2}}+c&: n>2\\
+           \end{cases}
+  \end{gather*}
+  wobei $b,c\in\C$.
+
+  \begin{proof}
+    \begin{align*}
+      \partial_{j}u &= v'(r)\partial_{j} r, &\partial_{j} r &=
+         \frac{\partial}{\partial x_{j}}(x^{2}_{1}
+         +\ldots+x^{2}_{n})^{\nicefrac{1}{2}} = \frac{x_{j}}{r}\\
+      &= v'(r) \frac{x_{j}}{r}\\
+      \partial^{2}_{j} u &= \partial_{j}(v'(r)\frac{x_{j}}{r})\\
+      &= v''(r) \frac{x^{2}_{j}}{r} + v'(r) \big(\frac{1}{r} -
+         \frac{x^{2}_{j}}{r^{3}}\big)\\
+      \Rightarrow \Delta u &= v''(r) + v'(r)\big(\frac{n}{r} -
+         \frac{1}{r}\big)\\
+      \Delta u &= v''(r) + \frac{n-1}{r} v'(r) \stackrel{!}{=} 0
+    \end{align*}
+
+    Wir setzen $v'=w$ und erhalten eine Differentialgleichung mit
+    getrennten Variablen: $w'(r) + \frac{n+1}{r} w=0$. Für $n=2$ erhalten
+    wir als Lösung $w=\frac{b}{r}$ und können $v$ als Stammfunktion von
+    $w$ bestimmen: $v(r) = b\ln r +c$.
+
+    Im Fall von $n\geq 2$ erhalten $w(r) = \frac{b'}{r^{n-1}}$ und $v(r)
+    = \frac{b}{r^{n-2}} +c$.
+  \end{proof}
+\end{lemma}
+
+\begin{defini}
+  Für $x\not=y$ setzen wir:
+  \begin{gather*}
+    \Gamma(x,y) = \Gamma(\abs{x-y}) =
+       \begin{cases}
+         \frac{1}{2\pi}\ln \abs{x} &: n=2\\
+         -\frac{1}{(n-2) \omega_{n}} \frac{1}{\abs{x-y}^{n-2}} &:n>2
+       \end{cases}
+  \end{gather*}
+  \emph{Achtung: $\Gamma$ ist nicht die $\Gamma$-Funktion!} $\omega_{n}$
+  bezeichnet die Oberfläche der Einheitskugel im $\R^{n}$; siehe
+  \autoref{sec:1}
+
+  $\Gamma$ heißt \highl{Fundamentallösung} der Laplace-Gleichung.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $\Gamma(x,y)$ ist harmonisch auf $\R^{n}\setminus\{y\}$ (als
+    Funktion von $x$)
+   \item $\Gamma(x,y)\in C^{\infty}(\R^{n}\setminus\{y\})$
+   \item $\frac{\partial}{\partial x_{j}}\Gamma(x,y)$ und
+    $\frac{\partial}{\partial \vec{n}}\Gamma(x,y)$ sind harmonisch auf
+    $C^{\infty}(\R^{n}\setminus\{y\})$
+   \item Das Integral $\int_{K_{1}(y)}\Gamma(x,y)\,dx$ existiert als
+    uneigentliches Integral
+    \begin{gather*}
+      \int_{K_{1}(y)}\Gamma(x,y)\,dx =
+         \begin{cases}
+           \int_{\abs{x}\leq1}\ln \abs{x}\,dx = 2\pi\int_{0}^{1} r\ln
+           r\,dr < \infty &n=2\\
+           \int_{\abs{x}\leq1}\frac{1}{\abs{x}^{n-2}}\,dx =
+           \abs{\omega_{n}} \int_{0}^{1} \frac{1}{r^{n-2}} r^{n-1}\,dr <
+           \infty &n>2
+         \end{cases}
+    \end{gather*}
+  \end{enumerate}
+\end{bemerk}
+
+\begin{satz}[Greensche Darstellungsformel]
+  Sei $\Omega\subseteq\R^{n}$ ein zulässiges Gebiet, $u\in
+  C^{2}(\overline{\Omega})$, $\vec{n}(x)$ äußerer Normalenvektor an
+  $x\in\partial\Omega$. Dann gilt für alle $y\in\Omega$
+  \begin{gather*}
+    u(y) = \int_{\partial\Omega}\big(u(x)\frac{\partial\Gamma}
+       {\partial\vec{n}(x)}(x,y) - \Gamma(x,y) \frac{\partial
+       u}{\partial\vec{n}}\, dS(x) + \int_{\Omega}\Gamma(x,y)\Delta
+       u(x)\,dx
+  \end{gather*}
+
+  \begin{proof}
+    Da die Singularität (Problemstelle $y$) Probleme macht, legen wir
+    eine Kugel $\overline{K_{\epsilon}(y)}\subset \Omega$ um $y$ (für
+    hinreichend kleines $\epsilon$) und betrachten $\Omega\setminus
+    \overline{K_{\epsilon}(y)}$ (zulässiges Gebiet \help{warum nochmal?}).
+
+    Es gilt:
+    \begin{gather*}
+      \int_{\Omega} \Gamma(x,y)\Delta u(x)\,dx =
+         \lim_{\epsilon\rightarrow0}
+         \int_{\Omega\setminus\overline{K_{\epsilon}(y)}}
+         \Gamma(x,y)\Delta u(x)\,dx
+    \end{gather*}
+    wir wenden \autoref{eq:15} auf
+    $\Omega\setminus\overline{K_{\epsilon}(y)}$ an ($\Delta\Gamma=0$
+    $\Rightarrow$ zweiter Summand unter Integral entfällt) und erhalten
+    \begin{align*}
+      \int_{\Omega\setminus\overline{K_{\epsilon}(y)}} \Gamma(x,y) \Delta
+         u(x)\,dx &= \int_{\partial\Omega} \Gamma(x,y)\frac{\partial
+         u}{\partial\vec{n}}(x) -
+         u(x)\frac{\partial\Gamma}{\partial\vec{n}}(x,y)\,dS(x)\\
+      &\quad + \int_{\partial K_{\epsilon}(y)} \Gamma(x,y)\frac{\partial
+         u}{\partial\vec{n}}(x) -
+         u(x) \frac{\partial\Gamma}{\partial\vec{n}}(x,y)\,dS(x)
+    \end{align*}
+    Auf $\partial K_{\epsilon}(y)$ ist $\Gamma(x,y) = \Gamma(\abs{x-y}) =
+    \Gamma(\epsilon)$ $\Rightarrow$
+    \begin{align*}
+      \abs[\Big]{\int_{\partial K_{\epsilon}(y)}
+         \Gamma(x,y)\frac{\partial u}{\partial\vec{n}}(x)\,dS(x)} &\leq
+         \Gamma(\epsilon) \sup_{x\in\Omega} \abs{\nabla n(x)}
+         \epsilon^{n-1} \abs{\omega_{n}} \\
+      &\leq \sup_{x\in\Omega}
+         \abs{\nabla u(x)}
+         \begin{cases}
+           \epsilon \ln \epsilon& n=2\\
+           \frac{1}{n-2}\epsilon & n>2
+         \end{cases}\quad \xrightarrow{\epsilon\rightarrow0} 0
+    \end{align*}
+  \end{proof}
+\end{satz}
 
 \clearpage
 \appendix
