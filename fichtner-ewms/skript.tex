@@ -1,7 +1,3 @@
-% TODO
-% This document ist work in progress. I expect it to be stable at the
-% end of August 2005
-%
 % + Brueche auf nicefrac oder frac pruefen
 
 \documentclass[titlepage]{scrbook}
@@ -15,6 +11,7 @@
 \usepackage{paralist}
 \usepackage{pst-plot}
 \usepackage{nicefrac}
+\usepackage{wasysym}
 
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Q}{\mathbb{Q}}
@@ -32,6 +29,7 @@
 \newcommand{\chiai}{\chi_{A_i}}
 \newcommand{\limn}{\lim_{n\rightarrow\infty}}
 \newcommand{\ofmu}{[\Omega,\CF,\mu]}
+\newcommand{\ofp}{[\Omega, \CF, P]}
 \newcommand{\rbel}{[\R,\FB,\ell]}
 \newcommand{\pxi}{P\circ\xi^{-1}}
 
@@ -1901,7 +1899,7 @@ Kriterien Kugeln gezogen werden.
 \item Auswahl \emph{mit} Berücksichtigung der Reihenfolge und
   \emph{ohne} Zurücklegen $(k\leq n)$\\
   $A_{k,m}^{oWmR}:=\{[\omega_1,\ldots,\omega_k]| \{\omega_1,\ldots,
-  \omega_k\}\in \{1,\ldots,n\}\}=m(n-1)(n-2)\ldots (n-k+1)=
+  \omega_k\}\in \{1,\ldots,n\}\}=n(n-1)(n-2)\ldots (n-k+1)=
   \frac{n!}{(n-k)!}$
 \item Auswahl \emph{ohne} Berücksichtigung der Reihenfolge und
   \emph{ohne} Zurücklegen\\
@@ -3021,9 +3019,147 @@ Frage ist nur unter gewissen Beschränktheitsforderungen möglich.
   \item Cauchy-Verteilung: $P_\xi=\ell f$ mit $f(x)= \frac{1}{\pi
       (1+x^2)}$ und $x\in\R$. Es ist klar, dass $\int_0^{+\infty}
     xf(x) dx=\infty$ gilt.
+
+    Ein anderer Weg ist folgender: Sei $\ofp = [\{0,1\}, \FP(\{0,1\}),
+    B_{1,p}]^{n\times}$ und $\xi_k$ die Projektion auf die $k$-te
+    Komponente in $\Omega$. Es ist bekannt, dass $P_{\xi_k}=B_{1,p}$
+    und $P_{\sum\xi_k}= B_{n,p}=P_\xi$. Somit folgt, $E\xi=
+    E\sum_{k=1}^n \xi_k= \sum_{k=1}^n E\xi_k= \sum_{k=1}^n p=np$.
+  \item Sei $P\xi=\ell f$ mit $f(x)=\frac{1}{\pi(1+x)^2}$ für
+    $x\in\R$. Es ist klar, dass $\int_0^{+\infty} xf(x)dx=+\infty$
+    gilt. Formal wäre $E\xi=+\infty$\lightning. Damit folgt, dass
+    $E\xi$ nicht existiert.
   \end{enumerate}
 \end{beispiel}
 
+\begin{satz}
+  Seien $\xi, \eta$ unabhängige Zufallsgrößen mit endlichem
+  Erwartungswert. Dann hat die Zufallsgröße $\xi\cdot\eta$ einen
+  endlichen Erwartungswert und es gilt:
+  \[E(\xi\cdot\eta)=E\xi\cdot E\eta\]
+\end{satz}
+\begin{proof}
+  \begin{align*}
+    [\Omega_1, \CF_1, \mu] &:= \ofp & [\Omega_2, \CF_2] &:= [\R^2,
+    \FB_2]\\
+    h &: \Omega_1\rightarrow \Omega_2 & h &= [\xi, \eta]\\
+    f &: \Omega_2\rightarrow \R & f(x,y) &= xy
+  \end{align*}
+  \begin{align*}
+    \Rightarrow \int f\circ h d\mu &= \int f d\mu\circ h^{-1}\\
+    \int \xi\cdot \eta dP &= \int xy dP_{[\xi,\eta]}d([x,y])\\
+    \Rightarrow E(\xi\cdot\eta) &= \int xy dP_{[\xi,\eta]}d([x,y])
+    =\int xy (P_\xi\times P_\eta)(d[x,y])\\
+    &=\iint xy P_\xi(dx) P_\eta(dy)= \int x P_\xi(dx) \cdot \int y
+    P_\eta(dy)\\
+    &= E\xi\cdot E\eta
+  \end{align*}
+\end{proof}
+
+\begin{remark}
+  Ohne die Forderung der Unabhängigkeit ist die Behauptung im obigen
+  Satz im allgemeinen nicht richtig.
+\end{remark}
+
+\section{Die Varianz}
+
+Sei $\ofp$ ein Wahrscheinlichkeitsraum. Wir betrachten die
+Zufallsgrößen $\xi, \eta$.
+
+\begin{definition}
+  Sie $\xi$ eine Zufallsgröße mit \emph{endlichem} Erwartungswert.
+  \[D\xi := E(\xi-E\xi)^2\]
+  heißt \emph{Varianz\index{Varianz}} von $\xi$. Weiterhin heißt
+  $\sqrt{D\xi}$ \emph{Standardabweichung\index{Standardabweichung}}.
+\end{definition}
+
+\begin{satz}
+  \begin{enumerate}[a)]
+  \item $D\xi\geq 0$
+  \item $D\xi=0\Leftrightarrow
+    P_\xi=\delta_{E\xi}$. D.h. $P("`\xi=c"') =1$, also Determinismus.
+  \item $D\xi$ endlich $\Leftrightarrow E\xi^2$ endlich. In diesem
+    Fall gilt $D\xi=E\xi^2-(E\xi)^2$
+  \item $D(c_1\xi+c_2)=c_1^2D\xi$ mit $c_1, c_2\in\R$
+  \item $D\xi=\int (x-E\xi)^2 P_\xi (dx)$
+  \end{enumerate}
+\end{satz}
+\begin{proof}
+  \begin{enumerate}[a)]
+  \item klar, weil $(\xi-E\xi)^2\geq 0\Rightarrow \int (\xi-E\xi)^2
+    dP\geq 0$
+  \item
+    \begin{itemize}
+    \item $P_\xi= \delta_{E\xi}\Rightarrow D\xi= \int(x-E\xi)^2 P_\xi
+      (dx)= (E\xi-E\xi)^2=0$
+    \item $E(\xi-E\xi)^2=0 \Rightarrow P("`(\xi-E\xi)^2=0"')=1=
+      P("`\xi- E\xi"')$
+    \end{itemize}
+  \item $D\xi= E(\xi-E\xi)^2= E(\xi)^2-e\xi E\xi+(E\xi)^2)= E\xi^2 -
+    2E\xi E\xi + (E\xi)^2= E\xi^2- 2(E\xi)^2+(E\xi)^2= E\xi^2-(E\xi)^2$
+  \item $D(c_1\xi+c_2)= E(c_1\xi+c_2-E(c_1\xi+c_2))^2=
+    E(c_1\xi-c_1E\xi)^2 =E(c_1(\xi-E\xi))^2= c_1^2 E(\xi-E\xi)^2= c_1 D\xi$
+  \item $D\xi= E(\xi-E\xi)^2 = \int (\xi-E\xi)^2dP$. Nach dem
+    Übertragungssatz folgt mit $h=\xi, f(x)=(x-E\xi)^2, \mu=P$
+    sowohl $f\circ h= (\xi-E\xi)^2$ als auch $\mu\circ
+    h^{-1}=P_\xi$. Weiter folgt somit $E(\xi-E\xi)^2=\int f(x)P_\xi
+    (dx)= \int (x-E\xi)^2P_\xi(dx)$. Daraus ergibt sich die Behauptung.
+  \end{enumerate}
+\end{proof}
+
+\begin{remark}[Folgerungen]
+  \begin{enumerate}
+  \item Aus den Punkten a) und c) ergibt sich: $E\xi^2\geq (E\xi)^2$
+  \item Aus c) ergibt sich: $D\xi=0\Leftrightarrow E\xi^2=(E\xi)^2
+    \Leftrightarrow P_\xi=\delta_{E\xi}$
+  \end{enumerate}
+\end{remark}
+
+\begin{beispiel}[für $E\xi\cdot\eta\neq E\xi\cdot E\eta$]
+  Sei $\xi$ eine Zufallsgröße mit $D\xi>0$, d.h. $\xi$ ist keine
+  Konstante, und $\eta := \xi$. Dann folgt, $E\xi\cdot\eta=E\xi^2$. Da
+  weiter gilt, $D\xi=E\xi^2-(E\xi)^2$ und $D\xi\neq 0$, folgt, dass
+  $E\xi^2\neq E\xi\cdot E\xi$. Angenommen, es gelte, $E\xi\cdot\eta=
+  E\xi\cdot E\cdot\eta$. Dann wäre $E\xi^2=(E\xi)^2\Rightarrow D\xi=
+  E\xi^2- (E\xi)^2=0$ \lightning
+\end{beispiel}
+
+\begin{satz}
+  Seien $\xi, \eta$ unabhängige Zufallsgrößen mit endlicher
+  Varianz. Dann gilt:
+  \[D(\xi+\eta)=D\xi+D\eta\]
+\end{satz}
+\begin{proof}
+  \begin{align*}
+    D(\xi+\eta) &= E(\xi+\eta-E(\xi+\eta))^2=
+    E(\xi-E\xi+\eta-E\eta)^2\\
+    &= E\left((\xi-E\xi)^2+2(\xi-E\xi)(\eta-E\eta)+
+      (\eta-E\eta)^2\right)\\
+    &= E(\xi-E\xi)^2+E(\eta-E\eta)^2+2\underbrace{E(\xi-E\xi)}_{0=}
+    \cdot \underbrace{E(\eta-E\eta)}_{=0}=D\xi+D\eta
+  \end{align*}
+\end{proof}
+
+\begin{remark}
+  Ohne die Forderung der Unabhängigkeit ist die Behauptung im
+  allgemeinen falsch.
+
+  Weiterhin kann man per vollständiger Induktion zeigen, dass für
+  $\xi_1, \ldots, \xi_n$ unabhängige Zufallsgrößen mit endlichen
+  Erwartungswerten folgt,
+  \[D\left(\sum_{k=1}^n \xi_k\right) = \sum_{k=1}^n D\xi_k\]
+\end{remark}
+
+\begin{satz}
+  \begin{enumerate}[a)]
+  \item Sei $P_\xi= \sum_{k\in\Z} a_k \delta_k$ und $E\xi$
+    endlich. Dann gilt:
+    \[D\xi= \sum_{k\in\Z} (k-e\xi)^2 a_k\]
+  \item Sei $P_\xi=\ell f$ mit $f$ stetig und $E\xi$ endlich. Dann
+    ist:
+    \[D\xi= \int_{-\infty}^{+\infty} (x-E\xi)^2 f(x)dx\]
+  \end{enumerate}
+\end{satz}
 
 \printindex
 \end{document}
