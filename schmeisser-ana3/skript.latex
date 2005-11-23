@@ -66,6 +66,11 @@
                  {#4}%
          \fi
      \fi}
+% Damit \autoref den richtigen Namen findet
+% <news:slrnd8s9ce.403.joerg@alea.gnuu.de>
+\newcommand{\saved@gather}{}
+\let\saved@gather\gather
+\def\gather{\@hyper@itemfalse\saved@gather}
 \makeatother
 
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
@@ -1967,7 +1972,7 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
     \Gamma(x,y) = \Gamma(\abs{x-y}) =
        \begin{cases}
          \frac{1}{2\pi}\ln \abs{x} &: n=2\\
-         -\frac{1}{(n-2) \omega_{n}} \frac{1}{\abs{x-y}^{n-2}} &:n>2
+         -((n-2) \abs{\omega_{n}})^{-1} \abs{x-y}^{2-n} &:n>2
        \end{cases}
   \end{gather*}
   \emph{Achtung: $\Gamma$ ist nicht die $\Gamma$-Funktion!} $\omega_{n}$
@@ -2004,12 +2009,12 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
   Sei $\Omega\subseteq\R^{n}$ ein zulässiges Gebiet, $u\in
   C^{2}(\overline{\Omega})$, $\vec{n}(x)$ äußerer Normalenvektor an
   $x\in\partial\Omega$. Dann gilt für alle $y\in\Omega$
-  \begin{gather*}
+  \begin{gather}\label{eq:17}
     u(y) = \int_{\partial\Omega}\big(u(x)\frac{\partial\Gamma}
        {\partial\vec{n}(x)}(x,y) - \Gamma(x,y) \frac{\partial
        u}{\partial\vec{n}}\, dS(x) + \int_{\Omega}\Gamma(x,y)\Delta
        u(x)\,dx
-  \end{gather*}
+  \end{gather}
 
   \begin{proof}
     Da die Singularität (Problemstelle $y$) Probleme macht, legen wir
@@ -2050,9 +2055,213 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
            \frac{1}{n-2}\epsilon & n>2
          \end{cases}\quad \xrightarrow{\epsilon\rightarrow0} 0
     \end{align*}
+
+    % 23.11.05
+
+    noch zu zeigen: ($y$ fest)
+    \begin{gather*}
+      -\int_{\partial K_{\epsilon}(y)} u(x) \frac{\partial\Gamma}
+         {\partial\vec{n}(x)}(x,y)\,dS(x)
+         \xrightarrow{\epsilon\rightarrow0} u(y)
+    \end{gather*}
+    $\vec{n}(x) = \frac{y-x}{\abs{x-y}}$ äußere Normale,
+    $\frac{\partial\Gamma}{\partial\vec{n}(x)} = \sprod{\nabla_{x}
+    \Gamma(x,y)}{\vec{n}(x)}$. Es gilt für $n>2$:
+    \begin{gather*}
+      \frac{\partial}{\partial x_{j}} (\abs{x-y}^{-n+2}) = (-n+2)
+         \abs{x-y}^{-n+1} \frac{1}{2} \frac{1}{\abs{x-y}} 2(x_{j}-y_{j})
+         = -(n-2) \frac{x_{j}-y_{j}}{\abs{x-y}^{n}}\\
+      \Rightarrow \nabla_{x}\Gamma(x,y) = \frac{1}{\abs{\omega_{n}}}
+         \frac{x-y}{\abs{x-y}^{n}}
+    \end{gather*}
+
+    Für $n=2$:
+    \begin{gather*}
+      \frac{\partial}{\partial x_{j}} (\ln\abs{x-y}) =
+         \abs{x-y}^{-1} \frac{x_{j}-y_{j}}{\abs{x-y}}
+         = \frac{x_{j}-y_{j}}{\abs{x-y}^{2}}\\
+      \Rightarrow \nabla_{x}\Gamma(x,y) = \frac{1}{2\pi}
+         \frac{x-y}{\abs{x-y}^{2}}
+    \end{gather*}
+
+    Zusammen ergibt sich für $n\geq 2$
+    \begin{gather*}
+      \frac{\partial\Gamma}{\partial\vec{n}(x)} =
+         \frac{1}{\abs{\omega_{n}}} \frac{x-y}{\abs{x-y}^{n}}
+         \frac{y-x}{\abs{x-y}}
+         = -\frac{1}{\abs{\omega_{n}}} \frac{1}{\abs{x-y}^{n-1}}
+         \Big(= -\frac{1}{\abs{\omega_{n}}} \frac{1}{\epsilon^{n-1}}
+         \quad\text{auf}\ \partial K_{\epsilon}(y)\Big)\\
+      \Rightarrow -\int_{\partial K_{\epsilon}(y)}
+         u(x)\frac{\partial\Gamma}{\partial\vec{n}(x)}(x,y)\,dS(x) =
+         \frac{1}{\abs{\omega_{n}}\epsilon^{n-1}} \int_{\partial
+         K_{\epsilon}(y)} u(x)\,dS(x)
+         = \frac{1}{\abs{\partial K_{\epsilon}(y)}} \int_{\partial
+         K_{\epsilon}(y)} u(x)\,dS(x) \xrightarrow{\epsilon\rightarrow0}
+         u(y)\\
+      \intertext{denn}
+      \abs[\Big]{u(y) - \frac{1}{\abs{\partial K_{\epsilon}(y)}}
+         \int_{\partial K_{\epsilon}(y)} u(x)\,dS(x)} \leq
+         \frac{1}{\abs{\partial K_{\epsilon}(y)}}
+         \int_{\partial K_{\epsilon}(y)} \abs{\underbrace{u(y)-u(x)}
+         _{\leq\delta}}\,dS(x) \leq\delta\qquad(\forall\delta)
+    \end{gather*}
   \end{proof}
 \end{satz}
 
+\begin{folger}
+  Für harmonische Funktionen $u$ auf $\Omega$ (d.\,h. $\Delta u=0$) gilt
+  ($y\in\Omega$)
+  \begin{gather*}
+    u(y) = \int_{\partial\Omega}
+       u(x)\frac{\partial\Gamma}{\partial\vec{n}}(x,y) -
+       \Gamma(x,y)\frac{\partial u}{\partial\vec{n}}(x)\,dS
+  \end{gather*}
+\end{folger}
+
+\begin{folger}\label{fol:1}
+  $\Omega$ sei ein zulässiges Gebiet und wir definieren ein zusätzliche
+  komplexwertige Funktion $\Phi$ auf $\Omega\times\Omega$ mit $\Phi(x,y)
+  \in C^{2}(\overline{\Omega})$ als Funktion von $x$ bei festem $y$.
+  Zusätzlich soll $\Phi$ harmonisch sein, d.\,h. $\Delta_{x}\Phi(x,y) =
+  0$ für alle $y\in\Omega$.
+
+  Wir setzen $G(x,y) := \Gamma(x,y) = \Phi(x,y)$ für alle $y,x\in
+  \overline{\Omega},x\not=y$.
+
+  Dann gilt die Greensche Darstellungsformel mit $G$ anstelle von $\Gamma$
+  \begin{gather}\label{eq:16}
+    u(y) = \int_{\partial\Omega}
+       u(x)\frac{\partial G}{\partial\vec{n}}(x,y) -
+       G(x,y)\frac{\partial u}{\partial\vec{n}}(x)\,dS
+       + \int_{\Omega} G(x,y)\Delta u(x)\,dx
+  \end{gather}
+
+  \begin{proof}
+    folgt aus \autoref{eq:17} und \autoref{eq:15} mit $v(x) = \Phi(x,y)$
+  \end{proof}
+\end{folger}
+
+\begin{bemerk}
+  Wählen $\Phi$ in \autoref{fol:1}, so daß $G(x,y) = 0$ für $y\in\Omega$
+  und $x\in\partial\Omega$. Für $\Delta u=0$ gilt:
+  \begin{gather}\label{eq:18}
+    u(y) = \int_{\partial\Omega} u(x)\frac{\partial G}{\partial\vec{n}(x)}
+       (x,y)\,dS(x)
+  \end{gather}
+\end{bemerk}
+
+\subsection{Die Green'sche Funktion für die Kugel und ds Poisson-Integral}
+
+\begin{defini}
+  $\Omega\subseteq\R^{n}$ zulässiges Gebiet. Es sei
+  $\Phi:\overline{\Omega}\times\overline{\Omega}\rightarrow\C$ mit
+  $\Phi(x,y)\in C^{2}(\overline{\Omega})$ für jedes $y\in\Omega$ (als
+  Funktion von $x$) und $\Phi(x,y)$ sei harmonisch auf $\Omega$ für jedes
+  $y\in\Omega$ (als Funktion von $x$).
+
+  $G(x,y) := \Gamma(x,y) + \Phi(x,y)$ heißt \highl{Green'sche Funktion}
+  für $\Omega$ \gdwdef $G(x,y)=0$ für alle $y\in\Omega$ und
+  $x\in\partial\Omega$.
+\end{defini}
+
+\begin{figure}
+  \center
+  \ifpdf\input{Spiegelung-Kugel.pdf_t}\else\input{Spiegelung-Kugel.eps_t}\fi
+  \caption{\label{fig:3}Spiegelung ar Einheitskugel}
+\end{figure}
+
+\begin{lemma}[Green'sche Funktion für die Einheitskugel im $\R^{n}$]
+  Es sei $K=\{y: \abs{y}< 1\}$. Es sei $\overline{y}:=
+  \frac{y}{\abs{y}^{2}}$ für $y\not=0$. (siehe \autoref{fig:3})
+
+  Dann gilt:
+  \begin{gather*}
+    G(x,y) = \begin{cases}
+               \Gamma(\abs{x-y}) - \Gamma(\abs{y}\abs{x-\overline{y}})&:
+               y\not=0\\
+               \Gamma(\abs{x})-\Gamma(1)&: y=0
+             \end{cases}
+  \end{gather*}
+  ist die \highl{Green'sche Funktion} für die Einheitskugel.
+
+  \begin{proof}
+    \begin{gather*}
+      \Phi(x,y) = -\begin{cases}
+                     \Gamma(\abs{y}\abs{x-\overline{y}})&:y\not=0\\
+                     \Gamma(1)&:y=0
+                   \end{cases}
+    \end{gather*}
+    ist harmonisch auf $K$ für alle $y\in K$. Überprüfen, ob
+    Randbedingung erfüllt: Wenn $\abs{x}=1$ und $y=0$, dann ist $G(x,y) =
+    G(x,0) = \Gamma(1)-\Gamma(1) = 0$. $0<\abs{y}<1$ $\Rightarrow$
+    $(\abs{y}\abs{x-\overline{y}})^{2} = \abs{y}^{2}(x-\overline{y})
+    (x-\overline{y}) = \abs{y}^{2}(\abs{x}^{2} - 2x\overline{y} +
+    \abs{y}^{2}) =\abs{y}^{2} ( \underbrace{\abs{x^{2}}}_{=1} -
+    2\frac{xy}{\abs{y}^{2}} + \frac{1}{\abs{y}^{2}}) = \abs{y}^{2} - 2xy
+    + \abs{x}^{2} = \abs{x-y}^{2}$ (drandenken: wir haben Skalarprodukte)
+    $\Rightarrow$ $G(x,y) = 0$
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}
+  Sei $u$ eine zweimal stetig fortsetzbare Funktion auf dem
+  Rand der Einheitskugen ($u\in C^{2}(\overline{K})$) und harmonisch auf
+  $K$. Dann gilt:
+  \begin{gather*}
+    u(y) = \frac{1-\abs{y}^{2}}{\abs{\omega_{n}}} \int_{\partial K}
+       \frac{u(x)}{\abs{x-y}^{n}}dS(x)\qquad y\in K
+  \end{gather*}
+
+  \begin{proof}
+    $G$ Green'sche Funktion für $K$ $\Rightarrow$ Es gilt \autoref{eq:18}
+
+    Es gilt auf $\partial K$: $\frac{\partial G}{\partial\vec{n}(x)}(x,y)
+    = \sprod{\nabla_{x} G(x,y)}{x}$, $\vec{n}(x) = x:$ $\nabla_{x} G(x,y)
+    = \nabla_{x}(\Gamma(\abs{x-y}) -
+    \nabla_{x}(\Gamma(\abs{y}\abs{x-\overline{y}})) =
+    \nabla_{x}(\Gamma(\abs{x-y})) - \abs{y}^{-(n-2)}
+    \nabla_{x}(\Gamma(\abs{x-\overline{y}})) =^{beweis von Satz 1}
+    \frac{1}{\abs{\omega_{n}}}\Big(\frac{x-y}{\abs{x-y}^{n}} -
+    \abs{y}^{-n+2} \frac{x-\overline{y}}{\abs{x-\overline{y}}^{n}}\Big) =
+    \frac{1}{\abs{\omega_{n}}}\Big(\frac{x-y}{\abs{x-y}^{n}} -
+    \frac{(x-\overline{y})\abs{y}^{2}}{(\abs{y}\abs{x-\overline{y}})^{n}}
+    \Big) = \frac{1}{\abs{\omega_{n}}} \frac{1}{\abs{x-y}^{n}}(x-y
+    -x\abs{y}^{2} + y) =
+    -\frac{x(1-\abs{y}^{2})}{\abs{\omega_{n}}\abs{x-y}^{n}}$
+
+    Für den Rand der Kugel ($\abs{x}=1$) ist
+    \begin{gather*}
+      \frac{\partial G}{\partial \vec{n}(x)}(x,y) =
+         \frac{1-\abs{y}^{2}}{\abs{\omega_{n}}\abs{x-y}^{n}}
+    \end{gather*}
+  \end{proof}
+\end{lemma}
+
+\begin{satz}[Poisson'sche Darstellungsformel, Lösung des
+  Dirichlet-Problems für Einheitskugel im $\R^{n}$]
+  \index{Dirichlet-Problem}
+
+  Es sei $\phi:\partial K\rightarrow\C$ stetig und es sei
+  \begin{gather*}
+    u(y) = \frac{1-\abs{y}^{2}}{\abs{\omega_{n}}} \int_{\partial K}
+       \frac{\phi(x)}{\abs{x-y}^{n}}dS(x)\qquad\forall y\in K
+  \end{gather*}
+  Dann gilt:
+  \begin{enumerate}
+   \item $u$ ist harmonisch auf $K$: $\Delta u(y) =0$
+   \item $\forall y^{0}\in\partial K: \lim_{y\rightarrow y^{0}} u(y) =
+    \phi(y^{0})$ Das heißt $u$ lässt sich stetig auf dem Rand als $\phi$
+    fortsetzen.
+  \end{enumerate}
+
+  \begin{proof}
+    (1) $\phi(x)$ in \autoref{eq:18} statt $u(x)$ laplace-Operator unter das
+    Integral, für $\phi(x)$ ohne Wirkung, da Laplace nach $y$, Anwendung
+    auf $G$, geht weil $G$ harmonisch $\Rightarrow$ alles harmonisch
+    $\rightarrow$ Weltfrieden :)
+  \end{proof}
+\end{satz}
 \clearpage
 \appendix
 \pdfbookmark[0]{Index}{index}
