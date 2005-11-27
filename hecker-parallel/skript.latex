@@ -15,32 +15,14 @@
 %  * Überlegen, ob man für KOSTEN auch einen Befehl macht. Kommt es oft
 %    genug im Dokument vor?
 %
-%  * Das Skript IMMER so hinterlassen, daß es mit pdflatex übersetzbar 
+%  * Das Skript IMMER so hinterlassen, daß es mit pdflatex übersetzbar
 %	 bleibt!
 %
 %  * Alle Bilder in center-environment
 
-\documentclass[twoside]{scrreprt}
+\documentclass[draft,halfparskip*,german,twoside]{scrreprt}
 
 \usepackage{ifthen}
-
-% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
-% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
-% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
-% eine Druckversion ist das wichtig! Daher dieser Hack.
-% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
-% ohne die Option "`hyperref"' geladen.
-%
-% pdflatex '\def\ifwithHyperref{\iffalse}\input{skript.latex}'
-\ifthenelse{\isundefined{\ifwithHyperref}}%
-	   {\newboolean{withHyperref}
-	     \setboolean{withHyperref}{true} % true, false
-	   }{}
-
-\ifthenelse{\boolean{withHyperref}}{}%
-	   {\newcommand{\texorpdfstring}[2]{#1}%
-	    \newcommand{\pdfbookmark}[3][]{}%
-	   }
 
 % Algorithmen:
 \usepackage{algorithm}
@@ -48,13 +30,21 @@
 \renewcommand{\algorithmicrequire}{\textbf{INPUT:}}
 \renewcommand{\algorithmicensure}{\textbf{OUTPUT:}}
 \renewcommand{\algorithmiccomment}[1]{\textit{// #1}}
+
+% Das sollte einen Fehler bringen, wenn eine for in einer forpar
+% geschachtelt ist. Die innere for sollte dann auch ein pardo haben
+\newcommand*{\FORPAR}[2][default]%
+           {\begingroup\renewcommand{\algorithmicdo}{\textbf{pardo}}%
+            \FOR[#1]{#2}}
+\newcommand*{\ENDFORPAR}{\ENDFOR\endgroup}
+
 \floatname{algorithm}{Algorithmus}
 \renewcommand{\listalgorithmname}{Algorithmenliste}
 
 \newcommand{\help}[1]{\textcolor{green}{help: #1}}
 \newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
 
-\usepackage{graphics}
+\usepackage[final]{graphics}
 \usepackage{color}
 \usepackage{fancyvrb}
 \usepackage{ngerman}
@@ -63,17 +53,23 @@
 \usepackage[intlimits,leqno]{amsmath}
 \usepackage{paralist}
 \usepackage[latin1]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{ae}
 \usepackage{xspace}
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
-	   {}
+\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}
 
 % http://user.informatik.uni-goettingen.de/~may/Ntheorem/
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
-	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem}
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+
+\usepackage{times}		% Times
+\usepackage{helvet}
+\usepackage[T1]{fontenc}
+
+\usepackage{index}
 
 \theoremstyle{break}
 \theorembodyfont{\normalfont}
@@ -89,6 +85,19 @@
 \theoremsymbol{\ensuremath{_\blacksquare}}
 \newtheorem{proof}{\textnormal{\scshape Beweis:}}
 
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\proofautorefname}{Beweis}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
 \pagestyle{headings}
 
 \graphicspath{{figures/}}
@@ -96,56 +105,23 @@
 % Zur Korrektur von \thref
 % <news:col095$me8$2@n.ruf.uni-freiburg.de>
 \makeatletter
-\ifthenelse{\boolean{withHyperref}}{%
-\def\thref#1{%
-   \expandafter\ifx\csname r@#1@type\endcsname\None
-     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
-       \thepage \space undefined}\G@refundefinedtrue
-     \else\csname r@#1@type\endcsname~\fi%
-   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
-}%
-}{}
-
-% Korrektur der Platzierung der Gleichungsnummer
-% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
-\def\SetOnlyEndMark{%
-   \global\tag@true
-   \iftagsleft@
-     \gdef\df@tag{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
-   \else
-     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
-   \fi}
-\def\SetTagPlusEndMark{%
-   \iftagsleft@
-     \gdef\maketag@@@##1{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{%
-           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
-       }%
-     }%
-   \else
-     \gdef\maketag@@@##1{%
-       \hbox{\m@th\normalfont##1%
-         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
-   \fi}
-
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
 \makeatother
 
-%somit wird nicht mehr eingerückt
- \parindent 0mm
-
+% Prof. Hecker schwankt in der Vorlesung ständig zwischen Zeit und Time
+% bzw. Work und Arbeit. Diese zwei Befehle sollen helfen, die Begriffe
+% einheitlich im Skript zu verwenden und ggf. alle Stellen leicht
+% änderbar machen
 \newcommand{\Time}{TIME\xspace}
 \newcommand{\Work}{WORK\xspace}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
 
 \makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
 
 \begin{document}
 
@@ -154,9 +130,62 @@
 \date{SS 2005}
 \maketitle
 
+\clearpage
+\chapter*{Vorwort}
+{\itshape
+
+  Dieses Skript ist im Rahmen des
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
+  "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
+  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
+  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis die Internetadresse
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/} des Projekts
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist unter
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/pdf/} verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder selbst
+  einzupflegen -- einfach eine eMail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse des Projekts verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2004/05)
+   \item Fred Thiele (2005)
+   \item Christian Raschka (2005)
+  \end{itemize}
+}
+
+\clearpage
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
+
 \clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
 
 \pdfbookmark[0]{Literaturverzeichnis}{literaturverzeichnis}
 \begin{thebibliography}{Gibbon}
@@ -272,7 +301,7 @@ Beispiel das Modell eines Feldrechners:
 
 %% in der pdf Grafik sind noch vier Zahlen doppelt,
 %% die entfernt werden müssen (siehe pdf)
-\begin {center}
+\begin{center}
 \input{figures/netmodell_input.pdf_t}
 \end{center}
 
@@ -594,13 +623,13 @@ zusammengefasst werden, die gleichzeitig augef"uhrbar sind. \\
 \begin{algorithmic}[1]
 \REQUIRE $n=2^{k}$-Zahlen in Array $A$
 \ENSURE Summe $S$
-\FOR{$i \le i \le n$ {\bf{par}}}
+\FORPAR{$i \le i \le n$}
 	\STATE $B(i) := A(i)$
-\ENDFOR
+\ENDFORPAR
 \FOR{$h=1$ to $\log n$}
-	\FOR{$1 \le i \le \frac{n}{2^h}$ {\bf{par}}}
+	\FORPAR{$1 \le i \le \frac{n}{2^h}$}
 		\STATE $B(i) := B(2\,i-1)+B(2\,i)$
-	\ENDFOR
+	\ENDFORPAR
 \ENDFOR
 \STATE $S := B(1)$
 \end{algorithmic}
@@ -741,7 +770,6 @@ Sei $W_i(n)$ die Anzahl der Operationen des Algorithmus in der TimeUnit $i$. Sim
 		\ENDIF
 	\ENDFOR
 \ENDFOR
-
 \end{algorithmic}
 \end{algorithm}
 
@@ -797,13 +825,13 @@ Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Opera
 \REQUIRE Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$
 \ENSURE $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel\\
 (Seriell in $O(n)$ \Time)\\
-\FOR{$1 \le i \le n$ {\bf par}}
+\FORPAR{$1 \le i \le n$}
 	\STATE $S(i) := p(i)$
 	\WHILE{$S(i) \not= S(S(i))$}
 		\STATE $W(i) := W(i) + W(S(i))$
 		\STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
 	\ENDWHILE
-\ENDFOR
+\ENDFORPAR
 \end{algorithmic}
 \end{algorithm}
 
@@ -1857,7 +1885,7 @@ Analyse: \Time: $O(\log n)$
 \end{bemerk}
 
 \begin{folger}
-  \thref{satz:1} ist nicht optimal.
+  \autoref{satz:1} ist nicht optimal.
 \end{folger}
 
 Im Parallelen gilt: LCA geht in $O(\log n)$ \Time optimal
@@ -2556,5 +2584,10 @@ $\rightarrow$ Graph, s,u,v
   u:=s(n), v=t(n) $\Rightarrow$ u vor v besucht $\Leftrightarrow$
   wert($g_{n}$)=1
 \end{defini}
+
+\clearpage
+\appendix
+\pdfbookmark[0]{Index}{index}
+\printindex
 
 \end{document}
