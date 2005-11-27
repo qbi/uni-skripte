@@ -37,6 +37,10 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
     fi
 
     svn export $URL/$i
+
+    GZIP=-9 tar -xzf $WEB/$i.tar.gz $i
+    echo "I: created $i.tar.gz"
+
     if [ -r $i/skript.latex ]; then
         src=skript.latex
     elif [ -r $i/skript.tex ]; then
@@ -67,4 +71,5 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
     echo "I: ...done."
 done
 
+cd /
 rmdir $TMP
