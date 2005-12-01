@@ -55,6 +55,10 @@
 \newcommand{\vektor}[1][\omega]{\ensuremath{\lb#1_1,\ldots,#1_n\rb}}
 \newcommand{\vol}{V\!ol}
 
+\newcommand{\SVNLastChangedRevision}{4}
+\newcommand{\SVNDate}{1.12.2006}
+\newcolumntype{L}{>{$}l<{$}}
+
 \begin{document}
 \author{Prof. Dr. Linde\thanks{aufgeschrieben von Christian Raschka \quad
     Email: chrisra@informatik.uni-jena.de}}
@@ -65,16 +69,46 @@
 	}
 \maketitle
 
-%\setlength{\headrulewidth}{1.0pt}
-%\pagestyle{fancy}
-%\setlength{\footrulewidth}{0.4pt}
-%\setlength{\headwidth}{\textwidth}
 \pagestyle{headings}
-%\lhead[\bfseries\thepage]{\rightmark}
-%\rhead[\leftmark]{\bfseries\thepage}
-%\cfoot{Vorlesung Mathematik f¸r Informatiker III (SS 2002)}
 
+\chapter*{Vorwort}
+{\itshape
+
+  Dieses Skript ist im Rahmen des Projekts "`Vorlesungsskripte der 
+  Fakult‰t f¸r Mathematik und Informatik"' 
+  (http://www.minet.uni-jena.de/$\sim$joergs/skripte/) 
+  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
+  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, noch die
+  Mitglieder des Projekts f¸r dessen Fehlerfreiheit. F¸r etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  ¸bernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  ver‰ndern oder auf anderen Medien verf¸gbar zu machen, solange ein
+  Verweis die Internetadresse http://www.minet.uni-jena.de/$\sim$joergs/skripte/
+  des Projekts enthalten ist.
+
+  Diese Ausgabe tr‰gt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mˆgliche) aktuellere Ausgabe ist unter
+  http://www.minet.uni-jena.de/$\sim$joergs/skripte/pdf/ verf¸gbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen f¸r das Skript einzureichen bzw. zu melden oder selbst
+  einzupflegen -- einfach eine eMail an die Adresse 
+  \texttt{skripte@listserv.uni-jena.de} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse des Projekts verf¸gbar.
+
+  Hiermit mˆchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item Christian Raschka \texttt{<chrisra@informatik.uni-jena.de>} (2003)
+   \item Matti Bickel \texttt{<cat5@minet.uni-jena.de>} (2005)
+  \end{itemize}
+}
+
+%\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
+\clearpage
+
 \chapter{Das Modell der Wahrscheinlichkeitstheorie}
 \index{Wahrscheinlichkeitstheorie}
 \label{sec:WTheorie}
@@ -1266,14 +1300,14 @@ Ein stetiges Wahrscheinlichkeitsmaﬂ $\p$ l‰sst sich eindeutig von $\E$ auf
         \index{Formal von Bayes@{Formel von \emph{Bayes}}}
         \begin{center}\begin{boxedminipage}[c]{10cm}\Large
             \[\p(B_j|A)=\frac{\p(B_j)\cdot\p(A|B_j)}
-            {\sum_{j=1}^n\p(B_j)\cdot\p(A|B_j)}\]
+            {\sum_{i=1}^n\p(B_i)\cdot\p(A|B_i)}\]
         \end{boxedminipage}\end{center}
     \end{Satz}
     \underline{Beweis:}\\
     $\p(A)=\sum_{j=1}^n\p(B_j)\p(A|B_j)\\
     \to \text{Rechte Seite}=\frac{\p(B_j)\p(A|B_j)}{\p(A)}
     =\frac{\p(B_j)\cdot\frac{\p(A\cap B_j)}{\p(B_j)}}{\p(A)}
-    =\frac{\p(A\cap B_j)}{\p(A)}=\p(B_j|A)\qquad\boxed{}$
+    =\frac{\p(A\cap B_j)}{\p(A)}=\p(B_j|A)\qquad\boxed{}$\\
     \underline{Bemerkungen:}\\
     \begin{enumerate}
         \item{Kennt man bereits $\p(A)$, so vereinfacht sich obige Formel:
@@ -1293,7 +1327,7 @@ Ein stetiges Wahrscheinlichkeitsmaﬂ $\p$ l‰sst sich eindeutig von $\E$ auf
         $A:=\{$Test positiv$\};\quad B:=\{$Person hat TBC$\}$
         Wir suchen $\p(B|A)$!\\
         $\p(B)=0.004 \quad\to\quad\p(B^C)=0.996\\
-        \p(A)=0.96;\qquad \p(A|B^C)=0.06\\
+        \p(A|B)=0.96;\qquad \p(A|B^C)=0.06\\
         \p(B|A)=\frac{\p(B)\p(A|B)}{\p(B)\p(A|B)+\p(B^C)\p(A|B^C)}
         =\frac{0.004\cdot 0.96}{0.004\cdot 0.96+0.996\cdot 0.06}=0.06$\\
         Nur 6\% der positiv getesteten Personen haben TBC.
@@ -1327,12 +1361,13 @@ Ein stetiges Wahrscheinlichkeitsmaﬂ $\p$ l‰sst sich eindeutig von $\E$ auf
     \begin{Def}
         $(\Omega,\A,\p)$ Wahrscheinlichkeitsraum,$\quad A,B\in\A$\\
         A und B heiﬂen stochastisch unabh‰ngig, wenn gilt:
-        \[\p(A\cap B)=\\p(A)\cdot\p(B)\]
+        \[\p(A\cap B)=\p(A)\cdot\p(B)\]
     \end{Def}
     \begin{Satz}
         \begin{enumerate}
+            \item{$A$ unabh‰ngig $B \Leftrightarrow B$ unabh‰ngig $A$}
             \item{$\emptyset,\Omega$ sind  unabh‰ngig von jedem $A\in\A$}
-            \item{$A,B$ unabh‰ngig$\to A,B^C$ unabh‰nig $\to A^C,B$ unabh‰ngig}
+            \item{$A,B$ unabh‰ngig$\to A,B^C$ unabh‰ngig $\to A^C,B$ unabh‰ngig}
         \end{enumerate}
     \end{Satz}
     \underline{Beweis:}
