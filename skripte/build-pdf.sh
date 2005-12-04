@@ -22,13 +22,8 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
 
     echo "I: Repository $i"
 
-    stamp=
-    for ext in pdf ps; do
-        if [ -f "$WEB/$i.$ext" ]; then
-            stamp="$(stat -c %y $WEB/$i.$ext)"
-            stamp="${stamp%% *}"
-        fi
-    done
+    stamp="$(stat -c %y $WEB/$i.tar.gz)"
+    stamp="${stamp%% *}"
 
     if [ -n "$stamp" ] && [ "$stamp" \> \
          "$(svnlook info ${URL#*://}/$i |sed -n '2{s/ .*//; p;}')" ]; then
@@ -38,7 +33,7 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
 
     svn export $URL/$i
 
-    GZIP=-9 tar -xzf $WEB/$i.tar.gz $i
+    GZIP=-9 tar -czf $WEB/$i.tar.gz $i
     echo "I: created $i.tar.gz"
 
     if [ -r $i/skript.latex ]; then
