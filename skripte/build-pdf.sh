@@ -22,11 +22,8 @@ for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
 
     echo "I: Repository $i"
 
-    stamp="$(stat -c %y $WEB/$i.tar.gz)"
-    stamp="${stamp%% *}"
-
-    if [ -n "$stamp" ] && [ "$stamp" \> \
-         "$(svnlook info ${URL#*://}/$i |sed -n '2{s/ .*//; p;}')" ]; then
+    if [ -e "$WEB/$i.tar.gz" ] && ( stamp="$(stat -c %y $WEB/$i.tar.gz)";
+         [ "${stamp%% *}" \> "$(svnlook info ${URL#*://}/$i |sed -n '2{s/ .*//; p;}')" ]); then
         echo "I: $i is up to date"
         continue
     fi
