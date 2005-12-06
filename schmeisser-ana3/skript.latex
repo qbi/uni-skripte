@@ -185,6 +185,7 @@
 \DeclareMathOperator{\Div}{div}		% Differgent
 \DeclareMathOperator{\grad}{grad}	% Gradient
 \DeclareMathOperator{\rot}{rot}		% Rotation
+\DeclareMathOperator{\supp}{supp}	% Träger
 
 \makeindex
 
@@ -1312,7 +1313,7 @@ Sei $B\subset\Omega\subset\R^2, \Omega$ offen, $B$ kompakt, $\vec{v}:
 
 \begin{satz}[Gauß für $n=3$]\label{satz:gauss}
   $B$ Normalbereich, $\partial B$ Rand, $\vec{n}$ äußerer
-  Normaleneinheitsvekor an $\partial B$. $B\subseteq \Omega\subset
+  Normaleneinheitsvekor an $\partial B$. $B\subset \Omega\subseteq
   \R^{3}$, $\Omega$ offen, $\vec{v}$ $C^{1}$-Vektorfeld auf $\Omega$.
 
   Dann gilt:
@@ -1827,7 +1828,7 @@ Materialgleichungen mit den Stoffkonstanten $\epsilon_{0}$ und $\mu_{0}$
 
 Laplace-Gleichung:
 \begin{gather*}
-  \Delta n(x) = 0\quad \forall x\in\Omega\subseteq \R^{n}
+  \Delta u(x) = 0\quad \forall x\in\Omega\subseteq \R^{n}
 \end{gather*}
 Laplace-Poisson-Gleichung:
 \begin{gather*}
@@ -1838,17 +1839,16 @@ Helmholzgleichung:
   \Delta u+k^{2} u=0\quad\text{auf}\ \Omega
 \end{gather*}
 
-Spezialfälle davon:
+Man betrachtet die folgenden Spezialfälle der Helmholzgleichung gesondert:
 \begin{gather*}
   -\Div\big(A(x) \grad u(x)\big)+\vec{b}(x)\grad u(x) + c(x)u(x) = f(x)\\
-  \text{wobei:}\quad A(x) = \Big(A_{ij}(x)\Big), \vec{b}(x) =
+  \text{wobei:}\quad A(x) = \bigg(A_{ij}(x)\bigg), \vec{b}(x) =
      \begin{bmatrix}b_{1}\\\vdots\\b_{n}(x)\end{bmatrix}, c(x), f(x)
 \end{gather*}
 heißt \highl{elliptische Differentialgleichung 2.\,Ordnung}, falls die
 Matrix $A(x)$ positiv definit auf $\Omega$ ist.
 
-\highl{Randwertproblem}:\\
-\highl{Dirichlet-Problem}:
+\highl{Randwertproblem} oder \highl{Dirichlet-Problem}:
 \begin{gather*}
   -\Delta u(x) = f(x)\quad x\in\Omega
      u\big|_{\partial\Omega} = g
@@ -1878,7 +1878,7 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
   \end{gather*}
   $\Omega$ offen und $m\in \N_{0}$
   \begin{gather*}
-    C^{m}(\overline{\Omega}) := \{u\in C^{m}(\Omega): \forall\alpha \abs{\alpha}\leq m,
+    C^{m}(\overline{\Omega}) := \{u\in C^{m}(\Omega): \forall\alpha, \abs{\alpha}\leq m,
        \exists\ \text{stetigig Fortsetzung auf dem Rand}\ \partial\Omega\}
   \end{gather*}
   dann: $D^{\alpha} u(x^{0}) :=\lim_{x\rightarrow x_{0}} D^{\alpha}u(x)$
@@ -2014,17 +2014,20 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
   C^{2}(\overline{\Omega})$, $\vec{n}(x)$ äußerer Normalenvektor an
   $x\in\partial\Omega$. Dann gilt für alle $y\in\Omega$
   \begin{gather}\label{eq:17}
-    u(y) = \int_{\partial\Omega}\big(u(x)\frac{\partial\Gamma}
+    u(y) = \int_{\partial\Omega}u(x)\frac{\partial\Gamma}
        {\partial\vec{n}(x)}(x,y) - \Gamma(x,y) \frac{\partial
        u}{\partial\vec{n}}\, dS(x) + \int_{\Omega}\Gamma(x,y)\Delta
        u(x)\,dx
   \end{gather}
 
   \begin{proof}
-    Da die Singularität (Problemstelle $y$) Probleme macht, legen wir
+    Da die Singularität (Problemstelle $y$) Probleme bereitet, legen wir
     eine Kugel $\overline{K_{\epsilon}(y)}\subset \Omega$ um $y$ (für
     hinreichend kleines $\epsilon$) und betrachten $\Omega\setminus
-    \overline{K_{\epsilon}(y)}$ (zulässiges Gebiet \help{warum nochmal?}).
+    \overline{K_{\epsilon}(y)}$. Dies ist ein zulässiges Gebiet, da wir
+    den Rand $\partial\Omega$ um den Rand der Kugel erweitern und den
+    Normalenvektor auf diesem Stück in Richtung $y$ zeigen lassen, und wir
+    können damit den Satz von Gauß (\autoref{satz:gauss}) anwenden.
 
     Es gilt:
     \begin{gather*}
@@ -2266,6 +2269,146 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
     $\rightarrow$ Weltfrieden :)
   \end{proof}
 \end{satz}
+
+\todo{hier fehlen zwei Vorlesungen}
+
+% 6.12.05
+
+\subsection{Das Newton-Potential}
+
+\begin{bemerk}
+  Ziel dieses Abschnittes ist es die folgende Gleichung für ein gegebenes
+  $f$ zu lösen.
+  \begin{gather*}
+    -\Delta u=f\ \text{auf}\ \Omega\subseteq\R^{n}
+  \end{gather*}
+
+  Annahme: $u$ ist eine zweimal-stetig-differenzierbare Funktion mit
+  kompaktem Träger ($u\in C^{2}(\Omega), \supp u\subset\Omega$ kompakt).
+  Die Greensche Formel \todo{link finden} liefert uns
+  \begin{gather}\label{eq:19}
+    u(x) = \int_{\Omega} \Gamma(x,y)\Delta u(y)\,dy
+  \end{gather}
+  Die Vermutung ist, dass die Lösung von $-\Delta u=f$ sich so darstellen
+  lässt
+  \begin{gather*}
+    u(x) = \int_{\Omega}\Gamma(x,y) f(y)\,dy
+  \end{gather*}
+\end{bemerk}
+
+\begin{defini}
+  $f\in C(\overline{\Omega}), \Omega\subseteq\R^{n}$ zulässiges Gebiet im
+  $\R^{n}$ definieren wir die folgende Funktion, die man als
+  \highl{Newton-Potential} bezeichnet.
+  \begin{gather*}
+    u(x) = \int_{\Omega} \Gamma(\abs{x-y}) f(y)\,dy
+  \end{gather*}
+  Für y$\rightarrow$ x geht $\Gamma$ gegen unendlich $\rightarrow$
+  Singularität $\rightarrow$ uneigentliches Integral, aber es geht, da
+  die Singalarität schwach ist und wir können darüber integrieren. Das
+  Integral exsistiert also für alle $x\in \R^{n}$.
+
+  insbesondere sind
+  \begin{gather*}
+    u(x) = \frac{1}{2\pi} \int_{\Omega} f(y)\ln\abs{x-y}\,dy\quad, n=2\\
+    u(x) = -\frac{1}{4\pi} \int_{\Omega} \frac{f(y)}{\abs{x-y}}\,dy\quad,
+       n=3\\
+  \end{gather*}
+\end{defini}
+
+\begin{lemma}
+  Wenn $f$ eine stetig differenzierbare Funktion ist und $u$ das
+  Newton-Potential, dann können wir folgendes beweisen:
+  \begin{enumerate}
+   \item $u\in C^{1}(\R^{n})$
+   \item $\frac{\partial u}{\partial x_{j}}(x) =
+    \int_{\Omega}\frac{\partial}{\partial x_{j}}\Gamma(\abs{x-y}) f(y)\,dy$
+   \item für $n\geq3$ ist $\lim_{\abs{x}\rightarrow0} u(x) = 0$
+  \end{enumerate}
+
+  \begin{proof}
+    Es gilt $\abs[\bigg]{\frac{\partial}{\partial
+    x_{j}}\Gamma(\abs{x-y})} \leq \frac{1}{\abs{\omega_{n}}}
+    \frac{1}{\abs{x-y}^{n-1}}$. Daraus folgt, dass die Singularität
+    schwach ist und wir darüber integrieren können. Es existiert also das
+    Integral $\int_{\Omega} \frac{\partial}{\partial x_{j}}
+    \Gamma(\abs{x-y})f(y)\,dy$ für alle $x\in\R^{n}$ (als uneigentliches
+    Integral, falls $x\in\overline{\Omega}$.
+
+    \begin{figure}
+      \center
+      \ifpdf\input{eta.pdf_t}\else\input{eta.eps_t}\fi
+      \caption{\label{fig:4} \todo{Text fürs Bild}}
+    \end{figure}
+    Wir wählen uns eine Hilfsfunktion $\eta(t)$, die im Bereich $[0,1]$
+    beliebig oft differenzierbar ist ($\in C^{\infty}$) und auf
+    $(-\infty,0]$ $\eta(t)=0$ und $\eta(t)=1$ auf $[2,\infty)$. Siehe
+    \autoref{fig:4}
+
+    Wir betrachten jetzt $\eta\big(\frac{\abs{x-y}}{\epsilon}\big)$.
+    \todo{nettes Bildchen davon}.
+
+    $\eta$ ist eine \highl{Abschneidefunktion}.
+
+    Es sei für $\epsilon>0$
+    \begin{gather*}
+      u_{\epsilon}(x) = \int_{\Omega}\Gamma(\abs{x-y})
+         \eta(\frac{\abs{x-y}}{\epsilon})f(y)\,dy\\
+      v_{j}(x) := \int_{\Omega} \frac{\partial \Gamma}{\partial x_{j}}
+         \big(\abs{x-y}\big)f(y)\,dy
+    \end{gather*}
+    $u_{\epsilon}(x)$ ist $\in C^{1}(\R^{n})$ und $\frac{\partial
+    u_{\epsilon}}{\partial x_{j}} = \int_{\Omega}
+    \frac{\partial}{\partial x_{j}} \Big(\Gamma(\abs{x-y})
+    \eta(\frac{\abs{x-y}}{\epsilon}) \Big)f(y)\,dy$
+
+    Es gilt:
+    \begin{align*}
+      \abs{u_{\epsilon}(x) - u(x)} &\leq \int_{\Omega}
+         \abs{\Gamma(\abs{x-y})} \abs{\eta(\frac{\abs{x-y}}{\epsilon})-1}
+         \underbrace{\abs{f(x)}}_{\leq c}\,dy\\
+      &= c \int_{\abs{x-y}\leq2\epsilon} \abs{\Gamma(\abs{x-y})}\,dy \leq
+         c \begin{cases}\epsilon^{2}& n>2\\\epsilon^{2} \abs{1+\ln
+             2\epsilon}& n=2
+           \end{cases} \xrightarrow{\epsilon\rightarrow0} 0\\
+      \abs{v_{j}(x)-\frac{\partial u_{\epsilon}}{\partial x_{j}}(x)} &\leq
+         \int_{\Omega} \abs{\frac{\partial}{\partial x_{j}}
+         \big(\Gamma(\abs{x-y})\,
+         (1-\eta(\frac{\abs{x-y}}{\epsilon}))\big)} \abs{f(y)}\,dy\\
+      &\leq \int_{\abs{x-y}\leq2\epsilon} \abs{\frac{\partial}{\partial
+         x_{j}} \Gamma(\abs{x-y})} + \abs{\Gamma(\abs{x-y})}
+         \frac{1}{\epsilon} c\,dy\\
+      &\leq c\begin{cases}\epsilon& n>2\\\epsilon(1+\abs{\ln 2\epsilon})
+               &n=2\end{cases} \xrightarrow{\epsilon\rightarrow0} 0
+    \end{align*}
+    (Hinweis: Integrale mit Kugelkoordinaten ausrechnen.)
+
+    Damit haben wir gezeigt, dass $u_{\epsilon}(x)$ gleichmäßig
+    \footnote{Abschätzung unabhängig von $x$} gegen $u(x)$ konvergiert
+    auf jeder kompakten Teilmenge des $\R^{n}$ und $\frac{\partial
+    u_{\epsilon}}{\partial x_{j}}$ gleichmäßig gegen $v_{j}(x)$
+    konvergiert auf jeder kompakten Teilmenge des $\R^{n}$. Aus einem
+    Satz von früher folgt dann, dass die Ableitung $\frac{\partial
+    u}{\partial x_{j}}$ auf $\R^{n}$ existiert und $\frac{\partial
+    u}{\partial x_{j}}= v_{j}$ ist. Damit ist (1) und (2) gezeigt.
+  \end{proof}
+\end{lemma}
+
+\begin{satz}[Eigenschaften des Newton-Potentials]
+  Die Funktion $f$ sei einmal-stetig-differenzierbar auf $\Omega$
+  (zulässiges Gebiet) und stetig auf dem Abschluß $\overline{\Omega}$
+  ($f\in C^{1}(\Omega)\cap C(\overline{\Omega})$). $u$ sei das
+  Newton-Potential von $f$. Dann gilt:
+  \begin{enumerate}
+   \item $u\in C^{2}(\Omega)$ und $\Delta u(x) = f(x)$ für alle
+    $x\in\Omega$.
+   \item $u\in C^{1}(\R^{n})$
+   \item $u$ ist eine harmonische Funktion außerhalb von $\Omega$ ($u\in
+    C^{\infty}(\R^{n}\setminus\overline{\Omega})$ und $\Delta u=0$ auf
+    $\R^{n}\setminus\overline{\Omega}$.
+  \end{enumerate}
+\end{satz}
+
 \clearpage
 \appendix
 \pdfbookmark[0]{Index}{index}
