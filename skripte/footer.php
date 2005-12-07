@@ -19,8 +19,8 @@
 	      </a>
 	      <small>
                 Diese Seite wurde zuletzt bearbeitet am:
-		\$Date: 2005-12-07 16:11:59 +0100 (Mi, 07 Dez 2005) \$ <br>
-		von \$Author: chrisra \$
+		<!-- datum -->65280<!-- datum2 --> <br>
+		von <!-- autor -->65280<!-- autor2 -->
 	      </small>
 	    </address>
 	  </td>
