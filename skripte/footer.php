@@ -19,8 +19,8 @@
 	      </a>
 	      <small>
                 Diese Seite wurde zuletzt bearbeitet am:
-		$Date$ <br>
-		von $Author$
+		\$Date: 2005-12-07 16:11:59 +0100 (Mi, 07 Dez 2005) \$ <br>
+		von \$Author: chrisra \$
 	      </small>
 	    </address>
 	  </td>
