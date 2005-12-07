@@ -2,10 +2,8 @@
 
 use strict;
 
-my $autor=system(`svnlook author /home/stud/md01/joergs/.svnroot/skripte/`);
-my $datum=system(`svnlook date /home/stud/md01/joergs/.svnroot/skripte/`);
-
-print "$autor $datum\n";
+my $autor= `svnlook author /home/stud/md01/joergs/.svnroot/skripte/`;
+my $datum = `svnlook date /home/stud/md01/joergs/.svnroot/skripte/`;
 
 my $log;
 open(FH,"<footer.php") or die $!;
