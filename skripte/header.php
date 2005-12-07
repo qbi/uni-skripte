@@ -31,8 +31,9 @@
 	    </div>
 	    
 	    <div class='navheading'>
-	      <a href='./about.php'>About</a>
-	    </div>
+	      <a href='./'>About</a>
+	    </div>";
+?><!-- 
 
 	   <div class='navheading'>
               Skripte
@@ -82,13 +83,13 @@
 	      <div><a href='./linde-stochastik.php'>Mathematik für Informatiker 3</a></div>
 	    </div>
 	</div>
-	    
-	    <div class='navheading'>
+	    --><?
+echo 	    "<div class='navheading'>
 	      Download
 
 	    <div class='navmenu'>
 	      <div><a href='./sourcecode.php'>Quellcode</a></div>
-	      <div><a href='./pdf.php'>PDFs</a></div>
+	      <div><a href='./pdf/'>PDFs</a></div>
 	    </div>
 	    </div>
 
@@ -124,10 +125,6 @@
 	      <a href='./links.php'>Links</a>
             </div>
 	
-	    <div class='navheading'>
-	      <a href='./todo.php'>ToDo</a>
-	    </div>
-
 	    <div class='navheading'>
 	      <a href='./contact.php'>Kontakt</a>
 	    </div>
