@@ -104,6 +104,7 @@
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
 \newcommand*{\satzautorefname}{Satz}
+\newcommand*{\lemmaautorefname}{Lemma}
 \newcommand*{\bemerkautorefname}{Bemerkung}
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
@@ -2346,7 +2347,7 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
     \autoref{fig:4}
 
     Wir betrachten jetzt $\eta\big(\frac{\abs{x-y}}{\epsilon}\big)$.
-    \todo{nettes Bildchen davon}.
+    \todo{nettes Bildchen davon malen}.
 
     $\eta$ ist eine \highl{Abschneidefunktion}.
 
@@ -2409,6 +2410,215 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
   \end{enumerate}
 \end{satz}
 
+\begin{bemerk}
+  Dirichlet-Problem für Poissongleichung:
+  \begin{gather}\label{eq:20}
+    \begin{aligned}
+      -\Delta u &= f &\text{auf $\Omega\subseteq\R^{n}$ beschränkt}\\
+      u\big|_{\partial\Omega} &= g &\text{auf $\Omega$}
+    \end{aligned}
+  \end{gather}
+
+  Annahme: $\exists w\in C^{2}(\Omega)\cdot C(\overline{\Omega})$ mit
+  $-\Delta w=f$ auf $\Omega$. Dann Ansatz: $u=v+w$. (Bestimmt $v$, so
+  dass $u$ in \autoref{eq:20} erfüllt ist.)
+
+  $u$ erfüllt die \autoref{eq:20} \gdw $\Delta v=0$ auf $\Omega$ und
+  $u\big|_{\partial\Omega} + w\big|_{\partial} = g$ \gdw
+  $v\big|_{\partial\Omega} = g-w\big|_{\partial} = \phi$
+\end{bemerk}
+
+\begin{folger}
+  Sei $\Omega$ eine Kugel $K_{R}(0)$ mit Radius $R$ um 0 und $g$ eine
+  stetige Funktion $g:\partial K_{R} \rightarrow \R$ und $f\in
+  C^{1}(K_{R}) \cap C(\overline{K})$. Dann ist
+  \begin{align*}
+    w(x) &= -\int_{\Omega}\Gamma(\abs{x-y}) f(y)\,dy
+       &\text{(Newton-Potential)}\\
+    v(x) &= \frac{R^{2}-\abs{x}^{2}}{\abs{\omega_{n}}R}
+       \int_{\abs{x-y}=R} \frac{g(y)-w(y)}{\abs{x-y}^{n}}\,dS(y)
+  \end{align*}
+  $\Rightarrow$ $u(x) = v(x)+w(x)$ ist die Lösung des Dirichlet-Problems
+  \autoref{eq:20} für die Kugel.
+\end{folger}
+
+\section{Cauchy-Probleme}
+\subsection{Die Wärmeleitungsgleichung}
+
+Sei $x\in\R^{n}$ ein Punkt im $\R^{n}$ (Ortskoordinate) und $t\in\R$
+(Zeit). $u=u(x,t)$
+
+Gegengeben ist $f(x,t)$. Gelöscht werden soll:
+\begin{gather*}
+  u_{t}(x,y) - a^{2}\Delta u(x,t) = f(x,y)
+\end{gather*}
+Die Gleichung heißt \highl{Wärmeleitungsgleichung} oder
+\highl{Diffusionsgleichung}.
+
+Gesucht ist $u(x,t)$ mit $x\in\R^{n}$ und $t>0$.
+
+Diese Gleichung ist auch nur eine Spezialfall einer \highl{parabolischen
+Differentialgleichung}:
+\begin{gather*}
+  u_{t} - \Div K \grad u + \sprod{\vec{b}}{\grad u} + cu = f(x,t)
+\end{gather*}
+
+\begin{defini}[Cauchyproblem für Wärmeleitungsgleichung]
+  Gegeben sei $f(x,t)$ und $u_{0}(x)$ und gesucht ist $u(x,t)$, so dass
+  \begin{align*}
+    u_{t} - \Delta u &= f(x,t) &(x\in\R^{n}, t>0)\\
+    u(x,0) = u_{0}(x)
+  \end{align*}
+  Damit ist ein \highl{Anfangswertproblem} beschrieben.
+
+  \obda ist $a^{2}=1$, sonst muss man noch eine Koordinatentransformation
+  durchführen $u(x,t) = u(\frac{x}{a}, t), \tilde{f}(x,t) =
+  f(\frac{x}{a}, t)$.
+\end{defini}
+
+\begin{lemma}[Fundamentallösung der Wärmeleitungsgleichung]\label{lem:1}
+  Sei $x\in\R^{n}, t>0$. Wir definieren eine Funktion
+  \begin{gather*}
+    \Phi(x,t) := \frac{1}{(4\pi t)^{\nicefrac{n}{2}}}
+       e^{-\frac{\abs{x}^{2}}{4t}}
+  \end{gather*}
+  Dann gilt:
+  \begin{enumerate}
+   \item $\Phi_{t}(x,t) - \Delta \Phi(x,t) = 0$ für alle $x\in\R^{n}$ und
+    $t>0$
+   \item
+    \begin{gather*}
+      \int_{\R^{n}} \Phi(x,t)\,dx = 1\qquad\forall t>0
+    \end{gather*}
+  \end{enumerate}
+
+  \begin{proof}
+    \begin{align*}
+      \frac{\partial}{\partial t}\bigg( t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &= -\frac{n}{2} t^{-\frac{n}{2}-1}
+         e^{-\frac{\abs{x}^{2}}{4t}} + t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}} \frac{\abs{x}^{2}}{4t^{2}}\\
+      &= t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}
+         \bigg(\frac{\abs{x}^{2}}{4t^{2}} - \frac{n}{2t}\bigg)\\
+      \frac{\partial}{\partial x_{j}}\bigg( t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &= t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}} \bigg(\frac{x_{j}}{4t}\bigg) =
+         t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}
+         \bigg(-\frac{x_{j}}{2t}\bigg)\\
+      \frac{\partial^{2}}{\partial x_{j}^{2}}\bigg( t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &= t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}} \bigg(\frac{x_{j}^{2}}{4t^{2}} -
+         \frac{1}{2t}\bigg)\\
+      \intertext{Damit ergibt sich für den Laplace-Operator}
+      \Delta\bigg( t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &=
+         \sum_{j=1}^{n} \frac{\partial^{2}}{\partial x_{j}^{2}} =
+         t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}
+         \bigg(\frac{\abs{x}^{2}}{4t^{2}} - \frac{n}{2t}\bigg)
+    \end{align*}
+    $\Rightarrow$ $(\ldots)_{t} = \Delta(\ldots)$
+
+    Es ist
+    \begin{align*}
+      \int_{\R^{n}} e^{-\frac{\abs{x}^{2}}{4t}}\,dx &= \int_{\R^{n}}
+         e^{-\frac{x_{1}^{2}+\ldots+x_{n}^{2}}{4t}}\,dx\\
+      &= \prod_{j=1}^{n} \int_{-\infty}^{\infty}
+         e^{-\frac{x_{j}^{2}}{4t}}\,dx_{j} &\text{Nach Satz von Fubini}\\
+      &= \Big( \int_{-\infty}^{\infty} e^{-\frac{r^{2}}{4t}}\,dr\Big)^{n}
+         &\text{Subst.:}\ \frac{r}{2\sqrt{t}}=\rho, dr=2\sqrt{t}d\rho\\
+      &= \Big(2\sqrt{t} \int_{-\infty}^{\infty} e^{-\rho^{2}}\Big)^{n} =
+         2^{n} t^{\frac{n}{2}} \pi^{\frac{n}{2}} = (4\pi t)^{\frac{n}{2}}
+    \end{align*}
+
+    (2) folgt durch hinsehen
+  \end{proof}
+\end{lemma}
+
+\begin{figure}
+  \center
+  \input{Fundamental-waerme.tex}
+  \caption{\label{fig:5} Die Fundamentallösung der Wärmeleitungsgleichung
+    (\autoref{lem:1}) im $\R^{3}$ für verschiedene $t$}
+\end{figure}
+
+\begin{bemerk}
+  Die Fundamentallösung der Wärmeleitungsgleichung $\Phi(x,t)$ geht für
+  $t\rightarrow0+$ -- wenn man sich also immer mehr zum Startzeitpunkt
+  zurück begibt -- für $x=0$ gegen Unendlich und für $x\not=0$ gegen 0.
+  \help{haben die Physiker dafür eine anschauliche Interpretation?} Siehe
+  \autoref{fig:5}
+  \begin{gather*}
+    \Phi(x,t) \xrightarrow{t\rightarrow0+}
+       \begin{cases}
+         \infty& x=0\\
+         0 & x\not=0
+       \end{cases}
+  \end{gather*}
+\end{bemerk}
+
+\begin{satz}[Cauchyproblem für die homogene Wärmeleitungsgleichung]
+  Es sei $u_{0}\in C(\R^{n})$ beschränkt. Es sei $u(x,t) = \int_{\R^{n}}
+  \Phi(x-y, t) u_{0}(y)\,dy$ mit $x\in \R^{n}, t>0$. Dann gilt
+  \begin{gather}
+    \label{eq:21} u\in C^{\infty}(\R^{n}\times(0,\infty))\ 
+       \text{beschränkt}\\
+    \label{eq:22} u_{t}-\Delta u=0\ \text{auf}\ \R^{n}\times(0,\infty)\\
+    \label{eq:23} \lim_{(x,t)\rightarrow(x^{0},0)} = u(x^{0})
+    \quad\forall x^{0}\in\R^{n}
+  \end{gather}
+  $u$ ist \emph{eine} Lösung des Cauchyproblems.
+
+  Als ersten Schritt zeigen wir \autoref{eq:21} und \autoref{eq:22}.
+  $\abs{u_{0}(x)}\leq M$ auf $\R^{n}$ $\Rightarrow$ $\abs{u(x,t)} \leq
+  \int_{\R^{n}} \Phi(x-y,t) \abs{u_{0}(y)}\,dy \leq M$ nach
+  \autoref{lem:1}. $\Phi(x-y, t)\in C^{\infty}(\R^{n}\times(0,\infty))$
+  als Funktion von $x$ und $t$ für jedes $y\in\R^{n}$. Alle Ableitungen
+  sind schnell fallend für $\abs{y}\rightarrow\infty$. Das erlaubt uns
+  die Ableitung unter das Integral zu ziehen. $\Rightarrow$ $\exists
+  D^{\alpha}_{x}\Delta^{\beta}_{t} u(x,t) = \int_{\R^{n}}
+  D^{\alpha}_{x}\Delta^{\beta}_{t} u(x,t) \Phi(x-y,t) u(y)\,dy$ für alle
+  $\alpha\in\N_{0}^{n}, b\in\N_{0}$ stetig und $\Rightarrow$ $u\in
+  C^{\infty}(\R^{n}\times(0,\infty))$ und $u_{t}-\Delta u = \int_{\R^{n}}
+  \big(\Phi_{t}(x-y,t) - \Delta\Phi(x-y,t)\big) u_{0}(y)\,dy = 0$ (nach
+  \autoref{lem:1}) auf $\R^{n}\times(0,\infty)$.
+
+  Im zweiten Schritt zeigen wir noch \autoref{eq:23}. \todo{schönes
+  Bildchen mit Rechteck}
+
+  $u_{0}$ ist gleichmäßig stetig auf $K_{1}(x^{0})$. Es sei $\epsilon>0$.
+  Dann existiert ein $\delta(\epsilon)$ und es gilt:
+  $\abs{u_{0}(x) - u_{0}(y)}\leq \epsilon$, falls $x,y\in K_{1}(x^{0})$
+  und $\abs{x-y}\leq \delta(\epsilon)$. Außerdem können wir
+  folgendermaßen argumentieren:
+  \begin{gather*}
+    \abs{u(x,t) - u_{0}(x)} =^{\autoref{lem:1}} \abs{\int_{\R^{n}}
+       \Phi(x-y, t) u_{0}(y)\,dy - \int_{\R^{n}}
+       \underbrace{\Phi(y,\frac{1}{4})}_{=\pi^{-\nicefrac{n}{2}}e^{-\abs{y}^{2}}}
+       u_{0}(x)\,dy}
+  \end{gather*}
+  Substitution im ersten Integral: $\frac{x-y}{\sqrt{4t}} = z \gdw
+  y=x-\sqrt{4t}z$ und $dy = (4t)^{\nicefrac{n}{2}}\,dz$
+
+  \begin{align*}
+    \abs{u(x,t) - u_{0}(x)} &\leq \pi^{-\nicefrac{n}{2}} \int_{\R^{n}}
+       e^{-\abs{z}^{2}} \abs{u_{0}(x-\sqrt{4t}z)- u_{0}(x)}\,dz\\
+    &= \pi^{-\nicefrac{n}{2}} \int_{\abs{z}\leq R} e^{-\abs{z}^{2}}
+       \underbrace{\abs{u_{0}(x-\sqrt{4t}z) - u_{0}(x)}} _{\leq\epsilon\ 
+       \text{falls}\ t<t_{0}(\epsilon)}\,dz + \pi^{-\nicefrac{n}{2}}
+       \underbrace{\int_{\abs{z}> R} e^{-\abs{z}^{2}} 2M\,dz}
+       _{<\epsilon, R\geq R(\epsilon)}\\
+    \intertext{wobei $t_{0}(\epsilon)$, so dass $\sqrt{4t}R(\epsilon)\leq
+      \delta(\epsilon)$}
+    &\leq 2\epsilon
+  \end{align*}
+
+  Dann ist
+  \begin{gather*}
+    \abs{u(x,t) - u_{0}(x^{0})} \leq \underbrace{\abs{u(x,t) - u_{0}(x)}}
+       _{<2\epsilon}+ \underbrace{\abs{u_{0}(x)-u_{0}(x^{0})}}
+       _{<\epsilon} = 3\epsilon
+  \end{gather*}
+  $\abs{x-x^{0}} < \delta(\epsilon), t<t_{0}(\epsilon)$
+\end{satz}
 \clearpage
 \appendix
 \pdfbookmark[0]{Index}{index}
