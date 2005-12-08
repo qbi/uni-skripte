@@ -78,7 +78,7 @@
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=linde-stochastik'>Mathematik für Informatiker 3</a></div>
+	      <div><a href='./skripte.php?id=linde-stochastik'>Mathematik für Informatiker&nbsp;3</a></div>
 	    </div>
 	</div>
 	    
