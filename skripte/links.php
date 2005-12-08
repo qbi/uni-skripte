@@ -2,8 +2,8 @@
 <?php
 include('header.php');
 	
-echo "<p><ul><li>
-    <a href='http://www.kubieziel.de/computer/latex-tutorial.html>
+echo "<ul><li>
+    <a href='http://www.kubieziel.de/computer/latex-tutorial.html'>
     LaTeX-Tutorial</a>: Eine Einführung in LaTeX</li>
 
     <li><a href='http://www.dante.de/CTAN/info/german/l2tabu/l2tabu.pdf'>
@@ -16,9 +16,9 @@ echo "<p><ul><li>
 
     <li><a href='http://groups.google.de/group/de.comp.text.tex'>
     de.comp.text.tex bei Google Groups</a>: Ein Anfangspunkt zur
-    Hilfesuche.</li></ul></p>
+    Hilfesuche.</li></ul>
 
-   <p>Die Qualität der folgenden Links kann ich nicht bewerten, da ich sie
+   Die Qualität der folgenden Links kann ich nicht bewerten, da ich sie
    noch nicht gelesen habe, aber ich hab sie auch irgendwo als Empfehlung
    aufgeschnappt:
    <ul><li><a href='http://www.wiwiss.fu-berlin.de/w3/w3iso/download/Latex_Fortgeschritten_Manuela_Juergens.pdf'>
@@ -27,7 +27,7 @@ echo "<p><ul><li>
    <li><a href='http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf'>
    Mathmode</a></li>
 
-   <li><a href='http://www.zvisionwelt.de/typokurz.pdf'>typokurz.pdf</a></p></li></ul></p>
+   <li><a href='http://www.zvisionwelt.de/typokurz.pdf'>typokurz.pdf</a></li></ul>
 ";
 include('footer.php');
 ?>

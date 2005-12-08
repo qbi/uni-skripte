@@ -20,7 +20,7 @@
     <h1 id='logo'><a href='./'><img alt='Logo' border='0' src='./images/logo.png'/></a></h1>
     <h3 id='slogan'><em>...from students for students...</em></h3>
 
-    <table border='0' cellspacing='0' cellpadding='10' height='80%' width='100%'>
+    <table border='0' cellspacing='0' cellpadding='10' width='100%'>
 
 	<tr>
 
@@ -32,70 +32,68 @@
 	    
 	    <div class='navheading'>
 	      <a href='./'>About</a>
-	    </div>";
-?><!-- 
+	    </div> 
 
 	   <div class='navheading'>
               Skripte
-            
 
 	    <div class='navmenu'>
-	      <a href='./carl-ana1.php'>Analysis 1</a>
+	      <a href='./skripte.php?id=carl-ana1'>Analysis 1</a>
    	    </div>
 
 	    <div class='navmenu'>
-	      <a href='./carl-ana2.php'>Analysis 2</a>
+	      <a href='./skripte.php?id=carl-ana2'>Analysis 2</a>
    	    </div>
 
 	    <div class='navmenu'>
-	      <a href='./engelbert-mass-integral.php'>Maß und Integral</a>
+	      <a href='./skripte.php?id=engelbert-mass-integral'>Maß und Integral</a>
    	    </div>
 
 	    <div class='navmenu'>
-	      <a href='./erhard-komm-sys.php'>Kommunikationssysteme</a>
+	      <a href='./skripte.php?id=erhard-komm-sys'>Kommunikationssysteme</a>
    	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./fichtner-ewms.php'>EWMS</a></div>
+	      <div><a href='./skripte.php?id=fichtner-ewms'>EWMS</a></div>
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./hecker-parallel.php'>Parallelität</a></div>
+	      <div><a href='./skripte.php?id=hecker-parallel'>Parallelität</a></div>
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./lischke-form-sprachen.php'>Formale Sprachen</a></div>
+	      <div><a href='./skripte.php?id=lischke-form-sprachen'>Formale Sprachen</a></div>
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./schmeisser-hoehere-ana.php'>H&ouml;here Analysis</a></div>
+	      <div><a href='./skripte.php?id=schmeisser-hoehere-ana'>H&ouml;here Analysis</a></div>
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./vogel-dml2.php'>DML 2</a></div>
+	      <div><a href='./skripte.php?id=vogel-dml2'>DML 2</a></div>
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./vogel-info4.php'>Informatik 4</a></div>
+	      <div><a href='./skripte.php?id=vogel-info4'>Informatik 4</a></div>
 	    </div>
 
 	    <div class='navmenu'>
-	      <div><a href='./linde-stochastik.php'>Mathematik für Informatiker 3</a></div>
+	      <div><a href='./skripte.php?id=linde-stochastik'>Mathematik für Informatiker 3</a></div>
 	    </div>
 	</div>
-	    --><?
-echo 	    "<div class='navheading'>
+	    
+	<div class='navheading'>
 	      Download
 
 	    <div class='navmenu'>
-	      <div><a href='./sourcecode.php'>Quellcode</a></div>
+	      <div><a href='./skripte.php'>Quellcode</a></div>
 	      <div><a href='./pdf/'>PDFs</a></div>
 	    </div>
 	    </div>
 
-	    <div class='navheading'>
+	    <!--<div class='navheading'>
 	      <a href='./mitarbeit.php'>Mitarbeit</a>
-	    </div>
+	    </div>-->
 
 	    <div class='navheading'>
 	      <a href='./mailingliste.php'>Mailingliste</a>
@@ -107,26 +105,26 @@ echo 	    "<div class='navheading'>
 
 	    <div class='navmenu'>
 	      <div><a href='./windows.php'>SVN Anleitung f&uuml;r Windows</a></div>
-	      <div><a href='./svn.php'>SVN Anleitung allgemein</a></div>
+	      <div><a href='./skripte.php'>SVN Anleitung allgemein</a></div>
 	      <div><a href='./form.php'>Hinweise zur Form</a></div>
 	    </div>
 	    </div>
 
-	    <div class='navheading'>
+	    <!--<div class='navheading'>
 	    Probleme
 
 	    <div class='navmenu'>
 	      <div><a href='./diag.php'>Diagnose</a></div>
 	      <div><a href='./bugs.php'>Fehler</a></div>
 	    </div>
-	    </div>
+	    </div>-->
 
 	    <div class='navheading'>
 	      <a href='./links.php'>Links</a>
             </div>
 	
 	    <div class='navheading'>
-	      <a href='./contact.php'>Kontakt</a>
+	      <a href='./kontakt.php'>Kontakt</a>
 	    </div>
 
 	  </td>
