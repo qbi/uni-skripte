@@ -17,7 +17,7 @@
   
   <body>
 
-    <h1 id='logo'><a href=''><img alt='Logo' border='0' height='77' width='309' src='./images/logo.png'/></a></h1>
+    <h1 id='logo'><a href='./'><img alt='Logo' border='0' src='./images/logo.png'/></a></h1>
     <h3 id='slogan'><em>...from students for students...</em></h3>
 
     <table border='0' cellspacing='0' cellpadding='10' height='80%' width='100%'>
