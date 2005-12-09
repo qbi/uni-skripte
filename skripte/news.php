@@ -21,7 +21,7 @@ if (!$id) {
 	echo "<a href='./news.php'>Zurück zur Übersicht</a>
 	<h2>$id</h2>
 	<pre>";
-	include("./$id.Changelog");
+	echo (readfile("./$id.Changelog"));
 	echo "</pre>";
 }
 

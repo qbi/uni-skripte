@@ -45,7 +45,7 @@ if ($id=="SKRIPT") {
 	<li><a href='./pdf/$id.pdf'>$id.pdf</a></li></ul>
            
 	<h2>Die aktuellen Quellen</h2>
-	<ul><li><a href='./pdf/$id.tar.gz'>$id.tar.gz</a></li>
+	<ul><li><a href='./pdf/$id.tar.gz'>$id.tar.gz</a></li></ul>
 	";
 }
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
