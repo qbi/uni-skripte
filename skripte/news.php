@@ -21,7 +21,7 @@ if (!$id) {
 	echo "<a href='./news.php'>Zurück zur Übersicht</a>
 	<h2>$id</h2>
 	<pre>";
-	echo (readfile("./$id.Changelog"));
+	echo (htmlentities(readfile("./$id.Changelog")));
 	echo "</pre>";
 }
 
