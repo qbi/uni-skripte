@@ -19,6 +19,7 @@ if (!$id) {
 	<li><a href='./news.php?id=linde-stochastik'>Mathematik für Informatiker&nbsp;3</a></li></ul>";
 } else {
 	echo "<a href='./news.php'>Zurück zur Übersicht</a>
+	<h2>$id</h2>
 	<pre>";
 	include("./$id.Changelog");
 	echo "</pre>";
