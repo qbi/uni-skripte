@@ -20,7 +20,7 @@ if (!$id) {
 } else {
 	echo "<a href='./news.php'>Zurück zur Übersicht</a>
 	<pre>";
-	include('./$id.Changelog');
+	include("./$id.Changelog");
 	echo "</pre>";
 }
 
