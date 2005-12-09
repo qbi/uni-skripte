@@ -1,7 +1,7 @@
 <!-- $Id$ -->
 <?php
 include('header.php');
-	
+
 echo "<ul><li>
     <a href='http://www.kubieziel.de/computer/latex-tutorial.html'>
     LaTeX-Tutorial</a>: Eine Einführung in LaTeX</li>
@@ -28,6 +28,29 @@ echo "<ul><li>
    Mathmode</a></li>
 
    <li><a href='http://www.zvisionwelt.de/typokurz.pdf'>typokurz.pdf</a></li></ul>
+   
+   ...und noch etwas Werbung für die Konkurrenz
+   <ul>
+     <li>Bis wir selbst ein Info&nbsp;3-Skript haben :), ist dieses hier, glaube
+       ich sehr zu empfehlen. Ich fand es liest sich gut und behandelt auch alle
+       Themen, die Prof.&nbsp;Hecker behandelt.
+       
+       <a href='http://web.informatik.uni-bonn.de/I/Lehre/Vorlesungen/InfoIV-SS04/Baier-InfoIV-SS04.pdf'>
+        Info&nbsp;3 an der Uni Bonn</a>
+     </li>
+   </ul>
+
+   ...und noch einige hilfreiche Programme
+   <ul>
+     <li><a href='http://gnuplot.sourceforge.net'>gnuplot</a> zum Zeichnen von
+       Funktionen oder plotten von Daten</li>
+     <li><a href='http://epb.lbl.gov/xfig'>XFig</a> zum Erstellen von Vektorgrafiken</li>
+     <li><a href='http://beffara.org/stuff/rubber.html'>rubber</a> als Hilfe
+       beim Übersetzen der Skripte</li>
+     <li><a href='http://www.miktex.org'>MikTex</a> für die Windows-Leute</li>
+     <li><a href='http://www.texniccenter.org'>TexnicCenter</a> auch für
+       Windows-Leute</li>
+   </ul>
 ";
 include('footer.php');
 ?>

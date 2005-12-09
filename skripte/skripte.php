@@ -20,7 +20,7 @@ if (!$id) {
 	echo "<h1>Skript: $id</h1>";
 }
 echo "<p>Für die Kommandozeile: Eine aktuelle Version von SVN selbst ist unter
-http://subversion.tigris.org/ verfügbar.</p>
+<a href=\"http://subversion.tigris.org/\">http://subversion.tigris.org/</a> verfügbar.</p>
 
 Die erste lokale Kopie wird mit folgendem Befehl erstellt:
 <pre>svn checkout svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/$id</pre>
@@ -43,6 +43,9 @@ if ($id=="SKRIPT") {
 	<h2>Übersetzte Versionen</h2>
 	<ul><li><a href='./pdf/$id.ps'>$id.ps</a></li>
 	<li><a href='./pdf/$id.pdf'>$id.pdf</a></li></ul>
+           
+	<h2>Die aktuellen Quellen</h2>
+	<ul><li><a href='./pdf/$id.tar.gz'>$id.tar.gz</a></li>
 	";
 }
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
