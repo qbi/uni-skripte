@@ -21,7 +21,13 @@ if (!$id) {
 	echo "<a href='./news.php'>Zurück zur Übersicht</a>
 	<h2>$id</h2>
 	<pre>";
-	echo (htmlentities(readfile("./$id.Changelog")));
+	//echo (htmlentities(readfile("./$id.Changelog")));
+	$datei=fopen("./$id.Changelog",r);
+	while ($zeile=fgets($datei,1024))
+	{
+		echo ( htmlentities($zeile) );
+	}
+	fclose($datei);
 	echo "</pre>";
 }
 
