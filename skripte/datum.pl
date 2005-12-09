@@ -5,6 +5,9 @@ use strict;
 my $autor= `svnlook author /home/stud/md01/joergs/.svnroot/skripte/`;
 my $datum = `svnlook date /home/stud/md01/joergs/.svnroot/skripte/`;
 
+chomp($autor);
+chomp($datum);
+
 my $log;
 open(FH,"<footer.php") or die $!;
 while(<FH>){$log.=$_;}
