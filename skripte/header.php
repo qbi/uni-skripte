@@ -35,7 +35,7 @@
 	    </div> 
 
 	    <div class='navheading'>
-	      <a href='./news.php>News</a>
+	      <a href='./news.php'>News</a>
 	    </div>
 
 	   <div class='navheading'>
