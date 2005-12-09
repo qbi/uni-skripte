@@ -2204,8 +2204,8 @@ Wahrscheinlichkeitsraum ist.
   \begin{align*}
     \sum_{i\in I} P(A|B_i)P(B_i)&= \sum_{i\in I} \frac{P(A\cap
       B_i)}{P(B_i)} P(B_i)&= \sum_{i\in I} P(A\cap B_i)\\
-    P(\bigcup_{i\in I} (A\cap B_i))&= P(A\cap \bigcup_{i\in I} B_i) &=
-    P(A\cap \Omega)=P(A)
+    P\left(\bigcup_{i\in I} (A\cap B_i)\right)&= P\left(A\cap
+      \bigcup_{i\in I} B_i\right) &= P(A\cap \Omega)=P(A)
   \end{align*}
 \end{proof}
 
@@ -3270,6 +3270,7 @@ Sei $\ofp$ ein Wahrscheinlichkeitsraum. Wir betrachten Zufallsgrößen
 \end{proof}
 
 \begin{satz}
+\label{satz:563}
   Seien $\xi_1,\ldots,\xi_n$ eine Folge unabhängiger Zufallsgrößen mit
   $E\xi_i=a, D\xi_i=\delta^2$ für $i=1,\ldots, n$. Dann gilt:
   \[P\left("`\lvert\frac{1}{n}\sum_{i=1}^n \xi_i-a\rvert
@@ -3279,8 +3280,158 @@ Sei $\ofp$ ein Wahrscheinlichkeitsraum. Wir betrachten Zufallsgrößen
 \begin{proof}
   Für den Beweis wird Satz~\ref{satz:tscheby} angewendet und wir
   setzen: $\eta:=\frac{1}{n} \sum_{i=1}^n \xi_i$
-  %%weiter ergänzen
+  \begin{gather*}
+    \Rightarrow E\eta = E\left(\nicefrac{1}{n}\sum_i \xi_i\right)=
+    \nicefrac{1}{n} \sum_i E\xi_i = a\nicefrac{1}{n}n\\
+    D\eta= D\left(\nicefrac{1}{n}\sum_i \xi_i\left) =
+    \nicefrac{1}{n^2} \sum_i D\xi_i = \nicefrac{1}{n^2} n\sigma^2
+    = \frac{\sigma^2}{n}\\
+    \Rightarrow P\left("`\lvert\nicefrac{1}{n}\sum\xi_i-a\rvert\geq
+      \varepsilon"'\right) =P("`\lvert\eta-E\eta\rvert\geq
+    \varepsilon"')
+    \leq=\frac{D\eta}{\varepsilon^2}=\frac{\sigma^2}{n\varepsilon^2}
+  \end{gather*}
 \end{proof}
+
+\paragraph{Anwendung von Satz~\ref{satz:563} auf Wette}
+
+\begin{itemize}
+\item $n=250$ Münzwürfe mt $\xi_1,\ldots,\xi_{250}$
+\item $\xi_1=1$ entspricht der Aussage, dass der $i$-te Wurf Wappen zeigt.
+\item Damit sind die $\xi,\ldots,\xi_n$ unabhängig
+\item $P_{\xi_i}=B_{1,p}=\nicefrac{1}{2}(\delta_1+\delta_0)$ mit
+  $p=\nicefrac{1}{2}\Rightarrow E\xi_i=\nicefrac{1}{2},
+  D\xi_i=\nicefrac{1}{2} (1-\nicefrac{1}{2})=\nicefrac{1}{4}$
+\item $\lvert\sum_{i=1}^{250} \xi_i-125\rvert \geq 2=:A$ entspricht der
+  Aussage, dass ich gewinne.
+\end{itemize}
+Aus Satz~\ref{satz:563} folgt nun: $P(A)=P("`\lvert \nicefrac{1}{n}
+\sum \xi_i-a\rvert\geq\varepsilon"')\leq
+\frac{\sigma^2}{n\varepsilon^2}=
+\frac{\nicefrac{1}{4}}{250\cdot \nicefrac{1}{10}^2}= \frac{1}{10}$.
+
+\subsubsection*{(reale) Anwendung --- Meßtheorie}
+
+Viele Messgeräte arbeiten nicht exakt. Die Ursachen liegen in
+systematischen Fehlern und durch zufällige Einflüsse bedingte
+Fehler. Die systematischen Fehler können durch Eichung minimiert oder
+abgeschafft werden.
+
+Die ideale Messapparatur liefert der Wert $a$ und der reale Vorgang
+die zufällige Größe $\xi$. Da das Gerät zwar korrekt misst, aber auch
+anfällig für äußere Einflüsse ist, ergibt sich ein nicht
+systematischer Fehler, d.h. $E\xi=a$. Vom Hersteller erhält man
+$D\xi=\sigma^2$. Die übliche Verfahrensweise ist nun, dass wiederholte
+Messungen durchgeführt werden und man so viele $\xi,\ldots,\xi_n$
+bekommt. Für diese wird angenommen, dass sie unabhängig und identisch
+verteilt (iid\footnote{vom englischen independent and identical
+  distributed}) sind und es gilt:
+\begin{align*}
+  D\xi_i &= \sigma^2 & E\xi_i &= a
+\end{align*}
+Als Verfahren wird das arithmetische Mittel als "`Schätzwert"' für $a$
+gebildet:
+\begin{align*}
+  \frac{1}{n} \sum_{i=1}^n \xi_i=\eta_n
+\end{align*}
+Folgende Ansprüche werden formuliert:
+\begin{enumerate}
+\item Die Schätzung soll "`hinreichend"' exakt sein, d.h. für ein
+  vorgegebenes $\varepsilon>0$ wird gefordert: $\lvert \eta_n -a\rvert
+  < \varepsilon$.
+\item Vorgabe eines Sicherheitsniveaus $s<1$ mit
+  \begin{align}
+    \label{eq:1}
+    P("`\lvert\eta_n-a\rvert<\varepsilon"')\geq s
+  \end{align}
+\end{enumerate}
+
+Damit stellt sich das Problem, wie $n$ gewählt werden muss, so dass
+die Gleichung (\ref{eq:1}) gilt. Eine mögliche Antwort isT:
+\begin{align}
+  \label{eq:2}
+  n\geq\frac{\sigma^2}{(1-s)\varepsilon^2}
+\end{align}
+
+\begin{remark}
+  \begin{enumerate}
+  \item Wählen "`kleinstes"' zulässiges $n$
+  \item Kompromiss bei der Wahl von $s, \varepsilon$ gewöhnlich
+    erforderlich. Denn aus großem $s$ und kleinem $\varepsilon$ folgt
+    ein großes $n$.
+  \item Bei Informationen über den Typ $P_\xi$ kann man bessere
+    Grundlagen für die Ermittlung des $n$ als Satz~\ref{satz:563}
+    erhalten. (siehe Vorlesung Stochastik).
+  \end{enumerate}
+\end{remark}
+
+\begin{proof}
+  Es folgt ein Beweis dafür, dass aus Gleichung~(\ref{eq:2}) die
+  Gleichung~(\ref{eq:1}) folgt. Aus dem Satz~\ref{satz:563} folgt,
+  $P("`\lvert \eta_n-a\rvert <\varepsilon"')=1- P("`\lvert
+  \underbrace{\eta_n}_{\nicefrac{1}{n} \sum\xi_i} -a\rvert\geq
+  \varepsilon"')$. Nunmehr sich hier wieder Satz~\ref{satz:563}
+  anwenden und die obige Gleichung ist größergleich
+  $1-\frac{\sigma^2}{n\varepsilon^2}\geq
+  s$. D.h. Gleichung~(\ref{eq:1}) wird realisiert, wenn $s\leq 1-
+  \frac{\sigma^2}{n\varepsilon^2}\Leftrightarrow n\geq
+  \frac{\sigma^2}{(1-s)\varepsilon^2}$. Letzteres entspricht gerade
+  Gleichung~(\ref{eq:2}).
+\end{proof}
+
+\section{Konvergenzarten und das Gesetz der großen Zahlen}
+
+Sei $\ofp$ ein Wahrscheinlichkeitsraum und wir betrachten
+Zufallsgrößen oder -variablen über diesem Wahrscheinlichkeitsraum.
+
+\begin{definition}
+  Seien $\xi$ eine Zufallsgröße und $(\xi_n)_{n\geq 1}$ eine Folge von
+  Zufallsgrößen. Die Folge $(\xi_n)$ konvergiert mit
+  Wahrscheinlichkeit gegen $\xi$, wenn für alle $\varepsilon>0$ gilt:
+  \[P("`\lvert\xi_n-\xi\rvert\geq\varepsilon``)\xrightarrow{n\rightarrow
+    \infty} 0\Leftrightarrow P("`\lvert
+  \xi_n-\xi\rvert<\varepsilon``) \xrightarrow{n\rightarrow\infty} 1\]%"'
+\end{definition}
+
+\begin{satz}[Schwaches Gesetz der großen Zahlen nach Tschebyscheff]
+  \label{satz:schwachges-571}
+  Sei $(\xi_i)_{i\geq 1}$ eine Folge unabhängiger identisch verteilter
+  Zufallsgrößen mit $E\xi_i=a, D\xi_i=\sigma^2$. Dann gilt:
+  \[\frac{1}{n} \sum_{i=1}^n \xi_i\xrightarrow{P} a\]
+\end{satz}
+\begin{proof}
+  Aus Satz~\ref{satz:563} folgt: %%Beweis unklar
+\end{proof}
+
+\paragraph{Bezug zu relativen Häufigkeiten (Spezialfall)}
+
+Wir betrachten die Folgen von Zufallsvariablen $(\eta_i)_{i\geq 1}$
+mit Werten in $[X, \FX]$, wählen ein $A\in\FX$ und betrachten
+$P_{n_1}(A) =P_{n_i}(A)$. Dann wird gefordert, dass die
+$(\eta_i)_{i\geq 1}$ iid sind. Nun betrachten wir die $\xi_i:=\xi_i^A
+:=\chi_A(\eta_i)=\chi_A\circ\eta_i$ für $i=1,2,\ldots$. Diese sind
+messbar, da $A\in\FX$ und die Summe über alle $\xi_i$ entspricht der
+Anzahl, wie oft $A$ bei $1,\ldots,n$ realisiert wird,
+d.h. $\nicefrac{1}{n} \sum_{i=1}^n \xi_i$ ist die relative Häufigkeit
+des Eintretens von $A$. Es ist klar, dass $(\xi_i)$ iid sind und aus
+Satz~\ref{satz:schwachges-571} ergibt sich $\nicefrac{1}{n} \sum \xi_i
+\xrightarrow{P} P_{\eta_1}(A)$. Dies ist eine rein qualitative Aussage
+und macht keine Angabe über die Konvergenzgeschwindigkeit. Durch die
+Anwendung von Satz~\ref{satz:563} kann nun folgender Schluss gezogen
+werden: $P("`lvert \nicefrac{1}{n}\sum\xi_i-P_{\eta_1}(A)\rvert\geq
+\varepsilon``)\leq
+\frac{P_{\eta_1}(A)(1-P_{\eta_1}(A))}{n\varepsilon^2} \leq
+\frac{1}{n\varepsilon^2} \Rightarrow \sup_A P("`\lvert \nicefrac{1}{n}
+\sum\xi_i -P_{\eta_1}(A)\rvert \geq\varepsilon``)\xrightarrow{n
+  \rightarrow \infty} 0$ %"'
+
+\paragraph{andere Konvergenzarten}
+
+
+
+
+
+
 
 \printindex
 \end{document}
