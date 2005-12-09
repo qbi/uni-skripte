@@ -3,7 +3,11 @@
 include('header.php');
 
 echo "<ul><li>
-    <a href='http://www.kubieziel.de/computer/latex-tutorial.html'>
+    <a href='http://www.dante.de'>
+    DANTE</a>:
+    DANTE, Deutschsprachige Anwendervereinigung TeX e.V.</li>
+
+    <li><a href='http://www.kubieziel.de/computer/latex-tutorial.html'>
     LaTeX-Tutorial</a>: Eine Einführung in LaTeX</li>
 
     <li><a href='http://www.dante.de/CTAN/info/german/l2tabu/l2tabu.pdf'>
@@ -50,6 +54,7 @@ echo "<ul><li>
      <li><a href='http://www.miktex.org'>MikTex</a> für die Windows-Leute</li>
      <li><a href='http://www.texniccenter.org'>TexnicCenter</a> auch für
        Windows-Leute</li>
+     <li><a href='http://subversion.tigris.org/'>Subversion</a></li>
    </ul>
 ";
 include('footer.php');
