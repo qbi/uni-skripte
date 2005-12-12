@@ -17,13 +17,14 @@ TMP=$(mktemp -d)
 cd $TMP
 
 for i in carl-ana1 carl-ana2 engelbert-mass-integral erhard-komm-sys \
+  fey-recharch \
   fichtner-ewms hecker-parallel linde-stochastik lischke-form-sprachen \
   schmeisser-ana3 schmeisser-hoehere-ana vogel-dml2 vogel-info4; do
 
     echo "I: Repository $i"
 
     if [ -e "$WEB/$i.tar.gz" ] && ( stamp="$(stat -c %y $WEB/$i.tar.gz)";
-         [ "${stamp%% *}" \> "$(svnlook date ${URL#*://}/$i |cut -d\  -f1" ]); then
+         [ "${stamp%% *}" \> "$(svnlook date ${URL#*://}/$i |cut -d\  -f1)" ]); then
         echo "I: $i is up to date"
         continue
     fi
