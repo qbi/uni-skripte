@@ -16,7 +16,8 @@ if (!$id) {
 	<li><a href='./news.php?id=schmeisser-hoehere-ana'>H&ouml;here Analysis</a></li>
 	<li><a href='./news.php?id=vogel-dml2'>DML 2</a></li>
 	<li><a href='./news.php?id=vogel-info4'>Informatik 4</a></li>
-	<li><a href='./news.php?id=linde-stochastik'>Mathematik für Informatiker&nbsp;3</a></li></ul>";
+	<li><a href='./news.php?id=linde-stochastik'>Mathematik für Informatiker&nbsp;3</a></li>
+	<li><a href='./news.php?id=fey-recharch'>Rechnerarchitektur 1&nbsp;und%nbsp;2</></li></ul>";
 } else {
 	echo "<a href='./news.php'>Zurück zur Übersicht</a>
 	<h2>$id</h2>

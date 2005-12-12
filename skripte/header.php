@@ -84,6 +84,11 @@
 	    <div class='navmenu'>
 	      <div><a href='./skripte.php?id=linde-stochastik'>Mathematik für Informatiker&nbsp;3</a></div>
 	    </div>
+	    
+	     <div class='navmenu'>
+	      <div><a href='./skripte.php?id=fey-recharch'>Rechnerarchitektur 1&nbsp;und%nbsp;2</a></div>
+	    </div>
+	    
 	</div>
 	    
 	<div class='navheading'>
