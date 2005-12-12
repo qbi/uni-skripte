@@ -15,7 +15,7 @@ if (!$id) {
 	<li>Höhere Analysis, Prof. Dr. Hans-Jürgen Schmeißer: schmeisser-hoehere-ana</li>
 	<li>Informatik 4, Dr. Jörg Vogel: vogel-info4</li>
 	<li>Mathematik für Informatiker 3 (Wahrscheinlichkeitstheorie), Prof. Dr. Linde: linde-stochastik</li>
-	<li>Rechnerarchitektur 1&nbsp;und%nbsp;2, Prof. Dr. Fey: fey-recharch</li>
+	<li>Rechnerarchitektur 1&nbsp;und&nbsp;2, Prof. Dr. Fey: fey-recharch</li>
 	<li>Das allgemeine Projekt für alle Skript: skripte</li></ul>";
 } else {
 	echo "<h1>Skript: $id</h1>";
