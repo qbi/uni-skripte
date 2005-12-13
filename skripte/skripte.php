@@ -60,7 +60,7 @@ if ($id=="SKRIPT") {
         } else {
           echo "Leider noch keine Quellen verfügbar. Informationen gibt es
           unter <a href='mailto:skripte@listserv.uni-jena.de'>
-          skripte@listserv.uni-jena.de</>";
+          skripte@listserv.uni-jena.de</a>";
         }	
 }
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
