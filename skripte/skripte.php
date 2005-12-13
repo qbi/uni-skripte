@@ -42,12 +42,26 @@ if ($id=="SKRIPT") {
 	http://www.minet.uni-jena.de/~joergs/skripte/windows.php</a></p>
 	
 	<h2>Übersetzte Versionen</h2>
-	<ul><li><a href='./pdf/$id.ps'>$id.ps</a></li>
-	<li><a href='./pdf/$id.pdf'>$id.pdf</a></li></ul>
+	<ul>";
+        $filename="./pdf/$id.ps";
+        if (file_exists($filename)) {
+          echo "<li><a href='$filename'>$filename</a></li>";
+        }
+        $filename="./pdf/$id.pdf";
+        if (file_exists($filename)) {
+          echo "<li><a href='$filename'>$filename</a></li>";
+        }
+        echo "</ul>
            
-	<h2>Die aktuellen Quellen</h2>
-	<ul><li><a href='./pdf/$id.tar.gz'>$id.tar.gz</a></li></ul>
-	";
+	<h2>Die aktuellen Quellen</h2>";
+        $filename="./pdf/$id.tar.gz";
+        if (file_exists($filename)) {
+          echo "<ul><li><a href='$filename'>$filename</a></li></ul>";
+        } else {
+          echo "Leider noch keine Quellen verfügbar. Informationen gibt es
+          unter <a href='mailto:skripte@listserv.uni-jena.de'>
+          skripte@listserv.uni-jena.de</>";
+        }	
 }
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
 und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
