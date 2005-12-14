@@ -31,7 +31,7 @@
 	    </div>
 	    
 	    <div class='navheading'>
-	      <a href='./'>U&ouml;ber</a>
+	      <a href='./'>&Uuml;ber</a>
 	    </div> 
 
 	    <div class='navheading'>
