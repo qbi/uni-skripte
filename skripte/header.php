@@ -18,7 +18,7 @@
   <body>
 
     <h1 id='logo'><a href='./'><img alt='Logo' border='0' src='./images/logo.png'/></a></h1>
-    <h3 id='slogan'><em>...from students for students...</em></h3>
+    <h3 id='slogan'><em>...by students for students...</em></h3>
 
     <table border='0' cellspacing='0' cellpadding='10' width='100%'>
 
@@ -27,15 +27,15 @@
 	  <td class='navbar' valign='top' width='20%'>
 
 	    <div class='navheading'>
-	      <a href='./'>Home</a>
+	      <a href='./'>Startseite</a>
 	    </div>
 	    
 	    <div class='navheading'>
-	      <a href='./'>About</a>
+	      <a href='./'>U&ouml;ber</a>
 	    </div> 
 
 	    <div class='navheading'>
-	      <a href='./news.php'>News</a>
+	      <a href='./news.php'>Aktuelles</a>
 	    </div>
 
 	   <div class='navheading'>
