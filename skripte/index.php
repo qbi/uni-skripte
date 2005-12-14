@@ -10,7 +10,7 @@ bearbeiten und natürlich zu verwenden.</p>
 <p>Mittlerweile sind schon ein paar Skripte vorhanden. 
 Einige sind nur zu Teilen, andere sind vollständig aber
 dafür sind noch Probleme beim Übersetzen. Aber das alles soll auch nur
-ein Anfang sein. Wir hoffen, dass sich weitere Studenten finden und die
+ein Anfang sein. Wir hoffen, dass sich weitere Studenten finden, die
 Skripte verbessern, sei es in Bezug auf den Inhalt, Vollständigkeit oder
 den Latex-Satz. Leider sind vereinzelt auch noch Fehler versteckt, sowohl
 inhaltliche als auch orthographische.<p>
@@ -32,7 +32,7 @@ Benutzer erhalten. Wir verwenden
 
 <p>Diese Programme schützen natürlich nicht vor Sabotage oder davor neue
 Fehler in die Dokumente einzupflegen (es wäre zu schön, wenn ein Programm
-erkennen kann, ob ein Text inhaltlich korrekt ist :). Daher appelieren wir
+erkennen kann, ob ein Text inhaltlich korrekt ist :). Daher appellieren wir
 an die soziale Kompetenz der Leute! Die Skripte sind alle kostenlos
 und ohne Verpflichtungen verfügbar. Es sollte also keiner einen Grund
 haben, die Skripte absichtlich zu schädigen. Aber denoch eine kleine

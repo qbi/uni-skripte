@@ -6,7 +6,7 @@ include('header.php');
 if (!$id) {
 	$id="SKRIPT";
 	echo "<h1>Allgemeine Anleitung</h1>
-	Im folgenden ist $id der Name eines der Projekte für das jeweilige
+	Im Folgenden steht $id f&uuml;r den Namen eines der Projekte für das jeweilige
 	Vorlesungsskript. Zur Zeit gibt es die folgenden:
 	<ul><li>Maß und Integral, Prof. Dr. Hans-Jürgen Engelbert: engelbert-mass-integral</li>
 	<li>Kommunikationssysteme, Prof. Dr. Werner Erhard: erhard-komm-sys</li>
@@ -65,7 +65,7 @@ if ($id=="SKRIPT") {
 }
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
 und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
-machen -- damit ist auch viel geholfen.</p>";
+machen -- damit ist auch viel geholfen!</p>";
 
 include('footer.php');
 ?>

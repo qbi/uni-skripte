@@ -30,7 +30,7 @@
        		alt='Valid CSS!' border='0' align='right'>
  	      </a>
  	      <small>
-                Diese Seite wurde zuletzt bearbeitet am:
+               Letzte Aktualisierung dieser Seite: 
 		<!-- datum -->65280<!-- datum2 --> <br>
 		von <!-- autor -->65280<!-- autor2 -->
 	      </small>
