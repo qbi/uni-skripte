@@ -30,9 +30,11 @@
        		alt='Valid CSS!' border='0' align='right'>
  	      </a>
  	      <small>
-               Letzte Aktualisierung dieser Seite: 
-		<!-- datum -->65280<!-- datum2 --> 
-		[<!-- autor -->65280<!-- autor2 -->]
+               Letzte Aktualisierung dieser Seite: ";
+readfile("skripte.Date");
+echo "[";
+readfile("skripte.Author");
+echo "]
 	      </small>
 	    </address>
 	  </td>
