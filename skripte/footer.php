@@ -31,8 +31,8 @@
  	      </a>
  	      <small>
                Letzte Aktualisierung dieser Seite: 
-		<!-- datum -->65280<!-- datum2 --> <br>
-		von <!-- autor -->65280<!-- autor2 -->
+		<!-- datum -->65280<!-- datum2 --> 
+		[<!-- autor -->65280<!-- autor2 -->]
 	      </small>
 	    </address>
 	  </td>
