@@ -174,6 +174,13 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
+% Befehl zur Vergabe von Gleichungsnummern, an Stellen, an denen sonst
+% keine Nummer erstellt werden würde (in gather* z.B.)
+% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
+\newcommand*{\taglabel}[1]{%
+  \refstepcounter{equation}\tag{\theequation}\label{#1}%
+}
+
 % Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
 % nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
 % description mit normaler Schrift
@@ -2494,26 +2501,26 @@ Differentialgleichung}:
 
   \begin{proof}
     \begin{align*}
-      \frac{\partial}{\partial t}\bigg( t^{-\frac{n}{2}}
-         e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &= -\frac{n}{2} t^{-\frac{n}{2}-1}
+      \frac{\partial}{\partial t}\Big( t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}}\Big) &= -\frac{n}{2} t^{-\frac{n}{2}-1}
          e^{-\frac{\abs{x}^{2}}{4t}} + t^{-\frac{n}{2}}
          e^{-\frac{\abs{x}^{2}}{4t}} \frac{\abs{x}^{2}}{4t^{2}}\\
       &= t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}
-         \bigg(\frac{\abs{x}^{2}}{4t^{2}} - \frac{n}{2t}\bigg)\\
-      \frac{\partial}{\partial x_{j}}\bigg( t^{-\frac{n}{2}}
-         e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &= t^{-\frac{n}{2}}
-         e^{-\frac{\abs{x}^{2}}{4t}} \bigg(\frac{x_{j}}{4t}\bigg) =
+         \Big(\frac{\abs{x}^{2}}{4t^{2}} - \frac{n}{2t}\Big)\\
+      \frac{\partial}{\partial x_{j}}\Big( t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}}\Big) &= t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}} \Big(\frac{x_{j}}{4t}\Big) =
          t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}
-         \bigg(-\frac{x_{j}}{2t}\bigg)\\
-      \frac{\partial^{2}}{\partial x_{j}^{2}}\bigg( t^{-\frac{n}{2}}
-         e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &= t^{-\frac{n}{2}}
-         e^{-\frac{\abs{x}^{2}}{4t}} \bigg(\frac{x_{j}^{2}}{4t^{2}} -
-         \frac{1}{2t}\bigg)\\
+         \Big(-\frac{x_{j}}{2t}\Big)\\
+      \frac{\partial^{2}}{\partial x_{j}^{2}}\Big( t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}}\Big) &= t^{-\frac{n}{2}}
+         e^{-\frac{\abs{x}^{2}}{4t}} \Big(\frac{x_{j}^{2}}{4t^{2}} -
+         \frac{1}{2t}\Big)\\
       \intertext{Damit ergibt sich für den Laplace-Operator}
-      \Delta\bigg( t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}\bigg) &=
+      \Delta\Big( t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}\Big) &=
          \sum_{j=1}^{n} \frac{\partial^{2}}{\partial x_{j}^{2}} =
          t^{-\frac{n}{2}} e^{-\frac{\abs{x}^{2}}{4t}}
-         \bigg(\frac{\abs{x}^{2}}{4t^{2}} - \frac{n}{2t}\bigg)
+         \Big(\frac{\abs{x}^{2}}{4t^{2}} - \frac{n}{2t}\Big)
     \end{align*}
     $\Rightarrow$ $(\ldots)_{t} = \Delta(\ldots)$
 
@@ -2668,18 +2675,25 @@ Differentialgleichung}:
 \end{satz}
 
 \begin{bemerk}[Lösungsansatz des Cauchy-Problems]
-  \begin{tabular}{cc}
+  \hfill
+  \begin{minipage}[t]{.45\linewidth}
     \begin{gather}\label{eq:24}
-      v_{tt} = c^{2}v_{xx} = 0\\
-      v(x,0) = u_{0}(x)\\
-      v_{t}(x,0) = u_{1}(x)
-    \end{gather} &
-       \begin{gather}\label{eq:25}
-         w_{tt}-c^{2}w_{xx} = f\\
-         w(x,0) = 0\\
-         w_{t}(x,0) = 0
-       \end{gather}
-  \end{tabular}
+      \begin{split}
+        v_{tt} - c^{2}v_{xx} &= 0\\
+        v(x,0) &= u_{0}(x)\\
+        v_{t}(x,0) &= u_{1}(x)
+      \end{split}
+    \end{gather}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{.45\linewidth}
+    \begin{gather}\label{eq:25}
+      \begin{split}
+        w_{tt}-c^{2}w_{xx} &= f\\
+        w(x,0) &= 0\\
+        w_{t}(x,0) &= 0
+      \end{split}
+    \end{gather}
+  \end{minipage}\hfill
 
   zu \autoref{eq:24}:
   \begin{align*}
@@ -2687,18 +2701,18 @@ Differentialgleichung}:
     v(x,0) &= \phi(x)+\psi(x) = u_{0}\taglabel{eq:26}\\
     v_{t}(x,0) &= c\phi'(x)+c\psi'(x) = u_{1}(x)\\
     \intertext{$\Longrightarrow$}
-    c\phi'(x) + c\psi'(x) = cu_{0}'(x)\\
-    -c\phi'(x)+c\psi'(x) = u_{1}(x)\\
+    c\phi'(x) + c\psi'(x) &= cu_{0}'(x)\\
+    -c\phi'(x)+c\psi'(x) &= u_{1}(x)\\
     \intertext{$\Longrightarrow$}
-    2c\psi'(x) = cu_{0}(x) + u_{1}(x)\\
+    2c\psi'(x) &= cu_{0}(x) + u_{1}(x)\\
     \intertext{$\Longrightarrow$}
-    \psi(x) = \frac{1}{2} u_{0}(x) + \frac{1}{2c}
+    \psi(x) &= \frac{1}{2} u_{0}(x) + \frac{1}{2c}
        \int_{0}^{x}u_{1}(y)\,dy + a\\
     \intertext{$\Longrightarrow$ mit \autoref{eq:26}}
-    \phi(x) = u_{0}(x) - \psi(x) = \frac{1}{2c} \int_{0}^{x} u_{1}(y)\,dy
+    \phi(x) &= u_{0}(x) - \psi(x) = \frac{1}{2c} \int_{0}^{x} u_{1}(y)\,dy
        -a\\
     \intertext{$\Longrightarrow$}
-    v(x,t) = \frac{1}{2} u_{0}(x-ct) - \frac{1}{2c}\int_{0}^{x-ct}
+    v(x,t) &= \frac{1}{2} u_{0}(x-ct) - \frac{1}{2c}\int_{0}^{x-ct}
        u_{1}(y)\,dy + \frac{1}{2} u_{0}(x+ct) + \frac{1}{2c}
        \int_{0}^{x+ct} u_{1}(y)\,dy = \frac{1}{2}\big(u_{0}(x-ct)+
        u_{0}(x+ct)\big)+\frac{1}{2c}\int_{x-ct}^{x+ct} u_{1}(y)\,dy
@@ -2772,7 +2786,7 @@ Differentialgleichung}:
          f(y,z)\,dy\Big|_{z=t}}_{=0}\\
       u_{tt} &= \frac{1}{2} \int_{0}^{z} f_{x}(x+c(t-s),s)c +
          f_{x}(x-c(t-s), s) (-c)\,ds \Big|_{z=t} + \frac{1}{2c}
-         \bigg[f(x+c(t-s), s) c + f(x-c(t-s),s) c\bigg]_{s=t}\\
+         \Big[f(x+c(t-s), s) c + f(x-c(t-s),s) c\Big]_{s=t}\\
       &= c^{2} u_{xx} + f(x,t)
     \end{align*}
     $\Rightarrow$ Wellengleichung erfüllt.
@@ -2787,7 +2801,7 @@ Differentialgleichung}:
 
     \begin{gather*}
       \abs{u(x,t)} \leq \int_{0}^{t} \int_{x-c(t-s)}^{x+c(t-s)}
-         \underbrace{\abs{f(y,s)}}_{\leq M auf $Q$}\,dy\,ds \leq M
+         \underbrace{\abs{f(y,s)}}_{\leq M\ \text{auf}\ Q}\,dy\,ds \leq M
          \int_{0}^{t}(t-s)\,ds = M\frac{t^{2}}{2}
          \xrightarrow{t\rightarrow0}0
     \end{gather*}
@@ -2797,7 +2811,7 @@ Differentialgleichung}:
     Für die Ableitung gilt:
     \begin{gather*}
       \abs{u_{t}(x,t)}\leq \frac{1}{2c}\int_{0}^{t}
-         \underbrace{\abs[\bigg]{f(x+c(t-s),s) + f(x+c(t-s),s)}} _{\leq
+         \underbrace{\abs[\Big]{f(x+c(t-s),s) + f(x+c(t-s),s)}} _{\leq
          2M}\,ds = Mt \xrightarrow{t\rightarrow0} 0
     \end{gather*}
     Damit ist auch die zweite Anfangsbedingung erfüllt.
