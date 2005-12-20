@@ -50,6 +50,10 @@
    	    </div>
 
 	    <div class='navmenu'>
+	      <a href='./skripte.php?id=schmeisser-ana3'>Analysis 3</a>
+   	    </div>
+
+	    <div class='navmenu'>
 	      <a href='./skripte.php?id=engelbert-mass-integral'>Maﬂ und Integral</a>
    	    </div>
 
