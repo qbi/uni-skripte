@@ -14,7 +14,8 @@ if (!$id) {
 	<li>Informatik 4, Dr. Jörg Vogel: vogel-info4</li>
 	<li>Mathematik für Informatiker 3 (Wahrscheinlichkeitstheorie), Prof. Dr. Linde: linde-stochastik</li>
 	<li>Rechnerarchitektur 1&nbsp;und&nbsp;2, Prof. Dr. Fey: fey-recharch</li>
-	<li>Das allgemeine Projekt für alle Skript: skripte</li></ul>";
+	<li>Das allgemeine Projekt für alle Skript: skripte</li></ul>
+	<li>Analysis 3, Prof. Dr. Hans-Jürgen Schmeißer: schmeisser-ana3</li></ul>";
 	$id="SKRIPT";
 } else {
 	echo "<h1>Windows-Anleitung für das Skript: $id</h1>

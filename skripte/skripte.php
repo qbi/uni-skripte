@@ -16,7 +16,8 @@ if (!$id) {
 	<li>Informatik 4, Dr. Jörg Vogel: vogel-info4</li>
 	<li>Mathematik für Informatiker 3 (Wahrscheinlichkeitstheorie), Prof. Dr. Linde: linde-stochastik</li>
 	<li>Rechnerarchitektur 1&nbsp;und&nbsp;2, Prof. Dr. Fey: fey-recharch</li>
-	<li>Das allgemeine Projekt für alle Skript: skripte</li></ul>";
+	<li>Das allgemeine Projekt für alle Skript: skripte</li></ul>
+	<li>Analysis 3, Prof. Dr. Hans-Jürgen Schmeißer: schmeisser-ana3</li></ul>";
 } else {
 	echo "<h1>Skript: $id</h1>";
 }
@@ -66,6 +67,21 @@ if ($id=="SKRIPT") {
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
 und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
 machen -- damit ist auch viel geholfen!</p>";
+
+if ($id != "SKRIPT" && file_exists("./$id.Changelog"))
+{
+    echo "<h2>Letzte Änderungen</h2>\n<pre>";
+    $datei=fopen("./$id.Changelog","r");
+    if ($zeile=fgets($datei,1024))
+      echo ( htmlentities($zeile) );
+
+    while ( ($zeile=fgets($datei,1024)) and $zeile{0} != '2')
+    {
+    	echo ( htmlentities($zeile) );
+    }
+    fclose($datei);
+    echo "</pre>\n";
+}
 
 include('footer.php');
 ?>

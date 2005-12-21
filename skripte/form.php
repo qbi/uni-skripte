@@ -1,45 +1,36 @@
 <!-- $Id$ -->
-<?php
-include('header.php');
-	
-echo "<h1>Hinweise zur Form</h1>
+<?php include('header.php'); ?>
 
-<ul><li>Alle Dokumente sollten PDFs werden, da sich in PDFs suchen und Text
-  herauskopieren lässt. Im Verbund mit hyperref lassen sich auch ein
-  Lesezeichenmenü aufbauen und im Dokument verweise untereinander
-  erstellen.</li>
+<h1>Hinweise zur Form</h1>
 
-<li>Die Dokumente sind fast alle mit latin1-Codierung geschrieben. Dies
+<ul><li>Alle Dokumente sollten als sich PDF und PostScript mit
+  <a href="http://www.pps.jussieu.fr/~beffara/soft/rubber/">rubber</a>
+  übersetzen lassen</li>
+
+<li>Die Dokumente sind fast alle mit <tt>latin1</tt>-Codierung geschrieben. Dies
   sollte auch fortgeführt werden, wenn es nicht zu Problemen mit anderen
-  Platformen kommt, da man sonst Probleme im Umgang mit \verb bekommt und
+  Plattformen kommt, da man sonst Probleme im Umgang mit \verb bekommt und
   auch die Werkzeuge zur Bearbeitung keine Unterstützung dafür bieten
-  (angepasstes Suchen/Ersetzen,...)</li>
+  (angepasstes Suchen/Ersetzen,&nbsp;...)</li>
 
-<li>Als Dokumentklasse hat sich scrreprt als günstig erwiesen, da das
-  Skript schon die Ausmaße eines Buches annimmt, aber book nicht die
-  passende Klasse dafür ist. Als Option sollte \"twoside\" gesetzt werden.</li>
+<li>Als Dokumentklasse hat sich <tt>scrreprt</tt> als günstig erwiesen, da das
+  Skript schon die Ausmaße eines Buches annimmt, aber <tt>scrbook</tt> nicht die
+  passende Klasse dafür ist. Als Option sollte "twoside" gesetzt werden.</li>
 
-<li>Als pagestyle finde ich \"headings\" gut, da im Seitenkopf das Kapitel
-  und der Abschnitt stehen. \\pagestyle{headings}</li>
+<li>Als <tt>pagestyle</tt> finde ich "<tt>headings</tt>" gut, da im Seitenkopf das Kapitel
+  und der Abschnitt stehen. <tt>\pagestyle{headings}</tt></li>
 
 <li>Ob das Skript mit Absatzeinzug geschrieben wird oder nicht, sollte an
-  der Menge des Textes festgemacht werden. Latex braucht eine gewisse
+  der Menge des Textes festgemacht werden. LaTeX braucht eine gewisse
   Menge an Text pro Absatz um sinnvolle Formatierungen zu erreichen. Dies
   ist nicht möglich, wenn jeder Absatz nur aus zwei Sätzen besteht. In
-  dem Fall sollte der Absatzeinzug gelassen werden und dafür ein Abstand
-  zwischen den Absätzen gemacht werden.
-  
-<pre>\setlength{\parindent}{0ex}
-\addtolength{\parskip}{2ex}</pre></li>
+  dem Fall sollte der Absatzeinzug entfallen und dafür ein Abstand
+  zwischen den Absätzen gemacht werden. Dies wird mit der Klassenoption
+  <tt>halfparskip*</tt> erreicht.
 
-<li>Für Sätze, Beispiele, Bemerkungen u.ä. hat sich ntheorem als sehr
-  brauchbar erwiesen. Leider gibt es einige Probleme in Verbindung mit
-  hyperref. Daher sollten die aktuellen Versionen der beiden Pakete von
-  deren Websiten verwendet werden. Denoch gibt es Probleme mit den beiden
-  Paketen. Viele davon konnte ich in dem Skript 'schmeißer-funk-ana'
-  beheben. [Anm.: wer gut Tex kann, kann mal nach einer Lösung für die
-  fehlende Theorem-Bezeichnung in \\thref suchen. Danke!]
-  
+<li>Für Sätze, Beispiele, Bemerkungen u.ä. hat sich <tt>ntheorem</tt> als sehr
+  brauchbar erwiesen.
+
   <a href='http://user.informatik.uni-goettingen.de/~may/Ntheorem/'>
   http://user.informatik.uni-goettingen.de/~may/Ntheorem/</a>
 
@@ -48,39 +39,47 @@ echo "<h1>Hinweise zur Form</h1>
   des Skripts zu kopieren. Vorsicht: Diese nicht mit in das Repository
   aufnehmen!</li>
 
-<li>Für mathematische Belange hat sich \"amsmath\" als sehr gut erwiesen.</li>
+<li>Für mathematische Belange hat sich <tt>amsmath</tt> als sehr gut erwiesen.</li>
 
-<li>Als Algorithmenumgebung wird \"algorithm\" bzw. \"algorithmic\" verwendet.
+<li>Als Algorithmenumgebung wird <tt>algorithm</tt> und <tt>algorithmic</tt> verwendet.
   Zu Finden sind diese beiden Pakete unter:
-  
+
   <a href='http://www.ctan.org/tex-archive/macros/latex/contrib/algorithms/'>
   http://www.ctan.org/tex-archive/macros/latex/contrib/algorithms/</a></li>
 
-<li>Bilder sollten mit xfig (mit -specialtext kann direkt Latex erzeugt
-  werden), gnuplot oder tcm oder anderen vektororientierten Programmen
-  erstellt werden. Ist dies nicht möglich oder sinnvoll, dann sollte png
-  oder jpg als Format gewählt werden. pdflatex kann keine ps- oder
+<li>Bilder sollten mit <tt>xfig</tt> (mit -specialtext kann direkt LaTeX erzeugt
+  werden), <tt>gnuplot</tt> oder <tt>tcm</tt> oder anderen vektororientierten Programmen
+  erstellt werden. Ist dies nicht möglich oder sinnvoll, dann sollte <tt>png</tt>
+  oder <tt>jepg</tt> als Format gewählt werden. pdflatex kann keine ps- oder
   eps-Dateien einbinden!<br>
-  
+
   Immer die Originaldateien der Programme mit ins Archiv legen!<br>
 
   ACHTUNG: Zur Erstellung von combined pdf/latex Bildern bitte auf die Version
   achten. Es hat sich ergeben, daß die pdf-Anteile der Bilder um 90° verdreht
   werden, wenn man mit xfig-Version < 3.2.5 arbeitet.</li>
 
-<li>Da regelmäßg PDFs erstellt werden, sollte auf der
-  Titelseite ein \\thanks{\$LastChangedRevision\$ vom \$LastChangedDate\$} in
-  \\title{} stehen. (\\title{bla\\thanks{\$...\$}}) Dafür muss mit svn die
-  Ersetzung für diese \"Keywords\" gesetzt werden:
-  
-  <pre>svn propset svn:keywords \"LastChangedRevision LastChangedDate\" skript.latex</pre></li>
+<li>Jedes Dokument <b>muss</b> eine Erklärung über die Verwendbarkeit des
+  Dokuments (Lizenz) und Möglichkeiten zur Kontaktaufnahme beinhalten. Als
+  Vorlage dafür kann das Vorwort aus dem
+  <a href="vorlage/skript.latex">Beispielskript</a> verwendet werden.</li>
+
+<li>Da regelmäßg Ausgaben der Dokumente erstellt werden, sollte an einer
+  Stelle im Dokument die Version des Dokuments (<tt>$LastChangedRevision$</tt>)
+  und das Datum (<tt>$LastChangedDate$</tt>) der letzten Änderung verwerkt
+  werden. Dies ist zum Beispiel im Vorwort des
+  <a href="vorlage/skript.latex">Beispielskripts</a> umgesetzt. Dafür hat sich
+  das Paket <tt>svn</tt> als praktisch erwiesen. Zusätzlich muss mit svn die
+  Ersetzung der Schlüsselwörter aktiviert werden:
+
+  <pre>svn propset svn:keywords "LastChangedRevision LastChangedDate" skript.latex</pre></li>
 
 <li>Es sollten nur die langen Formen der Keywords verwendet werden, da es
   unwahrscheinlicher ist, dass diese Zeichenketten in dem Dokument
-  auftreten, als \$Rev\$ oder \$Date\$.</li>
-  
+  auftreten, als <tt>$Rev$</tt> oder <tt>$Date$</tt>.</li>
+
 <li>Vorlagen für neue Skripte befinden sich im Verzeichnis
-   <a href='./vorlage/'>vorlage</a></li></ul>
-";
-include('footer.php');
-?>
+   <a href='./vorlage/'>vorlage</a></li>
+</ul>
+
+<?php include('footer.php'); ?>

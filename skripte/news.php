@@ -8,6 +8,7 @@ if (!$id) {
 	echo "<ul><li><a href='./news.php?id=skripte'>Webseite</a></li>
 	<li><a href='./news.php?id=carl-ana1'>Analysis 1</a></li>
 	<li><a href='./news.php?id=carl-ana2'>Analysis 2</a></li>
+	<li><a href='./news.php?id=schmeisser-ana3'>Analysis 3</a></li>
 	<li><a href='./news.php?id=engelbert-mass-integral'>Maﬂ und Integral</a></li>
 	<li><a href='./news.php?id=erhard-komm-sys'>Kommunikationssysteme</a></li>
 	<li><a href='./news.php?id=fichtner-ewms'>EWMS</a></li>

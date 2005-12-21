@@ -31,9 +31,17 @@
  	      </a>
  	      <small>
                Letzte Aktualisierung dieser Seite: ";
-readfile("skripte.Date");
-echo "[";
-readfile("skripte.Author");
+if ( $file=fopen("skripte.Date", "r") )
+{
+    echo trim(fgets($file));
+    fclose($file);
+}
+echo " [";
+if ( $file=fopen("skripte.Author", "r") )
+{
+    echo trim(fgets($file));
+    fclose($file);
+}
 echo "]
 	      </small>
 	    </address>
