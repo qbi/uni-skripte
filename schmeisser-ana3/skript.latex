@@ -1,3 +1,10 @@
+% Einige zusätzliche Informationen für rubber
+% rubber: clean Fundamental-waerme.pdf $base.thm
+% rubber: watch $base.thm
+% r ubber: index.tool xindy
+% r ubber: index.language  german-din
+% r ubber: index.modules indexstyle.xdy
+
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
@@ -83,11 +90,11 @@
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[subsection]
-\newtheorem{bemerk}{Bemerkung}
-\newtheorem{defini}{Definition}
-\newtheorem{bsp}{Beispiel}
-\newtheorem{folger}{Folgerung}
-\newtheorem{lemma}{Lemma}
+\newtheorem{bemerk}{Bemerkung}[subsection]
+\newtheorem{defini}{Definition}[subsection]
+\newtheorem{bsp}{Beispiel}[subsection]
+\newtheorem{folger}{Folgerung}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
 
 \makeatletter
 % \autoref unterscheidet die Umgebungen, die angesprochen werden, anhand
@@ -95,7 +102,7 @@
 % teilen sollen, bezeichnet \autoref alles mit "`Satz"'. Daher bekommt
 % jede Umgebung einen eigenen Zähler, der in Wirklichkeit ein Alias zu
 % satz ist
-% <news:>
+% <news:m3wvitk0o9.fsf@sgifford.tir.com>
 \renewcommand*{\c@bemerk}{\c@satz}
 \renewcommand*{\p@bemerk}{\p@satz}
 \renewcommand*{\thebemerk}{\thesatz}
@@ -503,7 +510,8 @@ Eine kurze Wiederholung aus Abschnitt\,7.2
 \end{itemize}
 
 \begin{defini}
-  $(\Gamma, \phi)$ heißt stückweise glatte Kurve oder kurz Kurve \gdwdef
+  $(\Gamma, \phi)$ heißt \highl{stückweise glatte Kurve} oder kurz
+  \highl{Kurve} \gdwdef
   $\phi:[a,b]\rightarrow\R^{n}$ stetig und $\Gamma=\{\phi(t):t\in[a,b]\}$
   und es existieren endlich viele Teilungspunkte $a=t_{0}<t_{1}<\ldots
   <t_{N}=b$ und für jedes $j=1,\ldots,n$ ist $(\Gamma_{j},
@@ -2850,9 +2858,227 @@ Differentialgleichung}:
   \todo{Bild vom Vergangenheitskegel}
 \end{bemerk}
 
+% 3.1.2006
+
+\subsection{Die 3-dimensionale Wellengleichung} % 9.2.3
+
+Cauchy-Problem:
+\begin{align*}
+  u_{tt} - c^{2}\Delta u &= f(x,t) &(x\in \R^{3}, t>0)\\
+  % Anfangsbedingung:
+  u(x,0) &= u_{0}(x), u_{t}(x,0) = u_{1}(x) &(x\in\R^{3})
+\end{align*}
+
+\obda c=1, sonst $\tilde{u}(x,t) = u(x,\frac{t}{c})$ $\Leftrightarrow$
+$u(x,t) = \tilde{u}(x,ct)$
+
+\begin{align*}
+  u_{tt}-c^{2}\Delta u = f(x,t) &\Leftrightarrow
+     c^{2}\tilde{u}_{tt}(x,ct) - c^{2}\Delta \tilde{u}(x,ct) = f(x,t)\\
+  &\Leftrightarrow \tilde{u}_{tt}-\Delta \tilde{u} = \frac{1}{c^{2}}
+     f(x,ct) = \tilde{f}(x,t)
+\end{align*}
+
+ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
+
+\begin{satz}
+  Folgende Vorraussetzungen seien erfüllt: $u_{0}\in C^{3}(\R^{3}),
+  u_{1}\in C^{2}(\R^{3})$. Dann ist
+  \begin{gather*}
+    u(x,t) = \frac{1}{4\pi t} \int_{\abs{x-y}=t} u_{1}(y)\,dS(y) +
+       \frac{1}{4\pi} \frac{\partial}{\partial t}\Big( \frac{1}{t}
+       \int_{\abs{x-y}=t} u_{0}(y)\,dS(y) \Big)
+  \end{gather*}
+  (\textit{Anm.: mit $\abs{x-y}=t$ wird über den Rand der Kugel $K_{t}(x)$ integriert.})
+  die (eindeutig bestimmte) Lösung des Cauchy-Problems $u_{tt}-\delta u =
+  0$ mit den Anfangsbedingungen $u(x,0)=u_{0}(x)$ und $u_{t}(x,0) =
+  u_{1}(x)$ ($x\in \R^{3}, t>0$).
+
+  Die Gleichung heißt \highl{Kirchhoff'sche Formel}.
+\end{satz}
+
+\begin{bemerk}[Betrachtungen zur Kirchhoff'schen Formel]
+  Formt man die Kirchhoff'sche Formel etwas um, so erhält man
+  \begin{gather*}
+    u(x,t) = t \underbrace{\Big(\frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t} u_{1}(y)\,dS
+       \Big)}_{= Mu_{1}(x,t)} + \frac{\partial}{\partial t} \Big(t
+       \underbrace{\Big(\frac{1}{4\pi
+       t^{2}} \int_{\abs{x-y}=t} u_{0}(y)\,dS \Big)}_{=Mu_{0}(x,t)} \Big)
+  \end{gather*}
+  wobei
+  \begin{gather*}
+    Mg(x,t) = \frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t} g(y)\,dS =
+       \frac{1}{4\pi} \int_{\abs{y}=1} g(x+ty)\,dS
+  \end{gather*}
+
+  Diese Darstellung ist vorteilhaft, da der Parameter $t$ nicht mehr in
+  den Integralgrenzen auftaucht und nur noch unter dem Integral steht.
+  Dies wird später vorteilhaft sein, wenn wir Ableitungen bilden müssen.
+
+  Diese Formel nennt man den \highl{sphärischen Mittelwert} von $g$.
+
+  \begin{proof}
+    1.\,Schritt: Anfangsbedingungen sind erfüllt. Es gilt:
+    \begin{gather*}
+      u(x,t) = t\frac{1}{4\pi} \int_{\abs{y}=1} u_{1}(x+ty)\,dS +
+         \frac{\partial}{\partial t}\Big( t \frac{1}{4\pi}
+         \int_{\abs{y}=1} u_{0}(x+ty)\,dS \Big)
+    \end{gather*}
+    Für $t\rightarrow 0$ bekommen wir:
+    \begin{gather*}
+      u(x,0) = 0\cdot u_{1}(x) + \underbrace{\frac{1}{4\pi} \int_{\abs{y}=1}
+         u_{0}(x)\,dS}_{=u_{0}(x)} + \Big[ t\frac{1}{4\pi} \frac{\partial}{\partial t}
+         \int_{\abs{y}=1} u_{0}(x+ty)\,dS \Big]_{t=0}
+    \end{gather*}
+    Überzeugen wir uns noch davon, dass der dritte Summand Null ist.
+    Dafür muss der Integrant konstant sein, damit das Produkt mit $t$
+    gegen Null geht.
+    \begin{gather}\label{eq:27}
+      \frac{\partial}{\partial t} \int_{\abs{y}=1} u_{0}(x+ty)\,dS
+         = \int_{\abs{y}=1} \sum_{j=1}^{3} \frac{\partial
+         u_{0}}{\partial x_{j}}(x+ty)\cdot y_{j}\,dS
+    \end{gather}
+    für $t=0$ ergibt sich
+    \begin{gather*}
+      \int_{\abs{y}=1} \sum_{j=1}^{3} \frac{\partial u_{0}}{\partial
+         x_{j}}(x)\cdot y_{j}\,dS = \sum_{j=1}^{3} \frac{\partial
+         u_{0}}{\partial x_{j}}\,dS = \sum_{j=1}^{3} \frac{\partial
+         u_{0}}{\partial x_{j}}(x) \int_{\abs{y}=1}
+         \sprod{\vec{e_{j}}}{\vec{n}} =^{nach Gauß} \int_{\abs{y}\leq1}
+         \Div \vec{e_{j}}\,dy = 0
+    \end{gather*}
+
+    Es bleibt also $u(x,0) = u_{0}(x)$.
+
+    \begin{align*}
+      u_{t}(x,t) = \frac{1}{4\pi} \int_{\abs{y}=1} u_{1}(x+ty)\,dS +
+         \underbrace{t\cdot\frac{1}{4\pi} \frac{\partial}{\partial t} \Big(
+         \int_{\abs{y}=1} u_{1}(x+ty)\,dS\Big)
+         }_{\xrightarrow{t\rightarrow0}0 nach \autoref{eq:27}} +
+         \underbrace{\frac{\partial}{\partial
+         t} \Big(\frac{1}{4\pi} \int_{\abs{y}=1} u_{0}(x+ty)\,dS \Big)
+         }_{\xrightarrow{t\rightarrow0}0 nach \autoref{eq:27}}+
+         \underbrace{\frac{\partial}{\partial t} \Big(t\frac{1}{4\pi}
+         \frac{\partial}{\partial t} \int_{\abs{y}=1}
+         u_{0}(x+ty)\,dS\Big) }_{= \underbrace{\frac{1}{4\pi} \frac{\partial}{\partial
+         t} \int_{\abs{y}=1}
+         u_{0}(x+ty)\,dS}_{\xrightarrow{t\rightarrow0}0 nach \autoref{eq:27}} +
+         \underbrace{\frac{t}{4\pi}\frac{\partial^{2}}{\partial t^{2}}
+         \int_{\abs{y}=1} u_{0}(x+ty)\,dS }_{\xrightarrow{t\rightarrow0}0}}
+    \end{align*}
+
+    für $t\rightarrow0$ bleibt also $u_{t}(x,0) = u_{1}(x) +0$.
+
+    2.\,Schritt: zeigen $u$ erfüllt homogene Wellengleichung
+    \begin{gather*}
+      u(x,t) = \underbrace{t Mu_{1}(x,t)}_{=: v(x,t)} +
+         \frac{\partial}{\partial t} \big(\underbrace{t Mu_{0}(x,t) }_{=:
+         w(x,t)} \big)
+    \end{gather*}
+    wir zeigen: $v$ und $\frac{\partial}{\partial t} w$ erfüllen die
+    homogene Wellengleichung.
+
+    Es gilt:
+    \begin{gather*}
+      v_{t} = Mu_{1}(x,t) + t\frac{\partial}{\partial t} Mu_{1}(x,t),
+         v_{tt} = 2 \frac{\partial}{\partial t} Mu_{1}(x,t) +
+         t\frac{\partial^{2}}{\partial t^{2}} Mu_{1}(x,t)
+    \end{gather*}
+    Es gilt:
+    \begin{gather*}
+      \frac{\partial}{\partial t} Mu_{1}(x,t) = \frac{1}{4\pi}
+         \frac{\partial}{\partial t} \int_{\abs{y}=1} u_{1}(x+ty)\,dS
+         =^{\autoref{eq:27}} \frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t}
+         \frac{\partial u_{1}}{\partial \vec{n}}dS
+    \end{gather*}
+
+    Wiederholung der Greenschen Sätze \todo{link: 8.2.3/6}
+    \begin{gather*}
+      \int_{B} u\Delta v\,dy = \int_{\partial B} u\cdot\frac{\partial
+         v}{\partial \vec{n}}\,dS - \int_{B}\nabla u\cdot\nabla v\,dy
+    \end{gather*}
+    mit $u=1$ ergibt sich
+    \begin{gather*}
+      \int_{B}\Delta v\,dy = \int_{\partial B}\frac{\partial v}{\partial
+         \vec{n}}dS
+    \end{gather*}
+
+    \begin{gather}\label{eq:28}
+      \frac{\partial}{\partial t} Mu_{1}(x,t) = \frac{1}{4\pi t^{2}}
+         \int_{\abs{x-y}\leq t} \Delta u_{1}\,dy
+    \end{gather}
+
+    und weil es schon schön war, das ganze nochmal
+    \begin{gather*}
+      \frac{\partial^{2}}{\partial t^{2}} Mu_{1}(x,t) = -\frac{1}{2\pi
+         t^{3}} \int_{\abs{x-y}\leq t} \Delta u_{1}(y)\,dy +
+         \frac{1}{4\pi t^{2}} \frac{\partial}{\partial t} \underbrace{\Big(
+         \int_{0}^{t} \int_{\abs{x-y}=\rho} \Delta u_{1}(y)\,dS\,d\rho
+         \Big)}_{= \int_{\abs{x-y}=t} \Delta u_{1}(y)\,dS }
+    \end{gather*}
+    \begin{gather}\label{eq:29}
+      t\frac{\partial^{2}}{\partial t^{2}} Mu_{1}(x,t) = -\frac{1}{2\pi
+         t^{2}} \int_{\abs{x-y}\leq t} \Delta u_{1}(y)\,dy +
+         \frac{1}{4\pi t} \int_{\abs{x-y}= t} \Delta u_{1}(y)\,dS
+    \end{gather}
+
+    Aus \autoref{eq:28} und \autoref{eq:29} folgt
+    \begin{gather*}
+      v_{tt} = \frac{1}{4\pi t}\int_{\abs{x-y}= t} \Delta u_{1}(y)\,dS
+    \end{gather*}
+
+    bleibt noch zu zeigen, dass $v_{tt}=\Delta v$
+    Andererseits ist
+    \begin{gather*}
+      \Delta v(x,t) = \frac{t}{4\pi} \Delta\Big(\int_{\abs{y}=1}
+         u_{1}(x+ty)\,dS \Big) = \frac{t}{4\pi} \int_{\abs{y}=1} (\Delta
+         u_{1})(x+ty)\,dS = \frac{1}{4\pi t} \int_{\abs{x-y}=t} \Delta
+         u_{1}(y)\,dS
+    \end{gather*}
+
+    $v$ und $w$ unterscheiden sich nur darin, dass in $v$ $u_{1}$
+    verwendet wird und in $w$ $u_{0}$. Die ganze Rechnung lässt sich also
+    ebenso für $w$ durchführen und es ergibt sich, dass $w$ auch eine
+    Lösung der Wellengleichung ist: $w_{tt} = \Delta w$. Wir wollen aber
+    zeigen, dass $w_{t}$ eine Lösung der Wellengleichung ist:
+    \begin{gather*}
+      (w_{t})_{tt} = (w_{tt})_{t} = (\Delta w)_{t} = \Delta w_{t}
+    \end{gather*}
+    (mithilfe des Satz von Schwarz)
+
+    Also ergibt sich als Gesamtergebnis: $v+w_{t}$ ist Lösung der
+    homogenen Wellengleichung.
+  \end{proof}
+\end{bemerk}
+
+\begin{bemerk}[Die Huygensche Eigenschaft -- Schallausbreitung]
+  Modellierung: $u(x,t) = p(x,t) - p_{0}$ mit $p$ als Druck und $p_{0}$
+  als Normalendruck, $u_{0}(x)$ und $u_{1}(x)$ sind dann die Abweichungen
+  von $p_{0}$ zum Zeitpunkt $t=0$.
+
+  \begin{gather*}
+    u(x,t) = \frac{1}{4\pi t} \int_{\abs{x-y}=t} u_{1}(y)\,dS +
+       \frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t} \frac{\partial
+       u_{0}}{\partial \vec{n}}\,dS + \frac{1}{4\pi t^{2}}
+       \int_{\abs{x-y}=t} u_{0}(y)\,dS
+  \end{gather*}
+
+  Da nur über den Rand der Kugel um $x$ integriert wird, wirken sich
+  lokale Störungen ($u_{0}$ oder $u_{1}\not=0$) nur zu den Zeitpunkten
+  aus, die $u_{0}$ und $u_{1}$ berücksichtigen. Bei einem beschränkten
+  Träger von $u_{0}$ bzw. $u_{1}$ ist also eine lokale Störung nur in
+  einem beschränkten Zeitraum wahrnehmbar -- davor und danach nicht.
+  \help{Stimmt das?}
+\end{bemerk}
+
+% Hier fehlt die Vorlesung von 4.1.06
+
 \clearpage
 \appendix
 \pdfbookmark[0]{Index}{index}
+% Behebt das Problem der vielen "`overfull \hbox"' im Index
+% <news:3419172.ueajl5DJLB@mjk.komascript.de>
+\setlength{\parfillskip}{0pt plus 1fil}
 \printindex
 
 \end{document}
