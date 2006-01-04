@@ -41,23 +41,24 @@ svn export $URL
 GZIP=-9 tar -czf $WEB/pdf/$REPOS.tar.gz $REPOS
 echo "I: created $REPOS.tar.gz"
 
-if [ -r $REPOS/skript.latex ]; then
+cd $REPOS
+if [ -r skript.latex ]; then
     src=skript.latex
-elif [ -r $REPOS/skript.tex ]; then
+elif [ -r skript.tex ]; then
     src=skript.tex
-elif [ "$(ls $REPOS/*.latex $REPOS/*.tex 2>/dev/null | wc -l)" -eq 1 ]; then
-    src=$(ls $REPOS/*.latex $REPOS/*.tex 2>/dev/null) || true
-    src=${src#$REPOS/}
+elif [ "$(ls *.latex *.tex 2>/dev/null | wc -l)" -eq 1 ]; then
+    src=$(ls *.latex *.tex 2>/dev/null) || true
 else
     echo "E: No latex file found in $REPOS"
-    rm -r $TMP/*
+    cd /
+    rm -r $TMP
     exit 1
 fi
 echo "I: using $src as source file"
 
-cp $WEB/sty/* $REPOS
+cp $WEB/sty/* .
 for ext in pdf ps; do
-    if $rubber --$ext --inplace $REPOS/$src && [ -e ${src%.*}.$ext ]; then
+    if $rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
         echo "I: installing ${src%.*}.$ext as $REPOS.$ext"
         rm -f $WEB/pdf/$REPOS.$ext
         cp ${src%.*}.$ext $WEB/pdf/$REPOS.$ext
