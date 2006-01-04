@@ -57,7 +57,7 @@ echo "I: using $src as source file"
 
 cp $WEB/sty/* $REPOS
 for ext in pdf ps; do
-    if $rubber --$ext $REPOS/$src && [ -e ${src%.*}.$ext ]; then
+    if $rubber --$ext --inplace $REPOS/$src && [ -e ${src%.*}.$ext ]; then
         echo "I: installing ${src%.*}.$ext as $REPOS.$ext"
         rm -f $WEB/pdf/$REPOS.$ext
         cp ${src%.*}.$ext $WEB/pdf/$REPOS.$ext
