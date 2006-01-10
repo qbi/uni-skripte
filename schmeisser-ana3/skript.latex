@@ -1,9 +1,9 @@
 % Einige zusätzliche Informationen für rubber
 % rubber: clean Fundamental-waerme.pdf $base.thm
 % rubber: watch $base.thm
-% r ubber: index.tool xindy
-% r ubber: index.language  german-din
-% r ubber: index.modules indexstyle.xdy
+% rubber: index.tool xindy
+% rubber: index.language  german-din
+% rubber: index.modules indexstyle.xdy
 
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
@@ -219,6 +219,18 @@
 			      {\hspace\labelsep\normalfont ##1}%
 		 \begin{description}}%
 		 {\end{description}}
+
+\newcounter{fall}
+\newenvironment*{faelle}%
+               {\begin{list}{\textit{\underline{\arabic{fall}.\,Fall:}}}%
+                      {\usecounter{fall}%
+                        \settowidth{\labelwidth}{\textit{\underline{9.\,Fall:}}}%
+                        \setlength{\leftmargin}{1.3cm}%
+                        \setlength{\itemindent}{3mm}%
+                        \addtolength{\itemindent}{\labelwidth}%
+                        \addtolength{\itemindent}{-\leftmargin}%
+                      }}%
+               {\end{list}}
 
 \DeclareMathOperator{\Div}{div}		% Differgent
 \DeclareMathOperator{\grad}{grad}	% Gradient
@@ -2763,14 +2775,17 @@ Differentialgleichung}:
   \end{gather*}
 \end{satz}
 
-\begin{bemerk}
+\begin{bemerk}\label{bem:1}
   Für die Lösung $u(x,t)$ in einem Punkt benötigt man nur die Information
   von $u_{0}$ in den Punkten $(x-ct, 0)$ und $(x+ct, 0)$ und die Summe
   der Werte von $u_{1}$ auf der $x$-Achse zwischen $(x-ct, 0)$ und
-  $(x+ct, 0)$.
+  $(x+ct, 0)$. Alle Werte für die Lösung liegen also in der
+  "`Vergangenheit"' -- $u(x,\tilde{t})$ wird nur von $u_{0}$ und $u_{1}$
+  für $t<\tilde{t}$ beeinflusst.
 
-  Einfluss von $u_{0}$ nur spürbar für $t\in[t_{0},t_{1}]$. Einfluss von
-  $u_{1}$ nur für $t\geq t_{0}$
+  $u_{0}$ hat nur in einem Intervall $t\in[t_{0},t_{1}]$ auf die Lösung
+  einen Einfluss. $u_{1}$ hingegen hat einen Einfluss ab einem bestimmten
+  Zeitpunkt $t\geq t_{0}$.
 
   \todo{Bild vom "`Vergangenheitskegel"'}
 \end{bemerk}
@@ -2826,9 +2841,9 @@ Differentialgleichung}:
     Umgebung von $x$ zu untersuchen. Dazu wählen wir ein endliches
     Rechteck $Q$ ($\Rightarrow$ kompakt). Damit ist $f$ beschränkt
     ($\abs{f(y,s)}\leq M$ auf $Q$) und $f_{x}$ ist beschränkt
-    ($\abs{f_{x}(y,s)}\leq M$ auf $Q$). Nach \todo{link: Bemerkung ??}
-    benötigt man für die berechnung des Wertes nur Werte aus dem Gebiet
-    ("`Vergangenheitskegel"').
+    ($\abs{f_{x}(y,s)}\leq M$ auf $Q$). Nach \autoref{bem:1}
+    benötigt man für die Berechnung des Wertes nur Werte aus dem Gebiet
+    $Q$ ("`Vergangenheitskegel"').
 
     \begin{gather*}
       \abs{u(x,t)} \leq \int_{0}^{t} \int_{x-c(t-s)}^{x+c(t-s)}
@@ -2836,7 +2851,7 @@ Differentialgleichung}:
          \int_{0}^{t}(t-s)\,ds = M\frac{t^{2}}{2}
          \xrightarrow{t\rightarrow0}0
     \end{gather*}
-    In einem Solchen lokalen Gebiet $Q$ kann man eine solche Abschätzung
+    In einem solchen lokalen Gebiet $Q$ kann man eine solche Abschätzung
     produzieren und die Anfangsbedingung $u(x,0)$ ist 0.
 
     Für die Ableitung gilt:
@@ -2850,7 +2865,7 @@ Differentialgleichung}:
 \end{satz}
 
 \begin{bemerk}
-  Analog zu \todo{link Bemerkung ??} Für die Lösung in einem Punkt
+  Analog zu \autoref{bem:1}: Für die Lösung in einem Punkt
   $u(x,t)$ sind nur die Werte der Funktion innerhalb des
   Vergangenheitskegels notwendig. Alles, was außerhalb des Kegels liegt,
   wird für die Lösung nicht benötigt.
@@ -3072,6 +3087,226 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
 \end{bemerk}
 
 % Hier fehlt die Vorlesung von 4.1.06
+
+% 10.1.06
+
+\section{Separationsansätze (Fourier'sche Methode)}
+\subsection{Wellengleichung -- schwingende Saite}
+
+Wir betrachten das Anschlagen oder Zupfen einer Saite eines Instruments
+der Länge $l$. Die Anfangsauslenkung sei gegeben durch $u_{0}(x)$.
+\help{was ist dann $u_{1}$?} Wie verändert die Saite ihre Lage über die
+Zeit?
+
+\begin{enumerate}
+ \item\label{enu:1} $u_{tt} - c^{2} u_{xx} =0\quad(x\in (0,l), t>0)$
+ \item\label{enu:2} $u(0,t) = u(l,t) =0\quad(t>0)$ ist die Randbedingung,
+  $u_{1}(x)$ die Anfangsgeschwindigkeit
+ \item\label{enu:3} $u(x,0) = u_{0}(x)\quad(x\in(0,l))$ und $u_{t}(x,0) =
+  u_{1}(x)$ sind die Anfangsbedingung
+\end{enumerate}
+
+Diesen Typ von Fragestellungen bezeichnen wir als
+\highl{Rand-Anfangswert-Problem} für die homogene Wellengleichung.
+
+Noch einige Bezeichnungen: $c=\sqrt{\frac{s}{\rho}}$, wobei $s$ die
+Spannung und $\rho$ die die Dichte der Saite ist.
+
+\subsubsection{Separation}
+
+Man finde alle Lösungen der Form $u(x,t) = X(x)T(t)$ von \autoref{enu:1}
+und \autoref{enu:2}!
+\begin{gather*}
+  u_{tt} - c^{2} u_{xx} = XT'' - c^{2}X''T = 0 \Leftrightarrow c^{2} X''T
+     =XT'' \Leftarrow \frac{X''}{T} = \frac{T''}{c^{2}T} = \lambda
+     \exists \lambda\in\R (\forall x \forall t)
+\end{gather*}
+
+Man löse das Randwertproblem (1) "`Bestimme $\lambda\in\R$, so dass $X''
+= \lambda X$ auf $(0,l)$ und $X(0) = X(l) =0$"' und die gewöhnliche
+Differentialgleichung (2) $T''=c^{2}\lambda T$ für $\lambda$ aus dem
+Randwertproblem (1).
+
+% Sollte vielleicht besser ein \paragraph sein
+\minisec{Lösen des Randwertproblems (1)}
+
+Ansatz: $X=e^{\mu x}$ $\Rightarrow$ charakteristisches Polynom:
+$\mu^{2}=\lambda$
+\begin{faelle}
+ \item Für $\lambda>0$ ergibt sich $\mu_{1/2} = \pm\sqrt{\lambda}$. Die
+  allgemeine Lösung lautet also $X(x)= c_{1}e^{\sqrt{\lambda}x} +
+  c_{2}e^{-\sqrt{\lambda}x}$. Die Randbedingung \autoref{enu:2}
+  $X(0) = X(l) = 0$ liefert $c_{1}+c_{2}=0$ und
+  $c_{1}e^{\sqrt{\lambda}l} + c_{2}e^{-\sqrt{\lambda}l} =0$. Da $c>0$
+  (nach Definition), kann nur gelten $c_{1}=c_{2}=0$.
+
+  Dieses Ergebnis ist jedoch uninteressant, da dies bedeutet, dass die
+  Spannung der Saite Null ist.
+ \item Für $\lambda=0$ ergibt sich analog $c_{1}=c_{2}=0$.
+
+ \item $\lambda<0$ $\Rightarrow$ $\mu_{1/2}=\pm i\sqrt{-\lambda}$
+  $\Rightarrow$ allgemeine Lösung: $X=c_{1} \cos\sqrt{-\lambda} x +
+  c_{2}\sin\sqrt{-\lambda}x$ $(c_{1},c_{2}\in\R)$
+
+  $X(0) = 0 \Leftrightarrow c_{1}=0$ und $X(l) = 0 \Leftrightarrow
+  c_{2}\sin\sqrt{-\lambda} l =0 \Leftrightarrow c_{2}$ oder
+  $\sqrt{-\lambda}l = k\pi$ bzw. $\lambda =
+  -\big(\frac{k\pi}{l}\big)^{2}$ $(k\in\N)$
+\end{faelle}
+
+$\Rightarrow$ Lösung für $\lambda_{k}=-\big(\frac{k\pi}{l}\big)^{2}$
+$(k\in\N)$, $X_{k}(x) = c_{k}\sin\frac{k\pi}{l} x$ $(c_{k}\in\R)$
+
+% Sollte vielleicht besser ein \paragraph sein
+\minisec{Lösen der Differentialgleichung (2) für
+  $\lambda=\lambda_{k}$}
+
+\begin{gather*}
+  T_{k}'' + c^{2} \big(\frac{k\pi}{l}\big)^{2} T_{k}=0
+\end{gather*}
+Ansatz: $T_{k}= e^{\rho t}$ $\Rightarrow$ $\rho^{2} +
+\big(\frac{ck\pi}{l}\big)^{2} = 0, \rho_{1/2} = \pm i
+\frac{ck\pi}{l}$
+
+$\Rightarrow$ $T_{k}(t) = A_{k}\cos\frac{ck\pi}{l} t +
+B_{k}\sin\frac{ck\pi}{l} t$ mit $k\in\N, A_{k},B_{k}\in\R$
+
+Damit können wir jetzt das gesamte Problem lösen -- Lösungen der
+Separation:
+\begin{gather*}
+  U_{k}(x,t) = (a_{k}\cos\frac{ck\pi}{l}t + b_{k}\sin\frac{ck\pi}{l} t)
+     \sin\frac{k\pi}{l} x
+\end{gather*}
+mit den Freiheitsgraden $k\in\N$ und $a_{k},b_{k}\in\R$.
+
+\begin{bemerk}
+  $\sum_{\text{endl}} u_{k}(x,t)$ ist ebenfalls Lösung der Separation.
+\end{bemerk}
+
+Jetzt Übergang zu einer unendlichen Reihe: Ist $\sum_{k=1}^{\infty}
+u_{k}(x,t)$ eine Lösung? Für $u_{k} = 0$ ist natürlich auch die Summe 0
+und somit eine Lösung der Differentialgleichung. Die Frage ist nun, ob
+man $a_{k}$ und $b_{k}$ so bestimmen kann, dass sie der Randbedingung
+genügen.
+
+\subsubsection{Superposition}
+
+Man finde $a_{k},b_{k}\in\R$, so dass
+\begin{gather*}
+  u(x,t) := \sum_{k=1}^{\infty} (a_{k}\cos\frac{ck\pi}{l} t + b_{k}\sin
+     \frac{ck\pi}{l} t) \sin \frac{k\pi}{l} x
+\end{gather*}
+die Anfangsbedingung \autoref{enu:3} erfüllt!
+
+d.\,h.
+\begin{align}
+  u(x,0) &= \sum_{k=1}^{\infty} a_{k} \sin\frac{k\pi}{l} x = u_{0}(x)
+     \label{eq:30}\\
+  u_{t}(x,0) = \sum_{k=1}^{\infty} \underbrace{\frac{ck\pi}{l}
+     b_{k}}_{=:\tilde{b_{k}}} \sin\frac{k\pi}{l} x = u_{1}(x) \label{eq:31}
+\end{align}
+Beim Ableiten von $u$ nach $t$ haben wir den Konvergenzradius der Reihe
+ignoriert (nicht betrachtet oder halt \obda machbar)
+
+Wir haben jetzt zwei gleiche Problem gefunden: einmal für $u_{0}$ mit
+$a_{k}$ und $u_{1}$ mit $\tilde{b_{k}}$.
+
+% Sollte vielleicht besser ein \paragraph sein
+\minisec{Berechnung der Fourierkoeffizienten $a_{k}, b_{k}$ ($k\in\N$)}
+
+Verwende:
+\begin{gather*}
+  \int_{0}^{l} \sin(\frac{k\pi}{l} x)  \sin \frac{j\pi}{l} x\,dx =
+     \begin{cases}
+       0 & j\not=k\\ \frac{l}{2} & j=k
+     \end{cases}\\
+\end{gather*}
+denn:
+\begin{align*}
+  \int_{0}^{l} \ldots \,dx &= \frac{l}{x} \int_{0}^{\pi} \sin kx \sin
+     jx\,dx\\
+  &= \frac{l}{\pi} \int_{0}^{\pi} \frac{1}{2} (\cos (k-j)x - \cos(k+j) x
+     )\,dx\\
+  &= \frac{l}{2\pi} \begin{cases}0&j\not=k\\ \int_{0}^{\pi} (1-\cos
+                      2kx)\,dx = \pi &k=j\end{cases}
+\end{align*}
+
+Machen wir erstmal eine Analyse, was wir erhalten: Annahme
+\autoref{eq:30} gilt, dann haben wir
+\begin{align*}
+  \int_{0}^{l}\sin\frac{k\pi}{l} x u_{0}(x)\,dx &= \sum_{j=1}^{\infty}
+     a_{j} \int_{0}^{l} \sin (\frac{j\pi}{l} x) \sin(\frac{k\pi}{l}
+     x)\,dx &(k\in\N)\\
+  &= a_{k} \int_{0}^{l} (\sin\frac{k\pi}{l} x)^{2}\,dx = a_{k}\frac{l}{2}
+\end{align*}
+
+Wenn es also möglich ist, dann müssen die Koeffizienten so aussehen:
+\begin{gather*}
+  a_{k} = \frac{2}{l} \int_{0}^{l} u_{0}(x) \sin\frac{k\pi}{l} x\,dx
+     \quad(k\in\N)
+\end{gather*}
+
+Nehmen wir an \autoref{eq:31} gilt und wir bekommen heraus, dass
+\begin{gather*}
+  b_{k} = \frac{2}{ck\pi} \int_{0}^{l} u_{1}(x) \sin\frac{k\pi}{l} x\,dx
+     \quad(k\in\N)
+\end{gather*}
+
+$a_{k}$ und $b_{k}$ bezeichnet man als die Fourierkoeffizienten von
+$u_{0}$ und $u_{1}$.
+
+\subsubsection{Interpretation der Theorie der Fourierreihen}
+
+Von der Musik her kennen wir Schwingungen, die sich dadurch auszeichnen,
+dass sie periodisch sind, d.\,h. $f(t+T) = f(t)$. Das kleinste $T$
+bezeichnet man als die Schwingungsdauer und $\nu=\frac{1}{T}$ als die
+(Grund-)Frequenz. Die Fouriertheorie besagt, dass sich $f$ durch
+Teilschwingungen $f_{k}$ beschreiben lässt. (Wichtige Aussage der
+Fouriertheorie: Jede Schwingung lässt sich als Summe (Überlagerung) von
+Einzelschwingung darstellen)
+\begin{gather*}
+  f_{k}(t) = a_{k} \cos\frac{ck\pi}{l} t + b_{k}\sin \frac{ck\pi}{l} t
+\end{gather*}
+$\Rightarrow$ $T_{k}=\frac{2l}{c}\frac{1}{k}$ mit $k\in\N$ $\Rightarrow$
+$\nu_{k} = \frac{c}{2l} k$. $\frac{c}{2l}$ ist die Grundfrequenz. $k=1$
+bezeichnet man als den Grundton, $k>1$ als Obertöne = $k$-fache Frequenz
+der Frequenz des Grundtons.
+
+Wandeln wir unser Randwertproblem etwas ab und setzen für \autoref{enu:1}
+$u_{tt} - c^{2} u_{xx} = f(x,t)$ mit $x\in(0,l)$ und $t>0$.
+
+Machen wir dazu den Ansatz: $u(x,t) = v(x,t) + w(x,t)$, wobei
+\begin{enumerate}
+ \item $w_{tt} - c^{2}w_{xx} = 0$
+ \item $w(0,t) = w(l,t) = 0$
+ \item $w(x,0) = u_{0}(x)$ und $w_{t}(x,0) = u_{1}(x)$
+\end{enumerate}
+Dieses Problem ist wieder das ursprüngliche Problem.
+
+Als weiterer Fall ergibt sich:
+\begin{enumerate}
+ \item $v_{tt} - c^{2}v_{xx} = f(x,t)$ (inhomogene Differentialgleichung!)
+ \item $v(0,t) = v(l,t) = 0$
+ \item $v(x,0) = v_{t}(x,0) =0$
+\end{enumerate}
+
+Dafür machen wir folgenden Ansatz:
+\begin{gather*}
+  v(x,t) := \sum_{k=1}^{\infty} T_{k}(t) \sin\frac{k\pi}{l} x
+\end{gather*}
+Man entwickle $f(x,t)$ bei festem $t$ in eine Sinusreihe, d.\,h.
+\begin{gather*}
+  f(x,t) = \sum_{k=1}^{\infty} f_{k}(t) \sin\frac{k\pi}{l} x\\
+  f_{k}(t) = \frac{2}{l} \int_{0}^{l} f(x,t)\sin \frac{k\pi}{l} x\,dx
+\end{gather*}
+($k\in\N, t>0$)
+
+Dann ist $v(x,t)$ Lösung \gdw $T_{k}'' + c^{2}
+\big(\frac{k\pi}{l}\big)^{2} T_{k} = f_{k}(t)$ und $T_{k}(0) = T_{k}'(0)
+= 0$ mit $k\in\N$ 
+
+Das heißt wir führen die Lösung des Randwertproblem auf eine
+Fourierreihenentwicklung und ein Randwertproblem zurück.
 
 \clearpage
 \appendix
