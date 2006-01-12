@@ -1,9 +1,9 @@
 % Einige zusätzliche Informationen für rubber
 % rubber: clean Fundamental-waerme.pdf $base.thm
 % rubber: watch $base.thm
-% rubber: index.tool xindy
-% rubber: index.language  german-din
-% rubber: index.modules indexstyle.xdy
+% ru bber: index.tool xindy
+% ru bber: index.language  german-din
+% ru bber: index.modules indexstyle.xdy
 
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
@@ -3477,10 +3477,234 @@ Man entwickle $f(x,t)$ bei festem $t$ in eine Sinusreihe, d.\,h.
 
 Dann ist $v(x,t)$ Lösung \gdw $T_{k}'' + c^{2}
 \big(\frac{k\pi}{l}\big)^{2} T_{k} = f_{k}(t)$ und $T_{k}(0) = T_{k}'(0)
-= 0$ mit $k\in\N$ 
+= 0$ mit $k\in\N$
 
 Das heißt wir führen die Lösung des Randwertproblem auf eine
 Fourierreihenentwicklung und ein Randwertproblem zurück.
+
+% 11.01.06
+
+\minisec{(C) Rand-Anfangswert-Problem}
+
+\begin{align*}
+  u_{tt} - c^{2}u_{xx} &= f(x,t) &x\in(0,l), t>0\\
+  \begin{split}
+    u(0,t) &= \mu_{1}(t)\\
+    u(l,t) &= \mu_{2}(t)
+  \end{split} && t>0 (Randbedinugung inhomogen) \label{eq:32}\\
+  \begin{split}
+    u(x,0) &= u_{0}(x)\\
+    u_{t}(x,0) &= u_{1}(x)
+  \end{split} && x\in(0,l) (Anfangsbedingung inhomogen)\\
+\end{align*}
+
+\minisec{Lösungsmethode}
+Ansatz: $u(x,t) = v(x,t) + w(x,t)$, wobei $w(x,t) := \mu_{1}(t) +
+\frac{x}{l}(\mu_{2}(t)-\mu_{1}(t))$. $\Rightarrow$ $w(x,t)$ erfüllt die
+Randbedingung \autoref{eq:32} und $w_{xx}=0$.
+
+$\Rightarrow$ $u(x,t)$ ist Lösung des Rand-Anfangswert-Problems \gdw
+$v$ die neue XY erfüllt.
+\begin{gather}\label{eq:33}
+  v_{tt}-c^{2}v_{xx} = f(x,t) - w_{tt}(x,t)
+\end{gather}
+
+neue Randbedingung:
+\begin{gather}\label{eq:34}
+  v(0,t) = v(l,t) = 0
+\end{gather}
+
+neue Anfangsbedingung:
+\begin{align}\label{eq:35}
+  v(x,0) &= u_{0}(x) - w(x,0)\\
+  v_{t}(x,0) &= u_{1}(x) - w_{t}(x,0)
+\end{align}
+
+Dieses neue Rand-Anfangswert-Problem entspricht den Problem (B).
+
+\subsection{Fourierreihen}
+\subsubsection{Das trigonometrische System}
+
+Sei $l>0$ und wir berachten die Funktionen auf dem Intervall $[-l,l]$
+(vorzugsweise $l=\pi$) Riemann-integrierbar sind. Wir betrachten diesen
+Raum $R([-l,l])$ als einen euklidischen Vektorraum mit
+\begin{itemize}
+ \item dem Skalarprodukt
+  \begin{gather*}
+    \sprod{f,g} := \int_{-l}^{l} f(x) \overline{g(x)}\,dx
+  \end{gather*}
+  für $f,g\in R([-l,l])$
+ \item und der Norm
+  \begin{gather*}
+    \norm{f} := \sprod{f,f}^{\frac{1}{2}} = \Big( \int_{-l}^{l}
+       \abs{f(x)}^{2}\,dx \Big)
+  \end{gather*}
+\end{itemize}
+
+Man kann jetzt leicht zeigen, dass all diese Integrale existtieren (da
+Riemann-integrierbar), das Skalarprodukt alle Bedingungen eines
+Skalarprodukts und die Norm alle Bedingungen einer Norm erfüllt. Also ist
+$R([-l,l])$ ein normierter linearer Raum.
+
+In einem solchen Raum konvergiert $f_{j}\rightarrow f$ in $R([-l,l])$ \gdw
+$\norm{f_{j}-f} = (\int_{-l}^{l} \abs{f_{j}(x) - f(x)}^{2}\,dx
+)^{\nicefrac{1}{2}} \xrightarrow{j\rightarrow\infty} 0$.
+
+Wir betrachten ein Orthonormalsystem in dem Raum
+\begin{gather*}
+  \{ \underbrace{\frac{1}{\sqrt{2l}}}_{=:\phi_{0}} \} \cup
+     \{ \underbrace{\frac{1}{\sqrt{l}}\cos\frac{k\pi}{l} x}_{=:\phi_{k}},
+       \underbrace{\frac{1}{\sqrt{l}}\sin\frac{k\pi}{l} x}_{=:\psi_{k}}:
+       k\in\N\}
+\end{gather*}
+
+d.\,h. es gilt für $j\in\N_{0}, k\in\N$
+\begin{align*}
+  \sprod{\phi_{j}}{\phi_{k}} &= \delta_{jk} =
+     \begin{cases}1&j=k\\0&j\not=k\end{cases}\\
+  \sprod{\psi_{j}}{\psi_{k}} &= \delta_{jk}\\
+  \sprod{\phi_{j}}{\psi_{k}} &= 0
+\end{align*}
+
+Der Wunsch ist nun:
+\begin{gather*}
+  f = \sprod{f}{\phi_{0}} \phi_{0} + \sum_{k=1}^{\infty}
+     (\sprod{f}{\phi_{k}} \phi_{k} + \sprod{f}{\psi_{k}} \psi_{k} )
+\end{gather*}
+im Sinne der Konvergenz bezüglich $\norm{\cdot}$.
+
+Fourierkoeffizienten: Es ist
+\begin{align*}
+  \sprod{f}{\phi_{0}}\phi_{0} &= \frac{1}{\sqrt{2l}} \int_{-l}^{l} f(x)
+     \frac{1}{\sqrt{2l}}\,dx = \underbrace{\frac{1}{l} \int_{-l}^{l}
+     f(x)\,dx}_{=: a_{0}} \cdot \frac{1}{2}\\
+  \sprod{f}{\phi_{k}} \phi_{k} &= \frac{1}{\sqrt{l}} \cos\frac{k\pi}{l} x
+     \int_{-l}^{l} f(x) \cos\frac{k\pi}{l} x\,dx \cdot \frac{1}{\sqrt{l}}\\
+  &= \underbrace{\frac{1}{l} \int_{-l}^{l} \cos \frac{k\pi}{l} x\,dx
+     }_{=: a_{k}, k\in\N} \cos\frac{k\pi}{l} x\\
+  \sprod{f}{\psi_{k}} \psi_{k} &= \underbrace{\frac{1}{l} \int_{-l}^{l}
+     f(x) \sin\frac{k\pi}{l} x\,dx }_{=: b_{k}, k\in\N} \sin
+     \frac{k\pi}{l} x
+\end{align*}
+$a_{k}$ und $b_{k}$ heißen \highl{Fourierkoeffizienten} von $f$.
+
+\highl{Fourierreihe} zur Rekonstruktion der Funktion mithilfe der
+Fourierkoeffizienten:
+\begin{gather*}
+  s_{n}f(x) := \frac{a_{0}}{2} + \sum_{k=1}^{n}(a_{k}\cos\frac{k\pi}{l} x
+     + b_{k} \sin\frac{k\pi}{l} x)
+\end{gather*}
+ist die $n$-te Partialsumme der Fourierreihe, wobei $n\in\N_{0}$.
+
+Es gilt (ohne Beweis): $\norm{s_{n}f -f} \xrightarrow{n\rightarrow\infty}
+0$, d.\,h.
+\begin{gather*}
+  \frac{a_{0}}{2} + \sum_{k=1}^{\infty} (a_{k}\cos\frac{k\pi}{l} x
+     +b_{k}\sin\frac{k\pi}{l} x) = f
+\end{gather*}
+im Sinne der Normkonvergenz.
+
+Für Fourierreihen gilt die \highl{Parseval'sche Gleichung}: Es gilt (ohne
+Beweis) $f\in R([-l,l])$ $\Rightarrow$ $\norm{f}^{2} =
+\abs{\sprod{f}{\phi_{0}}}^{2} + \sum_{k=1}^{\infty}
+(\abs{\sprod{f}{\phi_{k}}}^{2} + \abs{\sprod{f}{\psi_{k}}}^{2} )$
+d.\,h.
+\begin{gather}
+  \norm{f}^{2} = l( \frac{\abs{a_{0}}}{2} + \sum_{k=1}^{\infty}
+     (\abs{a_{k}}^{2} + \abs{b_{k}}^{2})
+\end{gather}
+(das ist die Parseval'sche Gleichung)
+
+Stellt man eine weiter Anforderung (Punktweise Konvergenz
+$\sum_{k=1}^{\infty} (\abs{a_{k}}+ \abs{b_{k}}) <\infty$) an die
+Fourierkoeffizienten, so erhält man eine gleichmäßige Konvergenz für die
+Fourierreihe
+\begin{gather*}
+  \sup_{x\in[-l,l]} \abs{s_{n}f(x) - f(x)}
+     \xrightarrow{n\rightarrow\infty} 0
+\end{gather*}
+da $\sum_{k=1}^{\infty} (\abs{a_{k}}+ \abs{b_{k}}) <\infty$ eine oberer
+Majorante für die Fourierreihe ist.
+
+Da jedes Folgengleid stetig ist, ist auch $f$ stetig und jedes Folgeglied
+periodisch ($f(-l)=f(l)$) muss auch die Funktion periodisch sein: $f\in
+C_{perio}([-l,l])$.
+
+Umgekehrung gilt nicht! $\exists f\in C_{perio}([-l,l])$ mit
+$(S_{n}f(x_{0})_{n}$ divergent.
+
+Mithilfe weiterer Bedingungen an die Funktion $f$ kann man sichern, dass
+die Fourierreihe punktweise konvergiert. z.\,B.: $x_{0}\in[-l,l]$
+
+\begin{gather*}
+  \exists f_{+}'(x_{0}) = \lim_{h\downarrow 0} \frac{f(x_{0}+h) -
+     f(x_{0}+0)}{h}\\
+  \exists f_{-}'(x_{0}) = \lim_{h\downarrow 0} \frac{f(x_{0}-0) -
+     f(x_{0}-h)}{h}\\
+\end{gather*}
+
+Die Funktion muss nicht stetig und nicht differenzierbar sein, aber es
+genügt, wenn sie links- und rechtsseitig differenzierbar ist.
+
+$\Rightarrow$ $\exists\lim_{n\rightarrow\infty} S_{n}f(x_{0}) =
+\frac{f(x_{0}+0) + f(x_{0}-0)}{2}$
+
+Man darf Fourierreihen differenzieren \index{Fourierreihe!differenzieren}
+und integrieren \index{Fourierreihe!integrieren}, falls zusätzliche
+Bedingungen an der Funktion erfüllt sind.
+
+Sinus-Reihen und Cosinus-Reihen (vgl. 9.3.1\todo{link}): Betrachten eine
+Funktion $f$, die nur auf $[0,l]$ definiert ist. Setzen wir $f$ gerade
+($f(-x) = f(x)$) auf $[-l,l]$ fort, so sind die Koeffizienten $b_{k}=0$.
+Die Koeffizienten $a_{k}\not=0$. Die Funktion $f$ ist eine reine
+\highl{Cosinus-Reihe}
+\begin{gather*}
+  f(x) = \frac{a_{0}}{2} + \sum_{k=1}^{\infty} a_{k}\cos \frac{k\pi}{l} x
+\end{gather*}
+
+Für eine ungerade Funktion sind die $a_{k}=0$ und die $b_{k}\not=0$, so
+dass sich $f$ als reine \highl{Sinus-Reihe} darstellen lässt.
+\begin{gather*}
+  f(x) = \sum_{k=1}^{\infty} b_{k}\sin\frac{k\pi}{l} x
+\end{gather*}
+
+\begin{bsp}
+  $l=\pi$ Hutfunktion
+  \begin{gather*}
+    f(x) = \begin{cases}
+             x & x\in[0,\frac{\pi}{2}]\\
+             \pi-x & (\frac{\pi}{2}, \pi]
+           \end{cases}
+  \end{gather*}
+  gesucht ist eine Sinusreihe von $f$ auf $[0,\pi]$
+
+  $\Rightarrow$
+  \begin{align*}
+    b_{k} &= \frac{2}{\pi} \int_{0}^{\pi} f(x)\sin kx\,x = \frac{2}{\pi}
+       \Big( \int_{0}^{\frac{\pi}{2}} x \sin kx\,dx +
+       \int_{\frac{\pi}{2}}^{\pi} (\pi-x\sin kx)\,dx\Big)\\
+    &= \frac{2}{\pi} \Big[ -x \frac{\cos kx}{k} \Big]_{0}^{\frac{\pi}{2}}
+       + \int_{0}^{\frac{\pi}{2}} \frac{1}{k} \cos kx\,dx + \frac{2}{\pi}
+       \Big[-(\pi-x) \frac{\cos kx}{k} \Big]_{\frac{2}{\pi}}^{\pi} -
+       \frac{1}{k} \int_{\frac{2}{\pi}}^{\pi} \cos kx\,dx\\
+    &= \frac{2}{\pi} \frac{2}{k^{2}} \sin \frac{k\pi}{2} = \frac{4}{\pi
+       k^{2}} \begin{cases}0& k\text{ gerade}\\ (-1)^{l}& k\text{
+                ungerade} \end{cases}
+  \end{align*}
+
+  $\Rightarrow$
+  \begin{gather*}
+    f(x) = \frac{4}{\pi} \sum_{l=0}^{\infty} \frac{(-1)^{l}}{(2l+1)^{2}}
+       \sin(2l+1)x\qquad x\in[0,\pi]
+  \end{gather*}
+
+  für $x=\frac{\pi}{2}$ $\Rightarrow$
+  \begin{gather*}
+    \frac{\pi}{2} = \frac{4}{\pi} \sum_{l=0}^{\infty}
+       \frac{(-1)^{l}}{(2l+1)^{2}} \sin(2l+1) x\qquad x\in[0,\pi]\\
+    \frac{\pi^{2}}{8} = \sum_{l=0}^{\infty} \frac{1}{(2l+1)^{2}}
+  \end{gather*}
+\end{bsp}
 
 \clearpage
 \appendix
