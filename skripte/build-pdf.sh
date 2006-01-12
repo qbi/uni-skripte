@@ -4,6 +4,9 @@ set -e -u
 
 rubber=/home/stud/md01/joergs/rubber-1.0/bin/rubber
 
+# Test, warum rubber fehlschlägt, wenn das Skript im post-commit gerufen wird
+echo "-$PATH-"
+
 if [ $# -eq 0 ]; then
     echo "usage: $0 Repository" >&2
     exit 1
