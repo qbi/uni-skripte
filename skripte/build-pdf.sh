@@ -2,25 +2,24 @@
 
 set -e -u
 
-rubber=/home/stud/md01/joergs/rubber-1.0/bin/rubber
-
-# Test, warum rubber fehlschlägt, wenn das Skript im post-commit gerufen wird
-echo "-$PATH-"
-
 if [ $# -eq 0 ]; then
     echo "usage: $0 Repository" >&2
     exit 1
 fi
 
+joergs=/home/stud/md01/joergs
+
+export PATH=$joergs/rubber-1.0/bin:$joergs/xindy/bin:$PATH
+
 REPOS=$1
-URL=/home/stud/md01/joergs/.svnroot/$REPOS
+URL=$joergs/.svnroot/$REPOS
 
 if ! [ -d "$URL" ]; then
     echo "$REPOS is not a valid repository in /home/stud/md01/joergs/.svnroot/" >&2
     exit 1
 fi
 URL=file://$URL
-WEB=/home/stud/md01/joergs/.www/skripte/
+WEB=$joergs/.www/skripte/
 
 if [ -e "$WEB/pdf/$REPOS.tar.gz" ] && ( stamp="$(stat -c %y $WEB/pdf/$REPOS.tar.gz)";
      [ "${stamp%% *}" \> "$(svnlook date ${URL#*://} |cut -d\  -f1)" ]); then
@@ -61,7 +60,7 @@ echo "I: using $src as source file"
 
 cp $WEB/sty/* .
 for ext in pdf ps; do
-    if $rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
+    if rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
         echo "I: installing ${src%.*}.$ext as $REPOS.$ext"
         rm -f $WEB/pdf/$REPOS.$ext
         cp ${src%.*}.$ext $WEB/pdf/$REPOS.$ext
