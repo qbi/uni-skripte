@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e -u
+set -u
 
 if [ $# -eq 0 ]; then
     echo "usage: $0 Repository" >&2
@@ -38,7 +38,7 @@ TMP=$(mktemp -d)
 
 cd $TMP
 
-svn export $URL
+svn export $URL || exit
 
 GZIP=-9 tar -czf $WEB/pdf/$REPOS.tar.gz $REPOS
 echo "I: created $REPOS.tar.gz"

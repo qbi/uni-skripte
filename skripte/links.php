@@ -45,6 +45,15 @@ Mathmode</a></li>
     <a href='http://web.informatik.uni-bonn.de/I/Lehre/Vorlesungen/InfoIV-SS04/Baier-InfoIV-SS04.pdf'>
      Info&nbsp;3 an der Uni Bonn</a>
   </li>
+  <li><a href="http://www.minet.uni-jena.de/algebra/skripten/skripten.html">Viele
+	Mathematikvorlesungen</a> von Prof.&nbsp;Külshammer
+  </li>
+  <li><a href="http://www.minet.uni-jena.de/www/fakultaet/mhj/">Analysis für
+        Informatiker</a> von Prof.&nbsp;Schmeißer
+  </li>
+  <li><a href="http://www.fabolu.de/index.php?page=studium">verschiedene Vorlesungen
+	für Physiker, Lineare Algebra&nbsp;1 und Analysis</a> von Fabian Stutzki
+  </li>
 </ul>
 
 ...und noch einige hilfreiche Programme
