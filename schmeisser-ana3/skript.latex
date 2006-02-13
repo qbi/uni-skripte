@@ -56,6 +56,8 @@
 \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
                          % Unterscheidung bei Grafiken
                          % \input{XYZ.pdf_t}
+\usepackage{xkeyval}     % für die Auswertung von Argumentenlisten; s.
+                         % Neudefinition von \emph
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -182,19 +184,19 @@
 % ein optionales Argument in Form einer Liste, die mit
 % index=<Indexeintrag> und rand=<Randeintrag> die jeweiligen Felder
 % anders belegt.
-\usepackage{xkeyval}
 \makeatletter
-\define@cmdkey{emph}{index}
-\define@cmdkey{emph}{rand}
-\def\emph{\@ifnextchar[{\real@emph}{\real@emph[]}}
-\def\real@emph[#1]#2{%
+\define@key{local}{index}{\def\local@index{#1}}
+\define@key{local}{rand}{\def\local@rand{#1}}
+
+\renewcommand*{\emph}[2][]{%
   \begingroup%
-  \setkeys{emph}{index={#2},rand={#2}}\setkeys{emph}{#1}%
+  \setkeys{local}{index={#2},rand={#2}}\setkeys{local}{#1}%
   \textit{#2}%
-  \index{\KV@emph@index@cmd}%
-  \marginpar{\raggedright\small\textit{\KV@emph@rand@cmd}}%
+  \index{\local@index}%
+  \marginpar{\raggedright\small\itshape\local@rand}%
   \endgroup%
 }
+\makeatother
 
 % Definition für Xindy für die Trennung der einzelnen Abschnitte im
 % Index. siehe auch die Datei indexstyle.xdy
