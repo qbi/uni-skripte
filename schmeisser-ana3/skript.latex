@@ -25,6 +25,17 @@
 % T1-Schriften verwenden -- notwendig für PDFs
 \usepackage[T1]{fontenc}
 
+\usepackage{esint}       % für den Pfeil am oint
+% esint muss vor amsmath geladen werden, da es die ganzen Integrale
+% umdefiniert und so die Ausrichtung der Grenzen (Option intlimits bei
+% amsmath) zerstört. Da amsmath aber die folgenden Befehle neu definiert,
+% müssen wir sie nach dem Laden wieder löschen.
+\makeatletter
+\let\iint\relax
+\let\iiint\relax
+\let\iiiint\relax
+\makeatother
+
 \usepackage[intlimits,leqno]{amsmath}
 \usepackage{amssymb}     % wird für \R, \C,... gebraucht
 \usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
@@ -45,7 +56,6 @@
 \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
                          % Unterscheidung bei Grafiken
                          % \input{XYZ.pdf_t}
-\usepackage{esint}       % für den Pfeil am oint
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -166,10 +176,24 @@
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
-% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
-% optionales Argument selbst bestimmt werden.
-\renewcommand*{\emph}[2][]{\textbf{\boldmath{#2}}%
-  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+% automatisch als Indexeintrag verwendet und am Rand wiederholt. Da unter
+% Umständen der Eintrag im Index oder am Rand anders lauten soll --
+% z.\,B. Oberbegriff!Unterbegriff für den Index --, akzeptiert der Befehl
+% ein optionales Argument in Form einer Liste, die mit
+% index=<Indexeintrag> und rand=<Randeintrag> die jeweiligen Felder
+% anders belegt.
+\usepackage{xkeyval}
+\makeatletter
+\define@cmdkey{emph}{index}
+\define@cmdkey{emph}{rand}
+\def\emph{\@ifnextchar[{\real@emph}{\real@emph[]}}
+\def\real@emph[#1]#2{%
+  \begingroup%
+  \setkeys{emph}{index={#2},rand={#2}}\setkeys{emph}{#1}%
+  \textit{#2}%
+  \index{\KV@emph@index@cmd}%
+  \marginpar{\raggedright\small\textit{\KV@emph@rand@cmd}}%
+  \endgroup%
 }
 
 % Definition für Xindy für die Trennung der einzelnen Abschnitte im
@@ -208,8 +232,11 @@
 
 % In der Vorlesung war an dem Kurvenintegral ein kleiner Pfeil. Da das
 % Kurvenintegral ohne Pfeil nie genutzt wurde, definieren wir es einfach
-% um.
-\renewcommand*{\oint}{\varointctrclockwise\limits}
+% um. Mithilfe von \ilimits@ aus amsmath wird in abgesetzten Formeln die
+% Grenzen drüber und drunter und in Textformeln daneben gestellt.
+\makeatletter
+\def\oint{\varointctrclockwise\ilimits@}
+\makeatother
 
 % Befehl zur Vergabe von Gleichungsnummern, an Stellen, an denen sonst
 % keine Nummer erstellt werden würde (in gather* z.B.)
@@ -349,7 +376,7 @@
   C^{1}(\Omega), j=1,\ldots,n$ $C^{1}$-Vektorfeld. Dann gilt:
 
   \begin{enumerate}
-   \item Als den \emph[Gradient]{Gradienten} oder \emph{Nabla} einer
+   \item Als den \emph{Gradient} oder \emph{Nabla} einer
     Funktion $u$ bezeichnet man
     \begin{align*}
       \grad u &= \nabla u = \partial_{1}u\vec{e_{1}}
@@ -357,7 +384,7 @@
          \frac{\partial}{\partial x_{j}}\\
       &= \begin{bmatrix}\partial_{1}u\\\vdots\\\partial_{n}u\end{bmatrix}
     \end{align*}
-   \item Als \emph[Divergent]{Divergenten} eines Vektorfeldes $\vec{v}$
+   \item Als \emph{Divergent} eines Vektorfeldes $\vec{v}$
     bezeichnet man
     \begin{gather*}
       \Div \vec{v} := \partial_{1}v_{1} +
@@ -1632,7 +1659,7 @@ Folgerungen daraus:
 \end{gather*}
 
 \begin{satz}
-  $n\geq2$. Dann gilt: \index{Gamma-Funktion}
+  $n\geq2$. Dann gilt:
   \begin{gather*}
     \abs{\omega_{n}} = \frac{2\pi^{\nicefrac{n}{2}}}{\Gamma(\frac{n}{2})} =
        2\pi^{\nicefrac{n}{2}} \begin{cases}
@@ -3822,9 +3849,9 @@ genügt, wenn sie links- und rechtsseitig differenzierbar ist.
 $\Rightarrow$ $\exists\lim_{n\rightarrow\infty} S_{n}f(x_{0}) =
 \frac{f(x_{0}+0) + f(x_{0}-0)}{2}$
 
-Man darf Fourierreihen differenzieren \index{Fourierreihe!differenzieren}
-und integrieren \index{Fourierreihe!integrieren}, falls zusätzliche
-Bedingungen an der Funktion erfüllt sind.
+Man darf Fourierreihen \emph[index=Fourierreihe!differenzieren u.\,%
+integrieren,rand=Fourierr. diff. u. int.]{differenzieren \textnormal{und}
+integrieren}, falls zusätzliche Bedingungen an der Funktion erfüllt sind.
 
 Sinus-Reihen und Cosinus-Reihen (vgl. 9.3.1\todo{link}): Betrachten eine
 Funktion $f$, die nur auf $[0,l]$ definiert ist. Setzen wir $f$ gerade
@@ -3885,7 +3912,7 @@ dass sich $f$ als reine \emph{Sinus-Reihe} darstellen lässt.
 
 \begin{defini}[Hilbertraum]
   Als \emph{Hilbertraum} $H$ bezeichnet man einen Vektorraum (i.\,A.
-  $\dim H=\infty$ mit folgenden Eigenschaften
+  einen unendlichdimensonalen) mit folgenden Eigenschaften
   \begin{itemize}
    \item es ist ein Skalarprodukt $\sprod{f}{g}$ definiert
    \item es gibt eine Norm $\norm{f}=\sprod{f}{f}^{\frac{1}{2}}$
@@ -4190,10 +4217,16 @@ Lösungsmethode:
 \begin{defini}
   Wir betrachten eine Menge $D\subset\C$ und einen inneren Punkt
   $z_{0}\in D^{0}\not=\emptyset$. Wir nennen $f$
-  \emph{komplexdifferenzierbar} in $z_{0}$ \gdwdef $\exists
-  \lim_{z\rightarrow z_{0}} \frac{f(z) -f(z_{0})}{z-z_{0}}\in \C$. Wir
-  setzen dann: $f'(z_{0}) = \lim_{z\rightarrow z_{0}} \frac{f(z) -
-  f(z_{0})}{z-z_{0}}$.
+  \emph[rand=komplexdiff'bar]{komplexdifferenzierbar} in $z_{0}$ \gdwdef
+  der Grenzwert des Differenzenquotiens existiert und eine komplexe Zahl
+  ist. Diesen Grenzwert bezeichnen wir dann als \emph[index=komplexe
+  Funktion!Ableitung]{Ableitung} von $f$ an der Stelle $z_{0}$.
+  \begin{gather*}
+    \exists\lim_{z\rightarrow z_{0}} \frac{f(z) -f(z_{0})}{z-z_{0}}\in \C
+       \quad\Longrightarrow\quad
+       f'(z_{0}) = \lim_{z\rightarrow z_{0}} \frac{f(z) -
+       f(z_{0})}{z-z_{0}} 
+  \end{gather*}
 \end{defini}
 
 \begin{bsp}
@@ -4478,27 +4511,29 @@ D\rightarrow\R, D\subset\R^{2}$
   \end{proof}
 \end{satz}
 
-\begin{defini}[Komplexe Trigonometrische Funktionen]
-  $z\in\C$
-  \begin{enumerate}
-   \item $\cos z := \frac{e^{iz}+e^{-iz}}{2}, \sin z := \frac{e^{iz} -
-    e^{-iz}}{2i}$
-   \item $\cosh z := \frac{e^{z} + e^{-z}}{2}, \sinh z :=
-    \frac{e^{z}-e^{-z}}{2}$
-  \end{enumerate}
-
+\begin{defini}[Komplexe trigonometrische Funktionen]
+  Für eine komplexe Zahl $z\in\C$ sind die trigonometrischen Funktionen
+  wie folgt definiert:
+  \begin{align*}
+   \cos z &:= \frac{e^{iz}+e^{-iz}}{2}&
+       \sin z &:= \frac{e^{iz} - e^{-iz}}{2i}\\
+   \cosh z &:= \frac{e^{z} + e^{-z}}{2}&
+       \sinh z &:=\frac{e^{z}-e^{-z}}{2}
+  \end{align*}
   Da die Exponentionalfunktion eine harmonische Funktion ist, sind die
- tTrigonometrischen Funktionen ebenfalls harmonisch.
+  trigonometrischen Funktionen ebenfalls harmonisch.
 \end{defini}
 
 \begin{folger}
-  \begin{enumerate}
-   \item $\cosh iz = \cos z, \sinh iz = i\sin z$
-   \item $(\cos z)' = -\sin z, (\sin z)' = \cos z$\\
-    $(\cosh z)' = \sinh z, (\sinh z)' = \cosh z$
-   \item $\cosh z = \sum_{k=0}^{\infty} \frac{z^{2k}}{(2k)!}, \sinh z =
-    \sum_{k=0}^{\infty} \frac{z^{2k+1}}{(2k+1)!}$
-  \end{enumerate}
+  Folgende Zusammenhänge bestehen zwischen den komplexen
+  trigonometrischen Funktionen:
+  \begin{align*}
+   \cosh iz &= \cos z& \sinh iz &= i\sin z\\
+   (\cos z)' &= -\sin z& (\sin z)' &= \cos z\\
+   (\cosh z)' &= \sinh z& (\sinh z)' &= \cosh z\\
+   \cosh z &= \sum_{k=0}^{\infty} \frac{z^{2k}}{(2k)!}&
+       \sinh z &= \sum_{k=0}^{\infty} \frac{z^{2k+1}}{(2k+1)!}
+  \end{align*}
 \end{folger}
 
 \section{Integration}
@@ -4546,7 +4581,7 @@ Zu beginn einige Wiederholungen:
     \end{gather*}
     $h$ ist stetig $\Rightarrow$ Rieman-Integral existiert
 
-    $L$ heißt \emph{Länge} von $\Gamma$
+    $L$ heißt \emph[index=Länge einer Kurve]{Länge} von $\Gamma$
 
    \item $\Gamma = \sum_{j=1}^{n} \Gamma_{j}$ stückweise glatte Kurve in
     $G$:
@@ -4694,8 +4729,8 @@ Zu beginn einige Wiederholungen:
     \begin{align*}
       \int_{\Gamma} f(z)\,dz &= \int_{a}^{b} f(g(t))\dot{g}(t)\,dt
          = \int_{a}^{b} F'(g(t))\dot{g}(t)\,dt\\
-      &= \int_{a}^{b} \frac{d}{dt}\big(F(g(t))\,dt &\text{nach
-         \autoref{lem:2}}\\
+      &= \int_{a}^{b} \frac{d}{dt}\big(F(g(t))\,dt &\text{
+         \makebox[0pt][r]{nach \autoref{lem:2}}}\\
       \intertext{mit dem Hauptsatz der Differential und Integralrechnung
         ergibt sich}
       &= F(g(b)) - F(g(a)) = F(z_{2}) -F(z_{1})
@@ -4705,7 +4740,7 @@ Zu beginn einige Wiederholungen:
 
 % 31.1.06
 
-\begin{satz}
+\begin{satz}\label{satz:10.2.2/4}
   $G\subseteq\C$ offen, $f:G\rightarrow\C$ stetig. Dann sind äquivalent:
   \begin{enumerate}
    \item $f$ besitzt eine Stammfunktion in $\C$ ($\exists F:
@@ -4747,12 +4782,11 @@ Zu beginn einige Wiederholungen:
 
 \subsection{Der Cauchy'sche Integralsatz}
 
-In \todo{satz 10.2.1/6} haben wir unter den Vorraussetzungen (1) $f$
+In \autoref{satz:2} haben wir unter den Vorraussetzungen (1) $f$
 holomorph in $G$, (2) $f'$ stetig in $G$ und (3) $G$ stetig gezeigt, dass
-für alle geschlossenen Kurven $\Gamma$ das Kurvenintegral $\int_{\Gamma}
-f(z)\,dz =0$.
+für alle geschlossenen Kurven $\Gamma$ das Kurvenintegral null ist.
 
-\todo{Satz 10.2.2/4}: $\exists$ Stammfunktion und $G\subset \C$ offen
+\autoref{satz:10.2.2/4}: $\exists$ Stammfunktion und $G\subset \C$ offen
 $\Leftrightarrow $ für alle geschlossenen Kurven $\Gamma$ das
 Kurvenintegral $\int_{\Gamma} f(z)\,dz=0$.
 
@@ -4820,6 +4854,11 @@ $\int_{\Gamma} f(z)\,dz =0$.
     \end{gather*}
     Da die Stammfunktion zu 1 und $(z-z_{0})$ (\autoref{bsp:1})
     existiert, ist das Integral 0. \help{wieso?}
+    \textit{Hinweis von Fabian: Die Integrale werden null,
+      weil 1 und $(z-z_0)$ holomorphe Funktionen sind und wir über eine
+      geschlossene Kurve (in diesem Fall ein Dreieck) integrieren. --
+      Anmerkung von Jörg: das ist doch die Aussage des Lemmas, das wir
+      beweisen wollen.}
 
     \begin{gather*}
       \abs{\int_{\partial\Delta_{j}} f(z)\,dz} = \abs{
@@ -5375,10 +5414,13 @@ $\int_{\Gamma} f(z)\,dz =0$.
   Die Funktion
   \[f_1(z)= \sum_{k=-1}^{-\infty} a_k (z-z_0)^k= a_{-1}\frac{1}{z-z_0}
   + a_{-2}\frac{1}{(z-z_0)^2}+ \ldots\]
-  heißt \emph[Hauptteil\,d.\,Laurentreihe]{Hauptteil} und beschreibt die Singularität von $f$ bei
-  $z_0$. Insbesondere gilt für $a_{-1}: \oint_{\lvert
-    z-z_0\rvert=\rho} f(z)dz=2\pi ia_{-1}$ und $a_{-1}$ heißt
-  \emph{Residuum}\footnote{Schreibweise: $\Res(f, z_0)$} von $f$ in $z_0$.
+  heißt \emph[index={Hauptteil\,d.\,Laurentreihe}]{Hauptteil} und beschreibt die
+  Singularität von $f$ an der Stelle $z_0$. Insbesondere gilt für $a_{-1}$
+  \begin{gather*}
+    \oint_{\abs{z-z_0}=\rho} f(z)dz=2\pi ia_{-1}
+  \end{gather*}
+  $a_{-1}$ heißt \emph{Residuum}\footnote{Schreibweise: $\Res(f, z_0)$}
+  von $f$ in $z_0$.
 \end{bemerk}
 
 \begin{bsp}
