@@ -190,10 +190,12 @@
 
 \renewcommand*{\emph}[2][]{%
   \begingroup%
-  \setkeys{local}{index={#2},rand={#2}}\setkeys{local}{#1}%
-  \textit{#2}%
-  \index{\local@index}%
-  \marginpar{\raggedright\small\itshape\local@rand}%
+    \setkeys{local}{index={#2},rand={#2}}\setkeys{local}{#1}%
+    \textit{#2}%
+    \if\@empty\local@index\relax\else\index{\local@index}\fi%
+    \if\@empty\local@rand\relax\else%
+      \marginpar{\raggedright\small\itshape\local@rand}%
+    \fi%
   \endgroup%
 }
 \makeatother
@@ -378,7 +380,7 @@
   C^{1}(\Omega), j=1,\ldots,n$ $C^{1}$-Vektorfeld. Dann gilt:
 
   \begin{enumerate}
-   \item Als den \emph{Gradient} oder \emph{Nabla} einer
+   \item Als den \emph[rand={Gradient, Nabla}]{Gradient} oder \emph[rand=]{Nabla} einer
     Funktion $u$ bezeichnet man
     \begin{align*}
       \grad u &= \nabla u = \partial_{1}u\vec{e_{1}}
@@ -410,8 +412,10 @@
 
 \begin{bemerk}
   Gilt für $\vec{v}$ $\Div \vec{v} = 0$ auf $\Omega$, dann nennt man
-  $\vec{v}$ ein \emph{quellenfreies Vektorfeld}. Ist $\rot \vec{v}=0$
-  auf $\Omega$, so nennt man es ein \emph{wirbelfreies Vektorfeld}.
+  $\vec{v}$ ein \emph[rand=quellenfreies V.,
+  index=Vektorfeld!quellenfreies]{quellenfreies Vektorfeld}. Ist $\rot
+  \vec{v}=0$ auf $\Omega$, so nennt man es ein \emph[rand=wirbelfreies
+  V.,index=Vektorfeld!wirbelfreies]{wirbelfreies Vektorfeld}.
 \end{bemerk}
 
 \begin{defini}\label{def:1}
@@ -2679,7 +2683,7 @@ Matrix $A(x)$ positiv definit auf $\Omega$ ist.
 
 \begin{bemerk}
   Das Randwertproblem ist nicht immer lösbar. Sei beispielsweise
-  $\Delta u=0$ auf $K_1(0)\backslash\{0\}$ und $u(y)=0$ für $\lvert
+  $\Delta u=0$ auf $K_1(0)\setminus\{0\}$ und $u(y)=0$ für $\lvert
   y\rvert=1$ sowie $u(0)=1$ die Randbedingungen. Dann ist das in
   unserem Sinne nicht lösbar.
 \end{bemerk}
@@ -5228,7 +5232,7 @@ $\int_{\Gamma} f(z)\,dz =0$.
   \end{enumerate}
 \end{folger}
 
-\begin{folger}[Riemannscher Hebbarkeitssatz]
+\begin{folger}[Riemannscher Hebbarkeitssatz]\label{fol:4}
   $G\subset G$ offen und $z_{0}\in G$
   \begin{enumerate}
    \item $f$ holomorph in $G\setminus\{z_{0}\}$ und stetig in $z_{0}$
@@ -5356,7 +5360,7 @@ $\int_{\Gamma} f(z)\,dz =0$.
     \frac{f(\zeta)}{(\zeta - z_0)^{k+1}} d\zeta\]
   \item Der Hauptteil der Laurentreihe $f_1$ konvergiert absolut und
     gleichmäßig auf $\{z\colon \lvert z-z_0\rvert \geq r_1\}$ mit $r_1>r$
-    und ist holomorph auf $\C\backslash \overline{K_r(z_0)}$. Weiter
+    und ist holomorph auf $\C\setminus \overline{K_r(z_0)}$. Weiter
     ist $f_2$ ebenfalls absolut konvergent und gleichmäßig auf $\{z\colon
     \lvert z-z_0\rvert \leq r_2\}$ mit $r_2<R$ und ist holomorph auf
     $K_R(z_0)$.
@@ -5466,15 +5470,222 @@ $\int_{\Gamma} f(z)\,dz =0$.
 \end{defini}
 
 \begin{folger}
-  Sei $f$ holomorph in $K(z_0, r,R)\Rightarrow \oint_{\lvert
-    z-z_0\rvert =\rho} f(z)dz=2\pi i \Res(f,z_0)$.
+  Sei $f$ holomorph in $K(z_0, r,R)\Rightarrow \oint_{\abs{z-z_0} =r}
+  f(z)dz=2\pi i \Res(f,z_0)$.
 \end{folger}
 
+% 14.2.06
+
 \begin{bsp}
-  $\oint_{\lvert z-i\rvert=1} \frac{dz}{1+z^2}=2\pi
-  i\frac{1}{2i}= \pi$
+  \begin{gather*}
+    \oint_{\abs{z}=r} \frac{e^{z}}{z^{2}} = 2\pi i
+  \end{gather*}
+  da $\Res(\frac{e^{z}}{z^{2}}, 0) = 1$
+
+  Laurentreihe:
+  \begin{gather*}
+    \frac{e^{z}}{z^{2}} = \frac{1}{z^{2}} (1+z+\frac{z^{2}}{2!} +
+       \frac{z^{3}}{3!} + \ldots) = \frac{1}{z^{2}} \frac{1}{z} +
+       \frac{1}{2} + \ldots
+  \end{gather*}
 \end{bsp}
 
+\begin{bsp}
+  \begin{gather*}
+    \oint_{\abs{z-i}=1} \frac{dz}{1+z^2}=2\pi i \Res(\frac{1}{1+z^{2}},
+       i) = 2\pi i\frac{1}{2i}= \pi
+  \end{gather*}
+
+  da die Laurentreihe so aussieht:
+  \begin{gather*}
+    \frac{1}{1+z^{2}} = \frac{1}{2i} \frac{1}{z-1} + \frac{1}{4}
+       \sum_{k=0}^{\infty} \frac{i^{k}}{2^{k}} (z-i)^{k}
+  \end{gather*}
+\end{bsp}
+
+\begin{bemerk}
+  Ausdehnung auf beliebige geschlossene stückweise glatte Kuren $\Gamma$
+  (\textit{nicht} notwendig Jordankurve). dazu: \emph{Umlaufzahl}
+  (beschreibt wie oft eine Kurve um einen Punkt eine 360°-Drehung
+  vollzieht)
+
+  dazu wählen wir für $\Gamma$ eine Parameterdarstellung als
+  Polarkoordinaten mit $z_{0}$ als Nullpunkt und einen beliebigen festen
+  Strahl aus $z_{0}$ als den Winkel null.
+  \begin{gather*}
+    g(t) = z_{0} + t(t) e^{i\phi(t)}, g\colon[a,b] \rightarrow\C
+  \end{gather*}
+
+  Für eine geschlossene Kurve $\Gamma$ gilt $g(a)=g(b)$ und $r(a)=r(b)$
+  und $\phi(a) = \phi(b)+2\pi n$ mit $n\in\Z$. $n$ nennt man die
+  \emph{Umlaufzahl}.
+
+  Es gilt:
+  \begin{gather*}
+    \int_{\Gamma} \frac{dz}{z-z_{0}} = \int_{a}^{b}
+       \frac{g'(t)}{g(t)-z_{0}}dt = \int_{a}^{b} \frac{r'(t) e^{i\phi(t)} +
+       r(t) \phi'(t) e^{i\phi(t)} }{r(t) e^{i\phi(t)}} dt = \int_{a}^{b}
+       \frac{r'(t)}{r(t)}dt + i \int_{a}^{b} \phi'(t)\,dt = \ln r(t)
+       \big\|_{a}^{b} + i\phi(t) \big\|_{t=a}^{b} = i(\phi(b)-\phi(a)) =
+       (2\pi i) n
+  \end{gather*}
+  \textit{Anmerkung: $\ln r(t)$ ist null, da $r(a)=r(b)$}
+
+  Wir können also die Umlaufzahl wie folgt beschreiben
+  \begin{gather*}
+    n = \frac{1}{2\pi i}\int_{\Gamma} \frac{dt}{z-z_{0}}
+  \end{gather*}
+\end{bemerk}
+
+\begin{lemma}\label{lem:10.3.2/5}
+  Für einen Punkt $z_{0}\in\C$ und eine geschlossene stückweise glatte
+  Kurve $\Gamma$ in $\C$, wobei $z_{0}\ne\Gamma$, ist die Umlaufzahl eine
+  ganze Zahl
+  \begin{gather*}
+    \frac{1}{2\pi i} \int_{\Gamma} \frac{dz}{z-z_{0}}\; \in \Z
+  \end{gather*}
+
+  (ohne Beweis)
+\end{lemma}
+
+\begin{defini}
+  $\Gamma$ und $z_{0}$ wie in \autoref{lem:10.3.2/5}
+  \begin{gather*}
+    n(\Gamma, z_{0}) := \frac{1}{2\pi i} \int_{\Gamma} \frac{dz}{z-z_{0}}
+  \end{gather*}
+  heißt \emph{Umlaufzahl} von $\Gamma$ bezüglich $z_{0}$.
+\end{defini}
+
+\begin{satz}[Resiuensatz]\label{satz:10.3.2/7}
+  $G$ einfach zusammenhängendes Gebiet, $\{z_{1}, z_{2},\ldots,z_{N}\}
+  \subset G$, $f$ holomorph in $G\setminus\{z_{1},\ldots,z_{N}\}$,
+  $\Gamma$ geschlossene stückweise glatte Kurve in $G$, die $\{z_{1},
+  \ldots,z_{N}\}$ nicht enthält. Dann gilt:
+  \begin{gather*}
+    \int_{\Gamma} f(z)\,dz = 2\pi i\sum_{j=1}^{N} n(\Gamma, z_{j})
+       \Res(f, z_{j})
+  \end{gather*}
+\end{satz}
+
+\begin{folger}
+  Das Integral über eine geschlossene Jordankurve $\Gamma$ ist
+  \begin{gather*}
+    \int_{\Gamma} f(z)\,dz = 2\pi i \sum_{z_{j}\in IG} \Res(f,
+       z_{j})
+  \end{gather*}
+  Das \emph{Innengebiet} $IG$ sind alle Punkte, für die die Umlaufzahl
+  größer null ist oder bildlich dargestellt, ist es das Gebiet, das von
+  der Kurve umschlossen wird.
+\end{folger}
+
+\begin{folger}[Allgemeine Cauchy-Integralformel]
+  Auf einem einfach zusammenhängendes Gebiet $G$ mit einer geschlossene stückweise glatte
+  Kurve $\Gamma\subset G$ und einer holomorphen Funktion $f\colon
+  G\rightarrow\C$ gilt für einen Punkt $z\in G$, der nicht von $\Gamma$
+  durchlaufen wird:
+  \begin{gather*}
+    n(\Gamma, z) f^{(k)}(z) ) \frac{k!}{2\pi i} \int_{\Gamma}
+       \frac{f(\zeta)}{(\zeta-z)^{k+1}} d\zeta
+  \end{gather*}
+
+  \begin{proof}
+    \begin{align*}
+      g(\zeta) &= \frac{f(\zeta)}{(\zeta-z)^{k+1}} =
+         \frac{1}{(\zeta-z)^{k+1}} \sum_{j=0}^{\infty}
+         \frac{f^{(j)}(z)}{j!} (\zeta-z)^{j}\\
+         &= \frac{1}{(\zeta-z)^{k+1}} (f(z) + f'(z)\:(\zeta-z) + \ldots+
+         \frac{f^{(k)}(z)}{k!} (\zeta-z)^{k} + \ldots)
+    \end{align*}
+    $\Rightarrow$ $\Res(g,z) =  \frac{f^{(k)}(z)}{k!}$,
+    \autoref{satz:10.3.2/7} $\Rightarrow$ $\int_{\Gamma}
+    g(\zeta)\,d\zeta = 2\pi i n(\Gamma,z) \frac{f^{(k)}(z)}{k!}$
+  \end{proof}
+\end{folger}
+
+\subsection{Singularitäten}
+
+\begin{defini}
+  $f$ sei holomorph in $K_{R}(z_{0})\setminus\{z_{0}\}$. Es sei
+  $\sum_{k=-\infty}^{\infty} a_{k}(z-z_{0})^{k} =f(z)$ die Laurentreihe
+  von $f$ in $K_{R}(z_{0})\setminus\{z_{0}\}$.
+  \begin{enumerate}
+   \item $z_{0}$ heißt \emph[index=Singularität!hebbare]{hebbare
+    Singularität} \gdwdef $a_{-k}=0$ für alle $k\in\N$
+
+   \item $z_{0}$ heißt \emph{Pol $n$-ter Ordnung} von $f$ \gdwdef $a_{-n}
+    \ne 0$ und $a_{-k}=0$ für alle $k>n$
+
+   \item $z_{0}$ heißt \emph[index=Singularität!wesentliche]{wesentliche
+    Singularität} \gdwdef $a_{-k}\ne 0$ für unendlich viele $k\in\N$
+  \end{enumerate}
+\end{defini}
+
+\begin{bsp}
+  Die Funktion $f(z) = \frac{\sin z}{z}$ hat an der Stelle $z_{0}=0$ eine
+  Singularität. Da die Laurentreihenentwicklung für die Funktion keine
+  $z$ mit negativem Exponenten hat, ist $z_{0}$ eine hebbare
+  Singularität.
+  \begin{gather*}
+    f(z) = \frac{\sin z}{z} = \frac{1}{z^{2}} ( z - \frac{z^{3}}{3!} +
+       \frac{z^{5}}{5!} -+ \ldots ) = 1- \frac{z^{2}}{3!} +
+       \frac{z^{4}}{5!} -+\ldots
+  \end{gather*}
+
+  Die Laurentreihenentwicklung für $f(z) = \frac{\cos z}{z}$ liefert ein
+  Glied mit negativem Exponenten. Die Singularität $z_{0}=0$ ist ein Pol
+  2.\,Ordnung.
+  \begin{gather*}
+    f(z) = \frac{\cos z}{z} = \frac{1}{z^{2}} ( 1 - \frac{z^{2}}{2!} +
+       \frac{z^{4}}{4!} -+ \ldots ) = \frac{1}{z^{2}} - \frac{1}{2} +
+       \frac{z^{2}}{4!} - \frac{z^{4}}{6!} +-\ldots
+  \end{gather*}
+
+  Für $e^{z^{-1}}$ ist die Singularität bei $z_{0}=0$ eine wesentliche
+  Singularität.
+  \begin{gather*}
+    f(z) = e^{\frac{1}{z}} = \sum_{k=0}^{\infty} \frac{1}{k!}
+       \big(\frac{1}{z}\big)^{k} = 1+\frac{1}{z} + \frac{1}{2z^{2}} +
+       \frac{1}{3! z^{3}} + \ldots
+  \end{gather*}
+
+  analog $f(z) = \sin\frac{1}{x}$
+\end{bsp}
+
+\begin{bemerk}
+  Aus dem Riemannschen Hebbarkeitssatz (\autoref{fol:4}) folgt: $z_{0}$
+  ist eine hebbare Singularität \gdw $f$ beschränkt in einer Umgebung von
+  $z_{0}$ und holomorph in $U(z_{0})\setminus\{z_{0}\}$ ist.
+
+  Außerdem klar: $z_{0}$ Polstelle $\Rightarrow$
+  $\lim_{\abs{z}\rightarrow\infty} \abs{f(z)} = \infty$, da $f(z) =
+  \frac{1}{(z-z_{0})^{n}} (a_{-n} + a_{-n+1}(z-z_{0}) +\ldots)$
+\end{bemerk}
+
+\begin{satz}[Casorati-Weierstraß]
+  $z_{0}$ ist eine wesentliche Singularität von $f$ \gdw für jedes
+  $w\in\C$ existiert eine Folge $(z_{n})_{n}$ mit der Eigenschaft, dass
+  $z_{n}\rightarrow z_{0}$ und $f(z_{n}) \rightarrow w$ für
+  $n\rightarrow\infty$.
+\end{satz}
+
+\section{Eigenschaften holomorpher Funktionen}
+\subsection{Der Identitätssatz für holomorphe Funktionen}
+
+\begin{satz}
+  Es sei $G\subset \C$ ein beliebiges Gebiet und wir betrachten
+  holomorphe Funktionen $f,g\colon G\rightarrow \C$. Dann sind folgende
+  Aussagen äquivalent:
+  \begin{enumerate}
+   \item Es existiert eine Menge $M\subset G$, die in $G$ einen
+    Häufungspunkt besitzt, so dass $f(z) = g(z)$ für alle $z\in M$.
+
+   \item Es existiert ein Punkt $z_{0}\in G$, in dem alle Ableitungen von
+    $f$ und $g$ übereinstimmen: $f^{(k)}(z_{0})  =gf^{(k)}(z_{0})$
+    $\forall k\in\N_{0}$.
+
+   \item Es ist $f(z) = g(z)$ $\forall z\in G$.
+  \end{enumerate}
+\end{satz}
 
 \clearpage
 \appendix
