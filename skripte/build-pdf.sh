@@ -14,8 +14,8 @@ fi
 
 joergs=/home/stud/md01/joergs
 
-export PATH=$joergs/rubber-1.0/bin:$joergs/xindy/bin: \
-  /mnt/local/joergs/texlive/bin/i386-linux/:$PATH
+PATH=/mnt/local/joergs/texlive/bin/i386-linux/:$PATH
+export PATH=$joergs/rubber-1.0/bin:$joergs/xindy/bin:$PATH
 
 REPOS=$1
 URL=$joergs/.svnroot/$REPOS
