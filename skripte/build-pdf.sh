@@ -7,9 +7,15 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+if [ $(hostname) != "ppc214" ]; then
+    echo "You must run this script on ppc214 to get access to TexLive"
+    exit 1
+fi
+
 joergs=/home/stud/md01/joergs
 
-export PATH=$joergs/rubber-1.0/bin:$joergs/xindy/bin:$PATH
+export PATH=$joergs/rubber-1.0/bin:$joergs/xindy/bin: \
+  /mnt/local/joergs/texlive/bin/i386-linux/:$PATH
 
 REPOS=$1
 URL=$joergs/.svnroot/$REPOS
@@ -58,7 +64,7 @@ else
 fi
 echo "I: using $src as source file"
 
-cp $WEB/sty/* .
+#cp $WEB/sty/* .
 for ext in pdf ps; do
     if rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
         echo "I: installing ${src%.*}.$ext as $REPOS.$ext"
