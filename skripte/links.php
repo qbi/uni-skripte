@@ -17,6 +17,12 @@
  about TeX and DANTE e.V.</a>: Fragen und Antworten zu LaTeX -- kann
  sehr hilfreichsein, ist aber auch sehr umfangreich</li>
 
+ <li>Eine <a href='http://www.zvisionwelt.de/typokurz.pdf'>kurze Einführung
+   in die Welt der Typografie</a>. Wer auf den Gedanken kommt, er müsse eine
+   andere Schriftart wählen oder nicht weiß, wann er welchen Strich (- oder
+    -- oder ---) verwenden soll, der solle hier mal reinsehen.
+ </li>
+
  <li><a href='http://groups.google.de/group/de.comp.text.tex'>
  de.comp.text.tex bei Google Groups</a>: Ein Anfangspunkt zur
  Hilfesuche.</li>
@@ -33,8 +39,7 @@ LaTeX - Fortgeschrittene Anwendungen</a></li>
 
 <li><a href='http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf'>
 Mathmode</a></li>
-
-<li><a href='http://www.zvisionwelt.de/typokurz.pdf'>typokurz.pdf</a></li></ul>
+</ul>
 
 ...und noch etwas Werbung für die Konkurrenz
 <ul>

@@ -75,6 +75,9 @@ for ext in pdf ps; do
     fi
 done
 
+echo "I: check for bad latex..."
+$joergs/TeXidate.pl $src
+
 cd /
 rm -r $TMP
 
