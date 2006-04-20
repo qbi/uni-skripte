@@ -1,8 +1,11 @@
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
 % rubber: clean $base.thm
-%  rubber soll nach Änderungen an der Datei nochmal bauen 
+%  rubber soll nach Änderungen an der Datei nochmal bauen
 % rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
 %
 % scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
 % zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
@@ -13,7 +16,7 @@
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
-\usepackage{index}
+\usepackage{makeidx}
 % \usepackage[final]{graphicx}  % Für Grafiken
 \usepackage{color}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
@@ -23,18 +26,8 @@
 % \usepackage{nicefrac}
 % \usepackage{tabularx}
 
-% Schrift, die als serifen-Schrift (normale Text) verwendet wird
-%  Ich finde Times sieht kräftiger aus, als die beiden anderen, was sich
-%  IMO vorteilhaft bei 2 auf 1-Drucken auswirkt
-\usepackage{times}		% Times
-% \usepackage{lmodern}		% Latin Modern
-% \usepackage{type1ec}		% cm-super
-
-% Schrift, die für serifenlose Schrift (\textsf{}) verwendet wird
-\usepackage{helvet}
-
-% T1-Schriften verwenden -- notwendig für PDFs
-\usepackage[T1]{fontenc}
+\usepackage{lmodern}	    % Latin Modern als Schrift verwenden
+\usepackage[T1]{fontenc}    % T1-Schriften verwenden -- notwendig für PDFs
 
 \usepackage[intlimits,leqno]{amsmath}
 \usepackage{amssymb}     % wird für \R, \C,... gebraucht
@@ -54,6 +47,8 @@
                          % gesetzt werden
 % \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
                          % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{xkeyval}     % für die Auswertung von Argumentenlisten; s.
+                         % Neudefinition von \emph
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -117,11 +112,34 @@
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
-% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
-% optionales Argument selbst bestimmt werden.
-\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
-  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+% automatisch als Indexeintrag verwendet und am Rand wiederholt. Da unter
+% Umständen der Eintrag im Index oder am Rand anders lauten soll --
+% z.\,B. Oberbegriff!Unterbegriff für den Index --, akzeptiert der Befehl
+% ein optionales Argument in Form einer Liste, die mit
+% index=<Indexeintrag>, rand=<Randeintrag> und indexrand=<Index- und
+% Randeintrag> die jeweiligen Felder anders belegt.
+\makeatletter
+\newcommand*{\local@index}{}
+\newcommand*{\local@rand}{}
+\newcommand*{\local@indexrand}{}
+\define@key{local}{index}{\renewcommand*{\local@index}{#1}}
+\define@key{local}{rand}{\renewcommand*{\local@rand}{#1}}
+\define@key{local}{indexrand}{\renewcommand*{\local@indexrand}{#1}}
+
+\renewcommand*{\emph}[2][]{%
+  \begingroup%
+    \setkeys{local}{indexrand={#2}}%
+    \setkeys{local}{#1}%
+    \setkeys{local}{index={\local@indexrand},rand={\local@indexrand}}%
+    \setkeys{local}{#1}%
+    \textit{#2}%
+    \if\@empty\local@index\relax\else\index{\local@index}\fi%
+    \if\@empty\local@rand\relax\else%
+      \marginpar{\raggedright\small\itshape\local@rand}%
+    \fi%
+  \endgroup%
 }
+\makeatother
 
 % Definition für Xindy für die Trennung der einzelnen Abschnitte im
 % Index. siehe auch die Datei indexstyle.xdy
@@ -169,9 +187,9 @@
 
 \begin{document}
 
-\title{Name der Vorlesung}
-\author{Name des Dozenten}
-\date{Semester: SS 200X, WS 200X/0Y}
+\title{Logik}
+\author{Prof.\,Dr.\,Mundhenk}
+\date{Semester: SS 2006}
 \maketitle
 
 \clearpage
@@ -198,7 +216,7 @@
 
   Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
   Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder selbst
-  einzupflegen -- einfach eine eMail an die
+  einzupflegen -- einfach eine E-Mail an die
   \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
   \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
   sind unter der oben genannten Internetadresse des Projekts verfügbar.
@@ -206,7 +224,8 @@
   Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
   haben, vielmals danken:
   \begin{itemize}
-   \item \href{mailto:email}{Person \texttt{<email>}} (Jahr)
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2006)
   \end{itemize}
 }
 
@@ -228,62 +247,225 @@
 % \theoremlisttype{all}
 \listtheorems{defini,festl}
 
-\chapter{Erstes Kapitel}
-\section{Erster Abschnitt}
+\clearpage
+\pdfbookmark[0]{Literaturverzeichnis}{literaturverzeichnis}
+\begin{thebibliography}{99}
+ \bibitem{Mendelson} Mendelson: Introduction to mathematical logic
+ \bibitem{Booles} Booles/Jeffrey: Computability and logic
+ \bibitem{Nerode} Nerode/\ldots: Logic\ldots
+\end{thebibliography}
 
-\begin{satz}[Toller Satz]\label{satz:1}
-  Dies ist ein ganz toller und wichtiger Satz mit einer ganz einfachen
-  Formel
+\chapter{Aussagenlogik}
+
+Eine \emph{Aussage} ist entweder \emph{wahr} oder \emph{falsch}.
+
+Beispiele für Aussagen:
+\begin{itemize}
+ \item Die Straße ist nass. (falsche Aussage)
+ \item Jena liegt an der Saale. (wahre Aussage)
+ \item Hamburg liegt nicht in Thüringen. (falsche Aussage)
+\end{itemize}
+
+\emph{Negation} einer Aussage:
+\begin{itemize}
+ \item Die Straße ist nicht nass. (wahre Aussage)
+ \item Jena liegt nicht an der Saale. (falsche Aussage)
+\end{itemize}
+
+\emph{Konjunktion} zweier Aussagen:
+\begin{itemize}
+ \item Jena liegt an der Saale \emph{und} die Straße ist nicht nass.
+\end{itemize}
+
+\emph{Disjunktion} zweier Aussagen:
+\begin{itemize}
+ \item Jena liegt an derr Saale \emph{oder} die Straße ist nicht nass.
+\end{itemize}
+
+\textit{Vorsicht:} Umgangssprachlich versteht man unter "`oder"' oft ein
+"`entweder \ldots oder"' (genau eine der beiden Aussagen gilt), in der
+Logik ist es aber auch möglich, dass beide Teilaussagen wahr sind.
+
+\emph{Implikation} zweier Aussagen:
+\begin{itemize}
+ \item \emph[rand=wenn\ldots dann,index=wenn\ldots dann]{Wenn
+  \textnormal{die Straße nass ist,} dann} liegt Hamburg in
+  Thüringen.
+\end{itemize}
+
+\emph{Äquivalenz} zweier Aussagen:
+\begin{itemize}
+ \item Jena liegt an der Saale \emph{genau dann, wenn} Hambug in
+  Thüringen liegt.
+\end{itemize}
+
+Formal verwendet man statt Aussagen \emph{Variablen} bzw. Aussagezeichen
+wie $A_{0}, A_{1}, A_{2}, \ldots,B_{0},\\ B_{1}, B_{2}, \ldots$, statt
+"`Verknüpfungen"' nimmt man Symbole: $\neg$ (Negation), $\wedge$
+(Konjunktion), $\vee$ (Disjunktion), $\rightarrow$ (Implikation),
+$\leftrightarrow$ (Äquivalenz)
+
+\begin{defini}
+  Aussagenlogische Formeln sind wie folgt definiert:
+  \begin{enumerate}
+   \item Jede Variable $A_{0}, A_{1}, A_{2}, \ldots,B_{0}, B_{1}, B_{2},
+     \ldots$ ist eine aussagenlogische Formel.
+   \item Wenn $\alpha$ und $\beta$ aussagenlogische Formeln sind, dann
+    sind auch
+    \begin{gather*}
+      (\neg \alpha), (\alpha\wedge\beta), (\alpha\vee\beta),
+         (\alpha\rightarrow\beta), (\alpha\leftrightarrow\beta)
+    \end{gather*}
+    aussagenlogische Formeln.
+  \end{enumerate}
+\end{defini}
+
+\begin{bsp}[Beispiele für aussagenlogische Formeln]
+  Wenn $A_{12}$ und $B_{1}$ aussagenlogische Formeln sind, dann sind dies
+auch aussagenlogische Formeln:
   \begin{gather*}
-    a\cdot0=0
+    (A_{12} \wedge B_{1}), ((\neg A_{5}) \rightarrow B_{1}),
+       ((A_{12}\wedge B_{1}) \vee (\neg ((\neg A_{5})\rightarrow B_{1}))
   \end{gather*}
-
-  \begin{proof}
-    Daher müssen wir ihn auch beweisen:
-    \begin{align*}
-      a\cdot 0 &= a\cdot(1-1)\\
-      &= a-a&\text{durch ausmultiplizieren}\\
-      &= 0&\text{n.\,Definition d.\,Inversen d.\,Addition}
-    \end{align*}
-  \end{proof}
-\end{satz}
+\end{bsp}
 
 \begin{bemerk}
-  Der ganz tolle und wichtige \autoref{satz:1} ist gar nicht so toll und
-  wichtig ist er schon gar nicht.
+  überflüssige Klammern können weggelassen werden. $A,B,C,\ldots$ können
+auch als Variablen genommen werden.
+
+  Bindungsstärke der Verknüpfungszeichen:
+  \begin{enumerate}
+   \item $\neg$
+   \item $\wedge$, $\vee$
+   \item $\rightarrow$
+   \item $\leftrightarrow$
+  \end{enumerate}
+
+  \begin{gather*}
+    (A_{12}\wedge B_{1}) \vee \neg (\neg A_{5}\rightarrow B_{1})
+  \end{gather*}
 \end{bemerk}
 
-\begin{bemerk}[Wichtiger Hinweis]
-  Aber merke: Keine \texttt{equation}-Umgebung mehr verwenden.
-  Stattdessen lieber \texttt{gather}. Siehe \url{news:d9bfko$fdp$1@news.BelWue.DE}
-  und einfach mal "`\texttt{texdoc amsldoc}"' aufrufen.
+Jede Variable einer aussagenlogische Formel kann einen der
+\emph{Wahrheitswerte} $w$ ("`\emph{wahr}"', $T$, 1) und $f$
+("`\emph{falsch}"', $F$, 0) annehmen. Der Wahrheitswert einer
+zusammengesetzen Formel ergibt sich aus den Wahrheitswerten ihrer Teile.
 
-  Auf \url{http://www.dante.de/CTAN/info/german/l2tabu/l2tabu.pdf} sind
-  weitere nützliche Hinweise zu finden.
-\end{bemerk}
+\begin{table}[h]
+  \centering
+  \begin{tabular}{cc*{5}{|c}}
+    $\alpha$ & $\beta$ & $\alpha\wedge\beta$ & $\alpha\vee\beta$ &
+       $\alpha\rightarrow\beta$ & $\alpha\leftrightarrow\beta$ &
+       $\neg\alpha$\\
+    \hline
+    $f$ & $f$ & $f$ & $w$ & $w$ & $w$ & $w$\\
+    $f$ & $w$ & $f$ & $w$ & $w$ & $f$ &\\
+    $w$ & $f$ & $f$ & $w$ & $f$ & $f$ & $f$\\
+    $w$ & $w$ & $w$ & $w$ & $w$ & $w$ &
+  \end{tabular}
+  \caption{Wahrheitstafeln}
+\end{table}
 
-\begin{satz}[Verwendung von Grafiken]
-  Grafiken sollten prinzipell in einem Vektorformat erstellt werden. Dazu
-  eignet sich \texttt{xfig} sehr gut. Wird das Bild mit
-  \texttt{\textbackslash{}includegraphics\{bild\}} eingebunden, erstellt
-  \texttt{rubber} automatisch daraus die benötigte Datei
-  -- \texttt{bild.pdf} oder \texttt{bild.eps} -- für \LaTeX{}.
+Wenn $\underbrace{die Straße nass ist}_{A}$, dann $\underbrace{liegt
+Hamburg in Thüringen}_{B}$, wobei $A$ den Wahrheitswert $f$ und $B$ den
+Wahrheitswert $f$ hat. Also ist $A\rightarrow B$ wahr.
 
-  Für besondere Schriften (z.\,B. mathmatische Zeichen oder
-  Hoch-/Tiefstellen) kann man in \texttt{xfig} das "`Special Flag"' für
-  Text setzen und das Bild mithilfe von
-  \texttt{\textbackslash{}input\{bild.pdf\_t\}} einbinden. Damit wird die
-  Schrift direkt von \LaTeX{} erzeugt und man hat (fast) alle
-  Möglichkeiten, die \LaTeX{} bietet. Dies hat jedoch den Nachteil, dass
-  damit keine Postscript-Dateien erstellt werden können. Aber mithilfe
-  des Paketes \texttt{ifpdf} kann man in Latex beide Varianten für das
-  Bild angeben:
-  \begin{center}
-    \verb|\ifpdf\input{bild.pdf_t}\else\input{bild.eps_t}\fi|
-  \end{center}
-  \texttt{rubber} erzeugt dann zwar beide Bilder, aber das stört \LaTeX{}
-  nicht weiter.
-\end{satz}
+\begin{center}
+  \begin{tabular}{ccc*{5}{|c}}
+    $A$ & $B$ & $C$ & $A\wedge B$ & $B\vee C$ & $A\rightarrow(B\vee C)$ &
+    $\neg(A\rightarrow(B\vee C))$ & $\ldots \leftrightarrow \ldots$\\
+    \hline
+    $f$ & $f$ & $f$ & $f$ & $f$ & $w$ & $f$ & $w$\\
+    $f$ & $f$ & $w$ & $f$ & $w$ & $w$ & $f$ & $w$\\
+    $f$ & $w$ & $f$ & $f$ & $w$ & $w$ & $f$ & $w$\\
+    $f$ & $w$ & $w$ & $f$ & $w$ & $w$ & $f$ & $w$\\
+    $w$ & $f$ & $f$ & $f$ & $f$ & $f$ & $w$ & $f$\\
+    $w$ & $f$ & $w$ & $f$ & $w$ & $w$ & $f$ & $w$\\
+    $w$ & $w$ & $f$ & $w$ & $w$ & $w$ & $f$ & $f$\\
+    $w$ & $w$ & $w$ & $w$ & $w$ & $w$ & $f$ & $f$\\
+  \end{tabular}
+\end{center}
+
+\emph{Verknüpfungsbaum}: \todo{Bild vom Verknüpfungsbaum der obigen
+aussagenlogische Formel}
+
+Die Zuordnung von Wahrheitswerten zu Variablen nennt man eine
+\emph{Belegung}. Die Belegung ist eine Funktion von Variablen auf
+Wahrheitswerte. Wir beschreiben eine Belegung durch eine Menge
+\begin{gather*}
+  \mathcal{A} \subseteq \{ A_{0}, A_{1}, A_{2}, \ldots,B_{0}, B_{1},
+     B_{2}, \ldots \} \cup \{ \neg A_{0}, \neg A_{1}, \neg A_{2}, \ldots,
+\neg B_{0}, \neg B_{1}, \neg B_{2}, \ldots \}
+\end{gather*}
+mit $\{A_{i}, \neg A_{i}\}\not\subseteq \mathcal{A}$ und $\{B_{i}, \neg
+B_{i}\}\not\subseteq \mathcal{A}$ für alle $i$.
+
+$A_{i},B_{i}, \neg A_{i}, \ldots$ und $\neg B_{i}$ nennt man
+\emph{Literale}.
+
+Eine Belegung $\mathcal{A}$ \emph{passt} zur Formel $\alpha$, falls für
+jede Variable $X$, die in der Formel $\alpha$ vorkommt, gilt:
+\begin{center}
+  $X\in\mathcal{A}$ oder $\neg X\in\mathcal{A}$
+\end{center}
+
+Wenn $\mathcal{A}$ eine Belegung ist, die zu der aussagenlogischen
+Formel $\alpha$ passt, dann ist $\mathcal{A}(\alpha)$ wie folgt
+induktiv definiert:
+\begin{enumerate} %fälle
+ \item $\alpha$ ist eine Variable $X$:
+  \begin{gather*}
+    \mathcal{A}(\alpha) = \begin{cases}
+                             w &\text{falls}\ X\in\mathcal{A}\\
+                             f &\text{falls}\ \neg X\in\mathcal{A}\\
+                           \end{cases}
+  \end{gather*}
+
+ \item $\alpha$ ist eine Konjunktion $(\beta\wedge\gamma)$:
+  \begin{gather*}
+    \mathcal{A}(\alpha) =
+       \begin{cases}
+         w & \mathcal{A}(\beta)=w\ \text{und}\ \mathcal{A}(\gamma)=w\\
+         f & \text{sonst}
+       \end{cases}
+  \end{gather*}
+
+ \item $\alpha$ ist eine Disjunktion $(\beta\vee\gamma)$:
+  \begin{gather*}
+    \mathcal{A}(\alpha) =
+       \begin{cases}
+         w & \mathcal{A}(\beta)=w\ \text{oder}\ \mathcal{A}(\gamma)=w\\
+         f & \text{sonst}
+       \end{cases}
+  \end{gather*}
+
+ \item $\alpha$ ist eine Implikation $(\beta\rightarrow\gamma)$:
+  \begin{gather*}
+    \mathcal{A}(\alpha) =
+       \begin{cases}
+         f & \mathcal{A}(\beta)=w\ \text{und}\ \mathcal{A}(\gamma)=f\\
+         w & \text{sonst}
+       \end{cases}
+  \end{gather*}
+
+ \item $\alpha$ ist eine Äquivalenz $(\beta\leftrightarrow\gamma)$:
+  \begin{gather*}
+    \mathcal{A}(\alpha) =
+       \begin{cases}
+         w & \mathcal{A}(\beta)=\mathcal{A}(\gamma)\\
+         f & \text{sonst}
+       \end{cases}
+  \end{gather*}
+\end{enumerate}
+
+\begin{defini}[Tautologie]
+  Eine Formel, die unter jeder passenden Belegung den Wahrheitswert $w$
+  hat, nennt man \emph{Tautologie}.
+\end{defini}
+
+Beispiel: $A\vee\neg A$ oder $A\rightarrow(B\rightarrow A)$ oder
+$((A\rightarrow B)\wedge (B\rightarrow C) ) \rightarrow (A\rightarrow
+C)$.
 
 \clearpage
 \appendix
