@@ -93,6 +93,9 @@
 	      <div><a href='./skripte.php?id=fey-recharch'>Rechnerarchitektur 1&nbsp;und&nbsp;2</a></div>
 	    </div>
 	    
+	    <div class='navmenu'>
+	      <div><a href='./skripte.php?id=mundhenk-logik'>Logik</a></div>
+	    </div>
 	</div>
 	    
 	<div class='navheading'>
