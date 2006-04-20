@@ -211,15 +211,15 @@
   enthalten ist.
 
   Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
-  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist unter
-  \url{http://www.minet.uni-jena.de/~joergs/skripte/pdf/} verfügbar.
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
 
   Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
-  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder selbst
-  einzupflegen -- einfach eine E-Mail an die
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
   \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
   \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
-  sind unter der oben genannten Internetadresse des Projekts verfügbar.
+  sind unter der oben genannten Internetadresse verfügbar.
 
   Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
   haben, vielmals danken:
@@ -467,8 +467,274 @@ Beispiel: $A\vee\neg A$ oder $A\rightarrow(B\rightarrow A)$ oder
 $((A\rightarrow B)\wedge (B\rightarrow C) ) \rightarrow (A\rightarrow
 C)$.
 
+% 2006-04-19
+
+\begin{defini}[Formeläquivalenz]
+  Zwei Formeln sind \emph{äquivalent}, wenn sie bei jeder passenden
+  Belegung den gleichen Wahrheitswert haben. Die symbolische Schreibweise
+  dafür ist $A\equiv B$.
+\end{defini}
+
+\begin{bsp}
+  $A\rightarrow B \equiv \neg(A\wedge \neg B)$
+  \begin{center}
+    \begin{tabular}{cc|c|c}
+      $A$ & $B$ & $A\rightarrow B$ & $\neg(A\wedge\neg B)$\\
+      \hline
+      $f$ & $f$ & $w$ & $w$\\
+      $f$ & $w$ & $w$ & $w$\\
+      $w$ & $f$ & $f$ & $f$\\
+      $w$ & $w$ & $w$ & $w$
+    \end{tabular}
+  \end{center}
+\end{bsp}
+
+Grundlegene Äquivalenzen:
+\begin{itemize}
+ \item $A \wedge B \equiv B\wedge A$ \hfill (\emph{Kommutativität})\\
+  $A \vee B \equiv B\vee A$
+ \item $A\wedge (B\wedge C) \equiv (A\wedge B)\wedge C$ \hfill
+  (\emph{Assoziativität})\\
+  $A\vee (B\vee C) \equiv (A\vee B)\vee C$
+ \item $A\wedge (B\vee C) \equiv (A\wedge B) \vee (A\wedge C)$
+  \hfill (\emph{Distribitivität})\\
+  $A\vee (B\wedge C) \equiv (A\vee B) \wedge (A\vee C)$
+ \item $A \equiv \neg(\neg A)$ \hfill (\emph{Doppelnegation})
+ \item $\neg(A\wedge B) \equiv \neg A \vee \neg B$
+  \hfill (\emph{de Morgan'sche Regeln})\\
+  $\neg(A\vee B) \equiv \neg A \wedge \neg B$
+ \item $A \wedge A \equiv A$\\
+  $A\vee A \equiv A$ \hfill (\emph{Absorbtion})
+ \item $A \wedge \phi \equiv A$ für alle Tautologien $\phi$\\
+  $A \vee \psi \equiv A$ für alle Formeln $\psi$, die immer falsch sind.
+ \item $A\rightarrow B \equiv \neg A\vee B$
+ \item $A\leftrightarrow B \equiv (A\wedge B) \vee (\neg A\wedge\neg B)$
+\end{itemize}
+
+Für jede Aussagenvariable kann eine beliebige Formel eingesetzt werden.
+Die daraus entstehenden Formeln bleiben äquivalent. Beispiel:
+\begin{gather*}
+  (A\rightarrow B) \wedge (C \vee \neg B) \equiv (C\vee \neg B) \wedge
+     (A\rightarrow B)
+\end{gather*}
+
+\begin{center}
+  \begin{tabular}{ccc}
+    $\underbrace{\alpha\equiv\beta}$ & $\underbrace{\text{genau dann, wenn}}$
+       & $\underbrace{\alpha\leftrightarrow\beta}$ eine Tautologie ist.\\
+    \parbox{4cm}{\centering Äquivalenz zwischen Formeln} &
+       \parbox{3.5cm}{\centering umgangssprachl. Äquivalenz} &
+       \parbox{7cm}{\centering Verknüpfungszeichen für aussagenlog.
+         Formeln für Äquivalenz}
+  \end{tabular}
+\end{center}
+
+$A\rightarrow B \not\equiv B\rightarrow A$, denn für die Belegung
+$\mathcal{A} = \{A,\neg B\}$ ist $\mathcal{A}(A\rightarrow B) = f$ und
+$\mathcal{A}(B\rightarrow A) = w$.
+
+$A\rightarrow B \equiv \neg B \rightarrow \neg A$, denn
+\begin{align*}
+  A\rightarrow B &\equiv \neg A \vee B \equiv B \vee \neg A\\
+  &\equiv \neg\neg B \vee\neg A\\
+  &\equiv \neg B \rightarrow \neg A
+\end{align*}
+
+\subsection{Sind alle Operationen $\neg, \wedge, \vee, \rightarrow,
+\leftrightarrow$ nötig?}
+
+Eine \emph{Boole'sche Funktion} $g$ ist eine Funktion $g:\{w,f\}^{k}
+\rightarrow\{w,f\}$. Jede Boole'sche Funktion lässt sich durch eine
+\emph{Wahrheitstafel} beschreiben.
+
+\begin{tabular}{ccc|cl}
+  $A_{1}$ & $A_{2}$ & $A_{3}$ & $g(A_{1},A_{2}, A_{3})$ & \\
+  \hline
+  $f$ & $f$ & $f$ & $f$ &\\
+  $f$ & $f$ & $w$ & $w$ & $\leftarrow$\\
+  $f$ & $w$ & $f$ & $w$ & $\leftarrow$\\
+  $f$ & $w$ & $w$ & $f$ &\\
+  $w$ & $f$ & $f$ & $w$ & $\leftarrow$\\
+  $w$ & $f$ & $w$ & $f$ &\\
+  $w$ & $w$ & $f$ & $w$ & $\leftarrow$\\
+  $w$ & $w$ & $w$ & $f$ &\\
+\end{tabular}
+
+Die \emph{disjunktive Normalenform} der Funktion $g$ lässt sich leicht
+aufstellen, indem man die Literale aller Zeilen, für die die Funktion
+wahr ist, konjunktiv verknüpft und diese Terme disjunktiv verknüpft:
+\begin{gather*}
+  \phi = (\neg A_{1} \wedge \neg A_{2} \wedge A_{3}) \vee (\neg A_{1}\wedge
+     A_{2} \wedge \neg A_{3}) \vee (A_{1} \wedge \neg A_{2}\wedge \neg
+     A_{3}) \vee (A_{1}\wedge A_{2} \wedge \neg A_{3})\\
+  \mathcal{A} = \{A_{1}, \neg A_{2}, \neg A_{3}\}, \mathcal{A}(\phi) =
+     w = g(w,f,f)\\
+  \mathcal{A}' = \{\neg A_{1}, \neg A_{2}, \neg A_{3}\},
+     \mathcal{A}'(\phi) = f = g(f,f,f)
+\end{gather*}
+
+Jede Boole'sche Funktion lässt sich durch eine aussagenlogische Formel
+mit Verknüpfungszeichen $\neg, \wedge, \vee$ darstellen.
+
+Eine Formel ist in disjunktiver Normalform, wenn sie eine Disjunktion von
+Konjunktionen von Literalen ist:
+\begin{gather*}
+  \bigvee \bigwedge \alpha
+\end{gather*}
+
+Für jede beliebige aussagenlogische Formel gibt es eine äquivalente
+Formel in disjunktiver Normalform. (ohne Beweis)
+
+\begin{satz}
+  Für jede aussagenlogische Formel gibt es eine äquivalente Formel, die
+  nur die Verknüpfungszeichen $\neg$ und $\wedge$ enthält.
+
+  \begin{proof}
+    Sei $\alpha$ eine aussagenlogische Formel. O.\,B.\,d.\,A. enthält
+    $\alpha$ nur die Verknüpfungszeichen $\neg, \wedge, \vee$. Wir führen
+    eine Induktion über den Formelaufbau.
+
+    \begin{description}
+     \item[IA:] $\alpha$ ist eine Variable $A$
+
+     \item[IV:] Für beliebige Formeln $\beta$ und $\gamma$ gibt es
+      äquivalente Formeln $\beta' \equiv \beta$ und
+      $\gamma'\equiv\gamma$, die nur $\neg$ und $\wedge$ enthalten.
+
+     \item[IS:]
+      \begin{enumerate} %faelle
+       \item $\alpha=\neg\beta$. Dann gilt: $\alpha\equiv\neg\beta'$ und
+        $\neg\beta'$ enthält nach IV nur $\neg$ und $\wedge$.
+
+       \item $\alpha = \beta\wedge\gamma$. Dann gilt:
+        $\alpha\equiv\beta'\wedge\gamma'$. Nach IV hat
+        $\beta'\wedge\gamma'$ nur $\neg$ und $\wedge$ als
+        Verknüpfungszeichen.
+
+       \item $\alpha=\beta\vee\gamma$. Dann gilt:
+        $\alpha\equiv\beta'\vee\gamma'\equiv\neg(\neg\beta'\wedge\gamma')$
+        Nach IV hat $\neg(\neg\beta'\wedge\gamma')$ nur $\neg$ und
+        $\wedge$ als Verknüpfungszeichen.
+      \end{enumerate}
+    \end{description}
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  $A\vee B$ kann unter Nutzung von Doppelnegation ($\neg\neg A =A$) und
+  der Demorganschen Regel ($\neg(A\wedge B) \equiv \neg A\vee \neg B$)
+  umformen:
+  \begin{gather*}
+    A\vee B \equiv \neg\neg A \vee \neg\neg B \equiv \neg(\neg
+       A\wedge\neg B)
+  \end{gather*}
+
+  weiteres Beispiel:
+  \begin{align*}
+    A\rightarrow(B\leftrightarrow C) &\equiv \neg A \vee \big((B\wedge C)
+       \vee (\neg B\wedge \neg C)\big)\\
+    &\equiv \neg \big(A\wedge \neg \big((B\wedge C) \vee (\neg B \wedge \neg
+       C)\big)\big)\\
+    &\equiv \neg\big(A\wedge \neg(B\wedge C) \wedge \neg(\neg B \wedge \neg
+       C) \big)
+  \end{align*}
+\end{bsp}
+
+\begin{bemerk}
+  Analog: Für jede aussagenlogische Formel gibt es eine äquivalente
+  Formel, die nur $\neg$ und $\vee$ bzw. $\neg$ und $\rightarrow$ als
+  Verknüpfungszeichen benutzt.
+\end{bemerk}
+
+\begin{bemerk}
+  Kombinationen ohne Negation $\neg$ reichen nicht aus!
+
+  $\neg$ und $\leftrightarrow$ reichen auch nicht aus!
+  \begin{center}
+    \begin{tabular}{cc|c}
+      $A$ & $B$ & $A\leftrightarrow B$\\
+      \hline
+      $f$ & $f$ & $w$\\
+      $f$ & $w$ & $f$\\
+      $w$ & $f$ & $f$\\
+      $w$ & $w$ & $w$
+    \end{tabular}
+    \help{wie war hier die Argumentation?}
+  \end{center}
+\end{bemerk}
+
+Formeln, die nur Konjunktion und Disjunktion bestehen nennt man
+\emph{monotone Formeln}, da \help{weiß nicht mehr. Irgendwas die Werte
+als 0 und 1 und dann wird mit mehr 1 auf der Eingabe nur mehr 1 auf der
+Ausgabe aber nicht weniger}
+
+Mit dem einzelnen Verknüpfungszeichen NOR $\downarrow$ lässt sich jede
+aussagenlogische Formel äquivalent darstellen:
+\begin{center}
+  \begin{tabular}{cc|c}
+      $A$ & $B$ & $A\downarrow B$\\
+      \hline
+      $f$ & $f$ & $w$\\
+      $f$ & $w$ & $f$\\
+      $w$ & $f$ & $f$\\
+      $w$ & $w$ & $f$
+  \end{tabular}
+  $A \downarrow B\equiv \neg(A\vee B)$
+\end{center}
+
+Also sind ist $\neg A\equiv A\downarrow A$ und
+\begin{align*}
+  A\wedge B &\equiv \neg\neg(A\wedge B)\\
+  &\equiv \neg(\neg A\vee \neg B)\\
+  &\equiv \neg(\todo{hier fehlt was})
+\end{align*}
+
+Das gleiche gilt für NAND $\uparrow$
+\begin{center}
+  \begin{tabular}{cc|c}
+    $A$ & $B$ & $A\uparrow B$\\
+    \hline
+    $f$ & $f$ & $w$\\
+    $f$ & $w$ & $w$\\
+    $w$ & $f$ & $w$\\
+    $w$ & $w$ & $f$
+  \end{tabular}
+  $A \uparrow B\equiv \neg(A\wedge B)$
+\end{center}
+
 \clearpage
 \appendix
+
+\chapter{Übungsaufgaben}
+\section{Blatt 1}
+\subsection{Aufgabe 1}
+Zeigen Sie folgende Äquivalenzen durch Umformen:
+\begin{enumerate}
+ \item $A\rightarrow (B \rightarrow C) \equiv (A\wedge B) \rightarrow C$
+ \item $(A\rightarrow B) \rightarrow A \equiv A$
+ \item $\neg\big(\neg(A\wedge \wedge \neg(B\vee A)) \rightarrow (A
+  \rightarrow (\neg B\wedge A)) \big) \equiv A\wedge B$
+ \item $A\leftrightarrow B \equiv (A\rightarrow B) \wedge (B\rightarrow A)$
+ \item $(A\rightarrow B) \rightarrow C \not\equiv
+  A\rightarrow(B\rightarrow C)$ 
+\end{enumerate}
+\subsection{Aufgabe 2}
+Sind die folgenden Argumentationen logisch korrekt?
+\begin{enumerate}
+ \item Wenn es regnet, dann ist die Straße nass. Die Straße ist nass,
+  also regnet es.
+
+ \item Wenn eine Zahl $x$ auf 0 endet, dann ist sie durch 5 teilbar.
+  \begin{enumerate}
+   \item $x$ endet nicht mit 0, also ist $x$ nicht durch 5 teilbar.
+   \item $x$ ist nicht durch 5 teilbar, also endet $x$ nicht auf 0.
+  \end{enumerate}
+
+ \item Wenn $a=0$ oder $b=0$, dann ist $a\cdot b=0$. Es gilt $a\cdot
+  b\ne0$, also ist $a\ne0$ und $b\ne0$.
+\end{enumerate}
+
+\clearpage
 \pdfbookmark[0]{Index}{index}
 \printindex
 
