@@ -66,6 +66,7 @@
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
@@ -85,6 +86,7 @@
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
 \newcommand*{\satzautorefname}{Satz}
+\newcommand*{\lemmaautorefname}{Lemma}
 \newcommand*{\bemerkautorefname}{Bemerkung}
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
@@ -172,6 +174,8 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
+% Der wagerechte Strich soll etwas länger sein
+\renewcommand*{\vdash}{\mathrel{|}\mathop{\mkern-9mu-\mkern-7mu-}}
 
 % Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
 % nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
@@ -181,6 +185,17 @@
 			      {\hspace\labelsep\normalfont ##1}%
 		 \begin{description}}%
 		 {\end{description}}
+\newcounter{fall}
+\newenvironment*{faelle}%
+               {\begin{list}{\textit{\underline{\arabic{fall}.\,Fall:}}}%
+                      {\usecounter{fall}%
+                        \settowidth{\labelwidth}{\textit{\underline{9.\,Fall:}}}%
+                        \setlength{\leftmargin}{1.3cm}%
+                        \setlength{\itemindent}{3mm}%
+                        \addtolength{\itemindent}{\labelwidth}%
+                        \addtolength{\itemindent}{-\leftmargin}%
+                      }}%
+               {\end{list}}
 
 \makeindex
 
@@ -608,7 +623,7 @@ Formel in disjunktiver Normalform. (ohne Beweis)
       $\gamma'\equiv\gamma$, die nur $\neg$ und $\wedge$ enthalten.
 
      \item[IS:]
-      \begin{enumerate} %faelle
+      \begin{faelle}
        \item $\alpha=\neg\beta$. Dann gilt: $\alpha\equiv\neg\beta'$ und
         $\neg\beta'$ enthält nach IV nur $\neg$ und $\wedge$.
 
@@ -621,7 +636,7 @@ Formel in disjunktiver Normalform. (ohne Beweis)
         $\alpha\equiv\beta'\vee\gamma'\equiv\neg(\neg\beta'\wedge\gamma')$
         Nach IV hat $\neg(\neg\beta'\wedge\gamma')$ nur $\neg$ und
         $\wedge$ als Verknüpfungszeichen.
-      \end{enumerate}
+      \end{faelle}
     \end{description}
   \end{proof}
 \end{satz}
@@ -761,19 +776,167 @@ Die Theorie $\mathcal{L}$ für Aussagenlogik besteht aus
  \item Für alle aussagenlogische Formeln $\alpha$, $\beta$ und $\gamma$
   sind die folgenden Axiome:
   \begin{enumerate}[{A}1]
-   \item $\alpha \rightarrow (\alpha\rightarrow \alpha)$
+   \item $\alpha \rightarrow (\alpha\rightarrow \alpha)$ \label{A1}
    \item $\big(\alpha\rightarrow (\beta\rightarrow\gamma)\big)
     \rightarrow \big( (\alpha\rightarrow\beta) \rightarrow
-    (\alpha\rightarrow\gamma) \big)$
+    (\alpha\rightarrow\gamma) \big)$ \label{A2}
    \item $\big( (\neg\beta \rightarrow) \rightarrow (\neg\alpha) \big)
     \rightarrow \big( ( \neg\beta \rightarrow \alpha) \rightarrow
-    \beta\big)$
+    \beta\big)$ \label{A3}
   \end{enumerate}
 
  \item Die Ableitungsregeln \emph{modus ponens} (MP). $MP(\alpha,
   \beta,\gamma) \gdw \beta=\alpha \rightarrow\gamma$ oder andere
   Darstellung: $\frac{\alpha, \alpha \rightarrow \beta}{\gamma}$
 \end{enumerate}
+
+% 26.4.06
+
+\todo{hier gabe es Folien -- einbiden?}
+
+\subsection{Deduktionstheorem}
+
+\begin{satz}[Deduktionstheorem]
+  $\alpha$ und $\beta$ seien Formeln, $\Gamma$ eine Formelmenge.
+  \begin{gather*}
+    \Gamma, \alpha \vdash_{L} \beta \gdw \Gamma \vdash_{L} \alpha\rightarrow\beta
+  \end{gather*}
+
+  \begin{proof}
+    \begin{mdescription}
+      \item["`$\Leftarrow$"'] gelte $\Gamma \vdash_{L} \alpha\rightarrow\beta$.
+
+      Da $\Gamma, \alpha \vdash_{L} \alpha$ und $\Gamma, \alpha \vdash_{L}
+      \alpha\rightarrow\beta$ folgt mittels Anwendung von MP:
+      $\Gamma,\alpha \vdash_{L} \beta$
+
+     \item["`$\Rightarrow$"'] Es gelte $\Gamma, \alpha \vdash_{L} \beta$
+
+      Wir führen eine Induktion über die Länge $k$ des Beweises von
+      $\beta$ aus $\Gamma,\alpha$.
+
+      \begin{mdescription}
+       \item[IA:] $k=1$: Der Beweis von $\beta$ besteht nur aus $\beta$.
+        \begin{faelle}
+         \item $\beta$ ist ein Axiom oder $\beta\in\Gamma$.
+
+          Dann gilt $\Gamma \vdash_{L} \beta$. Mit \hyperref[A1]{Axiom 1}
+          $\beta \rightarrow (\alpha\rightarrow\beta)$ und MP folgt
+          $\Gamma \vdash_{L} \alpha \rightarrow\beta$.
+          \begin{align*}
+            \beta&&\text{Axiom oder Hypo.}\\
+            \beta\rightarrow(\alpha\rightarrow\beta)
+               &&\text{\hyperref[A1]{Axiom 1}}\\
+            \todo{hier fehlt was}
+          \end{align*}
+
+         \item $\beta=\alpha$. Dann ist $\alpha\rightarrow\beta =
+          \beta\rightarrow\beta$.
+
+          Da $\vdash_{L} \beta\rightarrow\beta$, folgt $\Gamma \vdash_{L}
+          \beta\rightarrow\beta$
+        \end{faelle}
+
+       \item[IV:] Die Belegung gilt für alle Formeln $\beta$ mit Beweisen
+        der Länge $\leq n$.
+
+       \item[IS:] $\Gamma, \alpha \vdash_{L} \beta$ durch einen Beweis mit
+        der Länge $n+1$
+        \begin{gather*}
+          \alpha_{1}, \ldots,\alpha_{i},\ldots,\alpha_{j},\ldots,
+             \alpha_{n+1} = \beta
+        \end{gather*}
+
+        \begin{faelle}
+         \item $\beta$ ist eine Axiom oder aus $\Gamma$ oder
+          $\beta=\alpha$.
+
+          geht genauso wie Indunktionsanfang.
+
+         \item $\beta$ entsteht durch MP aus $\alpha_{i}$ und
+          $\alpha_{j}$ ($i,j\leq n$), $\alpha_{j}=(\alpha_{i}\rightarrow
+          \beta)$
+
+          Nach Indunktionsvorraussetzung gilt $\Gamma \vdash_{L}
+          \alpha\rightarrow\alpha_{i}$ und $\Gamma \vdash_{L}
+          \alpha\rightarrow (\alpha_{i}\rightarrow\beta)$. Mit \todo{A2}
+          $(\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
+          ((\alpha\rightarrow\beta)\rightarrow(\alpha\rightarrow\gamma))$
+          ist $(\alpha\rightarrow(\alpha_{i}\rightarrow\beta)) \rightarrow
+          ((\alpha\rightarrow\alpha_{i}) \rightarrow
+          (\alpha\rightarrow\beta)$ ein Axiom von $L$. Durch Anwendung
+          von modus ponens mit obigen Formeln folgt $\Gamma \vdash_{L}
+          \alpha\rightarrow\beta$.
+        \end{faelle}
+      \end{mdescription}
+    \end{mdescription}
+  \end{proof}
+\end{satz}
+
+\begin{lemma}\label{lem:1}
+  $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \vdash
+  \alpha\rightarrow\gamma$.
+
+  Wir beweisen: $\alpha \rightarrow (\beta\rightarrow\gamma),
+  \beta,\alpha \vdash \gamma$
+  \begin{align*}
+    \alpha \rightarrow(\beta\rightarrow\gamma)&&\text{Hypothese}\\
+    \beta&&\text{Hypothese}\\
+    \alpha&&\text{Hypothese}\\
+    \beta\rightarrow\gamma&&\text{MP 3,1}\\
+    \gamma&&\text{MP 2,4}\\
+  \end{align*}
+  Mit Deduktionstheorem fogt $\alpha(\beta\rightarrow\gamma), \beta \vdash
+  \alpha\rightarrow\gamma$.
+\end{lemma}
+
+\begin{lemma}
+  $\vdash_{L} \neg\neg \beta \rightarrow\beta$.
+
+  \begin{proof}
+    \begin{align*}
+      (\neg\beta \rightarrow \neg\neg\beta) \rightarrow ( (\neg\beta
+         \rightarrow\neg\beta) \rightarrow \beta)
+         &&\text{\hyperref[A3]{Axiom 3}}\\
+      \neg\beta \rightarrow \neg\beta&&\text{\todo{link: Lemma
+         $\beta\rightarrow\beta$}}\\
+      (\neg\beta \rightarrow \neg\neg\beta) \rightarrow \beta &&\text{aus
+         1,2 mit \autoref{lem:1}}\\
+      \neg\neg\beta \rightarrow (\neg\beta \rightarrow \neg\neg\beta)
+         &&\text{\hyperref[A1]{Axiom 1}}\\
+      \neg\neg \beta \rightarrow\beta &&\text{aus 4, 3 mit \todo{link:
+         Lemma $\alpha\rightarrow\beta, \beta\rightarrow\gamma \vdash
+         \alpha\rightarrow\gamma$}}
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\begin{satz}[Korrektheitssatz]
+  Jedes Theorem von $L$ ist eine aussagenlogische Tautologie.
+
+  \begin{proof}
+    Sei $\beta$ ein Theorem von $L$. Wir führen eine Induktion über die
+    Länge $k$ des Beweises von $\beta$.
+
+    \begin{mdescription}
+     \item[IA:] $k=1$: d.\,h. $\beta$ ist eine Axiom. Alle Axiome sind
+      Tautologien, also ist $\beta$ auch eine Tautologie.
+
+     \item[IV:] Es gilt die Behauptung für alle Beweise der Länge $\leq n$.
+
+     \item[IS:] $\beta$ habe einen Beweis der Länge $n+1$.
+      \begin{faelle}
+       \item Falls $\beta$ ein Axiom ist, dann ist $\beta$ eine Tautologie.
+       \item Falls $\beta$ durch modus ponens aus $\alpha$ und $\alpha'$
+        entstehen, dann sind $\alpha$ und $\alpha'$ nach
+        Induktionsvorraussetzung Tautologien. $\alpha' =\alpha
+        \rightarrow\beta$. Wir wissen bereits, dass $\beta$ dann
+        ebenfalls eine Tautologie ist.
+      \end{faelle}
+    \end{mdescription}
+  \end{proof}
+\end{satz}
+
 \clearpage
 \appendix
 
@@ -804,6 +967,25 @@ Sind die folgenden Argumentationen logisch korrekt?
 
  \item Wenn $a=0$ oder $b=0$, dann ist $a\cdot b=0$. Es gilt $a\cdot
   b\ne0$, also ist $a\ne0$ und $b\ne0$.
+\end{enumerate}
+
+\section{Blatt 2}
+
+\begin{enumerate}[(1)]
+ \item $\vdash_{L} (\neg \alpha \rightarrow\alpha) \rightarrow\alpha$
+
+ \item $\alpha\rightarrow(\beta\rightarrow\gamma) \vdash_{L} \beta
+  \rightarrow(\alpha\rightarrow\gamma)$
+
+ \item $\vdash_{L} (\neg\beta\rightarrow\neg\alpha) \rightarrow
+  (\alpha\rightarrow\beta)$
+
+ \item Theorie $L$ ist konsistent, d.\,h. wenn $\alpha$ eine Theorem von
+  $L$ ist, dann ist $\neg\alpha$ kein Theorem von $L$, und wenn $\vdash_{L}
+  \neg\alpha$, dann $\not\vdash_{L} \alpha$.
+
+ \item $\alpha,\neg\alpha \vdash_{L} \beta$ gilt für beliebige Formeln
+  $\alpha$ und $\beta$.
 \end{enumerate}
 
 \clearpage
