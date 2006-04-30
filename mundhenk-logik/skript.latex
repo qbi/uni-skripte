@@ -143,6 +143,7 @@
     \fi%
   \endgroup%
 }
+\renewcommand*{\see}[2]{\textit{\seename} #1}
 \makeatother
 
 % Definition für Xindy für die Trennung der einzelnen Abschnitte im
@@ -175,7 +176,7 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 % Der wagerechte Strich soll etwas länger sein
-\renewcommand*{\vdash}{\mathrel{|}\mathop{\mkern-9mu-\mkern-7mu-}}
+\renewcommand*{\vdash}{\mathrel{|}\mathop{\mkern-9mu-\mkern-7mu-}\limits}
 
 % Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
 % nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
@@ -759,45 +760,153 @@ dass $A$ wahr ist, wird also $C$ wahr: $A\rightarrow C$
 \subsection{Anfang}
 
 Ein Axiomensystem dient dazu zu beweisen, dass eine Formel eine
-Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}. Eine
-formale Theorie $\mathfrak{S}$ besteht aus
-\begin{enumerate}
- \item einer Menge von Formeln $\mathcal{F}$
- \item einer Menge von Axiomen $Ax \subseteq \mathcal{F}$
- \item einer endlichen Menge von entscheidbaren Relationen über
-  $\mathcal{F}$ -- diese nennt man \emph{Ableitungsregeln}
-\end{enumerate}
+Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
 
-Die Theorie $\mathcal{L}$ für Aussagenlogik besteht aus
-\begin{enumerate}
- \item aussagenlogische Formeln mit den Verknüpfungszeichen $\neg$ und
-  $\rightarrow$
-
- \item Für alle aussagenlogische Formeln $\alpha$, $\beta$ und $\gamma$
-  sind die folgenden Axiome:
-  \begin{enumerate}[{A}1]
-   \item $\alpha \rightarrow (\alpha\rightarrow \alpha)$ \label{A1}
-   \item $\big(\alpha\rightarrow (\beta\rightarrow\gamma)\big)
-    \rightarrow \big( (\alpha\rightarrow\beta) \rightarrow
-    (\alpha\rightarrow\gamma) \big)$ \label{A2}
-   \item $\big( (\neg\beta \rightarrow) \rightarrow (\neg\alpha) \big)
-    \rightarrow \big( ( \neg\beta \rightarrow \alpha) \rightarrow
-    \beta\big)$ \label{A3}
+\begin{defini}[formale Theorie]
+  Eine \emph[index=Theorie!formale]{formale Theorie} $\mathcal{S}$
+  besteht aus
+  \begin{enumerate}
+   \item einer Menge von \emph{Formeln} $\mathcal{F}$
+   \item einer Menge von \emph[indexrand=Axiome]{Axiomen}
+    $\mathrm{Ax} \subseteq \mathcal{F}$
+   \item einer endlichen Menge von entscheidbaren Relationen über
+    $\mathcal{F}$ -- diese nennt man \emph{Ableitungsregeln}
   \end{enumerate}
+\end{defini}
 
- \item Die Ableitungsregeln \emph{modus ponens} (MP). $MP(\alpha,
-  \beta,\gamma) \gdw \beta=\alpha \rightarrow\gamma$ oder andere
-  Darstellung: $\frac{\alpha, \alpha \rightarrow \beta}{\gamma}$
-\end{enumerate}
+\begin{defini}[Theorie der Aussagenlogik]
+  Die \emph[index=Theorie!Aussagenlogik]{Theorie für Aussagenlogik}
+  $\mathcal{L}$ besteht aus
+  \begin{enumerate}
+   \item allen aussagenlogischen Formeln mit den Verknüpfungszeichen
+    $\neg$ und $\rightarrow$
+
+   \item den Axiomen, die aus dem Axiomenschemata (A1), (A2) und (A3)
+    durch Einsetzen von beliebigen aussagenlogische Formeln für $\alpha$,
+    $\beta$ und $\gamma$ entstehen:
+    \begin{enumerate}[{A}1]
+     \item $\alpha \rightarrow (\alpha\rightarrow \alpha)$ \label{A1}
+     \item $\big(\alpha\rightarrow (\beta\rightarrow\gamma)\big)
+      \rightarrow \big( (\alpha\rightarrow\beta) \rightarrow
+      (\alpha\rightarrow\gamma) \big)$ \label{A2}
+     \item $\big( (\neg\beta \rightarrow) \rightarrow (\neg\alpha) \big)
+      \rightarrow \big( ( \neg\beta \rightarrow \alpha) \rightarrow
+      \beta\big)$ \label{A3}
+    \end{enumerate}
+
+   \item der Ableitungsregel \emph{modus ponens} (MP) \index{MP|see{modus ponens}}
+    \begin{gather*}
+      MP(\alpha, \beta,\gamma) \gdw \beta=\alpha \rightarrow\gamma
+    \end{gather*}
+
+    Andere Schreibweise:
+    \begin{gather*}
+      \frac{\alpha, \alpha\rightarrow\gamma}{\gamma}
+    \end{gather*}
+  \end{enumerate}
+\end{defini}
 
 % 26.4.06
 
-\todo{hier gabe es Folien -- einbiden?}
+\subsection{Beweise und Theoreme}
+
+\begin{defini}[Beweis]
+  Ein \emph{Beweis} in einer Theorie $\mathcal{S}$ ist eine Folge
+  $\alpha_1, \alpha_2, \ldots, \alpha_k$ von Formeln von $\mathcal{S}$, so
+  dass für $i=1,2,\ldots, n$ gilt:
+
+  $\alpha_i$ ist
+  \begin{enumerate}
+   \item ein Axiom von $\mathcal{S}$, oder
+   \item aus davorstehenden $\alpha_j$ mit einer Ableitungsregel von
+    $\mathcal{S}$ ableitbar, d.\,h. $R(\alpha_{j_1}, \alpha_{j_2}, \ldots,
+    \alpha_{j_m},\alpha_i)$ für eine Ableitungsregel $R$ von $\mathcal{S}$
+    und $j_1,j_2,\ldots,j_m < i$.
+  \end{enumerate}
+\end{defini}
+
+\begin{defini}[Theorem]
+  Ein \emph{Theorem} von $\mathcal{S}$ ist eine Formel, die am Ende eines
+  Beweises in $\mathcal{S}$ steht.
+\end{defini}
+
+\begin{bsp}[Ein Beweis für $B\rightarrow B$ in $\mathbf{\mathrm{L}}$]
+  \label{bsp:1}
+  Wir konstruieren eine Folge $\alpha_1,\ldots,\alpha_5$ wie folgt:
+  \begin{align*}
+    \alpha_1 &= B\rightarrow(B\rightarrow B)  &\text{Instanz von
+       (\hyperref[A1]{Axiom 1})}\\
+    \alpha_2 &= B\rightarrow((B\rightarrow B) \rightarrow B)
+       &\text{Instanz von (\hyperref[A1]{Axiom 1})}\\
+    \alpha_3 &= (B\rightarrow((B\rightarrow B) \rightarrow B)) \rightarrow\\
+    &\hspace{1.4cm} ((B\rightarrow(B\rightarrow
+       B))\rightarrow(B\rightarrow B))
+       &\text{Instanz von (\hyperref[A1]{Axiom 2})}\\
+    \alpha_4 &= (B\rightarrow(B\rightarrow B))\rightarrow(B\rightarrow B)
+       &\text{MP auf $\alpha_2$, $\alpha_3$}\\
+    \alpha_5 &= B\rightarrow B
+       &\text{MP auf $\alpha_1$, $\alpha_4$}
+  \end{align*}
+
+  Wie wir sehen, ist $B\rightarrow B$ ein Theorem von $\mathrm{L}$.
+
+  Für jede Formel $\beta$ gilt also:\\
+  \centerline{$\beta \rightarrow \beta$ ist ein Theorem von $\mathrm{L}$.}
+\end{bsp}
+
+\begin{defini}[Folgerung]
+  $\alpha$ ist eine \emph{Folgerung} von Formelmenge $\Gamma$ in
+  $\mathcal{S}$, falls es einen Beweis für $\alpha$ in der Theorie
+  $\mathcal{S}$ gibt, zu der man $\Gamma$ zu den Axiomen hinzugenommen hat.
+
+  Schreibweisen:\\
+  \begin{tabular}{rcl}
+    $\Gamma \vdash_{\mathcal{S}} \alpha$ & bedeutet & $\alpha$ ist
+       Folgerung von $\Gamma$ in $\mathcal{S}$\\
+    $\emptyset \vdash_{\mathcal{S}} \alpha$ & schreibt man &
+       $\vdash_{\mathcal{S}} \alpha$\\
+    $\vdash_{\mathcal{S}} \alpha$ & bedeutet &
+       $\alpha$ ist Theorem von $\mathcal{S}$
+  \end{tabular}
+
+  Falls $\Gamma=\{\beta_1,\ldots,\beta_k\}$ eine endliche Menge ist,
+  schreibt man
+
+  \begin{tabular}{rcl}
+    $\beta_1,\ldots,\beta_k \vdash_{\mathcal{S}} \alpha$ & anstelle von &
+       $\{ \beta_1,\ldots,\beta_k \} \vdash_{\mathcal{S}} \alpha$ \\
+    $\Gamma, \beta \vdash_{\mathcal{S}} \alpha$ & anstelle von & $\Gamma
+       \cup \beta \vdash_{\mathcal{S}} \alpha$ \\
+  \end{tabular}
+\end{defini}
+
+\begin{bsp}
+  Wir zeigen:
+  \begin{gather*}
+    \alpha\rightarrow\beta, \beta\rightarrow\gamma
+       \vdash_{\mathcal{S}} \alpha\rightarrow\gamma
+  \end{gather*}
+  \begin{align*}
+    (1)\quad & \alpha\rightarrow\beta & \text{Hypothese}\\
+    (2)\quad & \beta\rightarrow\gamma & \text{Hypothese}\\
+    (3)\quad & (\beta\rightarrow\gamma) \rightarrow
+       (\alpha\rightarrow(\beta\rightarrow\gamma)) &
+       \text{\hyperref[A1]{Axiom 1}} \\
+    (4)\quad & \alpha\rightarrow(\beta\rightarrow\gamma) & \text{MP 2,3}\\
+    (5)\quad & (\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
+       ( (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma))
+       & \text{\hyperref[A1]{Axiom 2}} \\
+    (6)\quad & (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma)
+       & \text{MP 4,5} \\
+    (7)\quad & \alpha\rightarrow\gamma & \text{MP 1,6}
+  \end{align*}
+\end{bsp}
 
 \subsection{Deduktionstheorem}
 
 \begin{satz}[Deduktionstheorem]
-  $\alpha$ und $\beta$ seien Formeln, $\Gamma$ eine Formelmenge.
+  Sind $\alpha$ und $\beta$ zwei aussagenlogische Formeln und $\Gamma$
+  eine Formelmenge, dann gilt:
   \begin{gather*}
     \Gamma, \alpha \vdash_{L} \beta \gdw \Gamma \vdash_{L} \alpha\rightarrow\beta
   \end{gather*}
@@ -859,7 +968,7 @@ Die Theorie $\mathcal{L}$ für Aussagenlogik besteht aus
 
           Nach Indunktionsvorraussetzung gilt $\Gamma \vdash_{L}
           \alpha\rightarrow\alpha_{i}$ und $\Gamma \vdash_{L}
-          \alpha\rightarrow (\alpha_{i}\rightarrow\beta)$. Mit \todo{A2}
+          \alpha\rightarrow (\alpha_{i}\rightarrow\beta)$. Mit \hyperref[A1]{Axiom 2}
           $(\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
           ((\alpha\rightarrow\beta)\rightarrow(\alpha\rightarrow\gamma))$
           ist $(\alpha\rightarrow(\alpha_{i}\rightarrow\beta)) \rightarrow
@@ -880,11 +989,11 @@ Die Theorie $\mathcal{L}$ für Aussagenlogik besteht aus
   Wir beweisen: $\alpha \rightarrow (\beta\rightarrow\gamma),
   \beta,\alpha \vdash \gamma$
   \begin{align*}
-    \alpha \rightarrow(\beta\rightarrow\gamma)&&\text{Hypothese}\\
-    \beta&&\text{Hypothese}\\
-    \alpha&&\text{Hypothese}\\
-    \beta\rightarrow\gamma&&\text{MP 3,1}\\
-    \gamma&&\text{MP 2,4}\\
+    (1)\quad &\alpha \rightarrow(\beta\rightarrow\gamma)&\text{Hypothese}\\
+    (2)\quad &\beta &\text{Hypothese}\\
+    (3)\quad &\alpha &\text{Hypothese}\\
+    (4)\quad &\beta\rightarrow\gamma &\text{MP 3,1}\\
+    (5)\quad &\gamma &\text{MP 2,4}\\
   \end{align*}
   Mit Deduktionstheorem fogt $\alpha(\beta\rightarrow\gamma), \beta \vdash
   \alpha\rightarrow\gamma$.
@@ -895,18 +1004,16 @@ Die Theorie $\mathcal{L}$ für Aussagenlogik besteht aus
 
   \begin{proof}
     \begin{align*}
-      (\neg\beta \rightarrow \neg\neg\beta) \rightarrow ( (\neg\beta
+      (1)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow ( (\neg\beta
          \rightarrow\neg\beta) \rightarrow \beta)
          &&\text{\hyperref[A3]{Axiom 3}}\\
-      \neg\beta \rightarrow \neg\beta&&\text{\todo{link: Lemma
-         $\beta\rightarrow\beta$}}\\
-      (\neg\beta \rightarrow \neg\neg\beta) \rightarrow \beta &&\text{aus
-         1,2 mit \autoref{lem:1}}\\
-      \neg\neg\beta \rightarrow (\neg\beta \rightarrow \neg\neg\beta)
+      (2)\quad &\neg\beta \rightarrow \neg\beta&&\text{\autoref{bsp:1}}\\
+      (3)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow \beta
+         &&\text{aus 1,2 mit \autoref{lem:1}}\\
+      (4)\quad &\neg\neg\beta \rightarrow (\neg\beta \rightarrow \neg\neg\beta)
          &&\text{\hyperref[A1]{Axiom 1}}\\
-      \neg\neg \beta \rightarrow\beta &&\text{aus 4, 3 mit \todo{link:
-         Lemma $\alpha\rightarrow\beta, \beta\rightarrow\gamma \vdash
-         \alpha\rightarrow\gamma$}}
+      (5)\quad &\neg\neg \beta \rightarrow\beta &&\text{aus 4, 3 mit
+         \autoref{lem:1}}
     \end{align*}
   \end{proof}
 \end{lemma}
@@ -982,7 +1089,7 @@ Sind die folgenden Argumentationen logisch korrekt?
 
  \item Theorie $L$ ist konsistent, d.\,h. wenn $\alpha$ eine Theorem von
   $L$ ist, dann ist $\neg\alpha$ kein Theorem von $L$, und wenn $\vdash_{L}
-  \neg\alpha$, dann $\not\vdash_{L} \alpha$.
+  \neg\alpha$, dann nicht $\vdash_{L} \alpha$.
 
  \item $\alpha,\neg\alpha \vdash_{L} \beta$ gilt für beliebige Formeln
   $\alpha$ und $\beta$.
