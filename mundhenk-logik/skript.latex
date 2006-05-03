@@ -1,3 +1,10 @@
+% ToDo:
+%  * sollen Indunktionen eine description oder mdescription sein?
+%  * faelle schachtelbar machen
+%  * Eine Umgebung für die Beweise?
+%  * für MP in den Beweisen immer einen Link auf den modus ponens.
+%
+%
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
 % rubber: clean $base.thm
@@ -188,9 +195,9 @@
 		 {\end{description}}
 \newcounter{fall}
 \newenvironment*{faelle}%
-               {\begin{list}{\textit{\underline{\arabic{fall}.\,Fall:}}}%
+               {\begin{list}{\textit{\underline{Fall \arabic{fall}:}}}%
                       {\usecounter{fall}%
-                        \settowidth{\labelwidth}{\textit{\underline{9.\,Fall:}}}%
+                        \settowidth{\labelwidth}{\textit{\underline{Fall 9:}}}%
                         \setlength{\leftmargin}{1.3cm}%
                         \setlength{\itemindent}{3mm}%
                         \addtolength{\itemindent}{\labelwidth}%
@@ -933,10 +940,10 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
           $\beta \rightarrow (\alpha\rightarrow\beta)$ und MP folgt
           $\Gamma \vdash_{\mathrm{L}} \alpha \rightarrow\beta$.
           \begin{align*}
-            \beta&&\text{Axiom oder Hypo.}\\
-            \beta\rightarrow(\alpha\rightarrow\beta)
-               &&\text{\hyperref[A1]{Axiom 1}}\\
-            \todo{hier fehlt was}
+            (1)\quad &\beta&\text{Hypothese}\\
+            (2)\quad &\beta\rightarrow(\alpha\rightarrow\beta)
+               &\text{\hyperref[A1]{Axiom 1}}\\
+            (3)\quad &\alpha\rightarrow\beta &\text{MP 1,2}
           \end{align*}
 
          \item $\beta=\alpha$. Dann ist $\alpha\rightarrow\beta =
@@ -1046,11 +1053,11 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
 
 \todo{Folien einfügen}
 
-\subsection{Vollständigkeit von $\mathrm{L}$}
+\subsection{Vollständigkeit von \texorpdfstring{$\mathrm{L}$}{L}}
 
 "`Vollständigkeit von $\mathrm{L}$"' bedeutet: jede aussagenlogische
 Tautologie ist eine Theorem von $\mathrm{L}$. ("`Korrektheit von
-$\mathrm{L}$ bedeutet: jedes Theorem von $\mathrm{L}$ ist eine
+$\mathrm{L}$"' bedeutet: jedes Theorem von $\mathrm{L}$ ist eine
 aussagenlogische Tautologie. -- \autoref{satz:1})
 
 \begin{bsp}
@@ -1068,24 +1075,273 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
   \neg\alpha$, falls $\mathcal{A}(\alpha)=f$.
 \end{bsp}
 
-\begin{satz}
-  Sei $\alpha$ eine aussagenlogische Formel und $\mathcal{A}$ eine zu
-  $\alpha$ passende Belegung. Dann gilt:
+\begin{satz}[Belegung und Hypothesen]\label{satz:2}
+  Sei $\phi$ eine aussagenlogische Formel und $\mathcal{A}$ eine zu
+  $\phi$ passende Belegung. Dann gilt:
   \begin{enumerate}
-   \item $\mathcal{A} \vdash_{\mathrm{L}} \alpha$, falls
-    $\mathcal{A}(\alpha)=w$, und
+   \item $\mathcal{A} \vdash_{\mathrm{L}} \phi$, falls
+    $\mathcal{A}(\phi)=w$, und
 
-   \item $\mathcal{A} \vdash_{\mathrm{L}} \neg\alpha$, falls
-    $\mathcal{A}(\alpha)=f$.
+   \item $\mathcal{A} \vdash_{\mathrm{L}} \neg\phi$, falls
+    $\mathcal{A}(\phi)=f$.
   \end{enumerate}
 
   \begin{proof}
-    $\alpha$ ist eine Variable; $\alpha=B\colon \mathcal{A} = \{B\},
-    B \vdash_{\mathrm{L}} B$, das $\vdash_{\mathrm{L}} B\rightarrow B$
+    % $\alpha$ ist eine Variable; $\alpha=B\colon \mathcal{A} = \{B\},
+    % B \vdash_{\mathrm{L}} B$, das $\vdash_{\mathrm{L}} B\rightarrow B$
 
-    $\mathcal{A}=\{\neg B\}\colon $
+    % $\mathcal{A}=\{\neg B\}\colon $
+
+    % 3.5.06
+
+    Sei $\phi_{\mathcal{A}} = \begin{cases} \phi & \mathcal{A}(\phi)=w\\
+    \neg\phi & \mathcal{A}(\phi)=f\end{cases}$
+
+    \begin{description}
+     \item[IA:] \todo{hier fehlt was}
+
+     \item[IV:] für alle Formeln $\phi\in\mathcal{M}$ gilt $\mathcal{A}
+      \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+
+     \item[IS:] $\phi=\neg\alpha$ oder $\phi=\alpha \rightarrow\beta$ für
+      $\alpha,\beta\in\mathcal{M}$ (Formelmenge)
+
+      \begin{itemize}
+       \item $\phi=\neg\alpha$
+        \begin{faelle}
+         \item $\mathcal{A}(\phi)=w$ d.\,h. $\mathcal{A}(\alpha)=f$. Nach
+          Induktionsvorraussetzung gilt $\mathcal{A} \vdash_{\mathrm{L}}
+          \alpha_{\mathcal{A}} = \neg\alpha =\phi_{\mathcal{A}}$, d.\,h.
+          $\mathcal{A} \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+
+         \item $\mathcal{A}(\phi)=f$, d.\,h. $\mathcal{A}(\alpha)=w$
+          \begin{align*}
+            (1)\quad & \alpha & \text{IV}\\
+            (2)\quad & \alpha\rightarrow\neg\neg\alpha &\text{\todo{link
+               suchen: Lemma}}\\
+            (3)\quad & \neg\neg\alpha &\text{MP 1,2}
+          \end{align*}
+          Da $\phi_{\mathcal{A}}=\neg\neg\alpha$, folgt $\mathcal{A}
+          \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$.
+        \end{faelle}
+
+       \item $\phi=\alpha\rightarrow\beta$
+        \begin{faelle}
+         \item $\mathcal{A}(\phi)=f$ (d.\,h. $\phi_{\mathcal{A}}=\neg(
+          \alpha\rightarrow\beta)$), d.\,h. $\mathcal{A}(\alpha)=w$ und
+          $\mathcal{A}(\beta)=f$
+          \begin{align*}
+            (1)\quad & \alpha &\text{IV}\\
+            (2)\quad & \neg\beta &\text{IV}\\
+            (3)\quad & \alpha\rightarrow(\neg\beta\rightarrow
+               \neg(\alpha\rightarrow\beta)) &\text{\todo{link suchen:
+               lemma}}\\
+            (4)\quad & \neg\beta \rightarrow \neg(\alpha\rightarrow\beta)
+               &\text{MP 1,3}\\
+            (5)\quad & \neg(\alpha\rightarrow\beta) &\text{MP 2,4}
+          \end{align*}
+          Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
+          \neg(\alpha\rightarrow\beta)$, d.\,h. $\mathcal{A}
+          \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+
+         \item $\mathcal{A}(\phi)=w$, d.\,h. $\phi_{\mathcal{A}}
+          =\alpha\rightarrow\beta$
+          \begin{enumerate}[{Fall 2}a]
+           \item $\mathcal{A}(\alpha)=f$, Nach Induktionsvorraussetzung
+            gilt $\mathcal{A} \vdash_{\mathrm{L}} \neg\alpha$
+            \begin{align*}
+              (1)\quad & \neg\alpha &\text{IV}\\
+              (2)\quad & \neg\alpha \rightarrow (\alpha\rightarrow\beta)
+                 &\text{\todo{link suchen: Lemma}}\\
+              (3)\quad & \alpha\rightarrow\beta & \text{MP 1,3}
+            \end{align*}
+            Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
+            \alpha\rightarrow\beta$, d.\,h. $\mathcal{A}
+            \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+
+           \item $\mathcal{A}(\beta)=w$, Nach Induktionsvorraussetzung
+            gilt $\mathcal{A} \vdash_{\mathrm{L}} \beta$
+            \begin{align*}
+              (1)\quad & \beta &\text{IV}\\
+              (2)\quad & \beta\rightarrow(\alpha\rightarrow\beta) &
+                 \text{\hyperref[A1]{Axiom 1}}\\
+              (3)\quad & \alpha\rightarrow\beta &\text{MP 1,2}
+            \end{align*}
+            Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
+            \alpha\rightarrow\beta$, d.\,h.
+            $\mathcal{A}\vdash_{\mathrm{L}} \phi_{\mathcal{A}}$.
+          \end{enumerate}
+        \end{faelle}
+      \end{itemize}
+    \end{description}
   \end{proof}
 \end{satz}
+
+\begin{bsp}
+  $\phi = A\rightarrow \neg(\neg A\rightarrow B), \mathcal{A}=\{A, \neg
+  B\}$ Gesucht ist eine Beweis für $\mathcal{A} \vdash_{\mathrm{L}}
+  \phi_{\mathcal{A}}$. $\phi_{\mathcal{A}} = \neg(A\rightarrow \neg(\neg
+  A\rightarrow B))$.
+
+  \begin{enumerate}
+   \item $\mathcal{A} \vdash_{\mathrm{L}} A$
+    \begin{align*}
+      (1)\quad & A &\text{Hypothese}
+    \end{align*}
+
+   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg B$
+    \begin{align*}
+      (1)\quad & \neg B &\text{Hypothese}
+    \end{align*}
+
+   \item $\mathcal{A} \vdash_{\mathrm{L}} \neg\neg A$
+    \begin{align*}
+      (1)\quad & A &\text{IV}\\
+      (2)\quad & A \rightarrow \neg\neg A &\text{\todo{link suchen: Lemma}}\\
+      (3)\quad & \neg\neg A &\text{MP 1,2}
+    \end{align*}
+
+   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg A\rightarrow B$
+    \begin{align*}
+      (1)\quad & \neg\neg A &\text{IV}\\
+      (2)\quad & \neg\neg A \rightarrow (\neg A\rightarrow B)
+         &\text{\todo{link suchen: Lemma}}\\
+      (3)\quad & \neg A\rightarrow B &\text{MP 1,2}
+    \end{align*}
+
+   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg\neg(\neg A\rightarrow B)$
+    \begin{align*}
+      (1)\quad & \neg A\rightarrow B &\text{IV}\\
+      (2)\quad & (\neg A\rightarrow B) \rightarrow \neg\neg (\neg
+         A\rightarrow B) &\text{\todo{link suchen: Lemma}}\\
+      (3)\quad & \neg\neg(\neg A\rightarrow B) &\text{MP 1,2}
+    \end{align*}
+
+   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg(A\rightarrow \neg(\neg
+    A\rightarrow B))$
+    \begin{align*}
+      (1)\quad & A &\text{IV}\\
+      (2)\quad & \neg\neg(\neg A\rightarrow B) &\text{IV}\\
+      (3)\quad & A\rightarrow(\neg\neg (\neg A\rightarrow B)\rightarrow
+         \neg(A \rightarrow \neg(\neg A\rightarrow B))) &\text{\help{was
+         steht hier?}}\\
+      (4) \neg(A \rightarrow \neg(\neg A\rightarrow B)) &\text{2x MP
+         \todo{ausfürlich}}
+    \end{align*}
+
+   \item Zusammenbauen des Gesamtbeweises:
+    \begin{align*}
+      (1)\quad & A &\text{Hypothese}\\
+      (2)\quad & \neg B &\text{Hypothese}\\
+      (3)\quad & A \rightarrow \neg\neg A &\text{\todo{link suchen: Lemma}}\\
+      (4)\quad & \neg\neg A &\text{MP 1,3}\\
+      (5)\quad & \neg\neg A \rightarrow (\neg A \rightarrow B)
+         &\text{\todo{link suchen:lemma}}\\
+      (6)\quad & \neg A\rightarrow B &\text{MP 4,5}\\
+      (7)\quad & (\neg A \rightarrow B) \rightarrow \neg\neg(\neg
+         A\rightarrow B) &\text{\todo{link suchen: lemma}}\\
+      (8)\quad & \neg\neg(\neg A\rightarrow B) &\text{MP 6,7}\\
+      (9)\quad & A\rightarrow (\neg\neg (\neg A\rightarrow B)\rightarrow
+         \neg(A\rightarrow\neg(\neg A\rightarrow B))) &\text{\todo{link:
+         Lemma}}\\
+      (10)\quad & \neg\neg (\neg A\rightarrow B)\rightarrow
+         \neg(A\rightarrow\neg(\neg A\rightarrow B)) &\text{MP 1,9}\\
+      (11)\quad & \neg(A\rightarrow \neg(\neg A\rightarrow B)) &\text{MP
+         8,10}
+    \end{align*}
+  \end{enumerate}
+\end{bsp}
+
+Alle möglichen Belegungen zu $A \rightarrow (B\rightarrow B)$ sind
+$\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
+\mathcal{A}_{3}=\{A, \neg B\}$ und $\mathcal{A}_{4}=\{A, B\}$
+
+\begin{itemize}
+ \item
+  \begin{align*}
+    \neg A,\neg B &\vdash_{\mathrm{L}} A\rightarrow(B \rightarrow B) & \neg
+       A, B &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)\\
+    &\downarrow DT &&\downarrow DT\\
+    \neg A &\vdash_{\mathrm{L}} \neg B \rightarrow
+       (A\rightarrow(B\rightarrow B)) &\neg A &\vdash_{\mathrm{L}}
+       B\rightarrow(A\rightarrow(B\rightarrow B))\\
+    &\text{\todo{link suchen: lemma}} (\alpha\rightarrow
+       \beta)\rightarrow((\neg \alpha\rightarrow\beta)\rightarrow\beta)\\
+    &2mal MP\\
+    \neg A &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)
+  \end{align*}
+
+ \item
+  \begin{align*}
+    A,\neg B &\vdash_{\mathrm{L}} A\rightarrow(B \rightarrow B) &
+       A, B &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)\\
+    &\downarrow DT &&\downarrow DT\\
+    A &\vdash_{\mathrm{L}} \neg B \rightarrow
+       (A\rightarrow(B\rightarrow B)) & A &\vdash_{\mathrm{L}}
+       B\rightarrow(A\rightarrow(B\rightarrow B))\\
+    &\text{\todo{link suchen: lemma}} (\alpha\rightarrow
+       \beta)\rightarrow((\neg \alpha\rightarrow\beta)\rightarrow\beta)\\
+    A \vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)\\
+    \help{irgendwas stimmt hier nicht}\\
+    &2mal MP\\
+    \neg A &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)
+  \end{align*}
+\end{itemize}
+
+\begin{satz}[Hypothesenmengen bei Tautologien verkleinern]\label{satz:3}
+  Sei $\phi$ eine Tautologie und $\mathcal{A}$ eine Belegung der
+  Variablen von $\phi$. Dann gilt für jede Teilmenge $B\subseteq
+  \mathcal{A}$:
+  \begin{gather*}
+    B \vdash_{\mathrm{L}} \phi
+  \end{gather*}
+
+  \begin{proof}
+    Induktion über die Größe $\abs{B}$ von $B$.\help{soll das B in
+    \\mathcal sein?}
+    \begin{description}
+     \item[IA:] $\abs{B} = \abs{\mathcal{A}}$ dann ist $B=\mathcal{A}$
+      und $B \vdash_{\mathrm{L}} \phi$ folgt aus \autoref{satz:2}, da
+      $\phi=\phi_{B}$.
+
+     \item[IB:] Die Behauptung gilt für $B$ mit $\abs{B}
+      =\abs{\mathcal{A}}, \abs{\mathcal{A}}=1,\ldots,k$.
+
+     \item[IS:] $B$ habe die Größe $k-1$. Dann gibt es eine Variable
+      $A_{l}$, die nicht von $B$ belegt wird. Nach IV gilt
+      $B\cup\{A_{l}\} \vdash_{\mathrm{L}} \phi$ und $B\cup\{\neg A_{l}\}
+      \vdash_{\mathrm{L}} \phi$. Mit dem \todo{link suchen:
+      Deduktionstheorem} folgt
+      \begin{gather*}
+        B \vdash_{\mathrm{L}} A_{l} \rightarrow \phi \quad\text{und}\quad
+           B \vdash_{\mathrm{L}} \neg A_{l} \rightarrow \phi
+      \end{gather*}
+
+      Mit \todo{link suchen: lemma} $(A_{l} \rightarrow \phi)\rightarrow
+      ((\neg A_{l} \rightarrow\phi)\rightarrow\phi)$ und zweimal modus
+      ponens folgt $B \vdash_{\mathrm{L}} \phi$.
+    \end{description}
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Vollständigkeit der Theorie $\mathbf{\mathrm{L}}$]
+  Wenn $\phi$ eine aussagenlogische Tautologie ist, dann ist $\phi$ ein
+  Theorem von $\mathrm{L}$, d.\,h. $\vdash_{\mathrm{L}} \phi$.
+
+  \begin{proof}
+    \autoref{satz:3} gilt auch für $B=\emptyset$
+  \end{proof}
+\end{satz}
+
+\begin{description}
+ \item[Fazit:] Korrektheit und Vollständigkeit von $\mathrm{L}$:
+  \begin{center}
+    $\phi$ ist eine aussagenlogische Tautologie \gdw $\vdash_{\mathrm{L}}
+    \phi$.
+  \end{center}
+  "`Tautologie"' ist ein semantischer Ausdruck und
+  "`$\vdash_{\mathrm{L}}$"' ist ein syntaktischer Ausdruck
+\end{description}
 
 \clearpage
 \appendix
@@ -1216,6 +1472,27 @@ Sind die folgenden Argumentationen logisch korrekt?
     (9)\quad & \beta \text{MP 5,8}
   \end{align*}
 \end{enumerate}
+
+\section{Blatt 3}
+\subsection*{Aufgabe 1}
+
+Wie lang ist (nach dem Beweisen der Sätze dieser Vorlesung) ein Beweis
+(in $\mathrm{L}$) für eine Tautologie höchstens? (Abschätzung nach Anzahl
+von Verknüpfungszeichen und Anzahl der Variablen in der Formel)
+
+% durchprobieren der Wahrheitstafel, Ergebnis: wahrscheinlich $2^{n}$
+
+\subsection*{Aufgabe 2}
+
+Sei $\mathrm{L}'$ die Theorie, die aus $\mathrm{L}$ entsteht, indem
+\hyperref[A3]{Axiom 3} ersetzt wird durch Axiom 3': $(\neg \alpha
+\rightarrow \neg\beta) \rightarrow(\beta\rightarrow\alpha)$.
+
+Zeigen Sie, dass $\mathrm{L}'$ korrekt und vollständig ist Das heißt,
+$\phi$ ist Tautologie \gdw $\vdash_{\mathrm{L}'} \phi$.
+
+% A3' aus \hyperref[A1]{Axiom 1}, \hyperref[A2]{Axiom 2}, MP und DT
+% herleiten
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
