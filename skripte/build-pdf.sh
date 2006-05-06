@@ -64,7 +64,11 @@ else
 fi
 echo "I: using $src as source file"
 
-#cp $WEB/sty/* .
+# Aus irgendeinem Grund braucht das pdflatex aus TeXLive die HOME-Variable um
+# dort ein Unterverzeichnis .texlive2005 mit irgendwelchen Konfigurationen
+# anzulegen.
+HOME=$TMP
+
 for ext in pdf ps; do
     if rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
         echo "I: installing ${src%.*}.$ext as $REPOS.$ext"
