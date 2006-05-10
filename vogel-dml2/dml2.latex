@@ -1,30 +1,24 @@
-\documentclass[draft,twoside]{scrreprt}
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
 
-\usepackage{longtable}
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
 \usepackage{ifthen}
-
-% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
-% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
-% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
-% eine Druckversion ist das wichtig! Daher dieser Hack.
-% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
-% ohne die Option "`hyperref"' geladen.
-%
-% Achtung: Die Korrektur von \thref muss von Hand auskommentiert werden,
-% wenn hyperref nicht geladen wird!
-\newboolean{withHyperref}
-\setboolean{withHyperref}{true} % true, false
-\ifthenelse{\boolean{withHyperref}}{}%
-	   {\newcommand{\texorpdfstring}[2]{#1}%
-	    \newcommand{\pdfbookmark}[3][]{}%
-	   }
-
 \usepackage{makeidx}
 \usepackage[final]{graphicx}
 \usepackage{color}
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
-	   {}
+\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 % \usepackage{nicefrac}
@@ -38,135 +32,81 @@
 \usepackage{longtable}
 \usepackage{slashbox}
 
-% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
-	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
-
-% Zur Korrektur von \thref
-% <news:col095$me8$2@n.ruf.uni-freiburg.de>
-\makeatletter
-\def\thref#1{%
-   \expandafter\ifx\csname r@#1@type\endcsname\None
-     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
-       \thepage \space undefined}\G@refundefinedtrue
-     \else\csname r@#1@type\endcsname~\fi%
-   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
-}
-
-% Korrektur der Platzierung der Gleichungsnummer
-% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
-\def\SetOnlyEndMark{%
-   \global\tag@true
-   \iftagsleft@
-     \gdef\df@tag{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
-   \else
-     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
-   \fi}
-\def\SetTagPlusEndMark{%
-   \iftagsleft@
-     \gdef\maketag@@@##1{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{%
-           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
-       }%
-     }%
-   \else
-     \gdef\maketag@@@##1{%
-       \hbox{\m@th\normalfont##1%
-         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
-   \fi}
-
-% setzt / als Trenner zwischen Abschnitt und Satznummer
-\def\@thmcountersep{/}
-\makeatother
+\usepackage[thmmarks,hyperref]{ntheorem}
 
 \usepackage{paralist}
 \usepackage{ngerman}
 \usepackage{wasysym}  % \lightning
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
 
 \theoremstyle{break}
 \theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[chapter]
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{lemma}{Lemma}[chapter]
 
+% Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
-\theoremsymbol{\ensuremath{_\blacksquare}}
-% \theoremsymbol{q.\,e.\,d.}
-\newtheorem{proof}{\textnormal{\scshape Beweis:}}
 \newtheorem{fakt}{Fakt}
 
-% \setdefaultenum{(1)}{(a)}{i.}{A.}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\lemmaautorefname}{Lemma}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\proofautorefname}{Beweis}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
 \pagestyle{headings}
 
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\C}{\mathbb{C}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\K}{\mathbb{K}}
-\newcommand{\PP}{\mathbb{P}}
-\newcommand{\Prr}{\PP\mathrm{r}}  % The command \Pr already exists
-\newcommand{\Pa}{\PP\mathrm{a}}
-\newcommand{\help}[1]{\textcolor{green}{help: #1}}
-\newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
-\newcommand{\edefine}{=_{df}}
-\newcommand{\define}{\Leftrightarrow_{df}} %\define nur in $ $ benutzen!
-\newcommand{\semaeq}{\mathrel|\joinrel=\joinrel\mathrel|} %semantische Aequivalenz
-\newcommand{\mminus}{\backslash} %Mengenrelation minus
-\newcommand{\card}{\textrm{ card}}
-\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand*{\R}{\mathbb{R}}
+\newcommand*{\C}{\mathbb{C}}
+\newcommand*{\N}{\mathbb{N}}
+\newcommand*{\Q}{\mathbb{Q}}
+\newcommand*{\Z}{\mathbb{Z}}
+\newcommand*{\K}{\mathbb{K}}
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand*{\todo}[1]{\textcolor{blue}{todo: #1}}
+\newcommand*{\edefine}{=_{df}}
+\newcommand*{\define}{\Leftrightarrow_{df}} %\define nur in $ $ benutzen!
+\newcommand*{\semaeq}{\mathrel|\joinrel=\joinrel\mathrel|} %semantische Aequivalenz
+\newcommand*{\mminus}{\backslash} %Mengenrelation minus
+\newcommand*{\card}{\textrm{ card}}
+\newcommand*{\floor}[1]{\lfloor #1 \rfloor}
 \DeclareMathOperator{\sgn}{sgn} %Signum-Funktion
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
-\newcommand{\highl}[1]{\textbf{#1}\index{#1}}
+\newcommand*{\highl}[1]{\textbf{#1}\index{#1}}
 
-% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
-\newcommand*{\taglabel}[1]{%
-  \refstepcounter{equation}\tag{\theequation}\label{#1}%
-}
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
 
-\newcommand{\obda}{o.\,B.\,d.\,A.\xspace}
-\newcommand{\sonst}{\text{sonst}}
-\newcommand{\leerz}{\ifthenelse{\boolean{mmode}}%
-			       {\text{\textvisiblespace}}%
-			       {\textvisiblespace}}
-
-\renewcommand{\epsilon}{\varepsilon}
-% \renewcommand{\phi}{\varphi}
-% \renewcommand{\tilde}{\widetilde}
-
-				   		
-\newcounter{schritt}
-\newenvironment{schritte}%
-	       {\begin{list}{\textit{\underline{\arabic{schritt}.\,Schritt:}}}%
-		      {\usecounter{schritt}%
-			\settowidth{\labelwidth}{\textit{\underline{99.\,Schritt:}}}%
-			\setlength{\leftmargin}{1cm}%
-			\setlength{\itemindent}{4mm}%
-			\addtolength{\itemindent}{\labelwidth}%
-			\addtolength{\itemindent}{-\leftmargin}%
-		      }}%
-	       {\end{list}}
-
-
-\newenvironment{mdescription}%
-	       {\renewcommand{\descriptionlabel}[1]%
-			      {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		 {\end{description}}
-
-
-\setlength{\parindent}{0ex}
-\addtolength{\parskip}{1ex}
+\SVN $LastChangedRevision: 14 $
+\SVN $LastChangedDate: 2006-05-08 09:41:28 +0200 (Mo, 08 Mai 2006) $
 
 \makeindex
 
@@ -176,6 +116,45 @@
 \author{J\"org Vogel}
 \date{SS 2005}
 \maketitle
+
+\clearpage
+\chapter*{Vorwort}
+{\itshape
+
+  Dieses Skript ist im Rahmen des
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
+  "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
+  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
+  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis die Internetadresse
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/} des Projekts
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:kabel@cat0.de}{Matti Bickel
+    \texttt{<kabel@cat0.de>}} (2005)
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2006)
+  \end{itemize}
+}
 
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
@@ -627,11 +606,11 @@ $E$ und $N$ bilden eine Zerlegung der Menge aller 0-1-Tupel.\\
 F\"ur
 \begin{description}
 \item[DNF:] f\"ur $(x_1,\ldots,x_n)\in \{0,1\}^n$ definieren wir:
-\begin{equation*} A_1^{x_1}\wedge A_2^{x_2} \wedge \ldots \wedge
+\begin{gather*} A_1^{x_1}\wedge A_2^{x_2} \wedge \ldots \wedge
 A_n^{x_n} \textrm{ durch }\\
 A_i^{x_i}:= \Bigg\{\begin{array}{l}A_i \textrm{ falls }x_i=1\\\neg A_i \textrm{
 falls }x_i=0\end{array}
-\end{equation*}
+\end{gather*}
 \emph{Bemerkung}: $A_i^{x_i}$ ist stets ein Literal und eine Formel der obigen
 Gestalt hei\ss t \highl{Elementarkonjunktion}.
 
@@ -644,11 +623,11 @@ Eine solche DNF hei\ss t \highl{kanonische DNF (DKNF)}
 \end{fakt}
 
 \item[KNF:] f\"ur $(x_1,\ldots,x_n)\in \{0,1\}^n$ definieren wir:
-\begin{equation*} A_1^{\overline{x_1}}\vee A_2^{\overline{x_2}} \vee \ldots \vee
+\begin{gather*} A_1^{\overline{x_1}}\vee A_2^{\overline{x_2}} \vee \ldots \vee
 A_n^{\overline{x_n}} \textrm{ durch }\\
 A_i^{\overline{x_i}}:= \Bigg\{\begin{array}{l}\neg A_i \textrm{ falls }x_i=1\\ A_i \textrm{
 falls }x_i=0\end{array}
-\end{equation*}
+\end{gather*}
 \emph{Bemerkung}: $A_i^{\overline{x_i}}$ ist ein Literal und eine Formel der obigen
 Gestalt hei\ss t Elementarkonjunktion.
 
@@ -954,9 +933,9 @@ Die Folgerungsh\"ulle besitzt folgende Eigenschaften:
 \end{enumerate}
 
 Diese 3 Eigenschaften charakterisieren die Abbildung
-\begin{equation*}
+\begin{gather*}
 Fl:\ \mathcal{P}(\mathcal{L}_{Al}) \mapsto \mathcal{P}(\mathcal{L}_{Al})
-\end{equation*}
+\end{gather*}
 als \highl{H\"ullenoperator}.
 
 \begin{bsp}
@@ -981,44 +960,44 @@ Also  $X \models A_{17}$
 \end{bsp}
 
 \subsection{Endlichkeitssatz}
-\begin{satz}\label{endlich1}
+\begin{satz}\label{satz:endlich1}
 Es seien $X$ eine (beliebige unendliche) Formelmenge und es sei $F$ eine
 Formel.\\
-\begin{equation*}
+\begin{gather*}
    X \models F \textrm{ gdw.  es gibt eine endliche Teilmenge } X_{FIN} \textrm{
    von } X \textrm{, s.d. } X_{FIN} \models F
-\end{equation*}
+\end{gather*}
 \end{satz}
 
-\begin{satz}\label{endlich2}
+\begin{satz}\label{satz:endlich2}
 Es sei $X$ eine (unendliche) Formelmenge und es sei $F$ eine Formel.
 
 $X$ ist unerf\"ullbar gdw. es gibt eine Teilmenge $X_{Fin} \subseteq X$
 ($X_{Fin}$ endlich), die unerf\"ullbar ist.
 \end{satz}
 
-\begin{satz}\label{endlich3}
+\begin{satz}\label{satz:endlich3}
 Es sei $X$ eine (unendliche) Formelmenge.
 
 Alle endlichen Teilmengen von $X$ sind erf\"ullbar, gdw. $X$ ist erf\"ullbar.
 \end{satz}
 
 Logische Struktur dieser S\"atze:\\
-Satz \ref{endlich1}: $A_1 \leftrightarrow A_2$\\
-Satz \ref{endlich2}: $B_1 \leftrightarrow B_2$\\
-Satz \ref{endlich3}: $C_1 \leftrightarrow C_2$
+\autoref{satz:endlich1}: $A_1 \leftrightarrow A_2$\\
+\autoref{satz:endlich2}: $B_1 \leftrightarrow B_2$\\
+\autoref{satz:endlich3}: $C_1 \leftrightarrow C_2$
 
 Trivialerweise gilt: $A_2 \rightarrow A_1$, $B_2 \rightarrow B_1$ und $C_2
 \rightarrow C_1$.
 
 weitere Beziehungen: $B_2 = \neg C_1$ und $B_1 = \neg C_2$
-\begin{equation*}
+\begin{gather*}
 B_1 \rightarrow B_2 \semaeq \neg C_2 \rightarrow \neg C_1 \semaeq C_1
 \rightarrow C_2
-\end{equation*}
-d.h. Satz \ref{endlich2} ist \"aquivalent zu Satz \ref{endlich3}
+\end{gather*}
+d.h. \autoref{satz:endlich2} ist \"aquivalent zu \autoref{satz:endlich3}
 
-\underline{Behauptung}: Aus Satz \ref{endlich1} folgt Satz \ref{endlich2}!\\
+\underline{Behauptung}: Aus \autoref{satz:endlich1} folgt \autoref{satz:endlich2}!\\
 Es sei $X$ unerf\"ullbar, d.h. $X$ hat kein Modell. Es sei $G$ irgendeine
 Formel.
 
@@ -1026,7 +1005,7 @@ Dann gilt: Jedes Modell von $X$ ist auch Modell von $G$.\\
 D.h. $X \models G$ (aus einer unerf\"ullbaren Formelmenge folgt jede Formel)
 
 Insbesondere gilt: $X \models f$, $f := A \wedge \neg A$\\
-Satz \ref{endlich1} impliziert: es gibt eine endliche Teilmenge $X_{Fin}
+\autoref{satz:endlich1} impliziert: es gibt eine endliche Teilmenge $X_{Fin}
 \subseteq X$ mit $X_{Fin} \models f$.
 
 Da jedes Modell von $X_{Fin}$ auch Modell von $f$ ist, aber $f$ kein Modell hat,
@@ -1034,7 +1013,7 @@ besitzt auch $X_{Fin}$ kein Modell.
 
 Wir haben gezeigt: $\{ A_1 \rightarrow A_2 \} \models \{ B_1 \rightarrow B_2 \}$
 
-es gilt auch: aus Satz \ref{endlich2} folgt Satz \ref{endlich1}: $\{B_1
+es gilt auch: aus \autoref{satz:endlich2} folgt \autoref{satz:endlich1}: $\{B_1
 \rightarrow B_2\} \models \{A_1 \rightarrow A_2\}$.
 
 Es gelte: $X \models F$\\
@@ -1052,7 +1031,7 @@ b bedeutet: $I_\beta(\neg F)=1$, d.h. $I_\beta(F)=0$.\\
 Aus a folgt: (mit $X \models F$) $I_\beta(F)=1$ ($\beta$ ist Modell von $F$
 \lightning)
 
-Satz \ref{endlich2} impliziert: es gibt eine endliche Teilmenge $X^{'}_{Fin}
+\autoref{satz:endlich2} impliziert: es gibt eine endliche Teilmenge $X^{'}_{Fin}
 \subseteq X \cup \{\neg F\}$, die unerf\"ullbar ist.
 
 Wir betrachten $X_{Fin} := X^{'}_{Fin}\backslash\{\neg F\}$
@@ -1066,9 +1045,9 @@ Wir betrachten $X_{Fin} := X^{'}_{Fin}\backslash\{\neg F\}$
 \end{description}
 Also gilt: $X_{Fin} \models F$
 
-Damit gilt $\textrm{Satz \ref{endlich1}} \semaeq \textrm{ Satz \ref{endlich2}}$.
+Damit gilt $\textrm{\autoref{satz:endlich1}} \semaeq \textrm{ \autoref{satz:endlich2}}$.
 
-\begin{proof}[Satz \ref{endlich3}]
+\begin{proof}[\autoref{satz:endlich3}]
 Problem: Aus der F\"ulle der Modelle der endlichen Teilmengen (die zueinander
 nicht konsistent sein m\"ussen) ein gemeinsames Modell f\"ur alle Formeln aus
 $X$ zu konstruieren.
@@ -1201,7 +1180,7 @@ Wissen: zu jeder Formel $F$ gibt es eine KNF (die \"aquivalent ist)
 Dies schreiben wir in der Form:
 \[\{\{L_{11},L_{12},\ldots,L_{1n_1}\},\{L_{21},\ldots,L_{2n_2}\},\ldots,\{L_{m1},\ldots,L_{mn_m}\}\}\]
 Dies ist eine Menge von Mengen von Literalen. Letzteres hei\ss t
-\highl{"`Klausel"'}. Also schreiben wir die KNF als \highl{Klauselmenge}.
+"`\highl{Klausel}"'. Also schreiben wir die KNF als \highl{Klauselmenge}.
 
 \begin{bsp}
 Wir betrachten die folgenden Formeln in KNF:
@@ -1435,13 +1414,13 @@ Die Induktionsvorraussetzung liefert:
    \item \label{b} $\varnothing \in Res^*(F_1)$
 \end{enumerate}
 
-\ref{a} bedeutet: es gibt eine Folge von Klauseln $K_1,K_2,\ldots, K_l$, so dass
+\autoref{a} bedeutet: es gibt eine Folge von Klauseln $K_1,K_2,\ldots, K_l$, so dass
 gilt: f\"ur alle $K_i\ (1\leq i\leq l)$ ist entweder $K_i$ ein Element aus $F_0$
 (Startklauseln) oder es gibt zwei Klauseln $K_\alpha$ und $K_\beta$ mit
 $\alpha,\beta < i$ und \help{Resolution $K_\alpha, K_\beta$ zu $K_i$} und
 $K_l=\varnothing$
 
-\ref{b} bedeutet: es gibt eine Folge von Klauseln
+\autoref{b} bedeutet: es gibt eine Folge von Klauseln
 $K_1^{'},K_2^{'},\ldots,K_m^{'}$, so dass gilt: f\"ur alle $K_j^{'}\ (1\leq
 j\leq m)$ ist entweder $K_j^{'}\in F$ (Startklauseln) oder es gibt zwei Klauseln
 $K_\gamma^{'}$ und $K_\delta^{'}$ mit $\gamma, \delta < j$ und \help{Resolution
@@ -1907,7 +1886,7 @@ Hierf\"ur gilt gerade: $\binom{n+r-1}{r}$ M\"oglichkeiten.
 \label{2.6.2}\binom{n}{r}=\binom{n-1}{r-1}+\binom{n-1}{r} && \textrm{(Rekursion)}
 \end{align}
 \begin{proof}
-zu \ref{2.6.1} zwei Varianten:
+zu \autoref{2.6.1} zwei Varianten:
 
 \underline{1. Variante}: per Rechnung
 \[ \binom{n}{r} = \frac{n!}{r!\,(n-r)!} = \frac{n!}{(n-r)!\,(n-(n-r))!} =
@@ -1919,7 +1898,7 @@ Es gibt eine bijektive Zuordnung zwischen den $r$-Teilmengen $A$ von $N$ und den
 $(n-r)$-Teilmengen $B$ von $N$ durch $B=N-A=\overline{A}$\\
 und deshalb gilt: $\binom{n}{r}=\binom{n}{n-r}$ (ohne Rechnen)
 
-zu \ref{2.6.2} zwei Varianten:
+zu \autoref{2.6.2} zwei Varianten:
 
 \underline{1. Variante}: per Rechnung - durch vollst\"andige Induktion
 
@@ -2458,7 +2437,7 @@ Potenzen von Primzahlen:
 n = p_1^{e_1}\cdot p_2^{e_2}\cdot \ldots \cdot p_k^{e_k}\textrm{ , wobei } p_1 <
 p_2 < p_3 < \ldots < p_k
 \end{gather}
-Aufgabe: Es sei $n$ wie in \eqref{fundamentalarith} mit $n\in \N$ und $n>1$.
+Aufgabe: Es sei $n$ wie in \autoref{fundamentalarith} mit $n\in \N$ und $n>1$.
 Bestimme $\varphi(n)$!
 
 Das Beispiel liefert:
@@ -3130,7 +3109,7 @@ Verfahren, dass sich auf weitere Bsp. übertragen lässt.
 
 Das Verfahren vollzieht sich in den folgenden Schritten:
 
-\underline{1. Schritt}: Stelle das Schema \eqref{fibo} durch eine einzige
+\underline{1. Schritt}: Stelle das \hyperref[fibo]{Schema \ref*{fibo}} durch eine einzige
 Gleichung dar!
 
 Dazu setzen wir: $u_n := 0$ für $n<0$
@@ -3141,15 +3120,14 @@ und für $n>1\,:\ u_n = u_{n-1} + u_{n-2}$
 
 Dies schreiben als:
 \begin{gather}\label{fibo2}
-u_n = u_{n-1} + u_{n-2} + \text{Wert-I}_a^n(" n=1\mathaccent)
+u_n = u_{n-1} + u_{n-2} + \text{Wert-I}_a^n(\text{"`}n=1\text{"'})
 \end{gather}
-\help{Anführungszeichen im Math-Mode?}
 \underline{2. Schritt}: Bestimme mit Hilfe formaler Potenzreihen eine erzeugende
-Funktion für Schema \eqref{fibo2}!
+Funktion für \hyperref[fibo2]{Schema \ref*{fibo2}}!
 
 \underline{1. Ansatz}:
 \[ g(x) := \sum_{n=0}^\infty u_n\, x^n \]
-Wegen \eqref{fibo2} gilt:
+Wegen \autoref{fibo2} gilt:
 \begin{align*}
 g(x) &= \sum_{n=0}^\infty u_n\, x^n = \sum_{n=0}^\infty \left(u_{n-1} + u_{n-2} +
 \text{Wert-I}_a^n\left(" n=1 ''\right)\right)\, x^n\\
@@ -3168,12 +3146,12 @@ g(x) &= x\cdot g(x) + x^2\cdot g(x) + x\\
 x &= g(x)[x + x^2-1]\\
 \end{align*}
 und damit:
-\begin{equation}\label{fibo3}
+\begin{gather}\label{fibo3}
 g(x) = \frac{-x}{x^2 + x -1}
-\end{equation}
-$g(x)$ ist die erzeugende Funktion für das Schema \eqref{fibo2}
+\end{gather}
+$g(x)$ ist die erzeugende Funktion für das \hyperref[fibo2]{Schema \ref*{fibo2}}
 
-\underline{3. Schritt}: Entwickle die rechte Seite von \eqref{fibo3} in eine
+\underline{3. Schritt}: Entwickle die rechte Seite von \autoref{fibo3} in eine
 formale Potenzreihe und bestimme deren Koeff.!
 (Aufgrund des 1. Ansatzes sind die gerade die gesuchten $u_n$!)
 
@@ -3191,17 +3169,17 @@ Die Lsg. sind
 \beta = -1/2 - \sqrt{(1/2)^2 + 1} = \frac{-1 - \sqrt{5}}{2}
 \end{gather}
 und es gilt:
-\begin{equation}
+\begin{gather}
 q(x) = (x-\alpha)\,(x-\beta) = (x + \frac{1-\sqrt{5}}{2})\,(x + \frac{1 +
 \sqrt{5}}{2})
-\end{equation}
+\end{gather}
 
 \underline{Schritt 3.2}: Realisiere gemäß des 2. Ansatzes eine Darstellung von
 $g(x)$ durch Partialbruchzerlegung.
-\begin{equation}\label{fibo4}
+\begin{gather}\label{fibo4}
 g(x) = \frac{p(x)}{q(x)} = \frac{p(x)}{(x-\alpha)\,(x-\beta)} \stackrel{!}{=}
 \frac{A}{(x-\alpha)} + \frac{B}{(x-\beta)}
-\end{equation}
+\end{gather}
 
 \underline{3. Ansatz}:\\
 \underline{Schritt 3.3}: Bestimme die Koeff. $A$ und $B$!
@@ -3225,11 +3203,11 @@ g(x) &= \frac{(-1/\alpha)\cdot A}{(-1/\alpha)\cdot (x-\alpha)} +
 \end{align*}
 
 Damit gilt:
-\begin{equation}\label{fibo5}
+\begin{gather}\label{fibo5}
 u_n = -\frac{A}{\alpha^{n+1}} - \frac{B}{\beta^{n+1}}
-\end{equation}
+\end{gather}
 
-Nun \underline{Schritt 3.3} (wir starten mit \eqref{fibo4})
+Nun \underline{Schritt 3.3} (wir starten mit \autoref{fibo4})
 \begin{align*}
 g(x) &= \frac{p(x)}{(x-\alpha)\,(x-\beta)} = \frac{-x}{\left(x +
 \frac{1-\sqrt{5}}{2} \right)\, \left( x + \frac{1+\sqrt{5}}{2} \right) }
@@ -3249,7 +3227,7 @@ Ein Koeff.vergleich liefert:
 \label{fibo6.2} A\,\left(\frac{1+\sqrt{5}}{2}\right) +
 B\,\left(\frac{1-\sqrt{5}}{2}\right) = 0
 \end{gather}
-\eqref{fibo6.1} ergibt: $A= -1 -B$, insetzen in \eqref{fibo6.2}:
+\autoref{fibo6.1} ergibt: $A= -1 -B$, einsetzen in \autoref{fibo6.2}:
 
 \begin{align*}
 (-1 - B)\,(\frac{1+\sqrt{5}}{2}) + B(\frac{1-\sqrt{5}}{2}) &= 0\\
@@ -3260,11 +3238,11 @@ B\,(-\sqrt{5}) &= \frac{1+\sqrt{5}}{2}\\
 B &= -1/\sqrt{5} \cdot \frac{1+\sqrt{5}}{2}
 \end{align*}
 
-haben: $B = -1/\sqrt{5} \cdot \frac{1+\sqrt{5}}{2}$ in \eqref{fibo6.1} liefert:
-\begin{equation}\label{fibo7}
+haben: $B = -1/\sqrt{5} \cdot \frac{1+\sqrt{5}}{2}$ in \autoref{fibo6.1} liefert:
+\begin{gather}\label{fibo7}
 A=\frac{1}{\sqrt{5}} \cdot \frac{1-\sqrt{5}}{2}
-\end{equation}
-Um \eqref{fibo5} darstellen zu können, benutzen wir noch folgende Beziehungen:
+\end{gather}
+Um \autoref{fibo5} darstellen zu können, benutzen wir noch folgende Beziehungen:
 
 haben: $\alpha = \frac{-1 + \sqrt{5}}{2} = -\frac{1-\sqrt{5}}{2}$. Dann ist
 \[ \frac{1}{\alpha} = \frac{-2}{1-\sqrt{5}} = \frac{-2\, (1+\sqrt{5}}{
@@ -3274,7 +3252,7 @@ entsprechend liefert
 \[ \beta = \frac{-1 - \sqrt{5}}{2} = -\frac{1+\sqrt{5}}{2} \text{ für }
 \frac{1}{\beta} = -\alpha \]
 
-Dies setzen wir in \eqref{fibo5} ein:
+Dies setzen wir in \autoref{fibo5} ein:
 \begin{align*} 
 u_n =& -\left(\frac{1}{\sqrt{5}}\cdot \frac{1-\sqrt{5}}{2} \right) \left(
 \frac{1+\sqrt{5}}{2} \right) \left( \frac{1+\sqrt{5}}{2} \right)^n\\ 
@@ -3282,10 +3260,10 @@ u_n =& -\left(\frac{1}{\sqrt{5}}\cdot \frac{1-\sqrt{5}}{2} \right) \left(
 \frac{1-\sqrt{5}}{2} \right) \left( \frac{1-\sqrt{5}}{2} \right)^n 
 \end{align*}
 
-\begin{equation}
+\begin{gather}
 u_n = \frac{1}{\sqrt{5}}\cdot \left( \frac{1 + \sqrt{5}}{2} \right)^n -
 \frac{1}{\sqrt{5}}\cdot \left( \frac{1 - \sqrt{5}}{2} \right)^n
-\end{equation}
+\end{gather}
 
 \chapter{Einblicke in die Zahlentheorie}
 \section{Natürliche Zahlen}
@@ -3554,4 +3532,9 @@ Dies lässt sich für \emph{ganze} Zahlen $A$ und $B$ schreiben als
 	g = A n + B m
 \]
 wobei $\sgn(A) \ne \sgn(B)$
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
 \end{document}
