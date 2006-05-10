@@ -1,7 +1,7 @@
 % ToDo:
 %  * faelle schachtelbar machen
 %  * Eine Umgebung für die Beweise?
-%
+
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
 % rubber: clean $base.thm
@@ -10,7 +10,7 @@
 % rubber: makeidx.tool      xindy
 % rubber: makeidx.language  german-din
 % rubber: makeidx.modules   indexstyle.xdy
-%
+
 % scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
 % zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
 % unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
@@ -49,8 +49,6 @@
                          % dafür muss in SVN noch das Flag svn:keywords
                          % auf "LastChangedRevision LastChangedDate"
                          % gesetzt werden
-\usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
-                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
 \usepackage{xkeyval}     % für die Auswertung von Argumentenlisten; s.
                          % Neudefinition von \emph
 \usepackage{mparhack}    % Korrigiert einige Probleme mit \marginpar; die
@@ -187,7 +185,7 @@
 % description mit normaler Schrift
 \newenvironment*{mdescription}%
                {\renewcommand{\descriptionlabel}[1]%
-			      {\hspace\labelsep\normalfont ##1}%
+			      {\hspace{\labelsep}\normalfont ##1}%
 		 \begin{description}}%
 		 {\end{description}}
 \newcounter{fall}
@@ -248,6 +246,8 @@
   \begin{itemize}
    \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
     \texttt{<joerg@alea.gnuu.de>}} (2006)
+   \item \href{mailto:mundhenk@informatik.uni-jena.de}{Martin Mundhenk
+    \texttt{<mundhenk@informatik.uni-jena.de>}} (2006)
   \end{itemize}
 }
 
@@ -415,7 +415,7 @@ $A\rightarrow B$ wahr.
 
 \begin{figure}[h]
   \centering
-  \ifpdf\input{verkn-baum.pdf_t}\else\input{verkn-baum.ps_t}\fi
+  \input{verkn-baum.pdf_t}
   \caption{\emph[rand=]{Verknüpfungsbaum} für die Formel
     $\big(A\rightarrow(B\vee C)\big) \leftrightarrow
     \big(\neg(A\rightarrow(B\vee C))\big)$}
@@ -792,7 +792,7 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
    \item allen aussagenlogischen Formeln mit den Verknüpfungszeichen
     $\neg$ und $\rightarrow$
 
-   \item den Axiomen, die aus dem Axiomenschemata (A1), (A2) und (A3)
+   \item den \emph[indexrand=Axiome]{Axiomen}, die aus dem Axiomenschemata (A1), (A2) und (A3)
     durch Einsetzen von beliebigen aussagenlogische Formeln für $\alpha$,
     $\beta$ und $\gamma$ entstehen: \index{Axiome}
     \begin{enumerate}[({A}1)]
@@ -1040,6 +1040,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{lemma}
 
 \begin{satz}[Korrektheitssatz]\label{satz:1}
+  \index{Korrektheit}
   Jedes Theorem von $\mathrm{L}$ ist eine aussagenlogische Tautologie.
 
   \begin{proof}
@@ -1450,27 +1451,30 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
 
   \begin{proof}
     Induktion über die Größe $\abs{\mathcal{B}}$ von $\mathcal{B}$.
-    \begin{description}
-     \item[IA:] $\abs{\mathcal{B}} = \abs{\mathcal{A}}$ dann ist $\mathcal{B}=\mathcal{A}$
-      und $\mathcal{B} \vdash_{\mathrm{L}} \phi$ folgt aus \autoref{satz:2}, da
-      $\phi=\phi_{\mathcal{B}}$.
+    \begin{mdescription}
+     \item[IA:] % Sei $\mathcal{B}=\mathcal{A}$.
+      Da $\phi$ eine Tautologie ist, gilt $\mathcal{A}(\phi)=w$.
+      \autoref{satz:2} besagt, dass für eine Belegung $\mathcal{A}$, die
+      eine aussagenlogische Formel $\phi$ wahr werden lässt, gilt:
+      $\mathcal{A}\vdash_{\mathrm{L}} \phi$.
 
-     \item[IB:] Die Behauptung gilt für $\mathcal{B}$ mit $\abs{\mathcal{B}}
-      =\abs{\mathcal{A}}, \abs{\mathcal{A}}=1,\ldots,k$.
+     \item[IV:] Für jede Belegung $\mathcal{B}$ der Größe
+      $\abs{\mathcal{B}}=\abs{\mathcal{A}}$ gilt $\mathcal{B} \vdash_{\mathrm{L}}\phi$.
 
-     \item[IS:] $\mathcal{B}$ habe die Größe $k-1$. Dann gibt es eine Variable
-      $A_{l}$, die nicht von $\mathcal{B}$ belegt wird. Nach Induktionsvorraussetzung gilt
-      $\mathcal{B}\cup\{A_{l}\} \vdash_{\mathrm{L}} \phi$ und $\mathcal{B}\cup\{\neg A_{l}\}
+     \item[IS:] Sei $\mathcal{B}$ eine Belegung der Größe $k-1$.
+      Dann gibt es eine Variable $A_{l}$ in $\mathcal{A}$, die nicht von
+      $\mathcal{B}$ belegt wird. Nach Induktionsvorraussetzung gilt
+      $\mathcal{B}\cup\{A_{l}\} \vdash_{\mathrm{L}} \phi$ und $B\cup\{\neg A_{l}\}
       \vdash_{\mathrm{L}} \phi$. Mit dem Deduktionstheorem folgt
       \begin{gather*}
         \mathcal{B} \vdash_{\mathrm{L}} A_{l} \rightarrow \phi \quad\text{und}\quad
            \mathcal{B} \vdash_{\mathrm{L}} \neg A_{l} \rightarrow \phi
       \end{gather*}
 
-      Mit \todo{link suchen: lemma} $(A_{l} \rightarrow \phi)\rightarrow
+      Mit \autoref{lem:7} $(A_{l} \rightarrow \phi)\rightarrow
       ((\neg A_{l} \rightarrow\phi)\rightarrow\phi)$ und zweimal modus
       ponens folgt $\mathcal{B} \vdash_{\mathrm{L}} \phi$.
-    \end{description}
+    \end{mdescription}
   \end{proof}
 \end{satz}
 
@@ -1492,6 +1496,99 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
   "`Tautologie"' ist ein semantischer Ausdruck und
   "`$\vdash_{\mathrm{L}}$"' ist ein syntaktischer Ausdruck
 \end{description}
+
+\section{Resolution}
+
+Die \emph{Resultion} dienst zum Nachweis der Unerfülltbarkeit von
+Formeln. Eine Formel $\phi$ heißt unerfüllbar, falls $\phi$ unter jeder
+passenden Belegung $\mathcal{A}$ den Wert $\mathcal{A}(\phi)=f$ hat. Den
+Nachweis einer Tautologie erhält man über die Bezeihung: $\alpha$ ist
+eine Tautologie \gdw $\neg\alpha$ ist unerfüllbar. Zum Beispiel ist die
+Formel $\neg(A\rightarrow(B\rightarrow A))$ ist unerfüllbar.
+
+\begin{figure}
+  \centering \todo{nettes Bildchen von der Zerlegung der aussagenlogische
+  Formeln in (links) unerfüllbare Formeln, (mitte) erfüllbare Formeln,
+  die keine Tautologie sind und (rechts) Tautologien}
+  Im vorhergehenden Abschnitt wollten wir zeigen, dass Formeln im rechten
+  Teil liegen, in der Resolution zeigen, dass Formeln im linken Teil
+  liegen.
+\end{figure}
+
+Die Resolution arbeitet mit Formeln in \emph{konjunktiver Normalform}:
+\begin{enumerate}
+ \item Ein \emph{Literal} ist eine Variable oder eine negierte Variable
+  (z.\,B. $A, \neg A$)
+
+ \item Eine \emph{Klausel} ist eine Disjunktion von Literalen (z.\,B.
+  $A\vee B\vee \neg C \Delta\vee\neg E$)
+
+ \item Eine Formel in \emph{konjunktiver Normalform} (KNF) (z.\,B.
+  $(A\vee B)\wedge(\neg A\vee C\vee \neg D)\wedge (C)\wedge (\neg
+  B\vee\neg C)$)
+\end{enumerate}
+
+\begin{satz}
+  Zu jeder aussagenlogische Formel gibt es eine äquivalente Formel in
+  konjunktiver Normalform.
+  \begin{gather*}
+    \bigwedge\bigvee \alpha
+  \end{gather*}
+
+  \begin{proof}
+    Man stelle die Wahrheitstabelle für die Formel auf. Die Formel ist
+    genau dann wahr, wenn keine der Zeilen eintritt, die die Formel
+    falsch machen. Dies entspricht der UND-Verknüpfung der negierten
+    Belegunden der entsprechenden Zeilen.
+    \begin{gather*}
+      \bigwee \overline{\bigvee \alpha}
+    \end{gather*}
+    Über die de Morgan'sche Regel erhält man dann die gewünschte Form.
+  \end{proof}
+\end{satz}
+
+Der Nachteil der Wahrheitstafelmethode zur Umformung in die konjunktive
+Normalform ist, dass sie sehr zeitaufwendig ist und man mit der
+Wahrheitstafel auch gleich die Frage nach der Erfüllbarkeit beantwortet
+bekommt.
+
+Da es bei dem Erfüllbarkeitstest aber nur auf die Erhaltung der
+Erfüllbarkeit der Formel ankommt, können wir auch ein einfacheres
+Verfahren für die Umformung verwenden.
+
+\begin{satz}
+  Für jede Formel $\phi$ kann schnell (d.\,h. in polynomieller
+  Rechenzeit) eine erfüllbarkeitsäquivalente Formel $\phi'$ berechnet
+  werden. Dabei bedeutet
+  \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass $\phi$
+  unerfüllbar ist \gdw $\phi'$ unerfüllbar ist.
+\end{satz}
+
+\begin{bsp}
+  $\phi = (A\wedge B) \rightarrow \neg(A\vee\neg B)$
+  \todo{verknüpfungsbaum}
+
+  \begin{gather*}
+    (c_{0} \leftrightarrow (A\wedge B)) \wedge (c_{1} \leftrightarrow
+       \neg B) \wedge (c_{2} \leftrightarrow (A\vee c_{1})) \wedge (c_{3}
+       \leftrightarrow \neg c_{2}) \wedge (c_{4} \leftrightarrow
+       (c_{0}\rightarrow c_{3})) \wedge c_{4}
+  \end{gather*}
+  $\mathcal{A}=\{A, \neg B\}$: $\mathcal{A}(\phi)=w$,
+  $\mathcal{A}'(\phi)=w$ mit $\mathcal{A}'=\{A, \neg B, \neg c_{0},
+  c_{1}, c_{2}, \neg c_{3}, c_{4}\}$
+
+  Aus $\mathcal{A}(\phi')=w$ folgt $\mathcal{A}(\phi)=w$,
+  $\mathcal{A}=\{c_{4}, c_{3}, \neg c_{2}, c_{1}, c_{0}, \neg B, \neg A\}$
+
+  \todo{wahrheitstabelle für $c_{4}\leftrightarrow c_{0}\rightarrow c_{3}$}
+
+  Jede "`kleine"' Äquivalenz aus 3~Variablen hat eine konjunktive
+  Normalform aus höchstens 8~Klauseln zu je 3~Literalen. Für jedes
+  Verknüpfungszeichen von $\phi$ enthält $\phi'$ eine "`kleine"'
+  Äquivalenz. Also ist $\abs{\phi'} \leq k\cdot\abs{\phi}$ für eine
+  Konstante $k$.
+\end{bsp}
 
 \clearpage
 \appendix
@@ -1628,7 +1725,21 @@ Wie lang ist (nach dem Beweisen der Sätze dieser Vorlesung) ein Beweis
 (in $\mathrm{L}$) für eine Tautologie höchstens? (Abschätzung nach Anzahl
 von Verknüpfungszeichen und Anzahl der Variablen in der Formel)
 
-% durchprobieren der Wahrheitstafel, Ergebnis: wahrscheinlich $2^{n}$
+Aus dem \autoref{satz:2} folgt: $\mathcal{A}\vdash_{\mathrm{L}}\phi$ mit
+einem Beweis der Länge $\leq 5\cdot \abs{\phi}+1$ ($\abs{\phi}$ ist die
+Anzahl der Verknüpfungszeichen in $\phi$, für jede Tautologie $\phi$ und
+jede zu $\phi$ passende Belegung $\mathcal{A}$.
+
+$A,B,C \vdash_{\mathrm{L}} \phi$ + $A,B,\neg C \vdash_{\mathrm{L}}$
+$\Rightarrow$ $A,B \vdash_{\mathrm{L}} \phi$
+
+Reduktion des ganzen Baumes auf $\vdash_{\mathrm{L}}$. \todo{noch was
+dazu schreiben}
+
+\begin{gather*}
+  2^{\abs{\phi}} 5\cdot \abs{\phi} + (2^{\abs{\phi}}-1) \cdot 5 \leq
+     k2^{\abs{\phi}} = O(2^{\abs{\phi}}
+\end{gather*}
 
 \subsection*{Aufgabe 2}
 
@@ -1636,11 +1747,29 @@ Sei $\mathrm{L}'$ die Theorie, die aus $\mathrm{L}$ entsteht, indem
 Axiom 3 ersetzt wird durch Axiom 3': $(\neg \alpha
 \rightarrow \neg\beta) \rightarrow(\beta\rightarrow\alpha)$.
 
-Zeigen Sie, dass $\mathrm{L}'$ korrekt und vollständig ist Das heißt,
+Zeigen Sie, dass $\mathrm{L}'$ korrekt und vollständig ist, das heißt,
 $\phi$ ist Tautologie \gdw $\vdash_{\mathrm{L}'} \phi$.
 
-% A3' aus Axiom 1, Axiom 2, MP und DT
-% herleiten
+Wir zeigen, dass sich aus den Axiomen A1, A2 und A3' und dem modus ponens
+das Axiom A3 herleiten lässt. Damit sind alle Beweise, die wir bisher
+geführt haben und die A3 verwenden, auch mit A3' herleitbar. Also lässt
+sich auch der \todo{weiter}
+
+$L'$ ist korrekt (d.\,h. aus $\vdash_{\mathrm{L}'}\phi$ folgt $\phi$ ist
+eine Tautologie): Im Beweis von \autoref{satz:1} wird nicht A3 verwendet,
+also kann der Beweis direkt übertragen werden.\todo{stimmt das?}
+
+$L'$ vollständig (d.\,h. für jede Tautologie $\phi$ gilt:
+$\vdash_{\mathrm{L}'} \phi$): hinreichend ist $\vdash_{\mathrm{L}'} A3$.
+
+\begin{align*}
+  (1)\quad &\neg\alpha \rightarrow \neg\beta &\text{Hypothese}\\
+  (2)\quad &\neg\alpha \rightarrow \beta &\text{Hypothese}\\
+  (3)\quad &(\neg\alpha\rightarrow\neg\beta) \rightarrow
+     (\alpha\rightarrow\beta) & \text{A3'}\\
+  (4)\quad &\alpha\rightarrow\beta &\text{MP 1,3}\\
+  (5)\quad &\text{\help{wie weiter?}}
+\end{align*}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
