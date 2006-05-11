@@ -54,6 +54,8 @@
 \usepackage{mparhack}    % Korrigiert einige Probleme mit \marginpar; die
                          % Option [debug] ist hilfreich bei Problemen
 
+\usepackage{pictex}
+
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \addtokomafont{sectioning}{\boldmath}
@@ -179,6 +181,7 @@
 \renewcommand*{\phi}{\varphi}
 % Der wagerechte Strich soll etwas länger sein
 \renewcommand*{\vdash}{\mathrel{|}\mathop{\mkern-9mu-\mkern-7mu-}\limits}
+
 
 % Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
 % nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
@@ -1507,12 +1510,12 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
 
 \section{Resolution}
 
-Die \emph{Resultion} dienst zum Nachweis der Unerfülltbarkeit von
+Die \emph{Resultion} dient zum Nachweis der Unerfüllbarkeit von
 Formeln. Eine Formel $\phi$ heißt unerfüllbar, falls $\phi$ unter jeder
 passenden Belegung $\mathcal{A}$ den Wert $\mathcal{A}(\phi)=f$ hat. Den
-Nachweis einer Tautologie erhält man über die Bezeihung: $\alpha$ ist
+Nachweis einer Tautologie erhält man über die Beziehung: $\alpha$ ist
 eine Tautologie \gdw $\neg\alpha$ ist unerfüllbar. Zum Beispiel ist die
-Formel $\neg(A\rightarrow(B\rightarrow A))$ ist unerfüllbar.
+Formel $\neg(A\rightarrow(B\rightarrow A))$ unerfüllbar.
 
 \begin{figure}
   \centering \todo{nettes Bildchen von der Zerlegung der aussagenlogische
@@ -1597,6 +1600,564 @@ Verfahren für die Umformung verwenden.
   Äquivalenz. Also ist $\abs{\phi'} \leq k\cdot\abs{\phi}$ für eine
   Konstante $k$.
 \end{bsp}
+
+%\input{ALogik}
+{%% Anfang des Abschnittes ueber Resolution
+
+\newcommand*{\cA}{\mathcal{A}}    % Schreibschrift A
+\newcommand*{\cB}{\mathcal{B}}    % Schreibschrift B
+
+\newcommand{\cw}{w}
+\newcommand{\cf}{f}
+
+\newcommand{\lneg}{\neg}
+\newcommand{\limplies}{\rightarrow}
+
+Wenn $\cA(\phi)=w$, dann \emph{erf\"ullt} die Belegung $\cA$ die Formel $\phi$.
+Die erf\"ullende Belegung $\cA$ wird auch \emph{Modell} von $\phi$ genannt.
+
+Im Zusammenhang mit Resolution stellt man Formeln in Konjunktiver Normalform
+als Mengen dar.
+Jede Klausel wird als Menge ihrer Literale dargestellt, 
+z.B.~die Klausel $(A \vee \lneg B \vee C)$ als Menge $\{A, \lneg B, C\}$.
+Belegung $\cA$ erf\"ullt Klausel $C$ genau dann, wenn $\cA\cap C\not=\emptyset$.
+Die leere Klausel -- also die leere Menge von Literalen --
+wird als $\Box$ dargestellt.
+Da $\cA \cap \Box=\emptyset$ f\"ur jede Belegung $\cA$,
+ist die leere Klausel unerf\"ullbar.
+
+Eine Konjunktion von Klauseln
+wird als Menge von Klauseln dargestellt,
+z.B.~$(A \vee \lneg B \vee C)\wedge(B \vee \lneg C) \wedge \lneg A$
+als Menge $\big\{ \{A, \lneg B, C \}, \{B, \lneg C\},\{\lneg A\} \big\}$.
+Die Belegung $\cA$ erf\"ullt die Klauselmenge $S$,
+wenn $\cA\cap C\not=\emptyset$ f\"ur jede Klausel $C\in S$.
+Deshalb ist die leere Klauselmenge eine Tautologie.
+
+
+Sei $\cA_{\ell}$ eine Belegung mit $\ell\in\cA_{\ell}$,
+die eine Klauselmenge $S$ erf\"ullt.
+Dann erf\"ullt $\cA_{\ell}$ auch die Klauselmenge, 
+die man wie folgt aus $S$ erh\"alt:
+\begin{enumerate}
+\item Entferne jede Klausel aus $S$, die $\ell$ enth\"alt, und
+\item entferne das Literal $\overline{\ell}$ 
+           aus den verbliebenen Klauseln.
+\end{enumerate}
+Die so konstruierte Klauselmenge wird mit $S^{\ell}$ bezeichnet.
+Formal definiert sieht das so aus.
+
+\centerline{
+$S^{\ell} = \{C-\{\overline{\ell}\}|C\in S\mbox{ und }\ell\not\in C\}$.}
+
+F\"ur 
+
+\centerline{$S=\big\{\{a,\lneg b, c\},\{\lneg a, c\}, \{\lneg a, b\},\{\lneg b, c\}\big\}$}
+ist 
+
+\centerline{$S^{a} = \big\{\{c\}, \{ b\},\{\lneg b, c\}\big\}$}
+und
+ 
+\centerline{$S^{\lneg a}=\big\{ \{\lneg b, c\}         \big\}$.}
+
+
+Wir betrachten die erf\"ullende Belegung $\cA=\{\lneg b, \lneg c\}$ 
+der obigen Menge $S^{\lneg a}$.
+Jede Klausel in $S$, aus der eine Klausel in $S^{\lneg a}$ wurde
+-- also die Klauseln $\{a,\lneg b, c\}$ und $\{\lneg b, c\}$ --
+werden von $\cA$ erf\"ullt.
+Alle \"ubrigen Klauseln in $S$ ernthalten das Literal $\lneg a$
+und werden von $\cA\cup\{\lneg a\}$ erf\"ullt.
+Entsprechend wird aus der $S^{a}$ erf\"ullenden Belegung
+$\cB=\{b,c\}$ die $S$ erf\"ullende Belegung $\cB\cup\{a\}$.
+
+\begin{lemma}\label{ALogik-Sell}
+Sei $S$ eine Klauselmenge und $\ell$ ein Literal.
+Wenn $S^{\ell}$ erf\"ullbar ist oder $S^{\overline{\ell}}$ erf\"ullbar ist,
+dann ist auch $S$ erf\"ullbar.
+\end{lemma}
+
+\begin{proof}
+Sei $S^{\ell}$ erf\"ullbar,
+und $\cA$ sei ein Modell von $S^{\ell}$.
+Dann ist $\cB=(\cA-\{\overline{\ell}\})\cup\{\ell\}$
+ebenfalls Modell von $S^{\ell}$, da weder $\ell$ noch $\overline{\ell}$
+in einer Klausel in $S^{\ell}$ vorkommt.
+Da jede Klausel in $S$ entweder 
+(1) in $S^{\ell}$ vorkommt 
+oder 
+(2) aus einer Klausel in $S^{\ell}$ durch Hinzuf\"ugen von $\overline{\ell}$
+entsteht 
+oder 
+(3) $\ell$ enth\"alt, ist $\cB$ auch Modell von $S$.
+
+Ist $S^{\overline{\ell}}$ erf\"ullbar, dann kann entsprechend
+gezeigt werden, dass $\cB'=(\cA-\{{\ell}\})\cup\{\overline{\ell}\}$
+Modell von $S$ ist.
+\end{proof}
+
+Um die Erf\"ullbarkeit oder Unerf\"ullbarkeit
+einer Klauselmenge nachzuweisen,
+wird die vorgegebene Klauselmenge
+in der Resolutionsmethode solange um neue Klauseln
+-- so genannte Resolventen -- erweitert,
+bis die leere Klausel erzeugt ist.
+Gelingt das, dann ist die Ausgangsmenge unerf\"ullbar.
+Kann die leere Klausel dagegen nicht erzeugt werden, dann ist
+die Ausgangsmenge erf\"ullbar.
+
+\begin{defini}
+Sei $C_1$ eine Klausel, die das Literal $\ell$ enth\"alt,
+und $C_2$ sei eine Klausel, die das Literal $\overline{\ell}$
+enth\"alt.
+Dann hei\3t die Klausel
+\vspace{1ex}
+
+\centerline{$R=\big(C_1-\{\ell\})\cup(C_2-\{\overline{\ell}\}\big)$}
+\emph{Resolvent} der Klauseln $C_1$ und $C_2$ (nach Literal $\ell$).
+\index{Resolvent}
+\end{defini}
+
+Beispiele:
+Aus den Klauseln 
+$\{x,y\}$ und $\{\lneg x, y,\lneg z\}$
+kann der Resolvent 
+$\{y,\lneg z\}$
+gebildet werden.
+
+Aus den Klauseln 
+$\{x,y\}$ und $\{\lneg x,\lneg y\}$
+k\"onnen  die Resolventen 
+$\{y, \lneg y\}$ und 
+$\{x, \lneg x\}$ gebildet werden (und keine anderen).
+
+
+\begin{lemma}{\bf (Resolutionslemma)}\label{Resolutionslemma}
+Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$.
+Wenn $\cA$ beide Klauseln $C_1$ und $C_2$ erf\"ullt,
+dann erf\"ullt $\cA$ auch den Resolventen $R$.
+\end{lemma}
+
+\begin{proof}
+Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$ nach Literal $\ell$, 
+und sei $\cA$ erf\"ullt $C_1$ und $C_2$
+(d.h. $\cA\cap C_1\not=\emptyset$ und $\cA\cap C_2\not=\emptyset$).
+Ist $\ell\not\in\cA$, dann ist $\cA\cap(C_1-\{\ell\})\not=\emptyset$;
+ist $\overline{\ell}\not\in\cA$, 
+dann ist $\cA\cap(C_2-\{\overline{\ell}\})\not=\emptyset$.
+Da einer dieser beiden F\"alle eintreten muss,
+ist $\cA\cap((C_1-\{\ell\})\cup(C_2-\{\overline{\ell}\}))\not=\emptyset$.
+Also wird $R$ von $\cA$ erf\"ullt.
+\end{proof}
+
+Vereinigt man also eine Klauselmenge mit den Resolventen,
+die sich aus ihren Klauseln bilden lassen,
+erh\"alt man eine logisch \"aquivalente Klauselmenge.
+Diese Klauselmenge kann man wiederum mit ihren Resolventen
+vereinigen ohne die Erf\"ullbarkeit zu beeinflussen, und so weiter.
+L\"asst sich schlie\3lich die unerf\"ullbare leere Klausel
+als Resolvent bilden, so ist die
+Unerf\"ullbarkeit der Ausgangsmenge nachgewiesen.
+Dieses Verfahren wird als
+\emph{Resolutionsmethode} 
+\index{Resolutionsmethode}
+bezeichnet.
+Es besteht aus einer syntaktischen Formalisierung von Beweisen
+f\"ur die Unerf\"ullbarkeit von Formeln.
+
+\begin{defini}
+Sei $C$ eine Klausel und $S$ eine Klauselmenge.
+Ein \emph{Resolutionsbeweis} aus $S$
+ist eine endliche Folge von Klauseln $C_1,C_2,\ldots,C_n$, wobei
+\begin{enumerate}
+\item $C_n=C$, und
+\item $C_i\in S$ oder $C_i$ ist Resolvent von $C_a$ und $C_b$, $a,b<i$,
+f\"ur alle $1\leq i\leq n$.
+\end{enumerate}
+
+Eine \emph{Resolutionsherleitung}
+von Klausel $C$ aus Klauselmenge $S$ ist ein Resolutionsbeweis aus $S$,
+der $C$ enth\"alt. 
+
+Eine \emph{Resolutionswiderlegung} von $S$
+ist eine Resolutionsherleitung der leeren Klausel $\Box$ aus $S$.
+\end{defini}
+
+%\begin{enumerate}\label{beisp-res-herleitungen}
+%\item
+Wir betrachten die Klauselmenge $S=\{\{x,y\},\{\lneg x\}, \{\lneg y\}\}$.
+Dann ist 
+$\{x,y\}, \{\lneg x\} ,\{y\}$ 
+ eine Her\-leit\-ung von $\{y\}$ aus $S$.
+Die Folge von Klauseln
+$\{x,y\},\{\lneg x\},\{y\},\{\lneg y\}, \Box$
+ist eine Her\-leit\-ung von $\Box$ aus $S$:
+%
+\begin{center}
+\begin{tabular}{lr}
+$C_1=\{x,y\}$ & Klausel aus $S$,\\
+$C_2=\{\lneg x\}$ & Klausel aus $S$,\\
+$C_3=\{y\}$ & Resolvent aus $C_1$ und $C_2$, \\
+$C_4=\{\lneg y\}$ & Klausel aus $S$,\\
+$C_5=\Box$ & Resolvent aus $C_3$ und $C_4$. \\
+\end{tabular}
+\end{center}
+$S$ ist also widerlegbar.
+%
+
+%\item 
+Die Klauselmenge
+$S=\{\{x,y\},\{\lneg x,y\},\{x,\lneg y\},\{\lneg x,\lneg y\}\}$
+ist widerlegbar durch 
+\begin{center}
+\begin{tabular}{lr}
+$C_1=\{x,y\}$ & Klausel aus $S$,\\
+$C_2=\{\lneg x,y\}$ & Klausel aus $S$,\\
+$C_3=\{y\}$ & Resolvent aus $C_1$ und $C_2$, \\
+$C_4=\{x,\lneg y\}$ & Klausel aus $S$,\\
+$C_5=\{\lneg x,\lneg y\}$ & Klausel aus $S$,\\
+$C_6=\{\lneg y\}$ & Resolvent aus $C_4$ und $C_5$, \\
+$C_7=\Box$ & Resolvent aus $C_3$ und $C_6$. \\
+\end{tabular}
+\end{center}
+%
+Herleitungen mittels Resolution kann man auch als
+B\"aume veranschaulichen.
+Die Knoten des Baumes sind mit Klauseln markiert.
+Ist eine Klausel $C$ ein Resolvent, so sind die
+Klauseln $C_1$ und $C_2$, aus denen er gebildet wurde, seine beiden
+Nachfolger. ($C_1$ und $C_2$ hei\3en auch Eltern-Klauseln von $C$.)
+
+\beginpicture
+\setcoordinatesystem units <1mm, 0.8mm>
+%                  Breite,         Hoehe
+\setplotarea x from 0 to 150, y from 0 to 25
+\put{$C$}[b] at 75 20
+\plot 60 12 75 19 90 12 /
+\put{$C_1$}[b] at 60 5
+\put{$C_2$}[b] at 90 5
+\endpicture
+
+%\end{enumerate}
+
+Die beiden Herleitungen aus obigem Beispiel
+lassen sich wie in Abbildung~\ref{Res-Baeume} veranschaulichen.
+
+\begin{figure}[t]
+\beginpicture
+\setcoordinatesystem units <0.8mm, 1mm>
+%                  Breite,         Hoehe
+\setplotarea x from -15 to 150, y from 0 to 25
+
+\put{$\{x,y\}$}[b] at 10 0
+\put{$\{\lneg x\}$}[b] at 30 0
+\put{$\{y\}$}[b] at 50 0
+\plot 10 5 20 15 30 5 /
+\put{$\{\lneg y\}$}[b] at 20 15
+\plot 20 20 40 30 50 5 /
+\put{$\Box$}[b] at 40 30
+
+\put{$\{x,y\}$}[b] at 80 0 
+\put{$\{\lneg x,y\}$}[b] at 100 0 
+\put{$\{x,\lneg y\}$}[b] at 120 0 
+\put{$\{\lneg x,\lneg y\}$}[b] at 140 0 
+\plot 80 5 90 15 100 5 /
+\put{$\{y\}$}[b] at 90 15
+\plot 120 5 130 15 140 5 /
+\put{$\{\lneg y\}$}[b] at 130 15
+\plot 90 20 110 30 130 20 /
+\put{$\Box$}[b] at 110 30
+
+\endpicture
+
+\caption{Widerlegungen mittels Resolution}\label{Res-Baeume}
+\end{figure}
+
+Wir wollen nun die Korrektheit und die Vollst\"andigkeit
+der Resolutionsmethode nachweisen.
+
+\index{Resolutionsmethode!Korrekheit der}
+\begin{satz}{\bf (Korrektheit der Resolutionsmethode)}
+\label{satz-korrektheit-resolution-vor}
+Ist eine Klauselmenge $S$ erf\"ullbar, 
+   dann ist $S$ nicht mittels Resolution widerlegbar.
+\end{satz}
+
+\begin{proof}
+Sei $S$  eine erf\"ullbare Klauselmenge.
+Dann gibt es ein Modell $\cA$ von $S$.
+Sei $C_1,C_2,\ldots,C_n$ eine Herleitung von $C_n$ aus $S$.
+Da $C_1\in S$, ist $\cA$ Modell von $C_1$.
+Ist $C_{i+1}\in S$, dann ist $\cA$ ebenfalls Modell von $C_{i+1}$.
+Anderenfalls ist $C_{i+1}$ Resolvent von $C_a$ und $C_b$ f\"ur $a,b<i+1$.
+Ist $\cA$ Modell von $C_a$ und $C_b$, so ist nach 
+dem Resolutionslemma 
+$\cA$ ebenfalls Modell von $C_{i+1}$.
+Also folgt schlie\3lich, dass $\cA$ Modell von $C_{n}$ ist.
+Da $\Box$ unerf\"ullbar ist, ist $\cA$ kein Modell von $\Box$.
+Demnach ist $C_n\not=\Box$.
+Folglich gibt es keine Herleitung von $\Box$ aus $S$,
+das hei\3t $S$ ist nicht widerlegbar.
+\end{proof}
+
+Satz~\ref{satz-korrektheit-resolution-vor} zeigt tats\"achlich die
+{\em Korrektheit der Resolutionsmethode\/}:
+Ist eine Klauselmenge $S$ mittels Resolution widerlegbar, 
+dann ist $S$ unerf\"ullbar.
+
+Nun m\"ussen wir noch die 
+Vollst\"andigkeit der Resolutionsmethode 
+beweisen.
+\index{Resolutionsmethode!Vollst\"andigkeit der}
+Dazu \"uberlegen wir zun\"achst anhand eines Beispiels,
+wie man aus Herleitungen der leeren Klausel aus $S^{\ell}$ und
+aus $S^{\overline{\ell}}$ eine Herleitung der
+leeren Klausel aus $S$ konstruieren kann.
+
+Sei die Klauselmenge $S$ beispielsweise gegeben als
+$$S=\big\{\{u,\neg v, w,x\},\{u,v,w,x\},
+\{u,\neg w\},\{u,w,\neg x\},\{\lneg u,x\},\{\lneg u,\lneg x\}\big\}\ \ \ .$$
+Um die Unerf\"ullbarkeit von $S$ 
+gem\"a\3 Lemma~\ref{ALogik-Sell}
+zu beweisen, 
+m\"ussen wir Widerlegungen der beiden Klauselmengen 
+$S^x = \big\{\{u,\lneg w\},\{u,w\},\{\lneg u\}\big\}$ und
+$S^{\lneg x} = \big\{\{u,\neg v, w\}, \{u,v,w\}, \{u,\neg w\}, \{\lneg u\}\big\}$
+angeben.
+Diese Widerlegungen sind in Abbildung~\ref{zweiwiderlegungen} dargestellt.
+%
+\begin{figure}
+\beginpicture
+\setcoordinatesystem units <0.85mm, 0.8mm>
+%                  Breite,         Hoehe
+\setplotarea x from 20 to 170, y from -5 to 55
+
+\put{$\{u,\lneg w\}$}[b] at 30 0
+\put{$\{u,w\}$}[b] at 50 0
+\put{$\{\lneg u\}$}[b] at 70 0
+
+\plot 30 5 40 15 50 5 /
+\put{$\{u\}$}[b] at 40 15
+\plot 40 20 45 30 70 5 /
+\put{$\Box$}[b] at 45 30 
+
+\put{$\{u,\neg v, w\}$}[b] at 100 0
+\put{$\{u,v,w\}$}[b] at 120 0
+\put{$\{u,\neg w\}$}[b] at 140 0
+\put{$\{\lneg u\}$}[b] at 160 0
+
+\plot 100 5 110 15 120 5 /
+\put{$\{u,w\}$}[b] at 110 15
+\plot 110 20 120 30 140 5 /
+\put{$\{u\}$}[b] at 120 30 
+\plot 120 35 130 45 160 5 /
+\put{$\Box$}[b] at 130 45 
+\endpicture
+
+\caption{Widerlegungen von $S^x$ und $S^{\neg x}$}\label{zweiwiderlegungen}
+\end{figure}
+%
+Die "`Bl\"atter"' der beiden B\"aume in Abbildung~\ref{zweiwiderlegungen}
+sind Klauseln aus $S^x$ bzw. Klauseln aus $S^{\lneg x}$.
+Nun f\"ugen wir in alle Bl\"atter, die nicht durch Klauseln in $S$ 
+beschriftet sind,
+das entfernte Literal $x$ bzw. $\lneg x$ wieder ein
+und f\"uhren die Resolutionsschritte wie gehabt durch
+(siehe Abbildung~\ref{auszweimacheins}).
+Wir bekommen so aus den beiden Herleitungen von $\Box$
+aus $S^x$ und aus $S^{\neg x}$
+zwei Herleitungen aus $S$: Die eine von $\{x\}$ und
+die andere von $\{\lneg x\}$.
+Die leere Klausel kann nun gerade als der Resolvent von 
+$\{x\}$ und $\{\lneg x\}$ erhalten werden.
+Wir k\"onnen also die beiden Herleitungen
+zusammenf\"ugen und durch den zus\"atzlichen Resolutionsschritt
+zu einer Herleitung von $\Box$ aus $S$ erg\"anzen.
+
+\begin{figure}
+\beginpicture
+\setcoordinatesystem units <0.9mm, 1mm>
+%                  Breite,         Hoehe
+\setplotarea x from 30 to 170, y from -5 to 65
+
+\put{$\{u,\lneg w\}$}[b] at 30 0
+\put{$\{u,w,\fbox{$\lneg x$}\}$}[b] at 50 0
+\put{$\{\lneg u,\fbox{$\lneg x$}\}$}[b] at 75 0
+
+\plot 30 5 40 15 50 5 /
+\put{$\{u,\fbox{$\lneg x$}\}$}[b] at 40 15
+\plot 40 20 45 30 75 5 /
+\put{$\{\fbox{$\lneg x$}\}$}[b] at 45 30 
+
+\put{$\{u,\neg v, w,\fbox{$x$}\}$}[b] at 100 0
+\put{$\{u,v,w,\fbox{$x$}\}$}[b] at 127 0
+\put{$\{u,\neg w\}$}[b] at 148 0
+\put{$\{\lneg u,\fbox{$x$}\}$}[b] at 165 0
+
+\plot 100 5 110 15 127 5 /
+\put{$\{u,w,\fbox{$x$}\}$}[b] at 110 15
+\plot 110 20 120 30 148 5 /
+\put{$\{u,\fbox{$x$}\}$}[b] at 120 30 
+\plot 120 35 130 45 165 5 /
+\put{$\{\fbox{$x$}\}$}[b] at 130 45 
+
+\plot 45 35 90 60 130 50 /
+\put{$\Box$}[b] at 90 60
+\endpicture
+
+\caption{Widerlegung von $S$}\label{auszweimacheins}
+\end{figure}
+
+\begin{lemma}\label{lemma-vollst-resolution}
+Ist $S^{\ell}$ widerlegbar,
+dann ist $\Box$ oder $\{\overline{\ell}\}$ aus $S$ herleitbar.
+\end{lemma}
+
+\begin{proof}
+Sei $S^{\ell}$ widerlegbar. 
+Dann gibt es eine Herleitung $C_1,\ldots,C_m$ von $\Box$ aus $S^{\ell}$.
+Wir f\"ugen das entfernte Literal $\overline{\ell}$ 
+in die Herleitung von $\Box$ aus $S^{\ell}$ auf folgende Weise ein:
+F\"ur $1\leq i\leq m$ definieren wir Klauseln $C'_i$ durch
+\vspace{1ex}
+
+$
+C_i' \ = \ \left\{\begin{array}{ll}
+C_i,&\mbox{falls $C_i\in S$,}\\
+C_i\cup\{\overline{\ell}\},& \mbox{falls $C_i\cup\{\overline{\ell}\}\in S$ 
+                                       und $C_i\not\in S$,}\\
+%C,&\mbox{sonst, wobei $C$ Resolvent von $C'_a$ und $C'_b$ nach $\ell'$ ist,}\\
+%&\mbox{\hspace{5ex}wenn $C_i$ Resolvent von $C_a$ und $C_b$ nach $\ell'$ ist}
+C,&\mbox{falls $C_i$ Resolvent von $C_a$ und $C_b$ nach $\ell'$ ist,}\\
+&\mbox{\hspace{5ex}wobei $C$ Resolvent von $C'_a$ und $C'_b$ nach $\ell'$ ist.}
+\end{array}
+\right.
+$
+\vspace{1ex}
+
+Da $C'_i\in\big\{C_i,C_i\cup\{\overline{\ell}\}\big\}$ 
+und $C_m=\Box$ ist, ist  $C'_1,\ldots,C'_m$ eine 
+Herleitung von $\Box$ oder $\{\overline{\ell}\}$ aus $S$.
+\end{proof}
+
+\index{Resolutionsmethode!Vollst\"andigkeit der}
+\begin{satz}{\bf (Vollst\"andigkeit der Resolutionsmethode)}
+Ist eine Klauselmenge $S$ unerf\"ullbar, 
+            dann ist $S$ widerlegbar mittels Resolution.
+\end{satz}
+
+\begin{proof}
+Sei $S$ unerf\"ullbar.
+Wir f\"uhren eine induktiven Beweis \"uber die
+Anzahl der verschiedenen in $S$ enthaltenen Variablen.
+
+{Induktionsbasis:}
+$S$ enth\"alt $0$ Variablen.
+Wenn $S$ unerf\"ullbar ist, muss $S=\{\Box\}$ gelten.
+Also gibt es eine Resolutionsherleitung von $\Box$ aus $S$.
+
+{Induktionsvoraussetzung:} 
+F\"ur jede Klauselmenge mit $n$ Variablen gilt:
+wen $S$ unerf\"ullbar ist, dann gibt es eine Resolutionswiderlegung von $S$.
+
+{Induktionsschluss:}
+$S$ enthalte $n+1$ Variablen und sei unerf\"ullbar.
+Dann sind auch $S^{\ell}$ und $S^{\overline{\ell}}$
+unerf\"ullbar. (Lemma~\ref{ALogik-Sell}).
+Nach IV sind $S^{\ell}$ und $S^{\overline{\ell}}$ widerlegbar.
+Nach obigem Lemma~\ref{lemma-vollst-resolution} ist
+(1) $\Box$ aus $S$ herleitbar
+oder (2) $\{\ell\}$ und $\{\overline{\ell}\}$ sind aus $S$ herleitbar.
+Im Fall (1) haben wir bereits die Widerlegbarkeit von $S$ gezeigt.
+Im Fall (2) 
+ist $\Box$ Resolvent von $\{\ell\}$ und $\{\overline{\ell}\}$.
+Deshalb l\"asst sich aus den Herleitungen von 
+$\{\ell\}$ und $\{\overline{\ell}\}$ 
+erg\"anzt um einen weiteren Resolutionsschritt,
+mit dem $\Box$ aus $\{\ell\}$ und $\{\overline{\ell}\}$ resolviert wird,
+eine Herleitung von $\Box$ aus $S$ konstruieren.
+Also ist $S$ widerlegbar.
+\end{proof}
+
+Aus der Korrektheit und der Vollst\"andigkeit der Resolutionsmethode
+ergibt sich der Resolutionssatz der Aussagenlogik.
+
+\index{Resolutionssatz}
+\begin{satz}{\bf (Resolutionssatz)}\label{resolutionssatz}
+Klauselmenge $S$ ist unerf\"ullbar genau dann, 
+wenn $S$ mittels Resolution widerlegbar ist.
+\end{satz}
+
+
+Die {Unerf\"ullbarkeit} 
+einer beliebigen Formel $\alpha$
+kann man nun dadurch beweisen,
+dass man eine zu $\alpha$ erf\"ullbarkeits\"aquivalente Formel $\alpha'$
+in konjunktiver Normalform bildet, diese als 
+Klauselmenge darstellt und mittels Resolution
+die leere Klausel herleitet.
+
+Entsprechend kann man die {G\"ultigkeit} 
+einer Formel $\alpha$
+dadurch beweisen, dass man wie eben beschrieben 
+die Unerf\"ullbarkeit von $\lneg\alpha$
+nachweist.
+Dazu noch ein abschlie\3endes Beispiel.
+
+Beispiel:
+Wir zeigen, dass
+\[ \alpha=\big((\lneg x\lor y)\wedge(\lneg y\lor z)\wedge 
+(x\lor \lneg z) \wedge (x \lor y \lor z)\big)
+\limplies (x \wedge y\wedge z)
+\]
+eine Tautologie ist.
+
+Es gen\"ugt, dazu die Unerf\"ullbarkeit von $\lneg \alpha$ 
+nachzuweisen,
+\[ \lneg\alpha\equiv(\lneg x\lor y)\wedge(\lneg y\lor z)\wedge 
+(x\lor \lneg z) \wedge (x \lor y \lor z)
+\wedge (\lneg x \lor \lneg y \lor \lneg z)\ \ .
+\]
+Abbildung~\ref{last-resolution} veranschaulicht 
+die Resolutionswiderlegung von $\lneg \alpha$.
+Also ist $\alpha$ eine Tautologie.
+%
+\begin{figure}[t]
+\beginpicture
+\setcoordinatesystem units <0.8mm, 0.7mm>
+%                  Breite,         Hoehe
+\setplotarea x from -10 to 120, y from 0 to 100
+
+\put{$\{ \lneg x,y \}$}[b] at 10 0
+\put{$\{\lneg y,z\}$}[b] at 40 0
+\plot 10 7 20 15 40 7 /
+\put{$\{\lneg x,z\}$}[b] at 20 15
+\put{$\{x,y,z \}$}[b] at 60 0
+\plot 20 22 25 30 60 7 /
+\put{$\{y,z\}$}[b] at 25 30 
+\plot 25 37 30 45 40 7 /
+\put{$\{z\}$}[b] at 30 45
+\put{$\{x,\lneg z\}$}[b] at 90 0
+\plot 30 52 50 60 90 7 /
+\put{$\{x\}$}[b] at 50 60
+\put{$\{ \lneg x,y \}$}[b] at 110 0 
+\plot 50 67 70 75 110 7 /
+\put{$\{y\}$}[b] at 70 75 
+\put{$\{\lneg x,\lneg y,\lneg z\}$}[b] at 135 0
+\plot 30 52 110 55 135 7 /
+\put{$\{\lneg x,\lneg y\}$}[b] at 110 55
+\plot 50 67 100 75 110 62 /
+\put{$\{\lneg y\}$}[b] at 100 75
+\plot 70 82 85 90 100 82 /
+\put{$\Box$}[b] at 85 90
+\endpicture
+
+
+\caption{Widerlegung von $\lneg\alpha$ mittels Resolution}\label{last-resolution}
+\end{figure}
+
+} %% Ende des Abschnittes ueber Resolution
+
 
 \clearpage
 \appendix
