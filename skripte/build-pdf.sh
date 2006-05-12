@@ -14,28 +14,22 @@ fi
 
 joergs=/home/stud/md01/joergs
 
-PATH=/mnt/local/joergs/texlive/bin/i386-linux/:$PATH
-export PATH=$joergs/rubber-1.0/bin:$joergs/xindy/bin:$PATH
-
+export LANG=C
 REPOS=$1
 URL=$joergs/.svnroot/$REPOS
+WEB=$joergs/.www/skripte/
 
 if ! [ -d "$URL" ]; then
     echo "$REPOS is not a valid repository in /home/stud/md01/joergs/.svnroot/" >&2
     exit 1
 fi
 URL=file://$URL
-WEB=$joergs/.www/skripte/
 
 if [ -e "$WEB/pdf/$REPOS.tar.gz" ] && ( stamp="$(stat -c %y $WEB/pdf/$REPOS.tar.gz)";
      [ "${stamp%% *}" \> "$(svnlook date ${URL#*://} |cut -d\  -f1)" ]); then
     echo "I: $REPOS is up to date"
     exit 0
 fi
-
-# exec >$WEB/pdf/$REPOS.build.log 2>&1
-
-export LANG=C
 
 printf "I: "
 date
@@ -75,7 +69,9 @@ for ext in pdf ps; do
         rm -f $WEB/pdf/$REPOS.$ext
         cp ${src%.*}.$ext $WEB/pdf/$REPOS.$ext
     else
-        echo "E: building ${src%.*}.$ext failed"
+        echo "E: building ${src%.*}.$ext failed; cleanup and rerun with -vvvv"
+        rubber --clean --$ext $src
+        rubber -vvvv --$ext --inplace $src
     fi
 done
 
