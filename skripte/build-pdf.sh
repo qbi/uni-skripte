@@ -72,6 +72,8 @@ for ext in pdf ps; do
         echo "E: building ${src%.*}.$ext failed; cleanup and rerun with -vvvv"
         rubber --clean --$ext $src
         rubber -vvvv --$ext --inplace $src
+        env
+        which rubber latex pdflatex
     fi
 done
 
