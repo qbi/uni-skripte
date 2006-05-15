@@ -61,7 +61,7 @@ echo "I: using $src as source file"
 # Aus irgendeinem Grund braucht das pdflatex aus TeXLive die HOME-Variable um
 # dort ein Unterverzeichnis .texlive2005 mit irgendwelchen Konfigurationen
 # anzulegen.
-HOME=$TMP
+export HOME=$TMP
 
 for ext in pdf ps; do
     if rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
@@ -79,6 +79,12 @@ done
 
 echo "I: check for bad latex..."
 $joergs/TeXidate.pl $src
+
+# Todo: eigene Überprüfungen machen
+#   + keine \newcommand oder \renewcommand nach \begin{document}
+#   + z.(| |~|\ )B. und d. h. müssen als z.\,B. geschrieben sein
+#   + Kein \em[a-zA-Z] nach \begin{document}
+#   + $$ ist eine Sünde
 
 cd /
 rm -r $TMP
