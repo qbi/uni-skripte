@@ -54,6 +54,7 @@
 \usepackage{mparhack}    % Korrigiert einige Probleme mit \marginpar; die
                          % Option [debug] ist hilfreich bei Problemen
 \usepackage{ifpdf}
+\usepackage{fancyvrb}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -186,6 +187,9 @@
 
 \newcommand*{\lneg}{\neg}
 \newcommand*{\limplies}{\rightarrow}
+
+% Für Schlüsselwörter in Algorithmen
+\newcommand*{\schlwort}[1]{\underline{#1}}
 
 % Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
 % nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
@@ -2064,6 +2068,81 @@ Also ist $\alpha$ eine Tautologie.
 \caption{Widerlegung von $\lneg\alpha$ mittels Resolution}\label{last-resolution}
 \end{figure}
 
+% } gehört zu einem \left weiter oben
+
+% 16.5.06
+
+\subsection{Algorithmus zum Test auf Unerfüllbarkeit einer Klauselmenge}
+
+Eingabe $S$ als Klauselmenge
+\begin{Verbatim}[commandchars=\\\{\}]
+T:=\ensuremath{\emptyset}
+\schlwort{wiederhole}
+    S := S \ensuremath{\cup} T
+    T := die Menge aller Resolventen, die aus Klauseln in S gebildet werden können
+\schlwort{bis} T \ensuremath{\subseteq} S
+\schlwort{falls} \ensuremath{\Box\in} S
+\schlwort{dann} Ausgabe "unerfüllbar"
+\schlwort{sonst} Ausgabe "erfüllbar"
+\end{Verbatim}
+
+Optimierungen:
+\begin{itemize}
+ \item $\exists A_{1}, A_{2}\in S: A_{1}\subset A_{2}$ $\Rightarrow$ $S
+  := S\cap \{A_{2}\}$
+ \item $\exists A\in S: x\in A, \neg x\in A$ $\Rightarrow$ $S := S\cap
+  \{A\}$
+\end{itemize}
+
+Es gibt Klauselmengen, deren Resolutionswiderlegungen exponentiell lang
+sind. Diese nennt man $PHP_{k}$ ("`pigeon hole principle"' für $k$
+Tauben) -- in einem Taubenschlag mit $k-1$ Löchern können nicht $k$
+Tauben sitzen, wenn in jedem Loch höchstens eine Taube sitzen darf.
+Variable $A_{i,j}$ entspricht "`Taube $j$ sitzt in Loch $i$"'
+($i=1,2,\ldots,k; j=1,2,\ldots,k-1$)
+
+jede Taube sitzt in einem Loch:
+\begin{gather*}
+  (A_{1,1} \vee A_{2,1} \vee \ldots \vee A_{k-1,1} ) \wedge (A_{1,2} \vee
+     A_{2,2} \vee \ldots \vee A_{k-1,2}) \wedge \ldots \wedge (A_{1,k}
+     \vee A_{2,k} \vee \ldots \vee A_{k-1,k})\\
+  \alpha_{k} = \bigwedge_{j=1}^{k} \bigvee_{i=1}^{k-1} A_{i,j}
+\end{gather*}
+in jedem Loch sitzt höchstens eine Taube:
+\begin{gather*}
+  (A_{1,1} \rightarrow \neg A_{1,2})\wedge (A_{1,1} \rightarrow \neg
+     A_{1,3}) \wedge \ldots \wedge (A_{1,1} \rightarrow \neg A_{1,k})
+     \wedge (A_{1,2} \rightarrow \neg A_{1,1}) \wedge \ldots \wedge
+     (A_{k-1,k-1} \rightarrow \neg A_{k-1,k})\\
+  (\neg A_{1,1}\vee \neg A_{1,2}) \wedge (\neg A_{1,1} \vee \neg A_{1,3})
+     \wedge \ldots \wedge (\neg A_{k-1,k-1} \vee \neg A_{k-1,k})\\
+  \beta_{k} = \bigwedge_{i=1}^{k-1}\bigwedge_{p=1}^{k}
+     \bigwedge_{q=p+1}^{k} (\neg A_{i,p} \vee \neg A_{i,q}
+\end{gather*}
+
+\begin{gather*}
+  PHP_{k} = \alpha_{k} \wedge \beta_{k}
+\end{gather*}
+
+\subsection{Formulierung der Resolution als Theorie}
+
+Eine Theorie besteht aus Formeln, Axiomenschemata und Schlussregeln.
+\begin{description}
+ \item[Formeln:] die Klauselmengen
+ \item[Axiomenschemata:] $\Box$
+ \item[Schlussregeln:] $\frac{R}{T\cup\{A\}, S\cup\{\neg A\}}$ mit
+  $R=T\cup S$ für einen Resolutionsschritt und $\frac{T, S}{\{}$
+\end{description}
+
+\begin{bsp}
+  $S= \big\{ \{\neg A, B\}, \{\neg A, \neg B\}, \{A\}\big\}$
+
+  \begin{align*}
+    (1)\quad & \Box\\
+    (2)\quad & \{ A\}, \{\neg A\}\\
+    (3)\quad & \{ \neg A, B\} \}, \{\neg A, \neg B\}
+  \end{align*}
+\end{bsp}
 %% Ende des Abschnittes ueber Resolution
 
 
@@ -2247,6 +2326,40 @@ $\vdash_{\mathrm{L}'} \phi$): hinreichend ist $\vdash_{\mathrm{L}'} A3$.
   (4)\quad &\alpha\rightarrow\beta &\text{MP 1,3}\\
   (5)\quad &\text{\help{wie weiter?}}
 \end{align*}
+
+\section{Blatt 4}
+
+\subsection*{Aufgabe 1}
+
+Zeigen Sie mittels Resolution, dass die folgende Instanz des Axioms A3
+eine Tautologie ist.
+\begin{gather*}
+  (A\rightarrow (B\rightarrow C)) \rightarrow ((A\rightarrow
+     B)\rightarrow(A\rightarrow C))
+\end{gather*}
+
+Wenn A2 eine Tautologie ist, dann ist die Negation davon eine
+Kontradiktion (immer falsche Aussage). In der Wahrheitstabelle
+
+\subsection*{Aufgabe 2}
+
+Zeigen Sie mittels Resolution von dieser Formel, dass sie eine
+Tautologie ist.
+\begin{gather*}
+  \big( (A\vee B\vee \neg C) \wedge (\neg A\vee B\vee D) \wedge (C\vee D)
+     \wedge (\neg A \vee \neg D) \wedge (A\vee C \vee \neg D) \big)
+     \rightarrow (B\vee C)
+\end{gather*}
+
+\subsection*{Aufgabe 3}
+Wie lang kann höchstens ein Resolutionsbeweis sein?
+
+$2^{2n}$ mit $n$ ist die Anzahl der Variablen
+
+Bei Klauselmengen mit Variablen $A_{1},A_{2},\ldots,A_{n}$ ist jede
+Klausel eine Teilmenge von $\underbrace{\{A_{1},\ldots,A_{n}, \neg A_{1},\ldots,\neg
+A_{n}\}}_{2n\ \text{Elemente}}$. Eine Menge mit $2n$ Elementen hat
+$2^{2n}$ Teilmengen.
 
 \clearpage
 \pdfbookmark[0]{Index}{index}

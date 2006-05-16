@@ -1,6 +1,9 @@
 %%  Ver- und EntschlÃ¼sselung
 
 verbatimtex
+%&latex
+%% Die letzte Zeile ist um Metapost zu erklären, welches System es zum
+%% übersetzen des TeX-Teils verwenden soll
 \documentclass{article}
 \usepackage{latexsym,ngerman,amssymb}
 %%\usepackage{times,mathpazo}
