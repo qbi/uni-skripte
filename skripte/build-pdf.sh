@@ -83,8 +83,7 @@ $joergs/TeXidate.pl $src
 # Todo: eigene Überprüfungen machen
 #   + keine \newcommand oder \renewcommand nach \begin{document}
 #   + z.(| |~|\ )B. und d. h. müssen als z.\,B. geschrieben sein
-#   + Kein \em[a-zA-Z] nach \begin{document}
-#   + $$ ist eine Sünde
+#   + Komma vor etc.
 
 cd /
 rm -r $TMP
