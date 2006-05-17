@@ -40,6 +40,9 @@ cd $TMP
 
 svn export $URL || exit
 
+# erstmal das alte wegräumen, weil wir u. U. kein Schreibrecht auf die
+# Datei haben, wenn sie von einem anderen Benutzer angelegt wurde
+rm -f $WEB/pdf/$REPOS.tar.gz
 GZIP=-9 tar -czf $WEB/pdf/$REPOS.tar.gz $REPOS
 echo "I: created $REPOS.tar.gz"
 
