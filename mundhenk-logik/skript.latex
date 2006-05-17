@@ -19,6 +19,10 @@
 
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
+
 \usepackage{ifthen}
 \usepackage{makeidx}
 \usepackage[final]{graphicx}  % Für Grafiken
@@ -1585,9 +1589,9 @@ Die Resolution arbeitet mit Formeln in \emph{konjunktiver Normalform}:
     falsch machen. Dies entspricht der UND-Verknüpfung der negierten
     Belegunden der entsprechenden Zeilen.
     \begin{gather*}
-      \bigvee \overline{\bigvee \alpha}
+      \neg \bigvee \bigwedge \alpha = \bigwedge \neg \bigwedge \alpha =
+         \bigwedge \bigvee \neg\alpha
     \end{gather*}
-    Über die de Morgan'sche Regel erhält man dann die gewünschte Form.
   \end{proof}
 \end{satz}
 
@@ -2079,7 +2083,8 @@ Eingabe $S$ als Klauselmenge
 T:=\ensuremath{\emptyset}
 \schlwort{wiederhole}
     S := S \ensuremath{\cup} T
-    T := die Menge aller Resolventen, die aus Klauseln in S gebildet werden können
+    T := die Menge aller Resolventen, die aus Klauseln in S gebildet
+                werden können
 \schlwort{bis} T \ensuremath{\subseteq} S
 \schlwort{falls} \ensuremath{\Box\in} S
 \schlwort{dann} Ausgabe "unerfüllbar"
@@ -2126,25 +2131,186 @@ in jedem Loch sitzt höchstens eine Taube:
 
 \subsection{Formulierung der Resolution als Theorie}
 
-Eine Theorie besteht aus Formeln, Axiomenschemata und Schlussregeln.
+Zur Erinnerung: Eine Theorie besteht aus Formeln, Axiomenschemata und
+Schlussregeln.
 \begin{description}
  \item[Formeln:] die Klauselmengen
- \item[Axiomenschemata:] $\Box$
- \item[Schlussregeln:] $\frac{R}{T\cup\{A\}, S\cup\{\neg A\}}$ mit
-  $R=T\cup S$ für einen Resolutionsschritt und $\frac{T, S}{\{}$
+ \item[Axiomenschemata:] $\{\Box\}$
+ \item[Schlussregeln:] $S$ als Klauselmenge und $R\in S$ als Klausel,
+  wobei $R$ Resolvent von $C_{1}$ und $C_{2}$ ist
+  \begin{gather*}
+    \frac{S}{S\setminus\{R\}\cup\{R\cup\{A\},R\cup\{\neg A\}\}}
+  \end{gather*}
+
+  $\frac{S}{S\cup\{C\}}$, $S$ Klauselmenge, $C$ Klausel
+  \help{irgendwas stimmt hier nicht}
 \end{description}
 
 \begin{bsp}
   $S= \big\{ \{\neg A, B\}, \{\neg A, \neg B\}, \{A\}\big\}$
-
   \begin{align*}
-    (1)\quad & \Box\\
+    (1)\quad & \{\Box\}\\
     (2)\quad & \{ A\}, \{\neg A\}\\
     (3)\quad & \{ \neg A, B\} \}, \{\neg A, \neg B\}
   \end{align*}
+  \todo{fertig stellen}
 \end{bsp}
+
 %% Ende des Abschnittes ueber Resolution
 
+% 17. Mai 2006
+
+\chapter{Theorien 1.\,Ordnung -- Prädikatenlogik}
+
+\begin{bsp}
+  Jeder der mich mag, mag auch meine Frau. Peter mag meine Frau nicht.
+  Daraus folgt: Peter mag auch mich nicht.
+
+  Sprachliche Mittel:
+  \begin{itemize}
+   \item Eigenschaft $M(x,y)$ mit der Bedeutung "`$x$ mag $y$"'
+   \item Individuen $a$ bedeutet "`ich"', $b$ bedeutet "`meine Frau"' und
+    $c$ bedeutet "`Peter"'
+   \item Quantoren über Variablen: $\forall x: P(x)$ heißt "`für alle $x$
+    gilt Eigenschaft $P$"' (im Bsp.: $\forall x: M(x,a) \rightarrow M(x,b)$
+  \end{itemize}
+\end{bsp}
+
+\begin{bsp}
+  Der Nachfolger jeder geraden ganzen Zahl ist ungerade. 2 ist eine
+  gerade ganze Zahl. Also ist der Nachfolger von 2 ungerade.
+
+  \begin{tabular}{r@{\ldots}l}
+    $G(x)$ & $x$ ist eine ganze Zahl\\
+    $E(x)$ & $x$ ist gerade\\
+    $f(x)$ & bezeichne den Nachfolger von $x$\\
+    $b$ & Symbol 2
+  \end{tabular}
+  $G$ und $E$ sind Eigenschaften, $f$ ist eine Funktion
+
+  $\forall x: (G(x) \wedge E(x))\rightarrow \neg E(f(x))$
+
+  Also folgt aus $G(b)$ und $E(b)$, dass $\neg E(f(b))$ gilt.
+\end{bsp}
+
+\begin{defini}[Quantoren]
+  \index{Quatoren}
+  $\forall$ bezeichnet man als \emph{Allquantor} und $\exists$ als
+  \emph{Existenzquantor}. $\exists x\ P(x)$ bedeutet "`es gibt
+  (mindestens) ein $x$ für das $P(x)$ gilt."'
+\end{defini}
+
+\begin{tabular}{l@{\qquad}l}
+  Alle Vierbeiner können laufen & $\forall x: V(x) \rightarrow L(x)$\\
+  Es gibt Tiere, die Vierbeiner sind & $\exists x: T(x) \wedge V(x)$\\
+  Also gibt es Tiere, die laufen können & $\exists x: T(x) \wedge L(x)$
+\end{tabular}
+
+Die "`Sprache"' der Theorien 1.\,Ordnung:
+\begin{description}
+ \item[Zeichen:] logische Verknüpfungszeichen wie $\neg$, $\rightarrow$,
+  $\wedge$, $\vee$, $\leftrightarrow$,\\
+  \emph{Variablensymbole} wie $x_{0}$, $x_{1}$ und $x_{2}$,\\
+  \emph{Konstantensymbole} wie $a_{0}$, $a_{1}$ und $a_{2}$,\\
+  \emph{Prädikatensymbole} $A_{k}^{n}$, wobei $n$ die Stelligkeit und $k\in\N$,
+  z.\,B. $A_{0}^{0}, A_{1}^{0}, A_{0}^{3}, A_{1}^{5}$,\\
+  \emph{Funktionensymbole} $f_{k}^{n}$, $n$ ist die Stelligkeit, $k\in\N$ und\\
+  \emph{Quantoren} $\forall$ und $\exists$
+ \item[Terme:]
+  \begin{enumerate}
+   \item Jedes Variablen- oder Konstantensymbol ist ein Term
+   \item Wenn $t_{1},\ldots,t_{n}$ Terme sind, dann ist
+    $f^{n}_{k}(t_{1},\ldots,t_{n})$ ein Term
+  \end{enumerate}
+\end{description}
+
+\begin{bsp}
+  $x_{15}$ ist ein Variablensymbol, $a_{3}$ ist ein Konstantensymbol,
+  $f_{3}^{2}(x_{15}, a_{3})$ und $f_{0}^{1}(f_{3}^{2}(x_{15},a_{3}))$
+\end{bsp}
+
+\begin{defini}[Atomare Formeln]
+  Für Terme $t_{1},t_{2},\ldots,t_{n}$ ist $A_{k}^{n}
+  (t_{1},\ldots,t_{n})$ eine \emph[index=Formel!atomare]{atomare Formel}
+\end{defini}
+
+\begin{defini}[Formeln]
+  \begin{enumerate}
+   \item Jede atomare Formel ist eine \emph{Formel}.
+   \item Wenn $\alpha$ und $\beta$ Formeln sind, dann sind auch $(\neg
+    \alpha), (\alpha\rightarrow\beta)$ und $(\forall x_{i} \alpha)$
+    Formeln.
+
+    \textit{[$\wedge$, $\vee$ $\leftrightarrow$ können wie bisher als
+    abkürzende Schreibweise gebraucht werden. $(\exists x_{i} \alpha)$
+    ist Abkürzung für $(\neg (\forall x_{i} (\neg \alpha)))$]}
+
+    "`Überflüssige"' Klammern können zur Vereinfachung der Schreibweise
+    weggelassen werden.
+  \end{enumerate}
+\end{defini}
+
+\begin{bsp}
+  $\big(\forall x_{2} A_{1}^{1}(x_{2}) \rightarrow A_{0}^{2}(x_{2},
+  f_{1}^{1}(x_{2})) \big)$\\
+  $A_{1}^{1}(x_{2}) \rightarrow (\forall x_{3} A_{1}^{2}(x_{1},x_{2}))$\\
+  $(\exists x_{1} A_{1}^{2}(x_{1},x_{2})) \rightarrow (\forall x_{1}
+  (\neg A_{2}^{2}(x_{1},x_{2})))$
+\end{bsp}
+
+In $(\forall x_{i} \alpha)$ ist $\alpha$ der \emph{Gültigkeitsbereich}
+des Quantors "`$\forall x_{i}$."' Eine Variable $y$, die im
+Gültigkeitsbereich eines Quantors $\forall y$ liegt oder die Teil des
+Quantors sind, heißt \emph[index=Variable!gebundene]{gebunden}. Falls
+eine Variable nicht gebunden ist, dann heißt sie
+\emph[index=Variable!freie]{frei}.
+
+\begin{bsp}
+  In der Formel $A_{1}^{2}(x_{1},x_{2})$ sind $x_{1}$ und $x_{2}$ freie
+  Variablen. In der Formel $A_{1}^{2}(x_{1},x_{2}) \rightarrow (\forall
+  x_{2} A_{1}^{1}(x_{2}))$ ist die Variable $x_{1}$ frei und $x_{2}$ ist
+  im ersten Teil frei, im zweiten Teil aber durch den Allquantor
+  gebunden.
+
+  In $\forall x_{2} A_{1}^{2}(x_{1},x_{2}) \rightarrow (\forall x_{2}
+  A_{1}^{1}(x_{2}))$ ist $x_{1}$ frei und $x_{2}$ gebunden.
+\end{bsp}
+
+Eine Variable ist \emph[index=Variable!freie]{frei} in $\alpha$, falls
+alle Vorkommen der Variablen in $\alpha$ fri sind. (analog: gebunden)
+
+$\alpha[x/t]$ entsteht aus $\alpha$ durch Ersetzen aller freien Vorkommen
+der Variablen $x$ durch den Term $t$. Beispiel:
+$A_{1}^{2}(x_{1},x_{2})[x_{1}/f_{1}^{1}(x_{2})] =
+A_{1}^{2}(f_{1}^{1}(x_{2}), x_{2})$
+
+Der Term $t$ heißt \emph[index=Term!freier]{frei} für $x_{1}$ in
+$\alpha$, falls kein freies Vorkommen von $x_{i}$ in $\alpha$ im
+Gültigkeitsbereich eines Quantors für eine Variable in $t$ liegt.
+
+\begin{bsp}
+  $x_{2}$ ist frei für $x_{1}$ in $A_{1}^{1}(x_{1})$, nicht jedoch in
+  $\forall x_{2}$ $A_{1}^{1}(x_{1})$.
+\end{bsp}
+
+\section{Interpretation von Formeln}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $A_{1}^{2}(x_{1},x_{2})$
+   \item $\forall x_{2} A_{1}^{2}(x_{1},x_{2})$
+   \item $\exists x_{1}\ \forall x_{2} A_{1}^{2}(x_{1},x_{2})$
+  \end{enumerate}
+
+  Für die Grundmenge $\N$ und $A_{1}^{2}$ mit der Bedeutung $\leq$
+  ($A_{1}^{2}=\{(n,m)\in\N\times\N: n\leq m\}$) bedeuten die Aussagen:
+  \begin{enumerate}
+   \item $x_{1}\leq x_{2}$
+   \item Für alle $x_{1}\in\N$ gilt $x_{1}\leq x_{2}$, d.\,h. $x_{1}=0$
+   \item Es gibt ein $x_{1}\in\N$, so dass für alle $x_{2}\in\N$ gilt:
+    $x_{1}\leq x_{2}$ ($\N$ besitzt ein untere Schranke)
+  \end{enumerate}
+\end{bsp}
 
 \clearpage
 \appendix
@@ -2331,7 +2497,7 @@ $\vdash_{\mathrm{L}'} \phi$): hinreichend ist $\vdash_{\mathrm{L}'} A3$.
 
 \subsection*{Aufgabe 1}
 
-Zeigen Sie mittels Resolution, dass die folgende Instanz des Axioms A3
+Zeigen Sie mittels Resolution, dass die folgende Instanz des Axioms A2
 eine Tautologie ist.
 \begin{gather*}
   (A\rightarrow (B\rightarrow C)) \rightarrow ((A\rightarrow
@@ -2339,7 +2505,14 @@ eine Tautologie ist.
 \end{gather*}
 
 Wenn A2 eine Tautologie ist, dann ist die Negation davon eine
-Kontradiktion (immer falsche Aussage). In der Wahrheitstabelle
+Kontradiktion (immer falsche Aussage). Die konjunktive Normalform ist
+also die UND-Verknüpfung der Negation aller passenden Belegungen:
+\begin{gather*}
+  (\neg A\vee \neg B\vee\neg C) \wedge (\neg A\vee \neg B\vee C) \wedge
+     (\neg A\vee B\vee\neg C) \wedge \ldots \wedge (A \vee \neg B\vee C)
+     \wedge (A\vee B \vee\neg C) \wedge (A\vee B\vee C)
+\end{gather*}
+\todo{hier fehlt was}
 
 \subsection*{Aufgabe 2}
 
@@ -2360,6 +2533,28 @@ Bei Klauselmengen mit Variablen $A_{1},A_{2},\ldots,A_{n}$ ist jede
 Klausel eine Teilmenge von $\underbrace{\{A_{1},\ldots,A_{n}, \neg A_{1},\ldots,\neg
 A_{n}\}}_{2n\ \text{Elemente}}$. Eine Menge mit $2n$ Elementen hat
 $2^{2n}$ Teilmengen.
+
+\section{Blatt 5}
+
+\subsection*{Aufgabe 1}
+Was bedeuten die Formeln und den angegebenene Interpretationen?
+\begin{enumerate}
+ \item $(\exists n A_{1}^{2}(f_{1}^{2}(x,u), y) \wedge (\exists v
+  A_{1}^{2}(f_{1}^{2}(x,v),z))$ auf der Grundmenge $\N$ und $A_{1}^{2}$
+  ist die Gleichheit "`$=$"' und $f_{1}^{2}$ die Multiplikation
+  ($u,v,x,y,z$ sind Variablensymbole)
+
+ \item $\forall y( (\exists z A_{1}^{2}(f_{1}^{2}(y,z),x)) \rightarrow
+  (A_{1}^{2}(y,a) \wedge A_{1}^{2}(y,x)))$, wie oben $a=1$
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+Geben Sie eine Formel mit Interpretation mit der Grundmenge $\N$ an, die
+folgende Bedeutung hat.
+\begin{enumerate}
+ \item $x=ggT(y,z)$
+ \item Es gibt unendlich viele Primzahlen.
+\end{enumerate}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
