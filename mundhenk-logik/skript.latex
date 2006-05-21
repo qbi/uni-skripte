@@ -2093,9 +2093,9 @@ T:=\ensuremath{\emptyset}
 
 Optimierungen:
 \begin{itemize}
- \item $\exists A_{1}, A_{2}\in S: A_{1}\subset A_{2}$ $\Rightarrow$ $S
-  := S\cap \{A_{2}\}$
- \item $\exists A\in S: x\in A, \neg x\in A$ $\Rightarrow$ $S := S\cap
+ \item $\exists A, B\in S: A \subset B $ $\Rightarrow$ $S
+  := S\setminus \{ B \}$
+ \item $\exists A\in S: x\in A, \neg x\in A$ $\Rightarrow$ $S := S\setminus
   \{A\}$
 \end{itemize}
 
@@ -2133,28 +2133,82 @@ in jedem Loch sitzt höchstens eine Taube:
 
 Zur Erinnerung: Eine Theorie besteht aus Formeln, Axiomenschemata und
 Schlussregeln.
+Ein Beweis einer Formel besteht aus einer
+Folge von Formeln, die Axiome sind oder mittels Schlussregeln
+aus bereits abgeleiteten Formeln abgeleitet werden.
+In einem Beweis der Unerf\"ullbarkeit einer Klauselmenge $S$ (=Formel)
+muss also $S$ am Ende des Beweises stehen.
+(Das ist genau andersherum als bei der Resolution.)
+
 \begin{description}
  \item[Formeln:] die Klauselmengen
- \item[Axiomenschemata:] $\{\Box\}$
- \item[Schlussregeln:] $S$ als Klauselmenge und $R\in S$ als Klausel,
-  wobei $R$ Resolvent von $C_{1}$ und $C_{2}$ ist
+ \item[Axiomenschema:] $\{\Box\}$
+ \item[Schlussregeln:] 
+\begin{enumerate}
+\item[(Res)] F\"ur Klauselmenge $S$ und Klausel $R\in S$, die Resolvent von $C_1$ und $C_2$ ist:
   \begin{gather*}
-    \frac{S}{S\setminus\{R\}\cup\{R\cup\{A\},R\cup\{\neg A\}\}}
+    \frac{S}{S\setminus\{R\}\cup\{C_1, C_2\}}
   \end{gather*}
-
-  $\frac{S}{S\cup\{C\}}$, $S$ Klauselmenge, $C$ Klausel
-  \help{irgendwas stimmt hier nicht}
+\item[(Einf)] F\"ur Klauselmenge $S$ und beliebige Klausel $C$:
+  \begin{gather*}
+    \frac{S}{S \cup\{C\}}
+  \end{gather*}
+\end{enumerate}
 \end{description}
 
+Alle Beweise beginnen also mit der Klauselmenge, die nur aus der leeren Klausel besteht
+(einziges Axiom).
+Diese Klauselmenge ist unerf\"ullbar.
+Durch die Schlussregel (Res) wird ein Resolutionsschritt ``r\"uckw\"arts''
+ausgef\"uhrt,
+und durch (Einf) wird eine beliebige zus\"atzliche Klausel in die Klausel in 
+die Klauselmenge eingf\"ugt.
+
 \begin{bsp}
-  $S= \big\{ \{\neg A, B\}, \{\neg A, \neg B\}, \{A\}\big\}$
+  Beweis der Unerf\"ullbarkeit von 
+  $S= \big\{ \{\neg A, B\}, \{\neg A, \neg B\}, \{A\}, \{A, \neg C\} \big\}$
   \begin{align*}
-    (1)\quad & \{\Box\}\\
-    (2)\quad & \{ A\}, \{\neg A\}\\
-    (3)\quad & \{ \neg A, B\} \}, \{\neg A, \neg B\}
+    (1)\quad & \{\Box\} & \mbox{Axiom} \\
+    (2)\quad & \{ \{ A \}, \{\neg A \} \} 
+                    & \mbox{Schlussregel (Res) auf (1)} \\
+    (3)\quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\} \} 
+                       & \mbox{Schlussregel (Res) auf (2)}  \\
+    (4) \quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\}, \{A, \neg C\}  \} & 
+                       \mbox{Schlussregel (Einf) auf (3)} 
   \end{align*}
-  \todo{fertig stellen}
 \end{bsp}
+
+\begin{bsp}
+  Beweis der Unerf\"ullbarkeit von $S$ aus \autoref{last-resolution}, 
+
+  $S= \big\{ \{\neg B, C\}, \{A, B, C\}, \{A, \neg C\}, \{\neg A, B\}, \{\neg A, \neg B, \neg C\} \big\}$
+  \begin{align*}
+    (1)\quad & \{\Box\} & \mbox{Axiom} \\
+    (2)\quad & \{ \{ B\}, \{\neg B \} \} 
+                    & \mbox{(Res) auf $\Box$ in (1)} \\
+    (3)\quad & \{ \{ B \}, \{ A \}, \{\neg A, \neg B\} \} 
+                       & \mbox{(Res) auf $\{\neg B\}$ in (2)}  \\
+    (4)\quad & \{ \{ \neg A, B \}, \{ A \}, \{\neg A, \neg B\} \} 
+                       & \mbox{(Res) auf $\{B\}$ in (3)}  \\
+    (5)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B\} \} 
+                       & \mbox{(Res) auf $\{A\}$ in (4)}  \\
+    (6)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \} 
+                       & \mbox{(Res) auf $\{\neg A, \neg B\}$ in (5)}  \\
+    (7)\quad & \{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \} 
+                       & \mbox{(Res) auf $\{C\}$ in (6)}  \\
+    (8)\quad & \{ \{ \neg A, B \}, \{\neg A, C\}, \{A, B, C\}, 
+                    \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \} 
+                       & \mbox{(Res) auf $\{B,C\}$ in (7)}  \\
+    (9)\quad & \{ \{ \neg A, B \}, \{A, B, C\}, 
+                    \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \} 
+                       & \mbox{(Res) auf $\{\neg A, C\}$ in (8)}
+  \end{align*}
+\end{bsp}
+
+Man kann (leicht) zeigen,
+dass die Schlussregeln die Unerf\"ullbarkeit der Klauselmenge nicht \"andern,
+und dass jede unerf\"ullbare Klauselmenge einen Beweis besitzt
+(entsprechend \autoref{lemma-vollst-resolution} und \autoref{satz-korrektheit-resolution-vor}).
 
 %% Ende des Abschnittes ueber Resolution
 
