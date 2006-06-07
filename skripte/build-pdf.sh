@@ -85,9 +85,9 @@ echo "I: Status report: $(rubber-info --errors $src | wc -l) errors,\
  $(rubber-info --warnings $src | wc -l) warnings,\
  $(rubber-info --refs $src | wc -l) refs"
 
-vorlver=$(svn info $URL/../skripte/vorlage/skript.latex |
+vorlver=$(svn info ${URL%/*}/skripte/vorlage/skript.latex |
   sed -n '/^Revision: / { s/.* //; q; }')
-if ! grep "% entspricht Vorlage: $vorlver" $src; then
+if ! grep -q "% entspricht Vorlage: $vorlver" $src; then
     echo "E: Das Skript ist nicht mehr auf dem aktuellen Stand der Vorlage"
 fi
 
