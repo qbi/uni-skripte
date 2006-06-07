@@ -67,7 +67,7 @@ echo "I: using $src as source file"
 export HOME=$TMP
 
 for ext in pdf ps; do
-    if rubber --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
+    if rubber --quiet --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
         echo "I: installing ${src%.*}.$ext as $REPOS.$ext"
         rm -f $WEB/pdf/$REPOS.$ext
         cp ${src%.*}.$ext $WEB/pdf/$REPOS.$ext
@@ -79,6 +79,17 @@ for ext in pdf ps; do
         which rubber latex pdflatex
     fi
 done
+
+echo "I: Status report: $(rubber-info --errors $src | wc -l) errors,\
+ $(rubber-info --boxes $src | wc -l) overfull boxes,\
+ $(rubber-info --warnings $src | wc -l) warnings,\
+ $(rubber-info --refs $src | wc -l) refs"
+
+vorlver=$(svn info $URL/../skripte/vorlage/skript.latex |
+  sed -n '/^Revision: / { s/.* //; q; }')
+if ! grep "% entspricht Vorlage: $vorlver" $src; then
+    echo "E: Das Skript ist nicht mehr auf dem aktuellen Stand der Vorlage"
+fi
 
 echo "I: check for bad latex..."
 $joergs/TeXidate.pl $src
