@@ -85,14 +85,14 @@ echo "I: Status report: $(rubber-info --errors $src | wc -l) errors,\
  $(rubber-info --warnings $src | wc -l) warnings,\
  $(rubber-info --refs $src | wc -l) refs"
 
-vorlver=$(svn info ${URL%/*}/skripte/vorlage/skript.latex |
-  sed -n '/^Revision: / { s/.* //; q; }')
+vorlver=$(svnlook history ${URL#*://}/../skripte vorlage/skript.latex |
+  sed -e 1,2d -e 's@[[:space:]]*@@g; s@/.*@@; q')
 if ! grep -iq "^[[:space:]]*%[[:space:]]*entspricht[[:space:]]*vorlage:[[:space:]]*$vorlver\$" $src; then
     echo "E: Das Skript ist nicht mehr auf dem aktuellen Stand der Vorlage"
 fi
 
 echo "I: check for bad latex..."
-$joergs/TeXidate.pl $src
+rubber-info --warnings $src | grep nag
 
 # Todo: eigene Überprüfungen machen
 #   + keine \newcommand oder \renewcommand nach \begin{document}
