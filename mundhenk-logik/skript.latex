@@ -82,7 +82,7 @@
 \newtheorem{lemma}{Lemma}[chapter]
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
-\newtheorem{korol}{Korolar}[chapter]
+\newtheorem{korol}{Korollar}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
 
@@ -2395,7 +2395,7 @@ $( A_{1}^{2}(x_{1},x_{2}) \rightarrow
 \end{bsp}
 
 
-Der Term $t$ heißt \emph[index=Term!freier]{frei} für $x_{1}$ in
+Der Term $t$ heißt \emph[index=Term!frei f\"ur]{frei f\"ur} $x_{i}$ in
 $\alpha$, falls kein freies Vorkommen von $x_{i}$ in $\alpha$ im
 Gültigkeitsbereich eines Quantors für eine Variable in $t$ liegt.
 
@@ -2700,11 +2700,64 @@ $(\forall x_1 ~\alpha)\rightarrow \beta \vdash \alpha \rightarrow (\forall x_1 ~
 \section{Eigenschaften von Theorien 1.\texorpdfstring{\,}{~}Ordnung}
 
 
+% 31.5.06
+
+Ohne zus\"atzliche Axiome k\"onnen ausschlie\3lich g\"ultige Formeln bewiesen werden.
+
+\begin{satz}\label{satz-korrektheit-theorien-1.ordnung}
+  Für jeden Prädikatenkalkül 1.\,Ordnung $K$ und jede Formel $\alpha$
+  gilt: 
+
+\centering{Wenn $\vdash_{K} \alpha$, dann ist $\alpha$ gültig.}
+\end{satz}
+
+\begin{proof}
+    Alle Axiome sind gültig (E7 für A1--A3, E10 für A4 und E11 für A5).
+    Der modus ponens und die Generalisierung erhalten die Gültigkeit (E3
+    und E6).
+\end{proof}
+
+
+
+Das alte Deduktionstheorem gilt nicht f\"ur Theorien 1.\,Ordnung.
+Betrachte dazu folgenden Beweis.
+%
+\begin{align*}
+  (1)\quad &\alpha                   & \text{Hypothese}\\
+  (2)\quad &( \forall x_{i}~ \alpha) & \text{Gen}
+\end{align*}
+Mit dem alten Deduktionstheorem folgt: 
+$\vdash\alpha\rightarrow(\forall x_{i}~\alpha)$. 
+Diese Formel ist aber nicht g\"ultig!
+Ihre Beweisbarkeit widerspr\"ache \autoref{satz-korrektheit-theorien-1.ordnung}.
+Das Problem liegt hier in der Anwendung der Generalisierung
+auf eine Variable, die in der Hypothese frei vorkommt.
+
+Um ein Deduktionstheorem f\"ur Theorien 1.\,Ordnung zu formulieren,
+brauchen wir eine Eigenschaft von Beweisen.
+Sei $\alpha\in\Gamma$ und $\beta_{1},\ldots,\beta_{k}$ sei eine
+Herleitung aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots ab]
+{hängt} von $\alpha$ ab, falls
+\begin{itemize}
+ \item $\beta_{i}=\alpha$ oder
+ \item $\beta_{i}$ entsteht durch Anwendung einer Ableitungsregel auf
+  (mindestens) eine Formel, die von $\alpha$ abhängt.
+\end{itemize}
+
+\begin{lemma}
+  Sei $\alpha\not\in\Gamma$ und $\Gamma,\alpha \vdash\beta$. Wenn $\beta$
+  aus $\Gamma\cup\{\alpha\}$ hergeleitet werden kann, so dass $\beta$
+  nicht von $\alpha$ abhängt, dann gilt $\Gamma\vdash\beta$.
+\end{lemma}
+
+
 \begin{satz}[Deduktionstheorem]\label{Deduktionstheorem2}
-Es gelte $\Gamma,\alpha ~\vdash~ \beta$,
-wobei im Beweis jede Anwendung von (Gen) folgende Eigenschaft hat:
-(1) es wird keine freie Variable von $\alpha$ gebunden,
-oder (2) es wird keine aus $\alpha$ abgeleitete Formel verwendet.
+  Sei $\alpha\not\in\Gamma$ und $\beta_{1},\ldots,\beta_{k}$ eine
+  Herleitung von $\beta$ aus $\Gamma\cup\{\alpha\}$ mit folgender
+  Eigenschaft: Wenn $\beta_{i}=(\forall x_{j}\beta_{q})$ durch Anwendung
+  der Generalisierungsregel auf $\beta_{q}$ entsteht, dann gilt (1)
+  $\beta_{q}$ hängt nicht von $\alpha$ ab oder (2) $x_{j}$ kommt nicht
+  frei in $\alpha$ vor.
 
 Dann gilt $\Gamma ~\vdash~ \alpha\rightarrow\beta$.
 \end{satz}
@@ -2722,79 +2775,34 @@ oder
 Ein Beweis mit Benutzung des Deduktionstheorems.
 
 Beweise
-$(\forall x_1 ~(\forall x_2~\alpha) ~)\rightarrow(\forall x_2 ~(\forall x_1~\alpha) ~) $.
+$(\forall x_1 ~(\forall x_2~\alpha) )\rightarrow(\forall x_2 ~(\forall x_1~\alpha) ) $.
 
 \begin{quote}
 Wir zeigen:
 \ 
-$(\forall x_1 ~(\forall x_2~\alpha) ~)\vdash(\forall x_2 ~(\forall x_1~\alpha) ~) $.
+$(\forall x_1 ~(\forall x_2~\alpha) )\vdash(\forall x_2 ~(\forall x_1~\alpha) ) $.
 
 
 
 \begin{tabular}{cll}
-(1) & $\forall x_1 ~(\forall x_2~\alpha)$ & Hyp \\
-(2) & $(\forall x_1 ~(\forall x_2~\alpha)~) \rightarrow (\forall x_2~\alpha)$ &
-(A4) mit $t=x_1$ \\ & & (Bem.: $(\forall x_2\alpha)[x_1/x_1]=(\forall x_2\alpha)$) \\
+(1) & $\forall x_1 ~(\forall x_2~\alpha)$ & Hypothese \\
+(2) & $(\forall x_1 ~(\forall x_2~\alpha) ) \rightarrow (\forall x_2~\alpha)$ &
+(A4) mit $t=x_1$ \\ & & (Bem.: $(\forall x_2~\alpha)[x_1/x_1]=(\forall x_2~\alpha)$) \\
 (3) & $(\forall x_2~\alpha)$ & MP 1,2 \\
 (4) & $ (\forall x_2~\alpha) \rightarrow \alpha $ & (A4) mit $t=x_2$ \\
 (5) & $\alpha$ & MP 3,4 \\
 (6) & $ (\forall x_1~\alpha)$ & Gen 5 \\
-(7) & $ (\forall x_2 ~(\forall x_1~\alpha)~)$ & Gen 6 \\
+(7) & $ (\forall x_2 ~(\forall x_1~\alpha))$ & Gen 6 \\
 \end{tabular}
 \end{quote}
 
 Da durch (Gen) die Variablen $x_1$ und $x_2$ gebunden wurden,
-die beide nicht frei in ~$(\forall x_1 ~(\forall x_2~\alpha) ~)$~ vorkommen,
+die beide nicht frei in ~$(\forall x_1 ~(\forall x_2~\alpha) )$ vorkommen,
 kann das Deduktionstheorem angewendet werden.
 \end{bsp}
 
-% 31.5.06
+  \begin{proof}[von~\autoref{Deduktionstheorem2}]
 
-\begin{satz}
-  Für jedes Prädikatenkalkül 1.\,Ordnung $K$ und jede Formel $\alpha$
-  gilt: Wenn $\vdash_{K} \alpha$, dann ist $\alpha$ gültig.
-
-  \begin{proof}
-    Alle Axiome sind gültig (E7 für A1--A3, E10 für A4 und E11 für A5).
-    Der modus ponens und die Generalisierung erhalten die Gültigkeit (E3
-    und E6).
-  \end{proof}
-\end{satz}
-
-Das alte Deduktionstheorem gilt hier nicht mehr:
-\begin{align*}
-  (1)\quad &\alpha &\text{Hypothese}\\
-  (2)\quad &\forall x_{i} \alpha &\text{Gen}
-\end{align*}
-mit dem alten Deduktionstheorem folgt: $\vdash\alpha\rightarrow(\forall
-x_{i}\alpha)$. Dies ist aber nicht wahr!
-
-Sei $\alpha\in\Gamma$ und $\beta_{1},\ldots,\beta_{k}$ sei eine
-Herleitunng aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots ab]
-{hängt} von $\alpha$ ab, falls
-\begin{itemize}
- \item $\beta_{i}=\alpha$ oder
- \item $\beta_{i}$ entsteht durch Anwendung einer Ableitungsregel auf
-  (mindestens) eine Formel, die von $\alpha$ abhängt.
-\end{itemize}
-
-\begin{lemma}
-  Sei $\alpha\not\in\Gamma$ und $\Gamma,\alpha \vdash\beta$. Wenn $\beta$
-  aus $\Gamma\cup\{\alpha\}$ hergeleitet werden kann, so dass $\beta$
-  nicht von $\alpha$ abhängt, dann $\Gamma\vdash\beta$.
-\end{lemma}
-
-\begin{satz}[Deduktionstheorem]
-  Sei $\alpha\not\in\Gamma$ und $\beta_{1},\ldots,\beta_{k}$ eine
-  Herleitung von $\beta$ aus $\Gamma\cup\{\alpha\}$ mit folgender
-  Eigenschaft: Wenn $\beta_{i}=(\forall x_{j}\beta_{q})$ durch Anwendung
-  der Generalisierungsregel auf $\beta_{q}$ entsteht, dann gilt (1)
-  $\beta_{q}$ hängt nicht von $\alpha$ ab oder (2) $x_{j}$ kommt nicht
-  frei in $\alpha$ vor.
-
-  Dann gilt: $\Gamma\vdash\alpha\rightarrow\beta$.
-
-  \begin{proof}
     Induktion über Länge $i$ der Herleitung.
     \begin{description}
      \item[IA] $i=1$, $\beta_{i}$ ist ein Axiom oder aus
@@ -2834,7 +2842,6 @@ Herleitunng aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots ab]
       \end{faelle}
     \end{description}
   \end{proof}
-\end{satz}
 
 \begin{korol}
   \begin{itemize}
@@ -2849,51 +2856,28 @@ Herleitunng aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots ab]
   \end{itemize}
 \end{korol}
 
-\begin{bsp}
-  Zeigen wir $\vdash(\forall x_{1}~ (\forall x_{2}~ \alpha)) \rightarrow
-  (\forall x_{2}~(\forall x_{1} ~ \alpha))$.
-  \begin{align*}
-    (1)\quad & (\forall x_{1}~ (\forall x_{2}~ \alpha) &\text{Hypothese}\\
-    (2)\quad & (\forall x_{1}~ (\forall x_{2}~ \alpha))
-                   \rightarrow (\forall x_2~ \underbrace{\alpha[x_1/x_1]}_{=\alpha}) 
-                                                       & \text{A4} \\
-    (3)\quad & (\forall x_2~ \alpha) & \text{MP 1,2} \\
-    (4)\quad & (\forall x_2~ \alpha)\rightarrow \underbrace{\alpha[x_2/x_2]}_{=\alpha} 
-                                                       & \text{A4} \\
-    (5)\quad & \alpha & \text{MP 3,4} \\
-    (6)\quad & (\forall x_1 ~ \alpha) & \text{Gen 5} \\
-    (7)\quad & (\forall x_2 ~ (\forall x_1 ~ \alpha)) & \text{Gen 6}
-  \end{align*}
-  Damit ist gezeigt: $(\forall x_{1} (\forall x_{2} \alpha)) \vdash
-  (\forall x_{2} (\forall x_{1} \alpha))$.
-
-  Im Beweis wurde die Generalisierung nur angewendet für Variablen, die
-  in $(\forall x_{1} (\forall x_{2} \alpha))$ nicht frei vorkommen. Daher
-  kann das Deduktionstheorem angewendet werden.
-  Damit folgt $\vdash(\forall x_{1}~ (\forall x_{2}~ \alpha)) \rightarrow
-  (\forall x_{2}~(\forall x_{1}~ \alpha))$.
-\end{bsp}
 
 \subsection{Schreibweisen, die Beweise vereinfachen}
 
-Regel RA4: $(\forall x \alpha)\vdash \alpha[x/t]$, falls $t$ frei für $x$
+Regel RA4: $(\forall x ~\alpha)\vdash \alpha[x/t]$, falls $t$ frei für $x$
 in $\alpha$ ist.
 
 Regel RE4: $\alpha[x/t] \vdash (\exists x \alpha)$, falls $t$ frei für $x$
 in $\alpha$ ist.
 
+(Auf die Beweise der Korrektheit der Regeln wird aus Platzgr\"unden verzichtet \ldots)
+
 \begin{bsp}
-  Zeigen $\vdash (\forall x\alpha) \rightarrow (\exists x\alpha)$
+  Zeigen $\vdash (\forall x ~ \alpha) \rightarrow (\exists x ~ \alpha)$
   \begin{align*}
-    (1)\quad &\forall x \alpha &\text{Hypothese}\\
-    (2)\quad &\alpha[x/t] &\text{Regel RA4}\\
-    (3)\quad &\exists x \alpha &\text{mit RE4}
+    (1)\quad & (\forall x ~ \alpha) &\text{Hypothese}\\
+    (2)\quad &  \alpha[x/t] &\text{Regel RA4}\\
+    (3)\quad & (\exists x ~ \alpha) &\text{mit RE4}
   \end{align*}
-  Mit Deduktionstheorem folgt $\vdash (\forall x\alpha) \rightarrow
-  (\exists x\alpha)$.
+  Mit Deduktionstheorem folgt $\vdash (\forall x ~ \alpha) \rightarrow (\exists x ~ \alpha)$.
 \end{bsp}
 
-Weiter Regeln:
+Weitere Regeln (ohne Korrektheits-Beweise): 
 \begin{description}
  \item[Negation:] $\neg\neg\alpha\vdash\alpha$ und
   $\alpha\vdash\neg\neg\alpha$
@@ -2927,33 +2911,33 @@ Weiter Regeln:
 
  \item[Widerspruchsbeweis:] Sei $\Gamma,\neg\alpha \vdash
   \beta\wedge\neg\beta$ beweisbar ohne Verwendung der Generalisierung auf
-  eine freie Variable in $\alpha$, dann gilt $\Gamma\vdash\alpha$.
+  eine freie Variable in $\alpha$. Dann gilt $\Gamma\vdash\alpha$.
 \end{description}
 
 \begin{bsp}
-  Wir zeigen $\vdash (\forall x \alpha\leftrightarrow\beta) \rightarrow (
-  (\forall x\alpha) \leftrightarrow (\forall x\beta))$
+  Wir zeigen $\vdash (\forall x~ \alpha\leftrightarrow\beta) \rightarrow (
+  (\forall x~\alpha) \leftrightarrow (\forall x~\beta))$
 
   \begin{align*}
-    (1)\quad &(\forall x \alpha\leftrightarrow\beta) &\text{Hypothese}\\
-    (2)\quad &(\forall x \alpha) &\text{Hypothese}\\
+    (1)\quad &(\forall x~ \alpha\leftrightarrow \beta) &\text{Hypothese}\\
+    (2)\quad &(\forall x~ \alpha) &\text{Hypothese}\\
     (3)\quad & \alpha\leftrightarrow\beta &\text{Regel RA4,1}\\
     (1)\quad & \alpha &\text{Regel RA4, 2}\\
     (1)\quad & \beta &\text{3,4, Äquivalenzregel}\\
-    (1)\quad &\forall x\beta&\text{Generalisierung 5}
+    (1)\quad &\forall x~\beta&\text{Gen 5}
   \end{align*}
-  Mit Deduktionstheorem: $(\forall x \alpha\leftrightarrow\beta) \vdash
-  ((\forall x\alpha) \rightarrow (\forall x\beta))$
+  Mit Deduktionstheorem: $(\forall x~ \alpha\leftrightarrow\beta) \vdash
+  ((\forall x~ \alpha) \rightarrow (\forall x~ \beta))$
 
-  Analog: $(\forall x \alpha\leftrightarrow\beta) \vdash ((\forall
-  x\beta) \rightarrow (\forall x \alpha))$. Mit Äquivalenzregel  folgt
-  $(\forall x \alpha\leftrightarrow\beta) \vdash (\forall x\alpha)
-  \leftrightarrow (\forall x\beta)$. Mit Deduktionstheorem:
-  $\vdash(\forall x \alpha\leftrightarrow\beta) \rightarrow ((\forall
-  x\alpha) \leftrightarrow (\forall x\beta))$
+  Analog: $(\forall x~ \alpha\leftrightarrow\beta) \vdash ((\forall
+  x~ \beta) \rightarrow (\forall x~ \alpha))$. Mit Äquivalenzregel  folgt
+  $(\forall x~ \alpha\leftrightarrow\beta) \vdash (\forall x~ \alpha)
+  \leftrightarrow (\forall x~\beta)$. Mit Deduktionstheorem:
+  $\vdash(\forall x~ \alpha\leftrightarrow\beta) \rightarrow ((\forall
+  x~ \alpha) \leftrightarrow (\forall x~ \beta))$
 \end{bsp}
 
-\begin{satz}[Ersetzbarkeitstheorem]
+\begin{satz}[Ersetzbarkeitstheorem]\label{Ersetzbarkeitstheorem}
   Sei $\beta$ eine Teilformel von $\alpha$ und $\alpha'$ eine Formel, die
   aus $\alpha$ entsteht, indem beliebig viele Variablen von $\beta$ durch
   $\gamma$ ersetzt werden. Dabei enthält $y_{1},y_{2},\ldots,y_{k}$ alle
@@ -2962,8 +2946,8 @@ Weiter Regeln:
 
   Dann gilt:
   \begin{enumerate}
-    \item $(\forall y_{1} \ldots (\forall y_{k}
-    \beta\leftrightarrow\gamma)) \rightarrow
+    \item $(\forall y_{1} \ldots (\forall y_{k}~
+    \beta\leftrightarrow\gamma)\ldots) \rightarrow
     (\alpha\leftrightarrow\alpha')$
 
    \item Aus $\vdash\beta\leftrightarrow\beta$ folgt $\vdash\alpha
@@ -2974,43 +2958,107 @@ Weiter Regeln:
   \end{enumerate}
 \end{satz}
 
+
 \subsection{Regel~C (choice)}
 
-Die Idee ist, dass man den folgenden umgangssprachlichen Beweise
-betrachtet: Sei $p$ eine rationale Zahl. Dann gilt:
-$\exists\alpha,\beta\colon p=\frac{a}{b}$. Wähle $a,b$ mit $p=\frac{a}{b}$.
+Betrachte zuerst folgenden umgangssprachlichen Beweis f\"ur
+die Aussage
 
+\centering{Das Quadrat einer geraden Zahl ist ebenfalls gerade.}
+
+Beweis:\begin{tabular}[t]{l}
+         Sei $m$ eine gerade Zahl. \\
+         D.\,h.\,$\exists x\in\N:~ m=2\cdot x$.\\
+         Sei $c$ diese Zahl. \\
+         Also gilt $m^2 = 4 \cdot c^2 = 2 \cdot ( 2\cdot c^2)$. \\
+         Folglich gilt $\exists x\in\N:~ m^2 = 2\cdot x$.\\
+         D.\,h.\,$m^2$ ist gerade.
+       \end{tabular}
+
+Im Beweis wird f\"ur die durch den Existenzquantor gebundene Variable $x$
+zun\"achst die nat\"urliche Zahl $c$ eingesetzt.
+Dann wird mit $n$ herumgerechnet. Und schlielich
+wird der Term $2\cdot c^2$ wieder generalisiert.
+
+Dieses Vorgehen soll auch in formalen Beweisen benutzen werden k\"onnen.
+Es wird {Regel $C$} genannt.
+
+Regel C: $(\exists x ~ \alpha) \vdash \alpha[x/c]$ f\"ur ein neues Konstantensymbol $c$.
+
+Im folgenden Beispiel wird eine korrekte Benutzung der Regel C vorgestellt.
+Man muss jedoch ein paar Einschr\"ankungen beachten, die im Anschluss
+diskutiert werden
+\autoref{satz-regel-c} gibt dann die korrekte Benutzung von Regel C an.
 \begin{bsp}
-  \begin{gather*}
-    \big( (\exists x A(x)) \wedge (\exists x B(x)) \big) \rightarrow
-       (\exists A(x) \rightarrow B(x))
-  \end{gather*}
-
+Wir beweisen $\vdash
+    \big( (\exists x~ A(x)) \wedge (\exists x~ B(x)) \big) \rightarrow
+       (\exists~ A(x) \rightarrow B(x))$.
   \begin{align*}
-    (1)\quad & (\exists x A(x)) \wedge(\exists x B(x)) &\text{Hypothese}\\
-    (1)\quad &(\exists x B(x) &\text{1. Konj.Regel}\\
-    (1)\quad & B(c) &\text{2. Regel C}\\
-    (1)\quad & B(c) \rightarrow (A(c) \rightarrow B(c)) &\text{A1}\\
-    (1)\quad & A(c) \rightarrow B(c) &\text{MP 3,4}\\
-    (1)\quad & (\exists x A(x)\rightarrow B(x)) &\text{Regel RE4}
+    (1)\quad & (\exists x~ A(x)) \wedge(\exists x~ B(x)) &\text{Hypothese}\\
+    (2)\quad &(\exists x~ B(x)) &\text{Konj.Regel, 1}\\
+    (3)\quad & B(c) &\text{Regel C, 2}\\
+    (4)\quad & B(c) \rightarrow (A(c) \rightarrow B(c)) &\text{A1}\\
+    (5)\quad & A(c) \rightarrow B(c) &\text{MP 3,4}\\
+    (6)\quad & (\exists x~ A(x)\rightarrow B(x)) &\text{Regel RE4, 5}
   \end{align*}
-  Mit Deduktion folgt das Theorem.
+  Mit dem Deduktionstheorem folgt das Theorem.
 \end{bsp}
 
-Regel~C sieht so aus: $(\exists x \alpha) \vdash \alpha[x/c]$
+Die Verwendung der Regel C unterliegt den folgenden Einschr\"ankungen.
 
-Beachte:
 \begin{enumerate}
- \item es muss ein neues Konstantensymbol eingeführt werden
- \item Die Generalisierung dar nicht angewendet werden auf eine Variable,
+ \item Bei jeder Verwendung muss ein neues Konstantensymbol $c$ eingef\"uhrt werden,
+       das bisher im Beweis nicht vorkam.
+
+{\footnotesize Wird kein neues Konstantensymbol eingef\"uhrt, k\"onnen nicht-g\"ultige Formeln
+        bewiesen werden. 
+
+$
+\begin{array}{cll}
+(1) & \exists x_1 ~ A^2_1(x_1, a_1) & \text{Hypothese} \\
+(2) & A^2_1(a_1, a_1) & 
+           \text{falsche Anwendung von Regel C: $a_1$ ist kein neues Konst.symbol} \\
+(3) & \exists x_1 ~ A^2_1(x_1, x_1) &\text{Regel RE4}
+\end{array}
+$
+
+Mit Deduktionstheorem k\"onnte
+    $(\exists x_1 ~ A^2_1(x_1, a_1)) \rightarrow (\exists x_1 ~ A^2_1(x_1, x_1))$
+bewiesen werden, was offensichtlich nicht g\"ultig ist.}
+
+ \item Die Generalisierung darf nicht angewendet werden auf eine Variable,
   die frei in einer Formel vorkommt, die durch Regel~C entstanden ist.
- \item In der bewiesenen Formel kommt kein Konstantensymbol vor. das
+
+{\footnotesize Bei Nichtbeachtung dieser Einschr\"ankung k\"onnen
+  nicht-g\"ultige Formeln bewiesen werden.
+
+$
+\begin{array}{cll}
+(1) & (\forall x_1 ~ (\exists x_2 ~ A^2_1(x_1, x_2))) & \text{Hypothese} \\
+(2) & (\exists x_2 ~ A^2_1(x_1, x_2)) & \text{RA4, 1} \\
+(3) & A^2_1(x_1,a_1) & \text{Regel C (korrekte Anwendung), 2} \\
+(4) & (\forall x_1 ~ A^2_1(x_1,a_1)) & 
+  \text{Gen, 3 (Anwendung auf freie Var. aus 3, die durch Regel C entstanden ist)} \\
+(5) & (\exists x_2 ~ (\forall x_1 ~ A^2_1(x_1,a_1))) & \text{RE4, 4}
+\end{array}
+$
+
+Mit Deduktionstheorem k\"onnte
+$\vdash (\forall x_1 ~ (\exists x_2 ~ A^2_1(x_1, x_2))) \rightarrow 
+(\exists x_2 ~ (\forall x_1 ~ A^2_1(x_1,a_1)))$ bewiesen werden,
+was offensichtlich nicht g\"ultig ist.
+}
+ \item In der bewiesenen Formel kommt kein Konstantensymbol vor, das
   durch Regel~C eingeführt wurde.
+
+{\footnotesize Sonst k\"onnte $(\exists x_1 A^1_1(x_1)) \rightarrow A^1_1(a_1)$
+bewiesen werden, was offensichtlich nicht g\"ultig ist.
+}
 \end{enumerate}
 
 % 2006-06-07
 
-\begin{satz}
+\begin{satz}[Regel C]\label{satz-regel-c}
   Sei $\alpha$ eine Formel und $\Gamma$ eine Menge von Hypothesen. Falls
   $\alpha$ aus $\Gamma$ beweisbar ist mit Benutzung der Regel~C unter
   Berücksichtigung der drei Einschränkungen, dann ist $\alpha$ auch ohne
@@ -3020,7 +3068,7 @@ Beachte:
 \section{Vollständigkeit des Prädikatenkalküls
   1.\texorpdfstring{\,}{~}Ordnung}
 
-Wir wollen zeigen, dass für jedes Prädikatenkaltkül 1.\,Ordnung gilt: aus
+Wir wollen zeigen, dass für jeden Prädikatenkaltkül 1.\,Ordnung gilt: aus
 $\models \alpha$ folgt $\vdash\alpha$.
 
 Vorüberlegung: es gibt (nur) abzählbar viele Formeln.
@@ -3041,16 +3089,17 @@ Vorüberlegung: es gibt (nur) abzählbar viele Formeln.
 
   Die Menge $\N\times\N$ ist abzählbar.
   \begin{gather*}
-    f(a,b) = \big(\sum_{d=0}^{a+b} d\big)+b = bp(a,b)
+    bp(a,b) = \Big(\sum_{d=0}^{a+b} d\Big)+b 
   \end{gather*}
 
-  Die Menge der reellen Zahlen $\R$ und $\mathfrak{P}(\N)$ ist nicht
+  Die Menge der reellen Zahlen $\R$ und 
+  und die Potenzmenge der nat\"urlichen Zahlen $\mathfrak{P}(\N)$ sind nicht
   abzählbar.
 \end{bsp}
 
 \begin{lemma}
   Wenn $f\colon A\rightarrow\N$ injektiv ist, dann ist $A$ \emph{abzählbar
-  endlich}.
+  unendlich}.
 
   Wenn $A\subseteq B$ und $B$ ist abzählbar, dann ist $A$ abzählbar.
 \end{lemma}
@@ -3072,11 +3121,12 @@ Vorüberlegung: es gibt (nur) abzählbar viele Formeln.
      \item[] $(, ), \forall, \neg, \rightarrow, ,$ (Komma)
     \end{description}
 
-    Kodierung der Symbole: $g\colon \mathrm{Menge aller
-    Symbole}\rightarrow\N$
+    Kodierung der Symbole: $g\colon \text{Menge aller
+    Symbole}\rightarrow\N$:
+
     \begin{tabular}{r*{10}{|c}}
       $u$ & $($ & $)$ & $,$ & $\neg$ & $\rightarrow$ & $\forall$ & $x_{i}$,
-         & $a_{i}$ & $f_{i}^{j}$ & $A_{i}^{j}$\\
+         & $a_{i}$ & $f_{i}^{j}$ & $A_{i}^{j}$\\ \hline
       $g(u)$ & 1 & 2 & 3 & 4 & 5 & 6 & $3+4i$ & $4+4i$ & $9+4 bp(j-1,i-1)$
          & $10+ 4bp(j-1,i-1)$
     \end{tabular}
@@ -3084,14 +3134,20 @@ Vorüberlegung: es gibt (nur) abzählbar viele Formeln.
 
     \begin{tabular}{c*{9}{|c}}
       $u$ & $x_{1}$ & $a_{1}$ & $f_{1}^{1}$ & $A_{1}^{1}$ & $x_{2}$ &
-         $a_{2}$ & $f_{1}^{2}$ & $A_{1}^{2}$ & \ldots\\
+         $a_{2}$ & $f_{1}^{2}$ & $A_{1}^{2}$ & \ldots\\ \hline
       $g(u)$ & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & \ldots
     \end{tabular}
 
-    Formal $\alpha=u_{1}u_{2}\ldots u_{k}$ wird kodiert durch $g^{\ast}\colon
-    \mathrm{Menge aller Formeln}\rightarrow\N$ mit $g^{\ast}(u_{1}\ldots
+    Formel $\alpha=u_{1}u_{2}\cdots u_{k}$ wird kodiert durch die Funktion
+    
+    \centering{$g^{\ast}:\text{Menge aller Formeln}\rightarrow\N$}
+     mit $g^{\ast}(u_{1}\ldots
     u_{k}) = 2^{g(u_{1})}\cdot 3^{g(u_{2})}\cdot 5^{g(u_{3})}\cdot \ldots
     p_{k}^{g(u_{k})}$, wobei $p_{k}$ die $k$-te Primzahl ist.
+
+   $g^{\ast}$ ist offensichtlich eine injektive Funktion mit Wertebereich $\N$.
+   Also ist der Definitionsbereich von $g^{\ast}$ -- das ist die Menge
+   aller Formeln -- abz\"ahlbar.
 
     Bsp.:
     \begin{gather*}
@@ -3129,10 +3185,11 @@ jeder beliebige Theorie 1.\,Ordnung.
 \end{defini}
 
 \begin{lemma}
-  Jedes Prädikatenkalkül 1.\,Ordnung ist konsistent.
+  Jeder Prädikatenkalkül 1.\,Ordnung ist konsistent.
 
   \begin{proof}
-    Aus $\vdash_{K}\alpha$ folgt $\models\alpha$. Da höchstens eine der
+    Aus $\vdash_{K}\alpha$ folgt $\models\alpha$ 
+    (\autoref{satz-korrektheit-theorien-1.ordnung}). Da höchstens eine der
     Formeln $\alpha$ und $\neg\alpha$ gültig ist, muss $K$ konsistent sein.
   \end{proof}
 \end{lemma}
@@ -3426,7 +3483,7 @@ folgende Bedeutung hat.
 Welche der folgenden Formeln sind gültig?
 \begin{enumerate}
  \item $\neg (\exists x ~(\forall y ~ A^2_1(x,y) \leftrightarrow \neg
-  A^2_1(x,x)~)~)$
+  A^2_1(x,x) ) )$
 
   Der Teil $A^{2}_{1}(x,y) \leftrightarrow \neg A_{1}^{2}(x,x)$ soll für
   alle $y$ gelten, also auch für $y=x$. Dann ist die Äquivalenzrelation
