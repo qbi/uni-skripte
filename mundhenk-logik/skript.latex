@@ -1,6 +1,9 @@
 % ToDo:
 %  * faelle schachtelbar machen
-%  * Eine Umgebung für die Beweise? IA, IV IS
+%  * überlegen, ob description global entfettet werden soll.
+%    % In der Doku zu paralist auf Seite 3 steht die Originaldefinition. Diese
+%    % hier entfettet die Punkte einer description
+%    \renewcommand{\descriptionlabel}[1]{\hspace\labelsep\normalfont #1}
 
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
@@ -721,9 +724,9 @@ mit den Verknüpfungszeichen $\neg, \wedge$ und $\vee$ darstellen.
 \end{satz}
 
 \begin{bsp}
-  $A\vee B$ kann unter Nutzung von Doppelnegation ($\neg\neg A =A$) und
+  $A\vee B$ kann unter Nutzung der Doppelnegation ($\neg\neg A =A$) und
   der de Morgan'schen Regel ($\neg(A\wedge B) \equiv \neg A\vee \neg B$)
-  umformen:
+  umgeformt werden:
   \begin{gather*}
     A\vee B \equiv \neg\neg A \vee \neg\neg B \equiv \neg(\neg
        A\wedge\neg B)
@@ -773,45 +776,51 @@ erhalten, in $\mathcal{B}$ den Wert $w$ bekommen.
 Dann gilt $\mathcal{A}(\alpha)\leq \mathcal{B}(\alpha)$
 für jede monotone Formel $\alpha$.
 
-Mit dem einzelnen Verknüpfungszeichen \emph{NOR} $\downarrow$ lässt sich jede
-aussagenlogische Formel äquivalent darstellen:
-\begin{center}
+\begin{table}
+  \hfill
   \begin{tabular}{cc|c}
-      $A$ & $B$ & $A\downarrow B$\\
-      \hline
-      $f$ & $f$ & $w$\\
-      $f$ & $w$ & $f$\\
-      $w$ & $f$ & $f$\\
-      $w$ & $w$ & $f$
+    $A$ & $B$ & $A\downarrow B$\\
+    \hline
+    $f$ & $f$ & $w$\\
+    $f$ & $w$ & $f$\\
+    $w$ & $f$ & $f$\\
+    $w$ & $w$ & $f$\\
+    \multicolumn{3}{c}{$A \uparrow B\equiv\neg(A\wedge B)$}
   \end{tabular}
-  $A \downarrow B\equiv \neg(A\vee B)$
-\end{center}
-
-Also sind ist $\neg A\equiv A\downarrow A$ und
-\begin{align*}
-  A\wedge B &\equiv \neg\neg(A\wedge B)\\
-  &\equiv \neg(\neg A\vee \neg B)\\
-  &\equiv \neg( (A\downarrow A) \vee (B\downarrow B))\\
-  &\equiv (A\downarrow A) \wedge (B\downarrow B)
-\end{align*}
-
-Das gleiche gilt für \emph{NAND} $\uparrow$
-\begin{center}
+  \hfill
   \begin{tabular}{cc|c}
     $A$ & $B$ & $A\uparrow B$\\
     \hline
     $f$ & $f$ & $w$\\
     $f$ & $w$ & $w$\\
     $w$ & $f$ & $w$\\
-    $w$ & $w$ & $f$
+    $w$ & $w$ & $f$\\
+    \multicolumn{3}{c}{$A \downarrow B\equiv\neg(A\vee B)$}
   \end{tabular}
-  $A \uparrow B\equiv \neg(A\wedge B)$
-\end{center}
+  \hfill\mbox{}\\
+  \centering
+  \caption{Wahrheitswerttabelle für \emph[rand=]{NOR} (links) und
+    \emph[rand=]{NAND} (rechts)}
+\end{table}
+
+Mit dem einzelnen Verknüpfungszeichen \emph{NOR} $\downarrow$ lässt sich jede
+aussagenlogische Formel äquivalent darstellen.
+
+So ist z.\,B. $\neg A\equiv A\downarrow A$ und
+\begin{align*}
+  A\wedge B &\equiv \neg\neg(A\wedge B)\\
+  &\equiv \neg(\neg A\vee \neg B)\\
+  &\equiv \neg( (A\downarrow A) \vee (B\downarrow B))\\
+  &\equiv (A\downarrow A) \downarrow (B\downarrow B)
+\end{align*}
+
+Das gleiche gilt für \emph{NAND} $\uparrow$.
 
 \section{Ein Axiomensystem für die Aussagenlogik}
 
 \subsection{Vorbemerkung}
 
+Betrachten wir einen einfachen mathematischen Beweis:
 \begin{mdescription}
  \item[Behauptung:] Sei $n$ eine natürliche Zahl. Wenn $n$
   ungerade ist, dann ist $n^{2}$ ungerade.
@@ -823,8 +832,8 @@ Das gleiche gilt für \emph{NAND} $\uparrow$
   Primfaktor 2. Also ist $n^{2}$ nicht gerade.
 \end{mdescription}
 
-Verallgemeinerte Struktur eines Mathematischen Beweises:
-\begin{description}
+Verallgemeinerte Struktur eines mathematischen Beweises:
+\begin{mdescription}
  \item[Hypothese:] $n$ ist eine ungerade Zahl\hfill $A$
  \item[Anw. Definition:] $n$ ist ungerade $\rightarrow$ $n$ hat nicht
   Primfaktor 2\hfill $A\rightarrow B$
@@ -832,13 +841,15 @@ Verallgemeinerte Struktur eines Mathematischen Beweises:
   hat nicht Primfaktor 2\hfill $B\rightarrow C$
  \item[Folgerung:] (Anwendung der Definitionen) $n^{2}$ ist nicht
   gerade\hfill C
-\end{description}
+\end{mdescription}
 Der Beweis ist $A\rightarrow C$.
 
 Die Hypothese $A$ wird als wahr angenommen. Damit muss $B$ auch wahr
-sein, da die Anwendung der Definition $A\rightarrow B$ wahr ist. Analog
-erhält man für $B\rightarrow C$, dass $C$ wahr ist. Unter der Bedingung,
-dass $A$ wahr ist, wird also $C$ wahr: $A\rightarrow C$
+sein, da die Anwendung der Definition $A\rightarrow B$ wahr ist. Im
+Beweisschritt zeigt man, dass die Aussage $B\rightarrow C$ wahr ist. Also
+folgt nach der Schlusskette $A\wedge (A\rightarrow B)\wedge (B\rightarrow
+C)$, dass $C$ wahr ist. Unter der Bedingung, dass $A$ wahr ist, wird also
+$C$ wahr: $A\rightarrow C$.
 
 \subsection{Anfang}
 
@@ -2706,9 +2717,10 @@ Ohne zus\"atzliche Axiome k\"onnen ausschlie\3lich g\"ultige Formeln bewiesen we
 
 \begin{satz}\label{satz-korrektheit-theorien-1.ordnung}
   Für jeden Prädikatenkalkül 1.\,Ordnung $K$ und jede Formel $\alpha$
-  gilt: 
-
-\centering{Wenn $\vdash_{K} \alpha$, dann ist $\alpha$ gültig.}
+  gilt:
+  \begin{center}
+    Wenn $\vdash_{K} \alpha$, dann ist $\alpha$ gültig.
+  \end{center}
 \end{satz}
 
 \begin{proof}
@@ -2963,8 +2975,9 @@ Weitere Regeln (ohne Korrektheits-Beweise):
 
 Betrachte zuerst folgenden umgangssprachlichen Beweis f\"ur
 die Aussage
-
-\centering{Das Quadrat einer geraden Zahl ist ebenfalls gerade.}
+\begin{center}
+  Das Quadrat einer geraden Zahl ist ebenfalls gerade.
+\end{center}
 
 Beweis:\begin{tabular}[t]{l}
          Sei $m$ eine gerade Zahl. \\
@@ -3139,9 +3152,10 @@ Vorüberlegung: es gibt (nur) abzählbar viele Formeln.
     \end{tabular}
 
     Formel $\alpha=u_{1}u_{2}\cdots u_{k}$ wird kodiert durch die Funktion
-    
-    \centering{$g^{\ast}:\text{Menge aller Formeln}\rightarrow\N$}
-     mit $g^{\ast}(u_{1}\ldots
+    \begin{gather*}
+      g^{\ast}:\text{Menge aller Formeln}\rightarrow\N
+    \end{gather*}
+    mit $g^{\ast}(u_{1}\ldots
     u_{k}) = 2^{g(u_{1})}\cdot 3^{g(u_{2})}\cdot 5^{g(u_{3})}\cdot \ldots
     p_{k}^{g(u_{k})}$, wobei $p_{k}$ die $k$-te Primzahl ist.
 
