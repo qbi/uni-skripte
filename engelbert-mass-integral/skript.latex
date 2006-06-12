@@ -10,167 +10,200 @@
 %  * viele Formeln sind einzeilig $\rightarrow$ gather*
 %  * \mathcal{m} gibt es nicht. Das wird aber ab Zeile 1600 extensiv verwendet.
 
-\documentclass[draft,twoside]{scrreprt}
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
 
+\documentclass[halfparskip*,germandraft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
 \usepackage{ifthen}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
 
-% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
-% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
-% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
-% eine Druckversion ist das wichtig! Daher dieser Hack.
-% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
-% ohne die Option "`hyperref"' geladen.
-%
-% pdflatex '\def\ifwithHyperref{\iffalse}\input{skript.latex}'
-\ifthenelse{\isundefined{\ifwithHyperref}}%
-           {\newboolean{withHyperref}
-             \setboolean{withHyperref}{true} % true, false
-           }{}
-
-\ifthenelse{\boolean{withHyperref}}{}%
-           {\newcommand{\texorpdfstring}[2]{#1}%
-            \newcommand{\pdfbookmark}[3][]{}%
-           }
-
-\usepackage{makeidx}
-\ifthenelse{\boolean{withHyperref}}%
-           {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
-           {}
 \usepackage[latin1]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{nicefrac}
-\usepackage{ae}
-
-\usepackage[intlimits,leqno]{amsmath}
-\usepackage{fixmath}
-\usepackage{amscd}
-\usepackage{amssymb}
-\usepackage{helvet}
-\usepackage{xspace}
-
-% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
-\ifthenelse{\boolean{withHyperref}}%
-           {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
-           {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
-
-\usepackage{paralist}
 \usepackage{ngerman}
 
-% Zur Korrektur von \thref
-% <news:col095$me8$2@n.ruf.uni-freiburg.de>
+\usepackage{lmodern}		% Latin Modern
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+% \usepackage{amscd}
+\usepackage{amssymb}
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
+\usepackage{xspace}
+\usepackage{paralist}
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
 \makeatletter
-\ifthenelse{\boolean{withHyperref}}%
-{\def\thref#1{%
-   \expandafter\ifx\csname r@#1@type\endcsname\None
-     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
-       \thepage \space undefined}\G@refundefinedtrue
-     \else\csname r@#1@type\endcsname~\fi%
-   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
-}}{}
-
-% Korrektur der Platzierung der Gleichungsnummer
-% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
-\def\SetOnlyEndMark{%
-   \global\tag@true
-   \iftagsleft@
-     \gdef\df@tag{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
-   \else
-     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
-   \fi}
-\def\SetTagPlusEndMark{%
-   \iftagsleft@
-     \gdef\maketag@@@##1{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{%
-           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
-       }%
-     }%
-   \else
-     \gdef\maketag@@@##1{%
-       \hbox{\m@th\normalfont##1%
-         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
-   \fi}
-
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
+% Anpassung, damit ntheorem in der Satzübersicht genügend Platz für die
+% Satznummer und den Namen lässt; einfach aus ntheorem.sty kopiert und
+% den dritten Parameter von \@dottedtocline vergrößert
+\def\thm@@thmline@name#1#2#3#4#5{%
+     \ifx\\#5\\%
+         \@dottedtocline{-2}{0em}{3.5em}%
+             {#1 \protect\numberline{#2}#3}%
+             {#4}
+     \else
+         \ifHy@linktocpage\relax\relax
+             \@dottedtocline{-2}{0em}{4.5em}%
+                 {#1 \protect\numberline{#2}#3}%
+                 {\hyper@linkstart{link}{#5}{#4}\hyper@linkend}%
+         \else
+             \@dottedtocline{-2}{0em}{4.5em}%
+                 {\hyper@linkstart{link}{#5}%
+                   {#1 \protect\numberline{#2}#3}\hyper@linkend}%
+                 {#4}%
+         \fi
+     \fi}
 \makeatother
 
 \theoremstyle{break}
 \theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
 \newtheorem{satz}{Satz}[subsection]
 \newtheorem{bemerk}{Bemerkung}[subsection]
 \newtheorem{defini}{Definition}[subsection]
 \newtheorem{bsp}{Beispiel}[subsection]
 \newtheorem{folgerung}{Folgerung}[subsection]
 \newtheorem{lemma}{Lemma}[subsection]
-\newtheorem{fakt}{Fakt}[subsection]
-\newtheorem{notation}{Notation}[subsection]
 
 \theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+\newtheorem{notation}{Notation}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
 \theoremsymbol{\ensuremath{_\blacksquare}}
 % \theoremsymbol{q.\,e.\,d.}
-\newtheorem{proof}{\textnormal{\scshape Beweis:}}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
 \setdefaultenum{(1)}{(a)}{i.}{A.}
 \pagestyle{headings}
 
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\Z}{\mathbb{Z}}
+\newcommand*{\R}{\mathbb{R}}
+\newcommand*{\N}{\mathbb{N}}
+\newcommand*{\Q}{\mathbb{Q}}
+\newcommand*{\Z}{\mathbb{Z}}
 % \newcommand{\help}[1]{\textcolor{green}{help: #1}}
-\newcommand{\todo}[1]{\textcolor{blue}{todo: #1}}
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
 
-\newcommand{\abs}[2][]{#1\lvert#2#1\rvert}
-\newcommand{\norm}[2][]{#1\lVert#2#1\rVert}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
 
-% Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
-% und in den Index aufgenommen werden.
-\newcommand{\highl}[2][]{\textbf{#2}%
-  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
-}
-
-% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
-\newcommand*{\taglabel}[1]{%
-  \refstepcounter{equation}\tag{\theequation}\label{#1}%
-}
-
-\newcommand{\fue}{\ifthenelse{\boolean{mmode}}%
+\newcommand*{\fue}{\ifthenelse{\boolean{mmode}}%
                              {\text{f.\,ü.}}{f.\,ü.\xspace}}
-\newcommand{\obda}{o.\,B.\,d.\,A.\xspace}
-\newcommand{\sprod}[1]{\langle #1 \rangle}
-\newcommand{\Dh}{d.\,h.\xspace}
 
-\renewcommand{\epsilon}{\varepsilon}
-\renewcommand{\phi}{\varphi}
-\renewcommand{\tilde}{\widetilde}
+\renewcommand*{\epsilon}{\varepsilon}
+\renewcommand*{\phi}{\varphi}
+\renewcommand*{\tilde}{\widetilde}
 
 % In der Doku zu paralist auf Seite 3 steht die Originaldefinition. Diese
 % hier entfettet die Punkte einer description
 \renewcommand{\descriptionlabel}[1]{\hspace\labelsep\normalfont #1}
 
-\setlength{\parindent}{0ex}
-\addtolength{\parskip}{2ex}
-
 \DeclareMathOperator{\card}{card}
 
-\makeindex
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
 
 \begin{document}
 
-\clearpage
-
-\title{Maß und Integral\thanks{$LastChangedRevision$ vom $LastChangedDate$}}
+\title{Maß und Integral}
 \author{Engelbert}
-\date{SS 2003/04}
+\date{SS 2004}
 \maketitle
 
+\clearpage
+\chapter*{Vorwort}
+
+% entspricht Vorlage: 88
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2003)
+  \end{itemize}
+\end{itshape}
+
+\clearpage
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
 \clearpage
 
 % 12.10.04
@@ -182,19 +215,19 @@
  \bibitem{Halmos} P. R. Halmos: Naive set theory, Springer
 \end{thebibliography}
 
-\chapter{Me"sbare Funktionen}
+\chapter{Meßbare Funktionen}
 
-Seien $(\Omega, F), (E, e)$ me"sbare R"aume
+Seien $(\Omega, F), (E, e)$ meßbare Räume
 
 \begin{defini}
-  Eine Abbildung $f:\Omega\rightarrow E$ hei"st \emph{messbare
-  Abbildung} von $(\Omega, F)$ in $(E, e)$, falls f"ur alle $B\in e$ das
+  Eine Abbildung $f:\Omega\rightarrow E$ heißt \emph{messbare
+  Abbildung} von $(\Omega, F)$ in $(E, e)$, falls für alle $B\in e$ das
   volle Urbild $f^{-1}(B)={\omega\in\Omega:f(\omega)\in B}\in F$
 
-  Notation: $f:(\Omega,F)\rightarrow(E,e)$ me"sbar
+  Notation: $f:(\Omega,F)\rightarrow(E,e)$ meßbar
 \end{defini}
 
-\section{Eigenschaften me"sbarer Funktionen}
+\section{Eigenschaften meßbarer Funktionen}
 \begin{enumerate}
  \item Die konstante Funktion $f(\omega) C\in E, \omega\in\Omega$
   ist stets messbar\\
@@ -207,34 +240,34 @@ Seien $(\Omega, F), (E, e)$ me"sbare R"aume
        \end{cases}
        \qquad \in F
   \end{gather*}
- \item Hintereinanderausf"uhrung me"sbarer Funktionen
+ \item Hintereinanderausführung meßbarer Funktionen
   $f\colon(\Omega,F)\rightarrow(E_{1}, e_{1})$ messbar,
   $g:(E_{1},e_{1})\rightarrow(E_{2},e_{2})$ messbar\\
-  $g\circ f$ Hintereinanderausf"uhrung
+  $g\circ f$ Hintereinanderausführung
   $\longrightarrow$ $g\circ f$ $(\Omega,F)$
   $\rightarrow$ ($E_{2}, e_{2}$) messbar\\
 
   Beweis: $B\in e_{2}$: ($g\circ f)^{-1}$(B)=$f^{-1}$($\underbrace{g^{-1}(B)}_{\in e_{1}})\in F$
- \item Einschr"ankung messbarer Funktionen
+ \item Einschränkung messbarer Funktionen
   f:($Omega,F$)$\rightarrow$(E,e) messbar,
   $\Omega_{0}\subseteq\Omega$, $f_{|\Omega_{0}}:= f(\omega)$,
-  $\omega\in\Omega_{0}$ (Einschr"ankung von f auf $\Omega_{0}$
+  $\omega\in\Omega_{0}$ (Einschränkung von f auf $\Omega_{0}$
   $\longrightarrow f_{|\Omega_{0}}:(\Omega_{0},F\cap\Omega_{0})\rightarrow
    (E,,e)$ messbar, ($\Omega_{0}, F\cap\Omega_{0})$ Spur von ($\Omega,F)$
   auf $\Omega_{0}$
-Beweis: B"sin e: $f^{-1}_{|\Omega_{0}}(B)=\underbrace{f^{-1}(B)}_{\in
+Beweis: Bßin e: $f^{-1}_{|\Omega_{0}}(B)=\underbrace{f^{-1}(B)}_{\in
   F}\cap\Omega_{0}\in F\cap\Omega_{0}$
- \item Kriterium f"ur Messbarkeit
+ \item Kriterium für Messbarkeit
   ($\Omega,F)$, (E,e), $\mathfrak{S} \subseteq e,
   \sigma(\mathfrak{S})=\mathfrak{e}$ ($\mathfrak{S}$
-  erzeugt $\mathfrak{e}$ bzw. $\mathfrak{S}$ ist ein Erzeugendensystem f"ur $\mathfrak{E}$)
+  erzeugt $\mathfrak{e}$ bzw. $\mathfrak{S}$ ist ein Erzeugendensystem für $\mathfrak{E}$)
   $f:\Omega\rightarrow E$
   $f:(\Omega,F)\rightarrow(E,\mathfrak{E})$ messbar
   $\Longleftrightarrow$ $f^{-1}(B)\in F, \forall B\in \mathfrak{S}$
   \begin{proof}
     \begin{enumerate}[I.]
      \item Notwendigkeit: klar
-     \item Hinl"anglichkeit: $\tilde{\mathfrak{e}}:= {B\in \mathfrak{E}: f^{-1}(B)\in
+     \item Hinlänglichkeit: $\tilde{\mathfrak{e}}:= {B\in \mathfrak{E}: f^{-1}(B)\in
       F}$ (``gute'' Mengen
       z.\,z.: $\tilde{\mathfrak{E}}=\mathfrak{E}$
       \begin{enumerate}[1)]
@@ -269,7 +302,7 @@ Beweis: B"sin e: $f^{-1}_{|\Omega_{0}}(B)=\underbrace{f^{-1}(B)}_{\in
   $f\colon(\Omega,F) \longrightarrow$(E,B(E)) messbar
   $\Leftrightarrow$ $f^{-1}(G) \in F, \forall G\subseteq E$ offen
   Anwendung von 4
- \item ($E_{1},\rho_{1}$), ($E_{2}, \rho_{2})$ metrische R"aume
+ \item ($E_{1},\rho_{1}$), ($E_{2}, \rho_{2})$ metrische Räume
   f:($E_{1},B(E_{1}))\rightarrow(E_{2},B(E_{2}))$ messbar
   $\Longleftarrow$ $f\colon E_{1}\rightarrow E_{2}$ stetig
   \begin{proof}
@@ -279,7 +312,7 @@ Beweis: B"sin e: $f^{-1}_{|\Omega_{0}}(B)=\underbrace{f^{-1}(B)}_{\in
   \end{proof}
 \end{enumerate}
 
-\chapter{Me"sbare erweitere reelle Funktionen}
+\chapter{Meßbare erweitere reelle Funktionen}
 $\hat{\R}:=\R\cup{-\infty,\infty}=[-\infty,\infty]$
 
 Rechenregeln:
@@ -313,11 +346,11 @@ Verboten:
 
 $\hat{\rho}(x,y)=|h(x)-h(y)|, x,y\in\hat{\R}$
 \begin{enumerate}[{Aussage}~1]
- \item ($\hat{\R}, \hat{\rho})$ metrischer Raum ("Ubungsaufgabe)
+ \item ($\hat{\R}, \hat{\rho})$ metrischer Raum (Übungsaufgabe)
  \item G$\subset\R$
   G offen bzgl. $\hat{\rho} \Leftrightarrow $ G offen bzgl.
-  $\rho(x,y)=|x-y|, x,y\in\R$ ("Ubungsaufgabe-- Anwendung n"achste
-  "Ubungsserie)
+  $\rho(x,y)=|x-y|, x,y\in\R$ (Übungsaufgabe-- Anwendung nächste
+  Übungsserie)
   \begin{bemerk}
     $\R$ offen in $\hat{\R}$ bgzl. $\hat{\rho}$
   \end{bemerk}
@@ -325,11 +358,11 @@ $\hat{\rho}(x,y)=|h(x)-h(y)|, x,y\in\hat{\R}$
 
 \begin{defini}
   \begin{enumerate}[(i)]
-   \item Eine Funktion $f:\Omega\rightarrow\hat{\R}$ hei"st
+   \item Eine Funktion $f:\Omega\rightarrow\hat{\R}$ heißt
     messbar erweitert reell, falls $f\colon (\Omega, F)
     \rightarrow (\hat{\R},B(\hat{\R})$ messbar ist
    \item $f$ messbar erweitert reell,
-    $f(\Omega)=\{f(\omega)\colon \omega\in\Omega\}\subseteq\R$ Dann hei"st
+    $f(\Omega)=\{f(\omega)\colon \omega\in\Omega\}\subseteq\R$ Dann heißt
     f messbar reell auf $(\Omega,F)$.
   \end{enumerate}
 \end{defini}
@@ -345,7 +378,7 @@ $\hat{\rho}(x,y)=|h(x)-h(y)|, x,y\in\hat{\R}$
   \end{enumerate}
   \begin{proof}
     \begin{enumerate}[(i)]
-     \item Anwendung von "U-Aufgabe~1.3 $\R$ offen in $\hat{\R}$ bzgl. $\hat{\rho}$
+     \item Anwendung von Ü-Aufgabe~1.3 $\R$ offen in $\hat{\R}$ bzgl. $\hat{\rho}$
      \item $\mathfrak{E} := \sigma\big(\{[-\infty,r]: r\in\Q\}\big)$
       \begin{enumerate}[1)]
        \item $\mathfrak{E} \subseteq$ B($\hat{\R}$), d [-$\infty$,r) offen in $\hat{\R}$
@@ -381,7 +414,7 @@ $\hat{\rho}(x,y)=|h(x)-h(y)|, x,y\in\hat{\R}$
 
 Kurzbezeichnung: $f$ messbar (auf $(\Omega, F)$)
 
-Eigenschaften messbarer Funktionen: $(\Omega, F)$ sei fest gew"ahlt
+Eigenschaften messbarer Funktionen: $(\Omega, F)$ sei fest gewählt
 \begin{enumerate}[E1]
  \item $f$ und $g$ messbar, $f(\omega)$ und $g(\omega)$ sind keine Unendlichkeiten
   verschiedenen Vorzeichens $\forall\omega\in\Omega$
@@ -428,7 +461,7 @@ Eigenschaften messbarer Funktionen: $(\Omega, F)$ sei fest gew"ahlt
     \begin{gather}
       f\cdot g=f^{+}\cdot g^{+}-f^{+}\cdot g^{+}+f^{-}\cdot g^{-}
     \end{gather}
-    g.\,z.\,z.: $f\cdot g$ f"ur $f,g\ge0$
+    g.\,z.\,z.: $f\cdot g$ für $f,g\ge0$
 
     $\{f\cdot g < r\}=\bigcap_{n=1}^{\infty}\{f\cdot g\le r-\frac{1}{n}\}$
     deshalb g.\,z.\,z.: $\{f\cdot g\le r\}\in F$,$\forall r\in\R$
@@ -498,7 +531,7 @@ Eigenschaften messbarer Funktionen: $(\Omega, F)$ sei fest gew"ahlt
        \end{cases}
        \quad\omega\in\Omega
   \end{gather*}
-  $1_{A}$ hei"st Indikatorfunktion (oder charakteristische Funktion) der
+  $1_{A}$ heißt Indikatorfunktion (oder charakteristische Funktion) der
   Menge $A$
 
   $1_{A}$ messbar $\Leftrightarrow A\in F$
@@ -510,7 +543,7 @@ $\omega\not=\emptyset$, $\mathcal{M}\subseteq\mathcal{P}(\Omega)$
 
 \begin{defini}
   \begin{enumerate}[(i)]
-   \item $\mathcal{M}$ hei"st monotone Klasse, falls
+   \item $\mathcal{M}$ heißt monotone Klasse, falls
     \begin{enumerate}[a)]
      \item $A_{n}\in\mathcal{M}, A_{n}\subseteq A_{n+1}, n\ge1\Rightarrow
       \bigcup_{n=1}^{\infty}A_{n}\in\mathcal{M}$
@@ -518,7 +551,7 @@ $\omega\not=\emptyset$, $\mathcal{M}\subseteq\mathcal{P}(\Omega)$
       \Rightarrow\bigcap_{n=1}^{\infty}A_{n}\in\mathcal{M}$
     \end{enumerate}
    \item $\mathfrak{S}\subseteq\mathcal{P}(\Omega)$ Dann bereichne
-    $\mathfrak{M}$ die kleinste monotone Klasse, die $\mathfrak{S}$ enth"alt:
+    $\mathfrak{M}$ die kleinste monotone Klasse, die $\mathfrak{S}$ enthält:
     $\mathfrak{M}(S)=\bigcap_{\substack{\mathfrak{M} \text{monotone Klasse}\\
     \mathfrak{S}\subseteq \mathfrak{M}}}\mathcal{M}$
   \end{enumerate}
@@ -534,7 +567,7 @@ $\omega\not=\emptyset$, $\mathcal{M}\subseteq\mathcal{P}(\Omega)$
   \begin{proof}
     \begin{enumerate}[I.]
      \item Notwendigkeit: klar
-     \item Hinl"anglichkeit: Es sei 1. und 2. erf"ullt
+     \item Hinlänglichkeit: Es sei 1. und 2. erfüllt
 
       z.\,z.: $\bigcup_{n=1}^{\infty}A_{n}\in F$, falls $A_{n}\in F,n\ge1$
 
@@ -550,7 +583,7 @@ $\omega\not=\emptyset$, $\mathcal{M}\subseteq\mathcal{P}(\Omega)$
   $m(\mathfrak{S})\subseteq \sigma(\mathfrak{S})$
 \end{bemerk}
 
-\begin{satz}[Satz "uber monotone Klassen]
+\begin{satz}[Satz über monotone Klassen]
   es sei $\mathcal{A}$ und $\mathcal{M}$ Mengensysteme von Teilmengen von
   $\Omega$ mit folgenden Eigenschaften:
   \begin{enumerate}
@@ -565,7 +598,7 @@ $\omega\not=\emptyset$, $\mathcal{M}\subseteq\mathcal{P}(\Omega)$
 \begin{satz}2'
   $\mathcal{A}\subseteq\mathcal{P}(\Omega)$ sei Algebra $\Rightarrow$ $\mathfrak{M}(\mathcal{A}) = \sigma(\mathcal{A})$
 
-  Aussagen von Satz 2 und Satz 2' sind "aquivalent:
+  Aussagen von Satz 2 und Satz 2' sind äquivalent:
   \begin{enumerate}[I.]
    \item satz 2' $\Rightarrow$ Satz 2: $\mathcal{A}$ Algebra, $\mathcal{M}$ monotone Klasse,
     $\mathcal{A}\subseteq \mathcal{M} \xrightarrow{Satz 2'} \sigma(\mathcal{A})=\mathfrak{M}(\mathcal{A})\subseteq
@@ -610,8 +643,8 @@ $\omega\not=\emptyset$, $\mathcal{M}\subseteq\mathcal{P}(\Omega)$
 
 % 28.4.
 
-$(\Omega, F)$ me"sbarer Raum
-$\mathfrak{M}$ hei"st Ma"s auf $(\Omega, F)$
+$(\Omega, F)$ meßbarer Raum
+$\mathfrak{M}$ heißt Maß auf $(\Omega, F)$
 \begin{itemize}
  \item $\mathfrak{M}(\emptyset)=0$
  \item $A_{n}\in F$ parweise disjunkt (für $n \geq 1$) $\Rightarrow
@@ -620,7 +653,7 @@ $\mathfrak{M}$ hei"st Ma"s auf $(\Omega, F)$
 
 \begin{enumerate}[E1]
  \item %E6
-  ($\sigma$-Subadditivit"at)
+  ($\sigma$-Subadditivität)
 
   $A_{n}\in F, n\geq 1, A=\bigcup_{n=1}^{\infty}A_{n} \Rightarrow
   \mathfrak{M}(A)\leq\sum_{n=1}^{\infty}\mathfrak{M}(A_{n})$
@@ -670,9 +703,9 @@ $\mathfrak{M}$ hei"st Ma"s auf $(\Omega, F)$
   \Rightarrow\lim_{n\rightarrow\infty}\mathfrak{M}(A_{n})=0$
 \end{enumerate}
 
-Beispiele von Ma"sen
+Beispiele von Maßen
 \begin{enumerate}[B1]
- \item (Dirac-Ma"s) $(\Omega,F)$ me"sbarer Raum, $\omega_{0}\in A$,
+ \item (Dirac-Maß) $(\Omega,F)$ meßbarer Raum, $\omega_{0}\in A$,
   \begin{gather*}
     \delta_{\omega_{0}}=
        \begin{cases}
@@ -682,40 +715,40 @@ Beispiele von Ma"sen
        \quad A\in F
   \end{gather*}
 
-  $\delta_{\omega_{0}}$ ist ein Ma"s (Dirac-Ma"s, $\delta$-Ma"s,
+  $\delta_{\omega_{0}}$ ist ein Maß (Dirac-Maß, $\delta$-Maß,
   Einheitsmasse in $\omega_{0}$)
- \item (Summe von Ma"sen) $(m_{n})_{n\geq1}$ Folge von Ma"sen auf $(\Omega,
-  F)$ $m(A):=\sum_{n=1}^{\infty}m_{n}(A), A\in F \Rightarrow$ $m$ Ma"s auf
+ \item (Summe von Maßen) $(m_{n})_{n\geq1}$ Folge von Maßen auf $(\Omega,
+  F)$ $m(A):=\sum_{n=1}^{\infty}m_{n}(A), A\in F \Rightarrow$ $m$ Maß auf
     $(\Omega, F)$
     \begin{proof}
       \begin{enumerate}[1.]
-       \item $\sigma$-Superadditivit"at von $m$: $m(A) \geq
+       \item $\sigma$-Superadditivität von $m$: $m(A) \geq
 	\sum_{k=1}^{\infty}(A_{k}), A_{k}\in F, k\geq1$, parw. disj.
        \item Vorraus.: $\sum_{k=1}^{\infty}m(A_{k})<+\infty$
       \end{enumerate}
       z.\,z.: $m(A)=\sum_{k=1}^{\infty}m(A_{k}), A_{k}\in F, k\geq1$, parw.
-      disj. (Anwendung des Umorndungssatzes f"ur absolut konvergente
+      disj. (Anwendung des Umorndungssatzes für absolut konvergente
       unendl. Reichen)
     \end{proof}
  \item (multiplikation mit Skalaren) m sei ein Maus auf $(\Omega, F)$,
     $\alpha\in[0,+\infty]$, $(\alpha m)(A) := \alpha m(A), A\in F
-    \Rightarrow$ $\alpha m$ ist Ma"s
- \item (Nullma"s) $m(A)=0, A\in F \Rightarrow$ $m$ Ma"s (Nullma"s)
- \item $(m_{n})$ Folge von Ma"sen $(\Omega, F)$, $(\alpha_{n})$ Folge aus
-    $[0,+\infty]$ $\Rightarrow$ $m=\sum_{n=1}^{\infty}\alpha_{n}m_{n}$ Ma"s
- \item $m_{1},\ldots,m_{n}$ Ma"se, $\alpha_{1},\ldots,\alpha_{n}\in[0,+\infty]$
-    $\Rightarrow$ $\alpha_{1}m_{1}+\ldots+\alpha_{n}m_{n}$ Ma"s
- \item (Diskrete Ma"se) $\omega_{1},\omega_{2},\ldots\in\Omega,
+    \Rightarrow$ $\alpha m$ ist Maß
+ \item (Nullmaß) $m(A)=0, A\in F \Rightarrow$ $m$ Maß (Nullmaß)
+ \item $(m_{n})$ Folge von Maßen $(\Omega, F)$, $(\alpha_{n})$ Folge aus
+    $[0,+\infty]$ $\Rightarrow$ $m=\sum_{n=1}^{\infty}\alpha_{n}m_{n}$ Maß
+ \item $m_{1},\ldots,m_{n}$ Maße, $\alpha_{1},\ldots,\alpha_{n}\in[0,+\infty]$
+    $\Rightarrow$ $\alpha_{1}m_{1}+\ldots+\alpha_{n}m_{n}$ Maß
+ \item (Diskrete Maße) $\omega_{1},\omega_{2},\ldots\in\Omega,
     \alpha_{1},\alpha_{2},\ldots\in[0,+\infty]$
 
-    $m=\sum_{n=1}^{\infty} \alpha_{n}\delta_{\omega_{n}}$ ist ein Ma"s
-    (hei"st diskretes Ma"s)
+    $m=\sum_{n=1}^{\infty} \alpha_{n}\delta_{\omega_{n}}$ ist ein Maß
+    (heißt diskretes Maß)
 
     Eigenschaft: $A\in F, A\cap\{\omega_{1},\omega_{2},\ldots\}=\emptyset
     \Rightarrow m(A)=0$
- \item $m_{n}$ Ma"s auf $(\Omega, F)$, $m_{n}(A) \leq m_{n+1}(A)$, $A\in F$,
+ \item $m_{n}$ Maß auf $(\Omega, F)$, $m_{n}(A) \leq m_{n+1}(A)$, $A\in F$,
     $n\geq1$, $m(A) := \lim_{n\rightarrow\infty} m_{n}(A), A\in F \Rightarrow
-    m$ Ma"s auf $(\Omega, F)$
+    m$ Maß auf $(\Omega, F)$
 
     \begin{proof}
       \begin{enumerate}[1.]
@@ -736,31 +769,31 @@ Beispiele von Ma"sen
 
     \begin{bemerk}
       Beweis von B2 kann durch Anwendung von B8 erfolgen.
-      $\mu_{n}=\sum_{k=1}^{n}m_{k}$ Ma"s, $\mu_{n}\leq\mu_{n+1},
+      $\mu_{n}=\sum_{k=1}^{n}m_{k}$ Maß, $\mu_{n}\leq\mu_{n+1},
       m=\lim_{n\rightarrow\infty}\mu_{n} mit m=\sum_{n=1}^{\infty}m_{n}$
     \end{bemerk}
- \item (Z"ahlma"s)
+ \item (Zählmaß)
     $\Omega=\N, F=2^{\N}$
 
-    $\lambda:=\sum_{n\in \N}\delta_{n}$ Ma"s, $\lambda$ hei"st
-    Z"ahlma"s: $\lambda(A)= \mathrm{Anzahl} (A),A\subseteq \N$
- \item Jedes Wahrscheinlickeitsma"s $P$ auf $(\Omega, F)$ ist ein Ma"s. Es
+    $\lambda:=\sum_{n\in \N}\delta_{n}$ Maß, $\lambda$ heißt
+    Zählmaß: $\lambda(A)= \mathrm{Anzahl} (A),A\subseteq \N$
+ \item Jedes Wahrscheinlickeitsmaß $P$ auf $(\Omega, F)$ ist ein Maß. Es
     gilt $P(\Omega)=1$
 \end{enumerate}
 % }$
-\section{Eindeutigkeitssatz f"ur ma"se}
-$(\Omega, F)$ me"sbarere Raum, $m_{1}, m_{2}$ Ma"se auf $(\Omega, F)$
+\section{Eindeutigkeitssatz für maße}
+$(\Omega, F)$ meßbarere Raum, $m_{1}, m_{2}$ Maße auf $(\Omega, F)$
 
 \underline{Problem:} $\mathfrak{S}\subseteq F$ Mengensystem, $m_{1}(A)=m_{2}, \forall A\in \mathfrak{S}
 \xrightarrow{?} m_{1}=m_{2}$ (auf $F$)
 
 \begin{defini}
-  Ein Ma"s $m$ auf $(\Omega, F)$ hei"st endlich, falls
+  Ein Maß $m$ auf $(\Omega, F)$ heißt endlich, falls
   $m(\Omega)<+\infty$ (und somit $m(A)<+\infty, \forall A\in F$) gilt.
 \end{defini}
 
 \begin{satz}
-  Es seien $m_{1}, m_{2}$ \emph{endliche} Ma"se auf $(\Omega, F),
+  Es seien $m_{1}, m_{2}$ \emph{endliche} Maße auf $(\Omega, F),
   \mathfrak{S}\subseteq 2^{\Omega}$ mit folgenden Eigenschaften:
   \begin{itemize}
    \item $\mathfrak{S}$ $\pi$-System
@@ -794,16 +827,16 @@ $(\Omega, F)$ me"sbarere Raum, $m_{1}, m_{2}$ Ma"se auf $(\Omega, F)$
 
 \begin{defini}
   \begin{enumerate}[(i)]
-   \item $\mathfrak{S}\subseteq 2^{\Omega}, m$ Ma"s auf $(\Omega, F)$, m hei"st
+   \item $\mathfrak{S}\subseteq 2^{\Omega}, m$ Maß auf $(\Omega, F)$, m heißt
     $\sigma$-endlich \emph{auf} $\mathfrak{S}$, falls $\exists \Omega_{n}\in \mathfrak{S}$ mit
     $\Omega_{n}\subseteq\Omega_{n+1}, n\geq1$ und
     $\Omega=\bigcup_{n=1}^{\infty}\Omega_{n}$, sowie $m(\Omega_{n})<+\infty$
-   \item $m$ hei"st $\sigma$-endl., falls $m$ $\sigma$-endl auf $F$ ist
+   \item $m$ heißt $\sigma$-endl., falls $m$ $\sigma$-endl auf $F$ ist
   \end{enumerate}
 \end{defini}
 
 \begin{satz}
-  Seien $m_{1},m_{2}$ Ma"se auf $(\Omega, F)$, $\mathfrak{S}\subseteq$ $2^{\Omega}$
+  Seien $m_{1},m_{2}$ Maße auf $(\Omega, F)$, $\mathfrak{S}\subseteq$ $2^{\Omega}$
   mit folgenden Vorraussetzungen:
   \begin{enumerate}[1)]
    \item $\mathfrak{S}$ $\pi$-System
@@ -824,10 +857,10 @@ $(\Omega, F)$ me"sbarere Raum, $m_{1}, m_{2}$ Ma"se auf $(\Omega, F)$
     \Omega^{(n)}\uparrow_{n\rightarrow\infty}\Omega,
     m_{1}(\Omega^{(n)})<+\infty, m_{2}(\Omega^{(n)})<+\infty$
 
-    $m_{1}^{(n)},m_{2}^{(n)}$ endliche Ma"se auf $(\Omega,F)$, $\mathfrak{S}' :=
+    $m_{1}^{(n)},m_{2}^{(n)}$ endliche Maße auf $(\Omega,F)$, $\mathfrak{S}' :=
     \mathfrak{S}\cup\{\Omega\}$
 
-    $m_{1},m_{2},\mathfrak{S}'$ erf"ullen Vorraussetzung von Satz 1 $\Rightarrow$
+    $m_{1},m_{2},\mathfrak{S}'$ erfüllen Vorraussetzung von Satz 1 $\Rightarrow$
     $m_{1}^{(n)}=m_{2}^{(n)}$ auf $F$ für alle $n$
     $\Rightarrow m_{1}(A\cap\Omega^{(n)})=m_{2}(A\cap\Omega^{(n)}), A\in
     F$\\
@@ -842,12 +875,12 @@ $(\Omega, F)$ me"sbarere Raum, $m_{1}, m_{2}$ Ma"se auf $(\Omega, F)$
 C. Caratheodory (1873-1950)
 
 \begin{satz}[Fortsetzungssatz]
-   $(\Omega,F)$ me"sbarer Raum, $\mathcal{A}\subseteq$F Algebra,
-$\sigma(\mathcal{A})=F, \mathfrak{M}$ Pr"ama"s auf $(\Omega,\mathcal{A})$
+   $(\Omega,F)$ meßbarer Raum, $\mathcal{A}\subseteq$F Algebra,
+$\sigma(\mathcal{A})=F, \mathfrak{M}$ Prämaß auf $(\Omega,\mathcal{A})$
 
 Dann folgt:
 \begin{enumerate}[(i)]
- \item Es exit. ein Ma"s $\bar{\mathfrak{M}}$ auf $(\Omega,F)$ mit $\bar{A}=m(A),
+ \item Es exit. ein Maß $\bar{\mathfrak{M}}$ auf $(\Omega,F)$ mit $\bar{A}=m(A),
   A\in \mathcal{A}$
  \item Sei $m$ $\sigma$-endlich auf $\mathcal{A}$. Dann ist auch $\bar{\mathfrak{M}}$ eindeutig
   bestimmt.
@@ -857,11 +890,11 @@ Dann folgt:
     Beweiss der Eindeutigkeit von $\bar{\mathfrak{m}}$: Sei $\mathfrak{m}$ $\sigma$-endlich auf
     $\mathcal{A}$.
 
-    Ann.: $\bar{\mathfrak{m}}, \tilde{\mathfrak{m}}$ MA"se auf $(\Omega,F)$ mit
+    Ann.: $\bar{\mathfrak{m}}, \tilde{\mathfrak{m}}$ MAße auf $(\Omega,F)$ mit
     $\bar{\mathfrak{m}}(A)=\mathfrak{m}(A)=\tilde{\mathfrak{m}}(A), A\in \mathcal{A}$\\
     $\xrightarrow{Satz 2.2}_{(\mathfrak{S} =A)} \bar{\mathfrak{m}}=\tilde{\mathfrak{m}}$ auf F
 
-    Das "au"sere Ma"s
+    Das äußere Maß
     \begin{defini}
       $\mathcal{A}_{\sigma} := \{A\subseteq\Omega: A=\bigcup_{n=1}^{\infty},
       A_{n}\subseteq A_{n+1}, A_{n}\in \mathcal{A}, n\geq1\}$
@@ -889,7 +922,7 @@ Dann folgt:
 	B_{n})}_{\in \mathcal{A}}, A_{n}\cap B_{n}\subseteq A_{n+1}\cap B_{n+1}
 	\Rightarrow A\cap B\in \mathcal{A}_{\sigma}$
 
-	analog f"ur A$\cup$ B
+	analog für A$\cup$ B
 
 	(iii) $A_{n}=\bigcup_{m=1}^{\infty}A_{n,m}, A_{n,m}\in \mathcal{A},
 	A_{n,m}\in A_{n,m+1}, m\geq0 A:=\bigcup_{n=1}^{\infty}A_{n} D_{m}:=
@@ -942,7 +975,7 @@ Dann folgt:
 	B_{m+1}, m\geq1, A_{n}=\bigcup_{m=1}^{\infty}(A_n\cap B_{m})$
 
 	$\Rightarrow$ m($A_{n})=\lim_{m\rightarrow\infty} m(A_{n}\cap
-	B_{m})$ (Stetigkeit des Pr"ama"ses $\mathfrak{m}$ auf $\mathcal{A}$ in Analogie zu E1.7)
+	B_{m})$ (Stetigkeit des Prämaßes $\mathfrak{m}$ auf $\mathcal{A}$ in Analogie zu E1.7)
 
 	$\leq$ $\lim_{m\rightarrow\infty}m(B_{m})$
 
@@ -954,7 +987,7 @@ Dann folgt:
 \end{satz}
 
 \begin{bemerk}
-  i.\,a. Eindeutigkeit von $\bar{\mathfrak{M}}$ nicht erf"ullt.
+  i.\,a. Eindeutigkeit von $\bar{\mathfrak{M}}$ nicht erfüllt.
 \end{bemerk}
 
 \begin{satz}
@@ -1011,11 +1044,11 @@ Bezeichnung: m statt m'
 \begin{defini}
   $A\subseteq\Omega: m^{\ast}(A)=\inf_{A\subseteq B, B\in \mathcal{A}_{\sigma}} m(B)$
 
-  Die Mengenfuktion hei"st "au"seres Ma"s von m
+  Die Mengenfuktion heißt äußeres Maß von m
 \end{defini}
 
 \begin{bemerk}
-  Warnung! $m^{\ast}$ ist i.\,a. kein Ma"s, da $m^{\ast}$ i.\,a. nicht additiv
+  Warnung! $m^{\ast}$ ist i.\,a. kein Maß, da $m^{\ast}$ i.\,a. nicht additiv
 \end{bemerk}
 
 \begin{satz}
@@ -1067,9 +1100,9 @@ Bezeichnung: m statt m'
 
 % 7.5.
 
-\section{Vervollst"andigung von Ma"sr"aumen}
+\section{Vervollständigung von Maßräumen}
 
-$(\Omega, F, m)$ beliebiger Ma"sraum
+$(\Omega, F, m)$ beliebiger Maßraum
 
 \begin{defini}
   $F^{m} = \{ A\subseteq\Omega: \exists A_{1},A_{2}\in F, A_{1}\subseteq
@@ -1108,7 +1141,7 @@ $(\Omega, F, m)$ beliebiger Ma"sraum
 \begin{lemma}
   \begin{enumerate}[(i)]
    \item Definition von m auf $F^{m}$ korrekt
-   \item m ist ein Ma"s auf $F^{m}$ (Fortsetzung von m auf F)
+   \item m ist ein Maß auf $F^{m}$ (Fortsetzung von m auf F)
   \end{enumerate}
 
   \begin{proof}
@@ -1137,7 +1170,7 @@ $(\Omega, F, m)$ beliebiger Ma"sraum
 
 	Es gilt: $m(A) =^{(nach defini)} m(A_{1}) = \sum_{n=1}^{\infty}
 	m(A_{1}^{(n)} = \sum_{n=1}^{\infty} m(A_{n})$ (wegen
-	$\sigma$-Additivit"at von $m$ auf $F$, $A_{1}^{(n)}, n\geq 1,$ paarw. disj.)
+	$\sigma$-Additivität von $m$ auf $F$, $A_{1}^{(n)}, n\geq 1,$ paarw. disj.)
       \end{enumerate}
     \end{enumerate}
   \end{proof}
@@ -1145,28 +1178,28 @@ $(\Omega, F, m)$ beliebiger Ma"sraum
 
 \begin{defini}
   \begin{enumerate}[(i)]
-   \item $F^{m}$ hei"st Vervollst"andigung von $F$ bgzl. $m$
-   \item $(\Omega, F^{m}, m)$ hei"st Vervollst"andigung des Ma"sraumes
+   \item $F^{m}$ heißt Vervollständigung von $F$ bgzl. $m$
+   \item $(\Omega, F^{m}, m)$ heißt Vervollständigung des Maßraumes
     $(\Omega, F, m)$
   \end{enumerate}
 \end{defini}
 
 \begin{defini}
-  Es sei $(M, \mathfrak{M}, \mu)$ ein Ma"sraum. $(M, \mathfrak{M}, \mu)$ hei"st vollst"andig,
-  falls f"ur alle $A\subseteq \Omega$, f"ur die exist. eine Menge $B
+  Es sei $(M, \mathfrak{M}, \mu)$ ein Maßraum. $(M, \mathfrak{M}, \mu)$ heißt vollständig,
+  falls für alle $A\subseteq \Omega$, für die exist. eine Menge $B
   \in \mathfrak{M}$ mit $A\subseteq B$ und $\mu(B)=0$, stets folgt $A\in \mathfrak{M}$ (und
   $\mu(A)=0$ gilt)
 \end{defini}
 
 \begin{bemerk}
-  $(\Omega, F^{m}, m)$ ist vollst"andig.
+  $(\Omega, F^{m}, m)$ ist vollständig.
 \end{bemerk}
 
 \begin{satz}
-  Sei $m$ ein Pr"ama"s auf $(\Omega, \mathfrak{A})$, $\mathfrak{A}$ Algebra, $F:=\sigma(\mathfrak{A})$
+  Sei $m$ ein Prämaß auf $(\Omega, \mathfrak{A})$, $\mathfrak{A}$ Algebra, $F:=\sigma(\mathfrak{A})$
 
   $\bar{m}$ auf $\bar{F}$ seien definiert wie im Beweis des
-  Fortsetzungssatzes (insbesondere ist $\bar{m}$ ein Ma"s auf $F$)
+  Fortsetzungssatzes (insbesondere ist $\bar{m}$ ein Maß auf $F$)
 
   Dann gilt:
   \begin{enumerate}[(i)]
@@ -1193,8 +1226,8 @@ $(\Omega, F, m)$ beliebiger Ma"sraum
       \underbrace{m^{\ast}(B)}_{=\bar{m}(B)=0}+m^{\ast}(C^{\complement}\cap E) \leq
       m^{\ast}(E)$
 
-      umgekehrte Ungleichung folgt aus der Subadditivit"at von $m^{\ast}$
-      (au"seres Ma"s sogar stark subadditiv)
+      umgekehrte Ungleichung folgt aus der Subadditivität von $m^{\ast}$
+      (außeres Maß sogar stark subadditiv)
 
       $\Rightarrow$ $C \in \bar{F}$
      \item $m$ sei endl., $A\in \bar{F}$ z.\,z.: $A\in F^{\bar{m}}$
@@ -1217,11 +1250,11 @@ $(\Omega, F, m)$ beliebiger Ma"sraum
   \end{proof}
 \end{satz}
 
-\chapter{Konstruktion von Pr"ama"sen}
+\chapter{Konstruktion von Prämaßen}
 $\omega\not\emptyset$
 
 \begin{defini}
-  $\mathfrak{C} \subseteq \mathfrak{P}(\Omega)$ Mengensystem, $\mathfrak{C}$ hei"st dann eine
+  $\mathfrak{C} \subseteq \mathfrak{P}(\Omega)$ Mengensystem, $\mathfrak{C}$ heißt dann eine
   Halbalgebra, falls gilt:
   \begin{enumerate}
    \item $\Omega\in \mathfrak{C}$
@@ -1258,12 +1291,12 @@ $\omega\not\emptyset$
     Es gilt ($\ast$): $m'(A)= \sum_{i=1}^{n}m(A_{i})$, $A\in \mathfrak{A}, A=\bigcup_{i=1}^{n}A_{i},
     A_{1},\ldots,A_{n}\in \mathfrak{C}$ paarw. disj.
    \item Falls $m$  $\sigma$-additiv auf $\mathfrak{C}$ ist, dann ist auch $m'$
-    $\sigma$-additiv auf $\mathfrak{A}$ (und damit ein Pr"ama"s).
+    $\sigma$-additiv auf $\mathfrak{A}$ (und damit ein Prämaß).
   \end{enumerate}
 
   \begin{proof}
     \begin{enumerate}
-     \item Definieren Mengenfunktion $m'$ gem"a"s ($\ast$) auf $\mathfrak{A}$
+     \item Definieren Mengenfunktion $m'$ gemäß ($\ast$) auf $\mathfrak{A}$
 
       Definition ist korrekt. $A=
       \bigcup_{i=1}^{m}A_{i}=\bigcup_{j=1}^{m}B_{m}, A_{1},\ldots,A_{n}\in \mathfrak{C}$
@@ -1293,14 +1326,14 @@ $\omega\not\emptyset$
 
       m'(A) := $\sum_{i=1}^{n} m(A_{i}) =(**)
       \sum_{i=1}^{n}\sum_{j=1}^{m}\sum_{k=1}^{n_{j}} m(A_{i}\cap
-      A_{k}^{(j)})$ (Additivit"at von $m$ auf $\mathfrak{C}$)
+      A_{k}^{(j)})$ (Additivität von $m$ auf $\mathfrak{C}$)
       = $\sum_{j=1}^{m}\sum_{k=1}^{n_{j}}\sum_{i=1}^{n} m(A_{i}\cap
       A_{k}^{(j)}) = \sum_{j=1}^{m}\sum_{k=1}^{n_{j}} m(A_{k}^{(j)})$
 
       $\Rightarrow$ $m'(A)=\sum_{j=1}^{m} m'(A^{(j)})$
      \item $m'$ $\sigma$-additiv auf $\mathfrak{A}$, falls $m$ $\sigma$-additiv auf $\mathfrak{C}$
 
-      Beweis analog f"ur den Fall, dass der Index $m=+\infty$ ist.
+      Beweis analog für den Fall, dass der Index $m=+\infty$ ist.
     \end{enumerate}
   \end{proof}
 \end{satz}
@@ -1308,8 +1341,8 @@ $\omega\not\emptyset$
 % 12.5.
 
 \begin{defini}
-  Ein Mengensystem $\mathcal{K}\subseteq \mathfrak{P}\Omega$ hei"st kompakte Klasse, falls
-  f"ur beliebige Folgen $K_{n}\in \mathcal{K}$ mit
+  Ein Mengensystem $\mathcal{K}\subseteq \mathfrak{P}\Omega$ heißt kompakte Klasse, falls
+  für beliebige Folgen $K_{n}\in \mathcal{K}$ mit
   $\bigcap_{n=1}^{\infty}K_{n}=\emptyset$ bereits ein $N$ existiert, so dass
   $\bigcap_{n=1}^{N}K_{n}=\emptyset$
 \end{defini}
@@ -1322,11 +1355,11 @@ $\omega\not\emptyset$
 \begin{lemma}
   Sei $m$ ein endlicher Inhalt auf einer Algebra $\mathcal{A}$
 
-  $m$ Pr"ama"s $\Leftrightarrow$ $m$ ist stetig in $\emptyset$
+  $m$ Prämaß $\Leftrightarrow$ $m$ ist stetig in $\emptyset$
 
   \begin{proof}
     \begin{description}
-     \item[$\Rightarrow$] Beweis wie fr"uher f"ur Ma"se
+     \item[$\Rightarrow$] Beweis wie früher für Maße
      \item[$\Leftarrow$] $A_{n}\in \mathcal{A}, n\geq$ paarw. disj.,
       A=$\bigcup_{n=1}^{\infty}A_{n}\in \mathcal{A}$
 
@@ -1349,14 +1382,14 @@ $\omega\not\emptyset$
 
 \begin{satz}\label{satz:2}
   m endlicher Inhalt auf $(\Omega,\mathcal{A})$, $\mathcal{A}$ Algebra. Es sei folgende
-  Bedingung erf"ullt:
+  Bedingung erfüllt:
   \begin{gather}
     \forall A\in \mathcal{A}, \epsilon>0 \exists A'\in \mathcal{A}, K\in \mathcal{K}: A'\subseteq K
        \subseteq A \wedge m(A)-m(A')<\epsilon
   \end{gather}
   Dabei ist $\mathcal{K}\subseteq \mathfrak{P}(\Omega)$ eine kompakte Klasse.
 
-  $\Rightarrow$ Dann ist m ein Pr"ama"s
+  $\Rightarrow$ Dann ist m ein Prämaß
 
   \begin{proof}
     zeigen: m isst stetig in $\emptyset$ auf $\mathcal{A}$
@@ -1389,32 +1422,32 @@ $\omega\not\emptyset$
 
 \begin{bemerk}
   \begin{enumerate}
-   \item Falls $\mathcal{K}\subseteq\mathcal{A}$ $\rightarrow$ m"oglich: $A'=K$
-   \item Satz \ref{satz:2} gilt entsprechend f"ur Halbalgebren $\mathcal{C}$
+   \item Falls $\mathcal{K}\subseteq\mathcal{A}$ $\rightarrow$ möglich: $A'=K$
+   \item Satz \ref{satz:2} gilt entsprechend für Halbalgebren $\mathcal{C}$
     (anstelle von $\mathcal{A}$). Aussage: $m$ $\sigma$-additiv auf $\mathcal{C}$ (siehe Neven
     I.6.2)
   \end{enumerate}
 \end{bemerk}
 
-\chapter{Ma"se auf der reellen Achse}
-Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
+\chapter{Maße auf der reellen Achse}
+Betrachen Maße m auf dem meßbaren Raum $(\R, \mathcal{B}(\R))$
 
 \begin{defini}
-  Ein Ma"s m auf $(\R , \mathcal{B}(\R))$ hei"st lokal endlich, falls f"ur alle
+  Ein Maß m auf $(\R , \mathcal{B}(\R))$ heißt lokal endlich, falls für alle
   $x\in\R$ eine offene Menge $G_{x}$ existiert, für die gilt $x\in G_{x}$ und $m(G_{x})<+\infty$.
 \end{defini}
 
 \begin{bemerk}
   \begin{enumerate}
    \item $m$ lokal endlich $\Rightarrow$ $m([-n,n])<+\infty$, $\forall$
-    $n\geq 1$ (folgt aus "Uberdeckungssatz)
+    $n\geq 1$ (folgt aus Überdeckungssatz)
    \item $m$ lokal endlich $\Rightarrow$ $m$ ist $\sigma$-endlich (Umkehrung
     geht nicht!)
   \end{enumerate}
 \end{bemerk}
 
 \begin{satz}
-  Sei m ein lokal endliches Ma"s auf $(\R, \mathcal{B}(\R))$.
+  Sei m ein lokal endliches Maß auf $(\R, \mathcal{B}(\R))$.
 
   Dann existiert eine Funktion $F_{m}:\R\rightarrow\R$ mit folgenden
   Eigenschaften:
@@ -1437,12 +1470,12 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 
 \begin{satz}
   Es sei $F:\R\rightarrow\R$ monoton wachsend und stetig von links. Dann
-  existiert ein eindeutig bestimmtes Ma"s $m$ auf $(\R, \mathcal{B}(\R))$, so dass sich
+  existiert ein eindeutig bestimmtes Maß $m$ auf $(\R, \mathcal{B}(\R))$, so dass sich
   \begin{gather}
     m([a,b))=F(b)-F(a),\quad a,b\in\R, a\leq b
   \end{gather}
 
-  Das Ma"s m ist dann lokal endlich (und damit auch $\sigma$-endlich).
+  Das Maß m ist dann lokal endlich (und damit auch $\sigma$-endlich).
 
   \begin{proof}
     $\mathcal{C}=\{[a,b)\cap \R\colon -\infty\leq a\leq b \leq+\infty\}$ Halbalgebra,
@@ -1455,7 +1488,7 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 
     \begin{enumerate}
      \item $m_{N}(\emptyset)=0$
-     \item $m_{N}$ ist additiv auf $\mathcal{C}$ (leicht zu "uberpr"ufen)
+     \item $m_{N}$ ist additiv auf $\mathcal{C}$ (leicht zu überprüfen)
      \item $m_{N}(\R)=F({N})-F(-N)<\infty$
     \end{enumerate}
 
@@ -1463,9 +1496,9 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
     (bezeichnet durch $m_{N}$) auf $\mathcal{A} = \alpha(\mathcal{C})$, welcher unser
     vorgegebenes $m_{N}$ fortsetzt. $m_{N}(\R) < \infty$
 
-    Anwendung von Satz 6.2.: $m_{N}$ ist sogar ein Pr"ama"s auf $\mathcal{A}$
+    Anwendung von Satz 6.2.: $m_{N}$ ist sogar ein Prämaß auf $\mathcal{A}$
 
-    $\mathcal{K}:=\{K\subseteq\R: K~\text{kompakt}\}$, "uberpr"ufen (*)
+    $\mathcal{K}:=\{K\subseteq\R: K~\text{kompakt}\}$, überprüfen (*)
     $\epsilon>0, A\in \mathcal{A} $ fest forgegeben,
     A=$\bigcup_{i=1}^{n}[a_{i},b_{i}), [a_{1},b_{1}),\ldots,[a_{n},b_{n})
     paarw. disj.$ (Lemma 6.1)\\
@@ -1480,25 +1513,25 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 
     $\Rightarrow$ $m_{N}(A)-m_{N}(A_{\delta}')=\sum_{i=1}^{n}\underbrace{[
     F(b_{i}^{(N)})-F(b_{i}^{(N)}-\delta)]}_{\leq\frac\epsilon{n}
-    \text{f"ur $\delta$ hinreichend klein (Stetigkeit von links von F!)}}$
+    \text{für $\delta$ hinreichend klein (Stetigkeit von links von F!)}}$
 
     Aufgrund des Fortsetzungssatz existiert eine Fortsetzung zu einem
-    endlichen Ma"s $m_{N}$ auf $\mathcal{B}(\R) =\sigma(\mathcal{A})$.\\
+    endlichen Maß $m_{N}$ auf $\mathcal{B}(\R) =\sigma(\mathcal{A})$.\\
     Es gilt: $m_{N}\leq m_{N+1}(A), A\in \mathcal{B}(\R)$.\\
     Setzen: $\mu_{N}(A)=m_{N+1}(A\cap[-N,N]), A\in \mathcal{B}(\R) \Rightarrow
-    \mu_{N}$ Ma"s auf $\mathcal{B}(\R)$, $\mu_{N}$ endlich\\
+    \mu_{N}$ Maß auf $\mathcal{B}(\R)$, $\mu_{N}$ endlich\\
     $\mu_{N}(A)\leq m_{N+1}(A), A\in \mathcal{B}(\R)$\\
     Beh.: $\mu_{N}=m_{N}$ auf $\mathcal{B}(\R)$:
     $\mu_{N}([a,b)\cap\R)=m_{N+1}([a,b)\cap[-N,N)) = m_{N}([a,b)\cap\R)
-    \Rightarrow \mu_{N}=m_{N} auf \mathcal{C} \Rightarrow^{Eindeutigkeitssatz f"ur
-    endl. Ma"se} \mu_{N}=m_{N} auf \mathcal{B}(\R)$
+    \Rightarrow \mu_{N}=m_{N} auf \mathcal{C} \Rightarrow^{Eindeutigkeitssatz für
+    endl. Maße} \mu_{N}=m_{N} auf \mathcal{B}(\R)$
 
     aus Beispiel 1.8: m(A) = $\lim_{N\rightarrow\infty}m_{N}(A), A\in \mathcal{B}(\R)
-    \Rightarrow m Ma"s$
+    \Rightarrow m Maß$
     m([a,b))=$\lim_{N\rightarrow\infty}m_{N}([a,b)) =
     \lim_{N\rightarrow\infty}[F_{N}(b)-F_{N}(a)]=F(b)-F(a)$
 
-    Eindeutigkeit von m: Seien m, m' entsprechende Ma"se,
+    Eindeutigkeit von m: Seien m, m' entsprechende Maße,
     $\mathcal{C}'=\{[a,b)\colon a,b\in\R, a\leq b\}$ $\Rightarrow$ $m=m'$ auf $\mathcal{C}'$, $\mathcal{C}'$
     $\pi$-System, $\sigma(\mathcal{C}')=\mathcal{B}(\R)$, $m,m'$ $\sigma$-endlich auf $\mathcal{C}'$
     $\Rightarrow^{Satz 2.2}$ $m=m'$ auf $\mathcal{B}(\R)$
@@ -1507,17 +1540,17 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 
 \begin{defini}
   \begin{enumerate}
-   \item $F:\R\rightarrow \R$, monoton wachsend und linksstetig, hei"st
-    ma"serzeugende Funktion
-   \item sei $m$ lokal endliches Ma"s. Dann hei"st $F_{m}$ (aus Satz 1)
+   \item $F:\R\rightarrow \R$, monoton wachsend und linksstetig, heißt
+    maßerzeugende Funktion
+   \item sei $m$ lokal endliches Maß. Dann heißt $F_{m}$ (aus Satz 1)
     eine $m$-erzeugend
-   \item Eine ma"serzeugende Funktion $F$ hei"st Verteilungsfunktion, falls
-    zus"atzlich $\lim_{x-v-\infty}F(x)=0, \lim_{x-^\infty}F(x)=1$
+   \item Eine maßerzeugende Funktion $F$ heißt Verteilungsfunktion, falls
+    zusätzlich $\lim_{x-v-\infty}F(x)=0, \lim_{x-^\infty}F(x)=1$
   \end{enumerate}
 \end{defini}
 
 \begin{bemerk}
-  Eine Verteilungsfunktion erzeugt ein Wahrscheinlichkeitsma"s auf
+  Eine Verteilungsfunktion erzeugt ein Wahrscheinlichkeitsmaß auf
   $(\R,\mathcal{B}(\R))$.
 \end{bemerk}
 
@@ -1531,7 +1564,7 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
   \end{gather}
 
   \begin{proof}
-    als "Ubungsaufgabe: Anwendung von Satz 8.2
+    als Übungsaufgabe: Anwendung von Satz 8.2
   \end{proof}
 \end{lemma}
 
@@ -1545,7 +1578,7 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
     Zerlegung von $\R$: $\bigcup_{a\in\R}\Q_{a}=\R$ $a\not\sim b$ $\Rightarrow$
     $\Q_{a}\cap\Q_{b}=\emptyset$
 
-    $V$ sei eine Auswahlmenge f"ur $(Q_{a})_{a\in\R}$, dann besteht $V\cap\Q_{a}$
+    $V$ sei eine Auswahlmenge für $(Q_{a})_{a\in\R}$, dann besteht $V\cap\Q_{a}$
     aus genau einem Element.
 
     $V_{r}:= r+V, r\in\Q$
@@ -1598,21 +1631,21 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
     $M=\{V'\subseteq\R\colon V'\text{ Auswahlmenge von } (Q_{a})_{a\in\R}\}$
     ($V'\in M$ $\Rightarrow$ $V'\not\in \mathcal{B}^{\lambda}(\R)$)
 
-    $\mathrm{M"achtigkeit} (M)=  \mathrm{M"achtigkeit} (\times_{a\in\R}\Q_{a})=
+    $\mathrm{Mächtigkeit} (M)=  \mathrm{Mächtigkeit} (\times_{a\in\R}\Q_{a})=
     \prod_{a\in\R} \card(\Q_{a}) = \prod_{a\in\R} \card(\Q) =
     \card(\Q)^{\card(\R)}\geq 2^{\complement}$
   \end{proof}
 \end{folgerung}
 
 \begin{satz}
-  Es exitiere \emph{kein} verschiebungsinvariante Ma"s $\mathcal{m}$ auf $\mathcal{P}(\R)$ mit
+  Es exitiere \emph{kein} verschiebungsinvariante Maß $\mathcal{m}$ auf $\mathcal{P}(\R)$ mit
   $\mathcal{m}([0,1]) = 1$ (bzw. $0<m([0,1])<\infty$).
 \end{satz}
 
-\chapter{Ma"se auf metrischen R"aumen}
+\chapter{Maße auf metrischen Räumen}
 
 \begin{satz}
-  $(\Omega, \mathcal{F})$ me"sbarer Raum, $\mathcal{K}\subseteq \mathcal{F}, \mathcal{M}' = \mathcal{m}(\mathcal{K})$ (kleinste
+  $(\Omega, \mathcal{F})$ meßbarer Raum, $\mathcal{K}\subseteq \mathcal{F}, \mathcal{M}' = \mathcal{m}(\mathcal{K})$ (kleinste
   monotone Klasse $\supseteq \mathcal{K}$).
 
   Es gilt:
@@ -1625,12 +1658,12 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
   $\Rightarrow$ $\mathcal{M}'=\mathcal{F}$
 
   \begin{proof}
-    "Ubungsaufgabe
+    Übungsaufgabe
   \end{proof}
 \end{satz}
 
 \begin{satz}
-  $\mathcal{m}$ sei ein $\sigma$-endliches Ma"s auf $(\Omega,\mathcal{F})$, $\mathcal{K}\subseteq\mathcal{F}$
+  $\mathcal{m}$ sei ein $\sigma$-endliches Maß auf $(\Omega,\mathcal{F})$, $\mathcal{K}\subseteq\mathcal{F}$
   wie in Satz 1.
 
   Dann gilt: (*) $\mathcal{m}(A) = \sup_{F\subseteq A, F\in \mathcal{K}_{\delta}} \mathcal{m}(F),
@@ -1639,7 +1672,7 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 
   \begin{proof}
     \begin{enumerate}[I]
-     \item $\mathcal{m}$ sei endlich $\mathcal{M}=\{A\in \mathcal{F}: (*) erf"ullt\}$
+     \item $\mathcal{m}$ sei endlich $\mathcal{M}=\{A\in \mathcal{F}: (*) erfüllt\}$
       Dann gilt:
       \begin{enumerate}
        \item $\mathcal{K}\subseteq \mathcal{M}$
@@ -1667,7 +1700,7 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 	m(\bigcup_{k=1}^{n}(A_{k}\setminus F_{k}) \leq \sum_{k=1}^{n}
 	\underbrace{\mathcal{m}(A_{k}\setminus F_{k})}_{\frac\epsilon{2^{k}}}<\epsilon$
 
-	W"ahlen $F:= \cap_{n=1}^{\infty}$
+	Wählen $F:= \cap_{n=1}^{\infty}$
 	$F_{n}=\bigcap_{n=1}^{\infty}F_{n}' \Rightarrow F\in
 	\mathcal{K}_{\delta}=(\mathcal{K}_{\delta})_{\delta}, F\uparrow$
 
@@ -1680,7 +1713,7 @@ Betrachen Ma"se m auf dem me"sbaren Raum $(\R, \mathcal{B}(\R))$
 
       $\mathcal{m}_{n}(A):= \mathcal{m}(A\cap\Omega_{n}), A\in \mathcal{F}$
 
-      $\mathcal{m}_{n}$ endliches Ma"s
+      $\mathcal{m}_{n}$ endliches Maß
 
       $\mathcal{m}(A)=\sup_{n\geq1}\mathcal{m}(A\cap\Omega_{n}) =\sup_{n\geq1} \mathcal{m}_{n}(A)
       =^{I} \sup_{n\geq1}\sup_{F\subseteq A, F\in \mathcal{K}_{\delta}} \mathcal{m}_{n}(F)
@@ -1706,13 +1739,13 @@ Eigenschaften von $\mathcal{F}$:
 \end{enumerate}
 
 \begin{satz}
-  Sei m ein $\sigma$-endliches Ma"s auf $(E, \mathcal{B}(E))$.
+  Sei m ein $\sigma$-endliches Maß auf $(E, \mathcal{B}(E))$.
 
   Dann folgt $\mathcal{m}(A) = \sup_{F\subseteq A, F\in \mathcal{F}} \mathcal{m}(F), A\in B(E)$
 \end{satz}
 
-\begin{satz}[Approximation von Au"sen]
-  $m$ beliebiges Maß auf $(E,B(E))$, $A\in B(E)$ fest gew"ahlt
+\begin{satz}[Approximation von Außen]
+  $m$ beliebiges Maß auf $(E,B(E))$, $A\in B(E)$ fest gewählt
 
   $\mathcal{G}=\{G\subseteq E: G opffen\}$
   (*) $\mathcal{m}(A)=\inf_{A\subseteq G, G\in \mathcal{G}} m(G)$ $\Leftrightarrow$ Falls
@@ -1720,19 +1753,19 @@ Eigenschaften von $\mathcal{F}$:
 \end{satz}
 
 \begin{folgerung}
-  $m$ endliches Ma"s auf $(E,B(E))$
+  $m$ endliches Maß auf $(E,B(E))$
 
   Dann gilt: $m(A) =\inf_{A\subseteq G, G\in \mathcal{G}} m(G), A\in B(E)$
 \end{folgerung}
 
 \begin{folgerung}
-  $\lambda$ Lebesgue-Ma"s auf $(\R, B(\R))$ $\Rightarrow$ $\lambda(A) =
+  $\lambda$ Lebesgue-Maß auf $(\R, B(\R))$ $\Rightarrow$ $\lambda(A) =
   \inf_{A\subseteq G, G\in \mathcal{G}} \lambda(G), A\in B(\R)$
 
   \begin{proof}
     $A\in B(\R)$, $A\cap[n,n1)$, $n\in\Z$
 
-    $\underbrace{A\cap[n,n+1)}_{erf"ullt Bedingung in Satz 4}\subseteq$(n-1,n+1) offen
+    $\underbrace{A\cap[n,n+1)}_{erfüllt Bedingung in Satz 4}\subseteq$(n-1,n+1) offen
 
     Es exits. $G_{n}$ offen, $A\cap [n,n+1)\subseteq G_{n}$ und
     $\lambda(G_{n})-\lambda(A\cap[n,n-1))<\frac{\epsilon}{2^{|n|}}$
@@ -1745,7 +1778,7 @@ Eigenschaften von $\mathcal{F}$:
 \end{folgerung}
 
 % 21.5.
-% "Anderung an Satz 1: $\sigma$(\mathcal{K})=F
+% Änderung an Satz 1: $\sigma$(\mathcal{K})=F
 %    Beiweis der Folgerung 2: $2^{n}$ $\rightarrow$ $2^{|n|}$
 
 \begin{proof} % Beweis zu Satz 4
@@ -1758,7 +1791,7 @@ Eigenschaften von $\mathcal{F}$:
    \item[$\Leftarrow$] $m(A) < \infty$
 
   $\Rightarrow$ Es exist $G_{0}\supseteq A, G_{0}$ offen, $m(G_{0}) < +\infty$
-  $m_{0}(B)=m(B\cap G_{0}), B\in \mathcal{B}(E), m_{0}$ endliches Ma"s auf $(E,\mathcal{b}(E))$
+  $m_{0}(B)=m(B\cap G_{0}), B\in \mathcal{B}(E), m_{0}$ endliches Maß auf $(E,\mathcal{b}(E))$
   $m_{0}(A^{\complement}) = \sup_{F\subseteq A^{\complement}, F~\text{abgeschl.}} m_{0}(F)$
   (Anwendung von Satz 3)
   $m(A)=m(G_{0})-m(G_{0}\cap A^{\complement})=m(G_{0})=-m_{0}(A^{\complement})
@@ -1773,8 +1806,8 @@ Eigenschaften von $\mathcal{F}$:
 Approximation durch kompakte Mengen
 
 \begin{satz} % 5
-  $(E,\rho)$ sei ein vollst"andiger separabler metrischer Raum. $m$
-  $\sigma$-endliches Ma"s auf $(E,B(E))$.
+  $(E,\rho)$ sei ein vollständiger separabler metrischer Raum. $m$
+  $\sigma$-endliches Maß auf $(E,B(E))$.
 
   Dann gilt:
   \begin{gather}
@@ -1783,12 +1816,12 @@ Approximation durch kompakte Mengen
 
   \begin{proof}
     \begin{description}
-     \item[I. Reduktion auf dem Fall eines \emph{endlichen} Ma"ses $m$]:
+     \item[I. Reduktion auf dem Fall eines \emph{endlichen} Maßes $m$]:
 
     $m$ $\sigma$-endlich $\Rightarrow$ $\exists E_{n} \uparrow E$, $E_{n}\in
     \mathcal{B}(E), m(E_{n})<\infty, n\geq 1$
 
-    $m_{n}(A) := m(A\cap E_{n}), A\in \mathcal{B}(E)$ $m_{n}$ endliches Ma"s
+    $m_{n}(A) := m(A\cap E_{n}), A\in \mathcal{B}(E)$ $m_{n}$ endliches Maß
     $m(A) =\sup_{n\geq1} m(A\cap E_{n})=\sup_{n\geq1}
     m_{n}(A)=\sup_{n\geq1} \sup_{K\subseteq A, K kompakt} m_{n}(K) \leq
     \sup_{K\subseteq A, K kompakt} m(K)\leq m(A)$
@@ -1799,7 +1832,7 @@ Approximation durch kompakte Mengen
 
     $(F,\rho_{F\times F})$ metrischer Unterraum
 
-    Fakt: $(F, \rho_{F\times F})$ ist vollst"andig und separabel ($F$
+    Fakt: $(F, \rho_{F\times F})$ ist vollständig und separabel ($F$
     abgeschlossen)
 
     Setzen: $m_{F}(B) := \mathcal{m}(B), B\in \mathcal{B}(F)=\mathcal{B}(E)\cap F\subseteq \mathcal{B}(E)$
@@ -1808,7 +1841,7 @@ Approximation durch kompakte Mengen
     m_{F}(K)= \sup_{K\subseteq F, K kompakt (in E)} m(K)$
 
      \item[IV. m endlich, A=E:]
-      \{$x_{1}, x_{2},\ldots\}$ abz"ahlbar dichte Menge
+      \{$x_{1}, x_{2},\ldots\}$ abzählbar dichte Menge
       $S_{\frac1n}(x_{k}) abgeschlossene vollkugel vom Radium \frac1n und
       Mittelpunkt x_{k}$
 
@@ -1821,16 +1854,16 @@ Approximation durch kompakte Mengen
       Eigenschaften von $K$
       \begin{enumerate}
        \item abgeschlossen
-       \item pr"akompakt (Definition: $K$ besitzt beliebige Teilfolge, die
+       \item präkompakt (Definition: $K$ besitzt beliebige Teilfolge, die
 	Konvergiert, muss aber nicht in $K$ konvergieren)
       \end{enumerate}
       $\Rightarrow$ $K$ kompakt
 
       \begin{fakt}
-	$E$ vollst"andig
+	$E$ vollständig
 
 	\begin{gather}
-	  K \subseteq E ~\text{pr"akompakt}~ \Leftrightarrow \forall \delta >0
+	  K \subseteq E ~\text{präkompakt}~ \Leftrightarrow \forall \delta >0
 	     \exists ~\text{endl.}~  \delta\mathrm{-Netz} N(\delta)
 	\end{gather}
 
@@ -1841,7 +1874,7 @@ Approximation durch kompakte Mengen
 	\end{defini}
       \end{fakt}
 
-      $\delta=\frac1n \{x_{1},\ldots,x_{sn}\} ist \frac1n-$ Netz f"ur K
+      $\delta=\frac1n \{x_{1},\ldots,x_{sn}\} ist \frac1n-$ Netz für K
 
       $m(E)-m(K) = m(K^{\complement}) = m(\bigcup_{n=1}^{\infty} F_{n,sn}^{\complement})\leq
       \sum_{n=1}^{\infty}
@@ -1853,21 +1886,21 @@ Approximation durch kompakte Mengen
 
   \chapter{III. Das Integral}
 
-  \section{Das Integral f"ur nicht negative einfache Funktionen}
-  $(\Omega, F,m)$ beliebiger Ma"sraum
+  \section{Das Integral für nicht negative einfache Funktionen}
+  $(\Omega, F,m)$ beliebiger Maßraum
 
-  Erinnerung: f me"sbare (erweitert reelle) Funktion auf $(\Omega, F)$
+  Erinnerung: f meßbare (erweitert reelle) Funktion auf $(\Omega, F)$
   f: $(\Omega, F)$ $\rightarrow$($\hat{\R}, \mathcal{B}(\hat{\R}))$ messbar
 
   \begin{defini}
-    Sei f eine me"sbare Funktion auf $(\Omega, F)$.
+    Sei f eine meßbare Funktion auf $(\Omega, F)$.
 
-    Dann hei"st f \emph{einfach}, falls f nur \emph{endlich viele} Werte
+    Dann heißt f \emph{einfach}, falls f nur \emph{endlich viele} Werte
     besitzt.
 
     Eindeutige Darstellung: (D) f=$\sum_{i=1}^{n} x_{i}\cdot 1_{A_{k}}$
     $x_{1},\ldots,x_{n}\in \hat{\R},$ paarweise verschieden
-    \{ $A_{1},\ldots,A_{n}\} $ me"sbare Zerlegung von $\Omega$
+    \{ $A_{1},\ldots,A_{n}\} $ meßbare Zerlegung von $\Omega$
     \begin{enumerate}
      \item $A_{1},\ldots,A_{n}\in F$
      \item $A_{1},\ldots,A_{n} paarw. disj.$
@@ -1900,7 +1933,7 @@ Approximation durch kompakte Mengen
    \item $f=1_{A}, A\in \mathcal{F} \Rightarrow \int_{\Omega}f\,\mathfrak{m} = m(A)$
     f= 1$\cdot 1_{A}+0\cdot_{A^{\complement}}$
    \item f=$\sum_{j=1}^{m} x_{j}' 1_{A_{j}'},
-    x_{1}',\ldots,x_{m}'\in[0,\infty], \{A_{1}',\ldots,A_{m}'\} me"sb.
+    x_{1}',\ldots,x_{m}'\in[0,\infty], \{A_{1}',\ldots,A_{m}'\} meßb.
     Zerl. von \Omega$
 
     $f$ einfach, f$\geq$0
@@ -1920,17 +1953,17 @@ Approximation durch kompakte Mengen
       \sum_{i=1}^{n}x_{i}m(A_{i})=\int_{\Omega}f\,\mathfrak{m}
       \end{gather*}
     \end{proof}
-   \item (Positivit"at) $f$ nicht negetiv und einfach
+   \item (Positivität) $f$ nicht negetiv und einfach
 
     $\Rightarrow\int_{\Omega} f\,\mathfrak{m} \geq0$
-   \item (Linearit"at) $f,g$ nichtnegative einfache Funktionen, $a,b\in\R$
+   \item (Linearität) $f,g$ nichtnegative einfache Funktionen, $a,b\in\R$
 
     $af+bg \geq0$ $\Rightarrow$ $af+bg$ nicht negativ und einfach und
     $\int_{\Omega}[af+bg]\,dm=a\int_\Omega f\,dm+b\int_{\Omega}g\,dm$
 
     \begin{proof}
       $f=\sum_{i=1}^{n}x_{i} 1_{A_{i}}, x_{1},\ldots,x_{n}\in[0,\infty]
-      paarw. verschiedene, \{A_{1},\ldots,A_{n\} meb"sbar Zerlegun}$
+      paarw. verschiedene, \{A_{1},\ldots,A_{n\} mebßbar Zerlegun}$
       g=$\sum_{j=1}^{m}y_{j}1_{B_{j}}, y_{1},\ldots,y_{m}\in[0,\infty] "
       " \{B_{1},\ldots\}$
 
@@ -1945,9 +1978,9 @@ Approximation durch kompakte Mengen
 						}_{}$
       % !!! Es fehlt noch was !!!
     \end{proof}
-   \item f$\geq$0 einfach
+   \item $f\geq0$ einfach
 
-    $\int_{\Omega} fdm=0 \Leftrightarrow f=0 m$ fast "uberall (d.\,h.
+    $\int_{\Omega} fdm=0 \Leftrightarrow f=0 m$ fast überall (d.\,h.
     m(\{$\omega$:f$(\omega)\not$=0\})=0)
 
     \begin{proof}
@@ -1960,23 +1993,23 @@ Approximation durch kompakte Mengen
   \end{enumerate}
 
   % Wiederholung:
-  % $(\Omega, \mathcal{F}, m)$ Ma"sraum, f nichtnegative einfache Funktion,
+  % $(\Omega, \mathcal{F}, m)$ Maßraum, f nichtnegative einfache Funktion,
   % f=$\sum_{i=1}^{n}x_{i}1_{A_{i}}, x_{1},\ldots,x_{n}\in[0,\infty]$ paarw.
   % disj., \{$A_{1},\ldots,A_{n}\}$ messbare Zerlegung von $\Omega$
 
   % $\Rightarrow$ $\int_{\Omega}fdm:=\sum_{i=1}^{n}x_{i}m(A_{i})$
 
-  \section{Das Integral nichtnegativer me"sbarer Funktionen}
-  $(\Omega, \mathcal{F}, m)$ beliebiger Ma"sraum
+  \section{Das Integral nichtnegativer meßbarer Funktionen}
+  $(\Omega, \mathcal{F}, m)$ beliebiger Maßraum
 
   \begin{defini}
-    Eine auf $(\Omega, \mathcal{F})$ me"sbare (erweitert reelee) Funktion $f$ mit
-    $f(\omega) \geq0$, $\omega\in\Omega$, hei"st nichtnegative
-    me"sbare Funktion (auf $(\Omega, \mathcal{F})$)
+    Eine auf $(\Omega, \mathcal{F})$ meßbare (erweitert reelee) Funktion $f$ mit
+    $f(\omega) \geq0$, $\omega\in\Omega$, heißt nichtnegative
+    meßbare Funktion (auf $(\Omega, \mathcal{F})$)
   \end{defini}
 
   \begin{satz}
-    $f$ sei nichtnegativ me"sbar.
+    $f$ sei nichtnegativ meßbar.
 
     Dann existiert eine Folge $(f_{n})$ von nichtnegativen einfachen
     Funktionen mit $f_{n}\leq f_{n+1}$ und
@@ -2016,7 +2049,7 @@ Approximation durch kompakte Mengen
       g.\,z.\,z: $\int_{\Omega}f_{m}\mathfrak{m} \leq\lim_{n\rightarrow\infty}
       \int_{\Omega}g_{n}\mathfrak{m}, \forall m\geq1$
 
-      Es gen"ugt zu beweisen: f beliebige nichtnegative einfache
+      Es genügt zu beweisen: f beliebige nichtnegative einfache
       Funktion, f$\leq \lim_{n\rightarrow\infty}g_{n} \Rightarrow
       \int_{\Omega} fdm\leq \lim_{n\rightarrow\infty}\int_{\Omega} g_{n}\mathfrak{m}$
 
@@ -2028,7 +2061,7 @@ Approximation durch kompakte Mengen
 
       Darstellung von f: f=$\sum_{i=1}^{m}x_{i}1^{A_{i}},
       x_{1},\ldots,x_{n}\in[0,\infty]$ paarw. verschieden
-      \{$A_{1},\ldots,A_{n}\}$ me"sbare Zerlegung von $\Omega$
+      \{$A_{1},\ldots,A_{n}\}$ meßbare Zerlegung von $\Omega$
 
       $\Rightarrow$
       \begin{gather*}
@@ -2041,7 +2074,7 @@ Approximation durch kompakte Mengen
       \sum_{i=1}^{m}\max\{x_{i}-\epsilon,0\} m(A_{i}\cap\Omega_{n}
       \leq^{E1.5 Monitonie} \int_{\Omega} g_{n}dm$
 
-      f"ur n$\rightarrow \infty$
+      für n$\rightarrow \infty$
       $\sum_{i=1}^{m}\max\{x_{i}-\epsilon,0\} m(A_{i}) \leq
       \lim_{n\rightarrow\infty} \int_{\Omega} g_{n}\mathfrak{m}$
 
@@ -2061,11 +2094,11 @@ Approximation durch kompakte Mengen
   Eigenschaften:
   \begin{enumerate}[E1]
    \item $f=1_{A}, A\in F \Rightarrow \int_{\Omega}fdm = m(A)$
-   \item (Positivit"at) %Fehlt was
-   \item (Linearit"at)
-    $f,g$ nichtnegative me"sbare Funktionen, $a,b\in\R$ und $a,b\geq0$
+   \item (Positivität) %Fehlt was
+   \item (Linearität)
+    $f,g$ nichtnegative meßbare Funktionen, $a,b\in\R$ und $a,b\geq0$
 
-    $\Rightarrow$ $af+bg$ nichtnegative me"sbare Fuktion und es gilt:
+    $\Rightarrow$ $af+bg$ nichtnegative meßbare Fuktion und es gilt:
     $\int_{\Omega}(af+bg)dm = a\int_{\Omega}f dm + b\int_{\Omega}g dm$
 
     \begin{proof}
@@ -2080,7 +2113,7 @@ Approximation durch kompakte Mengen
       (a\int_{\Omega}f_{n}\mathfrak{m}+b\int_{\Omega} g_{n}\mathfrak{m})\\
       = a\int_{\Omega}f \mathfrak{m}+b\int_{\Omega} gdm$
     \end{proof}
-   \item (monotonie) f,g nichtnegativ me"sbar, f$\leq$g $\Rightarrow$
+   \item (monotonie) f,g nichtnegativ meßbar, f$\leq$g $\Rightarrow$
       $\int_{\Omega}fdm \leq \int_{\Omega}g \mathfrak{m}$
 
       \begin{proof}
@@ -2091,9 +2124,9 @@ Approximation durch kompakte Mengen
 	\leq\lim_{n\rightarrow\infty} \int g_{n}\mathfrak{m} \Rightarrow
 	\int_{\Omega}fdm \leq \int_{\Omega}gdm$
       \end{proof}
-   \item f $\geq$ 0 me"sbar
+   \item f $\geq$ 0 meßbar
 
-    $\int_{\Omega}$ fdm = 0 $\Leftrightarrow$ f=0 m fast "uberall
+    $\int_{\Omega}$ fdm = 0 $\Leftrightarrow$ f=0 m fast überall
     (m(\{f>0\})=0)
 
     \begin{proof}
@@ -2108,18 +2141,18 @@ Approximation durch kompakte Mengen
 	\Rightarrow \int_{\Omega} fdm \geq \int_{\Omega}f_{n}\mathfrak{m}>0$
        \item ``$\Leftarrow$''
 
-	Es gelte: f=0 m fast "uberall
+	Es gelte: f=0 m fast überall
 	Sei ($f_{n}$) Folge nichtneg. einfacher Funktionen,
-	$f_{n}\uparrow f\Rightarrow f_{n}=0$ m fast "uberall
+	$f_{n}\uparrow f\Rightarrow f_{n}=0$ m fast überall
 	$\Rightarrow^{E1.6}\int_{\Omega} f_{n}\mathfrak{m} =0,\forall n \Rightarrow
 	\int_{\Omega} fdm := \lim_{n\rightarrow\infty} \int_{\Omega}
 	f_{n}\mathfrak{m} =0$
       \end{enumerate}
     \end{proof}
-   \item f$\geq$0 me"sbar
+   \item f$\geq$0 meßbar
     \begin{gather}
       \int_{\Omega}fdm < \infty \Rightarrow f<\infty \text{m fast
-	 "uberall} (d.\,h. m(\{f=\infty\})=0)
+	 überall} (d.\,h. m(\{f=\infty\})=0)
     \end{gather}
 
     \begin{proof}
@@ -2130,10 +2163,10 @@ Approximation durch kompakte Mengen
   \end{enumerate}
 
   \section{Integrierbare Funktion}
-  $(\Omega, \mathcal{F}, m)$ beliebieger Ma"sraum, f sei me"sbare Funktion auf
+  $(\Omega, \mathcal{F}, m)$ beliebieger Maßraum, f sei meßbare Funktion auf
   $(\Omega, \mathcal{F})$, f=$f^{+}-f^{-}$
   $f^{+}=\max\{f,0\} positiver Teil von f, f^{-}=\max\{0,-f\} negativer
-  Teil$ $f^{+},f^{-} nichtnegative me"sbare Funktionen$
+  Teil$ $f^{+},f^{-} nichtnegative meßbare Funktionen$
 
   \begin{defini}
     \begin{enumerate}[(i)]
@@ -2145,7 +2178,7 @@ Approximation durch kompakte Mengen
       \begin{gather}
 	\int_{\Omega} fdm := \int_{\Omega}f^{+}\mathfrak{m} - \int_{\Omega}f^{-}dm
       \end{gather}
-     \item f hei"s't integrierbar, falls f me"sbar ist und
+     \item f heiß't integrierbar, falls f meßbar ist und
       $\int_{\Omega}fdm$ existiert sowie endlich ist ($\Leftrightarrow$
       $\int_{\Omega}f^{+}\mathfrak{m}, \int_{\Omega}f^{-}\mathfrak{m} < \infty$
     \end{enumerate}
@@ -2154,9 +2187,9 @@ Approximation durch kompakte Mengen
   Eigenschaften:
   \begin{enumerate}[E1]
    \item f=$1_{A}, A\in \mathcal{F} \Rightarrow \int_{\Omega} fdm = m(A)$
-   \item Positivit"at f$\geq$0 me"sbar $\Rightarrow$ $\int_{\Omega}fdm
+   \item Positivität f$\geq$0 meßbar $\Rightarrow$ $\int_{\Omega}fdm
     \geq 0$
-   \item Lineariot"at $f,g$ me"sbare Funktionen, $\int_{\Omega} f\,dm,
+   \item Lineariotät $f,g$ meßbare Funktionen, $\int_{\Omega} f\,dm,
     \int_{\Omega} g\,dm$ exitsieren, $a,b \in\R$
     \begin{gather}
       a\int_{\Omega}fdm+ b\int_{\Omega}g\,dm
@@ -2175,10 +2208,10 @@ Approximation durch kompakte Mengen
 
   Zwischenschritt: $\int_{\Omega} (f^{-}+g^{-}) 1_{\{f+g\geq0\}}\mathfrak{m} <+\infty$
   \begin{enumerate}[1. Fall]
-   \item Sei (3) erf"ullt $\Rightarrow$ $\int_{\Omega}
+   \item Sei (3) erfüllt $\Rightarrow$ $\int_{\Omega}
     (f^{-}+g^{-})1_{\{f+g\geq0\}}\mathfrak{m} \leq_{Monotonie} \int_{\Omega}
     (f^{-}+g^{-})\mathfrak{m} < \infty$
-   \item Sei (2) erf"ullt
+   \item Sei (2) erfüllt
     \begin{gather}
       \int_{\Omega} (f^{-}+g^{-})1_{\{f+g\geq0\}} \mathfrak{m} \leq^{Monotonie} \int_{\Omega}
 	 (f^{+}+g^{+})1_{\{f+g\geq0\}}\mathfrak{m} \leq \int_{\Omega}
@@ -2214,7 +2247,7 @@ Approximation durch kompakte Mengen
   \end{gather}
 
   E4 (Monotonie)
-  f,g me"sbar, f$\leq$g, $\int_{\Omega}f\,\mathfrak{m}, \int_{\Omega}g\,\mathfrak{m}$
+  f,g meßbar, f$\leq$g, $\int_{\Omega}f\,\mathfrak{m}, \int_{\Omega}g\,\mathfrak{m}$
   existieren.
 
   Dann folgt:
@@ -2238,7 +2271,7 @@ Approximation durch kompakte Mengen
 	      \end{cases}, h\geq0
     \end{gather*}
 
-    $0\leq_{Positiv.} \int_{\Omega}h\,\mathfrak{m} =_{Linearit"at} \int_{\Omega}
+    $0\leq_{Positiv.} \int_{\Omega}h\,\mathfrak{m} =_{Linearität} \int_{\Omega}
     g\,1^{\{-\infty<f,g<+\infty\}}\mathfrak{m}-\int_{\Omega}f\,1^{\{-\infty<f,g<+\infty\}}dm
     =\int_{\Omega}g\,\mathfrak{m} -\int_{\Omega} f\,\mathfrak{m} $
   \end{proof}
@@ -2247,7 +2280,7 @@ Approximation durch kompakte Mengen
 
   \begin{gather}
     \int_{\Omega} f\,\mathfrak{m} = \int_{\Omega}g\,\mathfrak{m} \Leftrightarrow f=g\quad m
-       fast "uberall
+       fast überall
   \end{gather}
 
   \begin{proof}
@@ -2255,12 +2288,12 @@ Approximation durch kompakte Mengen
 
     \begin{align}
       \int_{\Omega}h\,\mathfrak{m} = \int_{\Omega}g\,\mathfrak{m}-\int_{\Omega}f\,\mathfrak{m} =0
-	 &\Leftrightarrow h=0 m- fast "uberall (E2.5)\\
-	 &\Leftrightarrow f=g m- fast "uberall
+	 &\Leftrightarrow h=0 m- fast überall (E2.5)\\
+	 &\Leftrightarrow f=g m- fast überall
     \end{align}
   \end{proof}
 
-  E6 f me"sbar
+  E6 f meßbar
 
   \begin{gather}
     f \text{integrierbar} \Leftrightarrow \int_{\Omega}|f|\,\mathfrak{m}<+\infty
@@ -2273,23 +2306,23 @@ Approximation durch kompakte Mengen
     \end{gather}
   \end{proof}
 
-  E7 f me"sbar
+  E7 f meßbar
 
-  f integrierbar $\Rightarrow$ |f| <$+\infty$ m-fast "uberall
+  f integrierbar $\Rightarrow$ |f| <$+\infty$ m-fast überall
 
   \begin{proof}
     \begin{gather}
       \int_{\Omega}|f|\mathfrak{m}<+\infty \Rightarrow^{E2.6} |f|<+\infty m-fast
-	 "uberall
+	 überall
     \end{gather}
   \end{proof}
 
-  E8 f me"sbar, f=0 m-fast "uberall
+  E8 f meßbar, f=0 m-fast überall
 
   $\Rightarrow \exists\int_{\Omega} f\,\mathfrak{m}$ und $\int_{\Omega}f\,\mathfrak{m} = 0$
 
   \begin{gather}
-    f=f^{+}+f^{-} \Rightarrow f^{+}=0 m-f."u., f^{-}=0 m-f."u.\\
+    f=f^{+}+f^{-} \Rightarrow f^{+}=0 m-f.ü., f^{-}=0 m-f.ü.\\
     \Rightarrow \int_{\Omega} f^{+}\,\mathfrak{m}=0, \int_{\Omega}f^{-}\,\mathfrak{m}=0 (nach
        E2.5)\\
     \Rightarrow \int_{\Omega}f\,\mathfrak{m} =\int_{\Omega}f^{+}\,\mathfrak{m} -\int_{\Omega}
@@ -2309,13 +2342,13 @@ Approximation durch kompakte Mengen
 
   \section{Stetigkeitseigenschaften der Integrals}
 
-  Riemann-Integral: Stetigkeit bzw. gleichm"a"siger Konvergenz der
+  Riemann-Integral: Stetigkeit bzw. gleichmäßiger Konvergenz der
   Integranden
 
-  $(\Omega,\mathcal{F},\mathcal{m})$ beliebiger Ma"sraum
+  $(\Omega,\mathcal{F},\mathcal{m})$ beliebiger Maßraum
 
-  \begin{satz}[Satz von B.~Levi "uber monotone Konvergenz]
-    Sei ($f_{n})$ eine wachsende Folge nichtnegativer me"sbarer
+  \begin{satz}[Satz von B.~Levi über monotone Konvergenz]
+    Sei ($f_{n})$ eine wachsende Folge nichtnegativer meßbarer
     Funktionen, f=$\lim_{n\rightarrow\infty}f_{n}$
 
     Dann gilt:
@@ -2332,12 +2365,12 @@ Approximation durch kompakte Mengen
 	$\exists \lim_{m\rightarrow\infty}f_{n,m}\uparrow f_{n}, f_{n,m}$
 	nichtnegativ einfach
 
-	g:=$\max_{1\leq n\leq m}f_{n,m}$ einfache me"sbare Funktion
+	g:=$\max_{1\leq n\leq m}f_{n,m}$ einfache meßbare Funktion
 	\begin{enumerate}
 	 \item $g_{m}$ einfach
 	 \item $f_{n,m} \leq g_{m} \leq f_{m}, 1\leq n\leq m$
 	 \item $g_{m} \leq g_{m+1}, \forall m\geq1$
-	 \item $\lim_{m\rightarrow\infty} g_{m}=f$ (da "uber (b) eingeschachtelt)
+	 \item $\lim_{m\rightarrow\infty} g_{m}=f$ (da über (b) eingeschachtelt)
 	\end{enumerate}
 
 	$\Rightarrow\int_{\Omega}f\,\mathfrak{m} :=
@@ -2348,10 +2381,10 @@ Approximation durch kompakte Mengen
   \end{satz}
 
   \begin{folgerung}
-    Es sein ($f_{n})$ eine monoton wachsende Folge me"sbarer Funktionen,
+    Es sein ($f_{n})$ eine monoton wachsende Folge meßbarer Funktionen,
     $f=\lim_{n\rightarrow\infty} f_{n}$. Es gelte:
     \begin{enumerate}
-     \item g $\leq$ $f_{n}$ m-f."u.
+     \item g $\leq$ $f_{n}$ m-f.ü.
      \item $\int_{\Omega} g^{-}\mathfrak{m}<+\infty$
     \end{enumerate}
 
@@ -2378,7 +2411,7 @@ Approximation durch kompakte Mengen
   \end{folgerung}
 
   \begin{satz}[Lemma von Faton]
-    Sei ($f_{n}$) eine Folge \emph{nichtnegativer} me"sbarer Funktionen.
+    Sei ($f_{n}$) eine Folge \emph{nichtnegativer} meßbarer Funktionen.
 
     Dann folgt:
     \begin{gather}
@@ -2403,9 +2436,9 @@ Approximation durch kompakte Mengen
   \end{satz}
 
   \begin{folgerung} % Folgerugn 1
-    ($f_{n}$) Folge me"sbarer Funktionen mit:
+    ($f_{n}$) Folge meßbarer Funktionen mit:
     \begin{enumerate}
-     \item g $\leq$ $f_{n}$ m-f."u. f"ur eine me"sbare Funktion $g$
+     \item g $\leq$ $f_{n}$ m-f.ü. für eine meßbare Funktion $g$
      \item $\int_{\Omega}g^{-}\,\mathfrak{m}<+\infty$
     \end{enumerate}
   \end{folgerung}
@@ -2419,12 +2452,12 @@ Approximation durch kompakte Mengen
 
   \begin{proof}
     \begin{enumerate}
-     \item g $\leq$ $f_{n}$ m-f."u. $\Rightarrow$ $f^{-}_{n}\leq g^{-}$
-      m-f."u. $\Rightarrow$ $\int_{\Omega}f^{-}_{n}\,dm\leq+\infty$,
+     \item g $\leq$ $f_{n}$ m-f.ü. $\Rightarrow$ $f^{-}_{n}\leq g^{-}$
+      m-f.ü. $\Rightarrow$ $\int_{\Omega}f^{-}_{n}\,dm\leq+\infty$,
       ($\liminf_{n\rightarrow\infty} f_{n})^{-}\leq g^{-} $ $\Rightarrow$
       $\int_{\Omega}(\liminf_{n\rightarrow\infty}f_{n})^{-}\,\mathfrak{m}<\infty$
      \item A=$\bigcap_{n=1}^{\infty}\{-\infty<g\leq f_{n}\}, m(A^{\complement})=0$
-      $h_{n}=(f_{n}-g)\cdot 1_{A} \Rightarrow h_{n}\geq 0$ me"sbar
+      $h_{n}=(f_{n}-g)\cdot 1_{A} \Rightarrow h_{n}\geq 0$ meßbar
       $\Rightarrow$ $\int_{\Omega}\underbrace{\liminf_{n\rightarrow\infty} h_{n}}_{=
       (\liminf f_{n}-g)\cdot1_{A}}\,dm
       \leq\liminf_{n\rightarrow\infty}\int_{\Omega}h_{n}\,dm
@@ -2435,9 +2468,9 @@ Approximation durch kompakte Mengen
   \end{proof}
 
   \begin{folgerung}
-    Sei ($f_{n})$ Folge me"sbarer Funktionen mit den Eigenschaften:
+    Sei ($f_{n})$ Folge meßbarer Funktionen mit den Eigenschaften:
     \begin{enumerate}
-     \item $f_{n}\leq g$ m-f."u., n$\geq$1, g me"sbar
+     \item $f_{n}\leq g$ m-f.ü., n$\geq$1, g meßbar
      \item $\int_{\Omega}g^{+}\,\mathfrak{m}<\infty$
     \end{enumerate}
 
@@ -2449,13 +2482,13 @@ Approximation durch kompakte Mengen
     \end{gather}
 
     \begin{proof}
-      Anwendung von Folgerung 1 f"ur die Folge ($g_{n})$ mit $g_{n}=-f_{n}$
+      Anwendung von Folgerung 1 für die Folge ($g_{n})$ mit $g_{n}=-f_{n}$
       $\limsup_{n\rightarrow\infty}f_{n}=-\liminf_{n\rightarrow\infty}g_{n}$
     \end{proof}
   \end{folgerung}
 
-  \subsection{Konvergenz m-f."u.}
-  $(f_{n})$ Folge me"sbarer Funktionen,
+  \subsection{Konvergenz m-f.ü.}
+  $(f_{n})$ Folge meßbarer Funktionen,
   $\Omega_{0}:=\{\omega\in\Omega:\exists\lim_{n\rightarrow\infty}
   f(\omega) (in \hat{\R})\}\in \mathcal{F}$
 
@@ -2464,20 +2497,20 @@ Approximation durch kompakte Mengen
     \lim_{n\rightarrow\infty}f_{n}(\omega)&\omega\in\Omega_{0}\\
     0&\omega\not\in\Omega_{0}
   \end{cases}$
-  $\lim_{n\rightarrow\infty}f_{n}$ me"sbar auf $(\Omega,\mathcal{F})$
+  $\lim_{n\rightarrow\infty}f_{n}$ meßbar auf $(\Omega,\mathcal{F})$
 
   \begin{defini}
-    ($f_{n}$) hei"st m-f."u. konvergent, falls m($\Omega_{0}^{\complement})=0$
+    ($f_{n}$) heißt m-f.ü. konvergent, falls m($\Omega_{0}^{\complement})=0$
   \end{defini}
 
-  \begin{satz}[Satz von Lebesgue "uber majorisierte Konvergenz] %satz 3
-    Sei ($f_{n})$ einen Folge me"sbarer Funktionen auf $(\Omega,\mathcal{F})$ mit
+  \begin{satz}[Satz von Lebesgue über majorisierte Konvergenz] %satz 3
+    Sei ($f_{n})$ einen Folge meßbarer Funktionen auf $(\Omega,\mathcal{F})$ mit
     folgenden Eigenschaften:
     \begin{enumerate}
-     \item ($f_{n})$ konvergiert m-f."u.
-     \item Es existiert eine me"sbare Funktion g auf $(\Omega,\mathcal{F})$ mit
+     \item ($f_{n})$ konvergiert m-f.ü.
+     \item Es existiert eine meßbare Funktion g auf $(\Omega,\mathcal{F})$ mit
       \begin{enumerate}
-       \item |$f_{n}|\leq g$ m-f."u., n$\geq$1
+       \item |$f_{n}|\leq g$ m-f.ü., n$\geq$1
        \item $\int_{\Omega}g\,\mathfrak{m}<\infty$
       \end{enumerate}
     \end{enumerate}
@@ -2491,10 +2524,10 @@ Approximation durch kompakte Mengen
     \end{enumerate}
 
     \begin{proof}
-      -g$\leq f_{n}\leq g$ m-f."u., g,-g sind integrierbar
+      -g$\leq f_{n}\leq g$ m-f.ü., g,-g sind integrierbar
       $\rightarrow$ $\limsup_{n\rightarrow\infty}\int_{\Omega}f_{n}\,dm
       \leq^{Farton} \int_{\Omega}\limsup_{n\rightarrow\infty}f_{n}\,\mathfrak{m} =
-      \lim_{n\rightarrow\infty}f_{n}\,\mathfrak{m}$ (wegen der m-f."u. Konvergenz
+      \lim_{n\rightarrow\infty}f_{n}\,\mathfrak{m}$ (wegen der m-f.ü. Konvergenz
       von ($f_{n})$) = $\int_{\Omega}\liminf_{n\rightarrow\infty}
       f_{n}\,\mathfrak{m} \leq^{Faton} \liminf_{n\rightarrow\infty}\int_{\Omega}
       f_{n}\,\mathfrak{m} \leq\limsup_{n\rightarrow\infty}\int_{\Omega}f_{n}\,\mathfrak{m}$
@@ -2502,13 +2535,13 @@ Approximation durch kompakte Mengen
   \end{satz}
 
   \chapter{Das Lebesgue-Integral}
-  $(\R, \mathcal{B}^{\lambda}(\R), \lambda)$, Ma"sraum, $\lambda$ Lebesgue-Ma"s,
-  $\mathcal{B}(\R)$ $\sigma$-Algebra der Lebesgue-me"sbaren Mengen
-  ($\mathcal{B}^{\lambda}(\R)$ ist die Vervollst"andigung von $\mathcal{B}(\R)$ bzgl.
+  $(\R, \mathcal{B}^{\lambda}(\R), \lambda)$, Maßraum, $\lambda$ Lebesgue-Maß,
+  $\mathcal{B}(\R)$ $\sigma$-Algebra der Lebesgue-meßbaren Mengen
+  ($\mathcal{B}^{\lambda}(\R)$ ist die Vervollständigung von $\mathcal{B}(\R)$ bzgl.
   $\lambda$)
 
   \begin{defini}
-    $\int_{\R}f\,d\lambda$ bzw. $\int_{\R}f(x)\,dx$ hei"st
+    $\int_{\R}f\,d\lambda$ bzw. $\int_{\R}f(x)\,dx$ heißt
     \emph{Lebesgue-Integral} von $f$ (sofern das Integral existiert),
     $\int_{A}f\,d\lambda =\int_{\R}f\cdot1_{A}\,d\lambda, A\in
     \mathcal{B}^{\lambda}(\R)$
@@ -2517,28 +2550,28 @@ Approximation durch kompakte Mengen
   \begin{lemma}
     $f\colon\R\rightarrow \hat{\R}$
 
-    $f$ ist \emph{Lebesgue-me"sbar} $\Leftrightarrow$ Es existierten
-    Borel-me"sbare Funktionen $f_{1},f_{2}$ mit $f_{1}\leq f\leq f_{2}$
+    $f$ ist \emph{Lebesgue-meßbar} $\Leftrightarrow$ Es existierten
+    Borel-meßbare Funktionen $f_{1},f_{2}$ mit $f_{1}\leq f\leq f_{2}$
     und $\lambda(\{f_{1}\not=f_{2}\})=0$
 
-    ("Ubungsaufgabe)
+    (Übungsaufgabe)
   \end{lemma}
 
   Zielstellung: Vergleichen von Lebesgue-Integral und Riemann-Integral
 
   \begin{defini}
-    $f\colon\R\rightarrow\hat{\R}$, $f$ hei"st \emph{$\lambda$-f."u. stetig} auf
+    $f\colon\R\rightarrow\hat{\R}$, $f$ heißt \emph{$\lambda$-f.ü. stetig} auf
     $[a,b]$, falls eine Menge $N\subseteq[a,b]$ existiert mit $N \in
     \mathcal{B}^{\lambda}(\R), \lambda(N)=0$ und $f$ ist stetig in allen Punkten
     $x\in[a,b]\cap N^{\complement}$
   \end{defini}
 
   \begin{satz}
-    $f:\R\rightarrow \hat{\R}$ beschr"ank, $|f|\leq c$, $c>0$,
+    $f:\R\rightarrow \hat{\R}$ beschränk, $|f|\leq c$, $c>0$,
     $[a,b]\subseteq\R$ endliches Intervall
 
     $f$ Riemann-integrierbar auf $[a,b]$ $\Leftrightarrow$ $f$ ist
-    $\lambda$-f."u. stetig auf $[a,b]$
+    $\lambda$-f.ü. stetig auf $[a,b]$
 
     Es gilt dann:
     \begin{enumerate}
@@ -2547,7 +2580,7 @@ Approximation durch kompakte Mengen
     \end{enumerate}
 
     \begin{proof}
-      $f\colon\R\rightarrow \hat{\R}$ beschr"ankt $|f|\leq c$
+      $f\colon\R\rightarrow \hat{\R}$ beschränkt $|f|\leq c$
       o.\,B.\,d.\,A. $f(x)=0, x\not\in[a,b], bzw. f=f\cdot 1_{[a,b]}$
 
       $fZ_{n}=\{t_{0}^{(n)},\ldots,t_{m_{n}}^{(n)}\}$ Zerlegung von
@@ -2573,10 +2606,10 @@ Approximation durch kompakte Mengen
 
 \todo{hier fehlt was}
 
-\subsection{Produkte von WK-Ma"sens}
+\subsection{Produkte von WK-Maßens}
 
 $(\Omega_{1}, \mathcal{F}_{1}, P_{1})$ und $(\Omega_{2}, \mathcal{F}_{2}, P_{2})$
-WK-R"aume
+WK-Räume
 
 $\Omega = \Omega_{1}\times\Omega_{2}, \mathcal{F} = \mathcal{F}_{1}\otimes \mathcal{F}_{2},
 \omega=(\omega_{1}, \omega_{2}) \in \Omega$
@@ -2585,29 +2618,29 @@ Projektionsabbildungen
 $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 
 \begin{lemma} %3
-  $X_{i}:(\Omega,\mathcal{F})\rightarrow(\Omega_{i},\mathcal{F}_{i})$ me"sbar, (i=1,2)
+  $X_{i}:(\Omega,\mathcal{F})\rightarrow(\Omega_{i},\mathcal{F}_{i})$ meßbar, (i=1,2)
 
   \begin{proof}
     \begin{description}
      \item[i=1] $B\in \mathcal{F}_{1}$: $X_{1}^{-1}(B)=B\times\Omega_{2}\in
       \mathcal{F}_{1}\times \mathcal{F}_{2}\subseteq \mathcal{F}$
 
-      $p$ sei WK-Ma"s auf $(\Omega, \mathcal{F})$ $\Rightarrow$ $X_{i}: (\Omega,
-      \mathcal{F}, P) \rightarrow (\Omega_{i}, \mathcal{F}_{i})$ zuf"allige Variable,
-      $P_{X_{i}}:$ Verteilung von X bzgl. P (Bildma"s)
+      $p$ sei WK-Maß auf $(\Omega, \mathcal{F})$ $\Rightarrow$ $X_{i}: (\Omega,
+      \mathcal{F}, P) \rightarrow (\Omega_{i}, \mathcal{F}_{i})$ zufällige Variable,
+      $P_{X_{i}}:$ Verteilung von X bzgl. P (Bildmaß)
     \end{description}
   \end{proof}
 \end{lemma}
 
 \begin{satz}
   \begin{enumerate}
-   \item $P_{1}\otimes P_{2}$ ist ein WK-Ma"s auf $(\Omega, \mathcal{F})$
-   \item Es sei $P$ irgendein WK-Ma"s auf  $(\Omega, \mathcal{F})$ mit $P_{X_{i}} =
-    P_{i} (i=1,2)$. Dann sind folgende Aussagen "aquivalent:
+   \item $P_{1}\otimes P_{2}$ ist ein WK-Maß auf $(\Omega, \mathcal{F})$
+   \item Es sei $P$ irgendein WK-Maß auf  $(\Omega, \mathcal{F})$ mit $P_{X_{i}} =
+    P_{i} (i=1,2)$. Dann sind folgende Aussagen äquivalent:
     \begin{enumerate}
      \item \begin{gather}P = P_{1}\otimes P_{2}\end{gather}
-     \item\label{BBB} $X_{1}$ und $X_{2}$ sind unabh"angig bzgl. $P$
-     \item\label{CCC} $X_{1}^{-1}(F_{1})$ und $X_{2}^{-1}(\mathcal{F}_{2})$ unabh"angig bzgl.
+     \item\label{BBB} $X_{1}$ und $X_{2}$ sind unabhängig bzgl. $P$
+     \item\label{CCC} $X_{1}^{-1}(F_{1})$ und $X_{2}^{-1}(\mathcal{F}_{2})$ unabhängig bzgl.
       $P$
     \end{enumerate}
   \end{enumerate}
@@ -2655,20 +2688,20 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 \end{gather}
 
 \begin{defini} % 4
-  $x\in \Omega_{1}, f_{x}(y) = f(x,y), y\in \Omega_{2}, f_{x}$ hei"st
+  $x\in \Omega_{1}, f_{x}(y) = f(x,y), y\in \Omega_{2}, f_{x}$ heißt
   \emph{Schnitt} von f in $x\in \Omega_{1}$
 
-  $y\in \Omega_{2}, f^{y}(x) = f(x,y), x\in\Omega_{1}, f^{y}$ hei"st
+  $y\in \Omega_{2}, f^{y}(x) = f(x,y), x\in\Omega_{1}, f^{y}$ heißt
   \emph{Schnitt} von f in $y\in \Omega_{2}$
 \end{defini}
 
 \begin{lemma} % 4
   Sei $f:(\Omega, \mathcal{F}) = (\Omega_{1}\times \Omega_{2}, \mathcal{F}_{1}\otimes
-  \mathcal{F}_{2}) \rightarrow (\hat{\R}, \mathcal{B}(\hat{\R}))$ me"sbar
+  \mathcal{F}_{2}) \rightarrow (\hat{\R}, \mathcal{B}(\hat{\R}))$ meßbar
 
   Dann  ist $f_{x}: (\Omega_{2}, \mathcal{F}_{2}) \rightarrow (\hat{\R},
   \mathcal{B}(\hat{\R}))$ sowie  $f^{y}:(\Omega_{1}, \mathcal{F}_{1}) \rightarrow
-  (\hat{\R}, \mathcal{B}(\hat{\R}))$ me"sbar
+  (\hat{\R}, \mathcal{B}(\hat{\R}))$ meßbar
 
   \begin{proof}
     \begin{gather}
@@ -2677,7 +2710,7 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
       \Rightarrow^{Lemma 2} A_{x}\in \mathcal{F}_{2}, A^{y}\in \mathcal{F}_{1}, \text{es
 	 gilt: } A_{x}=\{y\in\Omega_{2}: f_{x}(y) < r\} =
 	 f^{-1}_{x}([-\infty, r))\in \mathcal{F}_{2}\forall r\in \R \Rightarrow
-	 f_{x} me"sbar
+	 f_{x} meßbar
     \end{gather}
 
     analog: $\mathcal{F}_{1}\ni A^{y}= (f^{y})^{-1}([-\infty,r))$
@@ -2686,13 +2719,13 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 
 \begin{satz}[Satz von Fubini] % 5
   ($\Omega_{1}, \mathcal{F}_{1}, \mathcal{m}_{1})$ und ($\Omega_{2}, \mathcal{F}_{2}, \mathcal{m}_{2})$
-  $\sigma$-endliche Ma"sr"aume, $(\Omega, \mathcal{F}, \mathcal{m})$ = ($\Omega_{1}\times
+  $\sigma$-endliche Maßräume, $(\Omega, \mathcal{F}, \mathcal{m})$ = ($\Omega_{1}\times
   \Omega_{2}, \mathcal{F}_{1}\otimes \mathcal{F}_{2}, \mathcal{m}_{1}\otimes \mathcal{m}_{2})$
 
-  f sei eine me"sbare Funktion auf ($\Omega, \mathcal{F})$, f nichtnegativ.
+  f sei eine meßbare Funktion auf ($\Omega, \mathcal{F})$, f nichtnegativ.
 
   Dann folgt: Das Integral $\int_{\Omega_{2}}
-  \underbrace{f(x,y)}_{f_{x}(y)} \mathcal{m}_{2}(dy)$ ist eine me"sbare Funktion
+  \underbrace{f(x,y)}_{f_{x}(y)} \mathcal{m}_{2}(dy)$ ist eine meßbare Funktion
   in $x$ auf ($\Omega_{1}, \mathcal{F}_{1})$ und es gilt:
   \begin{gather}
     \int_{\Omega} f(x,y) \mathcal{m}(d(x,y)) =
@@ -2705,10 +2738,10 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
       \begin{align}
 	\int_{\Omega} f(x,y) m(d(x,y)) &= \int_{\Omega} 1_{A}(x,y)
 	   \mathcal{m}(d(x,y)) = \mathcal{m}(A) = \int_{\Omega_{1}}
-	   \underbrace{\mathcal{m}_{2}(A_{x})}_{me"sbar in x (Satz 1)} \mathcal{m}_{1}(dx)\\
+	   \underbrace{\mathcal{m}_{2}(A_{x})}_{meßbar in x (Satz 1)} \mathcal{m}_{1}(dx)\\
 	& \int_{\Omega_{1}}(\int_{\Omega_{2}}1_{A}(y) \mathcal{m}_{2}(dy)) \mathcal{m}(dx)
 	   = \int_{\Omega_{1}}\underbrace{(\int_{\Omega_{2}}f(x,y)
-	   m_{2}(dy))}_{me"sbar in x}\mathcal{m}_{1}(dx)
+	   m_{2}(dy))}_{meßbar in x}\mathcal{m}_{1}(dx)
       \end{align}
      \item f sei nichtnegative einfache Funktion, d.\,h.
       \begin{gather}
@@ -2722,11 +2755,11 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 	&= \sum_{k=1}^{n}c_{k}\int_{\Omega_{1}}(\int_{\Omega_{2}}
 	   1_{A_{k}}(x,y) m_{2}(dy))m_{1}(dx) = \int_{\Omega_{1}}
 	   \underbrace{(\sum_{k=1}^{n}c_{k} \int_{\Omega_{2}}1_{A_{k}}(x,y)
-	   \mathcal{m}_{2}(dy))}_{me"sbar in x}m_{1}(dx)\\
+	   \mathcal{m}_{2}(dy))}_{meßbar in x}m_{1}(dx)\\
 	&= \int_{\Omega_{1}}\underbrace{(\int_{\Omega_{2}}\sum_{k=1}^{n} c_{k}
-	   1_{A_{k}}(x,y) m_{2}(dy))}_{me"sbar in x}m_{1}(dx)
+	   1_{A_{k}}(x,y) m_{2}(dy))}_{meßbar in x}m_{1}(dx)
       \end{align}
-     \item f me"sbar auf $(\Omega, \mathcal{F})$, f$\geq$0
+     \item f meßbar auf $(\Omega, \mathcal{F})$, f$\geq$0
 
       $\exists f_{n}: f_{n}\geq0$ und einfach,
       $f_{n}\uparrow_{n\rightarrow\infty}f$
@@ -2740,7 +2773,7 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 	   f_{n}(x,y) m_{2}(dy))m_{1}(dx) =^{B. Levi} \int_{\Omega_{1}}
 	   (\lim_{n\rightarrow\infty} \int_{\Omega_{2}} f_{n}(x,y)
 	   m_{2}(dy)) m_{1}(dx) =^{B. Levi}
-	   \int_{\Omega_{1}}\underbrace{(\int_{\Omega_{2}}f(x,y) m_{2}(dy))}_{me"sbar
+	   \int_{\Omega_{1}}\underbrace{(\int_{\Omega_{2}}f(x,y) m_{2}(dy))}_{meßbar
 	   in x} m_{1}(dx)
       \end{gather}
     \end{enumerate}
@@ -2748,7 +2781,7 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 \end{satz}
 
 \begin{satz} % 5':
-  f sei me"sbar auf $(\Omega, \mathcal{F})$, $\exists\int_{\Omega} f(x,y)m(d(x,y))$
+  f sei meßbar auf $(\Omega, \mathcal{F})$, $\exists\int_{\Omega} f(x,y)m(d(x,y))$
 
   Dann existiert $\int_{\Omega_{1}}(\int_{\Omega_{2}}f(x,y) m_{2}(dy))
   m_{1}(dx)$ und es gilt:
@@ -2771,7 +2804,7 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 	 \underbrace{\int_{\Omega}f^{+}(x,y) m(d(x,y))}_{<\infty}
 	 -\int_{\Omega}f^{-}(x,y) m(d(x,y))\\
       &=^{Satz 5} \int_{\Omega_{1}}(\underbrace{\int_{\Omega_{2}}
-	 f^{+}(x,y)m_{2}(dy))}_{<\infty m_{1}-f."u.}m_{1}(dx)-
+	 f^{+}(x,y)m_{2}(dy))}_{<\infty m_{1}-f.ü.}m_{1}(dx)-
 	 \int_{\Omega_{1}}(\int_{\Omega_{2}} f^{-}(x,y)m_{2}(dy))m_{1}(dx)
     \end{align}
     N=\{$x\in \Omega_{1}: \int_{\Omega_{2}}f^{+}(x,y) m_{2}(dy)=\infty\},
@@ -2781,7 +2814,7 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
 	 1_{N^{\complement}}(x)(\int_{\Omega_{2}}f^{+}(x,y)m_{2}(dy)) m_{1}(dx) -
 	 \int_{\Omega_{1}}
 	 1_{N^{\complement}}(x)(\int_{\Omega_{2}}f^{-}(x,y)m_{2}(dy)) m_{1}(dx)\\
-      &=^{Linearit"at} \int_{\Omega_{1}}
+      &=^{Linearität} \int_{\Omega_{1}}
 	 1_{N^{\complement}}(x)(\int_{\Omega_{2}}f^{+}(x,y)m_{2}(dy)-
 	 \int_{\Omega_{2}}f^{+}(x,y)m_{2}(dy)) m_{1}(dx)\\
       &= \int_{\Omega_{1}}\underbrace{1_{N^{\complement}}(x) (\int_{\Omega_{2}}f(x,y)
@@ -2796,11 +2829,11 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
   (Iterierte Integral und dessen Existenz)
 
   Das iterierte Integral $\int_{\Omega_{1}}(\int_{\Omega_{2}} f(x,y)
-  m_{2}(dy))m_{1}(dx)$ existiert (gem"a"s Definition), falls:
+  m_{2}(dy))m_{1}(dx)$ existiert (gemäß Definition), falls:
   \begin{enumerate}
    \item
     \begin{gather}
-      \exists\int_{\Omega_{2}}f(x,y) m_{2}(dy) m_{1}-f."u., d.\,h. es exist.
+      \exists\int_{\Omega_{2}}f(x,y) m_{2}(dy) m_{1}-f.ü., d.\,h. es exist.
 	 N\in \mathcal{F}_{1}, m_{1}(N) = 0 und \int_{\Omega_{1}} f(x,y) m_{2}(dy)
 	 exists \forall x\in N^{\complement}
     \end{gather}
@@ -2813,13 +2846,13 @@ $X_{1}(\omega) = \omega_{1}, X_{2}(\omega)=\omega_{2}$
          \end{cases}
     \end{gather*}
 
-    $g$ me"sbar
+    $g$ meßbar
    \item $\exists\int_{\Omega_{1}}g(x) m_{1}(dx)$
   \end{enumerate}
 \end{bemerk}
 
 \begin{folgerung}
-  $f$ me"sbar auf $(\Omega, \mathcal{F})$
+  $f$ meßbar auf $(\Omega, \mathcal{F})$
 
   Aus Satz 5 folgt:
   \begin{gather}
@@ -2856,7 +2889,7 @@ Ungleichung von Young
 	 |g|\,\mathfrak{m}}_{<\infty} = \|f\|_{q}+\|g\|_{q} <\infty
     \end{gather}
    \item[2.Fall] $1<p<\infty$
-    zeigen zun"achst: $f+g\in L_{p}$
+    zeigen zunächst: $f+g\in L_{p}$
     \begin{gather}
       |f+g|^{p}\leq|f+g||f+g|^{p-1}\leq(|f|+|g|)|f+g|^{p-1} =
 	 |f||f+g|^{p-1}+|g||f+g|^{p-1} (r_{1}=|f|, r_{2}=|g|,
@@ -2868,7 +2901,7 @@ Ungleichung von Young
     Vorraussetzung: $|f+g|\not=0$, Multiplikation mit $|f+g|^{1-p}$
     \begin{gather}
       \Rightarrow |f+g|\leq(|f|^{p}+|g|^{p})^{\frac1p}2^{\frac1q} ( auch
-	 g"ultig f"ur |f+g|=0)\\
+	 gültig für |f+g|=0)\\
       = |f+g|^{p} \leq (|f|^{p}+|g|^{p})2^{\frac{p}q} \Rightarrow
 	 |f+g|^{p} integrierbar \Rightarrow f+g\in L_{p}
     \end{gather}
@@ -2882,7 +2915,7 @@ Ungleichung von Young
 	 &\leq(\int_{\Omega}|f|^{p}\,\mathfrak{m})^{\frac1p}
 	 (\int_{\Omega}|f+g|^{(p-1)q}\,\mathfrak{m})^{\frac1q} +
 	 (\int_{\Omega}|g|^{p}\,\mathfrak{m})^{\frac1q}
-	 (\int_{\Omega}|f+g|^{(p-1)q}\,\mathfrak{m})^{\frac1q} (H"oldersche Ungleichung)\\
+	 (\int_{\Omega}|f+g|^{(p-1)q}\,\mathfrak{m})^{\frac1q} (Höldersche Ungleichung)\\
       &=(\|f\|_{p}+\|g\|_{p})(\int_{\Omega}|f+g|^{p}\,\mathfrak{m})^{\frac1q}\\
       Ann:. \int_{\Omega}|f+g|^{p}\,dm\not=0\\
 	 &=(\int_{\Omega}|f+g|^{p}\,\mathfrak{m})^{1-\frac1q=1\frac1p}
@@ -2893,9 +2926,9 @@ Ungleichung von Young
 \end{proof}
 
 \begin{satz} % Satz 3
-  $1\leq p<\infty, (\Omega, \mathcal{F}, \mathcal{m})$ Ma"sraum
+  $1\leq p<\infty, (\Omega, \mathcal{F}, \mathcal{m})$ Maßraum
 
-  Dann istt $L_{p}(\Omega, \mathcal{F},\mathcal{m})$ ein Banachraum (vollst"andig
+  Dann istt $L_{p}(\Omega, \mathcal{F},\mathcal{m})$ ein Banachraum (vollständig
   nromierter linearer Raum)
 
   \begin{proof}
@@ -2908,13 +2941,13 @@ Ungleichung von Young
      \item $\|\cdot\|$ ist eine Norm
       \begin{enumerate}
        \item $\|f\|_{p}\geq0, \|f\|_{p}=\int_{\Omega}|f|^{p}\,\mathfrak{m}=0
-	\Leftrightarrow |f|=0 m-f"u \Leftrightarrow f=0$  (im Sinne
-	der "Aquivalenzklassenbildung)
+	\Leftrightarrow |f|=0 m-fü \Leftrightarrow f=0$  (im Sinne
+	der Äquivalenzklassenbildung)
        \item $\|\alpha f\|_{p}=|\alpha|\|f\|_{p}, \alpha\in\R, f\in
 	L_{p}$ klar
        \item $\|f+g\|_{p} \leq \|f\|_{p}+\|g\|_{p}, f,g\in L_{p}$ (Satz 2)
       \end{enumerate}
-     \item ($L_{p},\|\cdot\|_{p})$ vollst"andiger normierter Raum
+     \item ($L_{p},\|\cdot\|_{p})$ vollständiger normierter Raum
 
       Es sei ($f_{n}$) eine Cauchy-Folge in $L_{p}$:
       $\lim_{n,m\rightarrow\infty} \|f_{n}-f_{m}\|_{p}=0$
@@ -2924,7 +2957,7 @@ Ungleichung von Young
 
       $n_{k}\leq n_{k+1}$
       Es folgt: $\|f_{n_{k+1}}-f_{n_{k}}\|_{p}\leq\frac{1}{2^{k}}, k=1,2,\ldots$
-      $g := \sum_{k=1}^{\infty} |f_{n_{k+1}}-f_{n_{k}}|$ me"sbare Funktion
+      $g := \sum_{k=1}^{\infty} |f_{n_{k+1}}-f_{n_{k}}|$ meßbare Funktion
 
       zeigen: $g\in L_{p}$
       \begin{gather}
@@ -2939,7 +2972,7 @@ Ungleichung von Young
 	   )^{p} \leq1
       \end{gather}
 
-      $\Rightarrow$ $0\leq g<\infty$ m-f"u
+      $\Rightarrow$ $0\leq g<\infty$ m-fü
       $\Rightarrow$ $\Omega_{0}\in \mathcal{F}, m(\Omega^{\complement})=0$ und
       $0\leq g(x)<\infty$ $\forall x\in\Omega_{0}$
 
@@ -2973,20 +3006,20 @@ Ungleichung von Young
 \end{satz}
 
 \chapter{Dichtefunktionen} % Kapitel 11
-$(\Omega, \mathcal{F}, m)$ beliebiger Ma"sraum, f$\geq$0 me"sbarer Funktion auf
+$(\Omega, \mathcal{F}, m)$ beliebiger Maßraum, f$\geq$0 meßbarer Funktion auf
 $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 \int_{\Omega}f\cdot1_{A}\,\mathfrak{m}, A\in \mathcal{F}$
 
 \begin{satz} % satz 1
   \begin{enumerate}
-   \item $\mu$ ist eine Ma"s auf $(\Omega, \mathcal{F})$
+   \item $\mu$ ist eine Maß auf $(\Omega, \mathcal{F})$
    \item $A\in \mathcal{F}$, $\mathcal{m}(A)=0$ $\Rightarrow$ $\mu(A) =0$
   \end{enumerate}
 
   \begin{proof}
     \begin{enumerate}
      \item2. $\mu$(A)=$\int_{A}f\cdot1_{A}\,\mathfrak{m} = 0$, da f$\cdot 1_{A}=0$
-      m-f"u, falls m(A)=0
+      m-fü, falls m(A)=0
      \item1. $\mu$($\emptyset$)=0 klar
 
       $(A_{n})$ aus $\mathcal{F}$, p.\,d.: $\mu(\bigcup_{n=1}^{\infty} A_{n}) =
@@ -3001,7 +3034,7 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 \begin{satz}
   $m$ $\sigma$-endlich
 
-  Dann ist die Dichte $f$ von $\mu$ bzgl. $\mathcal{m}$ $\mathcal{m}$-f"u. eindeutig bestimmt.
+  Dann ist die Dichte $f$ von $\mu$ bzgl. $\mathcal{m}$ $\mathcal{m}$-fü. eindeutig bestimmt.
 
   \begin{proof}
     $\Omega_{n} \uparrow \Omega, \Omega_{n}\in \mathcal{F} \mathcal{m}(\Omega_{n})<\infty$
@@ -3025,7 +3058,7 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
     1_{A\cap\Omega_{n}\cap\Omega_{n}'}}_{\geq 0}\, \mathfrak{m}$
 
     $\Rightarrow (f_{1}-f_{2})\cdot1_{A\cap\Omega_{n}\cap\Omega_{n}'}=0$
-    $\mathcal{m}$-f"u $\Rightarrow$ $m(A\cap\Omega_{n}\cap\Omega_{n}')=0$
+    $\mathcal{m}$-fü $\Rightarrow$ $m(A\cap\Omega_{n}\cap\Omega_{n}')=0$
 
     $m(\{\infty>f_{1}>f_{2}\}) = \lim_{n\rightarrow\infty}
     m(A\cap\Omega_{n}\cap\Omega_{n}')=0$
@@ -3047,25 +3080,25 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
       n\cdot m(\{\infty=f_{1}, f_{2} \leq n\}\cap\Omega_{n}) < \infty$
     \end{enumerate}
 
-    $\Rightarrow$ auch bei a) muss endlicher Wert stehen, geht nur f"ur
+    $\Rightarrow$ auch bei a) muss endlicher Wert stehen, geht nur für
     $m(\{\infty=f_{1}, f_{2} \leq n\}\cap\Omega_{n})=0$
 
     gezeigt: $m(\{f_{1}>f_{2}\})=0$
-    $\Rightarrow$ $f_{1}\leq f_{2}$ m-f"u
+    $\Rightarrow$ $f_{1}\leq f_{2}$ m-fü
 
-    annalog: $f_{2}\leq f_{2}$ m-f"u
+    annalog: $f_{2}\leq f_{2}$ m-fü
   \end{proof}
 \end{satz}
 
 \begin{defini} % def 2
-  $(\Omega, \mathcal{F})$ me"sbarer Raum, $\mu$, $m$ Ma"se auf $(\Omega, \mathcal{F})$
+  $(\Omega, \mathcal{F})$ meßbarer Raum, $\mu$, $m$ Maße auf $(\Omega, \mathcal{F})$
 
-  Dann hei"st $\mu$ absolut stetig bzgl. $\mathcal{m}$ ($\mu \ll\mathcal{m}$) , falls
-  $\mu(A) =0$ f"ur alle $A \in \mathcal{F}$ mit $\mathcal{m}(A)=0$.
+  Dann heißt $\mu$ absolut stetig bzgl. $\mathcal{m}$ ($\mu \ll\mathcal{m}$) , falls
+  $\mu(A) =0$ für alle $A \in \mathcal{F}$ mit $\mathcal{m}(A)=0$.
 \end{defini}
 
 \begin{lemma} %1
-  $g \geq 0$ me"sbar
+  $g \geq 0$ meßbar
 
   \begin{gather}
     \int_{\Omega} g\,\mathfrak{m} = \int_{\Omega}g\cdot1_{\Omega_{n}}\, dm
@@ -3073,7 +3106,7 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 \end{lemma}
 
 \begin{lemma} %2
-  $\nu, \tau$ seien endliche Ma"se, $\nu(\Omega)$<$\tau(\Omega)$
+  $\nu, \tau$ seien endliche Maße, $\nu(\Omega)$<$\tau(\Omega)$
 
   Dann existeier $\Omega'\in \mathcal{F}$ mit
   $\nu(\Omega')<\tau(\Omega')$ und $\nu(A) \leq \tau(A)$, $A\in
@@ -3085,9 +3118,9 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 \end{lemma}
 
 \begin{satz}[Radon-Nicodym] % 3
-  $\mu$, $\mathcal{m}$ ma"se auf $(\Omega, \mathcal{F})$, $\mathcal{m}$ sei $\sigma$-endlich.
+  $\mu$, $\mathcal{m}$ maße auf $(\Omega, \mathcal{F})$, $\mathcal{m}$ sei $\sigma$-endlich.
 
-  Dann sind die folgenden Bedingungen "aquivalent:
+  Dann sind die folgenden Bedingungen äquivalent:
   \begin{enumerate}
    \item $\mu \ll m$
    \item es existiert eine Dichte $f$ von $\mu$ bzgl. $m$
@@ -3096,29 +3129,29 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
   \begin{proof}
     (b)$\rightarrow$(a): klar
 
-    Umkehrung: zus"atzliche Vorraussetzung: $\mu$ $\sigma$-endlich
+    Umkehrung: zusätzliche Vorraussetzung: $\mu$ $\sigma$-endlich
     \begin{enumerate}[1.\,Schritt]
-     \item Reduktion auf den Fall, da"s $\mu$ und $\mathcal{m}$ endlich sind
+     \item Reduktion auf den Fall, daß $\mu$ und $\mathcal{m}$ endlich sind
       $\exists \Omega_{n} \in \mathcal{F}$, paarweise disjunkt,
       $\Omega=\bigcup_{n=1}^{\infty}\Omega_{n}$ mit m$(\Omega_{n} )$,
       $\mu(\Omega_{n})$ < $\infty$
 
       $m_{n}(A) := m(A\cap\Omega_{n}), \mu_{n}(A)=\mu(A\cap\Omega_{n}),
-      A\in \mathcal{F}, n\geq1$ $\mathcal{m}_{n}, \mu_{n}$ endliche Ma"se, $\mu_{n} \ll \mathcal{m}_{n}$
+      A\in \mathcal{F}, n\geq1$ $\mathcal{m}_{n}, \mu_{n}$ endliche Maße, $\mu_{n} \ll \mathcal{m}_{n}$
 
-      Ann.: Satz g"ultig f"ur endliche Ma"se
+      Ann.: Satz gültig für endliche Maße
       $\Rightarrow$ $\exists$ Dichte $f_{n}$ von $\mu_{n}$ bgzl. $\mathcal{m}_{n}$
 
       Ansatz: f:=$\sum_{n=1}^{\infty}f_{n}\cdot1_{\Omega_{n}}$
 
-      f$\geq$0 me"sbar
+      f$\geq$0 meßbar
       $\mu(A)$=$\sum_{n=1}^{\infty}\mu(A\cap\Omega_{n})
       =\sum_{n=1}^{\infty}\int_{A}f_{n}\,\mathfrak{m} =^{Lemma
       1} =\sum_{n=1}^{\infty}\int_{A}f_{n}\cdot1_{\Omega_{n}}\,dm
       =^{B.\,Levi} \int_{A}\sum_{n=1}^{\infty} f_{n}\cdot1_{\Omega_{n}}\,dm
       = \int_{A}\sum_{n=1}^{\infty} f\,\mathfrak{m}, A\in \mathcal{F}$
      \item Seien $\mu$, $\mathcal{m}$ endlich
-      $\mathcal{H}=\{h: h\geq 0 \text{me"sbar}, \int_{A}h\,dm\leq\mu(A),
+      $\mathcal{H}=\{h: h\geq 0 \text{meßbar}, \int_{A}h\,dm\leq\mu(A),
       \forall A\in \mathcal{F}\}$
 
       \begin{enumerate}
@@ -3149,7 +3182,7 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 	Es gilt: $f$ ist Dichte von $\mu$ bzgl. $\mathcal{m}$
 	zeigen: $\mu\ll\mathcal{m} \Rightarrow f$ Dichte
 	$\tau(A) := \mu(A)-\int_{A}f\,d\mathcal{m}, A\in \mathcal{F},
-	\tau$ Ma"s auf $(\Omega, \mathcal{F})$
+	\tau$ Maß auf $(\Omega, \mathcal{F})$
 
 	z.\,z. $\mu\ll \mathcal{m} \Rightarrow \tau\equiv0$
 
@@ -3187,9 +3220,9 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 \end{satz}
 
 \begin{bsp}
-  $m$ beliebiges ma"s auf $(\Omega, \mathcal{F}), \mathcal{m}\not= 0, f\equiv\infty$:
+  $m$ beliebiges maß auf $(\Omega, \mathcal{F}), \mathcal{m}\not= 0, f\equiv\infty$:
   $\mu(A) =\int_{A} f\,\mathfrak{m}, A\in \mathcal{F}$
-  $\mu$ Ma"s:
+  $\mu$ Maß:
   \begin{equation*}
     \mu(A) =
     \begin{cases}
@@ -3206,8 +3239,8 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
 \end{notation}
 
 \begin{satz} %4
-  Es seien $\mu$, $\mathcal{m}$ Ma"se auf $(\Omega, \mathcal{F})$ und
-  $\frac{d\mu}{d\mathcal{m}}$ sei Dichte, $h \geq 0$ me"sbar.
+  Es seien $\mu$, $\mathcal{m}$ Maße auf $(\Omega, \mathcal{F})$ und
+  $\frac{d\mu}{d\mathcal{m}}$ sei Dichte, $h \geq 0$ meßbar.
 
   Dann gilt:
   \begin{gather}
@@ -3219,22 +3252,22 @@ $(\Omega, \mathcal{F})$, $\mu$(A) = $\int_{A} f\,\mathfrak{m} (:=
     \begin{enumerate}
      \item $h=1_{A}$, $A\in \mathcal{F}$
      \item $h$ einfach, $h\geq 0$
-     \item $h \geq 0$ me"sbar: $\exists h_{n}\uparrow h, h_{n} \geq0$ einfach
+     \item $h \geq 0$ meßbar: $\exists h_{n}\uparrow h, h_{n} \geq0$ einfach
     \end{enumerate}
   \end{proof}
 \end{satz}
 
-\section{Singul"are Ma"se}
-$\mu$, $\mathcal{m}$ Ma"se auf $(\Omega,\mathcal{F})$
+\section{Singuläre Maße}
+$\mu$, $\mathcal{m}$ Maße auf $(\Omega,\mathcal{F})$
 
 \begin{defini} %3
-  $\mu$ hei"st singul"ar zu $\mathcal{m}(\mu\big|_\mathcal{m})$, falls
+  $\mu$ heißt singulär zu $\mathcal{m}(\mu\big|_\mathcal{m})$, falls
   $\exists$ $A\in \mathcal{F}$ mit $\mu$(A)=$\mathcal{m}(A^{\complement})=0$.
 \end{defini}
 
 \begin{bsp}
-  $(\Omega, \mathcal{F}=(\R, \mathcal{B}(\R))$, $\lambda$ Lebesgue-Ma"s,
-  $\mathcal{m}$ diskretes Ma"s
+  $(\Omega, \mathcal{F}=(\R, \mathcal{B}(\R))$, $\lambda$ Lebesgue-Maß,
+  $\mathcal{m}$ diskretes Maß
   $\mathcal{m}=\sum_{i=1}^{\infty}\alpha_{i}\delta_{x_{i}},
   x_{1},x_{2},\ldots\in\R$
   $\mathcal{m}|_\lambda$
@@ -3259,15 +3292,15 @@ $\mu$, $\mathcal{m}$ Ma"se auf $(\Omega,\mathcal{F})$
 
     Ansatz: $\nu(A) := \mu(A\cap\{f<1\}), \lambda(A) :=
     \mu(A\cap\{f\geq1\}), A\in \mathcal{F}$
-    $\mu$ = $\nu+ \lambda, \nu, \lambda$ erf"ullen die gew"unschten
+    $\mu$ = $\nu+ \lambda, \nu, \lambda$ erfüllen die gewünschten
     Eigenschaften
   \end{proof}
 \end{satz}
 
-\chapter{Transformation des Lebesgue-Ma"ses} % 12
+\chapter{Transformation des Lebesgue-Maßes} % 12
 
 \begin{description}
- \item[Ziel:] Verallgemeinerung der bekannten Substitutionsregel f"ur das
+ \item[Ziel:] Verallgemeinerung der bekannten Substitutionsregel für das
   Riemann-Integral ($n=1$).
 \end{description}
 
@@ -3279,7 +3312,7 @@ $\mu$, $\mathcal{m}$ Ma"se auf $(\Omega,\mathcal{F})$
   \int_{a}^{b}f(t(x))t'(x)\,dx=\int_{t(a)}^{t(b)}f(y)\,dy, \quad y=t(x)
 \end{gather}
 
-Sei $t$ zus"atzlich umkehrbar eindeutig:
+Sei $t$ zusätzlich umkehrbar eindeutig:
 \begin{gather}
   \int_{a}^{b}f(t(x))|t'(x)|\,dx=\int_{t(a)}^{t(b)}f(y)\,dy, \quad y=t(x)
 \end{gather}
@@ -3292,9 +3325,9 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
 
 \begin{satz} % 1
   \begin{enumerate}
-   \item Das Lebesgue-Ma"s $\lambda^{n}$  auf $(\R^{n},
+   \item Das Lebesgue-Maß $\lambda^{n}$  auf $(\R^{n},
     \mathcal{B}(\R^{n}))$ ist verschiebungsinvariant
-   \item Es sei $\mathcal{m}$ ein Ma"s auf $(\R^{n},
+   \item Es sei $\mathcal{m}$ ein Maß auf $(\R^{n},
     \mathcal{B}(\R^{n}))$ mit den folgenden Eigenschaften:
     \begin{enumerate}
      \item $\mathcal{m}$ ist verschiebungsinvariant
@@ -3304,7 +3337,7 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
   \end{enumerate}
 
   \begin{proof}
-    vgl. Satz II.8.2+3, "Ubungsaufgabe (Serie 11)
+    vgl. Satz II.8.2+3, Übungsaufgabe (Serie 11)
   \end{proof}
 \end{satz}
 
@@ -3317,17 +3350,17 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
   Eigenwerten und einer orthogonalen Transformation $O$.
 
   \begin{proof}
-    "Ubungsserie
+    Übungsserie
   \end{proof}
 \end{lemma}
 
 \begin{satz}
-  $\lambda^{n}$ sei das Lebesgue-ma"s auf $(\R^{n}, \mathcal{B}(\R))$,
+  $\lambda^{n}$ sei das Lebesgue-maß auf $(\R^{n}, \mathcal{B}(\R))$,
   $T$ lineare Abbildung des $\R^{n}$ in sich.
 
   \begin{enumerate}
    \item $A\in \mathcal{B}(\R^{n}) \Rightarrow T(A)\in
-    \mathcal{B}^{\lambda^{n}}(\R^{n})$ (Vervollst"andigung von
+    \mathcal{B}^{\lambda^{n}}(\R^{n})$ (Vervollständigung von
     $\mathcal{B}(\R^{n})$)
    \item $A\in \mathcal{B}(\R^{n}) \Rightarrow \lambda^{n}(T(A))=|det
     T|\,\lambda^{n}(A)$
@@ -3335,7 +3368,7 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
 
   \begin{proof}
     \begin{enumerate}
-     \item Es gelte zun"achst T($\R^{n}$) = $\R^{n}$
+     \item Es gelte zunächst T($\R^{n}$) = $\R^{n}$
 
       $T^{-1}$ Umkehrabbildung: $T^{-1}$ ist linear und somit stetig
 
@@ -3353,7 +3386,7 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
       $T(A)\in \mathcal{B}^{\lambda^{n}}(\R^{n})$ und $\lambda^{n}(T(A))=0$)
 
       $dim(H)=k < n$, sei $x_{1},\ldots,x_{k}$ orthonormierte Basis von
-      $H$, $x_{1},\ldots,x_{k},x_{k+1},\ldots,x_{n}$ Erg"anzung einer
+      $H$, $x_{1},\ldots,x_{k},x_{k+1},\ldots,x_{n}$ Ergänzung einer
       orthonormierten Basis des $\R^{n}$
 
       setze $Ox_{i} := e_{i}, i=1,\ldots,n, e_{1},\ldots,e_{n}$ kanonische
@@ -3379,7 +3412,7 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
       $\mu$(A) := $\lambda^{n}(\underbrace{T(A)}_{\in \mathcal{B}(\R)}),
       A\in \mathcal{B}(\R^{n})$
 
-      $\mu$ Ma"s auf $(\R^{n}, \mathcal{B}(\R^{n}))$, $\mu$
+      $\mu$ Maß auf $(\R^{n}, \mathcal{B}(\R^{n}))$, $\mu$
       verschiebungsinvariant, $0 < \mu([0,1]^{n})<\infty$
 
       \begin{gather}
@@ -3417,7 +3450,7 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
 	   \lambda^{n}(T(A)) = \mu([0,1]^{n})\lambda^{n}(A),
 	   A\in\mathcal{B}(\R^{n})\\
 	\mu([0,1]^{n}) = \lambda^{n}(T([0,1]^{n})) = \lambda^{n}
-	   (Rechtecke der Seitenl"ange |\lambda_{i}|) =
+	   (Rechtecke der Seitenlänge |\lambda_{i}|) =
 	   \prod_{i=1}^{n}|\lambda_{i}| = |\det T|
       \end{gather}
 
@@ -3449,7 +3482,7 @@ Sei $t$ zus"atzlich umkehrbar eindeutig:
 \end{satz}
 
 \begin{folgerung}
-  Das Lebesgue-ma"s $\lambda^{n}$ auf ($\R^{n}, \mathcal{B}(\R^{n}))$ ist
+  Das Lebesgue-maß $\lambda^{n}$ auf ($\R^{n}, \mathcal{B}(\R^{n}))$ ist
   invariant bzgl. beliebiger Bewegungen (Drehungen, Spiegelung,
   Translationen)
 \end{folgerung}
@@ -3479,12 +3512,12 @@ Vorraussetzungen:
    \item $G' = t(G)$ offen
   \end{itemize}
 
-  Folgerungen aus em Satz "uber impliziete Funktionen, Vorraussetzungen
+  Folgerungen aus em Satz über impliziete Funktionen, Vorraussetzungen
   sind symetrisch in t und $t^{-1}$
 \end{bemerk}
 
 \begin{lemma} %2
-  Sei $r$ eine wachsende Funktion f"ur die gilt:
+  Sei $r$ eine wachsende Funktion für die gilt:
   \begin{gather}
     \lim_{a\downarrow 0} r(a) = 0
   \end{gather}
@@ -3515,7 +3548,7 @@ Vorraussetzungen:
 	 x_{k}}(y)-\frac{\partial t_{i}}{\partial x_{k}}(x)|\\
       |R_{x}(z)| \leq n\,r(|z-x|) |z-x|
     \end{gather}
-    f"ur $a\downarrow 0: r(a) \downarrow 0$ (Gleichm. stetigkeit der pariellen Ableitungen), $r$ wachsend
+    für $a\downarrow 0: r(a) \downarrow 0$ (Gleichm. stetigkeit der pariellen Ableitungen), $r$ wachsend
   \end{proof}
 \end{lemma}
 
@@ -3527,39 +3560,39 @@ Vorraussetzungen:
 
   \begin{proof}
     \begin{enumerate}[I]
-     \item Zus"atzliche Annahme:
+     \item Zusätzliche Annahme:
       \begin{enumerate}
 	\setcounter{enumii}{3}
-       \item $G$ beschr"ankt
-       \item $det t'(x)$, $det (t^{-1})'(x)$ beschr"ankt
-       \item partielle Ableitung von $t$ bzw. $t^{-1}$ sind gleichm"a"sig
-	stetig und beschr"ankt auf $G$ bzw. $G'$
+       \item $G$ beschränkt
+       \item $det t'(x)$, $det (t^{-1})'(x)$ beschränkt
+       \item partielle Ableitung von $t$ bzw. $t^{-1}$ sind gleichmäßig
+	stetig und beschränkt auf $G$ bzw. $G'$
       \end{enumerate}
 
-      Annahme: Sei Satz 3 g"ultig unter 1-6
+      Annahme: Sei Satz 3 gültig unter 1-6
       Betrachten $t: G\rightarrow G' mit 1-3$
-      Es existiere $G_{m}\uparrow G: G_{m}$ offen, beschr"ankt,
+      Es existiere $G_{m}\uparrow G: G_{m}$ offen, beschränkt,
       $\bar{G_{m}}\subseteq G (\Rightarrow \bar{G_{m}}$ kompakt)
       t: $G_{m} \rightarrow G'_{m} \rightarrow G_{m}'=t(G_{m}),
       \bar{G'_{m}}$ kompakt
 
-      $\Rightarrow t: G_m \rightarrow G'_{m}$ erf"ullt 1-6
+      $\Rightarrow t: G_m \rightarrow G'_{m}$ erfüllt 1-6
 
-      Anwendung von Satz 3 f"ur $G_{m}:$
+      Anwendung von Satz 3 für $G_{m}:$
       \begin{gather}
 	\lambda^{n}(t(A\cap G_{m})) = \int_{A\cap G_{m}}|det t'(x)|
 	   \lambda^{n}(dx),\quad A\in \mathcal{B}(\R^{n}), A\subseteq G\\
 	\downarrow m\rightarrow\infty \downarrow m\rightarrow\infty\\
 	\lambda^{n}(t(A)) = \int_{A}|det t'(x)|\lambda^{n}(dx)
       \end{gather}
-     \item $t:G\rightarrow G'$ erf"ulle 1-6
+     \item $t:G\rightarrow G'$ erfülle 1-6
 
       $x\in \R^{n}: |x|=\max_{i=1,\ldots,n}|x_{i}|, x=(x_{1},\ldots,x_{n})$
       $|\cdot|$ Norm, $S_{a}(x) = \times_{i=1}^{n}(x_{i}-a, x_{i}+a)$
       (Vollkugel mit Zentrum $x$ und Radius $a>0$)
 
       Taylorentwicklung:
-      w"ahlen $a>0$ so dass $z\in S_{a}(x) \subseteq G$
+      wählen $a>0$ so dass $z\in S_{a}(x) \subseteq G$
       \begin{gather}
 	t(z) = t(x) + t'(x)(z-x)+R_{x}(z), x\in G
       \end{gather}
@@ -3645,7 +3678,7 @@ Vorraussetzungen:
 
       also: $(1) \lambda(t(G)) \leq \int_{G}|det t'(z)\lambda(dz)$
 
-      $U\subseteq G$ offen: $t_{|U}: U\rightarrow t(U)$ erf"ullt alle
+      $U\subseteq G$ offen: $t_{|U}: U\rightarrow t(U)$ erfüllt alle
       Vorraussetzungen, folglich erhalten wir wie (1): (2) $\lambda(t(U))
       \leq \int_{U}|det t'(z)| \lambda(dz)$
      \item $A\subseteq G$, $A\in \mathcal{B}(G)$
@@ -3653,7 +3686,7 @@ Vorraussetzungen:
       \lambda(U)$ (Satz I.10.4, Folgerung 1)
 
       $\varepsilon > 0$
-      W"ahlen $U$ offen: $A\subseteq U\subseteq G$ mit $\lambda(U) \leq
+      Wählen $U$ offen: $A\subseteq U\subseteq G$ mit $\lambda(U) \leq
       \lambda(A)+\varepsilon, \lambda(A)<\infty$
 
       $\lambda(t(A))\leq\lambda(t(U))\lambda^{(2)}\int_{U}|det
@@ -3664,7 +3697,7 @@ Vorraussetzungen:
       (3) $\lambda(t(A)) \leq \int_{A}|det t'(z)|\lambda(dz), A\in
       \mathcal{B}(G), A\subseteq G$
      \item s=$t^{-1}$ Umkehrabbildung, s: G'$\rightarrow$ G mit 1)-6)
-      $\lambda_{s}$ Bildma"s auf (G, $\mathcal{B}(G))$ von
+      $\lambda_{s}$ Bildmaß auf (G, $\mathcal{B}(G))$ von
       $\lambda_{|G'}$ bzgl $s$
       $\lambda_{s}(A)=\lambda(t(A)), A \in \mathcal{B}(G), A\subseteq G$
       $\lambda_{s}(A) = \lambda_{|G'}(s^{-1}(A))=\lambda_{|G'}(t(A))$
@@ -3682,20 +3715,20 @@ Vorraussetzungen:
       \Rightarrow =0$
 
       $\int_{G}[|det t'(z)|-f(z)] 1_{A_{z}}(z)\lambda(dz) = 0 \Rightarrow
-      [|det t'(z)|-f(z)] 1_{A_{z}}(z)=0$ $\lambda$ f"u. auf $G$
+      [|det t'(z)|-f(z)] 1_{A_{z}}(z)=0$ $\lambda$ fü. auf $G$
 
-      $\Rightarrow$ (4) f(z) $\leq$ |det t'(z)| $\lambda$-f"u. auf G
+      $\Rightarrow$ (4) f(z) $\leq$ |det t'(z)| $\lambda$-fü. auf G
      \item (Vorraussetung der Rollen von s und t)
-      $\lambda_{t}$ Bildma"s auf (G', $\mathcal{B}(G))$ von
+      $\lambda_{t}$ Bildmaß auf (G', $\mathcal{B}(G))$ von
       $\lambda_{|G}$ bzgl. $t$
 
       analog zu V: $\lambda_{t}\ll \lambda_{|G'}$ und $\frac{d
       \lambda_{t}}{d\lambda_{|G'}}(y) \leq |det s'(y)|$, $y \in G'$,
-      $\lambda$-f"u
+      $\lambda$-fü
       $s'(y)-(t^{-1})'(y) = (t'(t^{-1}(y)))^{-1}$
 
       (5) $\frac{d \lambda_{t}}{d \lambda_{|G'}}(y) |det
-      t'(t^{-1}(y))|^{-1}, y\in G'$, $\lambda-$f"u.
+      t'(t^{-1}(y))|^{-1}, y\in G'$, $\lambda-$fü.
      \item Zusammenstellung
       $\lambda(t(A)) \leq^{(3)} \int_{A}|det t'(z)| \lambda(dz)
       =^{Transformationssatz 6.2} \int_{t(A)} |det
@@ -3716,7 +3749,7 @@ Vorraussetzungen:
   $G^{(0)}$ Kern von $G$ (Menge der inneren Punkte von $G$)
 
   \begin{enumerate}
-   \item $t_{|G^{(0)}}$ erf"ullt die Bedingungen 1)-3)
+   \item $t_{|G^{(0)}}$ erfüllt die Bedingungen 1)-3)
    \item $\lambda(G\setminus G^{(0)}) = 0, \lambda(t(G)\setminus
     t(G^{(0)})=0$
 
@@ -3726,8 +3759,8 @@ Vorraussetzungen:
     $t$ stetig $\Rightarrow$ $(t(G))^{(0)}=t(G^{(0)})$, $\partial t(G) =
     \bar{t(G)}-t(G^{(0)}$
   \end{enumerate}
-  $\Rightarrow$ Unter diesen Vorraussetzungen gelten sinngem"a"s die
-  S"atze 3-5
+  $\Rightarrow$ Unter diesen Vorraussetzungen gelten sinngemäß die
+  Sätze 3-5
 \end{bemerk}
 
 \begin{bemerk}
@@ -3744,15 +3777,15 @@ Vorraussetzungen:
     \mathcal{B}(\R^{n})$
   \end{enumerate}
 
-  $\lambda^{n}_{t^{-1}}$ Bildma"s des Ma"ses $\lambda^{n}_{|G'}$
-  (Einschr"ankung von $\lambda^{n}$ auf $G'$, Ma"s auf (G',
-  $\mathcal{B}(G')), \lambda^{n}_{t^{-1}}$ Ma"s auf (G, $\mathcal{B}(G))$
+  $\lambda^{n}_{t^{-1}}$ Bildmaß des Maßes $\lambda^{n}_{|G'}$
+  (Einschränkung von $\lambda^{n}$ auf $G'$, Maß auf (G',
+  $\mathcal{B}(G')), \lambda^{n}_{t^{-1}}$ Maß auf (G, $\mathcal{B}(G))$
 \end{bemerk}
 
 \begin{satz} %4
   (Folgerung aus Satz 3)
 
-  Sei $\lambda^{n}_{t^{-1}}$ das Bildma"s von $\lambda^{n}_{|G'}$ auf
+  Sei $\lambda^{n}_{t^{-1}}$ das Bildmaß von $\lambda^{n}_{|G'}$ auf
   $(G, \mathcal{B}(G))$.
 
   Dann gilt:
@@ -3766,8 +3799,8 @@ Vorraussetzungen:
   \end{gather}
 \end{satz}
 
-\begin{satz}[Substitutionsregel f"ur das Lebesgue-Integral] %5
-  Sei $f$ me"sbar auf $(G', \mathcal{B}(G'))$.
+\begin{satz}[Substitutionsregel für das Lebesgue-Integral] %5
+  Sei $f$ meßbar auf $(G', \mathcal{B}(G'))$.
 
   Dann folgt:
   \begin{gather}
@@ -3868,19 +3901,19 @@ $\lambda^{3}(G\setminus G^{(0)})=0, \lambda^{3}(t(G)\setminus t(G^{(0)}))=0$
 \chapter{Der Satz von Daniell} % Kapitel 13
 
 \begin{description}
- \item[Problem] Zusammenhang zwischen linearen Funktionalen und Ma"sen
+ \item[Problem] Zusammenhang zwischen linearen Funktionalen und Maßen
 \end{description}
 
-$(\Omega, \mathcal{F})$ me"sbarer Raum, $\mathbb{B}(\Omega,
-\mathcal{F})$ linearer Raum der beschr"ankten me"sbaren Funktionen
+$(\Omega, \mathcal{F})$ meßbarer Raum, $\mathbb{B}(\Omega,
+\mathcal{F})$ linearer Raum der beschränkten meßbaren Funktionen
 $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
 \begin{enumerate}
  \item $H$ linearer Raum
  \item $1_{\Omega}\in H$
- \item $H$ abgeschlossen gegen"uber $\wedge,\vee$ (Minimum, Maximum)
+ \item $H$ abgeschlossen gegenüber $\wedge,\vee$ (Minimum, Maximum)
  \item $\sigma(H)=\mathcal{F}$, $\sigma(H)$ kleinste $\sigma$-Algebra
-  ($\subseteq \mathcal{F})$, da"s $f\colon (\Omega,\sigma(H))\rightarrow \R$
-  me"sbar ist $\forall f\in H$
+  ($\subseteq \mathcal{F})$, daß $f\colon (\Omega,\sigma(H))\rightarrow \R$
+  meßbar ist $\forall f\in H$
 \end{enumerate}
 
 \begin{satz}[Daniell]
@@ -3893,7 +3926,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
     $\lim_{n\rightarrow\infty}I(f_{n})=0$
   \end{enumerate}
 
-  Dann existiert ein endlichen Ma"s $\mathcal{m}$ auf
+  Dann existiert ein endlichen Maß $\mathcal{m}$ auf
   $(\Omega,\mathcal{F})$ mit
   \begin{gather}
     I(f) = \int_{\Omega}f\,d\mathcal{m}, f\in H
@@ -3904,7 +3937,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
     \mathcal{m}(\Omega) = I(1_{\Omega})
   \end{gather}
 
-  Das Ma"s $\mathcal{m}$ ist eindeutig bestimmt
+  Das Maß $\mathcal{m}$ ist eindeutig bestimmt
 
   \begin{proof}
     siehe Neven II.7.1 oder P.\,A.\,Meyer: Probability and Potentials, T II.2.4
@@ -3912,19 +3945,19 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
 \end{satz}
 
 \begin{folgerung}[Fortsetzungssatz von Caratheodory]
-  $\mathcal{m}$ Pr"ama"s auf $(\Omega, \mathcal{A})$ $\mathcal{A}$
+  $\mathcal{m}$ Prämaß auf $(\Omega, \mathcal{A})$ $\mathcal{A}$
   Algebra, $\mathcal{F}=\sigma(\mathcal{A})$
 
-  H=$\mathcal{L}(\{1_{A}: A\in\mathcal{A}\})$ (lineare H"ulle)
-  Eigenschaften 1-4 erf"ullt
+  H=$\mathcal{L}(\{1_{A}: A\in\mathcal{A}\})$ (lineare Hülle)
+  Eigenschaften 1-4 erfüllt
 
   \begin{gather}
     I(f) = \sum_{k=1}^{n}c_{k}\mathcal{m}(A_{k}), f\in H,
        f=\sum_{k=1}^{n}c_{k}1_{A_{k}}
   \end{gather}
-  $I$ erf"ullt (i)-(iii) von Satz Daniell
+  $I$ erfüllt (i)-(iii) von Satz Daniell
 
-  $\xrightarrow{Satz 1}$ Es existiert ein Ma"s $\bar{\mathcal{m}}$ auf
+  $\xrightarrow{Satz 1}$ Es existiert ein Maß $\bar{\mathcal{m}}$ auf
   $(\Omega, \mathcal{F})$ mit:
   \begin{gather}
     I(f)= \int_{\Omega}f\,d\bar{\mathcal{m}}
@@ -3941,7 +3974,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
   \varepsilon_{x},\varepsilon_{y}: K_{\varepsilon_{x}}(x)\cap
   K_{\varepsilon_{y}}(y) = \emptyset$)
 
-  $C(K)$  Raum aller stetigen (beschr"ankten!) Funktionen auf K,
+  $C(K)$  Raum aller stetigen (beschränkten!) Funktionen auf K,
   $\mathcal{B}_{0}(K)=\sigma(C(K))$ $\sigma$-Algebra der Bairschen Mengen
   $I\colon C(K)\rightarrow\R$ Abbildung mit:
   \begin{enumerate}
@@ -3949,14 +3982,14 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
    \item $I$ ist positiv
   \end{enumerate}
 
-  Dann existiert genau ein (endliches) Ma"s auf $\mathcal{m}$ auf $(K,
+  Dann existiert genau ein (endliches) Maß auf $\mathcal{m}$ auf $(K,
   \mathcal{B}_{0}(K))$ mit $I(f) = \int_{K}f\,d\mathcal{m}, f\in C(K)$
 
   \begin{proof}
     $\|f\| = \sup_{x\in K} |f(x)|, f\in C(K)$ ist eine Norm
 
     \begin{enumerate}
-     \item $I$ positiv $\Rightarrow$ $I$ stetig (=beschr"ankt) bzgl.
+     \item $I$ positiv $\Rightarrow$ $I$ stetig (=beschränkt) bzgl.
       $\|\cdot\|$
       \begin{enumerate}
        \item $I$ positiv $\Rightarrow$ $I$ monoton:
@@ -3969,7 +4002,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
 	$I(-f)\leq I(\|f\|1_{K})=\|f\|\underbrace{I(1_{K})}_{|\cdot|<\infty}$
 
 	$|I(f)| = \max\{I(f), -I(f)\} = \max\{I(f), I(-f)\} \leq \|f\|
-	I(1_{K}), f\in C(K)$ $\Rightarrow$ $I$ beschr"ankt $\Rightarrow$ $I$ stetig
+	I(1_{K}), f\in C(K)$ $\Rightarrow$ $I$ beschränkt $\Rightarrow$ $I$ stetig
       \end{enumerate}
      \item $I$ stetig bzgl. $\norm{\cdot}$ $\rightarrow$ $I$ stetig bzgl.
       monotoner Konvergenz $f_{n}\in C(K), f_{n}(x) \downarrow 0
@@ -3980,26 +4013,26 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
       $F_{n}= \{f_{n}\geq \varepsilon\}$ abgeschlossen, $F_{n}\supseteq
       F_{n+1}, \bigcap_{n=1}^{\infty}F_{n}=\emptyset$
 
-      $\Rightarrow^{K beschr"ankt} \exists n\colon F_{n}=\emptyset$
+      $\Rightarrow^{K beschränkt} \exists n\colon F_{n}=\emptyset$
     \end{enumerate}
 
-    Alle Vorraussetzungen f"ur den Satz von Daniell sind erf"ullt
+    Alle Vorraussetzungen für den Satz von Daniell sind erfüllt
     $\Rightarrow$ Beh.
   \end{proof}
 \end{satz}
 
-\chapter{Die S"atze von Egoroff und Lusin}
+\chapter{Die Sätze von Egoroff und Lusin}
 
 \begin{satz}[D.\,F. Egoroff]
-  $(\Omega, \mathcal{F}, \mathcal{m})$, endlicher Ma"sraum, $f_{n},
-  f$ me"sbare Funktionen, $f_{n}\rightarrow^{x\rightarrow\infty} f$
-  $\mathcal{m}$-f"u
+  $(\Omega, \mathcal{F}, \mathcal{m})$, endlicher Maßraum, $f_{n},
+  f$ meßbare Funktionen, $f_{n}\rightarrow^{x\rightarrow\infty} f$
+  $\mathcal{m}$-fü
 
   Dann folgt:
   \begin{gather}
     \forall\varepsilon>0 \exists A_{\varepsilon}\in \mathcal{F}:
        \mathcal{m}(A_{\varepsilon})<\varepsilon, f_{n}\rightarrow f
-       \text{gleichm"a"sig auf } A_{\varepsilon}
+       \text{gleichmäßig auf } A_{\varepsilon}
   \end{gather}.
 
   \begin{proof}
@@ -4029,19 +4062,19 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
 \end{satz}
 
 \begin{satz}[N. Lusin]
-  $(\Omega,\rho), (E,d)$ metrische R"aume, $E$ separabel, $\mathcal{m}$
-  endliches Ma"s auf $(\Omega, \mathcal{B}(\Omega))$, $f: (\Omega,
+  $(\Omega,\rho), (E,d)$ metrische Räume, $E$ separabel, $\mathcal{m}$
+  endliches Maß auf $(\Omega, \mathcal{B}(\Omega))$, $f: (\Omega,
   \mathcal{B}(\Omega)) \rightarrow (E, \mathcal{B}(E))$.
 
-  Dann folgt: F"ur alle $\varepsilon>0$ existiert eine abgeschlossene
+  Dann folgt: Für alle $\varepsilon>0$ existiert eine abgeschlossene
   Menge $F\subseteq\Omega$ mit den folgenden Eigenschaften:
   \begin{enumerate}
-   \item $f\big|_{F}$ (Einschr"ankung von $f$ auf $F$) ist stetig
+   \item $f\big|_{F}$ (Einschränkung von $f$ auf $F$) ist stetig
    \item $\mathcal{m}(F^{\complement})<\varepsilon$
   \end{enumerate}
 
   \begin{proof}
-    Sei $\{a_{1}, a_{2},\ldots\}$ eine abz"ahlbare dichte Menge in $E$.
+    Sei $\{a_{1}, a_{2},\ldots\}$ eine abzählbare dichte Menge in $E$.
 
     \begin{align*}
       B_{nk} &= f^{-1}(S_{2^{-k}}(a_{n})) &&n,k=1,2,\ldots\\
@@ -4053,7 +4086,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
 	 \bigcup_{j=1}^{\infty}B_{jk} \uparrow\Omega &&n\rightarrow\infty
     \end{align*}
 
-    Beweis f"ur letzte Gleichung:
+    Beweis für letzte Gleichung:
     \begin{gather}
       \bigcup_{n=1}^{\infty} A_{nk} = \bigcup_{n=1}^{\infty} B_{nk} =
 	 \bigcup_{n=1}^{\infty} f^{-1}(S_{2^{-k}}(a_{n})) =
@@ -4100,7 +4133,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
       \begin{gather}
 	x, x_{l}\in F, x_{l}\rightarrow^{l\rightarrow\infty}x \Rightarrow
 	   \exists j, \exists l_{0} l \geq l_{0}: x_{l}\in F \cap F_{jk}\\
-	\Rightarrow f_{k}(x) = a_{j} ( j so bestimmt, da"s x\in F\cap F_{jk})\\
+	\Rightarrow f_{k}(x) = a_{j} ( j so bestimmt, daß x\in F\cap F_{jk})\\
 	f_{k}(x_{l}) = a_{j}, l\geq l_{0} \Rightarrow
 	   \lim_{l\rightarrow\infty} f_{k}(x_{l}) = f_{k}(x)
       \end{gather}
@@ -4116,7 +4149,7 @@ $H\subseteq\mathbb{B}(\Omega,\mathcal{F})$ mit folgenden Eigenschaften:
       \end{gather}
 
       Es folgt $f_{k}\rightarrow^{k\rightarrow\infty}f_{|F}$
-      gleichm"a"sig $\Rightarrow$ $f_{|F}$ stetig
+      gleichmäßig $\Rightarrow$ $f_{|F}$ stetig
     \end{enumerate}
   \end{proof}
 \end{satz}
