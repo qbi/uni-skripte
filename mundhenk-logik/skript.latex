@@ -3367,176 +3367,324 @@ unter der alle Axiome der Theorie wahr sind.
 Daraus folgt, dass unter dieser Interpretation ebenfalls
 alle beweisbaren Formeln wahr sind.)
 
+% 2006-06-14
 
-\todo{Hier fehlt jetzt einiges aus der Vorlesung vom 14.06. \ldots}
+\begin{figure}
+  \todo{Bildchen: links: abgeschlossene Theorie mit beweisbaren und nicht
+    beweisbaren Formeln, $\alpha, \neg\beta, \neg\gamma$ vs. $\neg\alpha,
+    \beta,\gamma$ }
+  \todo{Bildchen: rechts: Prädikatenkalkül 1.\,Ordnung mit beweisbaren und nicht
+    beweisbaren Formeln, $\alpha$ vs. $\neg\alpha, \beta,\neg\beta$}
+\end{figure}
 
-\begin{lemma}\label{lemma-aufz-modelle}
-Jede konsistente, vollst\"andige und T-produktive Theorie $J$
-besitzt ein Modell $\cM$,
-dessen Grundmenge $D$ die Menge aller variablenfreien Terme von $J$ ist.
+\subsection{Besitzt eine abgeschlossene Theorie ein Modell?}
+
+\begin{bsp}
+  Ein Modell für $\forall x\colon A(x)$ mit einer beliebigen Grundmenge und
+  \help{was war das?} $(A)^{\mathcal{M}} =$ Grundmenge.
+
+ Ein Modell für
+  $\neg (\forall x\colon A(x))$ mit einer beliebigen Grundmenge, aber (\ldots)
+  es muss ein $d$ in der Grundmenge geben mit $d\not\in
+  (\mathcal{A})^{\mathcal{M}}$.
+
+  Ein Modell für $\neg(\forall x\colon A(x))\rightarrow\neg A(a_{1})$:
+  $(a_{1})^{\mathcal{M}}\not\in(\mathcal{A})^{\mathcal{M}}$
+\end{bsp}
+
+\begin{defini}
+  Eine Theorie $K$ heißt T-produktiv ("`scape goat"', engl. Sündenbock)
+  falls für jede Formel $\alpha$ mit genau einer freien Variablen $x$ ein
+  variablenfreier Term $t$ existiert mit
+  \begin{gather*}
+    \vdash_{K} (\exists x\colon \neg\alpha) \rightarrow \neg\alpha[x/t]
+  \end{gather*}
+\end{defini}
+
+\begin{lemma}\label{lem:8}
+  Jede konsistente Theorie $K$ hat eine konsistente Erweiterung $K'$, die
+  T-produktiv ist und die Menge aller Terme in $K'$ ist abzählbar.
+
+  \begin{proof}
+    $K'$ entsteht aus $K$ durch Hinzufügen von neuen Konstantensymbolen
+    $\{c_{1},c_{2},\ldots\}$ und durch Hinzufügen neuer zusätzlicher
+    Axiome wie folgt. Sei $\alpha_{1},\alpha_{2},\ldots$ eine Aufzählung
+    aller Formeln in $K'$ mit genau einer freien Variablen; $\alpha_{i}$
+    enthalte die Variablen $x_{j_{i}}$ frei. Sei $b_{1},b_{2},\ldots$
+    eine Aufzählung einer Teilmenge von $\{c_{1},c_{2},\ldots\}$ so, dass
+    $b_{i}$ weder in $\alpha_{1},\ldots,\alpha_{i-1}$ nicht in
+    $b_{1},\ldots,b_{i-1}$ vorkommt.
+
+    Definiere $\sigma_{k}=(\exists x_{j_{k}}\colon \neg\alpha)
+    \rightarrow\neg\alpha[x_{j_{k}}/b_{k}]$ $K'$ hat zusätzliche Axiome
+    $\sigma_{1},\sigma_{2},\ldots$.
+
+    Um zu zeigen, dass $K'$ konstent ist betrachten wir die Teiltheorien
+    $K_{0},K_{1},K_{2},\ldots$ mit\\
+    \null\hfill
+    \begin{tabular}{r@{$\,=\,$}l}
+      $K_{0}$ &$K$ erweitert um die neuen Konstantensmbole
+         $\{c_{1},c_{2},\ldots\}$\\
+      $K_{i+1}$ & $K_{i}$ erweitert um zusätzliches Axiom $\sigma_{i+1}$
+    \end{tabular}
+    \hfill\null\\
+    ($K_{j}$ hat die zusätzlichen Axiome $\sigma_{1},\sigma_{2},\ldots,
+    \sigma_{j}$).
+
+    Wenn $K_{0},K_{1},K_{2},\ldots$ konsistent sind, dann ist auch $K'$
+    konsistent.
+    \begin{itemize}
+     \item $K_{0}$ ist konsistent, da $K$ konsistent ist.
+     \item Sei angenommen, dass $K_{n}$ nicht konsistent is. (Dann gilt
+      $\vdash_{K_{n}}\beta$ und $\vdash_{K_{n}}\neg\beta$) Dann folgt
+      $\vdash_{K_{n}}\neg\sigma_{n}$. Also folgt $\sigma_{n}
+      \vdash_{K_{n-1}}\neg\sigma_{n}$. Mit dem Deduktionstheorem folgt
+      $\vdash_{K_{n-1}}\sigma_{n}\rightarrow\neg\sigma_{n}$ und mit der
+      Tautologie $(\sigma_{n}\rightarrow\neg\sigma_{n})\rightarrow
+      \neg\sigma_{n}$ folgt $\vdash_{K_{n-1}}\neg\sigma_{n}$, d.\,h.
+      \begin{gather*}
+        \vdash_{K_{n-1}}\neg(\exists x_{j_{n}}\colon \neg\alpha)
+           \rightarrow \neg\alpha[x_{j_{n}}/b_{n}]
+      \end{gather*}
+
+      Mit der Implikationsregel folgt
+      \begin{gather*}
+        \vdash_{K_{n-1}} (\exists x_{j_{n}}\colon
+           \neg\alpha)\quad\text{und}\quad
+           \vdash_{K_{n-1}} \neg\neg\alpha[x_{j_{n}}/b_{n}]
+      \end{gather*}
+      mit der Negationsregel $\vdash_{K_{n-1}} \alpha[x_{j_{n}}/b_{n}]$.
+
+      Das $b_{n}$ kommt in keinem zusätzlichen Axiom von $K_{n-1}$ vor.
+      Deshalb kann es im Beweis von $\vdash_{K_{n-1}}
+      \alpha[x_{j_{n}}/b_{n}]$ durch eine Variable $x'$ ersetzt werden,
+      die im Beweis sonst nicht vorkommt, und wir erhalten
+      $\vdash_{K_{n-1}}\alpha[x_{j_{n}}/x']$.
+
+      Nach der Aufgabe 3 auf \hyperref[sec:uebung8]{Blatt~\ref{sec:uebung8}} gilt
+      $\vdash_{K_{n-1}}(\forall x_{j_{n}}\colon\alpha) \leftrightarrow
+      (\forall x'\colon \alpha[x_{j_{n}}/x']$. Aus $\vdash_{K_{n-1}}
+      \alpha[x_{j_{n}}/x']$ folgt mit Generalisierung $\vdash_{K_{n-1}}
+      (\forall x'\colon \alpha[x_{j_{n}}/x']$.
+
+      Mit Äquivalenzregel folgt $\vdash_{K_{n-1}}(\forall x_{j_{n}}\colon
+      \alpha)$. Aus $\vdash_{K_{n-1}} (\exists x_{j_{n}}\colon
+      \neg\alpha)$ folgt $\vdash_{K_{n-1}} \neg(\forall x_{j_{n}}\colon
+      \alpha)$. Also ist $K_{n-1}$ nicht konsistent.
+    \end{itemize}
+  \end{proof}
 \end{lemma}
 
-\begin{proof}
-Definiere $\cM$ wie folgt.
-\begin{itemize}
-\item Die Grundmenge $D$ besteht aus allen variablenfreien Termen,
+\begin{lemma}[Abzählbare Modelle]
+  Jede konsistente, abgeschlossene und T-produktive Theorie $J$ besitzt
+  ein Modell $\mathcal{M}$, dessen Grundmenge die Menge aller
+  variablenfreien Terme von $J$ ist.
+
+  \begin{proof}
+    Die Konstruktion eines Modells für eine konsistente, abgeschlossene
+    und T-produktive Theorie $K$: Grundmenge: Menge aller variablenfreien
+    Terme von $K$ $\{a_{1},a_{2},\ldots,f_{1}^{1}(a_{1}),
+    f_{1}^{1}(a_{2}), \ldots, f_{14}^{3}\big(a_{2}, f_{1}^{2}(a_{1}, a_{2}),
+    f_{1}^{1}(a_{1})\big)\}$. Konstanten und Funktionssymbole werden
+    "`durch sich selbst"' interpretiert $(a_{i})^{\mathcal{M}}=a_{i}$.
+    $(f_{i}^{n})^{\mathcal{M}}(t_{1},\ldots,t_{n}) =
+    f_{i}^{n}(t_{1},\ldots,t_{n})$
+
+    \begin{gather*}
+      (A_{i}^{n})\mathcal{M} = \{(t_{1},\ldots,t_{n})\colon \vdash_{K}
+         A_{i}^{n}(t_{1},\ldots,t_{n}) \}
+    \end{gather*}
+  \end{proof}
+
+  \begin{proof}
+    Definiere $\cM$ wie folgt.
+    \begin{itemize}
+     \item Die Grundmenge $D$ besteht aus allen variablenfreien Termen,
       die in $J$ gebildet werden k\"onnen.
-\item Konstanten- und Funktionssymbole werden \glqq durch sich selbst\grqq\xspace
+     \item Konstanten- und Funktionssymbole werden \glqq durch sich selbst\grqq\xspace
       interpretiert:
       \begin{eqnarray*}
-       (a_i)^{\cM} & = & a_i \\
-       (f^n_i)^{\cM}(t_1,\ldots,t_n) & = & f^n_i(t_1,\ldots,t_n)
+        (a_i)^{\cM} & = & a_i \\
+        (f^n_i)^{\cM}(t_1,\ldots,t_n) & = & f^n_i(t_1,\ldots,t_n)
       \end{eqnarray*}
-\item Pr\"adikatensymbole werden durch Beweisbarkeit interpretiert:
+     \item Pr\"adikatensymbole werden durch Beweisbarkeit interpretiert:
       \begin{gather*}
-      (A^n_i)^{\cM}  =  \big\{(t_1,\ldots,t_n)\in D^n \bigm| 
-                         ~ \vdash_{J} A^n_i(t_1,\ldots,t_n)\big\} \\
+        (A^n_i)^{\cM}  =  \big\{(t_1,\ldots,t_n)\in D^n \bigm| 
+           ~ \vdash_{J} A^n_i(t_1,\ldots,t_n)\big\} \\
       \end{gather*}
-\end{itemize}
-Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
-Dazu zeigen wir, dass f\"ur jede geschlossene Formel $\alpha$ gilt:
-aus $\models_{\cM} \alpha$ folgt $\vdash_{J} \alpha$.
-(F\"ur jede Formel $\beta$ und deren Abschluss $\beta'$ gilt 
-  (1) $\models_{\cM} \beta$ gdw. $\models_{\cM} \beta'$ und
-  (2) $\vdash_{J} \beta$ gdw. $\vdash_{J} \beta'$.)
-Der Beweis wird mittels Induktion \"uber den Formelaufbau gef\"uhrt,
-d.\,h. \"uber die Anzahl der in der Formel vorkommenden Verkn\"upfungszeichen.
+    \end{itemize}
+    Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
+    Dazu zeigen wir, dass f\"ur jede geschlossene Formel $\alpha$ gilt:
+    aus $\models_{\cM} \alpha$ folgt $\vdash_{J} \alpha$.
+    (F\"ur jede Formel $\beta$ und deren Abschluss $\beta'$ gilt 
+    (1) $\models_{\cM} \beta$ gdw. $\models_{\cM} \beta'$ und
+    (2) $\vdash_{J} \beta$ gdw. $\vdash_{J} \beta'$.)
+    Der Beweis wird mittels Induktion \"uber den Formelaufbau gef\"uhrt,
+    d.\,h. \"uber die Anzahl der in der Formel vorkommenden Verkn\"upfungszeichen.
 
-Im Induktionsanfang betrachten wir geschlossene atomare Formeln $\alpha$.
-Diese Formeln enthalten keine Variablensymbole.
-Es folgt direkt aus der Definition der Interpretation der
-Pr\"adikatensymbole, dass $\models_{\cM} \alpha$ gdw. $\vdash_{J} \alpha$.
+    Im Induktionsanfang betrachten wir geschlossene atomare Formeln $\alpha$.
+    Diese Formeln enthalten keine Variablensymbole.
+    Es folgt direkt aus der Definition der Interpretation der
+    Pr\"adikatensymbole, dass $\models_{\cM} \alpha$ gdw. $\vdash_{J} \alpha$.
 
-Die Induktionsvoraussetzung lautet, dass die Behauptung f\"ur alle geschlossenen Formeln
-bis zu einer bestimmten Gr\"o\3e gilt.
+    Die Induktionsvoraussetzung lautet, dass die Behauptung f\"ur alle geschlossenen Formeln
+    bis zu einer bestimmten Gr\"o\3e gilt.
 
-Im Induktionsschritt betrachten wir die drei M\"oglichkeiten,
-aus zwei Formeln $\alpha$ und $\beta$ eine Formel $\gamma$ mit einem zus\"atzlichen
-Verkn\"upfungszeichen zu konstruieren:
-(1) $\gamma = (\neg \alpha)$, (2) $\gamma=(\alpha\rightarrow\beta)$
-und (3) $\gamma = (\forall y~ \alpha)$.
+    Im Induktionsschritt betrachten wir die drei M\"oglichkeiten,
+    aus zwei Formeln $\alpha$ und $\beta$ eine Formel $\gamma$ mit einem zus\"atzlichen
+    Verkn\"upfungszeichen zu konstruieren:
+    (1) $\gamma = (\neg \alpha)$, (2) $\gamma=(\alpha\rightarrow\beta)$
+    und (3) $\gamma = (\forall y~ \alpha)$.
 
-\textbf{Fall (1): $\gamma = (\neg \alpha)$.}
+    \textbf{Fall (1): $\gamma = (\neg \alpha)$.}
 
-Es gilt
-%
-$$
- \models_{\cM} \gamma ~ \Leftrightarrow_{(1)} ~
- \not\models_{\cM} \alpha
- ~ \Leftrightarrow_{(2)} ~
- \not\vdash_{J} \alpha
- ~ \Leftrightarrow_{(3)} ~
-\vdash_{J} (\neg \alpha)
-~ \Leftrightarrow_{(4)} ~
-\vdash_{J} \gamma
-$$
-%
-\"Aquivalenz (1) folgt aus $\gamma = (\neg \alpha)$,
-(2) folgt aus der Induktionsvoraussetzung,
-(3) folgt aus der Abgeschlossenheit von $J$,
-und (4) folgt wiederum aus $\gamma = (\neg \alpha)$.
+    Es gilt
+    %
+    $$
+    \models_{\cM} \gamma ~ \Leftrightarrow_{(1)} ~
+    \not\models_{\cM} \alpha
+    ~ \Leftrightarrow_{(2)} ~
+    \not\vdash_{J} \alpha
+    ~ \Leftrightarrow_{(3)} ~
+    \vdash_{J} (\neg \alpha)
+    ~ \Leftrightarrow_{(4)} ~
+    \vdash_{J} \gamma
+    $$
+    %
+    \"Aquivalenz (1) folgt aus $\gamma = (\neg \alpha)$,
+    (2) folgt aus der Induktionsvoraussetzung,
+    (3) folgt aus der Abgeschlossenheit von $J$,
+    und (4) folgt wiederum aus $\gamma = (\neg \alpha)$.
 
-\textbf{Fall (2): $\gamma = (\alpha\rightarrow \beta)$.}
+    \textbf{Fall (2): $\gamma = (\alpha\rightarrow \beta)$.}
 
-Es gilt
-$$
- \not\models_{\cM} \gamma 
-   ~ \Leftrightarrow_{(1)} ~
-\models_{\cM} \alpha \text{~und~} \not\models_{\cM} \beta 
-   ~ \Leftrightarrow_{(2)} ~
-\vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta 
-   ~ \Leftrightarrow_{(3)} ~
-\vdash_{J} (\neg \gamma)
-~ \Leftrightarrow_{(4)} ~
-\not\vdash_{J} \gamma
-$$
+    Es gilt
+    $$
+    \not\models_{\cM} \gamma
+    ~ \Leftrightarrow_{(1)} ~
+    \models_{\cM} \alpha \text{~und~} \not\models_{\cM} \beta 
+    ~ \Leftrightarrow_{(2)} ~
+    \vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta 
+    ~ \Leftrightarrow_{(3)} ~
+    \vdash_{J} (\neg \gamma)
+    ~ \Leftrightarrow_{(4)} ~
+    \not\vdash_{J} \gamma
+    $$
 
-Die \"Aquivalenzen (1), (2) und (4) sind einfach.
-(1) ist Eigenschaft (E4) der grundlegenden Eigenschaften
+    Die \"Aquivalenzen (1), (2) und (4) sind einfach.
+    (1) ist Eigenschaft (E4) der grundlegenden Eigenschaften
     von Formeln und Interpretationen,
-(2) folgt aus der Induktionsvoraussetzung,
-und (4)  folgt aus der Abgeschlossenheit von $J$.
+    (2) folgt aus der Induktionsvoraussetzung,
+    und (4)  folgt aus der Abgeschlossenheit von $J$.
 
-F\"ur \"Aquivalenz (3) betrachten wir beide Richtungen getrennt.
-Aus ~$\vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta$~
-folgt zuerst $\vdash_{J} \neg\beta$ aus der Abgeschlossenheit von $J$.
-Mit der Tautologie $\alpha\rightarrow(\neg \beta \rightarrow\neg(\alpha\rightarrow\beta))$
-und modus ponens ergibt sich $\vdash_{J} \neg(\alpha\rightarrow\beta)$,
- also $\vdash_{J} (\neg \gamma)$.
+    F\"ur \"Aquivalenz (3) betrachten wir beide Richtungen getrennt.
+    Aus ~$\vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta$~
+    folgt zuerst $\vdash_{J} \neg\beta$ aus der Abgeschlossenheit von $J$.
+    Mit der Tautologie $\alpha\rightarrow(\neg \beta \rightarrow\neg(\alpha\rightarrow\beta))$
+    und modus ponens ergibt sich $\vdash_{J} \neg(\alpha\rightarrow\beta)$,
+    also $\vdash_{J} (\neg \gamma)$.
 
-Die andere Implikation  ~
-$\vdash_{J} \neg(\alpha\rightarrow\beta) \Rightarrow 
-          \vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta$
-~
-folgt direkt aus der Implikations-Regel.
+    Die andere Implikation  ~
+    $\vdash_{J} \neg(\alpha\rightarrow\beta) \Rightarrow
+    \vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta$
+    ~
+    folgt direkt aus der Implikations-Regel.
 
-\textbf{Fall (3): $\gamma = (\forall y ~\alpha)$.}
+    \textbf{Fall (3): $\gamma = (\forall y ~\alpha)$.}
 
-Das ist der etwas schwierigere Fall.
+    Das ist der etwas schwierigere Fall.
 
-Zuerst betrachten wir den Fall, dass $\alpha$ geschlossen ist.
-Dann gilt
-%
-$$
-\models_{\cM} (\forall y~\alpha)
-   ~ \Leftrightarrow_{(1)} ~
-\models_{\cM} \alpha
-   ~ \Leftrightarrow_{(2)} ~
-\vdash_{J} \alpha 
-   ~ \Leftrightarrow_{(3)} ~
-\vdash_{J} (\forall y ~\alpha)
-$$
-%
-\"Aquivalenz (1) ist die grundlegende Eigenschaft (E6) von Formeln
-und Interpretationen.
-\"Aquivalenz (2) folgt aus der Induktionsvoraussetzung,
-da $\alpha$ eine geschlossene Formel ist.
-\"Aquivalenz (3) folgt aus der Generalisierung bzw.\,Axiom (A4),
-da $\alpha[y/t]=\alpha$ ($y$ kommt in $\alpha$ nicht frei vor).
+    Zuerst betrachten wir den Fall, dass $\alpha$ geschlossen ist.
+    Dann gilt
+    %
+    $$
+    \models_{\cM} (\forall y~\alpha)
+    ~ \Leftrightarrow_{(1)} ~
+    \models_{\cM} \alpha
+    ~ \Leftrightarrow_{(2)} ~
+    \vdash_{J} \alpha
+    ~ \Leftrightarrow_{(3)} ~
+    \vdash_{J} (\forall y ~\alpha)
+    $$
+    %
+    \"Aquivalenz (1) ist die grundlegende Eigenschaft (E6) von Formeln
+    und Interpretationen.
+    \"Aquivalenz (2) folgt aus der Induktionsvoraussetzung,
+    da $\alpha$ eine geschlossene Formel ist.
+    \"Aquivalenz (3) folgt aus der Generalisierung bzw.\,Axiom (A4),
+    da $\alpha[y/t]=\alpha$ ($y$ kommt in $\alpha$ nicht frei vor).
 
-Nun zum Fall, dass $\alpha$ keine geschlossene Formel ist.
-Dann ist $y$ die einzige freie Variable in $\alpha$.
-Also ist $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/b_i]$
-ein Axiom von $J$.
-Wir zeigen, dass die beiden F\"alle,
-in denen $\models_{\cM} \gamma$ und $\vdash_{J} \gamma$
-nicht \"aquivalent sind, nicht auftreten k\"onnen.
-\begin{itemize}
-\item $\models_{\cM} \gamma$ und $\not \vdash_{J} \gamma$:
+    Nun zum Fall, dass $\alpha$ keine geschlossene Formel ist.
+    Dann ist $y$ die einzige freie Variable in $\alpha$.
+    Also ist $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/b_i]$
+    ein Axiom von $J$.
+    Wir zeigen, dass die beiden F\"alle,
+    in denen $\models_{\cM} \gamma$ und $\vdash_{J} \gamma$
+    nicht \"aquivalent sind, nicht auftreten k\"onnen.
+    \begin{itemize}
+     \item $\models_{\cM} \gamma$ und $\not \vdash_{J} \gamma$:
 
-Aus $\not \vdash_{J} \gamma$ folgt $\vdash_{J} \neg\gamma$
-(Abgeschlossenheit von $J$), also $\vdash_{J} \neg(\forall y~\alpha)$.
-Mit oben genanntem Axiom und modus ponens
-folgt daraus  $\vdash_{J} \neg\alpha[y/b_i]$.
+      Aus $\not \vdash_{J} \gamma$ folgt $\vdash_{J} \neg\gamma$
+      (Abgeschlossenheit von $J$), also $\vdash_{J} \neg(\forall y~\alpha)$.
+      Mit oben genanntem Axiom und modus ponens
+      folgt daraus  $\vdash_{J} \neg\alpha[y/b_i]$.
 
-Aus $\models_{\cM} \gamma$ folgt mit (E10)
-$\models_{\cM} \alpha[y/t]$ f\"ur jeden Term $t$,
-also auch $\models_{\cM} \alpha[y/b_i]$.
-Mit der Induktionsvoraussetzung folgt $\vdash_{J} \alpha[y/b_i]$
-und damit ein Widerspruch zur Konsistenz von $J$.
+      Aus $\models_{\cM} \gamma$ folgt mit (E10)
+      $\models_{\cM} \alpha[y/t]$ f\"ur jeden Term $t$,
+      also auch $\models_{\cM} \alpha[y/b_i]$.
+      Mit der Induktionsvoraussetzung folgt $\vdash_{J} \alpha[y/b_i]$
+      und damit ein Widerspruch zur Konsistenz von $J$.
 
-\item $\not\models_{\cM} \gamma$ und $\vdash_{J} \gamma$:
+     \item $\not\models_{\cM} \gamma$ und $\vdash_{J} \gamma$:
 
-Aus $\not\models_{\cM} \gamma$ folgt,
-dass es eine Belegung $s$ der Variablen $y$ mit einem Element der Grundmenge $t_0$
-gibt, so dass $\alpha$ nicht von $s$ erf\"ullt wird.
-Wir k\"onnen $s$ jetzt direkt in die Formel \glqq einbauen\grqq,
-da $t_0$ ein variablenfreier Term ist.
-Die Formel $\alpha[y/t_0]$ wird unter $\cM$ 
-genauso ausgewertet, wie $\alpha$ unter $\cM$ und $s$.
-Also gilt  $\not\models_{\cM} \alpha[y/t_0]$.
+      Aus $\not\models_{\cM} \gamma$ folgt,
+      dass es eine Belegung $s$ der Variablen $y$ mit einem Element der Grundmenge $t_0$
+      gibt, so dass $\alpha$ nicht von $s$ erf\"ullt wird.
+      Wir k\"onnen $s$ jetzt direkt in die Formel \glqq einbauen\grqq,
+      da $t_0$ ein variablenfreier Term ist.
+      Die Formel $\alpha[y/t_0]$ wird unter $\cM$ 
+      genauso ausgewertet, wie $\alpha$ unter $\cM$ und $s$.
+      Also gilt  $\not\models_{\cM} \alpha[y/t_0]$.
 
-Aus $\vdash_{J} \gamma$ folgt $\vdash_{J} \alpha[y/t_0]$ mit Axiom (A4) und modus ponens,
-da $t_0$ variablenfrei und deshalb frei f\"ur $y$ in $\alpha$ ist.
-Mit der Induktionsvoraussetzung folgt daraus
-$\models_{\cM} \alpha[y/t_0]$
-und der gesuchte Widerspruch.
-\end{itemize}
-\end{proof}
+      Aus $\vdash_{J} \gamma$ folgt $\vdash_{J} \alpha[y/t_0]$ mit Axiom (A4) und modus ponens,
+      da $t_0$ variablenfrei und deshalb frei f\"ur $y$ in $\alpha$ ist.
+      Mit der Induktionsvoraussetzung folgt daraus
+      $\models_{\cM} \alpha[y/t_0]$
+      und der gesuchte Widerspruch.
+    \end{itemize}
+  \end{proof}
+\end{lemma}
 
-\todo{Hier fehlt der Rest der Vorlesung vom 14.06. \ldots}
+\begin{satz}[Vollständigkeitssatz von Gödel]
+  Sei $K$ ein Prädikatenkalkül 1.\,Ordnung. Dann ist jede gültige Formel
+  in $K$ beweisbar, d.\,h. für jede Formel $\alpha$ von $K$ gilt: aus
+  $\models\alpha$ folgt $\vdash_{K}\alpha$.
 
+  \begin{proof}
+    Sei $\alpha$ eine Formel, die nicht in $K$ beweisbar ist
+    ($\not\vdash_{K}\alpha$). (O.\,B.\,d.\,A. ist $\alpha$ geschlossen.)
 
+    Erweitere $K$ zu $K'$ durch Hinzunehmen von $\neg\alpha$ als
+    zusätzliches Axiom. $K'$ ist konsisten \help{Begründung gab es
+    gestern.} $K$ kann nach \autoref{lem:8} zu einer T-produktiven
+    Theorie $K_{T}'$ erweitert werden, die konsisten ist. $K_{T}'$ kann
+    zu einer abgeschlossenen Theorie $K^{\ast}$ erweitert werden, die
+    konsistent und T-produktiv ist. $K^{\ast}$ hat ein Modell
+    $\mathcal{M}$. Da alle Axiome von $K$ ebenfalls in $K^{\ast}$
+    enhalten sind, ist $\mathcal{M}$ auch ein Modell von $K$ und $K'$.
+
+    $\neg\alpha$ ist ein Axiom von $K'$. Also gilt $\Mmodels\neg\alpha$.
+    Also ist $\not\Mmodels\alpha$. Folglich gibt es eine Interpretation,
+    die kein Modell von $\alpha$ ist, d.\,h. $\alpha$ ist nicht gültig,
+    also $\not\Mmodels\alpha$.
+
+    Damit haben wir gezeigt, dass $\vdash_{K}\alpha \rightarrow
+    \not\Mmodels\alpha$.
+  \end{proof}
+\end{satz}
+
+Zusammengefasst: Sei $K$ Prädikatenkalkül 1.\,Ordnung. Dann sind die
+gültigen Formeln genau die in $K$ beweisbaren Formeln.
 
 \clearpage
 \appendix
@@ -4036,7 +4184,7 @@ $x$ kommt in $\alpha$ nicht frei vor:
   \end{faelle}
 \end{enumerate}
 
-\section{Blatt 8}
+\section{Blatt 8}\label{sec:uebung8}
 
 \subsection*{Aufgabe 1}
 Zeigen Sie
@@ -4067,6 +4215,25 @@ Vorkommen von $y$ und mit $y$ frei für $x$ in $\alpha$. Dann gilt:
 $\vdash (\forall x \alpha) \leftrightarrow (\forall y \alpha[x/y])$
 
 Tipp: A4, Gen, A5, MP
+
+\section{Blatt 9}
+
+Sei $\alpha$ eine Formel ohne Quanttoren und $\vdash\alpha$ im
+Prädikatenkalkül 1.\,Ordnung. Zeigen Sie, $\alpha$ ist Instanz einer
+Tautologie. (Hinweise: falls nicht, dann gilt es eine Interpretation mit
+der Menge aller Terme von $\alpha$ als Grundmenge, under der $\alpha$
+falsch ist.)
+
+Formel ohne Quantoren:
+\begin{gather*}
+  A_{1}^{2}(x_{5}, f_{1}^{2}(x_{1},x_{3})) \rightarrow A_{1}^{1}\big(
+     f_{1}^{1}( f_{2}^{2}(x_{1},x_{5}))\big)
+\end{gather*}
+Menge aller Terme: $\{a_{5}, x_{1},x_{3},x_{5},f_{1}^{2}(x_{1}, x_{3}),
+f_{2}^{2}(x_{1},x_{5}), f_{1}^{1}\big(f_{2}^{2}(x_{1},x_{5})\big) \}$.
+
+$A_{1}^{2}\rightarrow A_{1}^{1}$ wird falls und $\{A_{1}^{2}, \neg
+A_{1}^{1}\}$. Dieses dann auf den Inhalt anwenden.
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
