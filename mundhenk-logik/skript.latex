@@ -3198,7 +3198,7 @@ jeder beliebige Theorie 1.\,Ordnung.
   Formel $\alpha$ gibt mit $\vdash_{K}\alpha$ und $\vdash_{K}\neg\alpha$.
 \end{defini}
 
-\begin{lemma}
+\begin{lemma}\label{lemma-KonsistenzPK}
   Jeder Prädikatenkalkül 1.\,Ordnung ist konsistent.
 
   \begin{proof}
@@ -3310,11 +3310,11 @@ entweder $\vdash \alpha$ oder $\vdash \neg \alpha$ (aber nicht beides).
 Solche Theorien gibt es,
 und jede konsistente Theorie l\"asst sich dazu erweitern.
 
-\begin{satz}[Lindenbaums Lemma]\label{satz-lindenbaumlemma}
+\begin{lemma}[Lindenbaums Lemma]\label{lemma-lindenbaum}
 F\"ur jede konsistente Theorie $K$
 gibt es eine konsistente und abgeschlossene Erweiterung $K'$.
 (Dabei haben $K$ und $K'$ die gleichen Formeln.)
-\end{satz}
+\end{lemma}
 
 \begin{proof}
 Sei $K$ eine konsistente Theorie.
@@ -3475,26 +3475,10 @@ alle beweisbaren Formeln wahr sind.)
   \end{proof}
 \end{lemma}
 
-\begin{lemma}[Abzählbare Modelle]
+\begin{lemma}[Abzählbare Modelle]\label{lemma-abz-modelle}
   Jede konsistente, abgeschlossene und T-produktive Theorie $J$ besitzt
   ein Modell $\mathcal{M}$, dessen Grundmenge die Menge aller
   variablenfreien Terme von $J$ ist.
-
-  \begin{proof}
-    Die Konstruktion eines Modells für eine konsistente, abgeschlossene
-    und T-produktive Theorie $K$: Grundmenge: Menge aller variablenfreien
-    Terme von $K$ $\{a_{1},a_{2},\ldots,f_{1}^{1}(a_{1}),
-    f_{1}^{1}(a_{2}), \ldots, f_{14}^{3}\big(a_{2}, f_{1}^{2}(a_{1}, a_{2}),
-    f_{1}^{1}(a_{1})\big)\}$. Konstanten und Funktionssymbole werden
-    "`durch sich selbst"' interpretiert $(a_{i})^{\mathcal{M}}=a_{i}$.
-    $(f_{i}^{n})^{\mathcal{M}}(t_{1},\ldots,t_{n}) =
-    f_{i}^{n}(t_{1},\ldots,t_{n})$
-
-    \begin{gather*}
-      (A_{i}^{n})\mathcal{M} = \{(t_{1},\ldots,t_{n})\colon \vdash_{K}
-         A_{i}^{n}(t_{1},\ldots,t_{n}) \}
-    \end{gather*}
-  \end{proof}
 
   \begin{proof}
     Definiere $\cM$ wie folgt.
@@ -3618,40 +3602,62 @@ alle beweisbaren Formeln wahr sind.)
     Dann ist $y$ die einzige freie Variable in $\alpha$.
     Also ist $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/b_i]$
     ein Axiom von $J$.
-    Wir zeigen, dass die beiden F\"alle,
-    in denen $\models_{\cM} \gamma$ und $\vdash_{J} \gamma$
-    nicht \"aquivalent sind, nicht auftreten k\"onnen.
-    \begin{itemize}
-     \item $\models_{\cM} \gamma$ und $\not \vdash_{J} \gamma$:
+    Es gelten folgende \"Aquivalenzen.
+    \begin{eqnarray*}
+      \models_{\cM} (\forall y ~ \alpha) 
+          & \Leftrightarrow_{(1)} &
+            \text{für jede Variablenbelegung $s\in\Sigma_{\cM}$ gilt: $s$ erfüllt $\alpha$} \\
+          & \Leftrightarrow_{(2)} &
+            \text{für jeden variablenfreien Term $t$ gilt:~} \models_{\cM} \alpha[y/t] \\
+          & \Leftrightarrow_{(3)} &
+            \text{für jeden variablenfreien Term $t$ gilt:~} \vdash_{J} \alpha[y/t]
+    \end{eqnarray*}
+    \"Aquivalenz (3) folgt aus der Induktionsvoraussetzung.
+    \"Aquivalenz (1) folgt aus der semantischen Definition des Allquantors.
+    \"Aquivalenz (2) folgt aus der Definition von $\cM$.
+    Für Variablenbelegung $s$ gilt $(s(y))^{\cM} = s(y)$ 
+      (Terme werden durch sich selbst interpretiert).
+    Daraus folgt:
+     $s$ erfüllt $\alpha$ genau dann, wenn $\models_{\cM} \alpha[y/s(y)]$.
+    Da $\{ s(y) \mid s\in\Sigma_{\cM} \} = D$
+    und $D$ die Menge aller variablenfreien Treme ist, folgt (2).
 
-      Aus $\not \vdash_{J} \gamma$ folgt $\vdash_{J} \neg\gamma$
-      (Abgeschlossenheit von $J$), also $\vdash_{J} \neg(\forall y~\alpha)$.
-      Mit oben genanntem Axiom und modus ponens
-      folgt daraus  $\vdash_{J} \neg\alpha[y/b_i]$.
+    Es bleibt noch folgende \"Aquivalenz (*) zu zeigen:
+    \begin{gather*}
+     \text{für jeden variablenfreien Term $t$ gilt~} \vdash_{J} \alpha[y/t]
+            ~ ~ \Leftrightarrow ~ ~
+     \vdash_{J} (\forall y ~ \alpha) 
+    \end{gather*}
+    Wir zeigen die beiden Implikationsrichtungen von (*) getrennt.
 
-      Aus $\models_{\cM} \gamma$ folgt mit (E10)
-      $\models_{\cM} \alpha[y/t]$ f\"ur jeden Term $t$,
-      also auch $\models_{\cM} \alpha[y/b_i]$.
-      Mit der Induktionsvoraussetzung folgt $\vdash_{J} \alpha[y/b_i]$
-      und damit ein Widerspruch zur Konsistenz von $J$.
+    Aus $\vdash_{J} (\forall y~ \alpha)$ folgt
+    $\vdash_{J} \alpha[y/t]$ für jeden variablenfreien Term $t$
+    mittels Axiom A4 und modus ponens.
 
-     \item $\not\models_{\cM} \gamma$ und $\vdash_{J} \gamma$:
+    Die andere Implikationsrichtung zerlegen wir in folgende Teile.
 
-      Aus $\not\models_{\cM} \gamma$ folgt,
-      dass es eine Belegung $s$ der Variablen $y$ mit einem Element der Grundmenge $t_0$
-      gibt, so dass $\alpha$ nicht von $s$ erf\"ullt wird.
-      Wir k\"onnen $s$ jetzt direkt in die Formel \glqq einbauen\grqq,
-      da $t_0$ ein variablenfreier Term ist.
-      Die Formel $\alpha[y/t_0]$ wird unter $\cM$ 
-      genauso ausgewertet, wie $\alpha$ unter $\cM$ und $s$.
-      Also gilt  $\not\models_{\cM} \alpha[y/t_0]$.
+    $
+    \begin{array}{cclc}
+    \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \vdash_{J} \alpha[y/t]} & (1) \\
+     \rule{20mm}{0mm} & \Rightarrow &
+    \text{für jeden variablenfreien Term $t$ gilt:~} \not\vdash_{J} \neg\alpha[y/t] & (2) \\
+     & \Rightarrow & 
+    \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\vdash_{J} \neg\alpha[y/a_j] & (3) \\
+     & \Rightarrow & \not\vdash_{J} \neg(\forall y ~ \alpha) & (4) \\
+      & \Rightarrow & \vdash_{J} (\forall y ~ \alpha) & (5)
+    \end{array}
+    $
 
-      Aus $\vdash_{J} \gamma$ folgt $\vdash_{J} \alpha[y/t_0]$ mit Axiom (A4) und modus ponens,
-      da $t_0$ variablenfrei und deshalb frei f\"ur $y$ in $\alpha$ ist.
-      Mit der Induktionsvoraussetzung folgt daraus
-      $\models_{\cM} \alpha[y/t_0]$
-      und der gesuchte Widerspruch.
-    \end{itemize}
+    Aus (1) folgt (2) wg.~der Konsistenz von $J$.
+    Aus (2) folgt (3), da jedes Konstantensymbol ein variablenfreier Term ist.
+    Aus dem Axiom 
+    $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/a_i]$ 
+    und $\vdash_{J} \neg(\forall y ~ \alpha)$ folgt $\vdash_{J} \neg\alpha[y/a_i]$.
+    Also folgt die Negation von (3) aus der Negation von (4).
+    Damit folgt (4) aus (3).
+    Die Abgeschlossenheit von $J$ führt schließlich zu (5).
+
+    Damit ist (*) bewiesen und der Beweis des Lemmas abgeschlossen.
   \end{proof}
 \end{lemma}
 
@@ -3665,12 +3671,14 @@ alle beweisbaren Formeln wahr sind.)
     ($\not\vdash_{K}\alpha$). (O.\,B.\,d.\,A. ist $\alpha$ geschlossen.)
 
     Erweitere $K$ zu $K'$ durch Hinzunehmen von $\neg\alpha$ als
-    zusätzliches Axiom. $K'$ ist konsisten \help{Begründung gab es
-    gestern.} $K$ kann nach \autoref{lem:8} zu einer T-produktiven
-    Theorie $K_{T}'$ erweitert werden, die konsisten ist. $K_{T}'$ kann
-    zu einer abgeschlossenen Theorie $K^{\ast}$ erweitert werden, die
-    konsistent und T-produktiv ist. $K^{\ast}$ hat ein Modell
-    $\mathcal{M}$. Da alle Axiome von $K$ ebenfalls in $K^{\ast}$
+    zusätzliches Axiom. Da $K$ konsistent ist (\autoref{lemma-KonsistenzPK}),
+    ist $K'$ ebenfalls konsistent (\autoref{lemma-kons-erweiterung}).
+    $K$ kann nach \autoref{lem:8} zu einer T-produktiven
+    Theorie $K_{T}'$ erweitert werden, die konsistent ist. 
+    $K_{T}'$ kann zu einer abgeschlossenen Theorie $K^{\ast}$ erweitert werden, die
+    konsistent und T-produktiv ist (\autoref{lemma-lindenbaum}).
+    $K^{\ast}$ hat ein Modell $\mathcal{M}$ (\autoref{lemma-abz-modelle}). 
+    Da alle Axiome von $K$ ebenfalls in $K^{\ast}$
     enhalten sind, ist $\mathcal{M}$ auch ein Modell von $K$ und $K'$.
 
     $\neg\alpha$ ist ein Axiom von $K'$. Also gilt $\Mmodels\neg\alpha$.
@@ -3678,8 +3686,7 @@ alle beweisbaren Formeln wahr sind.)
     die kein Modell von $\alpha$ ist, d.\,h. $\alpha$ ist nicht gültig,
     also $\not\Mmodels\alpha$.
 
-    Damit haben wir gezeigt, dass $\vdash_{K}\alpha \rightarrow
-    \not\Mmodels\alpha$.
+    Damit haben wir gezeigt: aus $\not\vdash_{K}\alpha$ folgt $\not\Mmodels\alpha$.
   \end{proof}
 \end{satz}
 
