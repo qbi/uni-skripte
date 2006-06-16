@@ -336,7 +336,7 @@
 
 \chapter{Aussagenlogik}
 
-\section{Grundlagen}\label{sec:1}
+\section{Logische Aussagen und Verknüpfungen}\label{sec:1}
 
 Eine \emph{Aussage} ist entweder \emph{wahr} oder \emph{falsch}.
 
@@ -492,9 +492,9 @@ $A_{i},B_{i}, \neg A_{i}$ und $\neg B_{i}$.
 
 Eine Belegung $\mathcal{A}$ \emph{passt} zur Formel $\alpha$, falls für
 jede Variable $X$, die in der Formel $\alpha$ vorkommt, gilt:
-\begin{center}
-  $X\in\mathcal{A}$ oder $\neg X\in\mathcal{A}$
-\end{center}
+\begin{gather*}
+  X\in\mathcal{A}\quad\text{oder}\quad\neg X\in\mathcal{A}
+\end{gather*}
 
 Wenn $\mathcal{A}$ eine Belegung ist, die zu der aussagenlogischen
 Formel $\alpha$ passt, dann ist $\mathcal{A}(\alpha)$ wie folgt
@@ -750,20 +750,20 @@ mit den Verknüpfungszeichen $\neg, \wedge$ und $\vee$ darstellen.
 \end{bemerk}
 
 \begin{bemerk}
-  Kombinationen ohne Negation $\neg$ reichen nicht aus!
+  Kombinationen ohne Negation $\neg$ reichen nicht aus! Konjunktion und
+  Disjunktion liefern nie ein den Wert wahr, wenn beide Operanten falsch
+  sind. Also lässt sich mit Konjunktion und Disjunktion keine Formel
+  aufstellen, die beispielsweise eine Tautologie ist.
 
-  $\neg$ und $\leftrightarrow$ reichen auch nicht aus!
-  \begin{center}
-    \begin{tabular}{cc|c}
-      $A$ & $B$ & $A\leftrightarrow B$\\
-      \hline
-      $f$ & $f$ & $w$\\
-      $f$ & $w$ & $f$\\
-      $w$ & $f$ & $f$\\
-      $w$ & $w$ & $w$
-    \end{tabular}
-    \help{wie war hier die Argumentation?}
-  \end{center}
+  $\neg$ und $\leftrightarrow$ reichen auch nicht aus! Eine Formel, die
+  nur diese beiden Verknüpfungszeichen verwendet hat entweder die
+  Struktur $\neg(A \leftrightarrow B)$ oder $A \leftrightarrow B$ mit $A$
+  und $B$ als beliebig komplexe Formeln, die wiederum nur die
+  Verknüpfungen $\neg$ und $\leftrightarrow$ verwenden. Da die
+  Wahrheitswerttabelle für die Äquivalenz \autoref{tab:1} immer eine
+  gerade Anzahl an Einträgen hat (unabhängig davon, ob das Ergebnis
+  nochmal negiert wird), kann man keine Formel aufstellen, die eine
+  ungerade Anzahl an Einträgen hat.
 \end{bemerk}
 
 Formeln, die nur Konjunktion und Disjunktion als Verknüpfungszeichen enthalten,
@@ -777,6 +777,15 @@ Dann gilt $\mathcal{A}(\alpha)\leq \mathcal{B}(\alpha)$
 für jede monotone Formel $\alpha$.
 
 \begin{table}
+  \hfill
+  \begin{tabular}{cc|c}
+    $A$ & $B$ & $A\leftrightarrow B$\\
+    \hline
+    $f$ & $f$ & $w$\\
+    $f$ & $w$ & $f$\\
+    $w$ & $f$ & $f$\\
+    $w$ & $w$ & $w$
+  \end{tabular}
   \hfill
   \begin{tabular}{cc|c}
     $A$ & $B$ & $A\downarrow B$\\
@@ -797,10 +806,11 @@ für jede monotone Formel $\alpha$.
     $w$ & $w$ & $f$\\
     \multicolumn{3}{c}{$A \downarrow B\equiv\neg(A\vee B)$}
   \end{tabular}
-  \hfill\mbox{}\\
+  \hfill\null\\
   \centering
-  \caption{Wahrheitswerttabelle für \emph[rand=]{NOR} (links) und
-    \emph[rand=]{NAND} (rechts)}
+  \caption{Wahrheitswerttabelle für Äquivalenz (links), \emph[rand=]{NOR}
+    (mitte) und \emph[rand=]{NAND} (rechts)}
+  \label{tab:1}
 \end{table}
 
 Mit dem einzelnen Verknüpfungszeichen \emph{NOR} $\downarrow$ lässt sich jede
@@ -858,13 +868,14 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
 
 \begin{defini}[formale Theorie]
   Eine \emph[index=Theorie!formale]{formale Theorie} $\mathcal{S}$
-  besteht aus
+  ist ein Tripel $(\mathcal{F}, \mathrm{Ax}, \mathrm{R})$ bestehend aus
   \begin{enumerate}
-   \item einer Menge von \emph{Formeln} $\mathcal{F}$
+   \item einer Menge von \emph{Formeln} $\mathcal{F}$,
    \item einer Menge von \emph[indexrand=Axiome]{Axiomen}
-    $\mathrm{Ax} \subseteq \mathcal{F}$
-   \item einer endlichen Menge von entscheidbaren Relationen über
-    $\mathcal{F}$ -- diese nennt man \emph{Ableitungsregeln}
+    $\mathrm{Ax} \subseteq \mathcal{F}$ und
+   \item einer endlichen Menge entscheidbarer Relationen
+    $\mathrm{R}\subseteq\mathcal{F}^{n}\rightarrow\mathcal{F}$, die man als
+    \emph{Ableitungsregeln} bezeichnet.
   \end{enumerate}
 \end{defini}
 
@@ -875,8 +886,8 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
    \item allen aussagenlogischen Formeln mit den Verknüpfungszeichen
     $\neg$ und $\rightarrow$
 
-   \item den \emph[indexrand=Axiome]{Axiomen}, die aus dem Axiomenschemata (A1), (A2) und (A3)
-    durch Einsetzen von beliebigen aussagenlogische Formeln für $\alpha$,
+   \item den \emph[rand=Axiome d. Auss.logik,index=Axiome!Aussagenlogik]{Axiomen}, die aus dem Axiomenschemata (A1), (A2) und (A3)
+    durch Einsetzen von beliebigen aussagenlogischen Formeln für $\alpha$,
     $\beta$ und $\gamma$ entstehen: \index{Axiome}
     \begin{enumerate}[({A}1)]
      \item $\alpha \rightarrow (\beta\rightarrow \alpha)$
@@ -890,7 +901,7 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
 
    \item der Ableitungsregel \emph{modus ponens} (MP) \index{MP|see{modus ponens}}
     \begin{gather*}
-      MP(\alpha, \beta,\gamma) \gdw \beta=\alpha \rightarrow\gamma
+      \mathrm{MP}(\alpha, \beta,\gamma) \gdw \beta=\alpha \rightarrow\gamma
     \end{gather*}
 
     Andere Schreibweise:
@@ -903,7 +914,7 @@ Tautologie ist. Dazu benutzt man den Begriff der \emph{Theorie}.
 Die Ableitungsregel modus ponens (vollständig
 \href{http://de.wikipedia.org/wiki/Modus_ponens}{modus ponendo ponens})
 ist eine Art Substitutionsregel, die besagt, dass eine Implikation der
-Form $\alpha\rightarrow\gamma$ durch die Teilformel $\gamma$ ersetzt
+Form $\alpha\rightarrow\gamma$ durch die Teilformel~$\gamma$ ersetzt
 werden kann, sofern man zeigen kann, dass die Teilformel $\alpha$ gilt.
 Dies ist auch mit der Deutung der Implikation aus \autoref{sec:1}
 anschaulich: Wenn $\alpha$ wahr ist und die Implikation
@@ -916,13 +927,11 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \begin{defini}[Beweis]
   Ein \emph{Beweis} in einer Theorie $\mathcal{S}$ ist eine Folge
   $\alpha_1, \alpha_2, \ldots, \alpha_k$ von Formeln von $\mathcal{S}$, so
-  dass für $i=1,2,\ldots, n$ gilt:
-
-  $\alpha_i$ ist
+  dass für $a_{i}$ ($i=1,2,\ldots, n$) gilt:
   \begin{enumerate}
-   \item ein Axiom von $\mathcal{S}$, oder
-   \item aus davorstehenden $\alpha_j$ mit einer Ableitungsregel von
-    $\mathcal{S}$ ableitbar, d.\,h. $R(\alpha_{j_1},\alpha_{j_2},\linebreak[4] \ldots,
+   \item $\alpha_{i}$ ist ein Axiom von $\mathcal{S}$ oder
+   \item $\alpha_{i}$ ist aus einem vorhergehendem $\alpha_j$ mit einer Ableitungsregel von
+    $\mathcal{S}$ ableitbar, d.\,h. $R(\alpha_{j_1},\alpha_{j_2},\ldots,
     \alpha_{j_m},\alpha_i)$ für eine Ableitungsregel $R$ von $\mathcal{S}$
     und $j_1,j_2,\ldots,j_m < i$.
   \end{enumerate}
@@ -938,12 +947,12 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Wir konstruieren eine Folge $\alpha_1,\ldots,\alpha_5$ wie folgt:
   \begin{align*}
     \alpha_1 &= B\rightarrow(B\rightarrow B)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     \alpha_2 &= B\rightarrow((B\rightarrow B) \rightarrow B)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     \alpha_3 &= (B\rightarrow((B\rightarrow B) \rightarrow B)) \rightarrow\\
     &\hspace{1.4cm} ((B\rightarrow(B\rightarrow
-       B))\rightarrow(B\rightarrow B)) &\text{Axiom 2}\\
+       B))\rightarrow(B\rightarrow B)) &\text{A2}\\
     \alpha_4 &= (B\rightarrow(B\rightarrow B))\rightarrow(B\rightarrow B)
        &\text{MP auf $\alpha_2$, $\alpha_3$}\\
     \alpha_5 &= B\rightarrow B
@@ -952,14 +961,18 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Wie wir sehen, ist $B\rightarrow B$ ein Theorem von $\mathrm{L}$.
 
   Da der Beweis $\alpha_{1},\ldots,\alpha_{5}$ ohne Einschränkungen bzgl.
-  $B$ geführt ist, gilt die Aussage für jede beliebige Formel $\beta$:\\
-  {\centering $\beta \rightarrow \beta$ ist ein Theorem von $\mathrm{L}$.}
+  $B$ geführt ist, gilt die Aussage für jede beliebige Formel $\beta$:
+  \begin{center}
+    $\beta \rightarrow \beta$ ist ein Theorem von $\mathrm{L}$.
+  \end{center}
 \end{bsp}
 
 \begin{defini}[Folgerung]
-  $\alpha$ ist eine \emph{Folgerung} von Formelmenge $\Gamma$ in
-  $\mathcal{S}$, falls es einen Beweis für $\alpha$ in der Theorie
-  $\mathcal{S}$ gibt, zu der man $\Gamma$ zu den Axiomen hinzugenommen hat.
+  $\alpha$ ist eine \emph{Folgerung} aus der Formelmenge $\Gamma$ in
+  $\mathcal{S}=(\mathcal{F}, \mathrm{Ax}, \mathrm{R})$, falls es einen
+  Beweis für $\alpha$ in der Theorie~$\mathcal{S}' =(\mathcal{F},
+  \mathrm{Ax}\cup\Gamma, \mathrm{R})$ gibt, in der man die Menge $\Gamma$
+  zu den Axiomen von $\mathcal{S}$ hinzugenommen hat.
 
   Schreibweisen:\\
   \begin{tabular}{rcl}
@@ -983,7 +996,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{defini}
 
 \begin{bsp}\label{bsp:2}
-  Wir beweisen die Schlussregel:
+  Wir beweisen für die Theorie $\mathrm{L}$ die Schlussregel:
   \begin{gather*}
     \alpha\rightarrow\beta, \beta\rightarrow\gamma
        \vdash_{\mathrm{L}} \alpha\rightarrow\gamma
@@ -995,11 +1008,11 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
     (2)\quad & \beta\rightarrow\gamma & \text{Hypothese}\\
     (3)\quad & (\beta\rightarrow\gamma) \rightarrow
        (\alpha\rightarrow(\beta\rightarrow\gamma)) &
-       \text{Axiom 1} \\
+       \text{A1} \\
     (4)\quad & \alpha\rightarrow(\beta\rightarrow\gamma) & \text{MP 2,3}\\
     (5)\quad & (\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
        ( (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma))
-       & \text{Axiom 2} \\
+       & \text{A2} \\
     (6)\quad & (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma)
        & \text{MP 4,5} \\
     (7)\quad & \alpha\rightarrow\gamma & \text{MP 1,6}
@@ -1017,13 +1030,14 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 
   \begin{proof}
     \begin{mdescription}
-      \item["`$\Leftarrow$"'] gelte $\Gamma \vdash_{\mathrm{L}} \alpha\rightarrow\beta$.
+      \item["`$\Leftarrow$"'] Es gelte $\Gamma \vdash_{\mathrm{L}}
+      \alpha\rightarrow\beta$. Nimmt man zusätzlich $\alpha$ zur Menge
+      $\Gamma$ hinzu, gilt $\Gamma, \alpha \vdash_{\mathrm{L}} \alpha$
+      und $\Gamma, \alpha \vdash_{\mathrm{L}} \alpha\rightarrow\beta$.
+      Daraus kann man mittels Anwendung von modus ponens: $\Gamma,\alpha
+      \vdash_{\mathrm{L}} \beta$ zeigen.
 
-      Da $\Gamma, \alpha \vdash_{\mathrm{L}} \alpha$ und $\Gamma, \alpha \vdash_{\mathrm{L}}
-      \alpha\rightarrow\beta$ folgt mittels Anwendung von modus ponens:
-      $\Gamma,\alpha \vdash_{\mathrm{L}} \beta$
-
-     \item["`$\Rightarrow$"'] Es gelte $\Gamma, \alpha \vdash_{\mathrm{L}} \beta$
+     \item["`$\Rightarrow$"'] Es gelte $\Gamma, \alpha \vdash_{\mathrm{L}} \beta$.
 
       Wir führen eine Induktion über die Länge $k$ des Beweises von
       $\beta$ aus $\Gamma,\alpha$.
@@ -1033,52 +1047,52 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
         \begin{faelle}
          \item $\beta$ ist ein Axiom oder $\beta\in\Gamma$.
 
-          Dann gilt $\Gamma \vdash_{\mathrm{L}} \beta$. Mit Axiom 1
+          Dann gilt $\Gamma \vdash_{\mathrm{L}} \beta$. Mit Axiom A1
           $\beta \rightarrow (\alpha\rightarrow\beta)$ und modus ponens folgt
           $\Gamma \vdash_{\mathrm{L}} \alpha \rightarrow\beta$.
           \begin{align*}
             (1)\quad &\beta&\text{Hypothese}\\
             (2)\quad &\beta\rightarrow(\alpha\rightarrow\beta)
-               &\text{Axiom 1}\\
+               &\text{A1}\\
             (3)\quad &\alpha\rightarrow\beta &\text{MP 1,2}
           \end{align*}
 
          \item $\beta=\alpha$. Dann ist $\alpha\rightarrow\beta =
           \beta\rightarrow\beta$.
 
-          Da $\vdash_{\mathrm{L}} \beta\rightarrow\beta$, folgt $\Gamma \vdash_{\mathrm{L}}
+          Da $\vdash_{\mathrm{L}} \beta\rightarrow\beta$
+          (\autoref{bsp:1}), folgt $\Gamma \vdash_{\mathrm{L}}
           \beta\rightarrow\beta$
         \end{faelle}
 
-       \item[IV:] Die Behauptung gilt für alle Formeln $\beta$ mit Beweisen
-        der Länge $\leq n$.
+       \item[IV:] Die Behauptung $\Gamma,\alpha\vdash_{\mathrm{L}} \beta
+        \gdw \Gamma\vdash_{L}\alpha\rightarrow\beta$ gilt für alle
+        Formeln $\beta$ mit Beweisen der Länge $\leq n$.
 
-       \item[IS:] $\Gamma, \alpha \vdash_{\mathrm{L}} \beta$ durch einen Beweis mit
-        der Länge $n+1$
+       \item[IS:] Der Beweis von $\Gamma, \alpha \vdash_{\mathrm{L}} \beta$
+        habe die Länge $n+1$ und die Formeln
         \begin{gather*}
           \alpha_{1}, \ldots,\alpha_{i},\ldots,\alpha_{j},\ldots,
              \alpha_{n+1} = \beta
         \end{gather*}
 
         \begin{faelle}
-         \item $\beta$ ist eine Axiom oder aus $\Gamma$ oder
+         \item $\beta$ ist ein Axiom oder aus $\Gamma$ oder
           $\beta=\alpha$.
 
           geht genauso wie Induktionsanfang.
 
-         \item $\beta$ entsteht durch modus ponens aus $\alpha_{i}$ und
-          $\alpha_{j}$ ($i,j\leq n$), $\alpha_{j}=(\alpha_{i}\rightarrow
-          \beta)$
+         \item Die Formel $\beta$ entsteht durch modus ponens aus $\alpha_{i}$ und
+          $\alpha_{j}$ ($i,j\leq n$), wobei o.\,B.\,d.\,A.
+          $\alpha_{j}=(\alpha_{i}\rightarrow \beta)$
 
           Nach Induktionsvorraussetzung gilt $\Gamma \vdash_{\mathrm{L}}
           \alpha\rightarrow\alpha_{i}$ und $\Gamma \vdash_{\mathrm{L}}
-          \alpha\rightarrow (\alpha_{i}\rightarrow\beta)$. Mit Axiom 2
-          $(\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
-          ((\alpha\rightarrow\beta)\rightarrow(\alpha\rightarrow\gamma))$
-          ist $(\alpha\rightarrow(\alpha_{i}\rightarrow\beta)) \rightarrow
-          ((\alpha\rightarrow\alpha_{i}) \rightarrow
-          (\alpha\rightarrow\beta)$ ein Axiom von $\mathrm{L}$. Durch Anwendung
-          von modus ponens mit obigen Formeln folgt $\Gamma \vdash_{\mathrm{L}}
+          \alpha\rightarrow (\alpha_{i}\rightarrow\beta)$. Mit der
+          Ausprägung $(\alpha\rightarrow(\alpha_{i}\rightarrow\beta))
+          \rightarrow \big((\alpha\rightarrow\alpha_{i}) \rightarrow
+          (\alpha\rightarrow\beta)\big)$ von Axiom A2 folgt durch Anwendung
+          von modus ponens mit $\Gamma \vdash_{\mathrm{L}}
           \alpha\rightarrow\beta$.
         \end{faelle}
       \end{mdescription}
@@ -1087,11 +1101,10 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{satz}
 
 \begin{lemma}\label{lem:1}
-  $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \vdash
-  \alpha\rightarrow\gamma$.
-
-  Wir beweisen: $\alpha \rightarrow (\beta\rightarrow\gamma),
-  \beta,\alpha \vdash \gamma$
+  Um zu seigen, dass
+  $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \vdash_{\mathrm{L}}
+  \alpha\rightarrow\gamma$ gilt, beweisen wir erst $\alpha \rightarrow
+  (\beta\rightarrow\gamma), \beta,\alpha \vdash \gamma$
   \begin{align*}
     (1)\quad &\alpha \rightarrow(\beta\rightarrow\gamma)&\text{Hypothese}\\
     (2)\quad &\beta &\text{Hypothese}\\
@@ -1099,23 +1112,23 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
     (4)\quad &\beta\rightarrow\gamma &\text{MP 3,1}\\
     (5)\quad &\gamma &\text{MP 2,4}\\
   \end{align*}
-  Mit Deduktionstheorem fogt $\alpha\rightarrow(\beta\rightarrow\gamma), \beta \vdash
-  \alpha\rightarrow\gamma$.
+  Mit dem Deduktionstheorem fogt dann $\alpha\rightarrow(\beta\rightarrow
+  \gamma), \beta \vdash \alpha\rightarrow\gamma$.
 \end{lemma}
 
 \begin{lemma}\label{lem:2}
-  $\vdash_{\mathrm{L}} \neg\neg \beta \rightarrow\beta$.
+  Zeigen wir: $\vdash_{\mathrm{L}} \neg\neg \beta \rightarrow\beta$.
 
   \begin{proof}
     \begin{align*}
-      (1)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow ( (\neg\beta
-         \rightarrow\neg\beta) \rightarrow \beta)
-         &\text{Axiom 3}\\
+      (1)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow \big( (\neg\beta
+         \rightarrow\neg\beta) \rightarrow \beta \big)
+         &\text{A3}\\
       (2)\quad &\neg\beta \rightarrow \neg\beta&\text{\autoref{bsp:1}}\\
       (3)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow \beta
          &\text{aus 1,2 mit \autoref{lem:1}}\\
       (4)\quad &\neg\neg\beta \rightarrow (\neg\beta \rightarrow \neg\neg\beta)
-         &\text{Axiom 1}\\
+         &\text{A1}\\
       (5)\quad &\neg\neg \beta \rightarrow\beta &\text{aus 4, 3 mit
          \autoref{lem:1}}
     \end{align*}
@@ -1131,19 +1144,24 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
     Länge $k$ des Beweises von $\beta$.
 
     \begin{mdescription}
-     \item[IA:] $k=1$: d.\,h. $\beta$ ist eine Axiom. Alle Axiome sind
-      Tautologien, also ist $\beta$ auch eine Tautologie.
+     \item[IA:] Sei $k=1$, d.\,h. $\beta$ ist eine Axiom. Alle Axiome sind
+      Tautologien, also ist $\beta$ auch eine Tautologie. \help{Ist das
+      mal irgendwo definiert worden?}
 
-     \item[IV:] Es gilt die Behauptung für alle Beweise der Länge $\leq n$.
+     \item[IV:] Jedes Theorem von $\mathrm{L}$, dessen Beweis die Länge
+      $\leq n$ hat, ist eine aussagenlogische Tautologie.
 
      \item[IS:] $\beta$ habe einen Beweis der Länge $n+1$.
       \begin{faelle}
        \item Falls $\beta$ ein Axiom ist, dann ist $\beta$ eine Tautologie.
-       \item Falls $\beta$ durch modus ponens aus $\alpha$ und $\alpha'$
-        entstehen, dann sind $\alpha$ und $\alpha'$ nach
-        Induktionsvorraussetzung Tautologien. $\alpha' =\alpha
+       \item Andernfalls geht $\beta$ durch modus ponens aus $\alpha$ und
+        $\alpha'$ hervor, wobei $\alpha$ und $\alpha'$ zwei bereits
+        hergeleitete Formeln des Beweises von $\beta$ (deren Beweis also
+        $\leq n$ ist) und die deshalb nach Induktionsvorraussetzung
+        Tautologien sind. $\alpha'$ sie von der Form $\alpha' =\alpha
         \rightarrow\beta$. Wir wissen bereits, dass $\beta$ dann
-        ebenfalls eine Tautologie ist.
+        ebenfalls eine Tautologie ist. \help{Woher? Es ist nirgends
+        gesagt, dass der modus ponens eine Tautologie liefert.}
       \end{faelle}
     \end{mdescription}
   \end{proof}
@@ -1153,43 +1171,42 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   $\vdash_{\mathrm{L}} \beta \rightarrow \neg\neg\beta$
   \begin{align*}
     (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
-       ((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\beta) &
-       \text{Axiom 3}\\
+       \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\big) &
+       \text{A3}\\
     (2)\quad & \neg\neg\neg\beta \rightarrow \neg\beta &
        \text{\autoref{lem:2}}\\
     (3)\quad & (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
        \neg\neg\beta &\text{MP 2,1}\\
     (4)\quad & \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     (5)\quad & \beta \rightarrow \neg\neg\beta
        &\text{\autoref{bsp:2} mit 4,3}\\
   \end{align*}
 \end{lemma}
 
 \begin{lemma}\label{lem:4}
-  $\vdash_{\mathrm{L}} \neg\alpha \rightarrow (\alpha \rightarrow \beta)$;
-  Wir zeigen zuerst $\neg\alpha, \alpha \vdash \beta$:
+  Um zu beweisen, dass $\vdash_{\mathrm{L}} \neg\alpha \rightarrow
+  (\alpha \rightarrow \beta)$ gilt, zeigen wir zuerst $\neg\alpha, \alpha \vdash \beta$:
   \begin{align*}
-    (1)\quad & \alpha & \text{Hyp} \\
-    (2)\quad & \neg \alpha & \text{Hyp} \\
+    (1)\quad & \alpha & \text{Hypothese} \\
+    (2)\quad & \neg \alpha & \text{Hypothese} \\
     (3)\quad & \alpha \rightarrow (\neg\beta \rightarrow \alpha) &
-       \text{Axiom 1} \\
+       \text{A1} \\
     (4)\quad & \neg\beta \rightarrow \alpha & \text{MP 1,3} \\
     (5)\quad & \neg\alpha \rightarrow (\neg\beta \rightarrow \neg\alpha) &
-       \text{Axiom 1} \\
+       \text{A1} \\
     (6)\quad & \neg\beta \rightarrow \neg\alpha & \text{MP 2,5} \\
     (7)\quad & (\neg \beta \rightarrow \neg \alpha) \rightarrow
-       ((\neg\beta \rightarrow \alpha) \rightarrow \beta) &
-       \text{Axiom 3} \\
+       \big((\neg\beta \rightarrow \alpha) \rightarrow \beta\big) &
+       \text{A3} \\
     (8)\quad & (\neg\beta \rightarrow \alpha) \rightarrow \beta &
        \text{MP 6,7} \\
     (9)\quad & \beta & \text{MP 4,8} \\
   \end{align*}
   Aus $\neg\alpha, \alpha \vdash \beta$ folgt mit zweimaliger Anwendung
-  des Deduktionstheorems\vspace{1ex}
-
+  des Deduktionstheorems
   \begin{gather*}
-    \vdash \neg\alpha \rightarrow (\alpha \rightarrow \beta).
+    \vdash_{\mathrm{L}} \neg\alpha \rightarrow (\alpha \rightarrow \beta).
   \end{gather*}
 \end{lemma}
 
@@ -1251,7 +1268,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
     (6)\quad & \neg \beta\rightarrow \neg\neg\alpha & \text{MP 2,5} \\
     (7)\quad & (\neg \beta \rightarrow \neg\neg \alpha) \rightarrow
        ((\neg\beta\rightarrow\neg\alpha) \rightarrow \beta) &
-       \text{Axiom 3}\\
+       \text{A3}\\
        (8)\quad & (\neg\beta\rightarrow\neg\alpha) \rightarrow \beta &
        \text{MP 6,7} \\
     (9)\quad & \beta & \text{MP 4,8}
@@ -1262,7 +1279,9 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 
 \subsection{Übersicht der gezeigten Theoreme}
 
+Nocheinmal als Zusammenfassung alle gezeigten Theoreme:
 \begin{align*}
+  \alpha &\rightarrow\alpha &\text{\autoref{bsp:1}}\\
   \neg\neg\alpha &\rightarrow \alpha  &\text{\autoref{lem:2}}\\
   \alpha &\rightarrow \neg\neg \alpha &\text{\autoref{lem:3}}\\
   \neg\alpha &\rightarrow (\alpha \rightarrow \beta)
@@ -1277,17 +1296,11 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
      \beta) \rightarrow \beta) &\text{\autoref{lem:7}}
 \end{align*}
 
-\help{haben wir irgendwo noch
-  \href{http://de.wikipedia.org/wiki/Modus_tollendo_ponens}{Modus
-    tollendo ponens} oder
-  \href{http://de.wikipedia.org/wiki/Modus_ponendo_tollens}{Modus ponendo
-    tollens}}
-
 \subsection{Vollständigkeit von \texorpdfstring{$\mathrm{L}$}{L}}
 
-"`Vollständigkeit von $\mathrm{L}$"' bedeutet: jede aussagenlogische
-Tautologie ist eine Theorem von $\mathrm{L}$. ("`Korrektheit von
-$\mathrm{L}$"' bedeutet: jedes Theorem von $\mathrm{L}$ ist eine
+"`Vollständigkeit von $\mathrm{L}$"' bedeutet, dass jede aussagenlogische
+Tautologie ein Theorem von $\mathrm{L}$ ist. ("`Korrektheit von
+$\mathrm{L}$"' wiederum bedeutet: jedes Theorem von $\mathrm{L}$ ist eine
 aussagenlogische Tautologie. -- \autoref{satz:1})
 
 \begin{bsp}
@@ -1402,7 +1415,7 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
             \begin{align*}
               (1)\quad & \beta &\text{IV}\\
               (2)\quad & \beta\rightarrow(\alpha\rightarrow\beta) &
-                 \text{Axiom 1}\\
+                 \text{A1}\\
               (3)\quad & \alpha\rightarrow\beta &\text{MP 1,2}
             \end{align*}
             Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
@@ -1720,7 +1733,7 @@ die man wie folgt aus $S$ erhält:
 Die so konstruierte Klauselmenge wird mit $S^{\ell}$ bezeichnet.
 Formal definiert sieht das so aus:
 \begin{gather*}
-  S^{\ell} = \{C-\{\overline{\ell}\}|C\in S\mbox{ und }\ell\not\in C\}.
+  S^{\ell} = \{C-\{\overline{\ell}\}|C\in S\text{ und }\ell\not\in C\}.
 \end{gather*}
 
 Für
@@ -2229,13 +2242,13 @@ die Klauselmenge eingfügt.
   Beweis der Unerfüllbarkeit von
   $S= \big\{ \{\neg A, B\}, \{\neg A, \neg B\}, \{A\}, \{A, \neg C\} \big\}$
   \begin{align*}
-    (1)\quad & \{\Box\} & \mbox{Axiom} \\
+    (1)\quad & \{\Box\} & \text{Axiom} \\
     (2)\quad & \{ \{ A \}, \{\neg A \} \}
-                    & \mbox{Schlussregel (Res) auf (1)} \\
+                    & \text{Schlussregel (Res) auf (1)} \\
     (3)\quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\} \}
-                       & \mbox{Schlussregel (Res) auf (2)}  \\
+                       & \text{Schlussregel (Res) auf (2)}  \\
     (4) \quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\}, \{A, \neg C\}  \} &
-                       \mbox{Schlussregel (Einf) auf (3)}
+                       \text{Schlussregel (Einf) auf (3)}
   \end{align*}
 \end{bsp}
 
@@ -2244,25 +2257,25 @@ die Klauselmenge eingfügt.
 
   $S= \big\{ \{\neg B, C\}, \{A, B, C\}, \{A, \neg C\}, \{\neg A, B\}, \{\neg A, \neg B, \neg C\} \big\}$
   \begin{align*}
-    (1)\quad & \{\Box\} & \mbox{Axiom} \\
+    (1)\quad & \{\Box\} & \text{Axiom} \\
     (2)\quad & \{ \{ B\}, \{\neg B \} \}
-                    & \mbox{(Res) auf $\Box$ in (1)} \\
+                    & \text{(Res) auf $\Box$ in (1)} \\
     (3)\quad & \{ \{ B \}, \{ A \}, \{\neg A, \neg B\} \}
-                       & \mbox{(Res) auf $\{\neg B\}$ in (2)}  \\
+                       & \text{(Res) auf $\{\neg B\}$ in (2)}  \\
     (4)\quad & \{ \{ \neg A, B \}, \{ A \}, \{\neg A, \neg B\} \}
-                       & \mbox{(Res) auf $\{B\}$ in (3)}  \\
+                       & \text{(Res) auf $\{B\}$ in (3)}  \\
     (5)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B\} \}
-                       & \mbox{(Res) auf $\{A\}$ in (4)}  \\
+                       & \text{(Res) auf $\{A\}$ in (4)}  \\
     (6)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-                       & \mbox{(Res) auf $\{\neg A, \neg B\}$ in (5)}  \\
+                       & \text{(Res) auf $\{\neg A, \neg B\}$ in (5)}  \\
     (7)\quad & \{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-                       & \mbox{(Res) auf $\{C\}$ in (6)}  \\
+                       & \text{(Res) auf $\{C\}$ in (6)}  \\
     (8)\quad & \{ \{ \neg A, B \}, \{\neg A, C\}, \{A, B, C\},
                     \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-                       & \mbox{(Res) auf $\{B,C\}$ in (7)}  \\
+                       & \text{(Res) auf $\{B,C\}$ in (7)}  \\
     (9)\quad & \{ \{ \neg A, B \}, \{A, B, C\},
                     \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-                       & \mbox{(Res) auf $\{\neg A, C\}$ in (8)}
+                       & \text{(Res) auf $\{\neg A, C\}$ in (8)}
   \end{align*}
 \end{bsp}
 
@@ -3737,7 +3750,7 @@ Sind die folgenden Argumentationen logisch korrekt?
        &\text{\autoref{bsp:1}}\\
     (2)\quad & (\neg \alpha \rightarrow \neg \alpha) \rightarrow \big(
        (\neg\alpha \rightarrow \alpha) \rightarrow \alpha\big)
-       &\text{Axiom 3}\\
+       &\text{A3}\\
     (3)\quad & (\neg\alpha \rightarrow \alpha) \rightarrow \alpha
        &\text{MP 1,2}
   \end{align*}
@@ -3751,11 +3764,11 @@ Sind die folgenden Argumentationen logisch korrekt?
     (2)\quad & \beta &\text{Hypothese}\\
     (3)\quad & \big( \alpha \rightarrow (\beta \rightarrow \gamma) \big)
        \rightarrow \big( (\alpha \rightarrow \beta) \rightarrow
-       (\alpha\rightarrow\gamma)\big) &\text{Axiom 2}\\
+       (\alpha\rightarrow\gamma)\big) &\text{A2}\\
     (4)\quad & (\alpha \rightarrow \beta) \rightarrow
        (\alpha\rightarrow\gamma) &\text{MP 1,3}\\
     (5)\quad & \beta \rightarrow (\alpha \rightarrow\beta)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     (6)\quad & \beta \vdash \alpha\rightarrow\beta &\text{DT 5}\\
     (7)\quad & \alpha\rightarrow\beta &\text{2,6}\\
     (8)\quad & \alpha\rightarrow\gamma &\text{MP 7,4}
@@ -3772,11 +3785,11 @@ Sind die folgenden Argumentationen logisch korrekt?
     (1)\quad & \neg\beta \rightarrow \neg\alpha &\text{Hypothese}\\
     (2)\quad & \alpha &\text{Hypothese}\\
     (3)\quad & (\neg\beta\rightarrow\neg\alpha) \rightarrow ((\neg\beta
-       \rightarrow \alpha) \rightarrow \beta) &\text{Axiom 3}\\
+       \rightarrow \alpha) \rightarrow \beta) &\text{A3}\\
     (4)\quad & (\neg\beta\rightarrow\alpha) \rightarrow \beta &\text{MP
        1,3}\\
     (5)\quad & \alpha \rightarrow (\neg\beta\rightarrow\alpha)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     (6)\quad & \neg\beta \rightarrow \alpha &\text{MP 2,5}\\
     (7)\quad & \beta &\text{MP 6,1}
   \end{align*}
@@ -3809,13 +3822,13 @@ Sind die folgenden Argumentationen logisch korrekt?
     (1)\quad & \alpha &\text{Hypothese}\\
     (2)\quad & \neg\alpha & \text{Hypothese}\\
     (3)\quad & \alpha \rightarrow (\neg\beta\rightarrow\alpha)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     (4)\quad & \neg\alpha \rightarrow (\neg\beta \rightarrow\neg\alpha)
-       &\text{Axiom 1}\\
+       &\text{A1}\\
     (5)\quad & \neg\beta \rightarrow \alpha &\text{MP 1,3}\\
     (6)\quad & \neg\beta \rightarrow \neg\alpha &\text{MP 2,4}\\
     (7)\quad & (\neg\beta \rightarrow \neg\alpha) \rightarrow ((\neg\beta
-       \rightarrow\alpha) \rightarrow \beta) &\text{Axiom 3}\\
+       \rightarrow\alpha) \rightarrow \beta) &\text{A3}\\
     (8)\quad & (\neg\beta \rightarrow \alpha) \rightarrow \beta &\text{MP
        6,7}\\
     (9)\quad & \beta & \text{MP 5,8}
@@ -3848,7 +3861,7 @@ dazu schreiben}
 \subsection*{Aufgabe 2}
 
 Sei $\mathrm{L}'$ die Theorie, die aus $\mathrm{L}$ entsteht, indem
-Axiom 3 ersetzt wird durch Axiom 3': $(\neg \alpha
+Axiom A3 ersetzt wird durch Axiom A3': $(\neg \alpha
 \rightarrow \neg\beta) \rightarrow(\beta\rightarrow\alpha)$.
 
 Zeigen Sie, dass $\mathrm{L}'$ korrekt und vollständig ist, das heißt,
