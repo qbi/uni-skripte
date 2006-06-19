@@ -192,12 +192,11 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
-% Der wagerechte Strich von \vdash und \models soll etwas länger sein und
-% man soll darunter schreiben können. Dies ist nach dem Vorschlag von Herbert
+% \vdash und \models mit variabler Strichlänge und so, dass man drüber
+% und drunter schreiben kann. \xvdash[drunter]{drüber} und
+% \xmodels[drunter]{dürber} Der Name ist an \xrightarrow[]{} aus amsmath
+% angelehnt. Dies ist nach dem Vorschlag von Herbert
 % Voss in <news:e6ge88$a9q$01$1@news.t-online.com>.
-% Zwei neue Befehle \xvdash[drunter]{drüber} und \xmodels[drunter]{dürber}
-% mit denen man sowohl unter als auch über den Strich schreiben kann. Der
-% Name ist an \xrightarrow[]{} aus amsmath angelehnt.
 \makeatletter
 \newcommand*\vdashfill@{\arrowfill@{|\mkern2mu}\relbar\relbar}
 \newcommand*\xvdash[2][]{%
@@ -208,7 +207,11 @@
 \makeatother
 
 \newcommand*{\Lvdash}{\xvdash[\mathrm{L}]{}}
-\newcommand*{\Mmodels}{\xmodels[\mathcal{M}]{}}
+\newcommand*{\Mmodels}{\xmodels[\scriptscriptstyle\mathcal{M}]{}}
+
+% Umdefinierung von \vdash und \models, damit die Striche länger sind.
+\renewcommand*{\vdash}{\xvdash{\hphantom{L}}}
+\renewcommand*{\models}{\xmodels{\hphantom{L}}}
 
 \newcommand*{\cA}{\mathcal{A}}    % Schreibschrift A
 \newcommand*{\cB}{\mathcal{B}}    % Schreibschrift B
@@ -1123,7 +1126,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Um zu seigen, dass
   $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \Lvdash
   \alpha\rightarrow\gamma$ gilt, beweisen wir erst $\alpha \rightarrow
-  (\beta\rightarrow\gamma), \beta,\alpha \vdash \gamma$
+  (\beta\rightarrow\gamma), \beta,\alpha \Lvdash \gamma$
   \begin{align*}
     (1)\quad &\alpha \rightarrow(\beta\rightarrow\gamma)&\text{Hypothese}\\
     (2)\quad &\beta &\text{Hypothese}\\
@@ -1132,7 +1135,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
     (5)\quad &\gamma &\text{MP 2,4}\\
   \end{align*}
   Mit dem Deduktionstheorem fogt dann $\alpha\rightarrow(\beta\rightarrow
-  \gamma), \beta \vdash \alpha\rightarrow\gamma$.
+  \gamma), \beta \Lvdash \alpha\rightarrow\gamma$.
 \end{lemma}
 
 \begin{lemma}\label{lem:2}
@@ -1205,7 +1208,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 
 \begin{lemma}\label{lem:4}
   Um zu beweisen, dass $\Lvdash \neg\alpha \rightarrow
-  (\alpha \rightarrow \beta)$ gilt, zeigen wir zuerst $\neg\alpha, \alpha \vdash \beta$:
+  (\alpha \rightarrow \beta)$ gilt, zeigen wir zuerst $\neg\alpha, \alpha \Lvdash \beta$:
   \begin{align*}
     (1)\quad & \alpha & \text{Hypothese} \\
     (2)\quad & \neg \alpha & \text{Hypothese} \\
@@ -1222,7 +1225,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
        \text{MP 6,7} \\
     (9)\quad & \beta & \text{MP 4,8} \\
   \end{align*}
-  Aus $\neg\alpha, \alpha \vdash \beta$ folgt mit zweimaliger Anwendung
+  Aus $\neg\alpha, \alpha \Lvdash \beta$ folgt mit zweimaliger Anwendung
   des Deduktionstheorems
   \begin{gather*}
     \Lvdash \neg\alpha \rightarrow (\alpha \rightarrow \beta).
@@ -1230,10 +1233,10 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{lemma}
 
 \begin{lemma}\label{lem:5}
-  $\vdash (\alpha \rightarrow \beta) \rightarrow (\neg \beta \rightarrow \neg \alpha)$.
+  $\Lvdash (\alpha \rightarrow \beta) \rightarrow (\neg \beta \rightarrow \neg \alpha)$.
   Dieser Schluss heißt \emph{modus tollens}.
 
-  Wir zeigen zuerst $\alpha \rightarrow \beta\ \vdash\ \neg\beta\rightarrow\neg\alpha$.
+  Wir zeigen zuerst $\alpha \rightarrow \beta\ \Lvdash\ \neg\beta\rightarrow\neg\alpha$.
   \begin{align*}
     (1)\quad & \alpha \rightarrow \beta & \text{Hypothese}\\
     (2)\quad & \neg\neg\alpha \rightarrow \alpha & \text{\autoref{lem:2}} \\
@@ -1251,17 +1254,17 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{lemma}
 
 \begin{lemma}\label{lem:6}
-  $\vdash \alpha \rightarrow (\neg \beta \rightarrow \neg (\alpha
+  $\Lvdash \alpha \rightarrow (\neg \beta \rightarrow \neg (\alpha
   \rightarrow \beta))$
   \begin{align*}
-    (a)\quad & \alpha, \alpha\rightarrow\beta\vdash\beta &\text{Lemma,
+    (a)\quad & \alpha, \alpha\rightarrow\beta\Lvdash\beta &\text{Lemma,
        aus MP \help{was geht hier vor?}}\\
-    (b)\quad & \vdash \alpha \rightarrow \big(( \alpha \rightarrow \beta)
+    (b)\quad & \Lvdash \alpha \rightarrow \big(( \alpha \rightarrow \beta)
        \rightarrow \beta\big) & \text{DT aus $(a)$} \\
-    (c)\quad & \vdash \big((\alpha\rightarrow\beta)
+    (c)\quad & \Lvdash \big((\alpha\rightarrow\beta)
        \rightarrow \beta\big) \rightarrow (\neg \beta \rightarrow \neg
        (\alpha\rightarrow\beta)) &\text{aus \autoref{lem:5}}\\
-    (d)\quad & \vdash \alpha \rightarrow (\neg \beta \rightarrow \neg
+    (d)\quad & \Lvdash \alpha \rightarrow (\neg \beta \rightarrow \neg
        (\alpha\rightarrow\beta)) & \text{\autoref{bsp:2} mit $(b)$, $(c)$}
   \end{align*}
   Dies ist keine streng formale Beweisführung (daher auch die Buchstaben
@@ -1271,10 +1274,10 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{lemma}
 
 \begin{lemma}\label{lem:7}
-  $\vdash (\alpha \rightarrow \beta) \rightarrow ((\neg \alpha
+  $\Lvdash (\alpha \rightarrow \beta) \rightarrow ((\neg \alpha
   \rightarrow \beta) \rightarrow \beta)$
 
-  Wir zeigen $\alpha \rightarrow \beta, \neg \alpha \rightarrow \beta \vdash \beta$.
+  Wir zeigen $\alpha \rightarrow \beta, \neg \alpha \rightarrow \beta \Lvdash \beta$.
 
   \begin{align*}
     (1)\quad & \alpha \rightarrow \beta & \text{Hypothese} \\
@@ -3532,9 +3535,9 @@ alle beweisbaren Formeln wahr sind.)
     \end{itemize}
     Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
     Dazu zeigen wir, dass für jede geschlossene Formel $\alpha$ gilt:
-    aus $\models_{\cM} \alpha$ folgt $\xvdash[J]{} \alpha$.
+    aus $\Mmodels \alpha$ folgt $\xvdash[J]{} \alpha$.
     (Für jede Formel $\beta$ und deren Abschluss $\beta'$ gilt
-    (1) $\models_{\cM} \beta$ gdw. $\models_{\cM} \beta'$ und
+    (1) $\Mmodels \beta$ gdw. $\Mmodels \beta'$ und
     (2) $\xvdash[J]{} \beta$ gdw. $\xvdash[J]{} \beta'$.)
     Der Beweis wird mittels Induktion über den Formelaufbau geführt,
     d.\,h. über die Anzahl der in der Formel vorkommenden Verknüpfungszeichen.
@@ -3542,7 +3545,7 @@ alle beweisbaren Formeln wahr sind.)
     Im Induktionsanfang betrachten wir geschlossene atomare Formeln $\alpha$.
     Diese Formeln enthalten keine Variablensymbole.
     Es folgt direkt aus der Definition der Interpretation der
-    Prädikatensymbole, dass $\models_{\cM} \alpha$ gdw. $\xvdash[J]{} \alpha$.
+    Prädikatensymbole, dass $\Mmodels \alpha$ gdw. $\xvdash[J]{} \alpha$.
 
     Die Induktionsvoraussetzung lautet, dass die Behauptung für alle geschlossenen Formeln
     bis zu einer bestimmten Größe gilt.
@@ -3558,8 +3561,8 @@ alle beweisbaren Formeln wahr sind.)
     Es gilt
     %
     $$
-    \models_{\cM} \gamma ~ \Leftrightarrow_{(1)} ~
-    \not\models_{\cM} \alpha
+    \Mmodels \gamma ~ \Leftrightarrow_{(1)} ~
+    \not\Mmodels \alpha
     ~ \Leftrightarrow_{(2)} ~
     \not\xvdash[J]{} \alpha
     ~ \Leftrightarrow_{(3)} ~
@@ -3577,9 +3580,9 @@ alle beweisbaren Formeln wahr sind.)
 
     Es gilt
     $$
-    \not\models_{\cM} \gamma
+    \not\Mmodels \gamma
     ~ \Leftrightarrow_{(1)} ~
-    \models_{\cM} \alpha \text{~und~} \not\models_{\cM} \beta
+    \Mmodels \alpha \text{~und~} \not\Mmodels \beta
     ~ \Leftrightarrow_{(2)} ~
     \xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta
     ~ \Leftrightarrow_{(3)} ~
@@ -3615,9 +3618,9 @@ alle beweisbaren Formeln wahr sind.)
     Dann gilt
     %
     $$
-    \models_{\cM} (\forall y~\alpha)
+    \Mmodels (\forall y~\alpha)
     ~ \Leftrightarrow_{(1)} ~
-    \models_{\cM} \alpha
+    \Mmodels \alpha
     ~ \Leftrightarrow_{(2)} ~
     \xvdash[J]{} \alpha
     ~ \Leftrightarrow_{(3)} ~
@@ -3637,11 +3640,11 @@ alle beweisbaren Formeln wahr sind.)
     ein Axiom von $J$.
     Es gelten folgende Äquivalenzen.
     \begin{eqnarray*}
-      \models_{\cM} (\forall y ~ \alpha)
+      \Mmodels (\forall y ~ \alpha)
           & \Leftrightarrow_{(1)} &
             \text{für jede Variablenbelegung $s\in\Sigma_{\cM}$ gilt: $s$ erfüllt $\alpha$} \\
           & \Leftrightarrow_{(2)} &
-            \text{für jeden variablenfreien Term $t$ gilt:~} \models_{\cM} \alpha[y/t] \\
+            \text{für jeden variablenfreien Term $t$ gilt:~} \Mmodels \alpha[y/t] \\
           & \Leftrightarrow_{(3)} &
             \text{für jeden variablenfreien Term $t$ gilt:~} \xvdash[J]{} \alpha[y/t]
     \end{eqnarray*}
@@ -3651,7 +3654,7 @@ alle beweisbaren Formeln wahr sind.)
     Für Variablenbelegung $s$ gilt $(s(y))^{\cM} = s(y)$
       (Terme werden durch sich selbst interpretiert).
     Daraus folgt:
-     $s$ erfüllt $\alpha$ genau dann, wenn $\models_{\cM} \alpha[y/s(y)]$.
+     $s$ erfüllt $\alpha$ genau dann, wenn $\Mmodels \alpha[y/s(y)]$.
     Da $\{ s(y) \mid s\in\Sigma_{\cM} \} = D$
     und $D$ die Menge aller variablenfreien Treme ist, folgt (2).
 
