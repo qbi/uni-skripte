@@ -1,5 +1,4 @@
 % ToDo:
-%  * faelle schachtelbar machen
 %  * überlegen, ob description global entfettet werden soll.
 %    % In der Doku zu paralist auf Seite 3 steht die Originaldefinition. Diese
 %    % hier entfettet die Punkte einer description
@@ -193,16 +192,27 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
-% Der wagerechte Strich soll etwas länger sein
-\renewcommand*{\vdash}{\mathrel{|}\mathop{\mkern-9mu-\mkern-7mu-}\limits}
+% Der wagerechte Strich von \vdash und \models soll etwas länger sein und
+% man soll darunter schreiben können. Dies ist nach dem Vorschlag von Herbert
+% Voss in <news:e6ge88$a9q$01$1@news.t-online.com>.
+% Zwei neue Befehle \xvdash[drunter]{drüber} und \xmodels[drunter]{dürber}
+% mit denen man sowohl unter als auch über den Strich schreiben kann. Der
+% Name ist an \xrightarrow[]{} aus amsmath angelehnt.
+\makeatletter
+\newcommand*\vdashfill@{\arrowfill@{|\mkern2mu}\relbar\relbar}
+\newcommand*\xvdash[2][]{%
+   \ext@arrow0099\vdashfill@{#1}{#2}} % die Ziffern 0099 sind 4 Parameter
+\newcommand*\modelsfill@{\arrowfill@{|\mkern1.5mu}\Relbar\Relbar}
+\newcommand*\xmodels[2][]{%
+   \ext@arrow0099\modelsfill@{#1}{#2}} % die Ziffern 0099 sind 4 Parameter
+\makeatother
+
+\newcommand*{\Lvdash}{\xvdash[\mathrm{L}]{}}
+\newcommand*{\Mmodels}{\xmodels[\mathcal{M}]{}}
 
 \newcommand*{\cA}{\mathcal{A}}    % Schreibschrift A
 \newcommand*{\cB}{\mathcal{B}}    % Schreibschrift B
 \newcommand*{\cM}{\mathcal{M}}    % Schreibschrift M
-
-\newcommand*{\mmodels}[1]{\models_{\scriptscriptstyle #1}}
-\newcommand*{\Mmodels}{\mmodels{\cM}}
-
 
 \newcommand*{\lneg}{\neg}
 \newcommand*{\limplies}{\rightarrow}
@@ -218,17 +228,26 @@
 			      {\hspace{\labelsep}\normalfont ##1}%
 		 \begin{description}}%
 		 {\end{description}}
-\newcounter{fall}
+
+% Nach Vorschlag von Norbert Stuhrmann in
+% <news:e6kc7d$pr8$1@f1node01.rhrz.uni-bonn.de>
+\newcounter{falli}
+\newcounter{fallii}
+\newcounter{falldepth}
+\setcounter{falldepth}{0}
+\newcommand{\falliformat}{\itshape Fall \arabic{falli}:}
+\newcommand{\falliiformat}{\falliformat\alph{fallii}}
 \newenvironment*{faelle}%
-               {\begin{list}{\textit{\underline{Fall \arabic{fall}:}}}%
-                      {\usecounter{fall}%
-                        \settowidth{\labelwidth}{\textit{\underline{Fall 9:}}}%
-                        \setlength{\leftmargin}{1.3cm}%
-                        \setlength{\itemindent}{3mm}%
-                        \addtolength{\itemindent}{\labelwidth}%
-                        \addtolength{\itemindent}{-\leftmargin}%
-                      }}%
-               {\end{list}}
+     {\stepcounter{falldepth}%
+      \begin{list}{\csname fall\roman{falldepth}format\endcsname}
+                  {\usecounter{fall\roman{falldepth}}%
+           \settowidth{\labelwidth}{\csname fall\roman{falldepth}\endcsname}%
+                      \setlength{\leftmargin}{1.3cm}%
+                      \setlength{\itemindent}{3mm}%
+                      \addtolength{\itemindent}{\labelwidth}%
+                      \addtolength{\itemindent}{-\leftmargin}%
+                    }}%
+             {\end{list}\addtocounter{falldepth}{-1}}
 
 \makeindex
 
@@ -976,11 +995,11 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 
   Schreibweisen:\\
   \begin{tabular}{rcl}
-    $\Gamma \vdash_{\mathcal{S}} \alpha$ & bedeutet & $\alpha$ ist
+    $\Gamma \xvdash[\mathcal{S}]{} \alpha$ & bedeutet & $\alpha$ ist
        Folgerung von $\Gamma$ in $\mathcal{S}$\\
-    $\emptyset \vdash_{\mathcal{S}} \alpha$ & schreibt man &
-       $\vdash_{\mathcal{S}} \alpha$\\
-    $\vdash_{\mathcal{S}} \alpha$ & bedeutet &
+    $\emptyset \xvdash[\mathcal{S}]{} \alpha$ & schreibt man &
+       $\xvdash[\mathcal{S}]{} \alpha$\\
+    $\xvdash[\mathcal{S}]{} \alpha$ & bedeutet &
        $\alpha$ ist Theorem von $\mathcal{S}$
   \end{tabular}
 
@@ -988,10 +1007,10 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   schreibt man
 
   \begin{tabular}{rcl}
-    $\beta_1,\ldots,\beta_k \vdash_{\mathcal{S}} \alpha$ & anstelle von &
-       $\{ \beta_1,\ldots,\beta_k \} \vdash_{\mathcal{S}} \alpha$ \\
-    $\Gamma, \beta \vdash_{\mathcal{S}} \alpha$ & anstelle von & $\Gamma
-       \cup \beta \vdash_{\mathcal{S}} \alpha$ \\
+    $\beta_1,\ldots,\beta_k \xvdash[\mathcal{S}]{} \alpha$ & anstelle von &
+       $\{ \beta_1,\ldots,\beta_k \} \xvdash[\mathcal{S}]{} \alpha$ \\
+    $\Gamma, \beta \xvdash[\mathcal{S}]{} \alpha$ & anstelle von & $\Gamma
+       \cup \beta \xvdash[\mathcal{S}]{} \alpha$ \\
   \end{tabular}
 \end{defini}
 
@@ -999,7 +1018,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Wir beweisen für die Theorie $\mathrm{L}$ die Schlussregel:
   \begin{gather*}
     \alpha\rightarrow\beta, \beta\rightarrow\gamma
-       \vdash_{\mathrm{L}} \alpha\rightarrow\gamma
+       \Lvdash \alpha\rightarrow\gamma
   \end{gather*}
   Diese wird auch als \emph{modus barbara} bezeichnet.
 
@@ -1025,19 +1044,19 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Sind $\alpha$ und $\beta$ zwei aussagenlogische Formeln und $\Gamma$
   eine Formelmenge, dann gilt:
   \begin{gather*}
-    \Gamma, \alpha \vdash_{\mathrm{L}} \beta \gdw \Gamma \vdash_{\mathrm{L}} \alpha\rightarrow\beta
+    \Gamma, \alpha \Lvdash \beta \gdw \Gamma \Lvdash \alpha\rightarrow\beta
   \end{gather*}
 
   \begin{proof}
     \begin{mdescription}
-      \item[„$\Leftarrow$“] Es gelte $\Gamma \vdash_{\mathrm{L}}
+      \item[„$\Leftarrow$“] Es gelte $\Gamma \Lvdash
       \alpha\rightarrow\beta$. Nimmt man zusätzlich $\alpha$ zur Menge
-      $\Gamma$ hinzu, gilt $\Gamma, \alpha \vdash_{\mathrm{L}} \alpha$
-      und $\Gamma, \alpha \vdash_{\mathrm{L}} \alpha\rightarrow\beta$.
+      $\Gamma$ hinzu, gilt $\Gamma, \alpha \Lvdash \alpha$
+      und $\Gamma, \alpha \Lvdash \alpha\rightarrow\beta$.
       Daraus kann man mittels Anwendung von modus ponens: $\Gamma,\alpha
-      \vdash_{\mathrm{L}} \beta$ zeigen.
+      \Lvdash \beta$ zeigen.
 
-     \item[„$\Rightarrow$“] Es gelte $\Gamma, \alpha \vdash_{\mathrm{L}} \beta$.
+     \item[„$\Rightarrow$“] Es gelte $\Gamma, \alpha \Lvdash \beta$.
 
       Wir führen eine Induktion über die Länge $k$ des Beweises von
       $\beta$ aus $\Gamma,\alpha$.
@@ -1047,9 +1066,9 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
         \begin{faelle}
          \item $\beta$ ist ein Axiom oder $\beta\in\Gamma$.
 
-          Dann gilt $\Gamma \vdash_{\mathrm{L}} \beta$. Mit Axiom A1
+          Dann gilt $\Gamma \Lvdash \beta$. Mit Axiom A1
           $\beta \rightarrow (\alpha\rightarrow\beta)$ und modus ponens folgt
-          $\Gamma \vdash_{\mathrm{L}} \alpha \rightarrow\beta$.
+          $\Gamma \Lvdash \alpha \rightarrow\beta$.
           \begin{align*}
             (1)\quad &\beta&\text{Hypothese}\\
             (2)\quad &\beta\rightarrow(\alpha\rightarrow\beta)
@@ -1060,16 +1079,16 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
          \item $\beta=\alpha$. Dann ist $\alpha\rightarrow\beta =
           \beta\rightarrow\beta$.
 
-          Da $\vdash_{\mathrm{L}} \beta\rightarrow\beta$
-          (\autoref{bsp:1}), folgt $\Gamma \vdash_{\mathrm{L}}
+          Da $\Lvdash \beta\rightarrow\beta$
+          (\autoref{bsp:1}), folgt $\Gamma \Lvdash
           \beta\rightarrow\beta$
         \end{faelle}
 
-       \item[IV:] Die Behauptung $\Gamma,\alpha\vdash_{\mathrm{L}} \beta
-        \gdw \Gamma\vdash_{L}\alpha\rightarrow\beta$ gilt für alle
+       \item[IV:] Die Behauptung $\Gamma,\alpha\Lvdash \beta
+        \gdw \Gamma\Lvdash\alpha\rightarrow\beta$ gilt für alle
         Formeln $\beta$ mit Beweisen der Länge $\leq n$.
 
-       \item[IS:] Der Beweis von $\Gamma, \alpha \vdash_{\mathrm{L}} \beta$
+       \item[IS:] Der Beweis von $\Gamma, \alpha \Lvdash \beta$
         habe die Länge $n+1$ und die Formeln
         \begin{gather*}
           \alpha_{1}, \ldots,\alpha_{i},\ldots,\alpha_{j},\ldots,
@@ -1086,13 +1105,13 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
           $\alpha_{j}$ ($i,j\leq n$), wobei o.\,B.\,d.\,A.
           $\alpha_{j}=(\alpha_{i}\rightarrow \beta)$
 
-          Nach Induktionsvorraussetzung gilt $\Gamma \vdash_{\mathrm{L}}
-          \alpha\rightarrow\alpha_{i}$ und $\Gamma \vdash_{\mathrm{L}}
+          Nach Induktionsvorraussetzung gilt $\Gamma \Lvdash
+          \alpha\rightarrow\alpha_{i}$ und $\Gamma \Lvdash
           \alpha\rightarrow (\alpha_{i}\rightarrow\beta)$. Mit der
           Ausprägung $(\alpha\rightarrow(\alpha_{i}\rightarrow\beta))
           \rightarrow \big((\alpha\rightarrow\alpha_{i}) \rightarrow
           (\alpha\rightarrow\beta)\big)$ von Axiom A2 folgt durch Anwendung
-          von modus ponens mit $\Gamma \vdash_{\mathrm{L}}
+          von modus ponens mit $\Gamma \Lvdash
           \alpha\rightarrow\beta$.
         \end{faelle}
       \end{mdescription}
@@ -1102,7 +1121,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 
 \begin{lemma}\label{lem:1}
   Um zu seigen, dass
-  $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \vdash_{\mathrm{L}}
+  $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \Lvdash
   \alpha\rightarrow\gamma$ gilt, beweisen wir erst $\alpha \rightarrow
   (\beta\rightarrow\gamma), \beta,\alpha \vdash \gamma$
   \begin{align*}
@@ -1117,7 +1136,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{lemma}
 
 \begin{lemma}\label{lem:2}
-  Zeigen wir: $\vdash_{\mathrm{L}} \neg\neg \beta \rightarrow\beta$.
+  Zeigen wir: $\Lvdash \neg\neg \beta \rightarrow\beta$.
 
   \begin{proof}
     \begin{align*}
@@ -1168,7 +1187,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{satz}
 
 \begin{lemma}\label{lem:3}
-  $\vdash_{\mathrm{L}} \beta \rightarrow \neg\neg\beta$
+  $\Lvdash \beta \rightarrow \neg\neg\beta$
   \begin{align*}
     (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
        \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\big) &
@@ -1185,7 +1204,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 \end{lemma}
 
 \begin{lemma}\label{lem:4}
-  Um zu beweisen, dass $\vdash_{\mathrm{L}} \neg\alpha \rightarrow
+  Um zu beweisen, dass $\Lvdash \neg\alpha \rightarrow
   (\alpha \rightarrow \beta)$ gilt, zeigen wir zuerst $\neg\alpha, \alpha \vdash \beta$:
   \begin{align*}
     (1)\quad & \alpha & \text{Hypothese} \\
@@ -1206,7 +1225,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Aus $\neg\alpha, \alpha \vdash \beta$ folgt mit zweimaliger Anwendung
   des Deduktionstheorems
   \begin{gather*}
-    \vdash_{\mathrm{L}} \neg\alpha \rightarrow (\alpha \rightarrow \beta).
+    \Lvdash \neg\alpha \rightarrow (\alpha \rightarrow \beta).
   \end{gather*}
 \end{lemma}
 
@@ -1309,12 +1328,12 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
 
   Für eine Belegung, die die Formel wahr macht, z.\,B.
   $\mathcal{A}=\{A,\neg B,\neg C\}$ kann man in der Theorie $\mathrm{L}$
-  zeigen: $\mathcal{A} \vdash_{\mathrm{L}} \neg\alpha$. Ebenso kann man
+  zeigen: $\mathcal{A} \Lvdash \neg\alpha$. Ebenso kann man
   zeigen, dass mit einer Belegung $\mathcal{A}'$, die die Formel falsch
-  macht, gilt: $\mathcal{A}' \vdash_{\mathrm{L}} \alpha$.
+  macht, gilt: $\mathcal{A}' \Lvdash \alpha$.
 
-  $\mathcal{A} \vdash_{\mathrm{L}} \alpha$, falls
-  $\mathcal{A}(\alpha)=w$, und $\mathcal{A} \vdash_{\mathrm{L}}
+  $\mathcal{A} \Lvdash \alpha$, falls
+  $\mathcal{A}(\alpha)=w$, und $\mathcal{A} \Lvdash
   \neg\alpha$, falls $\mathcal{A}(\alpha)=f$.
 \end{bsp}
 
@@ -1322,16 +1341,16 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
   Sei $\phi$ eine aussagenlogische Formel und $\mathcal{A}$ eine zu
   $\phi$ passende Belegung. Dann gilt:
   \begin{enumerate}
-   \item $\mathcal{A} \vdash_{\mathrm{L}} \phi$, falls
+   \item $\mathcal{A} \Lvdash \phi$, falls
     $\mathcal{A}(\phi)=w$, und
 
-   \item $\mathcal{A} \vdash_{\mathrm{L}} \neg\phi$, falls
+   \item $\mathcal{A} \Lvdash \neg\phi$, falls
     $\mathcal{A}(\phi)=f$.
   \end{enumerate}
 
   \begin{proof}
     % $\alpha$ ist eine Variable; $\alpha=B\colon \mathcal{A} = \{B\},
-    % B \vdash_{\mathrm{L}} B$, das $\vdash_{\mathrm{L}} B\rightarrow B$
+    % B \Lvdash B$, das $\Lvdash B\rightarrow B$
 
     % $\mathcal{A}=\{\neg B\}\colon $
 
@@ -1345,15 +1364,15 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
     \begin{mdescription}
      \item[IA:] $\phi$ ist eine Variable, d.\,h.~$\phi=B$.
       \begin{itemize}
-        \item $B\in\mathcal{A}$. Dann gilt $\mathcal{A}\vdash_{\mathrm{L}} B$
+        \item $B\in\mathcal{A}$. Dann gilt $\mathcal{A}\Lvdash B$
               (Deduktionstheorem).
               Da $\mathcal{A}(B)=w$, folgt die Behauptung.
-        \item $\neg B\in\mathcal{A}$. Dann gilt $\mathcal{A}\vdash_{\mathrm{L}} \neg B$.
+        \item $\neg B\in\mathcal{A}$. Dann gilt $\mathcal{A}\Lvdash \neg B$.
               Da $\mathcal{A}(B)=f$, folgt die Behauptung.
       \end{itemize}
 
      \item[IV:] für alle Formeln $\phi\in\mathcal{M}$ gilt $\mathcal{A}
-      \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+      \Lvdash \phi_{\mathcal{A}}$
 
      \item[IS:] $\phi=\neg\alpha$ oder $\phi=\alpha \rightarrow\beta$ für
       $\alpha,\beta\in\mathcal{M}$ (Formelmenge)
@@ -1362,9 +1381,9 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
        \item $\phi=\neg\alpha$
         \begin{faelle}
          \item $\mathcal{A}(\phi)=w$ d.\,h. $\mathcal{A}(\alpha)=f$. Nach
-          Induktionsvorraussetzung gilt $\mathcal{A} \vdash_{\mathrm{L}}
+          Induktionsvorraussetzung gilt $\mathcal{A} \Lvdash
           \alpha_{\mathcal{A}} = \neg\alpha =\phi_{\mathcal{A}}$, d.\,h.
-          $\mathcal{A} \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+          $\mathcal{A} \Lvdash \phi_{\mathcal{A}}$
 
          \item $\mathcal{A}(\phi)=f$, d.\,h. $\mathcal{A}(\alpha)=w$
           \begin{align*}
@@ -1374,7 +1393,7 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
             (3)\quad & \neg\neg\alpha &\text{MP 1,2}
           \end{align*}
           Da $\phi_{\mathcal{A}}=\neg\neg\alpha$, folgt $\mathcal{A}
-          \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$.
+          \Lvdash \phi_{\mathcal{A}}$.
         \end{faelle}
 
        \item $\phi=\alpha\rightarrow\beta$
@@ -1391,36 +1410,36 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
                &\text{MP 1,3}\\
             (5)\quad & \neg(\alpha\rightarrow\beta) &\text{MP 2,4}
           \end{align*}
-          Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
+          Also gilt $\mathcal{A} \Lvdash
           \neg(\alpha\rightarrow\beta)$, d.\,h. $\mathcal{A}
-          \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+          \Lvdash \phi_{\mathcal{A}}$
 
          \item $\mathcal{A}(\phi)=w$, d.\,h. $\phi_{\mathcal{A}}
           =\alpha\rightarrow\beta$
           \begin{enumerate}[{Fall 2}a]
            \item $\mathcal{A}(\alpha)=f$, Nach Induktionsvorraussetzung
-            gilt $\mathcal{A} \vdash_{\mathrm{L}} \neg\alpha$
+            gilt $\mathcal{A} \Lvdash \neg\alpha$
             \begin{align*}
               (1)\quad & \neg\alpha &\text{IV}\\
               (2)\quad & \neg\alpha \rightarrow (\alpha\rightarrow\beta)
                  &\text{\autoref{lem:4}}\\
               (3)\quad & \alpha\rightarrow\beta & \text{MP 1,3}
             \end{align*}
-            Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
+            Also gilt $\mathcal{A} \Lvdash
             \alpha\rightarrow\beta$, d.\,h. $\mathcal{A}
-            \vdash_{\mathrm{L}} \phi_{\mathcal{A}}$
+            \Lvdash \phi_{\mathcal{A}}$
 
            \item $\mathcal{A}(\beta)=w$, Nach Induktionsvorraussetzung
-            gilt $\mathcal{A} \vdash_{\mathrm{L}} \beta$
+            gilt $\mathcal{A} \Lvdash \beta$
             \begin{align*}
               (1)\quad & \beta &\text{IV}\\
               (2)\quad & \beta\rightarrow(\alpha\rightarrow\beta) &
                  \text{A1}\\
               (3)\quad & \alpha\rightarrow\beta &\text{MP 1,2}
             \end{align*}
-            Also gilt $\mathcal{A} \vdash_{\mathrm{L}}
+            Also gilt $\mathcal{A} \Lvdash
             \alpha\rightarrow\beta$, d.\,h.
-            $\mathcal{A}\vdash_{\mathrm{L}} \phi_{\mathcal{A}}$.
+            $\mathcal{A}\Lvdash \phi_{\mathcal{A}}$.
           \end{enumerate}
         \end{faelle}
       \end{itemize}
@@ -1430,29 +1449,29 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
 
 \begin{bsp}
   $\phi = A\rightarrow \neg(\neg A\rightarrow B), \mathcal{A}=\{A, \neg
-  B\}$ Gesucht ist ein Beweis für $\mathcal{A} \vdash_{\mathrm{L}}
+  B\}$ Gesucht ist ein Beweis für $\mathcal{A} \Lvdash
   \phi_{\mathcal{A}}$. $\phi_{\mathcal{A}} = \neg(A\rightarrow \neg(\neg
   A\rightarrow B))$.
 
   \begin{enumerate}
-   \item $\mathcal{A} \vdash_{\mathrm{L}} A$
+   \item $\mathcal{A} \Lvdash A$
     \begin{align*}
       (1)\quad & A &\text{Hypothese}
     \end{align*}
 
-   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg B$
+   \item $\mathcal{A}\Lvdash \neg B$
     \begin{align*}
       (1)\quad & \neg B &\text{Hypothese}
     \end{align*}
 
-   \item $\mathcal{A} \vdash_{\mathrm{L}} \neg\neg A$
+   \item $\mathcal{A} \Lvdash \neg\neg A$
     \begin{align*}
       (1)\quad & A &\text{IV}\\
       (2)\quad & A \rightarrow \neg\neg A &\text{\autoref{lem:3}}\\
       (3)\quad & \neg\neg A &\text{MP 1,2}
     \end{align*}
 
-   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg A\rightarrow B$
+   \item $\mathcal{A}\Lvdash \neg A\rightarrow B$
     \begin{align*}
       (1)\quad & \neg\neg A &\text{IV}\\
       (2)\quad & \neg\neg A \rightarrow (\neg A\rightarrow B)
@@ -1460,7 +1479,7 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
       (3)\quad & \neg A\rightarrow B &\text{MP 1,2}
     \end{align*}
 
-   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg\neg(\neg A\rightarrow B)$
+   \item $\mathcal{A}\Lvdash \neg\neg(\neg A\rightarrow B)$
     \begin{align*}
       (1)\quad & \neg A\rightarrow B &\text{IV}\\
       (2)\quad & (\neg A\rightarrow B) \rightarrow \neg\neg (\neg
@@ -1468,7 +1487,7 @@ aussagenlogische Tautologie. -- \autoref{satz:1})
       (3)\quad & \neg\neg(\neg A\rightarrow B) &\text{MP 1,2}
     \end{align*}
 
-   \item $\mathcal{A}\vdash_{\mathrm{L}} \neg(A\rightarrow \neg(\neg
+   \item $\mathcal{A}\Lvdash \neg(A\rightarrow \neg(\neg
     A\rightarrow B))$
     \begin{align*}
       (1)\quad & A &\text{IV}\\
@@ -1513,32 +1532,32 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
 \begin{itemize}
  \item
   \begin{align*}
-    \neg A,\neg B &\vdash_{\mathrm{L}} A\rightarrow(B \rightarrow B) & \neg
-       A, B &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)\\
+    \neg A,\neg B &\Lvdash A\rightarrow(B \rightarrow B) & \neg
+       A, B &\Lvdash A\rightarrow(B\rightarrow B)\\
     &\downarrow DT &&\downarrow DT\\
-    \neg A &\vdash_{\mathrm{L}} \neg B \rightarrow
-       (A\rightarrow(B\rightarrow B)) &\neg A &\vdash_{\mathrm{L}}
+    \neg A &\Lvdash \neg B \rightarrow
+       (A\rightarrow(B\rightarrow B)) &\neg A &\Lvdash
        B\rightarrow(A\rightarrow(B\rightarrow B))\\
     &\text{\todo{link suchen: lemma}} (\alpha\rightarrow
        \beta)\rightarrow((\neg \alpha\rightarrow\beta)\rightarrow\beta)\\
     &2mal MP\\
-    \neg A &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)
+    \neg A &\Lvdash A\rightarrow(B\rightarrow B)
   \end{align*}
 
  \item
   \begin{align*}
-    A,\neg B &\vdash_{\mathrm{L}} A\rightarrow(B \rightarrow B) &
-       A, B &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)\\
+    A,\neg B &\Lvdash A\rightarrow(B \rightarrow B) &
+       A, B &\Lvdash A\rightarrow(B\rightarrow B)\\
     &\downarrow DT &&\downarrow DT\\
-    A &\vdash_{\mathrm{L}} \neg B \rightarrow
-       (A\rightarrow(B\rightarrow B)) & A &\vdash_{\mathrm{L}}
+    A &\Lvdash \neg B \rightarrow
+       (A\rightarrow(B\rightarrow B)) & A &\Lvdash
        B\rightarrow(A\rightarrow(B\rightarrow B))\\
     &\text{\todo{link suchen: lemma}} (\alpha\rightarrow
        \beta)\rightarrow((\neg \alpha\rightarrow\beta)\rightarrow\beta)\\
-    A \vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)\\
+    A \Lvdash A\rightarrow(B\rightarrow B)\\
     \help{irgendwas stimmt hier nicht}\\
     &2mal MP\\
-    \neg A &\vdash_{\mathrm{L}} A\rightarrow(B\rightarrow B)
+    \neg A &\Lvdash A\rightarrow(B\rightarrow B)
   \end{align*}
 \end{itemize}
 
@@ -1547,7 +1566,7 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
   Variablen von $\phi$. Dann gilt für jede Teilmenge $\mathcal{B}\subseteq
   \mathcal{A}$:
   \begin{gather*}
-    \mathcal{B} \vdash_{\mathrm{L}} \phi
+    \mathcal{B} \Lvdash \phi
   \end{gather*}
 
   \begin{proof}
@@ -1557,31 +1576,31 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
       Da $\phi$ eine Tautologie ist, gilt $\mathcal{A}(\phi)=w$.
       \autoref{satz:2} besagt, dass für eine Belegung $\mathcal{A}$, die
       eine aussagenlogische Formel $\phi$ wahr werden lässt, gilt:
-      $\mathcal{A}\vdash_{\mathrm{L}} \phi$.
+      $\mathcal{A}\Lvdash \phi$.
 
      \item[IV:] Für jede Belegung $\mathcal{B}$ der Größe
-      $\abs{\mathcal{B}}=\abs{\mathcal{A}}$ gilt $\mathcal{B} \vdash_{\mathrm{L}}\phi$.
+      $\abs{\mathcal{B}}=\abs{\mathcal{A}}$ gilt $\mathcal{B} \Lvdash\phi$.
 
      \item[IS:] Sei $\mathcal{B}$ eine Belegung der Größe $k-1$.
       Dann gibt es eine Variable $A_{l}$ in $\mathcal{A}$, die nicht von
       $\mathcal{B}$ belegt wird. Nach Induktionsvorraussetzung gilt
-      $\mathcal{B}\cup\{A_{l}\} \vdash_{\mathrm{L}} \phi$ und $B\cup\{\neg A_{l}\}
-      \vdash_{\mathrm{L}} \phi$. Mit dem Deduktionstheorem folgt
+      $\mathcal{B}\cup\{A_{l}\} \Lvdash \phi$ und $B\cup\{\neg A_{l}\}
+      \Lvdash \phi$. Mit dem Deduktionstheorem folgt
       \begin{gather*}
-        \mathcal{B} \vdash_{\mathrm{L}} A_{l} \rightarrow \phi \quad\text{und}\quad
-           \mathcal{B} \vdash_{\mathrm{L}} \neg A_{l} \rightarrow \phi
+        \mathcal{B} \Lvdash A_{l} \rightarrow \phi \quad\text{und}\quad
+           \mathcal{B} \Lvdash \neg A_{l} \rightarrow \phi
       \end{gather*}
 
       Mit \autoref{lem:7} $(A_{l} \rightarrow \phi)\rightarrow
       ((\neg A_{l} \rightarrow\phi)\rightarrow\phi)$ und zweimal modus
-      ponens folgt $\mathcal{B} \vdash_{\mathrm{L}} \phi$.
+      ponens folgt $\mathcal{B} \Lvdash \phi$.
     \end{mdescription}
   \end{proof}
 \end{satz}
 
 \begin{satz}[Vollständigkeit der Theorie $\mathbf{\mathrm{L}}$]
   Wenn $\phi$ eine aussagenlogische Tautologie ist, dann ist $\phi$ ein
-  Theorem von $\mathrm{L}$, d.\,h. $\vdash_{\mathrm{L}} \phi$.
+  Theorem von $\mathrm{L}$, d.\,h. $\Lvdash \phi$.
 
   \begin{proof}
     \autoref{satz:3} gilt auch für $\mathcal{B}=\emptyset$
@@ -1591,11 +1610,11 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
 \begin{description}
  \item[Fazit:] Korrektheit und Vollständigkeit von $\mathrm{L}$:
   \begin{center}
-    $\phi$ ist eine aussagenlogische Tautologie \gdw $\vdash_{\mathrm{L}}
+    $\phi$ ist eine aussagenlogische Tautologie \gdw $\Lvdash
     \phi$.
   \end{center}
   „Tautologie“ ist ein semantischer Ausdruck und
-  „$\vdash_{\mathrm{L}}$“ ist ein syntaktischer Ausdruck
+  „$\Lvdash$“ ist ein syntaktischer Ausdruck
 \end{description}
 
 \section{Resolution}
@@ -2732,7 +2751,7 @@ Ohne zusätzliche Axiome können ausschließlich gültige Formeln bewiesen werde
   Für jeden Prädikatenkalkül 1.\,Ordnung $K$ und jede Formel $\alpha$
   gilt:
   \begin{center}
-    Wenn $\vdash_{K} \alpha$, dann ist $\alpha$ gültig.
+    Wenn $\xvdash[K]{} \alpha$, dann ist $\alpha$ gültig.
   \end{center}
 \end{satz}
 
@@ -3209,14 +3228,14 @@ jeder beliebige Theorie 1.\,Ordnung.
 
 \begin{defini}
   Eine Theorie 1.\,Ordnung $K$ heißt \emph{konsistent}, falls es keine
-  Formel $\alpha$ gibt mit $\vdash_{K}\alpha$ und $\vdash_{K}\neg\alpha$.
+  Formel $\alpha$ gibt mit $\xvdash[K]{}\alpha$ und $\xvdash[K]{}\neg\alpha$.
 \end{defini}
 
 \begin{lemma}\label{lemma-KonsistenzPK}
   Jeder Prädikatenkalkül 1.\,Ordnung ist konsistent.
 
   \begin{proof}
-    Aus $\vdash_{K}\alpha$ folgt $\models\alpha$
+    Aus $\xvdash[K]{}\alpha$ folgt $\models\alpha$
     (\autoref{satz-korrektheit-theorien-1.ordnung}). Da höchstens eine der
     Formeln $\alpha$ und $\neg\alpha$ gültig ist, muss $K$ konsistent sein.
   \end{proof}
@@ -3224,13 +3243,13 @@ jeder beliebige Theorie 1.\,Ordnung.
 
 \begin{bemerk}
   Wenn $K$ eine nichtkonsistente Theorie ist, dann kann man jede
-  beliebige Formel $\alpha$ beweisen: $\vdash_{K}\alpha$.
+  beliebige Formel $\alpha$ beweisen: $\xvdash[K]{}\alpha$.
 
   \begin{proof}
     Sei $K$ eine nichtkonsistente Theorie. Dann gibt es eine Formel
-    $\beta$ mit $\vdash_{K}\beta$ und $\vdash_{K}\neg\beta$. Mit der
-    Instanz der Tautologie $\vdash_{K}\beta \rightarrow (\neg\beta
-    \rightarrow\alpha)$ und zweimal modus ponens folgt $\vdash_{K}\alpha$.
+    $\beta$ mit $\xvdash[K]{}\beta$ und $\xvdash[K]{}\neg\beta$. Mit der
+    Instanz der Tautologie $\xvdash[K]{}\beta \rightarrow (\neg\beta
+    \rightarrow\alpha)$ und zweimal modus ponens folgt $\xvdash[K]{}\alpha$.
   \end{proof}
 \end{bemerk}
 
@@ -3257,37 +3276,37 @@ zusätzlichen Axioms $\alpha$ entsteht.
 Dann gilt:
 
 \centering{%
-wenn $\neg \alpha$ in $K$ nicht beweisbar ist (d.\,h.\,$\not\vdash_{K} \neg \alpha$),
+wenn $\neg \alpha$ in $K$ nicht beweisbar ist (d.\,h.\,$\not\xvdash[K]{} \neg \alpha$),
 dann ist $K'$ konsistent.
 }
 \end{lemma}
 
 \begin{proof}
 Wir beweisen das Lemma, indem wir zeigen:
-wenn $K'$ nicht konsistent ist, dann gilt $\vdash_{K} \neg \alpha$.
+wenn $K'$ nicht konsistent ist, dann gilt $\xvdash[K]{} \neg \alpha$.
 
 Sei also $K'$ nicht konsistent.
 Dann gibt es eine Formel $\beta$
-mit $\vdash_{K'} \beta$ und $\vdash_{K'} \neg\beta$.
+mit $\xvdash[K']{} \beta$ und $\xvdash[K']{} \neg\beta$.
 Die Formel $\beta\rightarrow(\neg \beta \rightarrow \neg \alpha)$
 ist Instanz einer Tautologie und deshalb in $K'$ beweisbar.
 Durch Anwendung von modus ponens erhält man
 aus den letzten drei Formeln
-$\vdash_{K'} \neg \alpha$.
+$\xvdash[K']{} \neg \alpha$.
 
 Da das zusätzliche Axiom $\alpha$ der einzige Unterschied
 zwischen $K$ und $K'$ ist,
 ist der Beweis für $\neg \alpha$ in $K'$
 auch ein Beweis in $K$ mit Hypothese $\alpha$,
-d.\,h.\,$\alpha \vdash_{K} \neg \alpha$.
+d.\,h.\,$\alpha \xvdash[K]{} \neg \alpha$.
 Da $\alpha$ geschlossen ist,
 kann das Deduktionstheorem angewendet werden,
-und man erhält $\vdash_{K} \alpha \rightarrow \neg \alpha$.
+und man erhält $\xvdash[K]{} \alpha \rightarrow \neg \alpha$.
 Die Formel $(\alpha \rightarrow \neg \alpha) \rightarrow \neg \alpha$
 ist Instanz einer Tautologie
 und deshalb in $K$ beweisbar.
 Mit modus ponens folgt aus den letzten beiden Formeln
-$\vdash_{K} \neg \alpha$.
+$\xvdash[K]{} \neg \alpha$.
 \end{proof}
 
 Die Theoreme der Theorie $K'$ enthalten hier
@@ -3296,7 +3315,7 @@ alle Theoreme der Theorie $K$.
 \begin{defini}
 Eine Theorie $K'$ ist eine \emph{Erweiterung} von $K$,
 falls jedes Theorem von $K$ ebenfalls ein Theorem von $K'$ ist
-(d.\,h. aus $\vdash_{K} \alpha$ folgt $\vdash_{K'} \alpha$).
+(d.\,h. aus $\xvdash[K]{} \alpha$ folgt $\xvdash[K']{} \alpha$).
 \end{defini}
 
 Wenn -- wie oben -- $K'$ aus $K$ durch Hinzunahme
@@ -3315,7 +3334,7 @@ natürlich die beweisbare Formel auswählen.
 \begin{defini}
 Eine Theorie $K$ heißt \emph{abgeschlossen},
 falls für jede geschlossene Formel $\alpha$ (von $K$)
-gilt: $\vdash_{K} \alpha$ oder $\vdash_{K} \neg \alpha$.
+gilt: $\xvdash[K]{} \alpha$ oder $\xvdash[K]{} \neg \alpha$.
 \end{defini}
 
 In einer konsistenten und abgeschlossenen Theorie
@@ -3339,15 +3358,15 @@ die Erweiterungen von $K$ sind.
 \begin{enumerate}
 \item $J_0=K$
 \item $J_{i+1} = \begin{cases}
-                   J_i, & \text{falls $\vdash_{J_i} \neg \beta_{i+1}$} \\
-                   J_i + \{\beta_{i+1}\}, &\text{falls $\not\vdash_{J_i} \neg \beta_{i+1}$}
+                   J_i, & \text{falls $\xvdash[J_i]{} \neg \beta_{i+1}$} \\
+                   J_i + \{\beta_{i+1}\}, &\text{falls $\not\xvdash[J_i]{} \neg \beta_{i+1}$}
                  \end{cases}
       $
 \end{enumerate}
 Für $J_i$ gilt also:
-$\vdash_{J_i} \neg \beta_i$ (da $\vdash_{J_{i-1}} \neg \beta_{i}$)
+$\xvdash[J_i]{} \neg \beta_i$ (da $\xvdash[J_{i-1}]{} \neg \beta_{i}$)
 oder
-$\vdash_{J_i} \beta_i$ (da $\not\vdash_{J_{i-1}} \neg \beta_{i}$
+$\xvdash[J_i]{} \beta_i$ (da $\not\xvdash[J_{i-1}]{} \neg \beta_{i}$
 und $\beta_i$ Axiom von $J_i$ ist).
 
 Nach \autoref{lemma-kons-erweiterung} ist jedes $J_i$ konsistent.
@@ -3365,10 +3384,10 @@ Da alle $J_i$ konsistent sind, muss $K'$ ebenfalls konsistent sein.
 $K'$ ist abgeschlossen:
 sei $\alpha$ eine geschlossene Formel.
 Dann gibt es ein $i$ mit $\alpha=\beta_i$.
-Nach obiger Bemerkung gilt $\vdash_{J_i} \neg \beta_i$
-oder $\vdash_{J_i} \beta_i$.
+Nach obiger Bemerkung gilt $\xvdash[J_i]{} \neg \beta_i$
+oder $\xvdash[J_i]{} \beta_i$.
 Da $K'$ eine Erweiterung von $J_i$ ist,
-folgt $\vdash_{K} \neg \beta_i$ oder $\vdash_{K} \beta_i$.
+folgt $\xvdash[K]{} \neg \beta_i$ oder $\xvdash[K]{} \beta_i$.
 \end{proof}
 
 In einer konsistenten und abgeschlossenen Theorie können
@@ -3411,7 +3430,7 @@ alle beweisbaren Formeln wahr sind.)
   falls für jede Formel $\alpha$ mit genau einer freien Variablen $x$ ein
   variablenfreier Term $t$ existiert mit
   \begin{gather*}
-    \vdash_{K} (\exists x\colon \neg\alpha) \rightarrow \neg\alpha[x/t]
+    \xvdash[K]{} (\exists x\colon \neg\alpha) \rightarrow \neg\alpha[x/t]
   \end{gather*}
 \end{defini}
 
@@ -3450,40 +3469,40 @@ alle beweisbaren Formeln wahr sind.)
     \begin{itemize}
      \item $K_{0}$ ist konsistent, da $K$ konsistent ist.
      \item Sei angenommen, dass $K_{n}$ nicht konsistent is. (Dann gilt
-      $\vdash_{K_{n}}\beta$ und $\vdash_{K_{n}}\neg\beta$) Dann folgt
-      $\vdash_{K_{n}}\neg\sigma_{n}$. Also folgt $\sigma_{n}
-      \vdash_{K_{n-1}}\neg\sigma_{n}$. Mit dem Deduktionstheorem folgt
-      $\vdash_{K_{n-1}}\sigma_{n}\rightarrow\neg\sigma_{n}$ und mit der
+      $\xvdash[K_{n}]{}\beta$ und $\xvdash[K_{n}]{}\neg\beta$) Dann folgt
+      $\xvdash[K_{n}]{}\neg\sigma_{n}$. Also folgt $\sigma_{n}
+      \xvdash[K_{n-1}]{}\neg\sigma_{n}$. Mit dem Deduktionstheorem folgt
+      $\xvdash[K_{n-1}]{}\sigma_{n}\rightarrow\neg\sigma_{n}$ und mit der
       Tautologie $(\sigma_{n}\rightarrow\neg\sigma_{n})\rightarrow
-      \neg\sigma_{n}$ folgt $\vdash_{K_{n-1}}\neg\sigma_{n}$, d.\,h.
+      \neg\sigma_{n}$ folgt $\xvdash[K_{n-1}]{}\neg\sigma_{n}$, d.\,h.
       \begin{gather*}
-        \vdash_{K_{n-1}}\neg(\exists x_{j_{n}}\colon \neg\alpha)
+        \xvdash[K_{n-1}]{}\neg(\exists x_{j_{n}}\colon \neg\alpha)
            \rightarrow \neg\alpha[x_{j_{n}}/b_{n}]
       \end{gather*}
 
       Mit der Implikationsregel folgt
       \begin{gather*}
-        \vdash_{K_{n-1}} (\exists x_{j_{n}}\colon
+        \xvdash[K_{n-1}]{} (\exists x_{j_{n}}\colon
            \neg\alpha)\quad\text{und}\quad
-           \vdash_{K_{n-1}} \neg\neg\alpha[x_{j_{n}}/b_{n}]
+           \xvdash[K_{n-1}]{} \neg\neg\alpha[x_{j_{n}}/b_{n}]
       \end{gather*}
-      mit der Negationsregel $\vdash_{K_{n-1}} \alpha[x_{j_{n}}/b_{n}]$.
+      mit der Negationsregel $\xvdash[K_{n-1}]{} \alpha[x_{j_{n}}/b_{n}]$.
 
       Das $b_{n}$ kommt in keinem zusätzlichen Axiom von $K_{n-1}$ vor.
-      Deshalb kann es im Beweis von $\vdash_{K_{n-1}}
+      Deshalb kann es im Beweis von $\xvdash[K_{n-1}]{}
       \alpha[x_{j_{n}}/b_{n}]$ durch eine Variable $x'$ ersetzt werden,
       die im Beweis sonst nicht vorkommt, und wir erhalten
-      $\vdash_{K_{n-1}}\alpha[x_{j_{n}}/x']$.
+      $\xvdash[K_{n-1}]{}\alpha[x_{j_{n}}/x']$.
 
       Nach der Aufgabe 3 auf \hyperref[sec:uebung8]{Blatt~\ref{sec:uebung8}} gilt
-      $\vdash_{K_{n-1}}(\forall x_{j_{n}}\colon\alpha) \leftrightarrow
-      (\forall x'\colon \alpha[x_{j_{n}}/x']$. Aus $\vdash_{K_{n-1}}
-      \alpha[x_{j_{n}}/x']$ folgt mit Generalisierung $\vdash_{K_{n-1}}
+      $\xvdash[K_{n-1}]{}(\forall x_{j_{n}}\colon\alpha) \leftrightarrow
+      (\forall x'\colon \alpha[x_{j_{n}}/x']$. Aus $\xvdash[K_{n-1}]{}
+      \alpha[x_{j_{n}}/x']$ folgt mit Generalisierung $\xvdash[K_{n-1}]{}
       (\forall x'\colon \alpha[x_{j_{n}}/x']$.
 
-      Mit Äquivalenzregel folgt $\vdash_{K_{n-1}}(\forall x_{j_{n}}\colon
-      \alpha)$. Aus $\vdash_{K_{n-1}} (\exists x_{j_{n}}\colon
-      \neg\alpha)$ folgt $\vdash_{K_{n-1}} \neg(\forall x_{j_{n}}\colon
+      Mit Äquivalenzregel folgt $\xvdash[K_{n-1}]{}(\forall x_{j_{n}}\colon
+      \alpha)$. Aus $\xvdash[K_{n-1}]{} (\exists x_{j_{n}}\colon
+      \neg\alpha)$ folgt $\xvdash[K_{n-1}]{} \neg(\forall x_{j_{n}}\colon
       \alpha)$. Also ist $K_{n-1}$ nicht konsistent.
     \end{itemize}
   \end{proof}
@@ -3508,22 +3527,22 @@ alle beweisbaren Formeln wahr sind.)
      \item Prädikatensymbole werden durch Beweisbarkeit interpretiert:
       \begin{gather*}
         (A^n_i)^{\cM}  =  \big\{(t_1,\ldots,t_n)\in D^n \bigm|
-           ~ \vdash_{J} A^n_i(t_1,\ldots,t_n)\big\} \\
+           ~ \xvdash[J]{} A^n_i(t_1,\ldots,t_n)\big\} \\
       \end{gather*}
     \end{itemize}
     Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
     Dazu zeigen wir, dass für jede geschlossene Formel $\alpha$ gilt:
-    aus $\models_{\cM} \alpha$ folgt $\vdash_{J} \alpha$.
+    aus $\models_{\cM} \alpha$ folgt $\xvdash[J]{} \alpha$.
     (Für jede Formel $\beta$ und deren Abschluss $\beta'$ gilt
     (1) $\models_{\cM} \beta$ gdw. $\models_{\cM} \beta'$ und
-    (2) $\vdash_{J} \beta$ gdw. $\vdash_{J} \beta'$.)
+    (2) $\xvdash[J]{} \beta$ gdw. $\xvdash[J]{} \beta'$.)
     Der Beweis wird mittels Induktion über den Formelaufbau geführt,
     d.\,h. über die Anzahl der in der Formel vorkommenden Verknüpfungszeichen.
 
     Im Induktionsanfang betrachten wir geschlossene atomare Formeln $\alpha$.
     Diese Formeln enthalten keine Variablensymbole.
     Es folgt direkt aus der Definition der Interpretation der
-    Prädikatensymbole, dass $\models_{\cM} \alpha$ gdw. $\vdash_{J} \alpha$.
+    Prädikatensymbole, dass $\models_{\cM} \alpha$ gdw. $\xvdash[J]{} \alpha$.
 
     Die Induktionsvoraussetzung lautet, dass die Behauptung für alle geschlossenen Formeln
     bis zu einer bestimmten Größe gilt.
@@ -3542,11 +3561,11 @@ alle beweisbaren Formeln wahr sind.)
     \models_{\cM} \gamma ~ \Leftrightarrow_{(1)} ~
     \not\models_{\cM} \alpha
     ~ \Leftrightarrow_{(2)} ~
-    \not\vdash_{J} \alpha
+    \not\xvdash[J]{} \alpha
     ~ \Leftrightarrow_{(3)} ~
-    \vdash_{J} (\neg \alpha)
+    \xvdash[J]{} (\neg \alpha)
     ~ \Leftrightarrow_{(4)} ~
-    \vdash_{J} \gamma
+    \xvdash[J]{} \gamma
     $$
     %
     Äquivalenz (1) folgt aus $\gamma = (\neg \alpha)$,
@@ -3562,11 +3581,11 @@ alle beweisbaren Formeln wahr sind.)
     ~ \Leftrightarrow_{(1)} ~
     \models_{\cM} \alpha \text{~und~} \not\models_{\cM} \beta
     ~ \Leftrightarrow_{(2)} ~
-    \vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta
+    \xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta
     ~ \Leftrightarrow_{(3)} ~
-    \vdash_{J} (\neg \gamma)
+    \xvdash[J]{} (\neg \gamma)
     ~ \Leftrightarrow_{(4)} ~
-    \not\vdash_{J} \gamma
+    \not\xvdash[J]{} \gamma
     $$
 
     Die Äquivalenzen (1), (2) und (4) sind einfach.
@@ -3576,15 +3595,15 @@ alle beweisbaren Formeln wahr sind.)
     und (4)  folgt aus der Abgeschlossenheit von $J$.
 
     Für Äquivalenz (3) betrachten wir beide Richtungen getrennt.
-    Aus ~$\vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta$~
-    folgt zuerst $\vdash_{J} \neg\beta$ aus der Abgeschlossenheit von $J$.
+    Aus ~$\xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta$~
+    folgt zuerst $\xvdash[J]{} \neg\beta$ aus der Abgeschlossenheit von $J$.
     Mit der Tautologie $\alpha\rightarrow(\neg \beta \rightarrow\neg(\alpha\rightarrow\beta))$
-    und modus ponens ergibt sich $\vdash_{J} \neg(\alpha\rightarrow\beta)$,
-    also $\vdash_{J} (\neg \gamma)$.
+    und modus ponens ergibt sich $\xvdash[J]{} \neg(\alpha\rightarrow\beta)$,
+    also $\xvdash[J]{} (\neg \gamma)$.
 
     Die andere Implikation  ~
-    $\vdash_{J} \neg(\alpha\rightarrow\beta) \Rightarrow
-    \vdash_{J} \alpha \text{~und~} \not\vdash_{J} \beta$
+    $\xvdash[J]{} \neg(\alpha\rightarrow\beta) \Rightarrow
+    \xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta$
     ~
     folgt direkt aus der Implikations-Regel.
 
@@ -3600,9 +3619,9 @@ alle beweisbaren Formeln wahr sind.)
     ~ \Leftrightarrow_{(1)} ~
     \models_{\cM} \alpha
     ~ \Leftrightarrow_{(2)} ~
-    \vdash_{J} \alpha
+    \xvdash[J]{} \alpha
     ~ \Leftrightarrow_{(3)} ~
-    \vdash_{J} (\forall y ~\alpha)
+    \xvdash[J]{} (\forall y ~\alpha)
     $$
     %
     Äquivalenz (1) ist die grundlegende Eigenschaft (E6) von Formeln
@@ -3624,7 +3643,7 @@ alle beweisbaren Formeln wahr sind.)
           & \Leftrightarrow_{(2)} &
             \text{für jeden variablenfreien Term $t$ gilt:~} \models_{\cM} \alpha[y/t] \\
           & \Leftrightarrow_{(3)} &
-            \text{für jeden variablenfreien Term $t$ gilt:~} \vdash_{J} \alpha[y/t]
+            \text{für jeden variablenfreien Term $t$ gilt:~} \xvdash[J]{} \alpha[y/t]
     \end{eqnarray*}
     Äquivalenz (3) folgt aus der Induktionsvoraussetzung.
     Äquivalenz (1) folgt aus der semantischen Definition des Allquantors.
@@ -3638,27 +3657,27 @@ alle beweisbaren Formeln wahr sind.)
 
     Es bleibt noch folgende Äquivalenz (*) zu zeigen:
     \begin{gather*}
-     \text{für jeden variablenfreien Term $t$ gilt~} \vdash_{J} \alpha[y/t]
+     \text{für jeden variablenfreien Term $t$ gilt~} \xvdash[J]{} \alpha[y/t]
             ~ ~ \Leftrightarrow ~ ~
-     \vdash_{J} (\forall y ~ \alpha)
+     \xvdash[J]{} (\forall y ~ \alpha)
     \end{gather*}
     Wir zeigen die beiden Implikationsrichtungen von (*) getrennt.
 
-    Aus $\vdash_{J} (\forall y~ \alpha)$ folgt
-    $\vdash_{J} \alpha[y/t]$ für jeden variablenfreien Term $t$
+    Aus $\xvdash[J]{} (\forall y~ \alpha)$ folgt
+    $\xvdash[J]{} \alpha[y/t]$ für jeden variablenfreien Term $t$
     mittels Axiom A4 und modus ponens.
 
     Die andere Implikationsrichtung zerlegen wir in folgende Teile.
 
     $
     \begin{array}{cclc}
-    \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \vdash_{J} \alpha[y/t]} & (1) \\
+    \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \xvdash[J]{} \alpha[y/t]} & (1) \\
      \rule{20mm}{0mm} & \Rightarrow &
-    \text{für jeden variablenfreien Term $t$ gilt:~} \not\vdash_{J} \neg\alpha[y/t] & (2) \\
+    \text{für jeden variablenfreien Term $t$ gilt:~} \not\xvdash[J]{} \neg\alpha[y/t] & (2) \\
      & \Rightarrow &
-    \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\vdash_{J} \neg\alpha[y/a_j] & (3) \\
-     & \Rightarrow & \not\vdash_{J} \neg(\forall y ~ \alpha) & (4) \\
-      & \Rightarrow & \vdash_{J} (\forall y ~ \alpha) & (5)
+    \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\xvdash[J]{} \neg\alpha[y/a_j] & (3) \\
+     & \Rightarrow & \not\xvdash[J]{} \neg(\forall y ~ \alpha) & (4) \\
+      & \Rightarrow & \xvdash[J]{} (\forall y ~ \alpha) & (5)
     \end{array}
     $
 
@@ -3666,7 +3685,7 @@ alle beweisbaren Formeln wahr sind.)
     Aus (2) folgt (3), da jedes Konstantensymbol ein variablenfreier Term ist.
     Aus dem Axiom
     $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/a_i]$
-    und $\vdash_{J} \neg(\forall y ~ \alpha)$ folgt $\vdash_{J} \neg\alpha[y/a_i]$.
+    und $\xvdash[J]{} \neg(\forall y ~ \alpha)$ folgt $\xvdash[J]{} \neg\alpha[y/a_i]$.
     Also folgt die Negation von (3) aus der Negation von (4).
     Damit folgt (4) aus (3).
     Die Abgeschlossenheit von $J$ führt schließlich zu (5).
@@ -3678,11 +3697,11 @@ alle beweisbaren Formeln wahr sind.)
 \begin{satz}[Vollständigkeitssatz von Gödel]
   Sei $K$ ein Prädikatenkalkül 1.\,Ordnung. Dann ist jede gültige Formel
   in $K$ beweisbar, d.\,h. für jede Formel $\alpha$ von $K$ gilt: aus
-  $\models\alpha$ folgt $\vdash_{K}\alpha$.
+  $\models\alpha$ folgt $\xvdash[K]{}\alpha$.
 
   \begin{proof}
     Sei $\alpha$ eine Formel, die nicht in $K$ beweisbar ist
-    ($\not\vdash_{K}\alpha$). (O.\,B.\,d.\,A. ist $\alpha$ geschlossen.)
+    ($\not\xvdash[K]{}\alpha$). (O.\,B.\,d.\,A. ist $\alpha$ geschlossen.)
 
     Erweitere $K$ zu $K'$ durch Hinzunehmen von $\neg\alpha$ als
     zusätzliches Axiom. Da $K$ konsistent ist (\autoref{lemma-KonsistenzPK}),
@@ -3700,7 +3719,7 @@ alle beweisbaren Formeln wahr sind.)
     die kein Modell von $\alpha$ ist, d.\,h. $\alpha$ ist nicht gültig,
     also $\not\Mmodels\alpha$.
 
-    Damit haben wir gezeigt: aus $\not\vdash_{K}\alpha$ folgt $\not\Mmodels\alpha$.
+    Damit haben wir gezeigt: aus $\not\xvdash[K]{}\alpha$ folgt $\not\Mmodels\alpha$.
   \end{proof}
 \end{satz}
 
@@ -3743,7 +3762,7 @@ Sind die folgenden Argumentationen logisch korrekt?
 \section{Blatt 2}
 
 \begin{enumerate}[(1)]
- \item $\vdash_{\mathrm{L}} (\neg \alpha \rightarrow\alpha) \rightarrow\alpha$
+ \item $\Lvdash (\neg \alpha \rightarrow\alpha) \rightarrow\alpha$
 
   \begin{align*}
     (1)\quad & \neg \alpha \rightarrow \neg \alpha
@@ -3755,7 +3774,7 @@ Sind die folgenden Argumentationen logisch korrekt?
        &\text{MP 1,2}
   \end{align*}
 
- \item $\alpha\rightarrow(\beta\rightarrow\gamma) \vdash_{\mathrm{L}} \beta
+ \item $\alpha\rightarrow(\beta\rightarrow\gamma) \Lvdash \beta
   \rightarrow(\alpha\rightarrow\gamma)$
 
   \begin{align*}
@@ -3776,10 +3795,10 @@ Sind die folgenden Argumentationen logisch korrekt?
   Mit Deduktionstheorem wird aus $\alpha \rightarrow
   (\beta\rightarrow\gamma), \beta \vdash \alpha\rightarrow\gamma$.
 
- \item $\vdash_{\mathrm{L}} (\neg\beta\rightarrow\neg\alpha) \rightarrow
+ \item $\Lvdash (\neg\beta\rightarrow\neg\alpha) \rightarrow
   (\alpha\rightarrow\beta)$ \label{enu:1}
 
-  2x DT: $\neg\beta \rightarrow \neg\alpha, \alpha \vdash_{\mathrm{L}}
+  2x DT: $\neg\beta \rightarrow \neg\alpha, \alpha \Lvdash
   \beta$ zu beweisen
   \begin{align*}
     (1)\quad & \neg\beta \rightarrow \neg\alpha &\text{Hypothese}\\
@@ -3793,29 +3812,29 @@ Sind die folgenden Argumentationen logisch korrekt?
     (6)\quad & \neg\beta \rightarrow \alpha &\text{MP 2,5}\\
     (7)\quad & \beta &\text{MP 6,1}
   \end{align*}
-  2x DT: $\vdash_{\mathrm{L}} (\neg\beta\rightarrow\neg\alpha) \rightarrow
+  2x DT: $\Lvdash (\neg\beta\rightarrow\neg\alpha) \rightarrow
   (\alpha\rightarrow\beta)$
 
  \item Theorie $\mathrm{L}$ ist konsistent, d.\,h. wenn $\alpha$ eine Theorem von
   $\mathrm{L}$ ist, dann ist $\neg\alpha$ kein Theorem von $\mathrm{L}$,
-  und wenn $\vdash_{\mathrm{L}}
-  \neg\alpha$, dann nicht $\vdash_{\mathrm{L}} \alpha$.
+  und wenn $\Lvdash
+  \neg\alpha$, dann nicht $\Lvdash \alpha$.
 
-  Wenn $\vdash_{\mathrm{L}}\alpha$ ein Theorem ist, dann ist $\alpha$
+  Wenn $\Lvdash\alpha$ ein Theorem ist, dann ist $\alpha$
   eine Tautologie (\autoref{satz:1}). Dann ist $\neg\alpha$ keine
-  Tautologie. Folglich gilt nicht $\vdash_{\mathrm{L}}\neg\alpha$.
+  Tautologie. Folglich gilt nicht $\Lvdash\neg\alpha$.
 
-  Aus der Negation von „Wenn $\vdash_{\mathrm{L}}\alpha$ ein Theorem
+  Aus der Negation von „Wenn $\Lvdash\alpha$ ein Theorem
   ist, dann ist $\alpha$ eine Tautologie“ folgt: Wenn $\alpha$ keine
-  Tautologie ist, dann gilt nicht $\vdash_{\mathrm{L}}\alpha$. Wenn
+  Tautologie ist, dann gilt nicht $\Lvdash\alpha$. Wenn
   $\neg\alpha$ also kein Theorem ist, dann ist $\alpha$ kein Theorem
 
-  Wenn $\vdash_{\mathrm{L}} \neg\alpha$, dann ist $\neg\alpha$ eine
+  Wenn $\Lvdash \neg\alpha$, dann ist $\neg\alpha$ eine
   Tautologie. Dann ist $\neg\neg\alpha$ keine Tautologie. Es gilt
   $\neg\neg=\alpha$. Also ist $\alpha$ keine Tautologie, folglich gilt
-  nicht $\vdash_{\mathrm{L}} \alpha$.
+  nicht $\Lvdash \alpha$.
 
- \item $\alpha,\neg\alpha \vdash_{\mathrm{L}} \beta$ gilt für beliebige Formeln
+ \item $\alpha,\neg\alpha \Lvdash \beta$ gilt für beliebige Formeln
   $\alpha$ und $\beta$.
 
   \begin{align*}
@@ -3842,15 +3861,15 @@ Wie lang ist (nach dem Beweisen der Sätze dieser Vorlesung) ein Beweis
 (in $\mathrm{L}$) für eine Tautologie höchstens? (Abschätzung nach Anzahl
 von Verknüpfungszeichen und Anzahl der Variablen in der Formel)
 
-Aus dem \autoref{satz:2} folgt: $\mathcal{A}\vdash_{\mathrm{L}}\phi$ mit
+Aus dem \autoref{satz:2} folgt: $\mathcal{A}\Lvdash\phi$ mit
 einem Beweis der Länge $\leq 5\cdot \abs{\phi}+1$ ($\abs{\phi}$ ist die
 Anzahl der Verknüpfungszeichen in $\phi$, für jede Tautologie $\phi$ und
 jede zu $\phi$ passende Belegung $\mathcal{A}$.
 
-$A,B,C \vdash_{\mathrm{L}} \phi$ + $A,B,\neg C \vdash_{\mathrm{L}}$
-$\Rightarrow$ $A,B \vdash_{\mathrm{L}} \phi$
+$A,B,C \Lvdash \phi$ + $A,B,\neg C \Lvdash$
+$\Rightarrow$ $A,B \Lvdash \phi$
 
-Reduktion des ganzen Baumes auf $\vdash_{\mathrm{L}}$. \todo{noch was
+Reduktion des ganzen Baumes auf $\Lvdash$. \todo{noch was
 dazu schreiben}
 
 \begin{gather*}
@@ -3865,19 +3884,19 @@ Axiom A3 ersetzt wird durch Axiom A3': $(\neg \alpha
 \rightarrow \neg\beta) \rightarrow(\beta\rightarrow\alpha)$.
 
 Zeigen Sie, dass $\mathrm{L}'$ korrekt und vollständig ist, das heißt,
-$\phi$ ist Tautologie \gdw $\vdash_{\mathrm{L}'} \phi$.
+$\phi$ ist Tautologie \gdw $\xvdash[\mathrm{L}']{} \phi$.
 
 Wir zeigen, dass sich aus den Axiomen A1, A2 und A3' und dem modus ponens
 das Axiom A3 herleiten lässt. Damit sind alle Beweise, die wir bisher
 geführt haben und die A3 verwenden, auch mit A3' herleitbar. Also lässt
 sich auch der \todo{weiter}
 
-$L'$ ist korrekt (d.\,h. aus $\vdash_{\mathrm{L}'}\phi$ folgt $\phi$ ist
+$L'$ ist korrekt (d.\,h. aus $\xvdash[\mathrm{L}']{}\phi$ folgt $\phi$ ist
 eine Tautologie): Im Beweis von \autoref{satz:1} wird nicht A3 verwendet,
 also kann der Beweis direkt übertragen werden.\todo{stimmt das?}
 
 $L'$ vollständig (d.\,h. für jede Tautologie $\phi$ gilt:
-$\vdash_{\mathrm{L}'} \phi$): hinreichend ist $\vdash_{\mathrm{L}'} A3$.
+$\xvdash[\mathrm{L}']{} \phi$): hinreichend ist $\xvdash[\mathrm{L}']{} A3$.
 
 \begin{align*}
   (1)\quad &\neg\alpha \rightarrow \neg\beta &\text{Hypothese}\\
