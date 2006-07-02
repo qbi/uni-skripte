@@ -105,7 +105,7 @@
 \newcommand*{\lemmaautorefname}{Lemma}
 \newcommand*{\bemerkautorefname}{Bemerkung}
 \newcommand*{\definiautorefname}{Definition}
-\newcommand*{\korolautorefname}{Korolar}
+\newcommand*{\korolautorefname}{Korollar}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
 \newcommand*{\proofautorefname}{Beweis}
@@ -214,6 +214,14 @@
 \renewcommand*{\vdash}{\xvdash{\hphantom{L}}}
 \renewcommand*{\models}{\xmodels{\hphantom{L}}}
 
+% für primitiv rekursive Funktionen:
+%   das Minus - mit 'nem Punkt drüber
+\newcommand{\dminus}{-\hspace{-2.6mm}\raisebox{1mm}{$\cdot$}\hspace{2mm}}
+\newcommand{\prim}{\mathrm{prim}}
+\newcommand{\fib}{\mathit{fib}}
+\newcommand{\falls}{\mbox{ falls }}
+\newcommand{\sonst}{\mbox{ sonst}}
+
 \newcommand*{\cA}{\mathcal{A}}    % Schreibschrift A
 \newcommand*{\cB}{\mathcal{B}}    % Schreibschrift B
 \newcommand*{\cM}{\mathcal{M}}    % Schreibschrift M
@@ -232,6 +240,13 @@
 			      {\hspace{\labelsep}\normalfont ##1}%
 		 \begin{description}}%
 		 {\end{description}}
+
+% Eine einfache Listenumgebung ohne
+% große Einrückung
+\newenvironment*{simplelist}{\begin{list}{\textbf{$\bullet$}}
+{\setlength{\labelwidth}{2mm}
+\setlength{\labelsep}{3mm}
+\setlength{\leftmargin}{5mm}}}{\end{list}}
 
 % Nach Vorschlag von Norbert Stuhrmann in
 % <news:e6kc7d$pr8$1@f1node01.rhrz.uni-bonn.de>
@@ -3814,7 +3829,7 @@ logische Verkn\"upf\-ungszeichen, Klammern
 \end{itemize}
 }
 
-Zu den logischen Axiomen kommen in S
+Zu den logischen Axiomen kommen in $\mathrm{S}$
 folgende zusätzliche Axiome.
 
 \begin{itemize}
@@ -3876,7 +3891,7 @@ $
 
 %%%%%%%%%%%%%
 
-Wir erhalten folgende Theoreme von S
+Wir erhalten folgende Theoreme von $\mathrm{S}$
 über grundlegende Eigenschaften der Gleichheitsrelation 
 (Reflexivität, Symmetrie, Transitivität)
 sowie der Addition (Kommutativität, Assoziativität).
@@ -4049,9 +4064,9 @@ und der „intuitiven“ Interpretaion der übrigen Symbole.
 \item $A^2_1$ wird durch die Gleichheitsrelation interpretiert
 \end{itemize}
 
-„Offensichtlich“ sind die Axiome von S wahr im Standard-Modell.
+„Offensichtlich“ sind die Axiome von $\mathrm{S}$ wahr im Standard-Modell.
 
-Es gibt jedoch auch Modelle f\"ur S mit
+Es gibt jedoch auch Modelle f\"ur $\mathrm{S}$ mit
 \"uberabz\"ahlbarer Grundmenge \ldots
 
 \todo{Irgendwo weiter oben einsortieren}
@@ -4198,6 +4213,912 @@ Weiter abkürzende Schreibweisen:
   $t\geq s$ & für $s\leq t$\\
   $t\not< s$ & für $\neg t<s$
 \end{tabular}
+
+
+
+\section{Primitiv rekursive Funktionen}
+\label{sec-prFunktionen}
+
+
+Primitiv rekursive Funktionen lassen sich mittels
+Komposition und Rekursion auf einfache Basisfunktionen zurückführen.
+Die Basisfunktionen sind
+%
+\begin{itemize}
+\item die Nullfunktionen $Z^{(k)}:\N^k\rightarrow\N$ mit 
+$Z^{(k)}(x_1,\ldots,x_k)=0$  ($k\in\N$)
+\item die Nachfolgerfunktion $N:\N\rightarrow\N$ mit $N(n)=n+1$
+\item die Projektionsfunktionen $U^k_i:\N^k\rightarrow\N$
+mit $U^{(k)}_i(x_1,\ldots,x_k)=x_i$ ($k\in\N^+$, $1\leq i\leq k$).
+\end{itemize}
+%
+
+\begin{defini}
+Seien $f:\N^k\rightarrow\N$ 
+und $g_1,\ldots,g_k:\N^l\rightarrow\N$ 
+Funktionen auf den natürlichen Zahlen.
+Die Funktion $h:\N^l\rightarrow\N$ mit
+$$
+h(x_1,\ldots,x_l) = f\big(g_1(x_1,\ldots,x_l),\ldots,g_k(x_1,\ldots,x_l)\big)
+$$
+entsteht aus $f$ und $g_1,\ldots,g_k$ durch Komposition.
+\end{defini}
+
+Beispiel:
+betrachte die Funktion $h:\N\rightarrow\N$ mit $h(x)=2\cdot x$.
+Sie entsteht aus $f:\N^2\rightarrow\N$ mit $f(x,y)=x+y$ und
+$g_1:\N\rightarrow\N$, $g_2:\N\rightarrow\N$ mit $g_1(x)$ und $g_2(x)=x$
+durch Komposition.
+Es gilt $h(x) = f(g_1(x), g_2(x))$.
+
+Die Komposition der Funktionen
+$f:\N^3\rightarrow\N$ mit $f(x,y,z)=x+y+z$ und
+$g_1,g_2,g_3:\N^2\rightarrow\N$
+mit $g_1(x,y)=x^2$, $g_2(x,y)=h(x)$ und $g_3(x,y)=y^2$ 
+liefert die Funktion
+$h':\N^2\rightarrow\N$ mit $h'(x,y)=x^2+2x+y^2$.
+
+\begin{defini}
+Sei $k\in\N$ und $g:\N^2\rightarrow\N$ eine totale Funktion.
+Dann entsteht die Funktion $h:\N\rightarrow\N$ mit
+$$
+\begin{array}{rcll}
+h(0) & = & k  & \mbox{ und} \\
+h(n+1) & = & g(n,h(n))
+\end{array}
+$$
+\noindent
+aus $k$ und $g$ mittels Rekursion.
+\end{defini}
+
+
+Die Rekursion ist stets endlich.
+Wenn $h$ durch Rekursion aus $g$ und $k$ entsteht,
+dann gilt zum Beispiel
+$$
+h(5)=g(4,\underbrace{g(3,\overbrace{g(2,\underbrace{g(1,\overbrace{g(0,\underbrace{k}_{h(0)})}^{h(1)})}_{h(2)})}^{h(3)})}_{h(4)}) \ \ .
+$$
+Sei $h$ definiert durch Rekursion aus $k=0$ und $g(x,y)=x+y$.
+Das heißt
+\vspace{1ex}
+
+$
+\hspace{20mm}\begin{array}{rclcll}
+h(0) & = & k & = & 0 & \mbox{ und} \\
+h(n+1) & = & g(n,h(n)) & =&  n + h(n)
+\end{array}
+$
+\vspace{1ex}
+
+\noindent
+Dann gilt $h(n)=\sum\limits_{i=0}^{n-1} i$.
+
+Die obige Definition der Rekursion diente
+der Veranschaulichung der wesentlichen Eigenschaften.
+Rekursion ist natürlich auch für mehrstellige Funktionen definiert.
+Dabei dient eines der Argumente für die Rekursion.
+Die anderen Argumente werden nur ``mitgeschleift''.
+
+\begin{defini}
+Seien $f:\N^k\rightarrow \N$ und $g:\N^{k+2}\rightarrow\N$.
+Die Funktion $h:\N^{k+1}\rightarrow\N$ entsteht mittels
+Rekursion aus $f$ und $g$, falls
+\begin{eqnarray*}
+h(x_1,\ldots,x_k,0) & = & f(x_1,\ldots,x_k) \mbox{\ \ \ und} \\
+h(x_1,\ldots,x_k,n+1) & = & g\big(n,h(x_1,\ldots,x_k,n),x_1,\ldots,x_n\big) .
+\end{eqnarray*}
+\end{defini}
+
+
+\begin{defini}
+Eine Funktion heißt \emph{primitiv rekursiv}, wenn sie
+\begin{itemize}
+\item die Nachfolgerfunktion, eine Nullfunktion 
+      oder eine Projektionsfunktion ist, 
+  oder
+\item durch Komposition oder Rekursion aus primitiv rekursiven
+      Funktionen entsteht.
+\end{itemize}
+
+Ein Prädikat $R\subseteq \N^k$ heißt primitiv rekursiv,
+falls die charakteristische Funktion $\chi_R:\N^k\rightarrow\N$ mit
+$$
+\chi_R(x_1,\ldots,x_k) = \left\{\begin{array}{ll}
+   0, & \mbox{ falls $(x_1,\ldots,x_k)\not\in R$} \\
+   1, & \mbox{ falls $(x_1,\ldots,x_k)\in R$}
+   \end{array}
+   \right.
+$$
+primitiv rekursiv ist.
+Anstelle von $\chi_R$ schreiben wir der Einfachheit halber auch $R$.
+\end{defini}
+ 
+
+\subsubsection*{Einige wichtige primitiv rekursive Funktionen und Prädikate}
+
+\begin{simplelist}
+\item
+Die Additionsfunktion $h_0:\N^2\rightarrow\N$ mit $h_0(x,y)=x+y$.
+Zuerst überlegen wir informell, wie man
+die Additionsfunktion rekursiv über $y$ definieren kann.
+Es gilt
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+x+0 & = & x   \\
+x+(y+1) & = & (x+y) +1 
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+Formal ist das
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+h_0(x,0) & = & U^{(1)}_1(x) \\
+h_0(x,y+1) & = & N(U^{(3)}_2(y,h_0(x,y),x))
+\end{array}
+$
+}
+
+Also entsteht $h_0$ durch Rekursion aus $U^{(1)}_1$
+und $g:\N^3\rightarrow\N$ mit $g(y,z,x) = N(U^{(3)}_2(y,z,x))$.
+Da $g$ durch Komposition aus $s$ und $U^{(3)}_2$ entsteht,
+ist $g$ primitiv rekursiv.
+$U^{(1)}_1$ ist ebenfalls primitiv rekursiv.
+Also ist $h_0$ ebenfalls primitiv rekursiv.
+\vspace{2ex}
+
+\item
+Die Multiplikationsfunktion $h_1:\N^2\rightarrow\N$ mit $h_1(x,y)=x\cdot y$.
+Zuerst schreiben wir die Rekursion wieder informell auf.
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+x\cdot 0 & = & 0   \\
+x\cdot(y+1) & = & (x\cdot y) +x 
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+Formal ist das
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+h_1(x,0) & = & N^{(1)}(x) \\
+h_1(x,y+1) & = & h_0(U^{(3)}_2(y,h_1(x,y),x),U^{(3)}_3(y,h_1(x,y),x)) 
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+Die Funktionen, aus denen $h_1$ mittels Rekursion entsteht,
+sind primitiv rekursiv.
+Also ist $h_1$ ebenfalls primitiv rekursiv.
+
+\item
+Die Fakultätsfunktion $h_2:\N\rightarrow\N$ mit $h_2(x)=x!$.
+Es gilt
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+0! & = & 1   \\
+(y+1)! & = & y! \cdot (y+1) 
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+Formal ist das
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+h_2(0) & = & N(Z^{(0)}()) \\
+h_2(y+1) & = & h_1(N(U^{(2)}_1(y,h_2(y)),U^{(2)}_2(y,h_2(y))) 
+\end{array}
+$
+}
+
+\item
+Die Potenzfunktion $h_3:\N^2\rightarrow\N$ mit $h_3(x,y)=x^y$.
+Es gilt
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+x^0 & = & 1   \\
+x^{(y+1)} & = & (x^y) \cdot x 
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+Formal
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+h_3(x,0) & = & N(Z^{(1)}(x)) \\
+h_3(x,y+1) & = & h_1(U^{(3)}_2(y,h_3(x,y),x),U^{(3)}_3(y,h_3(x,y),x)) 
+\end{array}
+$
+}
+
+\item
+Die Dekrementfunktion $h_4:\N\rightarrow\N$ mit $h_4(x)=x\dminus 1$.
+Es gilt
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+0\dminus 1 & = & 0   \\
+(x+1)\dminus 1 & = & x 
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+und damit
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+h_4(0) & = & Z^{(0)}(\ ) \\
+h_4(x+1) & = & U^{(2)}_1(x,h_4(x)) 
+\end{array}
+$
+}
+
+\item
+Die Subtraktionsfunktion $h_5:\N^2\rightarrow\N$ mit $h_5(x,y)=x\dminus y$.
+Es gilt
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+x\dminus 0 & = & x  \\
+x\dminus (y+1) & = & (x\dminus y) \dminus 1
+\end{array}
+$
+}
+\vspace{0.5ex}
+
+und damit
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+h_5(x,0) & = & U^{(1)}_1(x) \\
+h_5(x,y+1) & = & h_4(U^{(3)}_2(y,h_5(x,y),x)) 
+\end{array}
+$
+}
+
+\item
+Die Differenzfunktion $h_6:\N^2\rightarrow\N$ mit $h_6(x,y)=|x-y|$.
+Es gilt
+\vspace{1ex}
+
+\centerline{$|x-y| = (x\dminus y)+(y\dminus x)$.}
+\vspace{0.5ex}
+
+Also ist $h_6(x,y)=h_0(h_5(x,y),h_5(U^{(2)}_2(x,y),U^{(2)}_1(x,y)))$.
+
+\item
+Das Gleichnullprädikat ist $\alpha:\N\rightarrow\{0,1\}$ mit
+$$
+\alpha(x)=\left\{\begin{array}{ll}
+                  1, & \mbox{ falls $x=0$} \\
+                  0, & \mbox{ sonst}
+                  \end{array}
+           \right.
+$$
+Diese Funktion kann man gleich formal aufschreiben.
+\vspace{1ex}
+
+\centerline{
+$
+\begin{array}[t]{rcl}
+\alpha(0) & = & N(Z^{(0)}(~)) \\
+\alpha(x+1) & = & Z^{(2)}(x,\alpha(x))
+\end{array}
+$
+}
+
+\item
+Das Ungleichnullprädikat ist $\overline{\alpha}:\N\rightarrow\{0,1\}$ mit
+$$
+\alpha(x)=\left\{\begin{array}{ll}
+                  0, & \mbox{ falls $x=0$} \\
+                  1, & \mbox{ sonst}
+                  \end{array}
+           \right.
+$$
+ist $\overline{\alpha}(x)=1\dminus\alpha(x)$.
+
+\item
+Das Gleichheitsprädikat $x=y$:
+es gilt $x=y$ genau dann, wenn $|x-y|=0$.
+Also ist  
+$$(x=y) = \alpha(|x-y|)$$
+(formal $\alpha(h_6(x,y))$).
+
+\item
+Das Kleinergleichprädikat $x\leq y$: es gilt
+$x\leq y$ genau dann, wenn $x\dminus y = 0$.
+Also ist 
+$$(x\leq y) = \alpha(x\dminus y)\ \ .$$
+\end{simplelist}
+
+
+\subsection{Allgemeinere Konstruktoren für primitiv rekursive Funktionen}
+
+In der Definition primitiv rekursiver Funktionen gibt es nur
+die Konstruktoren Komposition und Rekursion.
+Wir betrachten jetzt weitere Konstruktoren für Funktionen,
+die das formale Aufschreiben von Funktionen erleichtern.
+Mit Ausnahme des (unbeschränkten) Minimum-Konstruktors
+kann man mit diesen Konstruktoren aus primitiv rekursiven Funktionen
+auch nur primitiv rekursive Funktionen erzeugen.
+
+Die üblichen logischen Verknüpfungen von Prädikaten können durch
+primitiv rekursive arithmetische Operationen dargestellt werden.
+
+\begin{satz}
+Seien $P$ und $Q$ primitiv rekursive Prädikate.
+Dann sind die Prädikate $\neg P$, $P\wedge Q$ und $P\vee Q$
+primitiv rekursiv.
+\end{satz}
+
+\begin{proof}
+Es ist lecht zu sehen, dass $\chi_{\neg P}(x) = \alpha(\chi_{P}(x))$, 
+$\chi_{P\wedge Q}(x) = \chi_P(x) \cdot \chi_Q(x)$
+und
+$\chi_{P\vee Q}(x) = \chi_{\neg(\neg P \wedge \neg Q)}
+                 = \alpha(\alpha(\chi_P(x))\cdot \alpha(\chi_Q(x)))$.
+\end{proof}
+
+
+Prädikate werden zum Beispiel in Funktionen benutzt,
+die durch Fallunterscheidung beschrieben werden.
+Dieses Mittel kann man auch für primitiv rekursive Funktionen verwenden.
+
+\begin{satz}(Fallunterscheidung)
+Seien $g:\N^k\rightarrow\N$ und $h:\N^k\rightarrow\N$ 
+primitiv rekursive Funktionen, 
+und $P\subseteq \N^k$ sei ein primitiv rekursives Prädikat.
+Dann ist auch die Funktion $f:\N^k\rightarrow\N$ mit 
+$$
+f(x_1,\ldots,x_k) = \left\{\begin{array}{ll}
+   g(x_1,\ldots,x_k), & \mbox{ falls $(x_1,\ldots,x_k)\in P$} \\
+   h(x_1,\ldots,x_k), & \mbox{ sonst}
+   \end{array}
+   \right.
+$$
+primitiv rekursiv.
+\end{satz}
+
+\begin{proof}
+Offensichtlich gilt
+$$
+f(x_1,\ldots,x_k) = g(x_1,\ldots,x_k) \cdot \chi_P(x_1,\ldots,x_k)
+                       + h(x_1,\ldots,x_k) \cdot \alpha\big(\chi_P(x_1,\ldots,x_k)\big)\ \ .
+$$
+Also ist $f$ primitiv rekursiv.
+\end{proof}
+
+Fallunterscheidungen mit mehr als zwei Fällen, die durch
+primitiv rekursive Prädikate entschieden werden, sind ebenfalls
+primitiv rekursiv (Beweis entsprechend).
+
+Als erstes Beispiel für eine rekursive Funktion hatten
+wir die Summe der ersten $n$ natürlichen Zahlen betrachtet.
+Die Summe der Werte einer primitiv rekursiven Funktion,
+bei der ein Argument hochgezählt wird,
+ist ebenfalls primitiv rekursiv.
+Gleiches gilt für das Produkt.
+
+
+\begin{satz}
+Sei $f:\N^{k+1}\rightarrow\N$ primitiv rekursiv.
+Dann sind auch die folgenden Funktionen $g,h:\N^{k+1}\rightarrow\N$
+primitiv rekursiv.
+\begin{eqnarray*}
+g(x_1,\ldots,x_k,y) & = & \sum_{t=0}^{y} f(x_1,\ldots,x_k,t) \\
+h(x_1,\ldots,x_k,y) & = & \prod_{t=0}^{y} f(x_1,\ldots,x_k,t) 
+\end{eqnarray*}
+\end{satz}
+
+\begin{proof}
+Sei $f:\N^{k+1}\rightarrow\N$ primitiv rekursiv.
+Definiere $f':\N^{k}\rightarrow\N$  
+mit
+\begin{eqnarray*}
+f'(x_1,\ldots,x_k) & = & f(x_1,\ldots,x_k,0) \\
+& = & f(U^{(k)}_1(x_1,\ldots,x_k),\ldots,U^{(k)}_k(x_1,\ldots,x_k),Z^{(k)}(x_1,\ldots,x_k))\ \ .
+\end{eqnarray*}
+$f'$ ensteht also durch Komposition aus
+den primitiv rekursiven Funktionen $f, U^{(k)}_1, \ldots, U^{(k)}_k, Z^{(k)}$.
+Also ist $f'$ primitiv rekursiv.
+Nun kann $g$ mittels Rekursion definiert werden.
+%
+\begin{eqnarray*}
+g(x_1,\ldots,x_k,0) & = & f'(x_1,\ldots,x_k) \\
+g(x_1,\ldots,x_k,y+1) & = & 
+\underbrace{g(x_1,\ldots,x_k,y)}_{=\sum\limits_{t=0}^{y} f(x_1,\ldots,x_k,t)}
+                              + f(x_1,\ldots,x_k,N(y))
+\end{eqnarray*}
+
+Für die Funktion $h$ wird entsprechend vorgegangen.
+%
+\begin{eqnarray*}
+h(x_1,\ldots,x_k,0) & = & f'(x_1,\ldots,x_k) \\
+h(x_1,\ldots,x_k,y+1) & = & 
+\underbrace{h(x_1,\ldots,x_k,y)}_{=\prod\limits_{t=0}^{y} f(x_1,\ldots,x_k,t)}
+                              \cdot f(x_1,\ldots,x_k,N(y))
+\end{eqnarray*}
+\end{proof}
+
+Man muss die Summe nicht unbedingt bei Index $0$ beginnen.
+\begin{satz}
+Sei $f:\N^{k+1}\rightarrow\N$ primitiv rekursiv.
+Dann sind auch die folgenden Funktionen primitiv rekursiv.
+\begin{eqnarray*}
+g(x_1,\ldots,x_k,y) & = & \sum_{t=1}^y f(x_1,\ldots,x_k,t) \\
+h(x_1,\ldots,x_k,y) & = & \prod_{t=1}^y f(x_1,\ldots,x_k,t)
+\end{eqnarray*}
+\end{satz}
+
+\begin{proof}
+Mit
+$$
+\sum_{t=1}^y f(x_1,\ldots,x_k,t) = 
+ \big(\sum_{t=0}^y f(x_1,\ldots,x_k,t)\big) \dminus f(x_1,\ldots,x_k,0)
+$$
+folgt dieser Satz direkt aus dem letzten Satz.
+Für das Produkt muss der Spezialfall
+$f(x_1,\ldots,x_k,0)=0$ getrennt betrachtet werden.
+\end{proof}
+
+Die Argumente von Prädikaten lassen sich quantifizieren.
+Wir benutzen \textit{beschränkte} Quantoren,
+die nur über einen Anfangsabschnitt der natürlichen Zahlen definiert sind.
+Sei $P$ ein $(k+1)$-stelliges Prädikat.
+Das ebenfalls $(k+1)$-stellige Prädikat $E$ mit
+$$
+E(x_1,\ldots,x_k,y) = (\exists t)_{\leq y} P(x_1,\ldots,x_k,t)
+$$
+ist wahr genau dann, wenn es (mindestens) ein $t\leq y$ gibt, 
+für das $P(x_1,\ldots,x_k,t)$ gilt.
+Entsprechend ist 
+$$
+A(x_1,\ldots,x_k,y) = (\forall t)_{\leq y} P(x_1,\ldots,x_k,t)
+$$
+wahr genau dann, wenn $P(x_1,\ldots,x_k,t)$ für alle $t\leq y$ wahr ist.
+Diese beschränkten Quantoren können durch primitiv rekursive Konstrukte
+beschrieben werden.
+
+\begin{satz}
+Sei $P:\N^{k+1}\rightarrow\N$ ein primitiv rekursives
+Prädikat.
+Dann sind auch die folgenden mit beschränkten Quantoren definierten
+Prädikate primitiv rekursiv.
+$$
+(\exists t)_{\leq y} P(x_1,\ldots,x_k,t)
+\mbox{\hspace{10mm} und \hspace{10mm}}
+(\forall t)_{\leq y} P(x_1,\ldots,x_k,t)\ \ .
+$$
+\end{satz}
+
+\begin{proof}
+Beim Summieren aller Werte $P(x_1,\ldots,x_k,t)$ für alle $t=0,1,2,\ldots,k$
+erhält man einen Wert größer $0$ genau dann, wenn es ein $t\leq y$ mit $P(x_1,\ldots,x_k,t)$
+gibt.
+Also gilt 
+\begin{eqnarray*}
+(\exists t)_{\leq y} P(x_1,\ldots,x_k,t)
+& = & \bigg( \Big[\sum_{t=0}^y P(x_1,\ldots,x_k,t)\Big] \not= 0 \bigg) \\
+& = & 1 \dminus \alpha \Big(\sum_{t=0}^y P(x_1,\ldots,x_k,t)\Big)
+\end{eqnarray*}
+
+Entsprechend ist das Produkt aller Werte $P(x_1,\ldots,x_k,t)$ für alle $t=0,1,2,\ldots,k$
+gleich $1$ genau dann, wenn $P(x_1,\ldots,x_k,t)$ für alle $t=0,1,2,\ldots,k$ gilt.
+Also gilt 
+\begin{eqnarray*}
+(\forall t)_{\leq y} P(x_1,\ldots,x_k,t)
+& = &  \bigg(\Big[\prod_{t=0}^y P(x_1,\ldots,x_k,t)\Big] = 1 \bigg) \\
+& = &  \prod_{t=0}^y P(x_1,\ldots,x_k,t)
+\end{eqnarray*}
+\vspace{-4ex}
+
+\end{proof}
+
+Als Beispiel betrachten wird das Teilbarkeitsprädikat $y|x$ (``$y$ teilt $x$'').
+$y|x$ ist wahr genau dann, wenn es ein $t\leq x$ gibt, so dass $t\cdot y=x$.
+Das dreistellige Prädikat  $P$ mit 
+$$P(x,y,t)= (t\cdot y=x)$$ 
+ist primitiv rekursiv.
+Nach obigem Satz ist dann auch das Prädikat
+$$
+Q(x,y,z) = (\exists t)_{\leq z} P(x,y,t)
+$$
+primitiv rekursiv.
+Das Teilbarkeitsprädikat $T(x,y)= (y|x)$ 
+lässt sich informell beschreiben als $$T(x,y)=Q(x,y,y)\ \ .$$
+Formal entsteht es durch Komposition aus $Q$ und Projektionsfunktionen
+$$
+T(x,y) = Q\big(U^{(2)}_1(x,y),U^{(2)}_2(x,y),U^{(2)}_2(x,y)\big) \ \ \ .
+$$
+
+Der beschränkte Allquantor kann zur Beschreibung der Primzahleigenschaft
+benutzt werden.
+Das Prädikat $\prim(x)$ ist wahr genau dann, wenn $x$ eine Primzahl ist.
+$x$ ist eine Primzahl genau dann, wenn jeder Teiler von $x$ entweder $1$ 
+oder $x$ ist. Da $x$ keinen größeren Teiler als sich selbst besitzen kann,
+folgt
+\begin{eqnarray*}
+\prim(x) & = &  x>1 \wedge
+               (\forall t)_{\leq x} \big(t=1 \vee t=x \vee \neg(t|x)\big) \ \ \ .
+\end{eqnarray*}
+
+
+\subsection{Beschränkte Minimierung}
+
+Der Existenzquantor liefert nur eine Antwort darauf,
+ob eine Zahl mit einer bestimmten Eigenschaft existiert.
+Oft will man eine solche Zahl auch benutzen.
+Sie wird vom $\min$-Konstruktor geliefert,
+der wie folgt definiert ist.
+Sei $P:\N^{k+1}\rightarrow\N$ 
+ein $(k+1)$-stelliges Prädikat.
+Dann ist $\min P:\N^k\rightarrow\N$ eine Funktion mit
+$$
+\min\limits_{t\leq y} P(x_1,\ldots,x_k,t) = \left\{
+  \begin{array}{ll}
+   t, & \begin{minipage}[t]{100mm} 
+          falls es ein $t\leq y$ gibt mit \\$P(x_1,\ldots,x_k,t)$
+          und $\neg P(x_1,\ldots,x_k,s)$ für $s=0,\ldots,t-1$
+        \end{minipage} \\
+   0, & \sonst
+  \end{array}
+  \right.
+$$
+
+Der $\min$-Konstruktor kann zum Beispiel zur Beschreibung der ganzzahligen
+Division 
+$$
+\left\lfloor \frac{x}{y} \right\rfloor\ \ = \ \ 
+\mbox{ die größte ganze Zahl kleiner oder gleich\  \ } \frac{x}{y}
+$$ 
+benutzt werden.
+Es gilt
+$$
+\left\lfloor \frac{x}{y} \right\rfloor \cdot y \leq x < 
+   \left(\left\lfloor \frac{x}{y} \right\rfloor +1\right)\cdot y \ \ .
+$$
+Also ist $\lfloor \frac{x}{y} \rfloor$ die kleinste natürliche Zahl $t$
+mit $(t+1)\cdot y > x$.
+Formaler aufgeschrieben gilt
+$$
+\left\lfloor \frac{x}{y} \right\rfloor = 
+     \min\limits_{t\leq y}\left[(t+1)\cdot y > x \right] \ \ \ .
+$$
+Damit lässt sich nun auch die mod-Operation einfach darstellen.
+$$
+x \bmod y \ \ =\ \  x \dminus \left( y\cdot\left\lfloor\frac{x}{y}\right\rfloor \right)
+$$
+
+Die beschränkte Minimierung lässt sich mit den
+Mitteln primitiv rekursiver Funktionen beschreiben.
+
+\begin{satz}
+Sei $P:\N^{k+1}\rightarrow\N$ ein primitiv rekursives
+Prädikat und $f:\N^{k+1}\rightarrow\N$ sei definiert als
+$$
+f(y,x_1,\ldots,x_k) = \min\limits_{t\leq y} P(x_1,\ldots,x_k,t)\ .
+$$
+Dann ist $f$ primitiv rekursiv.
+\end{satz}
+
+
+\begin{proof}
+Zuerst betrachten wir den Fall, dass $P(x_1,\ldots,x_k,t)$ für ein $t\leq y$ gilt,
+und sei $t_0 = \min\limits_{t\leq y} P(x_1,\ldots,x_k,t)$.
+Dann ist $P(x_1,\ldots,x_k,u)=0$ für $u=0,1,2,\ldots,t_0-1$.
+Damit folgt für alle $s=0,1,2,\ldots,t_0-1$
+$$
+\sum_{u=0}^{s} P(x_1,\ldots,x_k,u) \ \ =\ \  0 \ \ .
+$$
+Wegen $P(x_1,\ldots,x_k,t_0)=1$ folgt für alle $s=t_0,t_0+1,\ldots,y$
+$$
+\sum_{u=0}^{s} P(x_1,\ldots,x_k,s) \ \ \geq\ \  1 \ \ .
+$$
+Also gilt 
+\begin{eqnarray*}
+t_0 &\ \  =\ \  &\mbox{\ Anzahl aller $s\leq y$ mit\ } 
+                      \sum_{u=0}^s P(x_1,\ldots,x_k,u) = 0 \\
+&\ \  =\ \  & \sum_{s=0}^y\  \alpha\left(\sum_{u=0}^s P(x_1,\ldots,x_k,u)\right)
+\end{eqnarray*}
+
+
+
+Das schreiben wir als 
+Funktion $g:\N^{k+1}\rightarrow\N$ auf.
+Definiere
+\begin{eqnarray*}
+g(y,x_1,\ldots,x_k) & = & \sum_{s=0}^y\  \alpha\left(\sum_{u=0}^s P(x_1,\ldots,x_k,u)\right) \ \ .
+\end{eqnarray*}
+Da $P$ primitiv rekursiv ist, ist $g$ ebenfalls primitiv rekursiv.
+Durch Fallunterscheidung kann jetzt noch der Fall abgefangen werden,
+dass das gesuchte Minimum nicht existiert.
+Damit ergibt sich
+$$
+f(y,x_1,\ldots,x_k) = \left\{\begin{array}{ll}
+   g(y,x_1,\ldots,x_k), & 
+        \mbox{ falls $(\exists t)_{\leq y} P(x_1,\ldots,x_k,t)$} \\
+   0, & \sonst
+  \end{array}
+  \right.
+$$
+Also ist $f$ primitiv rekursiv.
+\end{proof}
+
+Als weiteres Beispiel für die Benutzung des $\min$-Operators
+zeigen wir, dass die Funktion $p:\N\rightarrow \N$ mit
+$$
+ p(n)\ \ =\ \ \mbox{die $n$-te Primzahl}
+$$
+primitiv rekursiv ist.
+Die unendliche Folge von Primzahlen beginnt mit $2,3,5,7,11,13$.
+Die erste Primzahl ist also $2$, d.h.~$p(1)=2$.
+Da es keine $0$te Primzahl gibt, die Funktion $p$ aber
+trotzdem auf $\N$ -- also auch für $0$ -- definiert sein soll,
+setzen wir einfach $p(0)=0$ fest.
+Aus dem (oder besser: einem) Beweis des Satzes,
+dass es unendlich viele Primzahlen gibt, folgt 
+$p(n+1)\leq p(n)!+1$.
+Damit ist schon mal eine Schranke gefunden, bis zu der
+nach der nächsten Primzahl gesucht werden muss.
+Dann ist $p(n+1)$ die kleinste Zahl $t\leq p(n)!+1$,
+die größer als $p(n)$ und eine Primzahl ist.
+Als einen ersten informellen Ansatz beschreiben wir die Funktion $p$ damit wie folgt.
+$$
+\begin{array}[t]{rcl}
+p(0) & = & 0 \\
+p(n+1) & = & \min\limits_{t\leq p(n)!+1}
+  \left[ \prim(t) \wedge t> p(n) \right]
+ \end{array}
+$$
+
+Formaler definieren wir zunächst eine primitiv rekursive Funktion $h$ mit
+$$
+ h(y,z) = \min\limits_{t\leq z} \left[ \prim(t) \wedge t>y\right]
+$$
+und darüber die Funktion $q$ mit
+$$
+  q(y,m) = h(m, m!+1) \ \ .
+$$
+Damit gilt schließlich 
+$$
+\begin{array}[t]{rcl}
+p(0) & = & 0 \\
+p(n+1) & = & q(n,p(n)) \ \ \ .
+ \end{array}
+$$
+
+
+\subsection{Exkurs: Unbeschränkte Minimierung und rekursive Funktionen}
+
+Verzichtet man auf die obere Schranke für das gesuchte Minimum,
+dann kann der Funktionswert von $\min P$ undefiniert sein.
+%
+\begin{eqnarray*}
+\lefteqn{\min\limits_{y} P(x_1,\ldots,x_k,y) } \\
+& = & \left\{
+  \begin{array}{ll}
+   \min\{t\mid P(x_1,\ldots,x_k,t)\}, & \begin{minipage}[t]{100mm} 
+          falls $P(x_1,\ldots,x_k,t)$ für ein $t\in\N$ \\
+          und $\neg P(x_1,\ldots,x_k,s)$ für $s=0,\ldots,t-1$
+        \end{minipage} \\
+   \uparrow, & \sonst
+  \end{array}
+  \right.
+\end{eqnarray*}
+Die Funktion $g$ mit
+$$
+g(x_1,\ldots,x_k) = \min\limits_y P(x_1,\ldots,x_k,y)
+$$
+entsteht aus $P$ durch (unbeschränkte) Minimierung.
+
+Die Subtraktionsfunktion auf den ganzen Zahlen
+liefert für $x-y<0$ keinen Funktionswert und kann
+auf den natürlichen Zahlen an diesen Stellen als undefiniert aufgefasst werden.
+Formal kann das ausgedrückt werden durch
+$$
+x-y = \min\limits_z\big[ x=y+z \big] \ \ .
+$$
+%
+Nimmt man Minimierung als zusätzlichen Konstruktor zu den
+für primitiv rekursive Funktionen benutzten Konstruktoren, 
+dann wird eine
+neue Klasse von Funktionen definiert.
+
+\begin{defini}
+Eine Funktion heißt \emph{rekursiv}, falls sie
+\begin{enumerate}
+\item eine Nullfunkiton, die Nachfolgerfunktion, oder
+eine Projektionsfunktion ist, oder
+\item mittels Komposition, Rekursion oder
+      Minimierung aus rekursiven Funktionen entsteht.
+\end{enumerate}
+\end{defini}
+
+Offensichtlich ist jede primitiv rekursive Funktion auch rekursiv.
+Es gibt jedoch rekursive Funktionen, die nicht primitiv rekursiv sind.
+Die überall undefinierte Funktion $\omega:\N\rightarrow\N$
+ist rekursiv, da sie wie folgt definiert werden kann.
+$$
+\omega(n) = \min\limits_t[t+1=0]
+$$
+Alle primitiv rekursiven Funktionen sind total.
+Also ist $\omega$ nicht primitiv rekursiv.
+Es gibt aber auch totale rekursive Funktionen, die
+nicht primitiv rekursiv sind.
+Ein bekanntes Beispiel ist die Ackermann-Funktion
+$A:\N^2\rightarrow\N$.
+Sie wächst stärker als jede primitiv rekursive Funktion.
+Allerdings ist es auch nicht ganz leicht zu zeigen,
+dass die Ackermann-Funktion rekursiv ist.
+\vspace{1ex}
+
+\hspace{15mm}\begin{tabular}{rcll}
+$A(0,y)$ & $=$ & $1$ & für jedes $y\geq 0$ \\
+$A(1,0)$ & $=$ & $2$ & \\
+$A(x,0)$ & $=$ & $x+2$ & für $x\geq 2$ \\
+$A(x+1,y+1)$ & $=$ & $A(A(x,y+1),y)$ & für $x\geq 0$ und $y\geq 0$
+\end{tabular}
+
+
+\section{Primitiv rekursive Funktionen sind in S repräsentierbar}
+
+Wir haben bereits gesehen, dass
+die Nullfunktionen, die Nachfolgerfunktion und die
+Projektionsfunktionen in $\mathrm{S}$ repräsentierbar sind.
+Außerdem haben wir gesehen, dass jede Funktion, die durch Komposition aus
+in $\mathrm{S}$ repräsentierbaren Funktionen entsteht,
+ebenfalls in $\mathrm{S}$ repräsentierbar ist.
+Es bleibt also noch zu zeigen,
+dass auch mittels Rekursion entstandene Funktionen diese Eigenschaft haben.
+Der \glqq Trick\grqq\xspace liegt hier in der
+Kodierung der Zwischenergebnisse, die bei der Berechnung
+einer rekursiv definierten Funktion anfallen.
+
+Dazu verwenden wir den Chinesischen Restsatz.
+
+Seien $x_1,\ldots,x_k$ paarweise teilerfremde natürliche Zahlen,
+und $y_1,\ldots,y_k$ seien natürliche Zahlen mit $y_i<x_i$.
+Dann gibt es eine natürliche Zahl $z<x_1\cdot x_2 \cdot \ldots \cdot x_k$, so dass
+für alle $i=1,2,\ldots,k$ gilt:
+$y_i = z \bmod x_i$.
+
+
+Der Chinesischen Restsatz kann wie folgt zur Kodierung
+einer Folge $k_0,k_1,\ldots,k_m$ von natürlichen Zahlen verwendet werden.
+
+\begin{enumerate}
+\item bestimme $j=\max(m,k_0,k_1,\ldots,k_m)$ 
+\item die Zahlen $u_0,u_1,\ldots,u_m$ mit $u_i=(i+1)\cdot j! +1$
+sind paarweise teilerfremd, und es gilt $k_i<u_i$
+\item durchlaufe die Zahlen $1,2,\ldots,k_0\cdot k_1\cdot \ldots \cdot k_m$,
+    bis ein $z$ mit $k_i = z \bmod u_i$ gefunden wurde
+\end{enumerate}
+
+Zur Dekodierung dient Gödels $\beta$-Funktion
+$\beta:\N^3\rightarrow \N$ mit
+$$
+\beta(z,c,i) ~ = ~ z \bmod ((i+1)\cdot c +1) \ \ .
+$$
+Für die nach obiger Methode kodierten $k_i$ gilt $k_i=\beta(z,j!,i)$.
+Die $\beta$-Funktion ist repräsentierbar in $\mathrm{S}$ 
+durch folgende Formel $Bt(x_1,x_2,x_3,x_4)$.
+$$
+x_4<(x_3'\cdot x_2)' \wedge (\exists w ~ x_1=w\cdot(x_3'\cdot x_2)'+x_4) \ \ .
+$$
+Der Term $(x_3'\cdot x_2)'$ repräsentiert $(i+1)\cdot c +1$ (also $u_i$).
+Der Teil $x_4<(x_3'\cdot x_2)'$ stellt die Forderung $k_i<u_i$ sicher.
+Der Teil $(\exists w ~ x_1=w\cdot(x_3'\cdot x_2)'+x_4)$ stellt
+damit $k_i = z \bmod u_i$ sicher.
+
+Wir werden nun die Repräsentation der $\beta$-Funktion benutzen,
+um durch Rekursion entstandene Funktionen zu repräsentieren.
+
+Sei $f:\N^{k+1}\rightarrow\N$ aus $g:\N^k\rightarrow \N$ und 
+$h:\N^{k+2}\rightarrow \N$ mittels Rekursion entstanden,
+\begin{eqnarray*}
+f(x_1,\ldots,x_n,0) & = & g(x_1,\ldots,x_n) \\
+f(x_1,\ldots,x_n,y+1) & = & h(y,f(x_1,\ldots,x_n,y), (x_1,\ldots,x_n))
+\end{eqnarray*}
+$g$ und $h$ seien durch $\gamma(x_1,\ldots,x_{n+1})$ und 
+$\delta(x_1,\ldots,x_{n+3})$ repräsentierbar.
+Man kann sich die Berechnung von $f(k_1,\ldots,k_n,m)$ 
+mittels folgendem \glqq Programm\grqq\xspace vorstellen.
+\begin{quote}
+$v_0 := g(k_1,\ldots,k_n)$ \\
+für $i:=1,2,\ldots,m$ wiederhole\\
+$\{$ \\
+\rule{10mm}{0mm} $v_i:=h(i-1,v_{i-1},k_1,\ldots,k_n)$ \\
+$\}$
+\end{quote}
+Dann ist $f(k_1,\ldots,k_n,m)=v_m$.
+
+Wir betrachten die vom Programm berechnete
+Zahlenfolge $v_0,v_1,\ldots,v_m$
+kodiert als Zahl $z$ mit $v_i=\beta(z,c,i)$.
+Dann gilt (umgangssprachlich ausgedrückt)
+$$
+\beta(z,c,0)=g(k_1,\ldots,k_n) ~ \wedge ~
+(\forall i: ~ i<m \rightarrow \beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\ldots,k_n))
+$$
+Daraus entwickeln wir nun die Formel, die die
+Funktion $f$ repräsentiert.
+
+$\beta(z,c,0)=g(k_1,\ldots,k_n)$ wird ausgedrückt durch
+$(\exists w ~ Bt(z,c,0,w) \wedge \gamma(x_1,\ldots,x_n,w)$.
+Dabei sind $z$ und $c$ Variablensymbole, die
+genau die durch die Kodierung intendierten Werte annehmen sollen.
+
+$\beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\ldots,k_n)$ wird ausgedrückt durch
+$(\exists u ~ \exists v ~ Bt(z,c,i,u) \wedge Bt(z,c,i',v) \wedge \delta(i,u,x_1,\ldots,x_n,v))$.
+
+Schließlich muss noch ausgedrückt werden, 
+dass $f(k_1,\ldots,k_n,m)=\beta(z,c,m)$ ist.
+Das geschieht durch $Bt(z,c,x_{n+1},x_{n+2})$.
+
+Insgesamt erhalten wir folgende Formel zur Repräsentation von $f$.
+
+$
+\begin{array}{rcl}
+\exists z ~ \exists c & & (\exists w ~ Bt(z,c,0,w) \wedge \gamma(x_1,\ldots,x_n,w)) \\
+& \wedge & (\forall i: ~ i<m \rightarrow \beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\ldots,k_n)) \\
+& \wedge & Bt(z,c,x_{n+1},x_{n+2}) 
+\end{array}
+$
+
+
+\begin{satz}
+Jede primitiv rekursive Funktion ist in $\mathrm{S}$ repräsentierbar.
+\end{satz}
+
+
+\begin{korol}
+Jedes primitiv rekursive Prädikat ist in $\mathrm{S}$ repräsentierbar.
+\end{korol}
+
+
+
+
+
+
 
 \clearpage
 \appendix
