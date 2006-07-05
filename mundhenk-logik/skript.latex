@@ -207,7 +207,7 @@
 \makeatother
 
 \newcommand*{\Lvdash}{\xvdash[\mathrm{L}]{}}
-\newcommand*{\Svdash}{\xvdash[S]{}}
+\newcommand*{\Svdash}{\xvdash[\mathrm{S}]{}}
 \newcommand*{\Mmodels}{\xmodels[\scriptscriptstyle\mathcal{M}]{}}
 
 % Umdefinierung von \vdash und \models, damit die Striche länger sind.
@@ -1634,26 +1634,23 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
       $\mathcal{A}\Lvdash \phi$.
 
      \item[IV:] Für jede Belegung $\mathcal{B}$ der Größe
-      $\abs{\mathcal{B}}=\abs{\mathcal{A}}$ gilt $\mathcal{B} \Lvdash\phi$.
+      $\abs{\mathcal{B}}=k$ gilt $\mathcal{B} \Lvdash\phi$.
 
      \item[IS:] Sei $\mathcal{B}$ eine Belegung der Größe $k-1$.
       Dann gibt es eine Variable $A_{l}$ in $\mathcal{A}$, die nicht von
       $\mathcal{B}$ belegt wird. Nach Induktionsvorraussetzung gilt
       $\mathcal{B}\cup\{A_{l}\} \Lvdash \phi$ und $B\cup\{\neg A_{l}\}
       \Lvdash \phi$. Mit dem Deduktionstheorem folgt
-      \begin{gather*}
-        \mathcal{B} \Lvdash A_{l} \rightarrow \phi \quad\text{und}\quad
-           \mathcal{B} \Lvdash \neg A_{l} \rightarrow \phi
-      \end{gather*}
-
-      Mit \autoref{lem:7} $(A_{l} \rightarrow \phi)\rightarrow
-      ((\neg A_{l} \rightarrow\phi)\rightarrow\phi)$ und zweimal modus
-      ponens folgt $\mathcal{B} \Lvdash \phi$.
+      $\mathcal{B} \Lvdash A_{l} \rightarrow \phi$ und
+      $\mathcal{B} \Lvdash \neg A_{l} \rightarrow \phi$. Wendet man
+      zweimal den modus ponens auf die Instanz von \autoref{lem:7}
+      $(A_{l} \rightarrow \phi)\rightarrow ((\neg A_{l} \rightarrow\phi)
+      \rightarrow\phi)$ an, folgt $\mathcal{B} \Lvdash \phi$.
     \end{mdescription}
   \end{proof}
 \end{satz}
 
-\begin{satz}[Vollständigkeit der Theorie $\mathbf{\mathrm{L}}$]
+\begin{satz}[Vollständigkeit der Theorie $\mathbf{\mathrm{L}}$]\label{satz:4}
   Wenn $\phi$ eine aussagenlogische Tautologie ist, dann ist $\phi$ ein
   Theorem von $\mathrm{L}$, d.\,h. $\Lvdash \phi$.
 
@@ -1663,19 +1660,20 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
 \end{satz}
 
 \begin{description}
- \item[Fazit:] Korrektheit und Vollständigkeit von $\mathrm{L}$:
+ \item[Fazit:] Aufgrund der Korrektheit (\autoref{satz:1}) und
+  Vollständigkeit (\autoref{satz:4}) von $\mathrm{L}$ ergibt sich:
   \begin{center}
     $\phi$ ist eine aussagenlogische Tautologie \gdw $\Lvdash
     \phi$.
   \end{center}
   \glqq Tautologie\grqq\xspace ist ein semantischer Ausdruck und
-  \glqq $\Lvdash$\grqq\xspace ist ein syntaktischer Ausdruck
+  \glqq $\Lvdash$\grqq\xspace ist ein syntaktischer Ausdruck.
 \end{description}
 
 \section{Resolution}
 
 Die \emph{Resolution} dient zum Nachweis der Unerfüllbarkeit von
-Formeln. Eine Formel $\phi$ heißt unerfüllbar, falls $\phi$ unter jeder
+Formeln. Eine Formel $\phi$ heißt \emph{unerfüllbar}, falls $\phi$ unter jeder
 passenden Belegung $\mathcal{A}$ den Wert $\mathcal{A}(\phi)=f$ hat. Den
 Nachweis einer Tautologie erhält man über die Beziehung: $\alpha$ ist
 eine Tautologie \gdw $\neg\alpha$ ist unerfüllbar. Zum Beispiel ist die
@@ -1693,12 +1691,12 @@ Formel $\neg(A\rightarrow(B\rightarrow A))$ unerfüllbar.
 Die Resolution arbeitet mit Formeln in konjunktiver Normalform:
 \begin{enumerate}
  \item Ein \emph{Literal} ist eine Variable oder eine negierte Variable
-  (z.\,B. $A, \neg A$).
+  (z.\,B. $A$ oder $\neg A$).
 
-  Für Literal $\ell$ bezeichnet $\overline{\ell}$ die Negation von $\ell$
+  Für ein Literal $\ell$ bezeichnet $\bar{\ell}$ die Negation von $\ell$
   mit aufgelöster Doppelnegation.
-  Für $\ell=A$ ist $\overline{\ell}=\neg A$,
-  und für  $\ell=\neg A$ ist $\overline{\ell}=A$.
+  Für $\ell=A$ ist $\bar{\ell}=\neg A$,
+  und für  $\ell=\neg A$ ist $\bar{\ell}=A$.
 
  \item Eine \emph{Klausel} ist eine Disjunktion von Literalen (z.\,B.
   $A\vee B\vee \neg C \vee\neg E$).
@@ -1725,6 +1723,7 @@ Die Resolution arbeitet mit Formeln in konjunktiver Normalform:
       \neg \bigvee \bigwedge \alpha = \bigwedge \neg \bigwedge \alpha =
          \bigwedge \bigvee \neg\alpha
     \end{gather*}
+    ~ % Das Leerzeichen ist notwendig, da ntheorem sonst kein \qed setzt.
   \end{proof}
 \end{satz}
 
@@ -1802,13 +1801,13 @@ Dann erfüllt $\cA_{\ell}$ auch die Klauselmenge,
 die man wie folgt aus $S$ erhält:
 \begin{enumerate}
  \item Entferne jede Klausel aus $S$, die $\ell$ enthält, und
- \item entferne das Literal $\overline{\ell}$
+ \item entferne das Literal $\bar{\ell}$
   aus den verbliebenen Klauseln.
 \end{enumerate}
 Die so konstruierte Klauselmenge wird mit $S^{\ell}$ bezeichnet.
 Formal definiert sieht das so aus:
 \begin{gather*}
-  S^{\ell} = \{C-\{\overline{\ell}\}|C\in S\text{ und }\ell\not\in C\}.
+  S^{\ell} = \{C-\{\bar{\ell}\}|C\in S\text{ und }\ell\not\in C\}.
 \end{gather*}
 
 Für
@@ -1833,26 +1832,26 @@ $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
 
 \begin{lemma}\label{ALogik-Sell}
   Sei $S$ eine Klauselmenge und $\ell$ ein Literal.
-  Wenn $S^{\ell}$ erfüllbar ist oder $S^{\overline{\ell}}$ erfüllbar ist,
+  Wenn $S^{\ell}$ erfüllbar ist oder $S^{\bar{\ell}}$ erfüllbar ist,
   dann ist auch $S$ erfüllbar.
 \end{lemma}
 
 \begin{proof}
   Sei $S^{\ell}$ erfüllbar,
   und $\cA$ sei ein Modell von $S^{\ell}$.
-  Dann ist $\cB=(\cA-\{\overline{\ell}\})\cup\{\ell\}$
-  ebenfalls Modell von $S^{\ell}$, da weder $\ell$ noch $\overline{\ell}$
+  Dann ist $\cB=(\cA-\{\bar{\ell}\})\cup\{\ell\}$
+  ebenfalls Modell von $S^{\ell}$, da weder $\ell$ noch $\bar{\ell}$
   in einer Klausel in $S^{\ell}$ vorkommt.
   Da jede Klausel in $S$ entweder
   (1) in $S^{\ell}$ vorkommt
   oder
-  (2) aus einer Klausel in $S^{\ell}$ durch Hinzufügen von $\overline{\ell}$
+  (2) aus einer Klausel in $S^{\ell}$ durch Hinzufügen von $\bar{\ell}$
   entsteht
   oder
   (3) $\ell$ enthält, ist $\cB$ auch Modell von $S$.
 
-  Ist $S^{\overline{\ell}}$ erfüllbar, dann kann entsprechend
-  gezeigt werden, dass $\cB'=(\cA-\{{\ell}\})\cup\{\overline{\ell}\}$
+  Ist $S^{\bar{\ell}}$ erfüllbar, dann kann entsprechend
+  gezeigt werden, dass $\cB'=(\cA-\{{\ell}\})\cup\{\bar{\ell}\}$
   Modell von $S$ ist.
 \end{proof}
 
@@ -1868,11 +1867,11 @@ die Ausgangsmenge erfüllbar.
 
 \begin{defini}[Resolvent]
   Sei $C_1$ eine Klausel, die das Literal $\ell$ enthält,
-  und $C_2$ sei eine Klausel, die das Literal $\overline{\ell}$
+  und $C_2$ sei eine Klausel, die das Literal $\bar{\ell}$
   enthält.
   Dann heißt die Klausel
   \begin{gather*}
-    R=\big(C_1-\{\ell\})\cup(C_2-\{\overline{\ell}\}\big)
+    R=\big(C_1-\{\ell\})\cup(C_2-\{\bar{\ell}\}\big)
   \end{gather*}
   \emph{Resolvent} der Klauseln $C_1$ und $C_2$ (nach Literal $\ell$).
   \index{Resolvent}
@@ -1903,10 +1902,10 @@ $\{B, \lneg B\}$ gebildet werden (und keine anderen).
   und sei $\cA$ erfüllt $C_1$ und $C_2$
   (d.\,h. $\cA\cap C_1\not=\emptyset$ und $\cA\cap C_2\not=\emptyset$).
   Ist $\ell\not\in\cA$, dann ist $\cA\cap(C_1-\{\ell\})\not=\emptyset$;
-  ist $\overline{\ell}\not\in\cA$,
-  dann ist $\cA\cap(C_2-\{\overline{\ell}\})\not=\emptyset$.
+  ist $\bar{\ell}\not\in\cA$,
+  dann ist $\cA\cap(C_2-\{\bar{\ell}\})\not=\emptyset$.
   Da einer dieser beiden Fälle eintreten muss,
-  ist $\cA\cap((C_1-\{\ell\})\cup(C_2-\{\overline{\ell}\}))\not=\emptyset$.
+  ist $\cA\cap((C_1-\{\ell\})\cup(C_2-\{\bar{\ell}\}))\not=\emptyset$.
   Also wird $R$ von $\cA$ erfüllt.
 \end{proof}
 
@@ -2043,7 +2042,7 @@ beweisen.
 \index{Resolutionsmethode!Vollständigkeit der}
 Dazu überlegen wir zunächst anhand eines Beispiels,
 wie man aus Herleitungen der leeren Klausel aus $S^{\ell}$ und
-aus $S^{\overline{\ell}}$ eine Herleitung der
+aus $S^{\bar{\ell}}$ eine Herleitung der
 leeren Klausel aus $S$ konstruieren kann.
 
 Sei die Klauselmenge $S$ beispielsweise gegeben als
@@ -2093,21 +2092,21 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
 
 \begin{lemma}\label{lemma-vollst-resolution}
   Ist $S^{\ell}$ widerlegbar,
-  dann ist $\Box$ oder $\{\overline{\ell}\}$ aus $S$ herleitbar.
+  dann ist $\Box$ oder $\{\bar{\ell}\}$ aus $S$ herleitbar.
 \end{lemma}
 
 \begin{proof}
   Sei $S^{\ell}$ widerlegbar.
   Dann gibt es eine Herleitung $C_1,\ldots,C_m$ von $\Box$ aus $S^{\ell}$.
-  Wir fügen das entfernte Literal $\overline{\ell}$
+  Wir fügen das entfernte Literal $\bar{\ell}$
   in die Herleitung von $\Box$ aus $S^{\ell}$ auf folgende Weise ein:
   Für $1\leq i\leq m$ definieren wir Klauseln $C'_i$ durch
   \begin{gather*}
     C_i' =
        \begin{cases}
          C_i &\text{falls~} C_i\in S\\
-         C_i\cup\{\overline{\ell}\} & \text{falls~}
-         C_i\cup\{\overline{\ell}\}\in S \text{~und~} C_i\not\in S\\
+         C_i\cup\{\bar{\ell}\} & \text{falls~}
+         C_i\cup\{\bar{\ell}\}\in S \text{~und~} C_i\not\in S\\
          C &\text{falls $C_i$ Resolvent von $C_a$ und $C_b$ nach $\ell'$
          ist}\\
          &\text{\hspace{5mm} wobei $C$ Resolvent von $C'_a$ und $C'_b$ nach
@@ -2115,9 +2114,9 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
        \end{cases}
   \end{gather*}
 
-  Da $C'_i\in\big\{C_i,C_i\cup\{\overline{\ell}\}\big\}$
+  Da $C'_i\in\big\{C_i,C_i\cup\{\bar{\ell}\}\big\}$
   und $C_m=\Box$ ist, ist  $C'_1,\ldots,C'_m$ eine
-  Herleitung von $\Box$ oder $\{\overline{\ell}\}$ aus $S$.
+  Herleitung von $\Box$ oder $\{\bar{\ell}\}$ aus $S$.
 \end{proof}
 
 \index{Resolutionsmethode!Vollständigkeit der}
@@ -2142,19 +2141,19 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
 
   {Induktionsschluss:}
   $S$ enthalte $n+1$ Variablen und sei unerfüllbar.
-  Dann sind auch $S^{\ell}$ und $S^{\overline{\ell}}$
+  Dann sind auch $S^{\ell}$ und $S^{\bar{\ell}}$
   unerfüllbar. (\autoref{ALogik-Sell}).
-  Nach IV sind $S^{\ell}$ und $S^{\overline{\ell}}$ widerlegbar.
+  Nach IV sind $S^{\ell}$ und $S^{\bar{\ell}}$ widerlegbar.
   Nach obigem \autoref{lemma-vollst-resolution} ist
   (1) $\Box$ aus $S$ herleitbar
-  oder (2) $\{\ell\}$ und $\{\overline{\ell}\}$ sind aus $S$ herleitbar.
+  oder (2) $\{\ell\}$ und $\{\bar{\ell}\}$ sind aus $S$ herleitbar.
   Im Fall (1) haben wir bereits die Widerlegbarkeit von $S$ gezeigt.
   Im Fall (2)
-  ist $\Box$ Resolvent von $\{\ell\}$ und $\{\overline{\ell}\}$.
+  ist $\Box$ Resolvent von $\{\ell\}$ und $\{\bar{\ell}\}$.
   Deshalb lässt sich aus den Herleitungen von
-  $\{\ell\}$ und $\{\overline{\ell}\}$
+  $\{\ell\}$ und $\{\bar{\ell}\}$
   ergänzt um einen weiteren Resolutionsschritt,
-  mit dem $\Box$ aus $\{\ell\}$ und $\{\overline{\ell}\}$ resolviert wird,
+  mit dem $\Box$ aus $\{\ell\}$ und $\{\bar{\ell}\}$ resolviert wird,
   eine Herleitung von $\Box$ aus $S$ konstruieren.
   Also ist $S$ widerlegbar.
 \end{proof}
@@ -4191,11 +4190,11 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
     (also $\Svdash \neg \alpha_{=}[x_1/\overline{n}, x_2/\overline{m}]$)
   \end{itemize}
 
-  Die Relation $<$ ist repräsentierbar in $\mathrm{S}$ durch $x_{1} < x_{2}$
+  Die Kleinerrelation $<$ ist repräsentierbar in $\mathrm{S}$ durch $x_{1} < x_{2}$
   (steht für   $\exists z\colon z\ne0\wedge x_{1}+z=x_{2}$).
 
   Seien $n_{1},n_{2}\in\N$.
-  \begin{enumerate}
+  \begin{faelle}
    \item $n_{1}<n_{2}$. Dann gibt es ein $b\in\N$ mit $n_1+b=n_2$.
     Es ist $\Svdash \exists z\colon z\ne0 \wedge\overline{n_{1}}+z=\overline{n_{2}}$
     zu beweisen
@@ -4224,11 +4223,15 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
       \begin{align*}
         (1)\quad &\overline{n_{2}} < \overline{n_{1}} &\text{wie oben}\\
         (2)\quad &\overline{n_{2}} < \overline{n_{1}} \vee
-           \overline{n_{1}} = \overline{n_{2}} & \text{Disjunktionsregel}\\
-        \todo{hier fehlt was}
+           \overline{n_{1}} = \overline{n_{2}} & \text{Disjunktionsregel}
       \end{align*}
     \end{enumerate}
-  \end{enumerate}
+
+    Also gilt: Wenn $n_{1}\not< n_{2}$, dann $\Svdash \overline{n_{2}}<
+    \overline{n_{1}}\vee \overline{n_{1}}=\overline{n_{2}}$. Daraus folgt
+    (mit einigem Aufwand) $\Svdash\neg (\overline{n_{1}} <
+    \overline{n_{2}})$
+  \end{faelle}
 \end{bsp}
 
 \begin{defini}
@@ -5891,12 +5894,13 @@ und $(f)^{\mathcal{M}}(t) = f(t)$ für jedes $t$ in der Grundmenge.
 Prädikatensymbole werden entsprechend der Belegung der aussagenlogischen
 Variablen interpretiert.
 
-Variablenbelegung von $s$:
-\begin{tabular}{c|cc}
+Variablenbelegung von $s$:\hspace{1cm}
+\begin{tabular}[t]{c|cc}
   $z$ & $x$ & $y$\\
   \hline
   $s(z)$ & $x$ & $y$
 \end{tabular}
+
 Jedes Variablensymbol wird in $s$ durch sich selbst interpretiert. Nun
 gilt: $s$ erfüllt $\alpha$ \gdw $\beta$ ist wahr unter $B$. Weil $\beta$
 falsch ist unter $B$, ist $\mathcal{M}$ kein Modell von $\alpha$. Also
@@ -5907,7 +5911,7 @@ ist $\alpha$ nichtgültigt und folglich gilt $\not\vdash\alpha$.
 Beweisen Sie das Theorem (f): $\Svdash t=0+t$
 
 Wir zeigen $\Svdash x=0+x$ mittels Induktion über $x$
-\begin{description}
+\begin{mdescription}
  \item[IA:]
   \begin{align*}
     (1)\quad& 0+0 = 0&\text{(S5')}\\
@@ -5933,7 +5937,7 @@ Wir zeigen $\Svdash x=0+x$ mittels Induktion über $x$
 
   Aus dem Induktionsanfang und Induktionsschluss folgt mit Axiom~S9 $\Svdash
   (\forall x\colon x=0+x)$. Mit der Regel~RA4 ergibt sich $\Svdash t=0+t$.
-\end{description}
+\end{mdescription}
 
 \section{Blatt 11}
 \subsection*{Aufgabe 1}
@@ -5956,7 +5960,7 @@ Rerpäsentation ist:
   $\Svdash t=t$ link finden:}
   \begin{align*}
     (1)\quad & \overline{n_{1}} = \overline{n_{1}}\\
-    \vdots & \vdots\\
+    \vdots\quad & \vdots\\
     (k)\quad & \overline{n_{k}} = \overline{n_{k}}\\
     (k+1)\quad & \overline{0} = \overline{0}\\
     (k+2)\quad & \overline{n_{1}} = \overline{n_{2}}\wedge
@@ -5985,20 +5989,27 @@ Rerpäsentation ist:
   $(\forall x_{k+1} \ldots \forall y\colon (x_{k+1} = 0\wedge y=0)
   \rightarrow x_{+1} = y)$
   \begin{align*}
-    \todo{hier fehlt was}
+    (1)\quad & x_{k+1} = 0\wedge y=0 &\text{Hypothese}\\
+    (2)\quad & x_{k+1} = 0 &\text{Konjunktionsregel}\\
+    (3)\quad & y=0&\text{Konjunktionsregel}\\
+    (4)\quad & x_{k+1} = y &\text{Transitiv. und Symm. von $=$}
   \end{align*}
 \end{enumerate}
 
 \subsection*{Aufgabe 2}
 Beweisen Sie, dass die Konstanten-Funktion $C_{i}\colon\N\rightarrow\N$
 mit $C_{i}(n) =i$ (streng) repräsentierbar ist.
-
 \begin{gather*}
   x_{1} = x_{1} \wedge \ldots x_{k}=x_{k} \wedge x_{k+1} = \overline{m}
 \end{gather*}
+
 \begin{enumerate}[(1)]
  \item Für $C_{m}^{k}(n_{1},\ldots,n_{k})= m$ gilt
-  \todo{hier fehlt was}
+  $\Svdash (m_{1}=n_{1}\wedge\ldots \wedge n_{k}=n_{k} \wedge
+  \overline{m}=\overline{m})$
+ \item $\Svdash(\exists_{1} x_{k+1}\colon
+  \overline{n_{1}}=\overline{n_{1}} \wedge\ldots
+  \overline{n_{k}}=\overline{n_{k}} \wedge x_{k+1}=\overline{m}$
 \end{enumerate}
 
 \subsection*{Aufgabe 3}
