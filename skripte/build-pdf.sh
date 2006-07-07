@@ -92,7 +92,7 @@ if ! grep -iq "^[[:space:]]*%[[:space:]]*entspricht[[:space:]]*vorlage:[[:space:
 fi
 
 echo "I: check for bad latex..."
-rubber-info --warnings $src | grep nag
+rubber-info --warnings $src | grep -E '(nag|onlyamsmath)'
 
 # Todo: eigene Überprüfungen machen
 #   + keine \newcommand oder \renewcommand nach \begin{document}

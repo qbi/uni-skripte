@@ -3,7 +3,7 @@
 
 <h1>Hinweise zur Form</h1>
 
-<ul><li>Alle Dokumente sollten als sich PDF und PostScript mit
+<ul><li>Alle Dokumente sollten sich als PDF und PostScript mit
   <a href="http://www.pps.jussieu.fr/~beffara/soft/rubber/">rubber</a>
   übersetzen lassen</li>
 
