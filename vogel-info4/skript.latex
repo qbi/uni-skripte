@@ -3,13 +3,26 @@
 %   * Algorithmen in eine eigene Umgebung und einheitlich formatieren
 %   * einen Abstract -- Kurzzusammenfassung des Inhalts
 
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
 
 \usepackage{tabularx}
 \usepackage{longtable}
 \usepackage{ifthen}
 
-\usepackage{index}
+\usepackage{makeidx}
 \usepackage[final]{graphicx}
 \usepackage{color}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
@@ -17,19 +30,18 @@
 % \usepackage{nicefrac}
 
 % Schrift, die als serifen-Schrift (normale Text) verwendet wird
-\usepackage{times}		% Times
-% \usepackage{lmodern}		% Latin Modern
+\usepackage{lmodern}		% Latin Modern
 % \usepackage{type1ec}		% cm-super
-
-% Schrift, die für serifenlose Schrift (\textsf{}) verwendet wird
-\usepackage{helvet}
-
-% T1-Schriften verwenden -- besser für PDFs
-\usepackage[T1]{fontenc}
+\usepackage[T1]{fontenc}        % T1-Schriften verwenden -- besser für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
 
 \usepackage[intlimits,leqno]{amsmath}
-\usepackage{amscd}
-\usepackage{amssymb}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
 \usepackage[thmmarks,hyperref]{ntheorem}
 \usepackage{xspace}
 \usepackage{slashbox}
@@ -37,9 +49,10 @@
 \usepackage{paralist}
 \usepackage{ngerman}
 \usepackage{svn}
-\usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
-                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
 %\usepackage{wasysym}  % \lightning
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -71,7 +84,6 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
-\newcommand*{\proofautorefname}{Beweis}
 \newcommand*{\faktautorefname}{Fakt}
 \renewcommand*{\subsectionautorefname}{Abschnitt}
 \renewcommand*{\subsubsectionautorefname}{Abschnitt}
@@ -191,40 +203,45 @@
 
 \clearpage
 \chapter*{Vorwort}
-{\itshape
 
-  Dieses Skript ist im Rahmen des
-  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
-  "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
-  entstanden und wird im Rahmen dieses Projekts weiter betreut. Das
-  Skript ist nach bestem Wissen und Gewissen entstanden. Denoch
-  garantiert weder der auf der Titelseite genannte Dozent, noch die
+% entspricht Vorlage: 91
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
   Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
   und dessen Folgen wird von keiner der genannten Personen eine Haftung
-  übernommen. Es steht jeder Person frei, dieses Skript zu lesen, zu
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
   verändern oder auf anderen Medien verfügbar zu machen, solange ein
-  Verweis die Internetadresse
-  \url{http://www.minet.uni-jena.de/~joergs/skripte/} des Projekts
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
   enthalten ist.
 
   Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
-  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist unter
-  \url{http://www.minet.uni-jena.de/~joergs/skripte/pdf/} verfügbar.
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
 
   Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
-  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder
-  selbst einzupflegen -- einfach eine eMail an die
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
   \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
   \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
-  sind unter der oben genannten Internetadresse des Projekts verfügbar.
+  sind unter der oben genannten Internetadresse verfügbar.
 
   Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
-  haben vielmals danken:
+  haben, vielmals danken:
   \begin{itemize}
    \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
     \texttt{<joerg@alea.gnuu.de>}} (2005)
   \end{itemize}
-}
+\end{itshape}
 
 \chapter{Berechenbarkeit}
 \section{Was ist ein Algorithmus?}
@@ -425,7 +442,7 @@ Es sei $\Sigma$ ein Alphabet. Dann bezeichnet
 \begin{align*}
   \Sigma^{0} &:= \{\lambda\}\\
   \Sigma^{1} &:= \Sigma\\
-  \Sigma^{n+1} &:= \{ wx: w\in\Sigma^{n},  x\in\Sigma \}\\
+  \Sigma^{n+1} &:= \{ wx\colon w\in\Sigma^{n},  x\in\Sigma \}\\
   \Sigma^{\ast} &= \bigcup_{n=0}^{\infty} \Sigma^{n}\\
   \Sigma^{+} &:= \Sigma^{\ast}\setminus \{\lambda\}
 \end{align*}
@@ -440,9 +457,9 @@ das Wort $w^{R}=x_{m}x_{m-1}\ldots x_{1}$ als \highl{Spiegelwort}.
 
 Man bezeichnet $L\subseteq \Sigma^{\ast}$ als \highl{formale Sprache}.
 Für zwei Sprachen $L_{1},L_{2}\subseteq \Sigma^{\ast}$ ist die
-\highl{Konkaternation} $L_{1}\cdot L_{2} := \{ u\cdot v: u\in L_{1}, v\in
+\highl{Konkaternation} $L_{1}\cdot L_{2} := \{ u\cdot v\colon u\in L_{1}, v\in
 L_{2}\}$. Für eine Sprache $L\subseteq \Sigma^{\ast}$ ist die
-\highl{Spiegelsprache} $L^{R}$ definiert durch $\{w^{R}: w\in L\}$.
+\highl{Spiegelsprache} $L^{R}$ definiert durch $\{w^{R}\colon w\in L\}$.
 
 Für ein Wort $w\in\Sigma^{\ast}$ sind die \highl{Potenzen} von $w$
 gleichermaßen definiert:
@@ -487,7 +504,7 @@ die \highl{Kleene-Hülle} von $L$.
 Wir definieren für Wörter $w\in \Sigma_{bool}^{\ast}$ der Form
 $x_{1}\ldots x_{n}$ die Funktion
 \begin{gather*}
-  No_{2}(w): \Sigma_{bool}^{\ast} \rightarrow \N,
+  No_{2}(w)\colon \Sigma_{bool}^{\ast} \rightarrow \N,
   w \mapsto \sum_{i=1}^{n}x_{i} 2^{n-i}
 \end{gather*}
 
@@ -501,7 +518,7 @@ Für Wörter $w\in\Sigma_{dezi}^{\ast}$ definieren wir analog:
 und die \highl{Dezimaldarstellung} $dezi(n)$ als das kürzeste Wort $w$
 mit $No_{10}(w) := n$.
 
-Eine Abbildung $f:\Sigma^{\ast} \rightarrow \Delta^{\ast}$ heißt
+Eine Abbildung $f\colon\Sigma^{\ast} \rightarrow \Delta^{\ast}$ heißt
 \highl{Homomorphismus} von $\Sigma^{\ast}$ in $\Delta^{\ast}$ \gdwdef für
 alle Wörter $u,v\in\Sigma^{\ast}$ gilt: $f(u\cdot v) = f(u)\cdot f(v)$.
 
@@ -652,7 +669,7 @@ $Q\cap\Gamma=\emptyset$ (dies ist für die Definition einer Konfiguration
 
 \subsection{Beispiele für Turing-Maschinen}
 \begin{bsp}\label{bsp:1}
-  $L=\{w\in\{a,b\}^{\ast} : w^{R}=w\}$ ist die Menge aller
+  $L=\{w\in\{a,b\}^{\ast} \colon w^{R}=w\}$ ist die Menge aller
   \highl{Palindrome} über $\{a,b\}$.
 
   Ziel: Konstruktion einer Turing-Maschine $M$, die $L$ im folgenden Sinne erkennt:
@@ -769,7 +786,7 @@ wobei $x_{m},\ldots,x_{0}\in\{0,\ldots,b-1\}$ und $x_{m}\not=0$ sind.
 
 Schreibweise: $bnaer(n) = x_{m}x_{m-1}\ldots x_{2}x_{1}x_{0}$
 
-$bnaer : \N \rightarrow \{0,1,\ldots,b-1\}^{\ast}$ ist eine eindeutige,
+$bnaer \colon \N \rightarrow \{0,1,\ldots,b-1\}^{\ast}$ ist eine eindeutige,
 aber nicht bijektive Abbildung.
 
 speziell: $b=2$ mit den Ziffern $\{0,1\}$ heißt binär. z.\,B.: $bin(17)
@@ -789,10 +806,10 @@ Ziffern $\{1,2,\ldots,b\}$
 
 Schreibweise: $bad(m) = y_{n}y_{n-1}\ldots y_{0}$, $bad(0) = \lambda$.
 
-Die Abbildung $bad : \N\rightarrow\{1,2,\ldots,b\}^{\ast}$ ist eine
+Die Abbildung $bad \colon \N\rightarrow\{1,2,\ldots,b\}^{\ast}$ ist eine
 Bijektion.
 
-speziell: $b=2$ dyadisch; $dya: \N \rightarrow \{1,2\}^{\ast}$ ist
+speziell: $b=2$ dyadisch; $dya\colon \N \rightarrow \{1,2\}^{\ast}$ ist
 injektiv und surjektiv. z.\,B.: $dya(17) = 1121$
 
 \section{Turing-Berechenbarkeit}
@@ -801,7 +818,7 @@ $\Box,\#\in\Gamma, \Delta\subseteq\Gamma\setminus\{\Box\},
 \Sigma\subseteq \Gamma\setminus\{\Box,\#\}$ und $n>0$.
 
 Eine Turing-Maschine $M$ \highl{berechnet} eine ($n$-stellige) Funktion
-$f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
+$f\colon\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
 \begin{enumerate}
  \item Für $(w_{1},w_{2},\ldots,w_{n})\in \bigl(\Sigma^{\ast}\bigr)^{n}$
   sei $f$ definiert und für die Startkonfiguration\\
@@ -818,13 +835,13 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
 \end{enumerate}
 
 \begin{defini}
-  Eine \highl{Wortfunktion} $f: \bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow
+  Eine \highl{Wortfunktion} $f\colon \bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow
   \Delta^{\ast}$ heißt \highl{Turing-berechenbar} \gdwdef es eine
   Turing-Maschine $M$ gibt, die $f$ berechnet.
 \end{defini}
 
 \begin{defini}\label{def:1}
-  Eine \highl{Zahlenfunktion} $g:\N^{n}\rightarrow\N$ heißt
+  Eine \highl{Zahlenfunktion} $g\colon\N^{n}\rightarrow\N$ heißt
   \highl{Turing-berechenbar} \gdwdef $g$ bei dyadischer
   Codierung $f_{g}$ ($f_{g}$ ist eine Wortfunktion $\{1,2\}^{\ast}
   \rightarrow \{1,2\}^{\ast}$) Turing-brechenbar ist, d.\,h.
@@ -840,8 +857,8 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
   \highl{charakteristische Funktion} $\chi_{L}$ Turing-berechenbar ist
   \begin{gather*}
     \chi_{L}(w) = \begin{cases}
-		 1&:w\in L\\
-		 0&:w\not\in L
+		 1&\colon w\in L\\
+		 0&\colon w\not\in L
 	       \end{cases}
   \end{gather*}
 \end{defini}
@@ -853,8 +870,8 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
   Turing-berechenbar ist
   \begin{gather*}
     \chi_{L}^{p}(w) = \begin{cases}
-			1&: w\in L\\
-			\ndef&: w\not\in L
+			1&\colon w\in L\\
+			\ndef&\colon w\not\in L
 		      \end{cases}
   \end{gather*}
 \end{defini}
@@ -862,7 +879,7 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
 \begin{defini}\label{def:4}
   Eine Sprache $L\subseteq\Sigma^{\ast}$ heißt \highl{Turing-aufzählbar}
   \gdwdef eine total definierte Turing-berechenbare
-  Funktion $f:\Sigma^{\ast} \rightarrow_{t}\Sigma^{\ast}$ existiert, so dass
+  Funktion $f\colon\Sigma^{\ast} \rightarrow_{t}\Sigma^{\ast}$ existiert, so dass
   $f(\Sigma^{\ast}) = L$.
 \end{defini}
 
@@ -871,8 +888,8 @@ $f:\bigl(\Sigma^{\ast}\bigr)^{n} \rightarrow \Delta^{\ast}$, falls gilt:
   \begin{gather*}
     f(w) =
        \begin{cases}
-         w & :w\in L\\
-         u & :w\not\in L
+         w & \colonw\in L\\
+         u & \colonw\not\in L
        \end{cases}
   \end{gather*}
   $u$ ist dabei ein bekanntes festes Wort aus $L$. Dies könnte z.\,B.
@@ -906,7 +923,7 @@ Als berechenbare Funktionen werden auch solche angesehen, die nicht
   Überführungsfunktion, obwohl $q_{F}$ nie erreicht wird.
 
   $M$ berechnet die \highl[Funktion!nirgends definierte]{"`nirgends definierte"' Funktion}
-  $f:\Sigma^{\ast} \rightarrow\Sigma^{\ast}$
+  $f\colon\Sigma^{\ast} \rightarrow\Sigma^{\ast}$
   \begin{align*}
     f(w) = \ndef &&\forall w\in\Sigma^{n}
   \end{align*}
@@ -915,7 +932,7 @@ Als berechenbare Funktionen werden auch solche angesehen, die nicht
 \end{bsp}
 
 \subsection{Wortfunktionen}
-Die Abbildung $bad: \N\rightarrow\{1,2,\ldots,b\}^{\ast}$ (für eine
+Die Abbildung $bad\colon \N\rightarrow\{1,2,\ldots,b\}^{\ast}$ (für eine
 Basis $b>1$) aus \autoref{sec:bad} ist eine Bijektion zwischen den Zahlen und den Wörten.
 Diese Bijektion erlaubt eine natürliche Zahl $n$ mit dem Wort
 $bad(n)$ und schließlich die Menge $\N$ mit $\{1,2,\ldots,b\}^{\ast}$
@@ -946,21 +963,21 @@ $\N$ identifiziert werden.
 \end{bsp}
 
 Wir haben in \autoref{def:1} die Festlegung getroffen:
-Eine Zahlenfunktion $g:\N^{n} \rightarrow\N$ heißt
+Eine Zahlenfunktion $g\colon\N^{n} \rightarrow\N$ heißt
 Turing-berechenbar \gdwdef die Wortunktion $f$
 Turing-berechenbar ist:
 \begin{gather*}
-  f: \big(\{1,2\}^{\ast}\big)^{n} \rightarrow \{1,2\}^{\ast}, f(y_{1},\ldots,y_{n}) =
+  f\colon \big(\{1,2\}^{\ast}\big)^{n} \rightarrow \{1,2\}^{\ast}, f(y_{1},\ldots,y_{n}) =
   dya\Bigl(g\bigl(dya^{-1}(y_{1}), \ldots,dya^{-1}(y_{n}) \bigr)\Bigr)
 \end{gather*}
 
 Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
 \begin{defini}
-  Eine Zahlenfunktion $g:\N^{n}\rightarrow\N$ heißt
+  Eine Zahlenfunktion $g\colon\N^{n}\rightarrow\N$ heißt
   \highl{Turing-berechenbar} \gdwdef zwei natürliche
   Zahlen $b_{1},b_{2} >1$ und eine Turing-berechenbare Funktion
   \begin{gather*}
-    h: (\{1,\ldots,b_{1}\}^{\ast})^{n} \rightarrow
+    h\colon (\{1,\ldots,b_{1}\}^{\ast})^{n} \rightarrow
     \{1,\ldots,b_{2}\}^{\ast}, (z_{1}, \ldots,z_{n}) \mapsto
     b_{2}ad\Bigl( g \bigl(b_{1}ad^{-1}(z_{1}), \ldots,
     b_{1}ad^{-1}(z_{n}) \bigr) \Bigr)
@@ -1003,11 +1020,11 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
 \begin{bemerk}[Verkettung von Funktionen]
   zur Verkettung von Funktionen:
   \begin{center}
-    \ifpdf\input{verkettung.pdf_t}\else\input{verkettung.eps_t}\fi\\
+    \input{verkettung.pdf_t}\\
     $c = g(b) = g(f(a)) = (f\circ g)(a)$
   \end{center}
 
-  Es gilt: $(a,c) \in f\circ g \gdwdef \exists b\in B:
+  Es gilt: $(a,c) \in f\circ g \gdwdef \exists b\in B\colon
   (a,b)\in f, (b,c)\in g$
 \end{bemerk}
 
@@ -1020,7 +1037,7 @@ Eine "`großzügigere"' Definition der Berechenbarkeit wäre die folgende:
   \TM\index{TM@\TM} ist die \highl[Klasse!Turing-ber.\,Fkt.]{Klasse aller
   Turing-berechenbarer Funktionen}.
   \begin{gather*}
-    \TM = \{f:\N^{n}\rightarrow\N \big| f \text{ ist
+    \TM = \{f\colon\N^{n}\rightarrow\N \big| f \text{ ist
     Turing-berechenbar}\}
   \end{gather*}
 \end{defini}
@@ -1035,13 +1052,13 @@ Funktionen und damit spezielle Formulierungen der Berechenbarkeit.
   $L\subseteq\Sigma^{\ast}$ ist Turing-entscheidbar \gdw
   $\overline{L}=\Sigma^{\ast}\setminus L$ ist Turing-entscheidbar
 
-  \hspace{2cm}\ifpdf\input{t-entsch1.pdf_t}\else\input{t-entsch1.eps_t}\fi
+  \hspace{2cm}\input{t-entsch1.pdf_t}
  \item[2.\,Beobachtung:] Die Sprache
   $L\subseteq\Sigma^{\ast}$ ist Turing-entscheidbar \gdw
   die Sprache $L$ und die Komplementsprache $\overline{L}$
   Turing-semientscheidbar sind.
 
-  \hspace{2cm}\ifpdf\input{t-entsch2.pdf_t}\else\input{t-entsch2.eps_t}\fi
+  \hspace{2cm}\input{t-entsch2.pdf_t}
  \item[3.\,Beobachtung:] Eine Sprache $L\subseteq\Sigma^{\ast}$ ist
   Turing-semientscheidbar \gdw $L$ ist aufzählbar.
 
@@ -1132,7 +1149,7 @@ das "`Gedächtnis"' der Turing-Maschine eingeführt werden:
 
   Wir betrachten die folgende Sprache
   \begin{gather*}
-    L= \{w=w_{1}w_{2}\ldots w_{\abs{w}}: w_{1} \not= w_{j}, j=2,\ldots,\abs{w}\}
+    L= \{w=w_{1}w_{2}\ldots w_{\abs{w}}\colon w_{1} \not= w_{j}, j=2,\ldots,\abs{w}\}
     \subseteq \Sigma^{\ast}
   \end{gather*}
 
@@ -1293,7 +1310,7 @@ das "`Gedächtnis"' der Turing-Maschine eingeführt werden:
 $k$ sei fixiert, $k$-Band-Turing-Maschine
 \begin{mdescription}
  \item[informell:] $k$\,Bänder mit \emph{je} einem Kopf
- \item[formell:] $\delta:Q\times \Gamma^{k} \rightarrow Q\times
+ \item[formell:] $\delta\colonQ\times \Gamma^{k} \rightarrow Q\times
   \Gamma^{k}\times\{L,0,R\}^{k}$
 \end{mdescription}
 
@@ -1305,7 +1322,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
 \end{bemerk}
 
 \begin{bsp}
-  $k=2, L= \{w\in\{a,b\}^{\ast}: w =w^{R}\}$
+  $k=2, L= \{w\in\{a,b\}^{\ast}\colon w =w^{R}\}$
 
   Wir wissen bereits aus \autoref{bsp:1}, dass $L$ Turing-entscheidbar
   durch eine gewöhnliche (1-Band-) Turing-Maschine ist.
@@ -1458,7 +1475,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
   Maschine werden als Knoten in einem Diagramm dargestellt. Die
   Überführungsfunktion mittels bewerteter Kanten.
   \begin{center}
-    \ifpdf\input{transition.pdf_t}\else\input{transition.eps_t}\fi\\
+    \input{transition.pdf_t}\\
     \textit{Die Maschine "`$i:=i+1$"'}
   \end{center}
   Dieser (Mega-)Knoten lässt sich in ein weiteres Transitionsdiagramm
@@ -1469,7 +1486,7 @@ $k$ sei fixiert, $k$-Band-Turing-Maschine
   Eine Turing-Maschine, die testet, ob der Bandinhalt "`0"' ist oder nicht (binäre
   Darstellung)
   \begin{center}
-    \ifpdf\input{transition2.pdf_t}\else\input{transition2.eps_t}\fi\\
+    \input{transition2.pdf_t}\\
     \textit{Die Maschine "`$i=0$"'}
   \end{center}
   Die Anschlüsse für dieses Unterprogramm (Knoten) führen in den
@@ -1484,7 +1501,7 @@ q_{0_{1}}, F_{2})$ realisiert ein hintereinanderschalten von $M_{1}$ und $M_{2}$
 Dabei gilt:
 \begin{gather*}
   \delta = \delta_{1}\cup\delta_{2}\cup\{(q_{1},a) \mapsto (q_{0_{2}},
-  a', 0): q_{1}\in F_{1}, a\in\Gamma_{1}, a'\in\Gamma_{2}\}
+  a', 0)\colon q_{1}\in F_{1}, a\in\Gamma_{1}, a'\in\Gamma_{2}\}
 \end{gather*}
 
 \begin{description}
@@ -1518,7 +1535,7 @@ Dabei gilt:
 \begin{bsp}[while-Schleifen]
   \mbox{}
   \begin{center}
-    \ifpdf\input{while.pdf_t}\else\input{while.eps_t}\fi\\
+    \input{while.pdf_t}\\
     \textit{Maschine "`\algokeyword{while} $i\not=0$
       \algokeyword{do} $M$"'}
   \end{center}
@@ -1545,8 +1562,8 @@ Dabei gilt:
 	 \ndef& $M$\text{ stoppt nicht}
        \end{cases}
   \end{align*}
-  Damit ist $time_{M}: \Sigma^{\ast} \rightarrow \N,
-  space_{M}:\Sigma^{\ast} \rightarrow \N$.
+  Damit ist $time_{M}\colon \Sigma^{\ast} \rightarrow \N,
+  space_{M}\colon\Sigma^{\ast} \rightarrow \N$.
   \begin{align*}
     TIME_{M}(n) &:=
        \begin{cases}
@@ -1568,8 +1585,8 @@ Dabei gilt:
 \end{defini}
 
 \begin{defini}
-  Es sei $t:\N \rightarrow_{t}\N$ und $s:\N\rightarrow_{t}\N$ zwei (total
-  definierte) Zahlenfunktionen. Eine Funktion $f:\N\rightarrow\N$ ist
+  Es sei $t\colon\N \rightarrow_{t}\N$ und $s\colon\N\rightarrow_{t}\N$ zwei (total
+  definierte) Zahlenfunktionen. Eine Funktion $f\colon\N\rightarrow\N$ ist
   \highl{Turing-berechenbar mit der Zeitschranke} $t$ und der
   \highl{Speicherplatzbeschränkung} $s$, falls es eine Turing-Maschine $M_{t}$ und eine
   Turing-Maschine $M_{s}$ gibt, so dass $TIME_{M_{t}} \leq t$ und $SPACE_{M_{s}}\leq s$.
@@ -1594,7 +1611,7 @@ Dabei gilt:
   entschieden werden.
 
   \begin{gather*}
-    \mathcal{P} = \{L: \exists p, p \text{ ist Polynom}, TIME_{M} \leq p\}
+    \mathcal{P} = \{L\colon \exists p, p \text{ ist Polynom}, TIME_{M} \leq p\}
   \end{gather*}
   $\mathcal{P}$ sind alle die Sprachen, die sich von einer Turing-Maschine in
   Polynomialzeit entscheiden lassen.
@@ -1610,7 +1627,7 @@ berechenbar sind, und Schemata, die aus "`einfachen"' Funktionen neue
 "`komplexe"' Funktionen konstruieren, aufbaut.
 
 \begin{bsp}[Modulo-Funktion]\label{bsp:2}
-  $\mod:\N\times\N \rightarrow\N$\\
+  $\mod\colon\N\times\N \rightarrow\N$\\
   $\mod(a,b) =$ Rest bei der ganzzahligen Division von $a$ und $b$\\
   $\mod(a,0) = \mod(0,b) = \mod(0,0) = 0$
 
@@ -1640,7 +1657,7 @@ $B_{n}=\{n-1\}$.
 
 \section{Primitiv-rekursive Funktionen}
 \begin{festl}
-  Wir beschränken uns \obda auf Zahlenfunktionen $f:\N^{k}\rightarrow\N$.
+  Wir beschränken uns \obda auf Zahlenfunktionen $f\colon\N^{k}\rightarrow\N$.
 \end{festl}
 
 \begin{bemerk}
@@ -1655,13 +1672,13 @@ $B_{n}=\{n-1\}$.
       I_{j}^{n}(x_{1},\ldots,x_{n}) = x_{j}
       &&\bigl((x_{1},\ldots,x_{n})\in\N^{n}, n\geq1, 1\leq j\leq n\bigr)
     \end{align*}
-    Die Menge aller Projektionen $\{I_{j}^{n}: n>0, 1\leq j \leq n\}$
+    Die Menge aller Projektionen $\{I_{j}^{n}\colon n>0, 1\leq j \leq n\}$
    \item[Konstanten]
     \begin{align*}
       C_{k}^{n}(x_{1},\ldots,x_{n}) = k
       &&\bigl((x_{1},\ldots,x_{n})\in\N^{n}, n\geq1, k\geq 0)
     \end{align*}
-    Die Menge aller Konstanten $\{C_{k}^{n}: n\geq 1, k\geq 0\}$
+    Die Menge aller Konstanten $\{C_{k}^{n}\colon n\geq 1, k\geq 0\}$
    \item[Nachfolgerfunktion]
     \begin{align*}
       N(x) = x+1 &&(x\in\N)
@@ -1676,9 +1693,9 @@ $B_{n}=\{n-1\}$.
 \end{bemerk}
 
 \begin{defini}[Einsetzungsprinzip]\index{Einsetzungsprinzip}
-  Gegeben seien eine Funktion $h\!:\N^{m}\rightarrow\N$ und eine Menge von
-  Funktionen $g_{i}\!:\N^{n}\rightarrow\N$ ($i=1,\ldots,m$). Die Funktion
-  $f\!:\N^{n}\rightarrow\N$ geht aus den Funktionen $h$ und $g_{i}$ durch
+  Gegeben seien eine Funktion $h\!\colon\N^{m}\rightarrow\N$ und eine Menge von
+  Funktionen $g_{i}\!\colon\N^{n}\rightarrow\N$ ($i=1,\ldots,m$). Die Funktion
+  $f\!\colon\N^{n}\rightarrow\N$ geht aus den Funktionen $h$ und $g_{i}$ durch
   Einsetzung hervor \gdwdef
   \begin{gather*}
     f(x_{1},\ldots,x_{n}) = h(g_{1}(x_{1},\ldots,x_{n}),\ldots,
@@ -1686,7 +1703,7 @@ $B_{n}=\{n-1\}$.
   \end{gather*}
   Schreibweise: $f=SUB^{m}(h; g_{1},\ldots,g_{m})$
 
-  Es sei $F\subseteq\{f:\N^{n}\rightarrow\N, n\geq0\}$ eine Menge von
+  Es sei $F\subseteq\{f\colon\N^{n}\rightarrow\N, n\geq0\}$ eine Menge von
   (Zahlen-)Funktionen. $F$ heißt \highl{abgeschlossen bezüglich des
   Schemas der Einsetzung} \gdwdef jede Funktion, die durch
   Einsetzung von Funktionen aus $F$ hervorgeht, gehört zu $F$.
@@ -1694,7 +1711,7 @@ $B_{n}=\{n-1\}$.
 
 \begin{figure}
   \centering
-  \ifpdf\input{n-einsetzung.pdf_t}\else\input{n-einsetzung.eps_t}\fi
+  \input{n-einsetzung.pdf_t}
   \parbox{10cm}{\caption{$M_{f}$ als Komposition aus $M_{h}$ und
     $M_{g_{1}},\ldots,M_{g_{m}}$ zur Nachbildung des "`Schemas der
     Einsetzung"'}}
@@ -1707,11 +1724,11 @@ $B_{n}=\{n-1\}$.
 \end{bemerk}
 
 \begin{defini}[Schema der primitiven Rekursion]
-  Eine Funktion $f:\N^{n}\rightarrow\N$ geht aus den Funktionen
-  $g:\N^{n-1}\rightarrow\N$ und $h:\N^{n+1}\rightarrow\N$ durch
+  Eine Funktion $f\colon\N^{n}\rightarrow\N$ geht aus den Funktionen
+  $g\colon\N^{n-1}\rightarrow\N$ und $h\colon\N^{n+1}\rightarrow\N$ durch
   \highl{primitive Rekursion} hervor \gdwdef
   \begin{align*}
-    \forall x_{1},\ldots,x_{n-1},y: f(x_{1},\ldots,x_{n-1},0) &=
+    \forall x_{1},\ldots,x_{n-1},y\colon f(x_{1},\ldots,x_{n-1},0) &=
        g(x_{1},\ldots,x_{n-1})\\
     f(x_{1},\ldots,x_{n-1},y+1) &= h(x_{1},\ldots,x_{n-1}, y,
        f(x_{1},\ldots,x_{n-1},y))
@@ -1729,7 +1746,7 @@ $B_{n}=\{n-1\}$.
 \end{bemerk}
 
 \begin{bsp}\label{bsp:7}
-  Die Addition $plus:\N\times\N\rightarrow\N$ geht aus den
+  Die Addition $plus\colon\N\times\N\rightarrow\N$ geht aus den
   Grundfunktionen durch primitive Rekursion und Einsetzung hervor.
   \begin{align*}
     plus(x,0) &= x = I_{1}^{1}(x)\\
@@ -1740,14 +1757,18 @@ $B_{n}=\{n-1\}$.
     plus(x,y+1) &= N\bigl( I_{3}^{3}(x,y,plus(x,y)) \bigr)
   \end{align*}
   $plus(x,y+1)$ lässt sich durch das Schema der Einsetzung
-  $SUB^{1}(N;I^{3}_{3})$ durch $h:\N^{3} \rightarrow N$ ersetzen. Für die
+  $SUB^{1}(N;I^{3}_{3})$ durch $h\colon\N^{3} \rightarrow N$ ersetzen. Für die
   Funktion $plus$ gilt also: $plus = PR\bigl(I_{1}^{1},
   SUB^{1}(N;I_{3}^{3})\bigr)$.
 \end{bsp}
 
 \begin{defini}[primitiv-rekursive Funktionen]
-  Die \highl{Klasse $\Prr$ der primitiv-rekursiven Funktionen} ist die kleinste
-  Klasse von Funktionen $\{f:\N^{n}\rightarrow\N \big| n\geq0\}$ mit folgenden
+  % Das \protect vor dem \Prr ist notwendig, da \index sonst die
+  % Zeichenkette \@Prr in den Indexdatei schreibt, was xindy wiederum
+  % nicht gefällt, da @ eine besondere Bedeutung hat.
+  % http://www.listserv.dfn.de/cgi-bin/wa?A2=ind0205&L=tex-d-l&D=0&T=0&P=29773
+  Die \highl{Klasse $\protect\Prr$ der primitiv-rekursiven Funktionen} ist die kleinste
+  Klasse von Funktionen $\{f\colon\N^{n}\rightarrow\N \big| n\geq0\}$ mit folgenden
   Eigenschaften:
   \begin{enumerate}
    \item Die Grundfunktionen $\mathcal{G}$ liegen in $\Prr$. ($\mathcal{G}\subseteq\Prr$)
@@ -1760,7 +1781,7 @@ $B_{n}=\{n-1\}$.
   \begin{gather*}
     \Prr = \Gamma_{\{SUB,PR\}}(G)
   \end{gather*}
-  Dabei steht $SUB$ für $SUB = \{SUB^{m}:m\in\N\}$
+  Dabei steht $SUB$ für $SUB = \{SUB^{m}\colonm\in\N\}$
 \end{defini}
 
 \begin{bemerk}
@@ -1777,7 +1798,7 @@ F.\,W.\,Ackermann definierte 1928 die folgende Funktion, die total
 definiert und berechenbar ist, aber von der gezeigt wurde, dass sie nicht
 primitiv-rekursiv ist!
 
-Wir benutzen folgende Form: $A:\N^{2}\rightarrow\N$
+Wir benutzen folgende Form: $A\colon\N^{2}\rightarrow\N$
 \begin{align*}
   A(0,y) &:= y+1\\
   A(x+1, 0) &:= A(x,1)\\
@@ -1833,8 +1854,8 @@ Wir benutzen folgende Form: $A:\N^{2}\rightarrow\N$
     konstanter Schachtelungstiefe) erreichen.
 
     \begin{gather}\label{eq:5}
-      A(x+1, y+1) = A(x, A(x+1, y)) = A\big(x, A(x, A(x+1, y-1)) \big) =
-         A\big(x, A\big(x, A(x A(x+1, y-2)) \big) \big)
+      A(x+1, y+1) = A(x, A(x+1, y)) = A\big(x, A(x, A(x+1, y-1)) \big) =\\
+      A\big(x, A\big(x, A(x A(x+1, y-2)) \big) \big)
     \end{gather}
 
     % Idee: Definition einer Folge von Funktionen $f_{n}:
@@ -1907,14 +1928,14 @@ Programmiersprachen mit Schleifen:
 wollen solche Schleifen simulieren
 
 \begin{defini}
-  Es sei $g:\N^{n+1}\rightarrow\N$ eine Funktion mit $n>0$. Die Funktion
-  $f:\N^{n}\rightarrow\N$ entsteht aus $g$ durch das Schema der
+  Es sei $g\colon\N^{n+1}\rightarrow\N$ eine Funktion mit $n>0$. Die Funktion
+  $f\colon\N^{n}\rightarrow\N$ entsteht aus $g$ durch das Schema der
   \highl[mu-Rekursion@$\mu$-Rekursion]{$\mu$-Rekursion} \gdwdef für alle
   $(x_{1},\ldots,x_{n})\in\N^{n}$ gilt:
   \begin{gather*}
     f(x_{1},\ldots,x_{n}) =
     \begin{cases}
-      \min\{t\in\N: g(x_{1},\ldots,x_{n},t)=0\}&
+      \min\{t\in\N\colon g(x_{1},\ldots,x_{n},t)=0\}&
       \text{\parbox[t]{.35\linewidth}{falls ein solches
       $t$ existiert und $\forall 0\leq y\leq t$ $g(x_{1},\ldots,x_{n},y)$
       definiert ist}}\\
@@ -1967,10 +1988,10 @@ als Schleife:\\
   Betragsfunktion primitiv-rekursiv sind.
 
   \begin{gather*}
-    sgn: \N\rightarrow\N; n \mapsto
-       \begin{cases}0&:n=0\\1&:n>0\end{cases}\\
-    exp:\N^{2}\rightarrow\N; (m,n)\mapsto m^{n}; (0,0)\mapsto1\\
-    ab:\N^{2}\rightarrow\N; (m,n)\mapsto \abs{m-n}
+    sgn\colon \N\rightarrow\N; n \mapsto
+       \begin{cases}0&\colonn=0\\1&\colonn>0\end{cases}\\
+    exp\colon\N^{2}\rightarrow\N; (m,n)\mapsto m^{n}; (0,0)\mapsto1\\
+    ab\colon\N^{2}\rightarrow\N; (m,n)\mapsto \abs{m-n}
   \end{gather*}
 
   \begin{align*}
@@ -1998,34 +2019,34 @@ als Schleife:\\
   %   exp(x,y+1) &= x^{y+1} = x^{y}\cdot x
   % \end{align*}
 
-  Damit ist $f:\N^{3}\rightarrow\N$ primitiv-rekursiv
+  Damit ist $f\colon\N^{3}\rightarrow\N$ primitiv-rekursiv
   \begin{align*}
     f(k,m,n) &= \abs{k\cdot m-n}^{sgn(m)}\\
     \intertext{setzen $f$ in $\mu R(f)$ ein:}
     [\mu R(f)](m,n) &=
        \begin{cases}
-	 \mu k(\abs{k\cdot m-n}=0)&: \text{falls ein solches $k$ existiert
+	 \mu k(\abs{k\cdot m-n}=0)&\colon \text{falls ein solches $k$ existiert
 	 und $m\not=0$}\\
-	 \ndef&:\sonst
+	 \ndef&\colon\sonst
        \end{cases}\\
     &= \begin{cases}
-	 \mu k(k\cdot m=n)&: \text{falls ein solches $k$ existiert}\\
-	 \ndef&:\sonst
+	 \mu k(k\cdot m=n)&\colon \text{falls ein solches $k$ existiert}\\
+	 \ndef&\colon\sonst
        \end{cases}\\
     &= \begin{cases}
-	 \frac{n}{m}&: \text{falls $m$ ein Teiler von $n$ ist, $m\not=0$}\\
-	 \ndef&:\sonst
+	 \frac{n}{m}&\colon \text{falls $m$ ein Teiler von $n$ ist, $m\not=0$}\\
+	 \ndef&\colon\sonst
        \end{cases}\\
     &= d(m,n)
   \end{align*}
 \end{bsp}
 
 \begin{bsp}\label{bsp:5}
-  Die Funktion $wurz:\N\rightarrow\N$ ist partiell-rekursiv
+  Die Funktion $wurz\colon\N\rightarrow\N$ ist partiell-rekursiv
   \begin{gather*}
     wurz(n) := \begin{cases}
-		 \sqrt{n}&:\sqrt{n}\in\N\\
-		 \ndef&:\sonst
+		 \sqrt{n}&\colon\sqrt{n}\in\N\\
+		 \ndef&\colon\sonst
 	       \end{cases}
   \end{gather*}
 
@@ -2035,12 +2056,12 @@ als Schleife:\\
     \intertext{Wir bestimmen $\mu R(h)$:}
     [\mu R(h)](m) &=
        \begin{cases}
-	 \mu n(\abs{m-n^{2}}=0)&:\exists n\\
-	 \ndef&:\sonst
+	 \mu n(\abs{m-n^{2}}=0)&\colon\exists n\\
+	 \ndef&\colon\sonst
        \end{cases}\\
     &= \begin{cases}
-	 \sqrt{m}&:\sqrt{m}\in\N\\
-	 \ndef&:\sonst
+	 \sqrt{m}&\colon\sqrt{m}\in\N\\
+	 \ndef&\colon\sonst
        \end{cases}\\
     &= wurz(m)
   \end{align*}
@@ -2048,7 +2069,7 @@ als Schleife:\\
 \end{bsp}
 
 \begin{bsp}\label{bsp:6}
-  Die Funktion $ganzwurz:\N\rightarrow\N$ ist partiell-rekursiv
+  Die Funktion $ganzwurz\colon\N\rightarrow\N$ ist partiell-rekursiv
   \begin{align*}
     ganzwurz(m) = gw(m) = \lfloor\sqrt{m}\rfloor&&(m\in\N)
   \end{align*}
@@ -2148,8 +2169,8 @@ zugehörigen Terme ergibt. Wir definieren nun die folgende Funktion
 \begin{gather*}
   \psi(n) := \phi_{n}(n) +1 =
   \begin{cases}
-    \phi_{n}(n)+1&: \text{falls } \phi_{n}(n)\text{ definiert ist}\\
-    \ndef&:\sonst
+    \phi_{n}(n)+1&\colon \text{falls } \phi_{n}(n)\text{ definiert ist}\\
+    \ndef&\colon\sonst
   \end{cases}
 \end{gather*}
 $\psi$ ist eine berechenbare Funktion, d.\,h. $\psi$ kommt in der Liste
@@ -2158,8 +2179,8 @@ $\psi=\phi_{k}$. Dies führt uns jedoch zu dem Problem:
 \begin{gather*}
   \phi_{k}(k) = \psi(k) = \phi_{k}(k)+1 =
   \begin{cases}
-    \phi_{k}(k)+1&: \text{falls } \phi_{k}(k)\text{ definiert ist}\\
-    \ndef&:\sonst
+    \phi_{k}(k)+1&\colon \text{falls } \phi_{k}(k)\text{ definiert ist}\\
+    \ndef&\colon\sonst
   \end{cases}
 \end{gather*}
 als dessen Konsequenz nur gelten kann, dass $\psi$ an der Stelle $k$ nicht
@@ -2210,10 +2231,10 @@ Funktionen ist nicht aufzählbar und damit ist nach \autoref{sec:5} die
 Menge nicht entscheidbar. Die charakteristisch Funktion der
 allgemein-rekursiven Funktionen ist also nicht berechenbar
 \begin{gather}\label{eq:7}
-  \chi_{\Pa} : \N \rightarrow \N\qquad
-     \chi_{\Pa}(n) = \begin{cases}1: \text{die Turing-Maschine
+  \chi_{\Pa} \colon \N \rightarrow \N\qquad
+     \chi_{\Pa}(n) = \begin{cases}1\colon \text{die Turing-Maschine
                        $TM_{n}$ aus $\PP$ ist total ($\in\Pa$)}\\
-                       0: \text{sonst}
+                       0\colon \text{sonst}
                      \end{cases}
 \end{gather}
 
@@ -2252,7 +2273,7 @@ Ein Beispiel hierzu:
 \end{align*}
 
 Wir fassen alle Zahlen, für die diese Vermutung zutrifft als Menge $B =
-\{n\in\N_{+}: \text{ Vermutung trifft für $n$ zu}\}$ zusammen. Nun ist die
+\{n\in\N_{+}\colon \text{ Vermutung trifft für $n$ zu}\}$ zusammen. Nun ist die
 Frage: Ist $B=\N_{+}$?
 
 Die einmalige Anwendung der Regel entspricht folgender Funktion
@@ -2279,8 +2300,8 @@ Wir definieren nun
 \begin{gather*}
   h(n) =
   \begin{cases}
-    \mu t(g(n,t) = 1) &: \text{ein solches $t$ existiert}\\
-    \ndef &:\sonst
+    \mu t(g(n,t) = 1) &\colon \text{ein solches $t$ existiert}\\
+    \ndef &\colon\sonst
   \end{cases}
 \end{gather*}
 $h$ ist partiell-rekursiv und für den Definitionsbereich gilt: $D_{n}=B$.
@@ -2294,8 +2315,8 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
 \begin{satz}[stückweise definierte Funktionen]
   Es seien folgende Funktionen primitiv-rekursiv
   \begin{align*}
-    f_{1},\ldots,f_{k},f_{k+1}:\N^{n} \rightarrow \N\\
-    \text{und } g_{1},\ldots,g_{k} :\N^{n} \rightarrow \N
+    f_{1},\ldots,f_{k},f_{k+1}\colon\N^{n} \rightarrow \N\\
+    \text{und } g_{1},\ldots,g_{k} \colon\N^{n} \rightarrow \N
   \end{align*}
   und es sei die folgende Bedingung erfüllt: Es gibt \emph{keine} Tupel
   $(x_{1},\ldots,x_{n})\in\N^{n}$ mit der Eigenschaft, dass für jedes
@@ -2303,22 +2324,22 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
   $g_{j}(x_{1},\ldots,x_{n})=0$ (d.\,h. für jedes Tupel ist höchstens
   eine Funktion $g_{i}=0$).
 
-  Dann ist die Funktion $h:\N^{n}\rightarrow\N$ mit
+  Dann ist die Funktion $h\colon\N^{n}\rightarrow\N$ mit
   \begin{gather*}
     h(x_{1},\ldots,x_{n}) =
     \begin{cases}
-      f_{1}(x_{1},\ldots,x_{n}) &: g_{1}(x_{1},\ldots,x_{n})=0\\
-      f_{2}(x_{1},\ldots,x_{n}) &: g_{2}(x_{1},\ldots,x_{n})=0\\
+      f_{1}(x_{1},\ldots,x_{n}) &\colon g_{1}(x_{1},\ldots,x_{n})=0\\
+      f_{2}(x_{1},\ldots,x_{n}) &\colon g_{2}(x_{1},\ldots,x_{n})=0\\
       \vdots\\
-      f_{k}(x_{1},\ldots,x_{n}) &: g_{k}(x_{1},\ldots,x_{n})=0\\
-      f_{k+1}(x_{1},\ldots,x_{n}) &: \sonst
+      f_{k}(x_{1},\ldots,x_{n}) &\colon g_{k}(x_{1},\ldots,x_{n})=0\\
+      f_{k+1}(x_{1},\ldots,x_{n}) &\colon \sonst
     \end{cases}
   \end{gather*}
   primitiv-rekursiv.
 \end{satz}
 
 \begin{satz}[obere Schranken]
-  Es seien $g:\N^{n+1}\rightarrow_{t} \N$ und $h:\N^{n}\rightarrow\N$
+  Es seien $g\colon\N^{n+1}\rightarrow_{t} \N$ und $h\colon\N^{n}\rightarrow\N$
   primitiv-rekursiv. Ferner sei $f=\mu R(g)$ die durch $\mu$-Rekursion
   aus $g$ entstehende Funktion mit der Eigenschaft, dass für alle
   $(x_{1},\ldots,x_{n})\in\N^{n}$ gilt:
@@ -2332,10 +2353,10 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
 \end{satz}
 
 \begin{satz}[Simultane Rekursion]
-  Es seien $g_{1},g_{2}: \N^{n-1}\rightarrow_{t}\N$ und $h_{1},h_{2}:
+  Es seien $g_{1},g_{2}\colon \N^{n-1}\rightarrow_{t}\N$ und $h_{1},h_{2}\colon
   \N^{n+2}\rightarrow_{t}\N$ primitiv-rekursiv.
 
-  Dann sind auch die Funktionen $f_{1},f_{2}:\N^{n}\rightarrow\N$ mit
+  Dann sind auch die Funktionen $f_{1},f_{2}\colon\N^{n}\rightarrow\N$ mit
   \begin{align*}
     f_{1}(x_{1},\ldots,x_{n-1}, 0) &= g_{1}(x_{1},\ldots,x_{n})\\
     f_{2}(x_{1},\ldots,x_{n-1}, 0) &= g_{2}(x_{1},\ldots,x_{n})\\
@@ -2351,10 +2372,10 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
 \begin{satz}[Wertverlaufsfunktionen]
   Es sei $A=\{0,1,\ldots,l\}$ und ferner sei
   $B_{n}\subseteq\{0,\ldots,n-1\}$ mit der Eigenschaft $\abs{B_{n}}=k$.
-  Ferner sei $g_{0},\ldots,g_{l}:\N^{n-1}\rightarrow_{t}\N$ und
-  $h:\N^{n+k}\rightarrow_{t}\N$ primitv-rekursiv.
+  Ferner sei $g_{0},\ldots,g_{l}\colon\N^{n-1}\rightarrow_{t}\N$ und
+  $h\colon\N^{n+k}\rightarrow_{t}\N$ primitv-rekursiv.
 
-  Dann ist auch die Funktion $f:\N^{n} \rightarrow_{t} \N$ mit
+  Dann ist auch die Funktion $f\colon\N^{n} \rightarrow_{t} \N$ mit
   \begin{align*}
     f(x_{1},\ldots,x_{n-1},0) &= g_{0}(x_{1},\ldots,x_{n-1})\\
     \vdots\\
@@ -2373,7 +2394,7 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
   \begin{align*}
     F(0) &= F(1) = 1\\
     F(n+1) &= F(n)+F(n-1)&&n \geq 2\\[1.5ex]
-    A &= \{0,1\}, B_{n}= \{n-2, n-1: n\geq 2\}\\
+    A &= \{0,1\}, B_{n}= \{n-2, n-1\colon n\geq 2\}\\
     F(0) &= F(1) = C_{1}^{0}\\
     F(n+1) &= h(n, F(n), F(n-1))
   \end{align*}
@@ -2403,16 +2424,16 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
       $\mathcal{G}\subseteq\TM$.
      \item Nach \autoref{bem:4} ist $\TM$ abgeschlossen bzgl. der
       Einsetzung:
-      falls $g_{1},\ldots,g_{m}:\N^{n}\rightarrow_{t}\N$ und
-      $h:\N^{m}\rightarrow_{t}\N$ Turing-berechenbar sind, dann ist auch
-      $f:\N^{n}\rightarrow_{t}\N$ mit $f(x_{1},\ldots,x_{n}) =
+      falls $g_{1},\ldots,g_{m}\colon\N^{n}\rightarrow_{t}\N$ und
+      $h\colon\N^{m}\rightarrow_{t}\N$ Turing-berechenbar sind, dann ist auch
+      $f\colon\N^{n}\rightarrow_{t}\N$ mit $f(x_{1},\ldots,x_{n}) =
       h\bigl(g_{1}(x_{1},\ldots,x_{n}),\ldots,
       g_{m}(x_{1},\ldots,x_{n})\bigr)$ Turing-berechenbar!
 
      \item Nach \autoref{bem:5} ist $\TM$ abgeschlossen bzgl. Primitiver-Rekursion,
-      d.\,h. falls $g:\N^{n-1} \rightarrow_{t}\N$ und
-      $h:\N^{n+1}\rightarrow_{t}\N$ Turing-berechenbar sind, dann ist
-      auch $f:\N^{n}\rightarrow\N$ mit
+      d.\,h. falls $g\colon\N^{n-1} \rightarrow_{t}\N$ und
+      $h\colon\N^{n+1}\rightarrow_{t}\N$ Turing-berechenbar sind, dann ist
+      auch $f\colon\N^{n}\rightarrow\N$ mit
       \begin{align*}
 	f(x_{1},\ldots,x_{n-1},0) &= g(x_{1},\ldots,x_{n-1})\\
 	f(x_{1},\ldots,x_{n-1},y+1) &= h\bigl(x_{1},\ldots,x_{n-1}, y,
@@ -2442,8 +2463,8 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
       Die so beschriebene Turing-Maschine berechnet $f$!
 
      \item \TM ist abgeschlossen bzgl. $\mu$-Rekursion, d.\,h. falls
-      $g: \N^{n+1} \rightarrow \N$ Turing-berechenbar ist, dann ist auch
-      $f: \N^{n} \rightarrow \N$ Turing-berechenbar, wobei
+      $g\colon \N^{n+1} \rightarrow \N$ Turing-berechenbar ist, dann ist auch
+      $f\colon \N^{n} \rightarrow \N$ Turing-berechenbar, wobei
       \begin{gather*}
         f(x_{1},\ldots,x_{n}) = \mu t \bigl( g(x_{1},\ldots,x_{n})=0 \bigr)
       \end{gather*}
@@ -2535,14 +2556,14 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
     \begin{align*}
       Z(w, t+1) &= q'\\
       R(w,t+1) &= \begin{cases}
-                   R(w,t) \div m&: \text{nach rechts}\\
-                   R(w,t) - x +x'&: \text{stehenbleiben}\\
-                   \big(R(w,t) - x +x'\big)m+y_{0} &:\text{nach links}
+                   R(w,t) \div m&\colon \text{nach rechts}\\
+                   R(w,t) - x +x'&\colon \text{stehenbleiben}\\
+                   \big(R(w,t) - x +x'\big)m+y_{0} &\colon\text{nach links}
                  \end{cases}\\
       L(w,t+1) &= \begin{cases}
-                   L(w,t)m + x' &: \text{nach rechts}\\
-                   L(w,t)&: \text{stehenbleiben}\\
-                   L(w,t) \div m &:\text{nach links}
+                   L(w,t)m + x' &\colon \text{nach rechts}\\
+                   L(w,t)&\colon \text{stehenbleiben}\\
+                   L(w,t) \div m &\colon\text{nach links}
                   \end{cases}\\
     \end{align*}
 
@@ -2582,20 +2603,20 @@ primitv-rekursive Funktion \help{Woran sieht man das?}
 \end{bemerk}
 Dazu die nun folgende Herleitung.
 
-Es seien $f:\N^{n+1} \rightarrow_{t} \N$ und $g:\N^{n} \rightarrow_{t}
+Es seien $f\colon\N^{n+1} \rightarrow_{t} \N$ und $g\colon\N^{n} \rightarrow_{t}
 \N$ primitiv-rekusiv. Ferner gelte
 \begin{align*}
   \forall (x_{1},\ldots,x_{n})\in\N^{n} \exists y \leq
      q(x_{1},\ldots,x_{n})&&(f(x_{1},\ldots,x_{n})=0)
 \end{align*}
 
-Dann ist eine Funktion $h: \N^{n}\rightarrow\N$ primitiv-rekursiv, wobei
+Dann ist eine Funktion $h\colon \N^{n}\rightarrow\N$ primitiv-rekursiv, wobei
 \begin{gather*}
   h(x_{1},\ldots,x_{n}) = \mu y\bigl( f(x_{1},\ldots,x_{n},y) =0\bigr)
 \end{gather*}
 
 \begin{proof}
-  Hilfsfunktion $h': \N^{n+1} \rightarrow \N$
+  Hilfsfunktion $h'\colon \N^{n+1} \rightarrow \N$
   \begin{align*}
     h'(x_{1},\ldots,x_{n},z) &= \mu y(y\leq z \wedge
        f(x_{0},\ldots,x_{n},y) = 0)\\
@@ -2640,7 +2661,7 @@ und damit
   \begin{gather*}
     f(x_{1},\ldots,x_{n}) = g \big(\mu y(h(x_{1},\ldots,x_{n},y) = 0) \big)
   \end{gather*}
-  mit primitiv-rekursiven Funktionen $g: \N\rightarrow_{t}\N$ und $h:
+  mit primitiv-rekursiven Funktionen $g\colon \N\rightarrow_{t}\N$ und $h\colon
   \N^{n+1} \rightarrow_{t} \N$
 \end{satz}
 
@@ -2649,10 +2670,10 @@ und damit
   Darstellung der Form
   \begin{gather*}
     f = \big\{ \big(g_{1}(t), g_{2}(t), \ldots, g_{n}(t), g_{n+1}(t)
-       \big) : t\in\N \big\}
+       \big) \colon t\in\N \big\}
   \end{gather*}
   mit (einstelligen) primitiv-rekursiven Funktionen
-  $g_{1},\ldots,g_{n+1}: \N \rightarrow_{t}\N$ oder $f$ ist nirgends
+  $g_{1},\ldots,g_{n+1}\colon \N \rightarrow_{t}\N$ oder $f$ ist nirgends
   definitert.
 \end{satz}
 
@@ -2685,11 +2706,11 @@ Grammatiken erzeugen Wörter. Wir wollen aber Funktionen
 berechnen! Eine Grammatik berechnet eine Funktion, indem sie ihren
 Graphen erzeugt.
 
-Es sei $f:\Sigma^{\ast} \rightarrow \Delta^{\ast}$ eine Funktion (die
+Es sei $f\colon\Sigma^{\ast} \rightarrow \Delta^{\ast}$ eine Funktion (die
 durch eine Turing-Maschine berechnet wird). Dann lässt sich eine
 Grammatik konstruieren, die die folgende Sprache erzeugt:
 \begin{gather*}
-  \{ (u,v): u\in\Sigma^{\ast}, v\in\Delta^{\ast} \wedge f(u) = v\}
+  \{ (u,v)\colon u\in\Sigma^{\ast}, v\in\Delta^{\ast} \wedge f(u) = v\}
 \end{gather*}
 Dies ist gerade der Graph von $f$.
 
@@ -2750,11 +2771,11 @@ Startsymbol $S$.
    \item Die von dieser Typ-0-Grammatik $G$ erzeugte
     \highl[Sprache!Typ-0]{Typ-0-Sprache} ist gegeben durch
     \begin{gather*}
-      L(G) := \{ w\in T^{\ast}: S \rightarrow ^{\ast} w\}
+      L(G) := \{ w\in T^{\ast}\colon S \rightarrow ^{\ast} w\}
     \end{gather*}
     Eine Sprache $L$ heißt Typ-0-Sprache \gdwdef eine
     Grammatik $G$ mit $L(G) =L$ exsistiert.
-   \item $CH(0) = \{ L: L\ \text{ist Typ-0-Sprache} \}$ ist die
+   \item $CH(0) = \{ L\colon L\ \text{ist Typ-0-Sprache} \}$ ist die
     \highl[Klasse!Typ-0-Sprachen]{Klasse der Typ-0-Sprachen}.
   \end{enumerate}
 \end{defini}
@@ -2790,7 +2811,7 @@ Startsymbol $S$.
   \end{align*}
 
   \begin{gather*}
-    L(G) = \{ \#\underbrace{a\ldots a}_{2^{i}}\#: i\in\N, i\geq 1\}
+    L(G) = \{ \#\underbrace{a\ldots a}_{2^{i}}\#\colon i\in\N, i\geq 1\}
   \end{gather*}
 \end{bsp}
 
@@ -2920,7 +2941,7 @@ durch \highl{Normalformen}.
       &=\quad RZ \rightarrow Z, &&\text{Regel 7}\\
       &=\quad Z \rightarrow \#,\\
       &=\quad A \rightarrow a \}\\
-      L(G_{1}) &= \{ \#a^{m}\#: m = 2^{n}, n\geq 1\} = L(G)
+      L(G_{1}) &= \{ \#a^{m}\#\colon m = 2^{n}, n\geq 1\} = L(G)
     \end{align*}
    \item Dieser Fall tritt bei unserer Beispielgrammatik nicht auf.
    \item
@@ -3011,7 +3032,7 @@ theoretischer wie aus praktischer Sicht zu allgemein.
 
     Dann gilt:
     \begin{align*}
-      u\in L &\gdw \exists i: M(w_{i}) = u\\
+      u\in L &\gdw \exists i\colon M(w_{i}) = u\\
       &\gdw M'\ \text{stoppt bei Eingabe $u$}\\
       &\gdw M'\ \text{akzeptiert die Eingabe $u$ (mit
          leerem Band und Finalzustand $q_{+}$)}\\
@@ -3029,7 +3050,7 @@ theoretischer wie aus praktischer Sicht zu allgemein.
     $M''$ sei eine so modifizierte Turing-Maschine.
     \begin{align*}
       Start-M''(u) &= q_{0}u_{1}u_{2}\ldots u_{k}\# && u=u_{1}\ldots u_{k}\\
-      Acc_{M''}(u) = \begin{cases}q_{+}&: u\in L\\\ndef&:\sonst\end{cases}
+      Acc_{M''}(u) = \begin{cases}q_{+}&\colon u\in L\\\ndef&\colon\sonst\end{cases}
     \end{align*}
 
     Ziel ist es nun eine Typ-0-Grammatik $G$ zu konstruieren, die
@@ -3085,7 +3106,7 @@ Das Pendant zum vorherigen Satz liefert der nächste:
     Die direkten Nachfolgeableitungen $Succ$\index{Succ@$Succ$} für ein
     $u$ ($S\rightarrow ^{\ast} u$) sind
     \begin{gather*}
-      Succ(u) = \{ v: u\rightarrow v\}
+      Succ(u) = \{ v\colon u\rightarrow v\}
     \end{gather*}
 
     Gründe für $v\in Succ(u)$:
@@ -3123,7 +3144,7 @@ Das Pendant zum vorherigen Satz liefert der nächste:
     \begin{gather*}
       L = \Big( \bigcup_{k=0}^{\infty} Succ^{k}(\{S\}) \Big)\cap T^{\ast}
     \end{gather*}
-    Das heißt $w\in L \gdw w\in T^{\ast} \wedge \exists k:
+    Das heißt $w\in L \gdw w\in T^{\ast} \wedge \exists k\colon
     w\in Succ^{k}(\{S\})$
 
     \highl{markierter Ableitungsbaum} von $G$:
@@ -3326,7 +3347,7 @@ kontextsensitiv ist.
 \end{bsp}
 
 \begin{bsp}
-  Die Menge aller \highl{Palindrome} $PAL = \{w\in\Sigma^{\ast}:
+  Die Menge aller \highl{Palindrome} $PAL = \{w\in\Sigma^{\ast}\colon
   w=w^{R}\}$.
   \begin{align*}
     T &= \{ a,b\}\\
@@ -3357,8 +3378,8 @@ kontextsensitiv ist.
     nach $i$ Ableitungsschritten in das leere Wort überführt werden.
     $A\in M_{i} \gdw A \rightarrow ^{i}\lambda$
     \begin{align*}
-      M_{1} &= \{ A\in N: (A\rightarrow\lambda)\in P\}\\
-      M_{i+1} &= M_{i}\cup \{ B\in N: (B\rightarrow u)\in P\ \text{mit}\ 
+      M_{1} &= \{ A\in N\colon (A\rightarrow\lambda)\in P\}\\
+      M_{i+1} &= M_{i}\cup \{ B\in N\colon (B\rightarrow u)\in P\ \text{mit}\ 
          u\in M_{i}\}
     \end{align*}
     Damit gilt: Für alle $i=1,2,\ldots$ ist stets $M_{i}\subseteq N$.
@@ -3367,8 +3388,8 @@ kontextsensitiv ist.
 
     Damit können wir folgende Regelmenge $P'$ definieren:
     \begin{multline*}
-      P' = P\setminus \{ A\rightarrow \lambda: (A\rightarrow\lambda)\in
-         P\} \cup \{ C\rightarrow u': u'\not=\lambda \wedge \exists
+      P' = P\setminus \{ A\rightarrow \lambda\colon (A\rightarrow\lambda)\in
+         P\} \cup \{ C\rightarrow u'\colon u'\not=\lambda \wedge \exists
          (C\rightarrow u)\in P \wedge\\
       \text{$u'$ entsteht durch weglassen min. eines Symbols aus $M_{k}$} \}
     \end{multline*}
@@ -3651,19 +3672,19 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
     höchstens die Länge $n$ haben und in höchstens $m$ Schritten aus $S$
     ableitbar sind.
     \begin{gather*}
-      Z_{n}(m) = \{ x\in(N\cup T)^{\ast}: \abs{x}\leq n \wedge S
+      Z_{n}(m) = \{ x\in(N\cup T)^{\ast}\colon \abs{x}\leq n \wedge S
          \rightarrow ^{k} x, k\leq m\}
     \end{gather*}
     Induktive Definition von $Z_{n}(m)$:
     \begin{align*}
       Z_{n}(0) &:= \{S\}\\
-      Z_{n}(m+1) &:= Z_{n}(m) \cup \{ x\in(N\cup T)^{\ast}: \abs{x}\leq
+      Z_{n}(m+1) &:= Z_{n}(m) \cup \{ x\in(N\cup T)^{\ast}\colon \abs{x}\leq
          n \wedge \exists y\in Z_{n}(m)\ \text{mit}\ y\rightarrow x\}
     \end{align*}
 
     Dann gilt:
     \begin{gather*}
-      \{ w\in L(G): \abs{w}\leq n\} \subseteq \bigcup_{m\geq0} Z_{n}(m)\\
+      \{ w\in L(G)\colon \abs{w}\leq n\} \subseteq \bigcup_{m\geq0} Z_{n}(m)\\
          \intertext{und es gilt:}
       Z_{n}(0) \subseteq Z_{n}(1) \subseteq \ldots \subseteq Z_{n}(m)
          \subseteq Z_{n}(m+1) \subseteq \ldots
@@ -3710,7 +3731,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
    \item $\abs{vx}\geq 1$ ($v\not=\lambda$ oder $x\not=\lambda$)
     \label{enu:pumpcf1}
    \item $\abs{vwx} \leq n$ \label{enu:pumpcf2}
-   \item $\forall k\geq 1: uv^{k}wx^{k}y\in L$ \label{enu:pumpcf3}
+   \item $\forall k\geq 1\colon uv^{k}wx^{k}y\in L$ \label{enu:pumpcf3}
   \end{enumerate}
 
   \begin{proof}
@@ -3720,7 +3741,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 
     \begin{figure}
       \centering
-      \ifpdf\input{pumpcf-ablbaum.pdf_t}\else\input{pumpcf-ablbaum.eps_t}\fi
+      \input{pumpcf-ablbaum.pdf_t}
       \caption{Allgemeiner Ableitungsbaum einer kontextfreien Grammatik.}
       \label{fig:4}
     \end{figure}
@@ -3802,7 +3823,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 \end{satz}
 
 \begin{bsp}
-  Wir wissen bereits (aus der Übung), dass $L=\{a^{n}b^{n}c^{n}:
+  Wir wissen bereits (aus der Übung), dass $L=\{a^{n}b^{n}c^{n}\colon
   n\in\N\}$ eine kontextsensitive Sprache ist. Nehmen wir nun an, $L$ sei
   auch eine kontextfreie Sprache. Dann gilt das Pamping-Lemma
   (\autoref{satz:pumpcf}) und es gibt eine natürliche Zahl $n$, so dass
@@ -3852,7 +3873,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 
     \begin{figure}
       \centering
-      \ifpdf\input{pumpreg-ablbaum.pdf_t}\else\input{pumpreg-ablbaum.eps_t}\fi
+      \input{pumpreg-ablbaum.pdf_t}
       \caption{Ableitungsbäume für linkslineare Grammatiken sehen wie
         eine Raupe mit der Haarlänge 1 aus \todo{Die Zeichnung könnte
       noch flacher sein}}
@@ -3864,7 +3885,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 \end{satz}
 
 \begin{bsp}
-  Wir wissen, dass $L=\{a^{n}b^{n}: n\in\N\}$ eine kontextfreie Sprache
+  Wir wissen, dass $L=\{a^{n}b^{n}\colon n\in\N\}$ eine kontextfreie Sprache
   ist. Treffen wir nun die Annahme, $L$ sei regulär.
 
   Dann würde das Pumping-Lemma für reguläre Sprachen
@@ -3887,7 +3908,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 
 \begin{bsp}
   \begin{gather}\label{eq:3}
-    L_{1} = \{a^{m^{2}}: m\in \N\}\qquad w\in L_{1} \gdw
+    L_{1} = \{a^{m^{2}}\colon m\in \N\}\qquad w\in L_{1} \gdw
        w\in\{a\}^{\ast} \wedge \abs{w}\ \text{ist Quadratzahl}
   \end{gather}
   Prüfen wir, ob diese Sprache regulär ist und nehmen dazu an, sie sei es.
@@ -3918,7 +3939,7 @@ Typ-$i$ ($i=0,\ldots,3$) gilt
 
 \begin{bsp}
   \begin{gather}\label{eq:4}
-    L_{2} = \{a^{p}: p\ \text{ist Primzahl}\}\qquad w\in L_{2} \gdw
+    L_{2} = \{a^{p}\colon p\ \text{ist Primzahl}\}\qquad w\in L_{2} \gdw
        w\in\{a\}^{\ast} \wedge \abs{w}\ \text{ist Primzahl}
   \end{gather}
 
@@ -4001,7 +4022,7 @@ Was sind dann Turing-Maschine vom Typ-$i$ ($i=1,2,3$)?
 
 Wir hatten im Beweis von \autoref{satz:5} für eine Typ-0-Grammatik in
 Normalform $G=(N,T,S,P)$ den markierten Ableitungsbaum mit $Succ(u) = \{
-v: u\rightarrow v\ \text{gemäß Regel}\ (p\rightarrow q)\in P\}$
+v\colon u\rightarrow v\ \text{gemäß Regel}\ (p\rightarrow q)\in P\}$
 definiert. Typisch dabei ist, dass aus einer Situation \emph{mehrere}
 Nachfolgersituationen entstehen. Anders war es bisher mit
 Turing-Maschinen, bei denen aus einer Situation \emph{genau eine}
@@ -4043,7 +4064,7 @@ entspricht dem markierten Ableitungsbaum der Grammatik.)
 
 Formal gesprochen heißt das, die Überführungsfunktion
 \begin{gather*}
-  \delta: Q\times \Gamma \rightarrow Q\times\Gamma\times\{L,R,0\}
+  \delta\colon Q\times \Gamma \rightarrow Q\times\Gamma\times\{L,R,0\}
 \end{gather*}
 wird durch eine \highl{Überführungsrelation}
 \begin{gather*}
@@ -4052,7 +4073,7 @@ wird durch eine \highl{Überführungsrelation}
 \end{gather*}
 ersetzt. Diese Relation lässt sich ihrerseits als Funktion schreiben:
 \begin{gather*}
-  \delta: Q\times \Gamma \rightarrow \mathfrak{P}(Q\times\Gamma\times\{L,R,0\})
+  \delta\colon Q\times \Gamma \rightarrow \mathfrak{P}(Q\times\Gamma\times\{L,R,0\})
 \end{gather*}
 
 Eine \highl[Turing-Maschine!nichtdeterministische]{nichtdeterministische
@@ -4079,7 +4100,7 @@ dieses Labyrinth abzulaufen:
 Gemäß der Obelix-Stategie akzeptiert eine nichtdeterministische
 Turing-Maschine eine Eingabe $w$, wenn sie auf einem Pfad erfolgreich war:
 \begin{gather*}
-  L(M) = \{w\in \Sigma^{\ast}: Start-Konf_{M}(w) \vdash^{\ast} K_{acc}\}
+  L(M) = \{w\in \Sigma^{\ast}\colon Start-Konf_{M}(w) \vdash^{\ast} K_{acc}\}
 \end{gather*}
 
 Zur \hyperref[enu:4]{Frage \ref*{enu:4}} folgendes: Gemäß der Asterix-Strategie lässt
@@ -4129,21 +4150,22 @@ $O(2^{t})$.
   $M=(Q,\Sigma,\Gamma,\delta,q_{0},F)$ bezeichnet man eine
   Turing-Maschine mit der Überführungsfunktion
   \begin{gather*}
-    \delta: Q\times \Gamma \rightarrow \mathfrak{P}(Q\times\Gamma\times\{L,R,0\})
+    \delta\colon Q\times \Gamma \rightarrow \mathfrak{P}(Q\times\Gamma\times\{L,R,0\})
   \end{gather*}
 
   Die von einer nichtdeterministischen Turing-Maschine akzeptierte Sprache
   beinhaltet alle Wörter, für die es einen akzeptierenden Berechnungspfad
   gibt.
   \begin{gather*}
-    L(M) = \{w\in\Sigma^{\ast}: Start-Konf_{M}(w) \vdash^{\ast} Konf_{acc}\}
+    L(M) = \{w\in\Sigma^{\ast}\colon Start-Konf_{M}(w) \vdash^{\ast} Konf_{acc}\}
   \end{gather*}
 \end{defini}
 
 \begin{auflistung}
-  $\mathcal{DTM}$\index{DTM@$\mathcal{DTM}$}& Klasse der Sprachen, die
+  % Wegen dem \protect siehe weiter oben bei \protect\Prr
+  $\mathcal{DTM}$\index{DTM@$\protect\mathcal{DTM}$}& Klasse der Sprachen, die
      durch eine deterministische Turing-Maschine akzeptiert werden\\
-  $\mathcal{NTM}$\index{NTM@$\mathcal{NTM}$}& Klasse der Sprachen, die
+  $\mathcal{NTM}$\index{NTM@$\protect\mathcal{NTM}$}& Klasse der Sprachen, die
      durch eine nichtdeterministische Turing-Maschine akzeptiert werden\\
   $CH(0)$& Klasse der Sprachen, die durch eine Grammatik vom Typ-0
      erzeugt werden
@@ -4205,9 +4227,9 @@ Die Arbeit einer \highl[Turing-Maschine!nichtdeterministische]
 \begin{bsp}[Erfüllbarkeitsproblem]\index{SAT@$SAT$}
   Es sei $F$ eine Formel mit den Atomen $A_{1},\ldots,A_{n}$. $F$ gehört
   zu $SAT$ \gdw es eine Belegung
-  $\beta:\{A_{1},\ldots,A_{n}\} \mapsto \{0,1\}$ mit $I_{\beta}(F)=1$ gibt.
+  $\beta\colon\{A_{1},\ldots,A_{n}\} \mapsto \{0,1\}$ mit $I_{\beta}(F)=1$ gibt.
   \begin{gather*}
-    SAT = \{ F: F\ \text{ist Formel in konjunktiver Normalform und $F$
+    SAT = \{ F\colon F\ \text{ist Formel in konjunktiver Normalform und $F$
        ist erfüllbar}\} \in NP
   \end{gather*}
 \end{bsp}
@@ -4227,7 +4249,7 @@ Wäre $SAT\in P$, so wäre $P=NP$. Damit ist $SAT$ ein
 
 \begin{bsp}[Hamiltonkreis-Problem]\listlinebreak
   \begin{gather*}
-    HC = \{ G: G=(E,V) \ \text{einfacher ungerichter Graph und $G$
+    HC = \{ G\colon G=(E,V) \ \text{einfacher ungerichter Graph und $G$
        besitzt Hamiltonkreis}\}
   \end{gather*}
 
@@ -4314,7 +4336,7 @@ Ein Zwischenergebnis $uAv$ einer Linksableitung steht für:\\
 
 Die Überführungsfunktion der entsprechenden Turing-Maschine:
 \begin{gather*}
-  \delta: Q\times \underbrace{(\Sigma\cup\{\triangleright,
+  \delta\colon Q\times \underbrace{(\Sigma\cup\{\triangleright,
      \triangleleft\})}_{=\Sigma'} \times
      \underbrace{(\Gamma\cup\{\ast\})}_{=\Gamma'} \rightarrow Q\times
      \Gamma'\times\{R,0\}
@@ -4322,7 +4344,7 @@ Die Überführungsfunktion der entsprechenden Turing-Maschine:
 
 Für einen Kellerautomaten sieht die Überführungsfunktion etwas anders aus:
 \begin{gather*}
-  \delta: Q\times(\Sigma'\cup\{\lambda\})\times\Gamma' \rightarrow
+  \delta\colon Q\times(\Sigma'\cup\{\lambda\})\times\Gamma' \rightarrow
      Q\times\Gamma'
 \end{gather*}
 
@@ -4351,7 +4373,7 @@ zwei Regeltypen der Grammatik:
 
   die Überführungsfunktion
   \begin{gather*}
-    \delta: Q\times (\Sigma\cup \{\triangleright,\triangleleft\}\cup\{\lambda\})
+    \delta\colon Q\times (\Sigma\cup \{\triangleright,\triangleleft\}\cup\{\lambda\})
        \times \underbrace{(\Gamma\cup\{\ast\})}_{=\Gamma'} \rightarrow
        \mathfrak{P}(Q\times \Gamma')
   \end{gather*}
@@ -4389,13 +4411,13 @@ akzeptieren kann:
 \begin{itemize}
  \item entweder mit Finalzuständen
   \begin{gather*}
-    L(K) = \{w\in\Sigma^{\ast}: (q_{0}, w\triangleleft, \ast) \vdash^{\ast} (q,
+    L(K) = \{w\in\Sigma^{\ast}\colon (q_{0}, w\triangleleft, \ast) \vdash^{\ast} (q,
        \triangleleft, \ast\gamma) \wedge q\in F\}
   \end{gather*}
 
  \item oder mit einem leeren Keller
   \begin{gather*}
-    L_{\lambda}(K) = \{w\in\Sigma^{\ast}: (q_{0}, w\triangleleft, \ast)
+    L_{\lambda}(K) = \{w\in\Sigma^{\ast}\colon (q_{0}, w\triangleleft, \ast)
        \vdash^{\ast} (q,\triangleleft,\ast) \wedge q\in F\}
   \end{gather*}
 \end{itemize}
@@ -4408,7 +4430,7 @@ akzeptieren kann:
 
 \begin{bsp}
   \begin{gather*}
-    L =\{ww^{R}: w\in\{0,1\}^{\ast}\}
+    L =\{ww^{R}\colon w\in\{0,1\}^{\ast}\}
   \end{gather*}
 
   \underline{Idee:} Wir lesen die Eingabe und schreiben $w$ auf das
@@ -4453,20 +4475,20 @@ akzeptieren kann:
   \end{auflistung}
   und der Überführungsfunktion
   \begin{gather*}
-    \delta: Q\times \Sigma \rightarrow \mathfrak{P}(Q)
+    \delta\colon Q\times \Sigma \rightarrow \mathfrak{P}(Q)
   \end{gather*}
 
   Diese Überführungsfunktion $\delta$ wird fortgesetzt zu einer
   \highl[Überführungsfunktion!erweiterte]{erweiterten
     Überführungsfunktion} $\delta'$
   \begin{gather*}
-    \delta': \mathfrak{P}(Q)\times\Sigma^{\ast} \rightarrow
+    \delta'\colon \mathfrak{P}(Q)\times\Sigma^{\ast} \rightarrow
        \mathfrak{P}(Q)\\
     \delta'(Q', wa) = \bigcup_{q\in Q'} \delta\big(\delta(q,w), a\big)
   \end{gather*}
 
   $L\subseteq\Sigma^{\ast}$ wird von $M$ akzeptiert \gdw
-  $L=\{w\in\Sigma^{\ast}: \delta'(Q_{0},w)\cap F\not=\emptyset\}$
+  $L=\{w\in\Sigma^{\ast}\colon \delta'(Q_{0},w)\cap F\not=\emptyset\}$
 \end{defini}
 
 \chapter{Ausblick in die Theorie der Entscheidbarkeit}
@@ -4480,8 +4502,8 @@ Widerholung: \todo{Links finden}
   \gdw $\chi_{L}^{P}$ ist berechenbar
 
   \begin{gather*}
-    \chi_{L}(w)=\begin{cases}1&:w\in L\\0&:w\not\in L\end{cases} \qquad
-       \chi_{L}^{P}(w) = \begin{cases}1&:w\in L\\\ndef&:\sonst\end{cases}
+    \chi_{L}(w)=\begin{cases}1&\colonw\in L\\0&\colonw\not\in L\end{cases} \qquad
+       \chi_{L}^{P}(w) = \begin{cases}1&\colonw\in L\\\ndef&\colon\sonst\end{cases}
   \end{gather*}
  \item $L\subseteq\Sigma^{\ast}$ heißt aufzählbar \gdw es
   eine total definierte und berechenbare Funktion $f$ mit
@@ -4494,15 +4516,15 @@ Hilfe eines Algorithmus' berechenbare Funktion ist berechenbar.
 \section{Charakterisierung der aufzählbaren Mengen}
 
 \begin{defini}
-  Es sei $M$ eine Turing-Maschine, die die Funktion $Res_{M}:
+  Es sei $M$ eine Turing-Maschine, die die Funktion $Res_{M}\colon
   \Sigma^{\ast}\rightarrow\Delta^{\ast}$ berechnet.
 
-  Die Menge $D_{M}=\{u \in \Sigma^{\ast}: \text{die Maschine $M$ stoppt
+  Die Menge $D_{M}=\{u \in \Sigma^{\ast}\colon \text{die Maschine $M$ stoppt
   bei Eingabe $u$}\}$ heißt
   \highl{Haltebereich} der Turing-Maschine $M$. ($D_{M}$ ist gerade der
   Definitionsbereich der Funktion $Res_{M}$)
 
-  Die Menge $W_{M}=\{v\in\Delta^{\ast}: \exists u\in\Sigma^{\ast}:
+  Die Menge $W_{M}=\{v\in\Delta^{\ast}\colon \exists u\in\Sigma^{\ast}\colon
   v=Res_{M}(u)\}$ heißt \highl{Ergebnisbereich} der Turing-Maschine $M$.
   ($W_{M}$ ist gerade der Wertebereich der Funktion $Res_{M}$)
 \end{defini}
@@ -4591,7 +4613,7 @@ Hilfe eines Algorithmus' berechenbare Funktion ist berechenbar.
             \begin{align*}
               w\in L &\Rightarrow \chi_{L}^{P}(w)=1\\
               &\Rightarrow Res_{M}(w) = 1\\
-              &\Rightarrow \exists t_{0}\in\N: M\ \text{liefert}\ 
+              &\Rightarrow \exists t_{0}\in\N\colon M\ \text{liefert}\ 
                  Res_{M}(w)=1 \text{ in } t_{0} \text{ Takten}
             \end{align*}
 
@@ -4651,7 +4673,7 @@ Für ein beliebiges $w\in A^{\ast}$ ist es entscheidbar, ob eine
 Turing-Maschine $TM$ mit $w=w_{TM}$ existiert. Das Alphabet $A$ hängt
 offensichtlich von $TM$ ab (da $\Gamma\subseteq A$). Es sei
 $A=\{b_{1},\ldots,b_{j}\}$. Verwenden deshalb $B=\{0,1\}$ und definieren
-die folgende Abbildung $\beta : A^{\ast}\rightarrow B^{\ast}$ durch
+die folgende Abbildung $\beta \colon A^{\ast}\rightarrow B^{\ast}$ durch
 \begin{align*}
   \beta(\lambda) &= \lambda\\
   \beta(b_{i}) &= 10^{i}&&(1\leq i \leq j)\\
@@ -4694,7 +4716,7 @@ Wir haben damit auch zwei Gödelisierungen der aufzählbaren Mengen:\\
 Wir betrachten Turing-Maschinen mit $\{0,1\}\subseteq \Sigma$.
 % Es sei $B=\{0,1\}$
 \begin{defini}
-  $H:=\{bw_{TM}11n: \text{ die Turing-Maschine $TM$ stoppt bei Eingabe
+  $H:=\{bw_{TM}11n\colon \text{ die Turing-Maschine $TM$ stoppt bei Eingabe
   $w$}\}$ ($H\subseteq\{0,1\}^{\ast}$) Die Wortmenge $H$ heißt
   \highl{Halteproblem} für Turing-Maschinen.
 \end{defini}
