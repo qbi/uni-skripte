@@ -1242,23 +1242,6 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   \end{proof}
 \end{satz}
 
-\begin{lemma}\label{lem:3}
-  $\Lvdash \beta \rightarrow \neg\neg\beta$
-  \begin{align*}
-    (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
-       \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\big) &
-       \text{A3}\\
-    (2)\quad & \neg\neg\neg\beta \rightarrow \neg\beta &
-       \text{\autoref{lem:2}}\\
-    (3)\quad & (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
-       \neg\neg\beta &\text{MP 2,1}\\
-    (4)\quad & \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta)
-       &\text{A1}\\
-    (5)\quad & \beta \rightarrow \neg\neg\beta
-       &\text{\autoref{bsp:2} mit 4,3}\\
-  \end{align*}
-\end{lemma}
-
 \begin{lemma}\label{lem:4}
   Um zu beweisen, dass $\Lvdash \neg\alpha \rightarrow
   (\alpha \rightarrow \beta)$ gilt, zeigen wir zuerst $\neg\alpha, \alpha \Lvdash \beta$:
@@ -1283,6 +1266,23 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   \begin{gather*}
     \Lvdash \neg\alpha \rightarrow (\alpha \rightarrow \beta).
   \end{gather*}
+\end{lemma}
+
+\begin{lemma}\label{lem:3}
+  $\Lvdash \beta \rightarrow \neg\neg\beta$
+  \begin{align*}
+    (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
+       \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\big) &
+       \text{A3}\\
+    (2)\quad & \neg\neg\neg\beta \rightarrow \neg\beta &
+       \text{\autoref{lem:2}}\\
+    (3)\quad & (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
+       \neg\neg\beta &\text{MP 2,1}\\
+    (4)\quad & \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta)
+       &\text{A1}\\
+    (5)\quad & \beta \rightarrow \neg\neg\beta
+       &\text{\autoref{bsp:2} mit 4,3}\\
+  \end{align*}
 \end{lemma}
 
 \begin{lemma}\label{lem:5}
@@ -1659,16 +1659,17 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
   \end{proof}
 \end{satz}
 
-\begin{description}
- \item[Fazit:] Aufgrund der Korrektheit (\autoref{satz:1}) und
-  Vollständigkeit (\autoref{satz:4}) von $\mathrm{L}$ ergibt sich:
+\begin{korol}
+  Aufgrund der Korrektheit (\autoref{satz:1}) und Vollständigkeit
+  (\autoref{satz:4}) von $\mathrm{L}$ ergibt sich:
   \begin{center}
     $\phi$ ist eine aussagenlogische Tautologie \gdw $\Lvdash
     \phi$.
   \end{center}
-  \glqq Tautologie\grqq\xspace ist ein semantischer Ausdruck und
-  \glqq $\Lvdash$\grqq\xspace ist ein syntaktischer Ausdruck.
-\end{description}
+\end{korol}
+
+Der Begriff "`Tautologie"' ist ein semantischer Ausdruck, wohingegen
+"`$\Lvdash$"' ein syntaktischer Ausdruck ist.
 
 \section{Resolution}
 
@@ -1707,7 +1708,7 @@ Die Resolution arbeitet mit Formeln in konjunktiver Normalform:
   (\neg B\vee\neg C)$).
 \end{enumerate}
 
-\begin{satz}
+\begin{satz}\label{satz:5}
   Zu jeder aussagenlogischen Formel gibt es eine äquivalente Formel in
   konjunktiver Normalform.
   \begin{gather*}
@@ -1737,59 +1738,113 @@ Erfüllbarkeit der Formel ankommt, können wir auch ein einfacheres
 Verfahren für die Umformung verwenden.
 
 \begin{satz}
-  Für jede Formel $\phi$ kann schnell (d.\,h. in polynomieller
-  Rechenzeit) eine erfüllbarkeitsäquivalente Formel $\phi'$ berechnet
-  werden. Dabei bedeutet
-  \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass $\phi$
-  erfüllbar ist \gdw $\phi'$ erfüllbar ist.
+  Für jede Formel $\phi$ kann in polynomieller Rechenzeit eine
+  erfüllbarkeitsäquivalente Formel $\phi'$ berechnet werden. Dabei
+  bedeutet \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass
+  $\phi$ erfüllbar ist \gdw $\phi'$ erfüllbar ist.
+
+  \begin{proof}
+    Dazu wird für jede Teilverknüpfung $\alpha_{i}$ ein neues Literal
+    $c_{i}$ eingeführt und $\phi'$ um eine Äquivalenz $c_{i}\leftrightarrow
+    \alpha_{i}$ erweitert $\phi'_{i} = \phi'_{i-1}\wedge c_{i}\leftrightarrow
+    \alpha_{i}$. Jede "`kleine"' Äquivalenz aus 3~Variablen hat eine
+    konjunktive Normalform (\autoref{satz:5}) aus höchstens 8~Klauseln zu
+    je 3~Literalen. Also ist $\abs{\phi'} \leq k\cdot\abs{\phi}$ für eine
+    Konstante $k$.
+    \help{Wieso verändert sich die Erfüllbarkeit nicht und wieso ist das
+      in polynomieller Zeit?}
+  \end{proof}
 \end{satz}
 
-\begin{bsp}
-  $\phi = (A\wedge B) \rightarrow \neg(A\vee\neg B)$
-  \todo{verknüpfungsbaum}
+\begin{figure}
+  \centering
+  \todo{Wenn der Bug in rubber gefixed ist, diese Grafik einbinden.}
+  % \includegraphics{verkn-baum-bsp.pdf_t}
+  \caption{Der Verknüpfungsbaum für $(A\wedge B) \rightarrow \neg(A\vee
+    \neg B)$ mit Knotenmarkierungen.}
+  \label{fig:vknb-bsp}
+\end{figure}
 
-  \begin{gather*}
-    (c_{0} \leftrightarrow (A\wedge B)) \wedge (c_{1} \leftrightarrow
-       \neg B) \wedge (c_{2} \leftrightarrow (A\vee c_{1})) \wedge (c_{3}
-       \leftrightarrow \neg c_{2}) \wedge (c_{4} \leftrightarrow
-       (c_{0}\rightarrow c_{3})) \wedge c_{4}
-  \end{gather*}
-  $\mathcal{A}=\{A, \neg B\}$: $\mathcal{A}(\phi)=w$,
-  $\mathcal{A}'(\phi)=w$ mit $\mathcal{A}'=\{A, \neg B, \neg c_{0},
-  c_{1}, c_{2}, \neg c_{3}, c_{4}\}$
+\begin{bsp}
+  Betrachten wir die Formel $\phi = (A\wedge B) \rightarrow
+  \neg(A\vee\neg B)$. Der Verknüpfungsbaum für $\phi$ ist in
+  \autoref{fig:vknb-bsp} dargestellt. Damit können wir die
+  erfüllbarkeitsäquivalente Formel $\phi'$ konstruieren
+  \begin{multline*}
+    \phi' = (c_{0} \leftrightarrow (A\wedge B))
+       \wedge (c_{1} \leftrightarrow \neg B)
+       \wedge (c_{2} \leftrightarrow (A\vee c_{1}))\\
+    \wedge (c_{3} \leftrightarrow \neg c_{2})
+       \wedge (c_{4} \leftrightarrow (c_{0}\rightarrow c_{3}))
+       \wedge c_{4}
+  \end{multline*}
+
+  Für $\mathcal{A}=\{A, \neg B\}$, z.\,B., gilt $\mathcal{A}(\phi)=
+  \mathcal{A}'(\phi)=w$ wobei $\mathcal{A}'=\{A, \neg B, \neg c_{0},
+  c_{1}, c_{2}, \neg c_{3}, c_{4}\}$ ist.
 
   Aus $\mathcal{A}(\phi')=w$ folgt $\mathcal{A}(\phi)=w$,
   $\mathcal{A}=\{c_{4}, c_{3}, \neg c_{2}, c_{1}, c_{0}, \neg B, \neg A\}$
 
-  \todo{wahrheitstabelle für $c_{4}\leftrightarrow c_{0}\rightarrow c_{3}$}
+  \begin{table}
+    \centering
+    \begin{tabular}{ccc|cc}
+      $c_{0}$ & $c_{3}$ & $c_{4}$ & $c_{0}\rightarrow c_{3}$ &
+         $c_{4}\leftrightarrow c_{0}\rightarrow c_{3}$\\
+      \hline
+      0 & 0 & 0 & 1 & 0\\
+      0 & 0 & 1 & 1 & 1\\
+      0 & 1 & 0 & 1 & 0\\
+      0 & 1 & 1 & 1 & 1\\
+      1 & 0 & 0 & 0 & 1\\
+      1 & 0 & 1 & 0 & 0\\
+      1 & 1 & 0 & 1 & 0\\
+      1 & 1 & 1 & 1 & 1
+    \end{tabular}
+    \caption{Wahrheitstabelle für $c_{4}\leftrightarrow c_{0}\rightarrow
+      c_{3}$ um die konjunktive Normalform zu bestimmen.}
+    \label{tab:wtab-erfaeq}
+  \end{table}
 
-  Jede \glqq kleine\grqq\xspace Äquivalenz aus 3~Variablen hat eine konjunktive
-  Normalform aus höchstens 8~Klauseln zu je 3~Literalen. Für jedes
-  Verknüpfungszeichen von $\phi$ enthält $\phi'$ eine \glqq kleine\grqq\xspace
-  Äquivalenz. Also ist $\abs{\phi'} \leq k\cdot\abs{\phi}$ für eine
-  Konstante $k$.
+  Mit der Wahrheitswerttabelle (\autoref{tab:wtab-erfaeq}) kann man
+  z.\,B. für die Verknüpfung $c_{4}\leftrightarrow c_{0}\rightarrow
+  c_{3}$ die konjunktive Normalform herleiten:
+  \begin{gather*}
+    (c_{0} \vee c_{3} \vee c_{4}) \wedge
+       (c_{0} \vee \neg c_{3} \vee c_{4}) \wedge
+       (\neg c_{0} \vee c_{3} \vee \neg c_{4}) \wedge
+       (\neg c_{0} \vee \neg c_{3} \vee c_{4})
+  \end{gather*}
+
+  Mit den konjunktiven Normalformen aller "`kleinen"' Äquivalenzen kann
+  man so ein erfüllbarkeitsäquivalente Formel in konjunktiver Normalform
+  aufstellen.
 \end{bsp}
 
 %\input{ALogik}
 %% Anfang des Abschnittes ueber Resolution
 
-Wenn $\cA(\phi)=w$, dann \emph{erfüllt} die Belegung $\cA$ die Formel $\phi$.
-Die erfüllende Belegung $\cA$ wird auch \emph{Modell} von $\phi$ genannt.
+\begin{defini}
+  Wenn $\cA(\phi)=w$, dann \emph{erfüllt} die Belegung $\cA$ die Formel $\phi$.
+  Die erfüllende Belegung $\cA$ wird auch \emph{Modell} von $\phi$ genannt.
+\end{defini}
 
-Im Zusammenhang mit Resolution stellt man Formeln in Konjunktiver Normalform
+Im Zusammenhang mit Resolution stellt man Formeln in konjunktiver Normalform
 als Mengen dar.
 Jede Klausel wird als Menge ihrer Literale dargestellt,
-z.\,B.~die Klausel $(A \vee \lneg B \vee C)$ als Menge $\{A, \lneg B, C\}$.
-Belegung $\cA$ erfüllt Klausel $C$ genau dann, wenn $\cA\cap C\not=\emptyset$.
-Die leere Klausel -- also die leere Menge von Literalen --
-wird als $\Box$ dargestellt.
+z.\,B.~steht die Menge $\{A, \lneg B, C\}$ für die Klausel $(A \vee \lneg
+B \vee C)$.
+
+Eine Belegung $\cA$ erfüllt eine Klausel $C$ genau dann, wenn $\cA\cap C\not=\emptyset$.
+Die \emph{leere Klausel} -- also die leere Menge von Literalen --
+wird mit dem Symbol $\Box$ dargestellt.
 Da $\cA \cap \Box=\emptyset$ für jede Belegung $\cA$,
 ist die leere Klausel unerfüllbar.
 
 Eine Konjunktion von Klauseln
-wird als Menge von Klauseln dargestellt,
+wird \emph{Klauselmenge} dargestellt,
 z.\,B.~$(A \vee \lneg B \vee C)\wedge(B \vee \lneg C) \wedge \lneg A$
-als Menge $\big\{ \{A, \lneg B, C \}, \{B, \lneg C\},\{\lneg A\} \big\}$.
+als die Menge $\big\{ \{A, \lneg B, C \}, \{B, \lneg C\},\{\lneg A\} \big\}$.
 Die Belegung $\cA$ erfüllt die Klauselmenge $S$,
 wenn $\cA\cap C\not=\emptyset$ für jede Klausel $C\in S$.
 Deshalb ist die leere Klauselmenge eine Tautologie.
@@ -1807,7 +1862,7 @@ die man wie folgt aus $S$ erhält:
 Die so konstruierte Klauselmenge wird mit $S^{\ell}$ bezeichnet.
 Formal definiert sieht das so aus:
 \begin{gather*}
-  S^{\ell} = \{C-\{\bar{\ell}\}|C\in S\text{ und }\ell\not\in C\}.
+  S^{\ell} = \{C\setminus\{\bar{\ell}\}\colon C\in S, \ell\not\in C\}.
 \end{gather*}
 
 Für
@@ -1832,14 +1887,14 @@ $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
 
 \begin{lemma}\label{ALogik-Sell}
   Sei $S$ eine Klauselmenge und $\ell$ ein Literal.
-  Wenn $S^{\ell}$ erfüllbar ist oder $S^{\bar{\ell}}$ erfüllbar ist,
+  Wenn $S^{\ell}$ oder $S^{\bar{\ell}}$ erfüllbar ist,
   dann ist auch $S$ erfüllbar.
 \end{lemma}
 
 \begin{proof}
   Sei $S^{\ell}$ erfüllbar,
   und $\cA$ sei ein Modell von $S^{\ell}$.
-  Dann ist $\cB=(\cA-\{\bar{\ell}\})\cup\{\ell\}$
+  Dann ist $\cB=(\cA\setminus\{\bar{\ell}\})\cup\{\ell\}$
   ebenfalls Modell von $S^{\ell}$, da weder $\ell$ noch $\bar{\ell}$
   in einer Klausel in $S^{\ell}$ vorkommt.
   Da jede Klausel in $S$ entweder
@@ -1851,7 +1906,7 @@ $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
   (3) $\ell$ enthält, ist $\cB$ auch Modell von $S$.
 
   Ist $S^{\bar{\ell}}$ erfüllbar, dann kann entsprechend
-  gezeigt werden, dass $\cB'=(\cA-\{{\ell}\})\cup\{\bar{\ell}\}$
+  gezeigt werden, dass $\cB'=(\cA\setminus\{{\ell}\})\cup\{\bar{\ell}\}$
   Modell von $S$ ist.
 \end{proof}
 
@@ -1871,43 +1926,37 @@ die Ausgangsmenge erfüllbar.
   enthält.
   Dann heißt die Klausel
   \begin{gather*}
-    R=\big(C_1-\{\ell\})\cup(C_2-\{\bar{\ell}\}\big)
+    R=\big(C_1\setminus\{\ell\})\cup(C_2\setminus\{\bar{\ell}\}\big)
   \end{gather*}
-  \emph{Resolvent} der Klauseln $C_1$ und $C_2$ (nach Literal $\ell$).
+  \emph{Resolvent} der Klauseln $C_1$ und $C_2$ (nach dem Literal $\ell$).
   \index{Resolvent}
 \end{defini}
 
-Beispiele:
-Aus den Klauseln
-$\{A,B\}$ und $\{\lneg A, B,\lneg C\}$
-kann der Resolvent
-$\{A,\lneg C\}$
-gebildet werden.
+Zum Beispiele kann aus den Klauseln $\{A,B\}$ und $\{\lneg A, B,\lneg
+C\}$ der Resolvent $\{B,\lneg C\}$ (nach dem Literal $A$) gebildet
+werden.
 
-Aus den Klauseln
-$\{A,B\}$ und $\{\lneg A,\lneg B\}$
-können  die Resolventen
-$\{A, \lneg A\}$ und
-$\{B, \lneg B\}$ gebildet werden (und keine anderen).
-
+Aus den Klauseln $\{A,B\}$ und $\{\lneg A,\lneg B\}$ können die
+Resolventen $\{A, \lneg A\}$ (nach $B$) und $\{B, \lneg B\}$ (nach $A$)
+gebildet werden (und keine anderen).
 
 \begin{lemma}[Resolutionslemma]\label{Resolutionslemma}
   Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$.
   Wenn $\cA$ beide Klauseln $C_1$ und $C_2$ erfüllt,
   dann erfüllt $\cA$ auch den Resolventen $R$.
-\end{lemma}
 
-\begin{proof}
-  Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$ nach Literal $\ell$,
-  und sei $\cA$ erfüllt $C_1$ und $C_2$
-  (d.\,h. $\cA\cap C_1\not=\emptyset$ und $\cA\cap C_2\not=\emptyset$).
-  Ist $\ell\not\in\cA$, dann ist $\cA\cap(C_1-\{\ell\})\not=\emptyset$;
-  ist $\bar{\ell}\not\in\cA$,
-  dann ist $\cA\cap(C_2-\{\bar{\ell}\})\not=\emptyset$.
-  Da einer dieser beiden Fälle eintreten muss,
-  ist $\cA\cap((C_1-\{\ell\})\cup(C_2-\{\bar{\ell}\}))\not=\emptyset$.
-  Also wird $R$ von $\cA$ erfüllt.
-\end{proof}
+  \begin{proof}
+    Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$ nach Literal $\ell$,
+    und erfülle $\cA$ die Klauseln $C_1$ und $C_2$
+    (d.\,h. $\cA\cap C_1\not=\emptyset$ und $\cA\cap C_2\not=\emptyset$).
+    Ist $\ell\not\in\cA$, dann ist $\cA\cap(C_1\setminus\{\ell\})\not=\emptyset$;
+    ist $\bar{\ell}\not\in\cA$,
+    dann ist $\cA\cap(C_2\setminus\{\bar{\ell}\})\not=\emptyset$.
+    Da einer dieser beiden Fälle eintreten muss,
+    ist $\cA\cap((C_1\setminus\{\ell\})\cup(C_2\setminus\{\bar{\ell}\}))\not=\emptyset$.
+    Also wird $R$ von $\cA$ erfüllt.
+  \end{proof}
+\end{lemma}
 
 Vereinigt man also eine Klauselmenge mit den Resolventen,
 die sich aus ihren Klauseln bilden lassen,
@@ -1943,43 +1992,38 @@ für die Unerfüllbarkeit von Formeln.
 
 %\begin{enumerate}\label{beisp-res-herleitungen}
 %\item
-Wir betrachten die Klauselmenge $S=\{\{A,B\},\{\lneg A\}, \{\lneg B\}\}$.
+Für die Klauselmenge $S=\{\{A,B\},\{\lneg A\}, \{\lneg B\}\}$.
 Dann ist
 $\{A,B\}, \{\lneg A\} ,\{B\}$
 eine Herleitung von $\{B\}$ aus $S$.
 Die Folge von Klauseln
 $\{A,B\},\{\lneg A\},\{B\},\{\lneg B\}, \Box$
 ist eine Herleitung von $\Box$ aus $S$:
-%
-\begin{center}
-  \begin{tabular}{lr}
-    $C_1=\{A,B\}$ & Klausel aus $S$,\\
-    $C_2=\{\lneg A\}$ & Klausel aus $S$,\\
-    $C_3=\{B\}$ & Resolvent aus $C_1$ und $C_2$, \\
-    $C_4=\{\lneg B\}$ & Klausel aus $S$,\\
-    $C_5=\Box$ & Resolvent aus $C_3$ und $C_4$. \\
-  \end{tabular}
-\end{center}
-$S$ ist also widerlegbar.
+\begin{align*}
+  C_1 &= \{A,B\} &\text{Klausel aus $S$}\\
+  C_2 &= \{\lneg A\} &\text{Klausel aus $S$}\\
+  C_3 &= \{B\} &\text{Resolvent aus $C_1$ und $C_2$}\\
+  C_4 &= \{\lneg B\} &\text{Klausel aus $S$}\\
+  C_5 &= \Box &\text{Resolvent aus $C_3$ und $C_4$}
+\end{align*}
+$S$ ist also widerlegt.
 %
 
 %\item
 Die Klauselmenge
 $S=\{\{A,B\},\{\lneg A,B\},\{A,\lneg B\},\{\lneg A,\lneg B\}\}$
-ist widerlegbar wie folgt.
-\begin{center}
-  \begin{tabular}{lr}
-    $C_1=\{A,B\}$ & Klausel aus $S$,\\
-    $C_2=\{\lneg A,B\}$ & Klausel aus $S$,\\
-    $C_3=\{B\}$ & Resolvent aus $C_1$ und $C_2$, \\
-    $C_4=\{A,\lneg B\}$ & Klausel aus $S$,\\
-    $C_5=\{\lneg A,\lneg B\}$ & Klausel aus $S$,\\
-    $C_6=\{\lneg B\}$ & Resolvent aus $C_4$ und $C_5$, \\
-    $C_7=\Box$ & Resolvent aus $C_3$ und $C_6$. \\
-  \end{tabular}
-\end{center}
+kann man mit folgender Herleitung widerlegen:
+\begin{align*}
+  C_1 &= \{A,B\} & \text{Klausel aus $S$}\\
+  C_2 &= \{\lneg A,B\} & \text{Klausel aus $S$}\\
+  C_3 &= \{B\} & \text{Resolvent aus $C_1$ und $C_2$}\\
+  C_4 &= \{A,\lneg B\} & \text{Klausel aus $S$}\\
+  C_5 &= \{\lneg A,\lneg B\} & \text{Klausel aus $S$}\\
+  C_6 &= \{\lneg B\} & \text{Resolvent aus $C_4$ und $C_5$}\\
+  C_7 &= \Box & \text{Resolvent aus $C_3$ und $C_6$}
+\end{align*}
 %
-Herleitungen mittels Resolution kann man auch als
+Die Herleitungen mittels Resolution kann man auch als
 Bäume veranschaulichen.
 Die Knoten des Baumes sind mit Klauseln markiert.
 Ist eine Klausel $R$ ein Resolvent, so sind die
@@ -2033,15 +2077,15 @@ der Resolutionsmethode nachweisen.
 
 \autoref{satz-korrektheit-resolution-vor} zeigt tatsächlich die
 \textit{Korrektheit der Resolutionsmethode}:
-Ist eine Klauselmenge $S$ mittels Resolution widerlegbar,
+Ist eine Klauselmenge~$S$ mittels Resolution widerlegbar,
 dann ist $S$ unerfüllbar.
 
 Nun müssen wir noch die
 Vollständigkeit der Resolutionsmethode
 beweisen.
 \index{Resolutionsmethode!Vollständigkeit der}
-Dazu überlegen wir zunächst anhand eines Beispiels,
-wie man aus Herleitungen der leeren Klausel aus $S^{\ell}$ und
+Dazu überlegen wir uns zunächst anhand eines Beispiels,
+wie man aus den Herleitungen der leeren Klausel aus $S^{\ell}$ und
 aus $S^{\bar{\ell}}$ eine Herleitung der
 leeren Klausel aus $S$ konstruieren kann.
 
@@ -2062,12 +2106,6 @@ müssen wir Widerlegungen der beiden Klauselmengen
 \end{gather*}
 angeben.
 Diese Widerlegungen sind in \autoref{zweiwiderlegungen} dargestellt.
-%
-\begin{figure}
-  \centering \includegraphics[width=\textwidth]{resolution.6}
-  \caption{Widerlegungen von $S^A$ und $S^{\neg A}$}\label{zweiwiderlegungen}
-\end{figure}
-%
 Die \glqq Blätter\grqq\xspace der beiden Bäume in \autoref{zweiwiderlegungen}
 sind Klauseln aus $S^A$ bzw. Klauseln aus $S^{\lneg A}$.
 Nun fügen wir in alle Blätter, die nicht durch Klauseln in $S$
@@ -2086,6 +2124,11 @@ zusammenfügen und durch den zusätzlichen Resolutionsschritt
 zu einer Herleitung von $\Box$ aus $S$ ergänzen.
 
 \begin{figure}
+  \centering \includegraphics[width=\textwidth]{resolution.6}
+  \caption{Widerlegungen von $S^A$ und $S^{\neg A}$}\label{zweiwiderlegungen}
+\end{figure}
+
+\begin{figure}
   \centering \includegraphics[width=\textwidth]{resolution.7}
   \caption{Widerlegung von $S$}\label{auszweimacheins}
 \end{figure}
@@ -2093,83 +2136,85 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
 \begin{lemma}\label{lemma-vollst-resolution}
   Ist $S^{\ell}$ widerlegbar,
   dann ist $\Box$ oder $\{\bar{\ell}\}$ aus $S$ herleitbar.
+
+  \begin{proof}
+    Sei $S^{\ell}$ widerlegbar.
+    Dann gibt es eine Herleitung $C_1,\ldots,C_m$ der leeren Klausel aus $S^{\ell}$.
+    Wir fügen das entfernte Literal $\bar{\ell}$
+    in die Herleitung der leeren Klausel aus $S^{\ell}$ auf folgende Weise ein:
+    Für $1\leq i\leq m$ definieren wir Klauseln $C'_i$ durch
+    \begin{gather*}
+      C_i' =
+         \begin{cases}
+           C_i &\text{falls~} C_i\in S\\
+           C_i\cup\{\bar{\ell}\} & \text{falls~}
+           C_i\cup\{\bar{\ell}\}\in S \text{~und~} C_i\not\in S\\
+           C &\text{falls $C_i$ Resolvent von $C_a$ und $C_b$ nach $\ell'$
+           ist}\\
+           &\text{\hspace{5mm} wobei $C$ Resolvent von $C'_a$ und $C'_b$ nach
+           $\ell'$ ist.}
+         \end{cases}
+    \end{gather*}
+
+    Da $C'_i\in\big\{C_i,C_i\cup\{\bar{\ell}\}\big\}$
+    und $C_m=\Box$ ist, ist  $C'_1,\ldots,C'_m$ eine
+    Herleitung von $\Box$ oder $\{\bar{\ell}\}$ aus $S$.
+  \end{proof}
 \end{lemma}
-
-\begin{proof}
-  Sei $S^{\ell}$ widerlegbar.
-  Dann gibt es eine Herleitung $C_1,\ldots,C_m$ von $\Box$ aus $S^{\ell}$.
-  Wir fügen das entfernte Literal $\bar{\ell}$
-  in die Herleitung von $\Box$ aus $S^{\ell}$ auf folgende Weise ein:
-  Für $1\leq i\leq m$ definieren wir Klauseln $C'_i$ durch
-  \begin{gather*}
-    C_i' =
-       \begin{cases}
-         C_i &\text{falls~} C_i\in S\\
-         C_i\cup\{\bar{\ell}\} & \text{falls~}
-         C_i\cup\{\bar{\ell}\}\in S \text{~und~} C_i\not\in S\\
-         C &\text{falls $C_i$ Resolvent von $C_a$ und $C_b$ nach $\ell'$
-         ist}\\
-         &\text{\hspace{5mm} wobei $C$ Resolvent von $C'_a$ und $C'_b$ nach
-         $\ell'$ ist.}
-       \end{cases}
-  \end{gather*}
-
-  Da $C'_i\in\big\{C_i,C_i\cup\{\bar{\ell}\}\big\}$
-  und $C_m=\Box$ ist, ist  $C'_1,\ldots,C'_m$ eine
-  Herleitung von $\Box$ oder $\{\bar{\ell}\}$ aus $S$.
-\end{proof}
 
 \index{Resolutionsmethode!Vollständigkeit der}
 \begin{satz}[Vollständigkeit der Resolutionsmethode]
   Ist eine Klauselmenge $S$ unerfüllbar,
   dann ist $S$ widerlegbar mittels Resolution.
+
+  \begin{proof}
+    Sei $S$ unerfüllbar.
+    Wir führen einen induktiven Beweis über die
+    Anzahl der verschiedenen in $S$ enthaltenen Variablen.
+
+    \begin{description}
+     \item[IA:]
+      $S$ enthält keine Variablen.
+      Wenn $S$ unerfüllbar ist, muss $S=\{\Box\}$ gelten.
+      Also gibt es eine Resolutionsherleitung von $\Box$ aus $S$.
+
+     \item[IV:]
+      Für jede Klauselmenge mit $n$ Variablen gilt:
+      wenn $S$ unerfüllbar ist, dann gibt es eine Resolutionswiderlegung von $S$.
+
+     \item[IS:]
+      $S$ enthalte $n+1$ Variablen und sei unerfüllbar.
+      Dann sind nach \autoref{ALogik-Sell} auch $S^{\ell}$ und $S^{\bar{\ell}}$
+      unerfüllbar.
+      Nach IV sind $S^{\ell}$ und $S^{\bar{\ell}}$ widerlegbar.
+      Nach obigem \autoref{lemma-vollst-resolution} ist
+      (1) $\Box$ aus $S$ herleitbar
+      oder (2) $\{\ell\}$ und $\{\bar{\ell}\}$ sind aus $S$ herleitbar.
+      Im Fall~(1) haben wir bereits die Widerlegbarkeit von $S$ gezeigt.
+      Im Fall~(2)
+      ist $\Box$ Resolvent von $\{\ell\}$ und $\{\bar{\ell}\}$.
+      Deshalb lässt sich aus den Herleitungen von
+      $\{\ell\}$ und $\{\bar{\ell}\}$
+      ergänzt um einen weiteren Resolutionsschritt,
+      mit dem $\Box$ aus $\{\ell\}$ und $\{\bar{\ell}\}$ resolviert wird,
+      eine Herleitung von $\Box$ aus $S$ konstruieren.
+      Also ist $S$ widerlegbar.
+    \end{description}
+  \end{proof}
 \end{satz}
-
-\begin{proof}
-  Sei $S$ unerfüllbar.
-  Wir führen eine induktiven Beweis über die
-  Anzahl der verschiedenen in $S$ enthaltenen Variablen.
-
-  {Induktionsbasis:}
-  $S$ enthält $0$ Variablen.
-  Wenn $S$ unerfüllbar ist, muss $S=\{\Box\}$ gelten.
-  Also gibt es eine Resolutionsherleitung von $\Box$ aus $S$.
-
-  {Induktionsvoraussetzung:}
-  Für jede Klauselmenge mit $n$ Variablen gilt:
-  wen $S$ unerfüllbar ist, dann gibt es eine Resolutionswiderlegung von $S$.
-
-  {Induktionsschluss:}
-  $S$ enthalte $n+1$ Variablen und sei unerfüllbar.
-  Dann sind auch $S^{\ell}$ und $S^{\bar{\ell}}$
-  unerfüllbar. (\autoref{ALogik-Sell}).
-  Nach IV sind $S^{\ell}$ und $S^{\bar{\ell}}$ widerlegbar.
-  Nach obigem \autoref{lemma-vollst-resolution} ist
-  (1) $\Box$ aus $S$ herleitbar
-  oder (2) $\{\ell\}$ und $\{\bar{\ell}\}$ sind aus $S$ herleitbar.
-  Im Fall (1) haben wir bereits die Widerlegbarkeit von $S$ gezeigt.
-  Im Fall (2)
-  ist $\Box$ Resolvent von $\{\ell\}$ und $\{\bar{\ell}\}$.
-  Deshalb lässt sich aus den Herleitungen von
-  $\{\ell\}$ und $\{\bar{\ell}\}$
-  ergänzt um einen weiteren Resolutionsschritt,
-  mit dem $\Box$ aus $\{\ell\}$ und $\{\bar{\ell}\}$ resolviert wird,
-  eine Herleitung von $\Box$ aus $S$ konstruieren.
-  Also ist $S$ widerlegbar.
-\end{proof}
 
 Aus der Korrektheit und der Vollständigkeit der Resolutionsmethode
 ergibt sich der Resolutionssatz der Aussagenlogik.
 
 \index{Resolutionssatz}
 \begin{satz}[Resolutionssatz]\label{resolutionssatz}
-  Klauselmenge $S$ ist unerfüllbar genau dann,
+  Die Klauselmenge $S$ ist unerfüllbar genau dann,
   wenn $S$ mittels Resolution widerlegbar ist.
 \end{satz}
 
 
-Die {Unerfüllbarkeit}
-einer beliebigen Formel $\alpha$
+Die Unerfüllbarkeit
+einer Formel $\alpha$
 kann man nun dadurch beweisen,
 dass man eine zu $\alpha$ erfüllbarkeitsäquivalente Formel $\alpha'$
 in konjunktiver Normalform bildet, diese als
@@ -2183,24 +2228,27 @@ die Unerfüllbarkeit von $\lneg\alpha$
 nachweist.
 Dazu noch ein abschließendes Beispiel.
 
-Beispiel:
-Wir zeigen, dass
-\[ \alpha=\big((\lneg A\lor B)\wedge(\lneg B\lor C)\wedge
-(A\lor \lneg C) \wedge (A \lor B \lor C)\big)
-\limplies (A \wedge B\wedge C)
-\]
-eine Tautologie ist.
+\begin{bsp}
+  Wir zeigen, dass
+  \begin{gather*}
+    \alpha=\big((\lneg A\lor B)\wedge(\lneg B\lor C)\wedge
+       (A\lor \lneg C) \wedge (A \lor B \lor C)\big)
+       \limplies (A \wedge B\wedge C)
+  \end{gather*}
+  eine Tautologie ist.
 
-Es genügt, dazu die Unerfüllbarkeit von $\lneg \alpha$
-nachzuweisen,
-\[ \lneg\alpha\equiv(\lneg A\lor B)\wedge(\lneg B\lor C)\wedge
-(A\lor \lneg C) \wedge (A \lor B \lor C)
-\wedge (\lneg A \lor \lneg B \lor \lneg C)\ \ .
-\]
-\autoref{last-resolution} veranschaulicht
-die Resolutionswiderlegung von $\lneg \alpha$.
-Also ist $\alpha$ eine Tautologie.
-%
+  Es genügt, dazu die Unerfüllbarkeit von $\lneg \alpha$
+  nachzuweisen,
+  \begin{gather*}
+    \lneg\alpha\equiv(\lneg A\lor B)\wedge(\lneg B\lor C)\wedge
+       (A\lor \lneg C) \wedge (A \lor B \lor C)
+       \wedge (\lneg A \lor \lneg B \lor \lneg C)\ \ .
+  \end{gather*}
+  \autoref{last-resolution} veranschaulicht
+  die Resolutionswiderlegung von $\lneg \alpha$.
+  Also ist $\alpha$ eine Tautologie.
+\end{bsp}
+
 \begin{figure}[t]
   \centering
   \includegraphics{resolution.8}
@@ -2213,7 +2261,7 @@ Also ist $\alpha$ eine Tautologie.
 
 Eingabe $S$ als Klauselmenge
 \begin{Verbatim}[commandchars=\\\{\}]
-T:=\ensuremath{\emptyset}
+T := \ensuremath{\emptyset}
 \schlwort{wiederhole}
     S := S \ensuremath{\cup} T
     T := die Menge aller Resolventen, die aus Klauseln in S gebildet
@@ -2246,36 +2294,42 @@ dass in jedem Loch höchstens eine Taube sitzt.
 
 Taube $j$ sitzt in einem der $k-1$ Löcher:
 \begin{gather*}
-  A_{1,j} \vee A_{2,1} \vee \ldots \vee A_{k-1,j} \ \ \ \ ( =  \theta_j)
+  A_{1,j} \vee A_{2,j} \vee \ldots \vee A_{k-1,j}\quad =  \theta_j
 \end{gather*}
 Jede der $k$ Taube sitzt in einem der $k-1$ Löcher:
 \begin{gather*}
-  \theta_1 \wedge \theta_2 \wedge \cdots \wedge \theta_k \\
-  = \bigwedge_{j=1}^{k} \bigvee_{i=1}^{k-1} A_{i,j} \\
+  \theta_1 \wedge \theta_2 \wedge \cdots \wedge \theta_k
+  = \bigwedge_{j=1}^{k} \bigvee_{i=1}^{k-1} A_{i,j}
   = \alpha_k
 \end{gather*}
 In Loch $i$ sitzt höchstens eine der $k$ Tauben:
-\begin{gather*}
-  (A_{i,1} \rightarrow \neg A_{i,2}) \wedge \cdots \wedge (A_{i,1} \rightarrow \neg A_{i,k-1}) \wedge \\
-  (A_{i,2} \rightarrow \neg A_{i,1}) \wedge A_{i,2} \rightarrow \neg A_{i,3}) \wedge \cdots \wedge (A_{i,2} \rightarrow \neg A_{i,k-1}) \wedge \\
-  \vdots \\
-  (A_{i,k-1} \rightarrow \neg A_{i,1}) \wedge \cdots \wedge (A_{i,k-1} \rightarrow \neg A_{i,k-2}) \wedge \\
-  \equiv
-     (\neg A_{i,1} \vee \neg A_{i,2}) \wedge \cdots \wedge (\neg A_{i,1} \vee \neg A_{i,k-1}) \wedge \\
-  \vdots \\
-  (\neg A_{i,k-1} \vee \neg A_{i,1}) \wedge \cdots \wedge (\neg A_{i,k-1} \vee \neg A_{i,k-2}) \wedge \\
-  \equiv \bigwedge_{p=1}^{k}
-     \bigwedge_{q=p+1}^{k} (\neg A_{i,p} \vee \neg A_{i,q}) \\
-  = \sigma_i
-\end{gather*}
+\begin{multline*}
+  \begin{aligned}
+    (A_{i,1} \rightarrow \neg A_{i,2}) \wedge \cdots \wedge (A_{i,1}
+    \rightarrow \neg A_{i,k-1}) \wedge \\
+    \quad(A_{i,2} \rightarrow \neg A_{i,1}) \wedge (A_{i,2} \rightarrow \neg
+    A_{i,3}) \wedge \cdots \wedge (A_{i,2} \rightarrow \neg A_{i,k-1})\wedge\\
+    \vdots \\
+    \quad(A_{i,k-1} \rightarrow \neg A_{i,1}) \wedge \cdots \wedge (A_{i,k-1}
+    \rightarrow \neg A_{i,k-2})\\
+  \end{aligned}\\
+  \begin{aligned}
+    &\equiv
+    (\neg A_{i,1} \vee \neg A_{i,2}) \wedge \cdots \wedge (\neg A_{i,1} \vee \neg A_{i,k-1}) \wedge \\
+    &\qquad\vdots \\
+    &\qquad(\neg A_{i,k-1} \vee \neg A_{i,1}) \wedge \cdots \wedge (\neg A_{i,k-1} \vee \neg A_{i,k-2}) \wedge \\
+    &\equiv \bigwedge_{p=1}^{k}
+    \bigwedge_{\substack{q=1\\q\ne p}}^{k} (\neg A_{i,p} \vee \neg A_{i,q})\quad = \sigma_i
+  \end{aligned}
+\end{multline*}
 In jedem der $k-1$ Löcher sitzt höchstens eine Taube:
 \begin{gather*}
-  \sigma_1 \wedge \sigma_2 \wedge \cdots \wedge \sigma_{k-1} \\
+  \sigma_1 \wedge \sigma_2 \wedge \cdots \wedge \sigma_{k-1}
   \equiv \bigwedge_{i=1}^{k-1}\bigwedge_{p=1}^{k}
-     \bigwedge_{q=p+1}^{k} (\neg A_{i,p} \vee \neg A_{i,q}) \\
+     \bigwedge_{q=p+1}^{k} (\neg A_{i,p} \vee \neg A_{i,q})
   = \beta_k
 \end{gather*}
-Die Taubenschlagformel $PHP_k$ ist dann
+Die Taubenschlagformel $PHP_k$ lautet
 \begin{gather*}
   PHP_{k} = \alpha_{k} \wedge \beta_{k}
 \end{gather*}
@@ -2291,29 +2345,29 @@ In einem Beweis der Unerfüllbarkeit einer Klauselmenge $S$ (=Formel)
 muss also $S$ am Ende des Beweises stehen.
 (Das ist genau andersherum als bei der Resolution.)
 
-\begin{description}
+\begin{mdescription}
  \item[Formeln:] die Klauselmengen
  \item[Axiomenschema:] $\{\Box\}$
  \item[Schlussregeln:]
   \begin{enumerate}
    \item[(Res)] Für Klauselmenge $S$ und Klausel $R\in S$, die Resolvent von $C_1$ und $C_2$ ist:
     \begin{gather*}
-      \frac{S}{S\setminus\{R\}\cup\{C_1, C_2\}}
+      \frac{S}{(S\setminus\{R\})\cup\{C_1, C_2\}}
     \end{gather*}
    \item[(Einf)] Für Klauselmenge $S$ und beliebige Klausel $C$:
     \begin{gather*}
       \frac{S}{S \cup\{C\}}
     \end{gather*}
   \end{enumerate}
-\end{description}
+\end{mdescription}
 
 Alle Beweise beginnen also mit der Klauselmenge, die nur aus der leeren Klausel besteht
 (einziges Axiom).
 Diese Klauselmenge ist unerfüllbar.
 Durch die Schlussregel (Res) wird ein Resolutionsschritt \glqq rückwärts\grqq\xspace
 ausgeführt,
-und durch (Einf) wird eine beliebige zusätzliche Klausel in die Klausel in
-die Klauselmenge eingfügt.
+und durch (Einf) wird eine beliebige zusätzliche Klausel in
+die Klauselmenge eingefügt.
 
 \begin{bsp}
   Beweis der Unerfüllbarkeit von
@@ -2321,11 +2375,11 @@ die Klauselmenge eingfügt.
   \begin{align*}
     (1)\quad & \{\Box\} & \text{Axiom} \\
     (2)\quad & \{ \{ A \}, \{\neg A \} \}
-       & \text{Schlussregel (Res) auf (1)} \\
+       & \text{(Res) auf (1)} \\
     (3)\quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\} \}
-       & \text{Schlussregel (Res) auf (2)}  \\
+       & \text{(Res) auf (2)}  \\
     (4) \quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\}, \{A, \neg C\}  \} &
-       \text{Schlussregel (Einf) auf (3)}
+       \text{(Einf) auf (3)}
   \end{align*}
 \end{bsp}
 
@@ -2336,28 +2390,31 @@ die Klauselmenge eingfügt.
   \begin{align*}
     (1)\quad & \{\Box\} & \text{Axiom} \\
     (2)\quad & \{ \{ B\}, \{\neg B \} \}
-       & \text{(Res) auf $\Box$ in (1)} \\
+       & \text{(Res) für $B$ auf $\Box$ in (1)} \\
     (3)\quad & \{ \{ B \}, \{ A \}, \{\neg A, \neg B\} \}
-       & \text{(Res) auf $\{\neg B\}$ in (2)}  \\
+       & \text{(Res) für $\neg A$ auf $\{\neg B\}$ in (2)}  \\
     (4)\quad & \{ \{ \neg A, B \}, \{ A \}, \{\neg A, \neg B\} \}
-       & \text{(Res) auf $\{B\}$ in (3)}  \\
+       & \text{(Res) für $\neg A$ auf $\{B\}$ in (3)}  \\
     (5)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B\} \}
-       & \text{(Res) auf $\{A\}$ in (4)}  \\
+       & \text{(Res) für $\neg C$ auf $\{A\}$ in (4)}  \\
     (6)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-       & \text{(Res) auf $\{\neg A, \neg B\}$ in (5)}  \\
-    (7)\quad & \{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-       & \text{(Res) auf $\{C\}$ in (6)}  \\
-    (8)\quad & \{ \{ \neg A, B \}, \{\neg A, C\}, \{A, B, C\},
-       \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-       & \text{(Res) auf $\{B,C\}$ in (7)}  \\
-    (9)\quad & \{ \{ \neg A, B \}, \{A, B, C\},
-       \{\neg B, C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-       & \text{(Res) auf $\{\neg A, C\}$ in (8)}
+       & \text{(Res) f. $\neg C$ auf $\{\neg A, \neg B\}$ in (5)}  \\
+    (7)\quad & \big\{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\},
+       & \text{(Res) für $B$ auf $\{C\}$ in (6)}  \\
+    &\quad  \{\neg A, \neg B, \neg C\} \big\}\\
+    (8)\quad & \big\{ \{ \neg A, B \}, \{\neg A, C\}, \{A, B, C\},
+       \{\neg B, C\},
+       & \text{(Res) für $A$ auf $\{B,C\}$ in (7)}  \\
+    &\quad  \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \big\}\\
+    (9)\quad & \big\{ \{ \neg A, B \}, \{A, B, C\},
+       \{\neg B, C\}, \{A, \neg C\},
+       & \text{(Res) für $B$ auf $\{\neg A, C\}$ in (8)}\\
+    &\quad \{\neg A, \neg B, \neg C\} \big\}
   \end{align*}
 \end{bsp}
 
 Man kann (leicht) zeigen,
-dass die Schlussregeln die Unerfüllbarkeit der Klauselmenge nicht ändern,
+dass die Schlussregeln die Unerfüllbarkeit der Klauselmenge nicht ändern
 und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
 (entsprechend \autoref{lemma-vollst-resolution} und \autoref{satz-korrektheit-resolution-vor}).
 
@@ -4410,15 +4467,16 @@ Komposition und Rekursion auf einfache Basisfunktionen zurückführen.
 Die Basisfunktionen sind
 %
 \begin{itemize}
- \item die Nullfunktionen $Z^{(k)}:\N^k\rightarrow\N$ mit
+ \item die \emph{Nullfunktionen} $Z^{(k)}\colon\N^k\rightarrow\N$ mit
   $Z^{(k)}(x_1,\ldots,x_k)=0$  ($k\in\N$)
- \item die Nachfolgerfunktion $N\colon\N\rightarrow\N$ mit $N(n)=n+1$
- \item die Projektionsfunktionen $U^k_i\colon\N^k\rightarrow\N$
-  mit $U^{(k)}_i(x_1,\ldots,x_k)=x_i$ ($k\in\N^+$, $1\leq i\leq k$).
+ \item die \emph{Nachfolgerfunktion} $N\colon\N\rightarrow\N$ mit $N(n)=n+1$
+ \item die \emph[rand=Projektionsfunkt.]{Projektionsfunktionen}
+  $U^k_i\colon\N^k\rightarrow\N$ mit $U^{(k)}_i(x_1,\ldots,x_k)=x_i$
+  wobei $k\in\N^+$ und $1\leq i\leq k$.
 \end{itemize}
 %
 
-\begin{defini}
+\begin{defini}[Komposition]
   Seien $f\colon\N^k\rightarrow\N$
   und $g_1,\ldots,g_k\colon\N^l\rightarrow\N$
   Funktionen auf den natürlichen Zahlen.
@@ -4426,15 +4484,15 @@ Die Basisfunktionen sind
   \begin{gather*}
     h(x_1,\ldots,x_l) = f\big(g_1(x_1,\ldots,x_l),\ldots,g_k(x_1,\ldots,x_l)\big)
   \end{gather*}
-  entsteht aus $f$ und $g_1,\ldots,g_k$ durch Komposition.
+  entsteht aus $f$ und $g_1,\ldots,g_k$ durch \emph{Komposition}.
 \end{defini}
 
-Beispiel:
-betrachte die Funktion $h\colon\N\rightarrow\N$ mit $h(x)=2\cdot x$.
-Sie entsteht aus $f\colon\N^2\rightarrow\N$ mit $f(x,y)=x+y$ und
-$g_1\colon\N\rightarrow\N$, $g_2\colon\N\rightarrow\N$ mit $g_1(x)$ und $g_2(x)=x$
-durch Komposition.
-Es gilt $h(x) = f(g_1(x), g_2(x))$.
+\begin{bsp}\label{bsp:3}
+  Die Funktion $h\colon\N\rightarrow\N$ mit $h(x)=2\cdot x$ entsteht aus
+  $f\colon\N^2\rightarrow\N$ mit $f(x,y)=x+y$ und $g_1, g_{2}\colon\N
+  \rightarrow\N$ mit $g_1(x) = g_2(x)=x$ durch Komposition. Es gilt $h(x)
+  = f\big(g_1(x), g_2(x)\big)$.
+\end{bsp}
 
 Die Komposition der Funktionen
 $f\colon\N^3\rightarrow\N$ mit $f(x,y,z)=x+y+z$ und
@@ -4443,23 +4501,33 @@ mit $g_1(x,y)=x^2$, $g_2(x,y)=h(x)$ und $g_3(x,y)=y^2$
 liefert die Funktion
 $h':\N^2\rightarrow\N$ mit $h'(x,y)=x^2+2x+y^2$.
 
+\begin{defini}[totale Funktion]
+  Eine Funktion $f\colon\Gamma\rightarrow\Omega$ heißt
+  \emph[indexrand=totale Funktion]{total} falls für alle $x\in\Gamma$ ein
+  $y\in\Omega$ existiert, so dass $f(x) = y$. Mit anderen Worten: Die
+  Funktion $f$ ist auf ganz $\Omega$ definiert.
+\end{defini}
+
 \begin{defini}
   Sei $k\in\N$ und $g\colon\N^2\rightarrow\N$ eine totale Funktion.
   Dann entsteht die Funktion $h\colon\N\rightarrow\N$ mit
-  \begin{align*}
-    h(0) & = k & \text{und} \\
-    h(n+1) & = g(n,h(n))
-  \end{align*}
-  aus $k$ und $g$ mittels Rekursion.
+  $h(0) = k$ und $h(n+1) = g(n,h(n))$ aus $k$ und $g$ mittels \emph{Rekursion}.
 \end{defini}
 
 
 Die Rekursion ist stets endlich.
 Wenn $h$ durch Rekursion aus $g$ und $k$ entsteht,
 dann gilt zum Beispiel
-\begin{gather*}
-  h(5)=g(4,\underbrace{g(3,\overbrace{g(2,\underbrace{g(1,\overbrace{g(0,\underbrace{k}_{h(0)})}^{h(1)})}_{h(2)})}^{h(3)})}_{h(4)}) \ \ .
-\end{gather*}
+% \begin{gather*}
+%   h(5)=g(4,\underbrace{g(3,\overbrace{g(2,\underbrace{g(1,\overbrace{g(0,\underbrace{k}_{h(0)})}^{h(1)})}_{h(2)})}^{h(3)})}_{h(4)}) \ \ .
+% \end{gather*}
+\begin{align*}
+  h(5) &= g\big(4, h(4)\big) = g\big(4, g(3, h(3))\big)
+     = g\big(4, g\big(3, g(2, h(2))\big)\big)\\
+  &= g\Big(4, g\big(3, g\big(2, g(1, h(1))\big)\big)\Big)\\
+  &= g\Big(4, g\Big(3, g\big(2, g\big(1, g(0, h(0))\big)\big)\Big)\Big)\\
+  &= g\Big(4, g\Big(3, g\big(2, g\big(1, g(0, k)\big)\big)\Big)\Big)
+\end{align*}
 Sei $h$ definiert durch Rekursion aus $k=0$ und $g(x,y)=x+y$.
 Das heißt
 \begin{alignat*}{3}
@@ -4481,10 +4549,10 @@ Die anderen Argumente werden nur "`mitgeschleift"'.
 \begin{defini}
   Seien $f\colon\N^k\rightarrow \N$ und $g\colon\N^{k+2}\rightarrow\N$.
   Die Funktion $h\colon\N^{k+1}\rightarrow\N$ entsteht mittels
-  Rekursion aus $f$ und $g$, falls
+  \emph{Rekursion} aus $f$ und $g$, falls
   \begin{eqnarray*}
     h(x_1,\ldots,x_k,0) & = & f(x_1,\ldots,x_k) \mbox{\ \ \ und} \\
-    h(x_1,\ldots,x_k,n+1) & = & g\big(n,h(x_1,\ldots,x_k,n),x_1,\ldots,x_n\big) .
+    h(x_1,\ldots,x_k,n+1) & = & g\big(n,h(x_1,\ldots,x_k,n),x_1,\ldots,x_k\big) .
   \end{eqnarray*}
 \end{defini}
 
@@ -4527,21 +4595,25 @@ Die anderen Argumente werden nur "`mitgeschleift"'.
       x+0 & = x\\
       x+(y+1) & = (x+y) +1
     \end{align*}
-
     Formal ist das
     \begin{align*}
       f_{add}(x,0) & = U^{(1)}_1(x) \\
       f_{add}(x,y+1) & = N(U^{(3)}_2(y,f_{add}(x,y),x))
     \end{align*}
 
-    $f_{add}$ entsteht durch Rekursion aus $U^{(1)}_1$
-    und $g\colon\N^3\rightarrow\N$ mit $g(y,z,x) = N(U^{(3)}_2(y,z,x))$.
-    Da $g$ durch Komposition aus $s$ und $U^{(3)}_2$ entsteht,
-    ist $g$ primitiv rekursiv.
-    $U^{(1)}_1$ ist ebenfalls primitiv rekursiv.
-    Also ist $f_{add}$ ebenfalls primitiv rekursiv.
+    $f_{add}$ entsteht durch Rekursion aus der Projektionsfunktion
+    $U^{(1)}_1$ und der dreistelligen Funktion $g\colon\N^3\rightarrow\N$
+    mit $g(y,z,x) = N(U^{(3)}_2(y,z,x))$. Da $g$ durch Komposition aus
+    der Nachfolgerfunktion $N$ und der Projektionsfunktion $U^{(3)}_2$
+    entsteht, ist $g$ und damit auch $f_{add}$ primitiv rekursiv.
   \end{proof}
 \end{lemma}
+
+\begin{bsp}
+  Die Funktion $h(x) = 2\cdot x$ aus \autoref{bsp:3} ist mit $f=f_{add}$
+  und $g_{1} = g_{2} = U_{1}^{(1)}$ somit auch primitiv rekursiv. Es gilt
+  $f(x) = f_{add}\big(U_{1}^{(1)}(x), U_{1}^{(1)}(x)\big)$.
+\end{bsp}
 
 \begin{simplelist}
  \item
@@ -6030,6 +6102,18 @@ Geben Sie Formeln zur Repräsentationen der folgenden Funktionen an
      \overline{1}) \wedge (\exists z\colon x_{1} = \overline{2}\cdot
      z)\big)
 \end{gather*}
+
+\section{Blatt 12}
+
+\subsection*{Aufgabe 1}
+Zeigen Sie, dass $x^y$ primitiv rekursiv ist.
+
+\subsection*{Aufgabe 2}
+Zeigen Sie, dass die Fibonacci-Funktion primitiv rekursiv ist.
+\begin{align*}
+  fib(0) &= 0 \qquad fib(1) =1\\
+  fib(n+2) &=fib(n+1)+fib(n)
+\end{align*}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
