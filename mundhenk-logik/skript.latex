@@ -5324,9 +5324,570 @@ repräsentiert, sparen wir uns hier.)
 \end{korol}
 
 
+\section{Arithmetisierung} 
+
+In der Sprache der Theorie $\mathrm{S}$ 
+können Aussagen über Zahlen gemacht werden.
+Im Abschnitt über Abzählbarkeit haben wir gesehen,
+dass Formeln auch durch Zahlen kodiert werden können.
+Über diesen \glqq Umweg\grqq\xspace lassen sich in $\mathrm{S}$
+also auch Aussagen über Formeln und Eigenschaften von Formeln ausdrücken.
+In $\mathrm{S}$ können wir die primitiv rekursiven Funktionen
+dazu benutzen, und das werden wir jetzt tun.
+Wir beginnen mit der Kodierung von Symbolen, 
+Ausdrücken und Folgen von Ausdrücken durch natürliche Zahlen
+und drücken anschließend Eigenschaften von Formeln
+durch primitiv rekursive Relationen und Funktionen
+in der Sprache von $\mathrm{S}$ aus.
 
 
+\subsection{Gödelisierung}
 
+Funktion $g$ bildet
+\begin{itemize}
+\item Symbole,
+\item endliche Folgen von Symbolen (=Ausdrücke), und
+\item endliche Folgen von Ausdrücken
+\end{itemize}
+wie folgt injektiv auf $\N$ ab.
+\vspace{1ex}
+
+Symbole ($n,k\geq 1$):
+\vspace{1ex}
+
+\renewcommand{\arraycolsep}{1mm}
+$
+\begin{array}{r||c|c|c|c|c|c|c|c|c|c}
+u    & ( & ) & , & \neg & \rightarrow & \forall & a_k        & x_k & f^n_k & A^n_k\\ \hline
+g(u) & 3 & 5 & 7 &  9   &     11      &   13    & 7+8\cdot k & 13+ 8\cdot k 
+   & 1+8\cdot(2^n\cdot 3^k) & 3+8\cdot(2^n\cdot 3^k) 
+\end{array}
+$
+\vspace{1ex}
+
+$g(u)$ heißt \emph{Gödelnummer} von $u$.
+
+Wenn $u$ ein Symbol ist, dann ist $g(u)$ ungerade.
+
+Für $u\geq 15$ gibt $g(u) \bmod 8$ gibt an, welche
+Art von Symbol $u$ ist.
+
+
+Sei $u_0 u_1 \ldots u_n$ eine endliche Folge von Symbolen.
+Dann ist
+$$
+g(u_0 u_1 \ldots u_n)\ =\ 2^{g(u_0)} \cdot 3^{g(u_1)} \cdot \ldots \cdot p_n^{g(u_n)}
+     \ = \ \prod_{i=0}^{n} p_i^{g(u_i)}
+$$
+wobei $p_i$ die $i$-te Primzahl ist ($p_0=2$).
+\vspace{1ex}
+
+Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1)) = 2^{13} \cdot 3^{21} \cdot 5^{138} 
+          \cdot 7^3 \cdot 11^{21} \cdot 13^{5}$
+\vspace{1ex}
+
+
+Das \it{Symbol} $x_1$ hat GN $g(x_1)=21$ (ist ungerade).
+
+
+Der \it{Ausdruck} $x_1$ hat GN $g(x_1)=2^{21}$ (ist gerade).
+\vspace{2ex}
+
+Sei $e_0, e_1, \ldots, e_n$ eine endliche Folge von Ausdrücken.
+Dann ist
+$$
+g(e_0, e_1, \ldots, e_n)\ =\ 2^{g(e_0)} \cdot 3^{g(e_1)} \cdot \ldots \cdot p_n^{g(e_n)}
+     \ = \ \prod_{i=0}^{n} p_i^{g(e_i)}
+$$
+wobei $p_i$ die $i$-te Primzahl ist ($p_0=2$).
+\vspace{2ex}
+
+Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1), x_1) 
+= 2^{(2^{13} \cdot 3^{21} \cdot 5^{138} \cdot 7^3 \cdot 11^{21} \cdot 13^{5})}
+  \ \cdot 3^{(2^{21})}$
+\vspace{3ex}
+
+
+Der \it{Ausdruck} $x_1$ hat GN $g(x_1)=2^{21}$ (ungerade 2er-Potenz).
+\vspace{0.5ex}
+
+Die \it{Folge von Ausdrücken} $x_1$ hat GN 
+$g(x_1)=2^{2^{21}}$ (gerade 2er-Potenz).
+
+
+\subsection{Repräsentation von Eigenschaften von Symbolen}
+
+Die folgenden Relationen stellen dar, dass
+eine Zahl ein Symbol einer bestimmten Art darstellt
+(Konstanten-, Variablen-, Funktions- oder Prädikatensymbol)
+oder ein Ausdruck aus genau einem solchen Symbol ist.
+Für die in $\mathrm{S}$ zugelassenen Symbole sind
+diese Relationen primitiv rekursiv.
+
+\begin{itemize}
+\item $IC = \{ n \mid n\mbox{ ist GN eines Konstantensymbols} \}$ 
+\vspace{1ex}
+
+$IC(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 7)$
+\vspace{1ex}
+
+\item $Vb = \{ n \mid n\mbox{ ist GN eines Variablensymbols} \}$ 
+\vspace{1ex}
+
+$Vb(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 5)$
+\vspace{1ex}
+
+\item $FL = \{ n \mid n\mbox{ ist GN eines Funktionssymbols} \}$ 
+\vspace{1ex}
+
+$FL(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 1)$
+\vspace{1ex}
+
+\item $PL = \{ n \mid n\mbox{ ist GN eines Prädikatensymbols} \}$ 
+\vspace{1ex}
+
+$PL(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 3)$
+
+\item $EIC = \{ n \mid n\mbox{ ist GN eines Ausdrucks, der aus einem Konstantensymbol besteht} \}$ 
+\vspace{0.5ex}
+
+$EIC(n)\ = \ (\exists z)_{\leq n}~ (IC(z) \wedge n=2^z)$
+\vspace{1ex}
+
+\item $EVb = \{ n \mid n\mbox{ ist GN eines Ausdrucks, 
+der aus einem Variablensymbol besteht} \}$ 
+\vspace{0.5ex}
+
+$EVb(n)\ = \ (\exists z)_{\leq n} ~ (Vb(z) \wedge n=2^z)$
+\vspace{1ex}
+
+\item $EFL = \{ n \mid n\mbox{ ist GN eines Ausdrucks, 
+         der aus einem Funktionssymbol besteht} \}$ 
+\vspace{0.5ex}
+
+$EFL(n)\ = \ (\exists z)_{\leq n} ~ (FL(z) \wedge n=2^z)$
+\vspace{1ex}
+
+\item $EPL = \{ n \mid n\mbox{ ist GN eines Ausdrucks, 
+           der aus einem Prädikatensymbol besteht} \}$ 
+\vspace{0.5ex}
+
+$EPL(n)\ = \ (\exists z)_{\leq n}~(PL(z) \wedge n=2^z)$
+
+\end{itemize}
+
+Bei Funktions- und Prädikatensymbolen muss die Stelligkeit
+festgestellt werden können.
+Dafür definieren wir die folgenden Funktionen,
+die in $\mathrm{S}$ primitiv rekursiv sind.
+
+\begin{itemize}
+\item $Arg_T(x)=n$, falls $x$ GN von $f^n_j$ ist
+
+$$
+Arg_T(x) = \left(\left\lfloor\frac{x\dminus 1}{8}\right\rfloor\right)_0
+$$
+\item $Arg_P(x)=n$, falls $x$ GN von $A^n_j$ ist
+
+$$
+Arg_P(x) = \left(\left\lfloor\frac{x\dminus 3}{8}\right\rfloor\right)_0
+$$
+\end{itemize}
+
+
+\subsection{Erkennen von Formeln}
+
+Wir wollen nun zeigen, 
+dass die Menge aller Kodierungen von Formeln
+primitiv rekursiv ist.
+D.\,h.\,es gibt eine primitiv rekursive Funktion $h$,
+deren Funktionswert $h(n)=1$ is, falls $n$ die Kodierung
+einer Formel ist, und anderenfalls ist der Funktionswert $0$.
+
+Formeln werden aus atomaren Formeln zusammengesetzt,
+und atomare Formeln haben Terme als Bestandteile.
+Wir wollen eine primitiv rekursive Funktion angeben,
+die entscheidet, ob ein Zahl die Gödelnummer eines Termes ist.
+Diese Funktion ist die charakteristishe Funktion der Menge
+
+\centerline{$Trm=\{ n \mid \mbox{ $n$ ist GN eines Termes}\}$.}
+Terme sind induktiv aufgebaut.
+Die einfachsten Terme sind Konstanten- und Variablensymbole.
+Zum Erkennen dieser Terme können wir $EIC$ und $EVb$ benutzen.
+Die übrigen Terme sind aus einem Funktionssymbol 
+und weiteren Termen zusammengesetzte Ausdrücke.
+Zum Beispiel ist der Term
+$t=f^3_5(x_1, f_2^2(a_3,x_1), f^1_3(f^2_2(a_1,a_2),x_1,a_{13}))$
+zusammengesetzt aus dem Funktionssymbol $f^3_5$ und
+den drei Termen $x_1$, $f_2^2(a_3,x_1)$ und $f^1_3(f^2_2(a_1,a_2),x_1,a_{13})$.
+Diese drei Terme bezeichnen wir als die Zerlegung von $t$.
+Da die Zerlegung eine Folge von Termen ist,
+kann sie mit der Funktion $g$ kodiert werden.
+In diesem Beispiel ist
+$$
+g(x_1, f_2^2(a_3,x_1), f^1_3(f^2_2(a_1,a_2),x_1,a_{13}))
+\ = \ 2^{g(x_1)} \cdot 3^{g(f_2^2(a_3,x_1))} \cdot 5^{g(f^1_3(f^2_2(a_1,a_2),x_1,a_{13}))}
+~ ~ .
+$$
+Sei $m=g(x_1, f_2^2(a_3,x_1), f^1_3(f^2_2(a_1,a_2),x_1,a_{13}))$
+die Kodierung der Zerlegung von $t$.
+Daraus lässt sich die Kodierung $c$ von $t$ gewinnen.
+Die Kodierung des Funktionssymbols von $t$ ist $(c)_0 (=g(f^3_5)$.
+Die Kodierung des ersten Termes der Zerlegung von $t$ ist $(m)_0 (=g(x_1))$,
+die Kodierungen des zweiten und dritten Termes der Zerlegung von $t$ sind
+$(m)_1 (=g(f_2^2(a_3,x_1)))$ und $(m)_2 (=g(f^1_3(f^2_2(a_1,a_2),x_1,a_{13})))$.
+Also gilt
+$$
+t = (c)_0 * 2^3 * (m)_0 * 2^7 * (m)_1 * 2^7 * (m)_2 * 2^5 ~ ~ .
+$$
+Formal drücken wir die Zerlegung eines Termes durch folgendes Prädikat aus.
+\vspace{1ex}
+
+$Zerl_T\ = \ \{ (x,w)\mid$\begin{tabular}[t]{ll}
+                       $x$ ist GN eines Termes $f^n_i(t_1,\ldots,t_k)$ \\
+         und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \cdot \ldots \cdot p_{n-1}^{g(t_n)}$ & $\}$ 
+               \end{tabular}
+
+Dieses Prädikat ist primitiv rekursiv.
+$$
+Zerl_T(x,w) \ = \ 
+\big( x = (x)_0 * 2^3 * 
+         \left(\prod_{i=0}^{Arg_T((x)_0)-2} \left(\left(w\right)_i * 2^7\right) \right)
+          * (w)_{Arg_T((x)_0)-1} * 2^5 \big)
+$$
+\vspace{3ex}
+
+Atomare Formeln können entsprechend in ihre Terme zerlegt werden.
+Dafür benutzen wir $Zerl_A(x,w)$.
+
+$Zerl_A\ = \ \{ (x,w)\mid$\begin{tabular}[t]{ll}
+                       $x$ ist GN einer atomaren Formel $A^n_i(t_1,\ldots,t_k)$ \\
+             und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \cdot \ldots \cdot p_{n-1}^{g(t_n)}$ & $\}$
+               \end{tabular}
+
+Dieses Prädikat ist primitiv rekursiv.
+$$
+Zerl_A(x,w) \ = \ 
+\big( x = (x)_0 * 2^3 * 
+         \left(\prod_{i=0}^{Arg_P((x)_0)-2} \left(\left(w\right)_i * 2^7\right) \right)
+          * (w)_{Arg_P((x)_0)-1} * 2^5 \big)
+$$
+
+Mit diesen Prädikaten können wir
+einfach testen, ob eine Kodierung einen Term bzw.\, eine atomare Formel kodiert.
+Die folgenden Relationen sind primitiv rekursiv.
+
+\begin{itemize}
+\item $Trm=\{ n \mid \mbox{ $n$ ist GN eines Termes}\}$ 
+
+$$
+\begin{array}{rcl}
+Trm(n) & = & EIC(n) ~\vee~ EVb(n) ~\vee~ \\
+       &   &     ( EFL((n)_0) ~\wedge~ 
+             (\exists w)_{<(p_n)^{n^2}} ( Zerl_T(n,w) \wedge 
+                  (\forall i)_{\leq lh(w)} Trm((w)_i) ) ) ~ ~ .
+\end{array}
+$$
+
+\item $Atmfml=\{ n \mid \mbox{ $n$ ist GN einer atomaren Formel}\}$ 
+
+$$
+Atmfml(n) \ = \ EPL((n)_0) ~\wedge~ 
+            (\exists w)_{<(p_n)^{n^2}} ( Zerl_A(n,w) \wedge 
+                  (\forall i)_{\leq lh(w)} Trm((w)_i) ) ) ~ ~ .
+$$
+\end{itemize}
+
+Formeln sind atomare Formeln oder werden aus Teilformeln zusammengesetzt.
+Funktionen, die aus Kodierungen von Teilformeln
+die Kodierung einer daraus zusammengesetzten Formel ergeben,
+sind primitiv rekursiv.
+
+\begin{itemize}
+\item $NegFml(x)=$ die GN der Formel $(\neg \alpha)$,
+falls $x$ die GN von Formel $\alpha$ ist
+\vspace{1ex}
+
+\centerline{$NegFml(x) \ = \ 2^3 * 2^9 * x * 2^5$}
+
+\item $CondFml(x,y)=$ die GN der Formel $(\alpha\rightarrow \beta)$,
+falls $x$ und $y$ die GNn von $\alpha$ und $\beta$ sind
+\vspace{1ex}
+
+\centerline{$CondFml(x,y) \ = \ 2^3 * x * 2^{11} * y * 2^5$}
+
+\item $GenFml(u,v)=$ die GN der Formel $(\forall x ~\alpha)$,
+falls $u$ und $v$ die GNn von $\alpha$ und $x$ sind
+\vspace{1ex}
+
+\centerline{$GenFml(u,v) \ = \ 2^3 * 2^{13} * 2^{v} * u * 2^5$}
+
+\end{itemize}
+
+Daraus können wir die Repräsentation der Relation
+\vspace{1ex}
+
+\centerline{$Fml \ = \ \{ x \mid x \mbox{ ist GN einer Formel} \}$}
+zusammensetzen.
+
+$
+\begin{array}{llll}
+Fml(x) \ = & \multicolumn{3}{l}{Atmfml(x) ~ \vee} \\
+& (\exists z)_{<x} \big[ & (Fml(z)~ \wedge ~ x=NegFml(z)) ~ \vee \\
+& & ( Fml((z)_0) ~ \wedge ~ Fml((z)_1) ~ \wedge ~ x=CondFml((z)_0,(z)_1)) ~\vee \\
+& & ( Fml((z)_0) ~ \wedge ~ Vb((z)_1) ~ \wedge ~ x=GenFml((z)_0,(z)_1) 
+          & \big] \\
+\end{array}
+$
+
+\subsection{Die Diagonalfunktion}
+
+Die Formel $\alpha[x/t]$ entsteht aus der Formel $\alpha$
+durch Ersetzen aller freien Vorkommen der Variablen $x$ durch den Term $t$.
+Wir wollen die Kodierung von $\alpha[x/t]$ 
+berechnen aus den Kodierungen von $\alpha$, $x$ und $t$.
+Dazu beginnen wir bei den Termen, in denen die Ersetzungen
+tatsächlich stattfinden.
+
+$TrmSubst\ = \ \{ (x,y,u,v)\mid$\begin{tabular}[t]{p{0.6\textwidth}l}
+                       wenn im Term mit GN $y$ der Term mit GN $v$
+                       für alle Vorkommen der Variablen mit GN $u$ eingesetzt wird,
+                       dann entsteht der Term mit GN $x$ \\[-3ex] & $ \}$
+               \end{tabular}
+
+Hier entspricht $y$ der Kodierung des Termes $\alpha$,
+$u$ der Kodierung der Variablen $x_i$ und $v$ der Kodierung des Termes $t$.
+$x$ ist dann die Kodierung des Termes $\alpha[x_i/t]$.
+Wir betrachten zuerst die zu unterscheidenden Fälle.
+\begin{enumerate}
+\item wenn $\alpha$ ein Konstantensymbol ist, dann ist $\alpha[x_i/t]=\alpha$
+\item wenn $\alpha=x_i$ die zu ersetzende Variable ist,
+         dann ist $\alpha[x_i/t]=t$
+\item wenn $\alpha=x_j$ eine Variable ungleich $x_i$ ist,
+         dann ist $\alpha[x_i/t]=\alpha$
+\item wenn $\alpha=f^m_j(t_1,\ldots,t_m)$ ist,
+dann ist $\alpha[x_i/t] = f^m_j(t_1[x_i/t],\ldots,t_m[x_i/t])$.
+Die Ersetzungen werden also rekursiv im zusammengesetzten Term vorgenommen.
+\end{enumerate}
+Die folgende Formel drückt genau diese Fallunterscheidung aus.
+Der letzte Fall -- $\alpha$ ist ein zusammengesetzter Term --
+führt wieder dazu, dass der Term zerlegt wird
+und die Ersetzungen auf die Terme der Zerlegung einzeln angewendet werden.
+\vspace{1ex}
+
+$
+\begin{array}{p{10mm}lll}
+\multicolumn{3}{l}{TrmSubst(x,y,u,v) ~ = } \\
+& \multicolumn{3}{l}{Trm(x) ~\wedge~ Trm(y)  ~\wedge~ Vb(u) ~\wedge~ Trm(v) ~\wedge~} \\
+ & \big( & (y=2^u ~\wedge~ x=v) ~\vee \\
+ &       & (EVb(y) ~\wedge~ y\not=2^u ~\wedge~ x=y) ~\vee \\
+ &       & (EIC(y) \wedge x=y) ~\vee \\
+ &      & \begin{array}[t]{ll}
+        (\exists w)_{<(p_y)^{y^2}} (\exists z)_{<(p_x)^{x^2}} & Zerl_T(y,w) ~\wedge~ Zerl_T(x,z) ~\wedge \\
+                    & (\forall i)_{<Arg_T((y)_0)} TrmSubst((z)_i,(w)_i,u,v)~ \wedge \\
+                    & (x)_0=(y)_0
+        \end{array} & \\[-3ex]
+ &      & & \big)
+\end{array}
+$
+\vspace{2ex}
+
+Ersetzungen in atomaren Formeln laufen entsprechend.
+\vspace{1ex}
+
+$AtmfmlSubst\ = \ \{ (x,y,u,v)\mid$\begin{tabular}[t]{p{0.5\textwidth}l}
+                       wenn in der at.Fml. mit GN $y$ der Term mit GN $v$
+                       für alle Vorkommen der Variablen mit GN $u$ eingesetzt wird,
+                       dann entsteht die at.Fml. mit GN $x$ \\[-3ex] & $ \}$
+               \end{tabular}
+
+\vspace{1ex}
+
+$
+\begin{array}{p{10mm}lll}
+\multicolumn{3}{l}{AtmfmlSubst(x,y,u,v) \ = } \\
+& \multicolumn{3}{l}{Atmfml(x) ~\wedge~ Atmfml(y)  ~\wedge~ Vb(u) ~\wedge~ Trm(v) ~\wedge~} \\
+& \big( & \begin{array}[t]{ll}
+        (\exists w)_{<(p_y)^{y^2}} (\exists z)_{<(p_x)^{x^2}} & Zerl_A(y,w) ~\wedge~ Zerl_A(x,z) ~\wedge \\
+                    & (\forall i)_{<Arg_P((y)_0)} TrmSubst((z)_i,(w)_i,u,v)~ \wedge \\
+                    & (x)_0=(y)_0
+        \end{array} & \\[-3ex]
+&      & & \big)
+\end{array}
+$
+\vspace{1ex}
+
+Von den Ersetzungen in den atomaren Formeln
+kommen wir nun zu Ersetzungen in beliebigen Formeln.
+Dazu definieren wir eine Funktion,
+die die Kodierung der durch Ersetzung entstandene Formel bestimmt.
+
+\vspace{1ex}
+
+$Subst(y,u,v)\ = \ x$\begin{tabular}[t]{p{0.7\textwidth}l}
+                       für die GN $x$ der Formel, die entsteht,
+                       wenn in der Formel mit GN $y$ der Term mit GN $v$
+                       für alle freien Vorkommen der Variablen mit GN $u$ eingesetzt wird
+               \end{tabular}
+
+\vspace{1ex}
+
+Hier ist folgende Fallunterscheidung nötig.
+\begin{enumerate}
+\item wenn $\alpha$ eine atomare Formel ist,
+dann findet die Ersetzung mittels $AtmfmlSubst$ statt
+\item wenn $\alpha=(\neg \beta)$,
+dann gilt $\alpha[x_i/t] = (\neg \beta[x_i/t])$
+\item wenn $\alpha=(\beta\rightarrow\gamma)$,
+dann gilt $\alpha[x_i/t] = (\beta[x_i/t]\rightarrow\gamma[x_i/t])$
+\item wenn $\alpha=(\forall x_i ~ \beta)$,
+dann gilt $\alpha[x_i/t] = \alpha$
+\item wenn $\alpha=(\forall x_j ~ \beta)$ für $x_i\not=x_j$,
+dann gilt $\alpha[x_i/t] = (\forall x_j ~ \beta[x_i/t])$
+\end{enumerate}
+Diese Fallunterscheidung findet sich in folgender Formel wieder,
+die zeigt, dass $Subst$ primitiv rekursiv ist.
+Da durch Ersetzung stets eine Formel entsteht,
+hat der min-Operator auch ein Ergebnis.
+\todo{Schranke für den min-Operator in der Formel}
+\vspace{1ex}
+
+{
+\renewcommand{\arraystretch}{1.3}
+$
+\begin{array}{rlll}
+\multicolumn{3}{l}{Subst(y,u,v) \ =} \\
+\ \ \  \min\limits_{x}
+& \multicolumn{3}{l}{AtmfmlSubst(x,y,u,v) ~\vee~} \\
+& \begin{array}[t]{llll}
+(\exists w)_{<y}(\exists z)_{<y}~ \Big[ 
+            & \big( 
+              Fml(z)~ \wedge ~ y=NegFml(z) ~\wedge~ \\ 
+            & ~ ~ ~ x=NegFml(Subst(z,u,v)) \big) ~\vee \\
+            & \big( Fml(w) ~ \wedge ~  Fml(z) ~\wedge~  y=CondFml(w,z) ~\wedge~\\ 
+            & ~ ~ ~ x=CondFml(Subst(w,u,v),Subst(z,u,v)) \ \ \ \big) ~ \vee \\
+            & \big( u=w ~\wedge~ y=GenFml(z,w) ~\wedge~ x=y \big) ~\vee \\
+            & \big( u\not=v ~\wedge~ Vb(w) ~\wedge~ y=GenFml(z,w) ~\wedge \\
+            & ~ ~ ~ x=GenFml(Subst(z,u,v),w) \big) & \Big]
+        \end{array} &  \\
+\end{array}
+$
+}
+\vspace{1ex}
+
+Mit der Funktion $Subst$ lässt sich feststellen,
+ob eine Formel ein freies Vorkommen einer Variablen enthält.
+
+\begin{itemize}
+\item
+$Fr\ = \ \{ (y,u)\mid$\begin{tabular}[t]{p{0.5\textwidth}l}
+                       in der Formel mit GN $y$ kommt Variable mit GN $u$ frei vor
+                       \\[-3ex] & $ \}$
+               \end{tabular}
+
+\vspace{1ex}
+
+\centerline{$Fr(y,u) \ = \ 
+       Fml(y) ~\wedge~ Vb(u) ~\wedge~ \neg (y=Subst(y,u,2^{13+8\cdot y}))$ \ \ .}
+
+\end{itemize}
+
+Damit kommen wir zur Diagonalfunktion.
+Sei $\alpha$ eine Formel mit freier Variablen $x_1$.
+Sei $c_{\alpha}$ die Kodierung von $\alpha$.
+Die Diagonalfunktion berechnet aus der Kodierung von $\alpha$
+die Kodierung von $\alpha[x_1/\overline{c_{\alpha}}]$.
+Im ersten Schritt brauchen wir dazu noch eine Funktion,
+die aus der Zahl $m$ die Kodierung des Termes $\overline{m}$ berechnet.
+
+\begin{itemize}
+\item
+$Num(m)=$ die GN von $\overline{m}$
+
+$
+\begin{array}{rcl}
+Num(0) & = & 2^{15} (=2^{g(a_1)}) \\
+Num(m+1) & = & 2^{49} * 2^3 * Num(m) * 2^5  ( = f^1_1(\overline{m}) )
+\end{array}
+$
+
+\item $D(u)=$ die GN von $\alpha[x_1/\overline{u}]$, falls $u$ die GN von $\alpha$ ist
+\vspace{1ex}
+
+$D(u) ~=~ Subst(u,21,Num(u))$ \ \ .
+\end{itemize}
+
+Die Funktion $D$ heißt \emph{Diagonalfunktion}
+und ist primitiv rekursiv.
+
+
+\subsection{Kodierung von Beweisen}
+
+Zum Abschluss kommen wir noch zur Kodierung von Beweisen.
+Beweise sind Folgen von Formeln,
+die Axiome sind oder aus Ableitungsregeln (modus ponens, Generalisierung)
+aus zuvor im Beweis vorkommenden Formeln entstehen.
+Die Kodierungen von Formeln,
+die durch Ableitungsregeln aus anderen Formeln entstehen,
+sind primitiv rekursiv.
+
+\begin{itemize}
+\item $\mathit{MP}=\{(x,y,z)\mid$\begin{tabular}[t]{ll}
+                             Ausdruck mit GN $z$ entsteht aus \\
+                            Ausdrücken mit GNn $x$ und $y$ durch modus ponens & $\}$
+                        \end{tabular}
+
+$
+\mathit{MP}(x,y,z) \ = \ ( y= 2^3 * x * 2^{11} * z * 2^5) \wedge Fml(x) \wedge Fml(z)
+$
+
+\item $Gen=\{(x,y)\mid $\begin{tabular}[t]{ll} Ausdruck mit GN $y$ entsteht\\
+               aus Ausdruck mit GN $x$ durch Generalisierung & $\}$
+                        \end{tabular}
+
+$
+Gen(x,y) \ = \ (\exists v)_{<y}~(EVb(v) \wedge y=2^3*2^{13}*v*x*2^5) \wedge Fml(x)
+$
+\end{itemize}
+
+Die Relation
+
+\centerline{$Ax \ =\ \{ x \mid \mbox{$x$ ist GN eines Axioms} \}$}
+ist primitiv rekursiv für die Axiome von $\mathrm{S}$.
+Damit ergibt sich, dass auch Kodierungen von Beweisen primitiv rekursiv sind.
+
+$\mathit{Prf} \ = \ \{ y \mid \mbox{$y$ ist GN eines Beweises} \}$
+
+Dazu betrachten wir folgende induktive Definition von Beweisen.
+
+Eine Folge $\alpha_1,\alpha_2,\ldots,\alpha_n$ ist ein Beweis, falls
+\begin{enumerate}
+\item $n=1$ und $\alpha_1$ ein Axiom ist, oder
+\item $\alpha_n$ ein Axiom ist, oder
+\item $\alpha_1,\alpha_2,\ldots,\alpha_{n-1}$ ein Beweis ist
+      und $\alpha_n$ mittels Generalisierung aus $\alpha_i$ mit $i<n$ entsteht.
+\item $\alpha_1,\alpha_2,\ldots,\alpha_{n-1}$ ein Beweis ist
+      und $\alpha_n$ mittels modus ponens aus $\alpha_i$ und $\alpha_j$
+      mit $i,j<n$ entsteht, oder
+\end{enumerate}
+Folgender Ausdruck zeigt, dass 
+$\mathit{Prf}$ eine primitiv rekursive Relation ist.
+
+
+{
+\renewcommand{\arraystretch}{1.3}
+$
+\begin{array}{p{8mm}p{10mm}l}
+\multicolumn{3}{l}{\mathit{Prf}(y) \ = } \\
+&\multicolumn{2}{l}{(\exists u)_{<y}(\exists v)_{<y}(\exists w)_{<y}(\exists z)_{<y}} \\
+& & \big( y=2^w ~\wedge~ Ax(w) \big) ~ ~ \vee \\
+& & \big( \mathit{Prf}(u) ~\wedge~ y=u*2^v ~\wedge~ Ax(v) \big) ~ ~ \vee \\
+& &  \big( (\mathit{Prf}(u) ~\wedge~ Fml((u)_w) ~\wedge~ y = u*2^v ~\wedge~ Gen((u)_w,v)\big) ~ ~ \vee \\
+& & \big( \mathit{Prf}(u) ~\wedge~ Fml((u)_z ~\wedge~ Fml((u)_w)) ~\wedge~ y = u*2^v 
+                ~\wedge~ \mathit{MP}((u)_z,(u)_w,v) \big)
+\end{array}
+$
+}
 
 
 \clearpage
@@ -6089,7 +6650,7 @@ mit $C_{i}(n) =i$ (streng) repräsentierbar ist.
 \subsection*{Aufgabe 3}
 Geben Sie Formeln zur Repräsentationen der folgenden Funktionen an
 \begin{gather*}
-  f(n) = \lfloor \frac{n}{2} \rfloor \qquad
+  f(n) = \left\lfloor \frac{n}{2} \right\rfloor \\
      f(n) = \begin{cases}
               n-1 & \text{falls $n$ ungerade}\\
               n+1 & \text{sonst}
