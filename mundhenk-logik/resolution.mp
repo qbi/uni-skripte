@@ -1,4 +1,4 @@
-%%  Ver- und Entschlüsselung
+%%  Resolutionsgraphen
 
 verbatimtex
 %&latex
@@ -18,7 +18,7 @@ etex ;
 % input MMgraphtools ;
 input TEX;
 
-le:=1mm ;            %% Festlegung der Längeneinheit
+le:=1mm ;            %% Festlegung der L�ngeneinheit
 abstand := 12 ;
 
 duenn := 1pt ;       %% Strichdicken
@@ -394,6 +394,140 @@ label(btex $\{B\}$ etex, p[11]+(0,-3)*le) ;
 label(btex $\{\neg B\}$ etex, p[12]+(0,-3)*le) ;
 
 label(btex $\Box$ etex, p[13]+(0,-3)*le) ;
+
+endfig;
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Noch ein Resolutionsbeispiel (Aufgabenblatt 4, Aufg 1)
+
+beginfig(9) ;
+
+breite := 20 ;
+hoehe := 12 ;
+
+p[1] := null ;
+p[2] := p[1] + (breite,0)*le ;
+p[3] := p[2] + (breite,0)*le ;
+p[4] := p[3] + (breite,0)*le ;
+p[5] := p[4] + (breite,0)*le ;
+p[6] := p[5] + (breite,0)*le ;
+p[7] := p[6] + (breite,0)*le ;
+p[8] := p[7] + (breite,0)*le ;
+
+
+p[10] := 0.5[p[1],p[2]] + (0,-hoehe)*le ;
+p[11] := 0.5[p[3],p[4]] + (0,-hoehe)*le ;
+p[12] := 0.5[p[5],p[6]] + (0,-hoehe)*le ;
+p[13] := 0.5[p[7],p[8]] + (0,-hoehe)*le ;
+
+p[20] := 0.5[p[10],p[11]] + (0,-hoehe)*le ;
+p[21] := 0.5[p[12],p[13]] + (0,-hoehe)*le ;
+
+p[30] := 0.5[p[20],p[21]] + (0,-hoehe)*le ;
+
+
+draw p[1] -- p[10] ;
+draw p[2] -- p[10] ;
+draw p[3] -- p[11] ;
+draw p[4] -- p[11] ;
+draw p[5] -- p[12] ;
+draw p[6] -- p[12] ;
+draw p[7] -- p[13] ;
+draw p[8] -- p[13] ;
+
+
+draw p[10]+(0,-5)*le -- p[20] ;
+draw p[11]+(0,-5)*le -- p[20] ;
+draw p[12]+(0,-5)*le -- p[21] ;
+draw p[13]+(0,-5)*le -- p[21] ;
+
+draw p[20]+(0,-5)*le -- p[30] ;
+draw p[21]+(0,-5)*le -- p[30] ;
+
+
+label(btex $\{\neg A, \neg B, \neg C\}$ etex, p[1]+(0,3)*le) ;
+label(btex $\{\neg A, \neg B,      C\}$ etex, p[2]+(0,3)*le) ;
+label(btex $\{\neg A,      B, \neg C\}$ etex, p[3]+(0,3)*le) ;
+label(btex $\{\neg A,      B,      C\}$ etex, p[4]+(0,3)*le) ;
+label(btex $\{     A, \neg B, \neg C\}$ etex, p[5]+(0,3)*le) ;
+label(btex $\{     A, \neg B,      C\}$ etex, p[6]+(0,3)*le) ;
+label(btex $\{     A,      B, \neg C\}$ etex, p[7]+(0,3)*le) ;
+label(btex $\{     A,      B,      C\}$ etex, p[8]+(0,3)*le) ;
+
+label(btex $\{\neg A, \neg B \}$ etex, p[10]+(0,-3)*le) ;
+label(btex $\{\neg A,      B \}$ etex, p[11]+(0,-3)*le) ;
+label(btex $\{     A, \neg B \}$ etex, p[12]+(0,-3)*le) ;
+label(btex $\{     A,      B \}$ etex, p[13]+(0,-3)*le) ;
+
+label(btex $\{\neg A \}$ etex, p[20]+(0,-3)*le) ;
+label(btex $\{     A \}$ etex, p[21]+(0,-3)*le) ;
+
+label(btex $\Box$ etex, p[30]+(0,-3)*le) ;
+
+
+
+endfig;
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Noch ein Resolutionsbeispiel (Aufgabenblatt 4, Aufg 2)
+
+beginfig(10) ;
+
+breite := 20 ;
+hoehe := 12 ;
+
+p[1] := null ;
+p[2] := p[1] + (breite,0)*le ;
+p[3] := p[2] + (breite,0)*le ;
+p[4] := p[3] + (breite,0)*le ;
+p[5] := p[4] + (breite,0)*le ;
+p[6] := p[5] + (breite,0)*le ;
+p[7] := p[6] + (breite,0)*le ;
+p[8] := p[7] + (breite,0)*le ;
+
+
+p[10] := 0.5[p[1],p[2]] + (0,-hoehe)*le ;
+p[11] := p[3] + (0,-hoehe)*le ;
+
+p[20] := 0.5[p[11],p[12]] + (0,-hoehe)*le ;
+
+
+p[30] := 0.5[p[20],p[21]] + (0,-hoehe)*le ;
+
+
+draw p[3] -- p[11] ;
+draw p[4] -- p[11] ;
+draw p[3] -- p[12] ;
+draw p[5] -- p[12] ;
+
+
+
+draw p[12]+(0,-5)*le -- p[20] ;
+draw p[11]+(0,-5)*le -- p[20] ;
+
+
+draw p[20]+(0,-5)*le -- p[30] ;
+draw p[7] -- p[30] ;
+
+
+label(btex $\{A, B, \neg C\}$ etex, p[1]+(0,3)*le) ;
+label(btex $\{\neg A, B, D\}$ etex, p[2]+(0,3)*le) ;
+label(btex $\{C, D \}$ etex, p[3]+(0,3)*le) ;
+label(btex $\{\neg A, \neg D \}$ etex, p[4]+(0,3)*le) ;
+label(btex $\{     A, C, \neg D\}$ etex, p[5]+(0,3)*le) ;
+label(btex $\{ \neg B\}$ etex, p[6]+(0,3)*le) ;
+label(btex $\{ \neg C\}$ etex, p[7]+(0,3)*le) ;
+
+
+label(btex $\{\neg A,      C \}$ etex, p[11]+(0,-3)*le) ;
+label(btex $\{     A,      C \}$ etex, p[12]+(0,-3)*le) ;
+
+label(btex $\{ C \}$ etex, p[20]+(0,-3)*le) ;
+
+
+label(btex $\Box$ etex, p[30]+(0,-3)*le) ;
 
 
 
