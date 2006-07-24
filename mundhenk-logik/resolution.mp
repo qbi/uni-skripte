@@ -529,9 +529,190 @@ label(btex $\{ C \}$ etex, p[20]+(0,-3)*le) ;
 
 label(btex $\Box$ etex, p[30]+(0,-3)*le) ;
 
-
-
 endfig;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Illustration zu konsistenten Erweiterungen von Theorien
+%
+
+beginfig(11) ;
+
+breite := 40 ;
+hoehe  := 20 ;
+
+pair zz[];
+
+zz[0] := null+(-breite,0)*le ;
+zz[2] := null+(breite,0)*le ;
+zz[1] := null+(0,hoehe)*le ;
+zz[3] := -zz[1] ;
+
+path aussenkreis ;
+aussenkreis := zz0 .. zz1 .. zz2 .. zz3 .. cycle ;
+fill aussenkreis withcolor 0.9white ;
+
+path mittelachse ;
+mittelachse := zz1--zz3 ;
+
+path abpp ;
+abpp := buildcycle(aussenkreis, mittelachse) ;
+fill abpp withcolor white ;
+draw aussenkreis ;
+
+pair formeln[] ;
+
+formeln0 := null +(-(5*breite)/8, 10)*le ;
+formeln1 := null +((5*breite)/8, 10)*le ;
+thbreite := 9;
+thhoehe := 10 ;
+
+path formelkreis ;
+formelkreis :=  formeln0+(0,3)*le .. formeln0+(thbreite,-thhoehe)*le ..
+     formeln0+(0,-2*thhoehe)*le .. formeln0+(-thbreite,-thhoehe)*le .. cycle ;
+fill formelkreis withcolor 0.7white ;
+
+
+%% Die Formeln und Theoreme der abgeschlossenen Erweiterung von K
+
+formeln2 := null +(-(2*breite)/8, hoehe/2)*le ;
+formeln3 := null +((2*breite)/8+2, hoehe/2)*le ;
+
+abbreite := 12 ;
+abhoehe := 20 ;
+
+label(btex $\neg\alpha_6$ etex, formeln2) ;
+label(btex $\neg\alpha_{13}$ etex, formeln2+(2,-9)*le) ;
+label(btex $\alpha_{23}$ etex, formeln2+(4,-18)*le) ;
+label(btex $\neg\alpha_{45}$ etex, formeln2+(0,-24)*le) ; 
+
+label(btex $\alpha_6$ etex, formeln3) ;
+label(btex $\alpha_{13}$ etex, formeln3+(-2,-9)*le) ;
+label(btex $\neg\alpha_{23}$ etex, formeln3+(-4,-18)*le) ;
+label(btex $\alpha_{45}$ etex, formeln3+(0,-24)*le) ; 
+
+
+
+%% Die Formeln und Theoreme der (untersten) Theorie K
+
+
+draw formelkreis ;
+
+label(btex $\alpha_4$ etex, formeln0) ;
+label(btex $\neg\alpha_{12}$ etex, formeln0+(-4,-6)*le) ;
+label(btex $\alpha_{42}$ etex, formeln0+(6,-9)*le) ;
+label(btex $\neg\alpha_{52}$ etex, formeln0+(0,-14)*le) ; 
+
+label(btex $\neg\alpha_4$ etex, formeln1) ;
+label(btex $\alpha_{12}$ etex, formeln1+(-4,-6)*le) ;
+label(btex $\neg\alpha_{42}$ etex, formeln1+(6,-9)*le) ;
+label(btex $\alpha_{52}$ etex, formeln1+(0,-14)*le) ; 
+
+
+endfig ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Illustration zu konsistenten und T-produktiven Erweiterungen von Theorien
+%
+
+beginfig(12) ;
+
+breite := 40 ;
+hoehe  := 20 ;
+
+pair zz[];
+
+zz[0] := null+(-breite,0)*le ;
+zz[2] := null+(breite,0)*le ;
+zz[1] := null+(0,hoehe)*le ;
+zz[3] := -zz[1] ;
+
+path aussenkreis ;
+aussenkreis := zz0 .. zz1 .. zz2 .. zz3 .. cycle ;
+
+path aussenrechteck ;
+aussenrechteck := null+(-1.2*breite, 1.2*hoehe)*le --
+                  null+(1.2*breite,  1.2*hoehe)*le --
+                  null+(1.2*breite, -1.2*hoehe)*le --
+                  null+(-1.2*breite, -1.2*hoehe)*le -- cycle ;
+fill aussenrechteck withcolor 0.9white ;
+
+path mittelachse ;
+mittelachse := null+(0,1.5*hoehe)*le--null+(0,-1.5*hoehe)*le ;
+
+path abpp ;
+abpp := buildcycle(aussenrechteck, mittelachse) ;
+fill abpp withcolor white ;
+draw aussenkreis ;
+draw aussenrechteck ;
+
+pair formeln[] ;
+
+formeln0 := null +(-(5*breite)/8, 10)*le ;
+formeln1 := null +((5*breite)/8, 10)*le ;
+thbreite := 9;
+thhoehe := 10 ;
+
+path formelkreis ;
+formelkreis :=  formeln0+(0,3)*le .. formeln0+(thbreite,-thhoehe)*le ..
+     formeln0+(0,-2*thhoehe)*le .. formeln0+(-thbreite,-thhoehe)*le .. cycle ;
+fill formelkreis withcolor 0.7white ;
+
+%% Die Formeln, die durch die neuen Konstantensymbole hinzukommen
+
+formeln4:=null+(-1*breite,1*hoehe)*le ;
+formeln5:=null+(1*breite,1*hoehe)*le ;
+
+label(btex $\neg\alpha_1$ etex, formeln4) ;
+label(btex $\alpha_5$ etex, formeln4+(-1,-6)*le ) ;
+label(btex $\alpha_{17}$ etex, formeln4+(12,0)*le ) ;
+label(btex $\neg \alpha_{4711}$ etex, formeln4+(6,-2*hoehe)*le ) ;
+
+label(btex $\alpha_1$ etex, formeln5) ;
+label(btex $\neg\alpha_5$ etex, formeln5+(1,-6)*le ) ;
+label(btex $\neg\alpha_{17}$ etex, formeln5+(-12,0)*le ) ;
+label(btex $\alpha_{4711}$ etex, formeln5+(-6,-2*hoehe)*le ) ;
+
+
+%% Die Formeln und Theoreme der abgeschlossenen Erweiterung von K
+
+formeln2 := null +(-(2*breite)/8, hoehe/2)*le ;
+formeln3 := null +((2*breite)/8+2, hoehe/2)*le ;
+
+abbreite := 12 ;
+abhoehe := 20 ;
+
+label(btex $\neg\alpha_6$ etex, formeln2) ;
+label(btex $\neg\alpha_{13}$ etex, formeln2+(2,-9)*le) ;
+label(btex $\alpha_{23}$ etex, formeln2+(4,-18)*le) ;
+label(btex $\neg\alpha_{45}$ etex, formeln2+(0,-24)*le) ; 
+
+label(btex $\alpha_6$ etex, formeln3) ;
+label(btex $\alpha_{13}$ etex, formeln3+(-2,-9)*le) ;
+label(btex $\neg\alpha_{23}$ etex, formeln3+(-4,-18)*le) ;
+label(btex $\alpha_{45}$ etex, formeln3+(0,-24)*le) ; 
+
+
+
+%% Die Formeln und Theoreme der (untersten) Theorie K
+
+
+%draw formelkreis ;
+
+label(btex $\alpha_4$ etex, formeln0) ;
+label(btex $\neg\alpha_{12}$ etex, formeln0+(-4,-6)*le) ;
+label(btex $\alpha_{42}$ etex, formeln0+(6,-9)*le) ;
+label(btex $\neg\alpha_{52}$ etex, formeln0+(0,-14)*le) ; 
+
+label(btex $\neg\alpha_4$ etex, formeln1) ;
+label(btex $\alpha_{12}$ etex, formeln1+(-4,-6)*le) ;
+label(btex $\neg\alpha_{42}$ etex, formeln1+(6,-9)*le) ;
+label(btex $\alpha_{52}$ etex, formeln1+(0,-14)*le) ; 
+
+
+endfig ;
 
 
 end.
