@@ -714,5 +714,52 @@ label(btex $\alpha_{52}$ etex, formeln1+(0,-14)*le) ;
 
 endfig ;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Das "nette Bildchen" von der Zerlegung der al.Formeln
+%  in gültige, unerfüllbare und alle anderen
+%
+
+beginfig(13) ;
+
+breite := 60 ;
+hoehe  := 30 ;
+
+pair zz[];
+
+zz[0] := null+(-breite,0)*le ;
+zz[2] := null+(breite,0)*le ;
+zz[1] := null+(0,hoehe)*le ;
+zz[3] := -zz[1] ;
+
+path aussenkreis ;
+aussenkreis := zz0 .. zz1 .. zz2 .. zz3 .. cycle ;
+draw aussenkreis ;
+
+path grenze[] ;
+grenze[1] := aussenkreis intersectionpoint (null -- null+(-0.5*breite,hoehe)*le)
+            ... null +(-0.3*breite,0)*le ...
+             aussenkreis intersectionpoint (null -- null+(-0.5*breite,-hoehe)*le) ;
+draw grenze[1] ;
+
+grenze[2] := aussenkreis intersectionpoint (null -- null+(0.5*breite,hoehe)*le)
+            ... null +(0.3*breite,0)*le ...
+             aussenkreis intersectionpoint (null -- null+(0.5*breite,-hoehe)*le) ;
+draw grenze[2] ;
+
+label(btex $A\rightarrow(B\rightarrow A)$ etex, null+(-0.6*breite,10)*le) ;
+label(btex $\neg(A\vee \neg B)\rightarrow \neg A$ etex, null+(-0.7*breite,0)*le) ;
+label(btex Tautologien etex, null+(-0.6*breite,-14)*le) ;
+
+label(btex $A \wedge \neg A$ etex, null+(0.6*breite,10)*le) ;
+label(btex $\neg(A \rightarrow (\neg A \rightarrow B))$ etex, null+(0.7*breite,0)*le) ;
+label(btex unerf\"ullbare Formeln etex, null+(0.63*breite,-14)*le) ;
+
+label(btex $A \wedge (B \vee \neg A)$ etex, null+(0,10)*le) ;
+label(btex $(A \rightarrow B) \vee (\neg A \wedge B)$ etex, null) ;
+label(btex erf\"ullbare Formeln, die etex, null+(0,-14)*le) ;
+label(btex keine Tautologien sind etex, null+(0,-19)*le) ;
+endfig ;
+
 
 end.
