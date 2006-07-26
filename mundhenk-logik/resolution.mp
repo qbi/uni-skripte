@@ -1,4 +1,4 @@
-%%  Resolutionsgraphen
+%%  Resolutionsgraphen und mehr
 
 verbatimtex
 %&latex
@@ -761,5 +761,209 @@ label(btex erf\"ullbare Formeln, die etex, null+(0,-14)*le) ;
 label(btex keine Tautologien sind etex, null+(0,-19)*le) ;
 endfig ;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Der Aufbau einer Formel
+
+beginfig(14) ;
+
+def unter(expr pp) =
+pp+(0,-3)*le 
+enddef ;
+
+def ueber(expr pp)=
+pp+(0,3)*le 
+enddef ;
+
+def punter(expr pp)=
+pp+(0,-6)*le
+enddef ;
+
+
+breite := 20 ;
+
+hoehe := 12; 
+
+pair p[] ;
+
+p[0] := null ;
+p[1] := null + (breite,0)*le ;
+p[2] := p[1] + (breite,0)*le ;
+
+label(btex $A$ etex, unter(p[0])) ;
+label(btex $B$ etex, unter(p[2])) ;
+
+
+p[3] := p[1] + (0,-hoehe*le) ;
+label(btex $\neg A$ etex, unter(p[3])) ;
+
+draw punter(p[0])--p[3] ;
+
+p[4]:=p[3]+(breite/2,-hoehe)*le ;
+label(btex $\neg A\rightarrow B$ etex, unter(p[4])) ;
+
+draw punter(p[3]) -- p[4] ;
+draw punter(p[2]) -- p[4] ;
+
+p[5]:=p[4]+(0,-hoehe)*le ;
+label(btex $\neg(\neg A\rightarrow B)$ etex, unter(p[5])) ;
+draw punter(p[4]) -- p[5] ;
+
+p[6]:=p[5]+(-breite/2,-hoehe)*le ;
+label(btex $A\rightarrow \neg(\neg A\rightarrow B)$ etex, unter(p[6])) ;
+draw punter(p[5]) -- p[6] ;
+draw punter(p[0]) -- p[6] ;
+
+
+
+endfig ;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Der Aufbau einer Formel
+
+beginfig(15) ;
+
+def unter(expr pp) =
+pp+(0,-3)*le 
+enddef ;
+
+def ueber(expr pp)=
+pp+(0,3)*le 
+enddef ;
+
+def punter(expr pp)=
+pp+(0,-6)*le
+enddef ;
+
+
+breite := 20 ;
+
+hoehe := 12; 
+
+pair p[] ;
+
+p[0] := null ;
+p[1] := null + (breite,0)*le ;
+p[2] := p[1] + (breite,0)*le ;
+
+label(btex $\mathcal{A} \vdash A$ etex, unter(p[0])) ;
+label(btex $\mathcal{A} \vdash \neg B$ etex, unter(p[2])) ;
+
+
+p[3] := p[1] + (0,-hoehe*le) ;
+label(btex $\mathcal{A} \vdash \neg\neg A$ etex, unter(p[3])) ;
+
+draw punter(p[0])--p[3] ;
+
+p[4]:=p[3]+(breite/2,-hoehe)*le ;
+label(btex $\mathcal{A} \vdash \neg A\rightarrow B$ etex, unter(p[4])) ;
+
+draw punter(p[3]) -- p[4] ;
+draw punter(p[2]) -- p[4] ;
+
+p[5]:=p[4]+(0,-hoehe)*le ;
+label(btex $\mathcal{A} \vdash \neg\neg(\neg A\rightarrow B)$ etex, unter(p[5])) ;
+draw punter(p[4]) -- p[5] ;
+
+p[6]:=p[5]+(-breite/2,-hoehe)*le ;
+label(btex $\mathcal{A} \vdash \neg(A\rightarrow \neg(\neg A\rightarrow B)$ etex, unter(p[6]))) ;
+draw punter(p[5]) -- p[6] ;
+draw punter(p[0]) -- p[6] ;
+
+
+
+endfig ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Der Aufbau eines Beweises fuer eine Formel
+
+beginfig(16) ;
+
+def unter(expr pp) =
+pp+(0,-3)*le 
+enddef ;
+
+def ueber(expr pp)=
+pp+(0,3)*le 
+enddef ;
+
+def punter(expr pp)=
+pp+(0,-6)*le
+enddef ;
+
+
+breite := 30 ;
+
+hoehe := 12; 
+
+pair p[] ;
+
+p[0] := null ;
+p[1] := null + (breite,0)*le ;
+p[2] := p[1] + (breite,0)*le ;
+
+label(btex \begin{array}[t]{llr}
+      (1) & A & \mbox{Hypothese}
+    \end{array}
+     etex, unter(p[0])) ;
+
+label(btex     \begin{array}[t]{llr}
+      (2) & \neg B &\mbox{Hypothese}
+    \end{array}
+ etex, unter(p[2])) ;
+
+
+p[3] := p[1] + (0,-hoehe*le) ;
+label(btex  
+    \begin{array}[t]{llr}
+      (3) & A \rightarrow \neg\neg A &\mbox{Lemma}\\
+      (4) & \neg\neg A &\mbox{MP 1,3}
+    \end{array}
+ etex, unter(unter(p[3]))) ;
+
+draw punter(p[0])--p[3] ;
+
+p[4]:=p[3]+(breite/2,-1.5*hoehe)*le ;
+label(btex
+    \begin{array}[t]{llr}
+      (5) & \neg\neg A \rightarrow (\neg A\rightarrow B)
+         &\mbox{Lemma}\\
+      (6) & \neg A\rightarrow B &\mbox{MP 4,5}
+    \end{array}
+       etex, unter(unter(p[4]))) ;
+
+draw punter(punter(p[3])) -- p[4] ;
+draw punter(p[2]) -- p[4] ;
+
+p[5]:=p[4]+(0,-1.5*hoehe)*le ;
+label(btex
+    \begin{array}[t]{llr}
+      (7)& (\neg A\rightarrow B) \rightarrow \neg\neg (\neg
+         A\rightarrow B) &\mbox{Lemma}\\
+      (8) & \neg\neg(\neg A\rightarrow B) &\mbox{MP 6,7}
+    \end{array}
+    etex, unter(unter(p[5]))+(4,0)*le) ;
+draw punter(punter(p[4])) -- p[5] ;
+
+p[6]:=p[5]+(-breite,-1.5*hoehe)*le ;
+label(btex       
+      \begin{array}[t]{llr}
+      (9) & A\rightarrow(\neg\neg (\neg A\rightarrow B)\rightarrow
+         \neg(A \rightarrow \neg(\neg A\rightarrow B)))
+         &\mbox{Lemma}\\
+      (10) & \neg\neg (\neg A\rightarrow B)\rightarrow
+         \neg(A \rightarrow \neg(\neg A\rightarrow B))
+         &\mbox{MP 1,3}\\
+      (11) &  \neg(A \rightarrow \neg(\neg A\rightarrow B))
+         &\mbox{MP 2,4}
+      \end{array}
+  etex, unter(unter(unter(p[6]))) +(19,0)*le) ;
+draw punter(punter(p[5])) -- p[6] ;
+draw punter(p[0]) -- p[6] ;
+
+
+
+endfig ;
 
 end.

@@ -1381,7 +1381,11 @@ Für alle al. Formeln $\alpha$ und $\beta$ gilt $\neg\alpha, \alpha \Lvdash \bet
 
 Unser Ziel ist der Beweis,
 dass die Theoreme von $\mathrm{L}$ genau die Tautologien sind.
-Die eine Beweisrichtung ist relativ einfach.
+Die eine Beweisrichtung ist relativ einfach:
+jedes Theorem ist eine Tautologie.
+Diese Eigenschaft von $\mathrm{L}$ heißt \emph{Korrektheit}.
+Man kann nichts \glqq falsches\grqq -- was keine Tautologie ist --
+beweisen.
 
 \begin{satz}[Korrektheit von $\mathrm{L}$]\label{satz:1}
   \index{Korrektheit}
@@ -1414,7 +1418,9 @@ Die eine Beweisrichtung ist relativ einfach.
   \end{proof}
 \end{satz}
 
-Die andere Beweisrichtung ist schwieriger.
+Die andere Beweisrichtung ist schwieriger:
+jede Tautologie ist ein Theorem.
+Diese Eigenschaft von $\mathrm{L}$ heißt \emph{Vollständigkeit}.
 Die folgenden Sätze und Lemmata führen dorthin.
 
 
@@ -1695,17 +1701,25 @@ Nocheinmal als Zusammenfassung alle gezeigten Theoreme:
 
 \section{Vollständigkeit von \texorpdfstring{$\mathrm{L}$}{L}}
 
-\glqq Vollständigkeit von $\mathrm{L}$\grqq\xspace bedeutet, dass jede aussagenlogische
-Tautologie ein Theorem von $\mathrm{L}$ ist. (\glqq Korrektheit von
-$\mathrm{L}$\grqq\xspace wiederum bedeutet: jedes Theorem von $\mathrm{L}$ ist eine
-aussagenlogische Tautologie. -- \autoref{satz:1})
+\glqq Vollständigkeit von $\mathrm{L}$\grqq\xspace bedeutet, dass jede
+Tautologie ein Theorem von $\mathrm{L}$ ist. 
 
-Im ersten Schritt werden wir zeigen, dass
+Im ersten Schritt (\autoref{satz:2}) werden wir zeigen, dass
 aus einer Belegung -- das ist ja eine Menge von Literalen -- $\cA$,
 unter der die Formel $\alpha$ den Wahrheitswert $w$ hat,
 die Formel $\alpha$ gefolgert werden kann (d.\,h. $\cA\Lvdash \alpha$).
-Ebenso kann man zeigen, dass für eine Belegung $\mathcal{A}'$, 
-die die Formel $\alpha$ falsch macht, gilt: $\mathcal{A}' \Lvdash \neg\alpha$.
+
+Im zweiten Schritt (\autoref{satz:3}) wird gezeigt,
+wie man die Hypothesenmengen für tautologien verkleiner kann.
+Für eine Tautologie $\alpha$ und jede Belegung $\cA$
+gilt folglich $\cA \Lvdash \alpha$.
+Wenn die Belegungen $\cA$ und $\cA'$ fast gleich sind
+und sich nur in der Belegung einer einzigen Variablen $B$ unterscheiden,
+kann man diese Variable aus den Belegungen entfernen.
+Falls $B\in \cA$ und $\neg\in\cA'$,
+dann gilt $\cA-\{B\} \Lvdash \alpha$.
+Für eine Tautologie $\alpha$ kann man diesen Prozess wiederholen,
+bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
 
 
 \begin{satz}[Belegung und Hypothesen]\label{satz:2}
@@ -1815,123 +1829,125 @@ die die Formel $\alpha$ falsch macht, gilt: $\mathcal{A}' \Lvdash \neg\alpha$.
   \end{proof}
 \end{satz}
 
+Dieser Beweis ist so schön konstruktiv, dass man mal sehen will,
+wie der aus einer Belegung konstruierte Beweis aussieht.
+
 \begin{bsp}
-  $\phi = A\rightarrow \neg(\neg A\rightarrow B), \mathcal{A}=\{A, \neg
-  B\}$ Gesucht ist ein Beweis für $\mathcal{A} \Lvdash
-  \phi_{\mathcal{A}}$. $\phi_{\mathcal{A}} = \neg(A\rightarrow \neg(\neg
-  A\rightarrow B))$.
+  Wir betrachten die Formel
+  $\phi = A\rightarrow \neg(\neg A\rightarrow B)$
+  und die Belegung $\mathcal{A}=\{A, \neg B\}$.
+  Da $\cA(\phi)=f$ ist 
+  $\phi_{\mathcal{A}} = \neg(A\rightarrow \neg(\neg A\rightarrow B))$.
+  Der Beweis für $\cA\Lvdash \varphi_{\cA}$ wird induktiv aus dem
+  Formelaufbau von $\varphi$ konstruiert.
 
-  \begin{enumerate}
-   \item $\mathcal{A} \Lvdash A$
-    \begin{align*}
-      (1)\quad & A &\text{Hypothese}
-    \end{align*}
-
-   \item $\mathcal{A}\Lvdash \neg B$
-    \begin{align*}
-      (1)\quad & \neg B &\text{Hypothese}
-    \end{align*}
-
-   \item $\mathcal{A} \Lvdash \neg\neg A$
-    \begin{align*}
-      (1)\quad & A &\text{IV}\\
-      (2)\quad & A \rightarrow \neg\neg A &\text{\autoref{lem:3}}\\
-      (3)\quad & \neg\neg A &\text{MP 1,2}
-    \end{align*}
-
-   \item $\mathcal{A}\Lvdash \neg A\rightarrow B$
-    \begin{align*}
-      (1)\quad & \neg\neg A &\text{IV}\\
-      (2)\quad & \neg\neg A \rightarrow (\neg A\rightarrow B)
-         &\text{\autoref{lem:4}}\\
-      (3)\quad & \neg A\rightarrow B &\text{MP 1,2}
-    \end{align*}
-
-   \item $\mathcal{A}\Lvdash \neg\neg(\neg A\rightarrow B)$
-    \begin{align*}
-      (1)\quad & \neg A\rightarrow B &\text{IV}\\
-      (2)\quad & (\neg A\rightarrow B) \rightarrow \neg\neg (\neg
-         A\rightarrow B) &\text{\autoref{lem:3}}\\
-      (3)\quad & \neg\neg(\neg A\rightarrow B) &\text{MP 1,2}
-    \end{align*}
-
-   \item $\mathcal{A}\Lvdash \neg(A\rightarrow \neg(\neg
-    A\rightarrow B))$
-    \begin{align*}
-      (1)\quad & A &\text{IV}\\
-      (2)\quad & \neg\neg(\neg A\rightarrow B) &\text{IV}\\
-      (3)\quad & A\rightarrow(\neg\neg (\neg A\rightarrow B)\rightarrow
-         \neg(A \rightarrow \neg(\neg A\rightarrow B)))
-         &\text{\autoref{lem:6}}\\
-      (4)\quad & \neg\neg (\neg A\rightarrow B)\rightarrow
-         \neg(A \rightarrow \neg(\neg A\rightarrow B))
-         &\text{MP 1,3}\\
-      (5)\quad &  \neg(A \rightarrow \neg(\neg A\rightarrow B))
-         &\text{MP 2,4}
-    \end{align*}
-
-   \item Zusammenbauen des Gesamtbeweises:
-    \begin{align*}
-      (1)\quad & A &\text{Hypothese}\\
-      (2)\quad & \neg B &\text{Hypothese}\\
-      (3)\quad & A \rightarrow \neg\neg A &\text{\autoref{lem:3}}\\
-      (4)\quad & \neg\neg A &\text{MP 1,3}\\
-      (5)\quad & \neg\neg A \rightarrow (\neg A \rightarrow B)
-         &\text{\autoref{lem:4}}\\
-      (6)\quad & \neg A\rightarrow B &\text{MP 4,5}\\
-      (7)\quad & (\neg A \rightarrow B) \rightarrow \neg\neg(\neg
-         A\rightarrow B) &\text{\autoref{lem:3}}\\
-      (8)\quad & \neg\neg(\neg A\rightarrow B) &\text{MP 6,7}\\
-      (9)\quad & A\rightarrow (\neg\neg (\neg A\rightarrow B)\rightarrow
-         \neg(A\rightarrow\neg(\neg A\rightarrow B)))
-         &\text{\autoref{lem:6}}\\
-      (10)\quad & \neg\neg (\neg A\rightarrow B)\rightarrow
-         \neg(A\rightarrow\neg(\neg A\rightarrow B)) &\text{MP 1,9}\\
-      (11)\quad & \neg(A\rightarrow \neg(\neg A\rightarrow B)) &\text{MP
-         8,10}
-    \end{align*}
-  \end{enumerate}
+  Der induktive Aufbau der Formel,
+  die sich aus den Teilen ergebenden beweisbaren Folgerungen
+  und der Aufbau des Beweises 
+  sind graphisch in \autoref{fig-formelaufbau} dargestellt.
 \end{bsp}
 
-Alle möglichen Belegungen zu $A \rightarrow (B\rightarrow B)$ sind
-$\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
-\mathcal{A}_{3}=\{A, \neg B\}$ und $\mathcal{A}_{4}=\{A, B\}$
+\begin{figure}[ht]
+{
+\centering
+\includegraphics{resolution.14}
+\qquad \qquad
+\includegraphics{resolution.15}
+\vspace{4ex}
 
-\begin{itemize}
- \item
-  \begin{align*}
-    \neg A,\neg B &\Lvdash A\rightarrow(B \rightarrow B) & \neg
-       A, B &\Lvdash A\rightarrow(B\rightarrow B)\\
-    &\downarrow DT &&\downarrow DT\\
-    \neg A &\Lvdash \neg B \rightarrow
-       (A\rightarrow(B\rightarrow B)) &\neg A &\Lvdash
-       B\rightarrow(A\rightarrow(B\rightarrow B))\\
-    &\text{\todo{link suchen: lemma}} (\alpha\rightarrow
-       \beta)\rightarrow((\neg \alpha\rightarrow\beta)\rightarrow\beta)\\
-    &2mal MP\\
-    \neg A &\Lvdash A\rightarrow(B\rightarrow B)
-  \end{align*}
+\includegraphics{resolution.16}
 
- \item
-  \begin{align*}
-    A,\neg B &\Lvdash A\rightarrow(B \rightarrow B) &
-       A, B &\Lvdash A\rightarrow(B\rightarrow B)\\
-    &\downarrow DT &&\downarrow DT\\
-    A &\Lvdash \neg B \rightarrow
-       (A\rightarrow(B\rightarrow B)) & A &\Lvdash
-       B\rightarrow(A\rightarrow(B\rightarrow B))\\
-    &\text{\todo{link suchen: lemma}} (\alpha\rightarrow
-       \beta)\rightarrow((\neg \alpha\rightarrow\beta)\rightarrow\beta)\\
-    A \Lvdash A\rightarrow(B\rightarrow B)\\
-    \help{irgendwas stimmt hier nicht}\\
-    &2mal MP\\
-    \neg A &\Lvdash A\rightarrow(B\rightarrow B)
-  \end{align*}
-\end{itemize}
+}
+\caption{Induktiver Aufbau einer Formel und der sich daraus ergebende Beweis}
+\label{fig-formelaufbau}
+\end{figure}
+
+Im nächsten Schritt geht es darum,
+die Hypothesenmenge zu verkleinern.
+Dazu betrachten wir zuerst ein Beispiel.
+
+\begin{bsp}
+Die Formel $A \rightarrow (B\rightarrow B)$ ist eine Tautologie.
+Nach obigem Satz kann man eine beliebige Belegung nehmen
+und daraus die Formel beweisen.
+Wir nehmen die beiden Belegungen 
+$\mathcal{A}_{1}=\{\neg A, B\}$ und $\mathcal{A}_{2}=\{\neg A,B\}$.
+Nach obigem Satz gilt
+{
+
+\centering
+
+$\neg A, B \Lvdash A \rightarrow (B\rightarrow B)$ und 
+$\neg A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$.
+
+}
+
+Wir wenden auf beide Folgerungen das Deduktionstheorem an und erhlaten
+
+{
+
+\centering
+
+$\neg A \Lvdash B\rightarrow(A \rightarrow (B\rightarrow B))$ und 
+$\neg A \Lvdash \neg B\rightarrow (A \rightarrow (B\rightarrow B))$.
+
+}
+
+Die beiden Folgerungen haben nun die gleichen Hypothesen.
+Mit \autoref{lem:7} 
+($\Lvdash (\alpha \rightarrow \beta) \rightarrow ((\neg \alpha
+  \rightarrow \beta) \rightarrow \beta)$)
+folgt daraus
+{
+
+\centering
+
+$\neg A \Lvdash A \rightarrow (B\rightarrow B)$. \quad $(\star)$
+
+}
+
+Wir haben also einen Beweis der Tautologie
+als Folgerung aus einer Hypothesenmenge, in der eine Variable weniger vorkommt.
+Entsprechend
+kann aus 
+{
+
+\centering
+
+$A, B \Lvdash A \rightarrow (B\rightarrow B)$ und 
+$A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$
+
+}
+
+mit dem Deduktionstheorme und \autoref{lem:7}
+{
+
+\centering
+
+$A \Lvdash A \rightarrow (B\rightarrow B)$. \quad $(\star\star)$
+
+}
+bewiesen werden.
+Aus $(\star)$ und $(\star\star)$ kann auf die gleiche Weise
+{
+
+\centering
+
+$\Lvdash A \rightarrow (B\rightarrow B)$.
+
+}
+bewiesen werden.
+Damit haben wir einen Beweis für die Tautologie
+aus ihren Beweisen mit den verschiedenen Belegungen
+als Hypothesen konstruiert.
+\end{bsp}
+
+Im Beweis des folgenden Satzes wird dieses Vorgehen benutzt.
 
 \begin{satz}[Hypothesenmengen bei Tautologien verkleinern]\label{satz:3}
-  Sei $\phi$ eine Tautologie und $\mathcal{A}$ eine Belegung der
-  Variablen von $\phi$. Dann gilt für jede Teilmenge $\mathcal{B}\subseteq
+  Sei $\phi$ eine Tautologie.
+  Dann gilt für jede Belegung $\cA$ der Variablen von $\varphi$ und
+  für jede Teilmenge $\mathcal{B}\subseteq
   \mathcal{A}$:
   \begin{gather*}
     \mathcal{B} \Lvdash \phi
@@ -1940,11 +1956,12 @@ $\mathcal{A}_{1}=\{\neg A, B\}, \mathcal{A}_{2}=\{\neg A,B\},
   \begin{proof}
     Induktion über die Größe $\abs{\mathcal{B}}$ von $\mathcal{B}$.
     \begin{mdescription}
-     \item[IA:] % Sei $\mathcal{B}=\mathcal{A}$.
-      Da $\phi$ eine Tautologie ist, gilt $\mathcal{A}(\phi)=w$.
-      \autoref{satz:2} besagt, dass für eine Belegung $\mathcal{A}$, die
-      eine aussagenlogische Formel $\phi$ wahr werden lässt, gilt:
-      $\mathcal{A}\Lvdash \phi$.
+     \item[IA:] Sei $|\mathcal{B}|=|\mathcal{A}|$.
+      Da$\mathcal{B}\subseteq \cA$, folgt $\mathcal{B}=\mathcal{A}$.
+      Da $\mathcal{B}$ eine zu $\varphi$ passende belegung ist
+      und $\phi$ eine Tautologie ist, gilt $\mathcal{B}(\phi)=w$.
+      Mit \autoref{satz:2} folgt
+      $\mathcal{B}\Lvdash \phi$.
 
      \item[IV:] Für jede Belegung $\mathcal{B}$ der Größe
       $\abs{\mathcal{B}}=k$ gilt $\mathcal{B} \Lvdash\phi$.
