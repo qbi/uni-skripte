@@ -866,7 +866,7 @@ label(btex $\mathcal{A} \vdash \neg\neg(\neg A\rightarrow B)$ etex, unter(p[5]))
 draw punter(p[4]) -- p[5] ;
 
 p[6]:=p[5]+(-breite/2,-hoehe)*le ;
-label(btex $\mathcal{A} \vdash \neg(A\rightarrow \neg(\neg A\rightarrow B)$ etex, unter(p[6]))) ;
+label(btex $\mathcal{A} \vdash \neg(A\rightarrow \neg(\neg A\rightarrow B))$ etex, unter(p[6])) ;
 draw punter(p[5]) -- p[6] ;
 draw punter(p[0]) -- p[6] ;
 
