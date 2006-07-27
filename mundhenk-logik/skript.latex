@@ -623,12 +623,12 @@ Es gilt
 \begin{tabular}{ccp{0.8\textwidth}}
 $\cA(A\rightarrow\neg(\neg B\vee A))=f$ & \gdw & 
   $\cA(A)=w$ und $\cA(\neg(\neg B\vee A))=f$ \\
-& \gdw & $\cA(A)=w$ und $\cA(\neg B\vee A)=t$ \\
+& \gdw & $\cA(A)=w$ und $\cA(\neg B\vee A)=w$ \\
 & \gdw & $\cA(A)=w$ und 
-     $\raisebox{-1mm}{$\llcorner$}\cA(\neg B)=t$ oder 
-     $\cA(A)=t\raisebox{-1mm}{$\lrcorner$}$\\
+     $\raisebox{-1mm}{$\llcorner$}\cA(\neg B)=w$ oder 
+     $\cA(A)=w\raisebox{-1mm}{$\lrcorner$}$\\
 & \gdw & $\cA(A)=w$ und $\raisebox{-1mm}{$\llcorner$}\cA(B)=f$ 
-          oder $\cA(A)=t\raisebox{-1mm}{$\lrcorner$}$
+          oder $\cA(A)=w\raisebox{-1mm}{$\lrcorner$}$
 \end{tabular}
 
 Da $\cA(A)=w$ und $\cA(B)=f$, die letzte Aussage wahr.
@@ -812,7 +812,7 @@ in \emph[index=disjunktive Normalform]{disjunktiver Normalform}
 (\emph[index=]{DNF})\index{DNF|see{disjunktive Normalform}},
 da sie eine Disjunktion von Konjunktionen von Literalen ist.
 
-\begin{lemma}
+\begin{lemma}\label{lemma-DNF}
 Für jede beliebige aussagenlogische Formel gibt es eine äquivalente
 Formel in disjunktiver Normalform.
 \end{lemma}
@@ -1835,7 +1835,7 @@ bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
 Dieser Beweis ist so schön konstruktiv, dass man mal sehen will,
 wie der aus einer Belegung konstruierte Beweis aussieht.
 
-\begin{bsp}
+\begin{bsp}\label{bsp-Belegungen}
   Wir betrachten die Formel
   $\phi = A\rightarrow \neg(\neg A\rightarrow B)$
   und die Belegung $\mathcal{A}=\{A, \neg B\}$.
@@ -1847,22 +1847,39 @@ wie der aus einer Belegung konstruierte Beweis aussieht.
   Der induktive Aufbau der Formel,
   die sich aus den Teilen ergebenden beweisbaren Folgerungen
   und der Aufbau des Beweises 
-  sind graphisch in \autoref{fig-formelaufbau} dargestellt.
+  sind graphisch in \autoref{fig-formelaufbau} und \autoref{fig-beweisaufbau} dargestellt.
+  Interessanterweise wird die Hypothese $\neg B$ in dem Beweis
+  nicht benutzt. 
+  Wenn man den Wahrheitswert von $\phi$ unter $\cA$ ausrechnet,
+  sieht man auch, dass der $\cA(A)=w$ zu seiner Bestimmung ausreicht
+  -- die Belegung von $B$ spielt keine Rolle.
 \end{bsp}
 
 \begin{figure}[ht]
 {
 \centering
+
 \includegraphics{resolution.14}
 \qquad \qquad
 \includegraphics{resolution.15}
-\vspace{4ex}
+
+}
+\caption{Induktiver Aufbau der Formel $A\rightarrow\neg(\neg A\rightarrow B)$
+und die für Belegung $\cA=\{A,\neg B\}$ beweisbaren (Teil-)Formeln
+(\autoref{bsp-Belegungen})}
+\label{fig-formelaufbau}
+\end{figure}
+
+\begin{figure}
+{
+\centering
 
 \includegraphics{resolution.16}
 
 }
-\caption{Induktiver Aufbau einer Formel und der sich daraus ergebende Beweis}
-\label{fig-formelaufbau}
+\caption{Fortsetzung von \autoref{fig-formelaufbau}:
+Induktiver Aufbau des Beweises gemäß \autoref{satz:2}}
+\label{fig-beweisaufbau}
 \end{figure}
 
 Im nächsten Schritt geht es darum,
@@ -1885,7 +1902,7 @@ $\neg A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$.
 
 }
 
-Wir wenden auf beide Folgerungen das Deduktionstheorem an und erhlaten
+Wir wenden auf beide Folgerungen das Deduktionstheorem an und erhalten
 
 {
 
@@ -1957,22 +1974,27 @@ Im Beweis des folgenden Satzes wird dieses Vorgehen benutzt.
   \end{gather*}
 
   \begin{proof}
-    Induktion über die Größe $\abs{\mathcal{B}}$ von $\mathcal{B}$.
+    Sei $\phi$ eine Formel, und $\cA$ sei eine Belegung der Variablen
+    von $\phi$. Das heißt, $\cA$ enthält kein Literal mit einer Variablen,
+    die nicht in $\phi$ vorkommt.
+    Also ist $\cA$ eine endliche Menge.
+    Wir führen eine Induktion über die Größe $\abs{\mathcal{B}}$ 
+    von $\mathcal{B}\subseteq\cA$.
     \begin{mdescription}
      \item[IA:] Sei $|\mathcal{B}|=|\mathcal{A}|$.
-      Da$\mathcal{B}\subseteq \cA$, folgt $\mathcal{B}=\mathcal{A}$.
-      Da $\mathcal{B}$ eine zu $\varphi$ passende belegung ist
+      Da $\mathcal{B}\subseteq \cA$, folgt $\mathcal{B}=\mathcal{A}$.
+      Da $\mathcal{B}$ eine zu $\varphi$ passende Belegung ist
       und $\phi$ eine Tautologie ist, gilt $\mathcal{B}(\phi)=w$.
       Mit \autoref{satz:2} folgt
       $\mathcal{B}\Lvdash \phi$.
 
-     \item[IV:] Für jede Belegung $\mathcal{B}$ der Größe
-      $\abs{\mathcal{B}}=k$ gilt $\mathcal{B} \Lvdash\phi$.
+     \item[IV:] Für jede Belegung $\cA$ und für jede Belegung $\mathcal{B}\subseteq \cA$ 
+      der Größe $\abs{\mathcal{B}}=|\cA|-k$ gilt $\mathcal{B} \Lvdash\phi$.
 
-     \item[IS:] Sei $\mathcal{B}$ eine Belegung der Größe $k-1$.
+     \item[IS:] Sei $\mathcal{B}\subseteq \cA$ eine Belegung der Größe $|\cA|-k-1$.
       Dann gibt es eine Variable $A_{l}$ in $\mathcal{A}$, die nicht von
       $\mathcal{B}$ belegt wird. Nach Induktionsvorraussetzung gilt
-      $\mathcal{B}\cup\{A_{l}\} \Lvdash \phi$ und $B\cup\{\neg A_{l}\}
+      $\mathcal{B}\cup\{A_{l}\} \Lvdash \phi$ und $\mathcal{B}\cup\{\neg A_{l}\}
       \Lvdash \phi$. Mit dem Deduktionstheorem folgt
       $\mathcal{B} \Lvdash A_{l} \rightarrow \phi$ und
       $\mathcal{B} \Lvdash \neg A_{l} \rightarrow \phi$. Wendet man
@@ -1988,26 +2010,44 @@ Im Beweis des folgenden Satzes wird dieses Vorgehen benutzt.
   Theorem von $\mathrm{L}$, d.\,h. $\Lvdash \phi$.
 
   \begin{proof}
-    \autoref{satz:3} gilt auch für $\mathcal{B}=\emptyset$
+    \autoref{satz:3} gilt auch für $\mathcal{B}=\emptyset$.
   \end{proof}
 \end{satz}
 
-\begin{korol}
-  Aufgrund der Korrektheit (\autoref{satz:1}) und Vollständigkeit
-  (\autoref{satz:4}) von $\mathrm{L}$ ergibt sich:
-  \begin{center}
-    $\phi$ ist eine aussagenlogische Tautologie \gdw $\Lvdash
-    \phi$.
-  \end{center}
+Aufgrund der Korrektheit (\autoref{satz:1}) und Vollständigkeit
+(\autoref{satz:4}) von $\mathrm{L}$ ergibt sich:
+\begin{korol}\label{korrektkeit-und-vollst-von-L}
+Für jede al. Formel $\phi$ gilt:
+    $\phi$ ist eine aussagenlogische Tautologie \gdw $\Lvdash \phi$.
 \end{korol}
 
-Der Begriff "`Tautologie"' ist ein semantischer Ausdruck, wohingegen
-"`$\Lvdash$"' ein syntaktischer Ausdruck ist.
+Der Begriff "`Tautologie"' ist ein semantischer Ausdruck
+-- er basiert auf der Bedeutung (dem Wahrheitswert) von Formeln.
+Dagegen ist "`$\Lvdash$"' ein syntaktischer Ausdruck --
+er basiert auf der äußeren Form von Formeln.
+(Ob eine Formel ein Axiom ist oder ob sie aus anderen Formeln
+ abgeleitet werden kann, ergibt sich nur aus ihrer Form; man
+ muss dazu nichts über ihre Wahrheitswerte wissen.)
+\autoref{korrektkeit-und-vollst-von-L} sagt, dass beide
+Begriffe gleichbedeutend sind.
+Die semantische und die syntaktische Betrachtungsweise
+der Aussagenlogik sind gleich.
+
 
 \section{Resolution für die Aussagenlogik}
 
-Die \emph{Resolution} dient zum Nachweis der Unerfüllbarkeit von
-Formeln. Eine Formel $\phi$ heißt \emph{unerfüllbar}, falls $\phi$ unter jeder
+Resolution ist eine Methode zum Nachweis der Unerfüllbarkeit
+aussagenlogischer Formeln.
+Es ist eine \glqq syntaktische\grqq\xspace Methode.
+Sie basiert auf der äußeren Form von Formeln.
+Resolution ist beliebt für Computer-Anwendungen.
+Die Programmiersprache PROLOG basiert auf Resolution
+(allerdings für die Prädikatenlogik).
+Wir werden in diesem Abschnitt die Resolution in der
+Aussagenlogik vorstellen und anschließend zeigen, dass
+sie auch als formale Theorie ausgedrückt werden kann.
+
+Eine Formel $\phi$ heißt \emph{unerfüllbar} (auch Kontradiktion), falls $\phi$ unter jeder
 passenden Belegung $\mathcal{A}$ den Wert $\mathcal{A}(\phi)=f$ hat. Den
 Nachweis einer Tautologie erhält man über die Beziehung: $\alpha$ ist
 eine Tautologie \gdw $\neg\alpha$ ist unerfüllbar. Zum Beispiel ist die
@@ -2042,25 +2082,18 @@ Die Resolution arbeitet mit Formeln in konjunktiver Normalform:
   (\neg B\vee\neg C)$).
 \end{enumerate}
 
-\begin{satz}\label{satz:5}
+\begin{lemma}\label{satz:5}
   Zu jeder aussagenlogischen Formel gibt es eine äquivalente Formel in
   konjunktiver Normalform.
-  \begin{gather*}
-    \bigwedge\bigvee \alpha
-  \end{gather*}
-
   \begin{proof}
-    Man stelle die Wahrheitstabelle für die Formel auf. Die Formel ist
-    genau dann wahr, wenn keine der Zeilen eintritt, die die Formel
-    falsch machen. Dies entspricht der UND"=Verknüpfung der negierten
-    Belegungen der entsprechenden Zeilen.
-    \begin{gather*}
-      \neg \bigvee \bigwedge \alpha = \bigwedge \neg \bigwedge \alpha =
-         \bigwedge \bigvee \neg\alpha
-    \end{gather*}
-    ~ % Das Leerzeichen ist notwendig, da ntheorem sonst kein \qed setzt.
+    Sei $\alpha$ eine Formel.
+    Nach \autoref{lemma-DNF} gibt es zu $\neg \alpha$
+    eine äquivalente Formel $\phi$ in disjunktiver Normalform.
+    Also gilt $\alpha\equiv\neg\phi$.
+    Zieht man das Negationszeichen von $\neg \phi$ nach innen,
+    dann erhält man eine äquivalente Formel in konjunktiver Normalform.
   \end{proof}
-\end{satz}
+\end{lemma}
 
 Der Nachteil der Wahrheitstafelmethode zur Umformung in die konjunktive
 Normalform ist, dass sie sehr zeitaufwendig ist und man mit der
@@ -2073,8 +2106,8 @@ Verfahren für die Umformung verwenden.
 
 \begin{satz}
   Für jede Formel $\phi$ kann in polynomieller Rechenzeit eine
-  erfüllbarkeitsäquivalente Formel $\phi'$ berechnet werden. Dabei
-  bedeutet \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass
+  erfüllbarkeitsäquivalente Formel $\phi'$ in konjuktiver Normalform berechnet werden. 
+  Dabei bedeutet \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass
   $\phi$ erfüllbar ist \gdw $\phi'$ erfüllbar ist.
 
   \begin{proof}
