@@ -2109,19 +2109,8 @@ Verfahren für die Umformung verwenden.
   erfüllbarkeitsäquivalente Formel $\phi'$ in konjuktiver Normalform berechnet werden. 
   Dabei bedeutet \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass
   $\phi$ erfüllbar ist \gdw $\phi'$ erfüllbar ist.
-
-  \begin{proof}
-    Dazu wird für jede Teilverknüpfung $\alpha_{i}$ ein neues Literal
-    $c_{i}$ eingeführt und $\phi'$ um eine Äquivalenz $c_{i}\leftrightarrow
-    \alpha_{i}$ erweitert $\phi'_{i} = \phi'_{i-1}\wedge c_{i}\leftrightarrow
-    \alpha_{i}$. Jede "`kleine"' Äquivalenz aus 3~Variablen hat eine
-    konjunktive Normalform (\autoref{satz:5}) aus höchstens 8~Klauseln zu
-    je 3~Literalen. Also ist $\abs{\phi'} \leq k\cdot\abs{\phi}$ für eine
-    Konstante $k$.
-    \help{Wieso verändert sich die Erfüllbarkeit nicht und wieso ist das
-      in polynomieller Zeit?}
-  \end{proof}
 \end{satz}
+
 
 \begin{figure}
   \captionsetup{justification=RaggedRight,format=hang}
@@ -2156,10 +2145,30 @@ Verfahren für die Umformung verwenden.
 \end{figure}
 
 \begin{bsp}
-  Betrachten wir die Formel $\phi = (A\wedge B) \rightarrow
-  \neg(A\vee\neg B)$. Der Verknüpfungsbaum für $\phi$ ist in
-  \autoref{fig:vknb-bsp} dargestellt. Damit können wir die
-  erfüllbarkeitsäquivalente Formel $\phi'$ konstruieren
+    Wir betrachten ein Beispiel statt eines Beweises.
+    Daraus sollte klar werden, wie der Beweis geht.
+
+    Betrachten wir die Formel $\phi = (A\wedge B) \rightarrow
+    \neg(A\vee\neg B)$. Der induktive Aufbau von $\phi$ ist in
+    dem Baum in \autoref{fig:vknb-bsp} dargestellt. 
+    Damit können wir die
+    erfüllbarkeitsäquivalente Formel $\phi'$ konstruieren.
+    Für jeden Knoten mit einem Verknüfungszeichen
+    wird eine neue Variable $c_i$ eingeführt.
+    Die Formel $\phi'$ ist eine Konjunktion von Äquivalenzen.
+    Für jedes $c_i$ enthält $\phi$ eine Äquivalenz $c_i \leftrightarrow( l~ op~ r)$.
+    Dabei ist $op$ das Verknüpfungszeichen des mit $c_i$ markierten Knotens,
+    $l$ ist die Variable, mit der der linke Sohn von $c_i$ markiert ist,
+    und $r$ ist die Variable, mit der der rechte Sohn von $c_i$ markiert ist.
+    Falls $c_i$ die Markierung eines Knotens mit Verknüpfungszeichen
+    $\neg $ ist, dann hat dieser Knoten nur einen rechten Sohn und keinen Linken Sohn.
+    Jede dieser "`kleinen"' Äquivalenzen aus 3~Variablen hat eine
+    konjunktive Normalform (\autoref{satz:5}) aus höchstens 8~Klauseln zu
+    je 3~Literalen. 
+    Die Markierung $c_m$ der Wurzel des Baumes wird auch zu einem Konjunkt von $\phi'$.
+
+    Für die Beispielformel ergibt sich folgende 
+    erfüllbarkeitsäquivalente Formel $\phi'$:
   \begin{multline*}
     \phi' = (c_{0} \leftrightarrow (A\wedge B))
        \wedge (c_{1} \leftrightarrow \neg B)
@@ -2191,8 +2200,6 @@ Verfahren für die Umformung verwenden.
   aufstellen.
 \end{bsp}
 
-%\input{ALogik}
-%% Anfang des Abschnittes ueber Resolution
 
 \begin{defini}
   Wenn $\cA(\phi)=w$, dann \emph{erfüllt} die Belegung $\cA$ die Formel $\phi$.
@@ -2707,9 +2714,9 @@ Die Taubenschlagformel $PHP_k$ lautet
 \subsection{Formulierung der Resolution als Theorie}
 
 Zur Erinnerung: Eine Theorie besteht aus Formeln, Axiomenschemata und
-Schlussregeln.
+Ableitungsregeln.
 Ein Beweis einer Formel besteht aus einer
-Folge von Formeln, die Axiome sind oder mittels Schlussregeln
+Folge von Formeln, die Axiome sind oder mittels Ableitungsregeln
 aus bereits abgeleiteten Formeln abgeleitet werden.
 In einem Beweis der Unerfüllbarkeit einer Klauselmenge $S$ (=Formel)
 muss also $S$ am Ende des Beweises stehen.
@@ -2718,7 +2725,7 @@ muss also $S$ am Ende des Beweises stehen.
 \begin{mdescription}
  \item[Formeln:] die Klauselmengen
  \item[Axiomenschema:] $\{\Box\}$
- \item[Schlussregeln:]
+ \item[Ableitungsregeln:]
   \begin{enumerate}
    \item[(Res)] Für Klauselmenge $S$ und Klausel $R\in S$, die Resolvent von $C_1$ und $C_2$ ist:
     \begin{gather*}
@@ -2734,7 +2741,7 @@ muss also $S$ am Ende des Beweises stehen.
 Alle Beweise beginnen also mit der Klauselmenge, die nur aus der leeren Klausel besteht
 (einziges Axiom).
 Diese Klauselmenge ist unerfüllbar.
-Durch die Schlussregel (Res) wird ein Resolutionsschritt \glqq rückwärts\grqq\xspace
+Durch die Ableitungsregel (Res) wird ein Resolutionsschritt \glqq rückwärts\grqq\xspace
 ausgeführt,
 und durch (Einf) wird eine beliebige zusätzliche Klausel in
 die Klauselmenge eingefügt.
@@ -2784,7 +2791,7 @@ die Klauselmenge eingefügt.
 \end{bsp}
 
 Man kann (leicht) zeigen,
-dass die Schlussregeln die Unerfüllbarkeit der Klauselmenge nicht ändern
+dass die Ableitungsregeln die Unerfüllbarkeit der Klauselmenge nicht ändern
 und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
 (entsprechend \autoref{satz-korrektheit-resolution-vor} und \autoref{satz-vollst-resolution}).
 
@@ -4478,7 +4485,7 @@ $\alpha$ ist gültig genau dann, wenn $\alpha$ in $K$ beweisbar ist.
 
 Diese Korrektheit und Vollständigkeit ist genau das, was man
 als \glqq natürlich\grqq\xspace annimmt.
-Man formuliert ja gerade Axiome und Schlussregeln, damit
+Man formuliert ja gerade Axiome und Ableitungsregeln, damit
 man Beweise führen kann.
 Und man will natürlich alles beweisen können, was wahr ist.
 Im nächsten Kapitel werden wir sehen,
