@@ -1,0 +1,1787 @@
+\documentclass{scrreprt}
+\usepackage{ngerman}
+\usepackage[latin1]{inputenc}
+\usepackage[OT1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[thmmarks,hyperref]{ntheorem} 
+\usepackage{paralist}
+\usepackage{eurosym} %% Eingabe des Eurosymbols
+\usepackage{sistyle} %% fuer die korrekte Angabe von Einheiten
+\usepackage{braket}  %% Zur Eingabe von Mengen: A={x| x>2}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,urlcolor=blue]{hyperref}
+\usepackage{makeidx}
+\usepackage{xspace}
+\usepackage{nicefrac}
+\usepackage{enumerate}
+\usepackage{booktabs}
+
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{defin}[bsp]{Definition}
+\newtheorem{lemma}[bsp]{Lemma}
+\newtheorem{satz}[bsp]{Satz}
+\newtheorem{bem}[bsp]{Bemerkung}
+\newtheorem{kor}[bsp]{Korollar}
+
+%% schwarzes Quadrat für das Ende eines Beweises
+\theoremsymbol{\ensuremath{_{\blacksquare}}}
+\newtheorem*{proof}{Beweis:}
+
+%% Bezeichnungen diverser Zahlenmengen
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% \ldots  und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+
+%% kalligrafische Zeichen
+\newcommand{\FF}{\mathcal{F}}
+
+%% sonstige Abkürzungen
+\newcommand{\obda}{o.\,B.\,d.\,A.\,}
+\newcommand{\unb}{unter den Nebenbedingungen\xspace}
+
+%% optische Unterstützer im Text
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+\DeclareMathOperator{\co}{co}  %% konvexe Huelle
+\DeclareMathOperator{\rg}{rg}  %% Rang
+
+\begin{document}
+\chapter{Einführung}
+
+\section{Grundbegriffe und Beispiele}
+
+Die Zielstellung in der linearen Optimierung ist die Betrachtung einer
+Funktion $f:\R^n\rightarrow \R$ mit dem Ziel der Berechnung eines
+Minimums von $f$.
+
+\begin{bsp}
+  \begin{inparaenum}[(1)]
+  \item $f:\R\rightarrow\R$ mit $f(x)=x^2$ hat genau ein Minimum.
+  \item $f:\R\rightarrow\R$ mit $f(x)=x$ ist nicht nach unten
+    beschränkt und hat daher kein Minimum.
+  \item $f:\R\rightarrow\R$ mit $f(x)=\sin x$.
+  \end{inparaenum}
+\end{bsp}
+
+\begin{bsp}
+  Die Funktion $f:\R^2\rightarrow\R$ mit $f(x_1,x_2)= x_1 \sin (x_1+
+  x_1 x_2\sin(x_2))$.
+\end{bsp}
+
+Die Norm auf $\R^n$ ist im allgemeinen die euklidische Norm,
+d.\,h. für $x\in \R^n, x=
+\begin{pmatrix}
+  x_1\\ \vdots\\ x_n
+\end{pmatrix}$ ist $\lVert x\rVert=\sqrt{\sum_{i=1}^n x_i^2}$. Für
+$\tilde{x}\in\R$ und $r>0$ ist die offene Kugel um $\tilde{x}$ mit
+Radius $r$ definiert durch $B(\tilde{x}, r)=\{x\in\R^n: \lVert
+x-\tilde{x} \rVert< r\}$.
+
+\paragraph{Allgemeine Formulierung des Optimierungsproblems}
+
+Sei $D\subset \R^n$ nichtleer und offen, $f:D\rightarrow \R,
+\FF\subset D$:
+\begin{equation}
+  \label{eq:P}
+  \min_{x\in\FF} f(x)
+\end{equation}
+
+Die Funktion $f$ heißt \emph{Ziel-} oder \emph{Kostenfunktion}.
+\begin{description}
+\item[$\FF=D$] unrestringiertes Optimierungsproblem
+  (Optimierungsproblem ohne Nebenbedingungen)
+\item[$\FF\subset D$] restringiertes Optimierungsproblem
+  (Optimierungsproblem mit Nebenbedingungen), $\FF$ heißt
+  \emph{zulässige Menge} und wird meist durch (Un-)gleichungen beschrieben.
+\end{description}
+
+\begin{bsp}
+  $n=1, D=\R, \min f(x)=x^3$, NB: $x\geq 1$.\\
+  In diesem Fall ist $\FF=\{x\in\R: x\geq 1\}$
+\end{bsp}
+
+\begin{defin}[Lokale Minima]
+  Ein Punkt $\tilde{x}\in\FF$ (zulässiger Punkt) heißt \emph{lokales
+    Minimum} von $f$ auf $\FF$ oder \emph{lokale Lösung} von
+  (\ref{eq:P}), falls es ein $r>0$ mit $f(x)\geq f(\tilde{x})$ für
+  alle $x\in\FF\cap B(\tilde{x}, r)$ gibt.
+
+  Ein Punkt $\tilde{x}\in\FF$ heißt \emph{striktes lokales Minimum}
+  von $f$ auf $\FF$ oder \emph{strikte lokale Lösung}  von
+  (\ref{eq:P}), falls es ein $r>0$ mit $f(x)>f(\tilde{x})$ für alle
+  $x\in \FF\cap B(\tilde{x}, r)$ mit $x\neq \tilde{x}$ gibt.
+\end{defin}
+
+\begin{defin}[globales Minimum]
+  Ein Punkt $\tilde{x}\in\FF$ heißt \emph{globales Minimum} von $f$
+  auf $\FF$, falls gilt $\forall x\in\FF: f(x)\geq f(\tilde{x})$
+\end{defin}
+
+\begin{bem*}
+  Die Optimierungsaufgabe $\max g(x)$ unter den Nebenbedingungen
+  $x\in\FF$ ist äquivalent zur Minimierung. Das Problem wird als $\min
+  f(x) := -g(x)$ definiert.
+
+  Anstatt lokales Minimum sagt man auch \emph{relatives
+    Minimum}. Anstatt striktes Minimum sagt man auch \emph{strenges
+    Minimum}.
+
+  Eine linere Optimierungsaufgabe besteht aus einer linearen Funktion
+  $f$ und $\FF$ wird aus linearen (Un-)gleichungen beschrieben.
+\end{bem*}
+
+\begin{bsp}[Produktionsplanung]
+  \label{bsp:prodplan-16}
+  Eine Firma produziert vier Lacke $L_1, L_2, L_3, L_4$. Dabei ist der
+  Gewinn pro Kilogramm Lack:
+  \begin{asparaitem}
+  \item 1,50 \euro{} für $L_1$
+  \item 1,00 \euro{} für $L_2$
+  \item 2,00 \euro{} für $L_3$
+  \item 1,40 \euro{} für $L_4$
+  \end{asparaitem}
+Nebenbedingungen:
+\begin{itemize}
+\item von $L_1$ und $L_2$ können maximal \SI{1300}{kg} produziert werden
+\item von $L_1, L_3, L_4$ können maximal \SI{2000}{kg} produziert werden
+\item Mindestproduktion von $L_4$ sind \SI{800}{kg}
+\item von $L_3$ sind nicht mehr als \SI{500}{kg} zu verkaufen
+\end{itemize}
+
+Ziel ist die Maximierung des Gewinns. Wir bezeichnen mit $x_i$ die
+Menge, die von Lack $L_i$ produziert wird. Der Gewinn ist $1,5x_1+ x_2+
+2x_3+ 1,4x_4$, d.\,h. es ist $f(x_1,x_2,x_3,x_4)= -1,5x_1 -x_2 -2x_3
+-1,4x_4$ unter den Nebenbedingungen:
+\begin{align*}
+  x_1 + x_2 &\leq 1300 & x_4 &\geq 800 \Leftrightarrow -x_4\leq -800\\
+  x_1+x_3+x_4 &\leq 2000 & x_3 &\leq 500
+\end{align*}
+zu minimieren.
+Weiterhin ergibt sich aus praktischen Überlegungen $x_i\geq 0$. Wir
+formulieren das Problem in Matrixschreibweise: Sei $c=-
+\begin{pmatrix}
+  1,5\\1\\2\\1,4
+\end{pmatrix}$. Dann hat die Zielfunktion die Form $c^Tx$. Mit
+\begin{align*}
+  A &=
+  \begin{pmatrix}
+    1&1&0&0\\
+    1&0&1&1\\
+    0&0&0&-1\\
+    0&0&1&0
+  \end{pmatrix} & b &=
+  \begin{pmatrix}
+    1300\\2000\\-800\\500
+  \end{pmatrix}
+\end{align*}
+können wir die Nebenbedingungen in der Form $Ax\leq b$ schreiben. Dann
+können wir das Optimierungsproblem in der Form $\min c^Tx$ unter den
+Nebenbedingungen $Ax\leq b, x\geq 0$ schreiben.
+\end{bsp}
+
+\begin{bsp}
+  Eine Tierfarm kauft drei verschiedene Kornsorten, um daraus
+  Futtermittel zu mischen.
+
+  \begin{tabular}{l|r|r|r|r}
+    & $S_1$ & $S_2$ & $S_3$ & Mindestbedarf\\
+    \hline
+    Nährstoff A & 2 & 3 & 7 & 1250\\
+    \hline
+    Nährstoff B & 1 & 1 & 0 & 250\\
+    \hline
+    Nährstoff C & 5 & 3 & 0 & 900\\
+    \hline
+    Nährstoff D & 0,6 & 0,25 & 1 & 232,5\\
+    \hline
+    Kosten & 41 & 35 & 96 & \\
+  \end{tabular}
+
+Gesucht ist eine Mischung, die den Nährstoffbedarf deckt und dabei
+möglichst billig herzustellen ist.
+
+Wir bezeichnen mit $x_i, i=1,2,3$ diejenige Menge, die von der
+Kornsorte $s_i$ eingekauft wird. Dabei müssen wir die Mengen so
+bestimmen, dass die Gesamtkosten der Futtermischung minimiert wird,
+d.\,h. die Funktion $41x_2+ 35x_2+ 96x_3$ soll minimiert
+werden. Folgende Nebenbedingungen gelten:
+\begin{itemize}
+\item Sinnvollerweise ist $x_i\geq 0, i=1,2,3$
+\item Um den Nährstoffbedarf zu decken, müssen wir fordern:
+  \begin{align*}
+    2x_1 &+ 3x_2 &+ 7x_3 &\geq 1250\\
+    x_1 &+ x_2 & &\geq 250\\
+    5x_1 &+ 3x_2 & &\geq 900\\
+    0,6x_1 &+ 0,25x_2 &+ x_3 &\geq 232,5
+  \end{align*}
+\item Wir definieren weiter:
+  \begin{align*}
+    c =
+    \begin{pmatrix}
+      41\\35\\96
+    \end{pmatrix}
+    & A =
+    \begin{pmatrix}
+      2 & 3 & 7 \\
+      1 & 1 & 0\\
+      5 & 3 & 0\\
+      0,6 & 0,25 & 1
+    \end{pmatrix}
+    & b =
+    \begin{pmatrix}
+      1250\\250\\900\\232,5
+    \end{pmatrix}
+  \end{align*}
+\item Somit können wir das Problem in der Form $\min c^Tx$ unter den
+  Nebenbedingungen $Ax\geq b, x\geq0$ schreiben.
+\end{itemize}
+\end{bsp}
+
+\paragraph{Allgemein zur Produktplanung}
+
+Es sollen bestimmte Güter aus Rohstoffen hergestellt werden. Durch die
+Zielfunktion soll der Gewinn maximiert bzw. die Kosten minimiert
+werden und als Nebenbedingung sollen keine negativen Mengen produziert
+bzw. benutzt werden.
+
+\section{Numerische Lösung von Optimierungsproblemen}
+
+Allgemein sei das Problem 
+\begin{equation}
+  \min f(x) \text{ mit } x\in \FF
+\end{equation}
+mit der Zielfunktion $f:\R^n\rightarrow\R$ und der zulässigen Menge
+$\FF \subset \R^n$ zu lösen.
+
+Numerische Verfahren sind Iterationsverfahren. Sie berechnen ausgehend
+von einem Startpunkt $x^{(0)}$ eine Folge $\{x^{(k)}\}\subset\R^n,
+k=1,2,3, \ldots$ mit dem Ziel:
+\begin{itemize}
+\item nach endlich vielen Schritten $m$ ist $x^{(m)}$ eine Lösung oder,
+  falls dies nicht möglich ist,
+\item deren Grenzwert ist eine Lösung.
+\end{itemize}
+
+Diese numerische Verfahren berechnen nur eine Näherungslösung. Da die
+Zielfunktion zu minimieren ist, versucht man, die Folge $x^{(k)}$ so
+zu berechnen, dass $f(x^{(k+1)})< f(x^{(k)})$ ist. Dies nennt man
+\emph{Abstiegsverfahren}. Prinzipiell geht man dabei wie folgt vor:
+\begin{itemize}
+\item  Man berechnet eine Abstiegsrichtung $d^{(k)}$, d.\,h. eine
+  Richtung $d^{(k)}$ mit $f(x^{(k)} + td^{(k)})< f(x^{(k)})$ für
+  hinreichend kleines $t>0$.
+\item Man berechnet eine geeignete Schrittweite $t_k$.
+\end{itemize}
+
+Ist $\FF\neq\R^n$, dann fordert man in der Regel
+\begin{itemize}
+\item $x^{(0)}\in\FF$
+\item $x^{(k)}\in\FF, k=1,2,\ldots$; Dazu bestimmt man die zulässige
+  Abstiegsrichtung $d^{(k)}$ mit der Eigenschaft, dass
+  $x^{(k)}+td^{(k)} \in\FF$ für hinreichend kleines $t>0$.
+\end{itemize}
+
+Es gibt verschiedene Verfahren, die diese Vorgehensweise für bestimmte
+Klassen von Optimierungsproblemen realisieren:
+\begin{itemize}
+\item Lineare Optimierungsprobleme: Simplexverfahren, Innere-Punkte-Verfahren
+\item Differenzierbare Optimierungsprobleme: Gradientenverfahren
+\end{itemize}
+Es gibt auch allgemeine Verfahren, die keine speziellen
+Voraussetzungen an die Zielfunktion und die Nebenbedingungen machen. 
+
+\begin{bsp}[Mutations-Selektions-Verfahren]
+  \begin{asparaenum}
+  \item Wähle $x^{(0)}\in\FF$. Setze $k:=0$
+  \item Mutation: Berechne einen neuen Punkt $v^{(k)}$ durch zufällige
+    Änderung $x^{(k)}$.
+  \item Selektion: Ist $v^{(k)}\in\FF$ und $f(v^{(k)})< f(x^{(k)})$,
+    dann $x^{(k+1)}:= v^{(k)}$. Andernfalls $x^{(k+1)}:=x^{(k)}$.
+  \item Setze $k:=k+1$ und gehe zu Punkt 2.
+  \end{asparaenum}
+Dieses Verfahren hat kein Abbruchkriterium. Eine häufig benutzte
+Mutation ist die Berechnung von $v^{(k)}_i = x^{(k)}_i +t_k (d^{(k)}_i
+-0,5)$. Dabei ist $d^{(k)}_i\in[0,1]$ zufällig erzeugt und $t_k$ muss
+durch Probieren bestimmt werden.
+\end{bsp}
+
+\begin{bsp}
+  Sei folgendes Optimierungsproblem gestellt:
+  \begin{align*}
+    \min -(2000x_1+ 1200x_2+ 1000x_3+ 1500x_4) &\\
+    x_1+x_2+x_3+x_4 &\leq 16\\
+    1200x_2 &\geq 4000\\
+    1200x_2 - 1500x_4 &\leq 0\\
+    2000x_1 &\leq 7000\\
+    xi\geq 0 & i=1,\ldots, 4
+  \end{align*}
+Das Simplexverfahren berechnet die Lösung in zwei Schritten. Zuerst
+wird $x^{(0)}\in\FF$ ermittelt. Dazu benötigt das Verfahren vier
+Iterationen. Danach erfolgt die eigentliche Berechnung in zwei
+Iterationen und es stoppt mit $x=
+\begin{pmatrix}
+  3,5\\3,33\\0\\9,16
+\end{pmatrix}, f(x)=-24750$.
+
+Das Mutations-Selektions-Verfahren wird mit einer Schrittweite
+$t_0=0,8$ gestartet. Diese wird immer nach 5000 Schritten halbiert und
+nach 100000 Iterationen wird abgebrochen. Das ermittelte Ergebnis ist $x=
+\begin{pmatrix}
+  3,5\\3,333\\1,6557\cdot 10^{-7}\\9,1666
+\end{pmatrix}, f(x)=-24749,999985$.
+\end{bsp}
+
+\chapter{Grundlagen der linearen Optimierung}
+Ein lineares Optimierungsproblem wird im englischen auch als linear
+program bezeihnet. Daher rührt die oft benutzte Abkürzung LP her. Das
+Problem besteht aus einer linearen Zielfunktion $f(x)=c^Tx$ und
+Nebenbedingungen, die in Form von Gleichungen und Ungleichungen
+definiert werden.
+
+Es gibt verschiedene "`Standardformen"' von linearen
+Optimierungsproblemen.
+
+\section{Lineare Optimierungsprobleme}
+
+\subsection{Standardformen von linearen Optimierungsproblemen}
+\begin{defin}
+  Ein lineares Optimierungsproblem in allgemeiner Form (LPA) ist die
+  Aufgabe:
+  \begin{align*}
+    \min c^Tx \text{ mit}\\
+    l_x\leq x\leq u_x\\
+    l_A\leq A^{(1)}\leq u_A\\
+    A^{(2)}(x), b
+  \end{align*}
+  wobei gilt: $x\in\R^n, c\in\R^n, l_x, u_x\in\R^n, A^{(1)}$ ist eine
+  $m_1\times n$-Matrix, $l_A, u_A\in\R^{m_1}, A^{(2)}$ ist eine
+  $m_2\times n$-Matrix.
+\end{defin}
+
+\begin{bsp}
+  Eine Supermarktkette stellt ein Billiggetränk auf Weinbasis
+  her. Grundlage ist ein Landwein mit Kosten von 1~\euro pro
+  Liter. Weitere Zutaten sind Zuckerlösung (1,20~\euro pro Liter) und
+  Konservierungsmittel (1,80~\euro pro Liter). Das Ziel ist die
+  Herstellung einer möglichst billigen Mischung. Dabei müssen folgende
+  Restriktionen beachtet werden.
+  \begin{asparaitem}
+  \item mindestens ein Drittel Zuckerlösung
+  \item mindestens halb soviel Wein wie Zuckerlösung
+  \item Anteil des Konservierungsmittels mindestens halb so groß wie
+    der Anteil der Zuckerlösung und höchstens so groß wie der Anteil
+    der Zuckerlösung
+  \item Anteil des Konservierungsmittels mindestens die Hälfte des
+    Weinanteils
+  \end{asparaitem}
+  Wir legen folgende Optimierungsvariablen fest:
+  \begin{description}
+  \item[$x_1$] Anteil der Zuckerlösung
+  \item[$x_2$] Anteil des Konservierungsmittels
+  \item[$x_3$] Anteil des Weins
+  \end{description}
+  Die Kosten $1,2x_1+1,8x_2+x_3$ sind unter folgenden Restriktionen zu
+  minimieren.
+  \begin{align*}
+    x_1, x_2, x_3 \geq 0 & x_1+x_2+x_3=1 & x_1\geq \frac{1}{3}\\
+    \frac{1}{2}x_1\leq x_2 \leq x_1 & 2x_3\geq x_1 & x_2\geq
+    \frac{1}{2} x_3
+  \end{align*}
+\end{bsp}
+
+\begin{bem*}
+  \begin{itemize}
+  \item Ungleichungen zwischen Vektoren sind komponentenweise zu
+    verstehen
+  \item Sinnvollerweise gilt: $l_x\leq u_x, l_A\leq u_A$. Gilt für
+    einen Index $i\in\{1, \ldots, n\}: l_{x_i}=u_{x_i}$, d.\,h. wir
+    fordern $l_{x_i}=x_i=u_{x_i}$, dann ist $x_i$ fest
+  \item Das lineare Funktional $\FF=\{x\in\R^n : l_x\leq x\leq u_x,
+    l_A\leq A^{(1)}\leq u_A, A^{(2)}x=b\}$ heißt zulässige Menge
+    (feasible set).
+  \item Ein Punkt $\tilde{x}\in\FF$ (zulässiger Punkt) heißt
+    \emph{optimal}, falls $\forall x\in\FF: f(x)\geq f(\tilde{x})$
+    gilt, d.\,h. $\tilde{x}$ ist globales Minimum von $f$ auf $\FF$.
+  \end{itemize}
+\end{bem*}
+
+\paragraph{Mögliche Transformationen}
+
+\begin{itemize}
+\item Sei $a\in\R^n, b\in\R$. Eine Ungleichung vom Typ $a^Tx\leq -b$
+  ist äquivalent zu $-a^Tx\geq b$.
+\item Eine Gleichung $a^Tx=b$ ist äquivalent zu $-a^Tx=-b$ und
+  äquivalent zu $a^Tx\leq b$ und $a^Tx\geq b$.
+\item Gibt es für $x_i$ keine Vorzeichenbedingung, dann kann man zwei
+  neue Variablen $x^+_i, x^-_i$ mit $x_i=x^+_i-x^-_i$ mit $x^+_i,
+  x^-_i\geq 0$ einführen.
+\end{itemize}
+
+\begin{bsp}
+  Wir betrachten das Problem, $\min x_1-x_2$ unter der
+  Nebenbedingungen $x_1\geq 0, x_2\leq 5$. Die Lösung ist mit $x_1=0,
+  x_2=5$ eindeutig bestimmt. Um ein Problem mit Vorzeichenbedingungen
+  für \emph{alle} Variablen zu erhalten, definieren wir $x^+_2, x^-_2$
+  und erhalten das Problem $\min x_1-x^+_2+x^-_2$ mit den
+  Nebenbedingungen $x_1\geq 0, x^+_2, x^-_2\geq 0, x^+_2-x^-_2\leq 5$.
+\end{bsp}
+
+\begin{defin}
+  Ein lineares Optimierungsproblem in kanonischer Form (LPK) ist die Aufgabe:
+  \begin{align*}
+    \min c^Tx \text{ mit}\\
+    Ax\geq b, x\geq0
+  \end{align*}
+  mit $c\in\R^n, A$ ist eine $m\times n$-Matrix, $b\in\R^m$. In diesem
+  Fall ist die zulässige Menge $\FF= \{x\in\R: Ax\geq b, x\geq 0\}$.
+\end{defin}
+
+\begin{bsp}
+  siehe Beispiel \ref{bsp:prodplan-16}
+  \begin{align*}
+    \max 1,5x_1+ x_2+ 2x_3+ 1,4x_4 && \\
+    x_1+ x_2+ \leq 1300 &&\\
+    x_1+ x_3+ x_4 \leq 2000&&\\
+    x_4 \leq 800&&\\
+    x_3 \leq 500&&\\
+    c=-
+    \begin{pmatrix}
+      1,5\\1\\2\\1,4
+    \end{pmatrix}&
+    A=
+    \begin{pmatrix}
+      -1 & -1 & 0 & 0\\
+      -1 & 0 & -1 &-1\\
+      0 & 0 & 0 & 1\\
+      0 & 0 & -1 & 0
+    \end{pmatrix}&
+    b=
+    \begin{pmatrix}
+      -1300\\-2000\\800\\-500
+    \end{pmatrix}
+  \end{align*}
+\end{bsp}
+
+\begin{defin}
+  Ein lineares Optimierungsproblem in Normalform oder Standardform ist
+  die Aufgabe
+  \[\min c^{T} x\]
+  unter den Nebenbedingungen
+  \[Ax=b, x\geq 0\]
+  mit $c\in\R^{n}, b\in\R^{m}$ und $A$ ist eine $m\times n$-Matrix.
+  Die zulässige Menge ist $\FF=\set{x\in\R^{n}|Ax=b,x\geq 0 }$
+\end{defin}
+
+\begin{bem*}
+  \begin{itemize}
+   \item Wir können \obda $b\geq 0$ setzen.
+   \item Bei $n$ Variablen und $m$ Gleichungsrestriktionen folgt, dass
+    ein lineares Gleichungssystem vorliegt.
+   \item In der Regel fordert man $m<n$.
+  \end{itemize}
+\end{bem*}
+
+Wie kann man nun ein Problem in kanonischer Form in Standardform
+umwandeln? Die Lösung ist hier die Einführung von
+\emph{Schlupfvariablen}.
+
+\begin{bsp}
+  Sei folgende Aufgabe gegeben:\\
+  Maximiere $x_{1}+x_{2}$ unter den Nebenbedingungen $x_{1}+
+  3x_{2}\leq 13, 3x_{1}+x_{2}\leq 15, -x_{1}+x_{2}\leq 3, x_{i}\geq
+  0$. Wir führen die \emph{Schlupfvariablen}\index{Schlupfvariable}
+  $x_{3}, x_{4}, x_{5}$ ein und ersetzen die Ungleichung durch:
+  \begin{align*}
+    x_{1} + 3x_{2} + x_{3} &= 13\\
+    3x_{1} + x_{2} + x_{4} &= 15\\
+    -x_{1} + x_{2} + x_{5} &= 3\\
+    x_{i} &\geq 0\\
+  \end{align*}
+\end{bsp}
+
+Allgemein lässt sich der Sachverhalt so formulieren:
+Sei ein lineares Problem in kanonischer Form gegeben. Um das Problem
+in Standardform zu transformieren, führen wir die Schlupfvariablen
+\[y=\begin{pmatrix}y_{1}\\\vdots\\y_{m}\end{pmatrix} =
+\begin{pmatrix}x_{n+1}\\\vdots\\x_{n+m}\end{pmatrix}\in \R^{m}\]
+ein und erhalten somit das Problem
+\[\min_{x\in\R^{n}, y\in\R^{m}} c^{T}x =(c^{T}, 0^{T}_{m})
+\begin{pmatrix}x\\y\end{pmatrix}\] unter den Nebenbedingungen $x,y\geq
+0$, d.\,h.
+\[Ax-y=b=(A-I_{m})\begin{pmatrix}x\\y\end{pmatrix}\]
+
+\begin{bsp}
+  Frannie verkauft jedes Jahr drei
+  Festmeter\footnote{\url{http://de.wikipedia.org/wiki/Festmeter}}
+  Holz. Zwei Kunden machen folgendes Angebot. Kunde1 bietet 90 \euro{}
+  für einen halben Festmeter und Kunde2 bietet 150~\euro{} für einen
+  Festmeter. Seien also $x_{1}$ die Anzahl der Festmeter an Kunde1 und
+  $x_{2}$ die Anzahl der Festmeter an Kunde2. Die Einnahmen sollen
+  maximiert werden. Damit ergibt sich folgendes Optimierungsproblem:
+  \[\min -90x_{1} - 150x_{2}\]
+  unter den Nebenbedingungen:
+  \[0,5x_{1} + x_{2} \geq 3 \quad x_{i} \geq \]
+  Wir betrachten die Geraden $x_{2}=-0,5x_{1} + 3$ und $-90x_{1}-150
+  x_{2}=r$
+\end{bsp}
+
+\subsection{Grafische Lösung von linearen Optimierungsproblemen}
+\label{sec:212-grafLsg}
+Hierzu muss man sich auf $n=2$ beschränken und es sind nur
+Ungleichungen als Nebenbedingungen zugelassen
+\todo{Grafik einfügen}
+
+Zur Bestimmung der Lösungsmenge werden die Randgeraden eingezeichnet
+und die richtige Lösungshälfte bestimmt.
+
+\subsection{Lösbarkeit von linearen Optimierungsproblemen}
+
+Hier kann man drei Fälle unterscheiden:
+\begin{enumerate}
+ \item Lösung ist eindeutig bestimmt
+ \item Es gibt unendlich viele Lösungen.
+ \item Es gibt keine Lösung.
+\end{enumerate}
+
+\subsection{Software zur Lösung}
+
+Zur Lösung von linearen Optimierungsproblemen kann man u.\,a. MATLAB
+oder auch Scilab benutzen.
+
+MATLAB ist eine kommerzielle Lösung der Firma The MathWorks, Inc. und
+hat die Webseite \url{http://www.mathworks.de/}.
+
+Scilab ist eine kostenlose Entwicklung aus Frankreich und hat die
+Webseite \url{http://www.scilab.org/}.
+
+\begin{bsp}
+  \todo{Beispiel einfügen}
+\end{bsp}
+
+\begin{bsp}
+  \todo{Beispiel einfügen}
+\end{bsp}
+\begin{bsp}
+  \todo{Beispiel einfügen}
+\end{bsp}
+\begin{bsp}
+  \todo{Beispiel einfügen}
+\end{bsp}
+
+\section{Konvexe Mengen}
+
+\begin{defin}
+  Ein Menge $C\subset\R^{n}$ heißt \emph{konvex}\index{Menge!konvexe},
+  falls mit $x,y\in C$ und $\alpha\in(0,1)$ auch der Punkt
+  $(1-\alpha)x+ \alpha y\in C$ ist.
+\end{defin}
+
+\begin{bem*}
+  Seien $x,y\in C$. Dann heißt $[x,y] := \set{(1-\alpha)x + \alpha y|
+  \alpha\in [0,1]}$ \emph{Verbindungsstrecke}
+  \index{Verbindungsstrecke} von $x$ und $y$. Konvexität heißt $x,y\in
+  C\Rightarrow[x,y]\in C$
+\end{bem*}
+
+\begin{bsp}
+  Sei $n=1$. Dann sind die konvexen Mengen Intervalle. Für den Fall,
+  dass $n$ beliebig ist, gilt:
+
+  Sei $x\in\R^{n}$ und $r\in\R$. Wir betrachten $B(x, r)=\set{y\in\R^{n}|
+  \lVert y-x\rVert<r}$ und behaupten, dass $B(x,r)$ konvex ist. Denn
+  sei $y,z\in B(x,r)$ und $\alpha\in(0,1)$. Dann folgt:
+  \begin{align*}
+    \lVert r-x\rVert &= \lVert (1-\alpha)y+\alpha z -x\rVert = \lVert
+       (1-\alpha)y+\alpha z -(1-\alpha)x-\alpha x\rVert\\
+    &= \lVert (1-\alpha)(y-x)+\alpha(z-x)\rVert \leq \lVert
+       (1-\alpha)(y-x)\rVert + \lVert \alpha(z-x)\rVert\\
+    &\leq (1-\alpha) \underbrace{\lVert y-x\rVert}_{< r} + \alpha
+       \underbrace{\lVert z-x\rVert}_{<r}\\
+    &< (1-\alpha+\alpha)r=r
+  \end{align*}
+\end{bsp}
+
+\begin{bsp}
+  Sei $(s,r)\in\R^{n}\times\R, s\neq 0$, wobei $0$ der Nullvektor ist.
+  Die Hyperbene $H_{s,r}=\set{x\in\R^{n}| \langle s,x\rangle=r}$ ist
+  konvex. Denn sei $y,z\in H_{s,r}$ und $\alpha\in[0,1]$ beliebig.
+  Also ist zu zeigen, $v=(1-\alpha)y+\alpha z\in H_{s,r}$, d.\,h.
+  $\langle s,v\rangle =r= \langle s,(1-\alpha)y + \alpha z\rangle=
+  (1-\alpha)\underbrace{\langle s,y\rangle}_{=r} +\alpha
+  \underbrace{\langle s,z\rangle}_{=r} =r$. Gleiches gilt für den
+  offenen Halbraum $\set{x\in\R^{n}| \langle s,x\rangle<r}$ und den
+  abgeschlossenen Halbraum $\set{x\in\R^{n}| \langle s,x\rangle\leq r}$.
+\end{bsp}
+
+\begin{lemma}
+  \label{lem:konvDurchsch}
+  Ist $(C_{j})_{j\in J}$ eine beliebige Familie konvexer Mengen, dann
+  ist auch der Durchschnitt dieser Mengen $C:=\bigcap_{j\in J} C_{j}$
+  konvex.
+
+  Denn seien $x,y\in C$ und $\alpha\in[0,1]$ beliebig. Dann folgt für
+  alle $j\in J$, dass $x,y\in C_{j}$ und weiter ist $(1-\alpha)x +
+  \alpha y\in C_{j}$. Damit gilt aber $(1-\alpha)x + \alpha y\in C$.
+\end{lemma}
+
+\begin{bsp}
+  Sei $(a^{(i)}, b^{(i)})\in\R^{n}\times\R, i=1,\ldots,s,s+1,\ldots,
+  m$. Weiter sei $K=\set{x\in\R^{n}| \langle a^{(i)}, x\rangle =
+  b^{(i)}, i=1,\ldots,s, \langle a^{(i)}, x\rangle\leq b^{(i)}, i=s+1,
+  \ldots, n}$ die Lösungsmenge eines Systems linearer Gleichungen und
+  Ungleichungen. Man nennt $K$ auch \emph{Polyeder}\index{Polyeder}.
+  Es wird behauptet, dass $K$ konvex ist.
+
+  Sei $C_{i}= \set{x\in\R^{n}| \langle a^{(i)}, x\rangle=b_{i}}$ mit
+  $i=1,\ldots,s$ bzw. $C_{i}= \set{x\in\R^{n}| \langle a^{(i)},
+  x\rangle\leq b_{i}}$ mit $i=s+1,\ldots,n$. Dann ist
+  $K=\bigcap_{i=1}^{m} C_{i}$ konvex nach
+  Lemma~\ref{lem:konvDurchsch}.
+
+  Ein lineares Optimierungsproblem in allgemeiner, kanonischer oder
+  Standardform ist vom Typ $\min c^{T}x$ \unb $x\in K$, wobei $K$ ein
+  Polyeder ist.
+\end{bsp}
+
+\begin{satz}
+  \label{satz:218-lokglobLsg}
+  Ist $c\in\R^{n}$ und $K\subset \R^{n}$ nichtleer und konvex, dann
+  ist jede lokale Lösung des Problems $\min c^{T}x$ \unb $x\in K$ auch
+  globale Lösung. Weiterhin ist die Lösungsmenge konvex.
+  \begin{proof}
+    Sei $\tilde{x}\in K$ eine beliebige lokale Lösung. Dann existiert
+    ein $r>0$ mit $f(x)\geq f(\tilde{x})$ für alle $x\in K\cap
+    B(\tilde{x}, r)$. Sei weiter $y\in K, y\neq \tilde{x}$ beliebig.
+    Wir zeigen: $f(y)\geq f(\tilde{x})$. Dazu nutzen wir die
+    Konvexität aus. Da $K$ konvex ist, gilt $\tilde{x}+\alpha
+    (y-\tilde{x})=(1-\alpha)\tilde{x}+\alpha y\in K$. Weiter gilt für
+    hinreichend kleines $\alpha>0$ (speziell $\alpha<\frac{r}{\lVert
+    y- \tilde{x}\rVert}$). Für $0<\alpha<\min\{1, \frac{r}{\lvert y-
+    \tilde{x}\rVert}\}$ gilt also: $\tilde{x}+\alpha(y-\tilde{x})\in
+    K\cap B(\tilde{x}, r)$. Somit folgt:
+    $f(\tilde{x}+\alpha(x-\tilde{x})\geq f(\tilde{x})$. Dies ist
+    gleichbedeutend mit $c^{T}(\tilde{x}+\alpha(y-\tilde{x}))\geq
+    c^{T}\tilde{x}\Rightarrow c^{T}\tilde{x} +\alpha c^{T}x -\alpha
+    c^{T} \tilde{x}\geq c^{T}\tilde{x} \Rightarrow \alpha c^{T} y \geq
+    \alpha c^{T}\tilde{x} \Rightarrow c^{T}y \geq c^{T}\tilde{x}
+    \Rightarrow f(y)\geq f(\tilde{x})$.
+
+    Seien $\tilde{x}, \tilde{y}$ beliebige Lösungen. Dann sind diese
+    auch globale Lösungen, d.\,h. $f(\tilde{x})=f(\tilde{y})$. Sei
+    $\alpha\in[0,1]$. Nun ist zu zeigen, dass auch
+    $(1-\alpha)\tilde{x} +\alpha \tilde{y}$ Lösung ist. Es gilt:
+    $f((1-\alpha)\tilde{x}+\alpha\tilde{y})=c^{T} ((1-\alpha)\tilde{x}
+    +\alpha\tilde{y})= (1-\alpha)c^{T}\tilde{x} +\alpha c^{T}\tilde{y}
+    = (1-\alpha)f(\tilde{x}) + \alpha f(\tilde{y})=
+    (1-\alpha)f(\tilde{x}) + \alpha f(\tilde{x}) =f(\tilde{x})$.
+  \end{proof}
+\end{satz}
+
+\begin{bem*}
+  Die Aussage von Satz~\autoref{satz:218-lokglobLsg} gilt allgemein
+  für konvexe Zielfunktion. Dabei heißt eine Funktion $f\colon
+  \R^{n}\rightarrow \R$ konvex auf $K$, wenn gilt: $f((1-\alpha) x+
+  \alpha y)\leq (1-\alpha)f(x)+\alpha f(y)$ für alle $x,y\in K$ und
+  $\alpha\in[0,1]$. Im Spezialfall $f(x)=c^{T}x$ gilt sogar
+  $f((1-\alpha) x+\alpha y)=(1-\alpha)x+\alpha y$.
+\end{bem*}
+
+\begin{defin}
+  Eine \emph{Konvexkombination}\index{Konvexkombination} von Punkten
+  $x^{(1)},\ldots,x^{(k)}\in\R^{n}$ ist ein Punkt der Form
+  $\sum_{i=1}^{k} \alpha_{i} x^{(i)}$ mit $\alpha_{i}\geq 0,
+  i=1,\ldots,k$ und $\sum_{i=1}^{k} \alpha_{i}=1$.
+\end{defin}
+
+\begin{bem*}
+  Für $k=2$ gilt: $\alpha_{1} x^{(1)} + \alpha_{2} x^{(2)}$ mit
+  $\alpha_{1}, \alpha_{2}\geq 0,
+  \alpha_{1}+\alpha_{2}=0\Leftrightarrow \alpha_{1} = 1-\alpha_{2}$. 
+\end{bem*}
+
+\begin{satz}
+  Eine Menge $C\subset\R^{n}$ ist genau dann konvex, wenn sie alle
+  Konvexkombinationen  von Punkten in $C$ enthält.
+  \begin{proof}
+    Dies stellt eine Beweisidee dar:
+
+    In der Gegenrichtung zeigt man: Wenn $C$ alle Konvexkombinationen
+    von Punkten in $C$ enthält, dann enthält sie alle
+    Konvexkombinationen von zwei Punkten in $C$. Dann folgt, dass $C$
+    konvex ist.
+
+    In der Hinrichtung nimmt man an, dass $C$ konvex ist. Weiter sei
+    $x^{(1)},\ldots,x^{k}\in C$ beliebig und
+    $\alpha_{1},\ldots,\alpha_{k}\in\R$ mit $\alpha_{i}\geq 0,
+    i=1,\ldots, k, \sum_{i=1}^{k} \alpha_{i}=1$. Dann ist zu zeigen,
+    dass $\sum_{i=1}^{k} \alpha_{i} x^{(i)}\in C$. Dieser Beweis wird
+    per Induktion geführt.
+  \end{proof}
+\end{satz}
+
+\begin{defin}
+  Sei $A\in\R^{n}$ beliebig. Die \emph{konvexe
+  Hülle}\index{Hülle!konvexe} von $A$ ist die Menge
+  \[\bigcap_{A\subset C} C\]
+  Dies ist die kleinste konvexe Menge, die $A$ umfasst.
+\end{defin}
+
+\begin{lemma}
+  Für eine beliebige Menge $A\subset\R^{n}$ ist $\co A= \set{x\in\R| x
+  \text{ ist Konvexkombination von Punkten in } A} =: B$.
+  \begin{proof}
+    Für den Fall $\co A\subset B$ gilt, dass $B$ konvex ist und das
+    $A\subset B$. Somit folgt, $\co A\subset B$.
+
+    Für $B\subset\co A$ gilt: Sei $C$ eine beliebige konvexe Menge mit
+    $C\supset A\Rightarrow C$ enthält alle Konvexkombinationen von
+    Punkten in $A$, d.\,h. $C\supset B\Rightarrow B\subset
+    \bigcap_{C\supset A} C \subset \co A$.
+  \end{proof}
+\end{lemma}
+
+\section{Hauptsatz der linearen Optimierung}
+
+Ziel dieses Abschnittes ist, zu zeigen, wenn ein lineares
+Optimierungsproblem eine Lösung hat, existiert eine Ecke, die Lösung
+ist.
+
+\begin{defin}[geometrische Definition einer Ecke]
+  Sei $\FF$ die zulässige Menge eines linearen Optimierungsproblems.
+  Dann heißt ein Punkt $x\in\FF$ \emph{Ecke}\index{Ecke} von $\FF$,
+  falls $x$ nicht als Konvexkombination $x=(1-\alpha)y+\alpha z$ mit
+  $y,z\in\FF, y\neq z, \alpha\in(0,1)$ darstellbar ist.
+\end{defin}
+
+\begin{bem}
+  \label{bem:224}
+  Ist $\FF$ die zulässige Menge eines linearen Optimierungsproblems
+  mit Vorzeichenbedingung $x\geq 0_{n}$ und ist der Nullpunkt
+  $0_{n}\in\FF$, dann ist $0_{n}$ eine Ecke von $\FF$. Dann sind
+  $y,z\in\FF$ mit $y\neq z, \alpha\in(0,1)$ mit $0_{n}= (1-\alpha)
+  y+\alpha z\Rightarrow y=z=0_{n}$.
+\end{bem}
+
+\begin{bsp}
+  siehe das lineare Optimierungsproblem aus
+  Abschnitt~\ref{sec:212-grafLsg}
+\end{bsp}
+
+\begin{bsp}
+  Sei $\FF\subset\R^{2}$ die zulässige Menge eines linearen
+  Optimierungsproblems in kanonischer Form. Es ist definiert durch:
+  $2x_{1}+3x_{2}\leq 6, x_{1}\leq 2, x_{i}\geq 0$. 
+\end{bsp}
+
+\begin{bsp}
+  \todo{Beispiel einfügen}
+\end{bsp}
+
+Ab jetzt betrachten wir nur noch lineare Optimierungsprobleme in
+Standardform, d.\,h. mit der zulässigen Menge $\FF=\set{x\in\R^{n}|
+Ax=b, x\geq 0}$. Dabei ist $A$ eine $m\times n$-Matrix. Die
+zulässigen Punkte $x\in\FF$ sind insbesondere Lösung des linearen
+Gleichungssystems $Ax=b$.
+
+Es gibt folgende Spezialfälle:
+\begin{itemize}
+ \item[$n=m$] Hat $A$ den vollen Rang, dann hat das System $Ax=b$
+  genau eine Lösung: $x=A^{-1}b$. Gilt für $x$ auch noch $x\geq
+  0_{n}\Rightarrow \FF=\{x\}$. Andernfalls ist $\FF=\emptyset$.
+ \item[$m>n$] In diesem Falle gibt es mehr Gleichungen als Variablen
+  (überbestimmtes System). Dies ist für die Optimierung uninteressant.
+ \item[$m<n$] Dieses System hat weniger Gleichungen als Variablen. Die
+  Menge $\set{x\in\R^{n}| Ax=b}$ ist dann ein affiner Unterraum.
+  Spezialfall: Der Rang der Matrix $A$ ist gleich $m$.
+\end{itemize}
+
+\begin{satz}
+  \label{satz:228}
+  Sei $\FF=\set{x\in\R^{n}| Ax=b, x\geq 0_{n}}, A\in\R^{m\times n},
+  b\in\R^{m}, m\leq n$ die zulässige Menge eines linearen
+  Optimierungsproblems in Standardform. Dann gilt: $x\in\FF$ ist genau
+  dann Ecke von $\FF$, wenn die zu positiven Komponenten von $x$
+  gehörenden Spaltenvektoren linear unabhängig sind, d.\,h. wenn die
+  Vektoren $A_{.i}$ linear unabhängig sind.
+  \begin{proof}
+    Ist $x=0_{n}$ (d.\,h. $I(x)=\emptyset$), dann ist $x$ Ecke von
+    $\FF$ (Bemerkung~\ref{bem:224}). Sei jetzt $I(x)=\emptyset$ ($x$
+    hat mindestens eine Komponente, die größer als 0 ist).
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $x$ Ecke von $\FF$. Dann ist zu
+      zeigen, dass die Vektoren $A_{.i}$ mit $i\in I(x)$ linear
+      unabhängig sind. Angenommen die Vektoren $A_{.i}$ seien linear
+      abhängig. Dann zeigen wir: $\exists y,z\in\FF$ mit $y\neq z$ und
+      $x=0,5y+0,5z$. Da die Vektoren $A_{.i}$ linear abhängig,
+      existieren Zahlen $\alpha_{i}$ mit $\sum_{i\in I(x)}$
+      $\alpha_{i} A_{.i}$  und $\gamma := \max_{i\in I(x)} \lvert
+      \alpha_{i}\rvert >0$. Sei $\beta:= \min_{i\in I(x)} x
+      \Rightarrow \beta>0$. Wir definieren zwei Vektoren:
+      \begin{align*}
+	y_{i} &= \begin{cases}x_{i}-\frac{\beta}{\gamma}\alpha_{i} &
+		   i\in I(x)\\
+		   0 & \text{sonst}\end{cases} &
+	   z_{i} &= \begin{cases}x_{i}+ \frac{\beta}{\gamma}\alpha_{i}
+		      & i\in I(x)\\
+		      0 & \text{sonst}\end{cases}
+      \end{align*}
+      Dann ist $x=0,5y+0,5z$ und weiter $y\neq z$. Nun ist noch zu
+      zeigen, dass $y,z\in\FF$, d.\,h. $y,z\geq 0, Ay=b=Az$. Aus der
+      Definition von $\beta$ und $\gamma$ erhalten wir:
+      \[\left\lvert \frac{\beta}{\gamma} \alpha_{i} \right\rvert
+      =\beta \underbrace{\frac{\lvert \alpha_{i}\rvert}{\gamma}}_{\leq 1}
+      \leq \beta \Rightarrow y,z\geq 0_{n}\]
+      Weiter ist $x_{i}=0$ für $i\notin I(x)$. Damit folgt,
+      $Ay=\sum_{i=1}^{n} y_{i} A_{.i} = \sum_{i\in I(x)} y_{i} A_{.i}
+      = \sum_{i\in I(x)} \left(x_{i}-\frac{\beta}{\gamma} \alpha_{i}
+      \right) A_{.i}= \sum_{i\in I(x)} x_{i} A_{.i}-
+      \frac{\beta}{\gamma} \underbrace{\sum_{i\in I(x)} \alpha_{i}
+      A_{.i}}_{0_{n}} = \sum_{i=1}^{n} x_{i} A_{.i}=Ax$
+      \emph{Widerspruch}
+     \item["`$\Leftarrow$"'] Seien die $A_{.i}$ linear unabhängig.
+      Dann ist zu zeigen, $x$ ist Ecke von $\FF$. Sei $x=(1-\lambda)
+      x^{(1)} +\lambda x^{(2)}$ mit $x^{(1)}, x^{(2)}\in\FF,
+      \lambda\in (0,1)$. Dann ist zu zeigen, dass $x^{(1)} = x^{(2)}$.
+      Sei nun $j\not\in I(x)\Rightarrow 0=x_{j} = (1-\lambda)
+      x^{(1)}_{j} + \lambda x^{(2)}_{j} \Rightarrow x^{(1)}_{j} =
+      x^{(2)}_{j} =0$. Es gilt, $Ax^{(1)}=b, Ax^{(2)}=b\Rightarrow
+      0=b-b = Ax^{(1)}-Ax^{(2)}=A(x^{(1)}-x^{(2)})$ und weiter
+      $0=\sum_{i=1}^{n} (x^{(1)}_{i} -x^{(2)}_{i}) A_{.i}= \sum_{i\in
+      I(x)} (x^{(1)}_{i} -x^{(2)}_{i}) A_{.i}$. Da die Vektoren
+      $A_{.i}$ linear unabhängig sind, folgt $x^{(1)}_{i} -x^{(2)}_{i}
+      =0 \Rightarrow x^{(1)}_{i}=x^{(2)}_{i}$. Somit ist gezeigt, dass
+      $x^{(1)}=x^{(2)}$.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+\begin{bem*}
+  Bei einer Auswahl von Spaltenvektoren von $A$ können höchstens $m$
+  linear unabhängig sein, d.\,h. $I(x)$ hat höchtens $m$ Elemente und
+  es folgt, dass eine Ecke höchtens $m$ positive Komponenten haben kann.
+\end{bem*}
+
+\begin{bsp}
+  siehe die Beispiele 2.27 bzw. 2.28 \todo{Referenz einfügen}
+
+  Die Ecken der zulässigen Mengen sind anschaulich die Punkte:
+  \begin{align*}
+    x^{(1)} &= \begin{pmatrix}0\\0\\3\end{pmatrix} & x^{(2)} &=
+       \begin{pmatrix}6\\0\\0\end{pmatrix} & x^{(3)} &=
+       \begin{pmatrix}0\\3\\0\end{pmatrix}
+  \end{align*}
+  Es gilt: $A=(\nicefrac{1}{2}, 1, 1), b=2, m=1, n=3$.
+\end{bsp}
+
+\begin{bsp}[siehe Beispiel 2.26\todo{Referenz}]
+  Die zulässige Menge in kanonischer Form wird definiert durch:
+  \begin{align*}
+    A &= \begin{pmatrix}-2 & -3\\-1 & 0\end{pmatrix} & b &=
+       \begin{pmatrix}-6\\-2\end{pmatrix}
+  \end{align*}
+  Um Satz~\ref{satz:228} anzuwenden, müssen wir das Problem in
+  Standardform bringen:
+  \[\tilde{A} = \begin{pmatrix}-2 & -3 & -1 & 0\\
+		  -1 & 0 & 0 -1\end{pmatrix}\]
+  Kandidaten für die Ecken sind:
+  \begin{align*}
+    x^{(1)} &= \begin{pmatrix}0\\0\\6\\2\end{pmatrix} &
+       x^{(2)} &= \begin{pmatrix}2\\0\\2\\0\end{pmatrix} &
+       x^{(3)} &= \begin{pmatrix}0\\2\\0\\2\end{pmatrix} &
+       x^{(4)} &= \begin{pmatrix}2\\\nicefrac{2}{3}\\0\\0\end{pmatrix}
+  \end{align*}
+  Sei $x\in\FF_{k}$ und $s=Ax-b\geq 0\Rightarrow
+  \begin{pmatrix}x\\s\end{pmatrix}\in \FF$ zulässige Punkte für die
+  Standardform.
+\end{bsp}
+
+\begin{bem}
+  Sei $\FF_{k}=\set{x=(x_{1},\ldots,x_{n})^{T}\in\R^{n}| x\geq 0,
+  Ax\geq b}$ die zulässige Menge eines linearen Optimierungsproblems
+  in kanonischer Form. Transformiert man das Problem in Standardform,
+  erhält man die zulässige Menge:
+  \[\FF =\set{\tilde{x} =(x_{1},\ldots,x_{n}, \underbrace{x_{n+1},
+  \ldots,x_{n+m}}_{=s})^{T}\in\R^{n\times m}| \tilde{x}\geq 0,
+  (A-I_{m}) x=b}\]
+  Dann gilt:
+  \begin{itemize}
+   \item $x\in\FF_{k}$ und $s=Ax-b\Leftrightarrow
+    \begin{pmatrix}x\\s\end{pmatrix}\in\FF$
+   \item $x\in\FF_{k}$ ist Ecke von $\FF_{k}\Leftrightarrow
+    \begin{pmatrix}x\\s\end{pmatrix}$ mit $s=Ax-b$ ist Ecke von $\FF$.
+  \end{itemize}
+\end{bem}
+
+\begin{satz}
+  \label{satz:232}
+  Die zulässige Menge $\FF=\set{x\in\R^{n}| x\geq 0, Ax=b}$ eines
+  linearen Optimierungsproblems in Standardform sei nicht leer. Dann
+  existiert mindestens eine und höchstens endlich viele Ecken von $\FF$.
+  \begin{proof}
+    \todo{Beweis einfügen}
+  \end{proof}
+\end{satz}
+
+\begin{lemma}
+  \label{lem:233}
+  Ist $\FF=\set{x\in\R^{n}| Ax=b, x\geq 0}\neq\emptyset$ zulässige
+  Menge eines linearen Optimierungsproblems in Standardform. Dann ist
+  $\FF$ genau dann beschränkt, wenn es kein $d\in\R^{n}\setminus
+  \{0_{n}\}$ gibt mit $Ad=0, d\geq 0$.
+  \begin{proof}
+    \todo{Beweis einfügen}
+  \end{proof}
+\end{lemma}
+
+\begin{satz}
+  Sei $\FF=\set{x\in\R^{n}| Ax=b, x\geq 0}\neq\emptyset$ und
+  $v^{(1)},\ldots,v^{k}$ Ecken von $\FF$. Jeder Punkt $x\in\FF$ hat
+  eine Darstellung:
+  \begin{gather*}
+    x=\sum_{i=1}^{k} \alpha_{i} v^{(i)}_{k} +d
+  \end{gather*}
+  mit $\alpha_{i}\geq 0, i=1,\ldots,k, \sum_{i=1}^{k} \alpha_{i}=1,
+  d\geq 0, Ad=0$. Ist $\FF$ beschränkt, gilt:
+  \begin{equation}
+    \label{eq:234}
+    \FF=\co\{v^{(1)},\ldots,v^{(k)}\}
+  \end{equation}
+  \begin{proof}
+    Sei $p_{0}$ die Minimalzahl der positiven Komponenten von Vektoren
+    $x\in\FF$. Der Beweis wird nach dem Prinzip der vollständigen
+    Induktion geführt:
+    \begin{itemize}
+     \item[Induktionsanfang] $p=p_{0}$
+     \item[Induktionsvoraussetzung] Es gelte Gleichung~\ref{eq:234}
+      für $x\in\FF$ und höchstens $n-1$ positiven Komponenten.
+     \item[Induktionsbeweis] Sei $x\in\FF$ ein Vektor mit genau $p$
+      positiven Komponenten ($I(x):= \set{1\leq i\leq n| x_{i}\geq
+      0}$). Sei nun $x$ keine Ecke von $\FF$. Nach Satz~\ref{satz:228}
+      folgt, dass die $A_{.i}$ linear abhängig sind, d.\,h. $\exists
+      w\in\R^{n}\setminus\{0\}$ mit $w_{i}=0$ für $i\not\in I(x)$ und
+      $\sum_{i=1}^{n} w_{i} A_{.i} =0$.
+      \begin{enumerate}[1.~F{a}ll]
+       \item Es gibt mindestens ein $w_{j}<0$ und $w_{k}>0$. Dann sind
+	$x^{(1)}, x^{(2)}\in\FF$ und haben höchstens $p-1$ positive
+	Komponenten. Nach der Induktionsvoraussetzung haben die
+	$x^{(1)}, x^{(2)}$ eine Darstellung der Form:
+			\begin{gather*}
+			  x^{(i)} = \sum_{j=1}^{k} \alpha_{j}^{(i)}
+			     v^{(j)} + d^{(i)} \qquad i=1,2
+			\end{gather*}
+	mit $\alpha_{j}^{(i)}\geq 0, \sum_{j=1}^{k}
+	\alpha_{j}^{(i)}=1, d^{(i)} \geq 0, Ad^{(i)}=0$. Weiter gilt:
+		\begin{align*}
+		  x &= \underbrace{\frac{\lambda_{2}}{\lambda_{1} +
+		     \lambda_{2}}}_{=(1-\mu)} x^{(1)} +
+		     \underbrace{\frac{\lambda_{1}}{\lambda_{1} +
+		     \lambda_{2}}}_{=\mu\in(0,1)} x^{(2)} (1-\mu)
+		     x^{(1)} + \mu x^{(2)}\\
+		  &= (1-\mu) \sum_{j=1}^{k} \alpha_{j}^{(i)} v^{(j)}
+		     d^{(i)} +\mu \sum_{j=1}^{k} \alpha_{j}^{(i)}
+		     v^{(j)} + d^{(i)}\\
+		  &= \left(\sum_{j=1}^{k} \underbrace{(1-\mu)
+		     \alpha_{j}^{(i)} + \mu \alpha_{j}^{(i)}}_{=:
+		     \alpha_{j}}\right) v^{(j)} + (1-\mu) d^{(1)} +
+		     \mu d^{(2)}\\
+		  &\Rightarrow \alpha_{j}\geq 0, \sum_{j=1}^{k}
+		     \alpha_{j}=1
+		\end{align*}
+	Für $d:= (1-\mu) d^{(1)} + \mu d^{(2)}\geq 0$ und $Ad=(1-\mu)A
+	d^{(1)} +\mu Ad^{(2)}$.
+       \item $w\geq 0$\\
+	Dann definiert man $x^{(1)}$ und $\lambda_{1}$ wie oben. Dann
+	ist $x^{(1)}\in\FF$ und hat höchstens $p-1$ positive
+	Komponenten. Mit der Anwendung der Induktionsvoraussetzung auf
+	$x^{(1)}$ folgt $x=x^{(1)}+\lambda_{1} w= \sum_{j=1}^{k}
+	\alpha_{j}^{(1)} v^{(j)} + d^{(1)} + \lambda_{1} w$. Für $d:=
+	d^{(1)} +\lambda_{1} w$ gilt $d\geq 0$ und $Ad^{(1)}
+	+\lambda_{1} w=0$.
+       \item $w\leq 0$\\
+	Man definiert $x^{(2)}$ und $\lambda_{2}$ wie oben. Die
+	Beweisführung erfolgt wie im zweiten Fall.
+      \end{enumerate}
+      Sei $\FF$ nun  beschränkt. Dann folgt nach Lemma~\ref{lem:233},
+      dass es kein $d\in\R^{n}\setminus \{0\}$ mit $d\geq 0$ und
+      $Ad=0$ gibt. Damit hat jedes $x\in\FF$ eine Darstellung wie in
+      Gleichung~\ref{eq:234} mit $d=0_{n}$, d.\,h. für alle $x\in\FF$
+      ist Konvexkombination der Ecken $v^{(1)},\ldots,v^{k}\in\FF
+      \Rightarrow \FF\subseteq \co \{v^{(1)},\ldots,v^{(k)}\}$. Da
+      $\FF$ konvex und $v^{(1)},\ldots,v^{(k)}\in\FF\Rightarrow \FF
+      \supseteq \co\{v^{(1)},\ldots,v^{(k)}\}$.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Hauptsatz der linearen Optimierung]
+  Sei $A\in\R^{m\times n}, m\leq n, b\in\R^{m}$. Wir betrachten das
+  lineare Optimierungsproblem in Standardform:
+  \begin{gather*}
+    \min c^{T}x \text{ \unb } x\in\FF=\set{x\in\R^{n}| Ax=b, x\geq 0}
+  \end{gather*}
+  Dann gilt:
+  \begin{enumerate}[(a)]
+   \item Entweder ist eine der endlich vielen Ecken des linearen
+    Optimierungsproblems in Standardform Lösung oder die Zielfunktion
+    ist auf $\FF$ nicht nach unten beschränkt.
+   \item Ist $\FF$ beschränkt, dann hat das lineare
+    Optimierungsproblem in Standardform mindestens eine Lösung. Ein
+    $x\in\FF$ ist genau dann Lösung, wenn gilt: $x$ ist
+    Konvexkombination von Ecken, die ebenfalls Lösung sind.
+    \begin{proof}
+      Es existiere ein $d\in\R^{n}$ mit $d\geq 0, Ad=0$ und
+      $c^{T}d\leq 0$. Dann ist die Zielfunktion auf $\FF$ nicht nach
+      unten beschränkt. Denn sei $x\in\FF$ beliebig. Dann folgt für
+      alle $t\geq 0\colon x+td\in\FF\Rightarrow c^{T}(x+td) = c^{T}x
+      +tc^{T}d\xrightarrow{t\rightarrow\infty} -\infty$.
+
+      Betrachten jetzt $\forall d\in\R^{n}$ mit $d\geq 0, Ad=0\colon
+      c^{T}d\geq 0$. Es ist zu zeigen, dass mindestens eine der Ecken
+      von $\FF$ Lösung ist. Seien $v^{(1)},\ldots,v^{(k)}$ Ecken. Nach
+      Satz~\ref{satz:234} hat jedes $x\in\FF$ die Darstellung:
+      \begin{align*}
+	x &= \sum_{i=1}^{k} \alpha_{i} v^{(i)} +d\\
+	\Rightarrow c^{T}x &= c^{T} \left(\sum_{i=1}^{k} \alpha_{i}
+	   v^{(i)} +d \right) = \sum_{i=1}^{k}\alpha_{i} c^{T} v^{(i)}
+	   + \underbrace{c^{T}d}_{\geq 0}
+      \end{align*}
+      Sei $\mu:= \min_{i=1,\ldots,k} (c^{T} v^{(i)})$. Dann gilt
+      $c^{T}x \geq \sum_{i=1}^{k} \alpha_{i} c^{T} v^{(i)} \geq
+      \sum_{i=1}^{k} \alpha_{i} \mu = \mu \sum_{i=1}^{k} \alpha_{i}
+      \mu$. Somit ist jede Ecke $v^{(j)}$ von $\FF$ mit
+      $c^{T}v^{(j)}$ Lösung und der erste Teil des Satzes ist gezeigt.
+
+      Für den zweiten Teil des Satzes sei nun $\FF$ beschränkt. Da
+      $\FF$ weiterhin auch abgeschlossen ist, folgt, dass $\FF$
+      kompakt. Die Zielfunktion $f(x)=c^{T}x$ ist stetig. Nach dem
+      Satz vom Weierstraß nimmt $f$ auf $\FF$ ihr Minimum an.
+
+      Sei $x$ beliebige Lösung des linearen Optimierungsproblems in
+      Standardform. Dann ist zu zeigen, dass das $x$ eine
+      Konvexkombination ist. Nach Satz~\ref{satz:234} gilt, $x=
+      \sum_{i=1}^{k} \alpha_{i} v^{(i)}$ mit $\alpha_{i}\geq 0,
+      \sum_{i=1}^{k} \alpha_{i}=1, i=1,\ldots,k$. Wir zeigen,
+      $\alpha_{i}=0$ für alle nichtoptimalen Ecken. Wissen
+      $\mu=c^{T}x= \sum_{i=1}^{k} \alpha_{i} c^{T} v^{(i)}=
+      \min_{i=1,\ldots,k} c^{T} v^{(i)}$. Denn eine optimale Lösung
+      existiert. Sei jetzt $j\in\{1,\ldots,k\}$ für den $v^{(j)}$
+      nicht optimal ist. Dann ist $c^{T} v^{(j)} =\mu + \epsilon$ mit
+      $\epsilon>0\Rightarrow \mu= \sum_{i=1}^{k} \alpha_{i}
+      \underbrace{c^{T}v^{(i)}}_{\geq \mu} \geq \sum_{i=1}^{k}
+      \alpha_{i} \mu +\alpha_{i} \epsilon=\mu+\alpha_{j}
+      \epsilon\Rightarrow \alpha_{j}=0$. Es ist nun noch zu zeigen,
+      dass, wenn $x$ keine Konvexkombination ist, $x$ dann optimal
+      ist. Sei $x\leq \sum_{j=1}^{p} \alpha_{ij} v^{(ij)}, p\leq k$
+      und optimale Ecken $v^{(ij)}, j=1,\ldots,p$ und $\alpha_{ij}\geq
+      0, j=1,\ldots,p, \sum \alpha_{ij}=1$. Es gilt: $c^{T}v^{(ij)}
+      =\mu\Rightarrow c^{T} x=\sum_{j=1}^{p} \alpha_{ij}
+      \underbrace{c^{T}v^{(ij)}}_{=\mu} =\mu$.
+    \end{proof}
+  \end{enumerate}
+\end{satz}
+
+\section{Basislösungen}
+
+Sei $J_{B}\subset \{1,\ldots,n\}, J_{N}=\{1,\ldots,n\}\setminus
+J_{B}$. Somit ist $J_{B}\cup J_{N} =\{1,\ldots,n\}$ und $J_{B}\cap
+J_{N}=\emptyset$. Für einen Vektor $x\in\R^{n}$ bezeichnen wir mit:
+\begin{itemize}
+ \item $x_{B}$ den Vektor mit den Komponenten $x_{i}, i\in J_{B}$
+ \item $x_{N}$ den Vektor mit den Komponenten $x_{i}, i\in J_{N}$
+\end{itemize}
+Entsprechend bezeichnen wir für eine $m\times n$-Matrix $A$ mit:
+\begin{itemize}
+ \item $A_{B}$ die Matrix mit den Spaltenvektoren $A_{.i}, i\in J_{B}$
+ \item $A_{N}$ die Matrix mit den Spaltenvektoren $A_{.i}, i\in J_{N}$
+\end{itemize}
+Sei $m\leq n$ und $A\in\R^{m\times n}$ mit vollem Zeilenrang $m,
+b\in\R^{m}$. Weiter sei $J_{B}\subset\{1,\ldots,n\}$ mit genau $m$
+Elementen, so dass die Matrix $A_{B}$ invertierbar ist. Wie oben sei
+$J_{N}$. Wir definieren $B, N$ durch:
+\begin{align*}
+  B &:= \set{A_{.i}| i\in J_{B}}\\
+  N &:= \set{A_{.i}| i\in J_{N}}
+\end{align*}
+
+\begin{bsp}
+  \label{bsp:236}
+  Sei:
+  \begin{align*}
+    (A|b) &= \begin{pmatrix}0 & 1 & 5 & 1 & | & 2\\
+	       1 & 0 & -1 & 0 & | & 2\\
+	       1 & 0 & 2 & 1 & | & 3\end{pmatrix} & m &= 3 & n &= 4
+  \end{align*}
+  Wir wählen $J_{B}=\{1,2,4\}\Rightarrow J_{N}=\{3\}$. Die Matrix
+  $A_{B}= \begin{pmatrix}0&1&1\\ 1&0&0\\ 1&0&1\end{pmatrix}$ ist
+  invertierbar.
+  \begin{align*}
+    A_{N} &= \begin{pmatrix}5\\-2\\1\end{pmatrix} & x_{B} &=
+       \begin{pmatrix}x_{1}\\x_{2}\\x_{4}\end{pmatrix} & x_{N} &=
+       (x_{3})
+  \end{align*}
+\end{bsp}
+
+Sei $x\in\R^{n}$ eine Lösung des linearen Systems $Ax=b$. Dann gilt:
+\begin{align}
+  \label{eq:25}
+  b &= Ax =(A_{B}| A_{N})\begin{pmatrix}x_{B}\\x_{N}\end{pmatrix} =
+     A_{B} x_{B}+ A_{N} x_{N}\nonumber\\
+  x_{B} &= A_{B}^{-1} (b-A_{N}x_{N})
+\end{align}
+Das bedeutet, dass man das System nach $x_{B}$ auflösen kann und es
+folgt, dass die Lösungsmenge
+\begin{gather*}
+  \set{x\in\R^{n}| x_{N}\in\R^{n-m}, x_{B}=A_{B}^{-1}(b-A_{N}x_{N})}
+\end{gather*}
+ein Unterraum des $\R^{n}$ ist. Die Dimension des Lösungsraumes ist
+$n-m$. In jedem $x_{N}\in\R^{n-m}$ existiert genau eine Lösung, wobei
+$x_{B}$ durch die Gleichung~\ref{eq:25} bestimmt ist.
+
+Für die Optimierung ist die Lösung $x$ zu $x_{N}=0_{n-m}$ von
+besonderem Interesse, d.\,h. $x_{B}=A_{B}^{-1}b\Leftrightarrow A_{B}
+x_{B}=b$.
+
+\begin{defin}[Basislösung, Basisvariablen, Nichtbasisvariablen]
+  Sei $m\leq n, A\in\R^{m\times n}$, wobei der Rang der Matrix $A$
+  gleich $m$ ist. Weiter sei $J_{B}\subset\{1,\ldots,n\}$ eine
+  Indexmenge, so dass $A_{B}$ invertierbar ist. Der eindeutig
+  bestimmte Vektor $x$ mit $A_{B} x_{B}=b, x_{N}=0$ heißt
+  \emph{Basislösung}\index{Basislösung} des Systems $Ax=b$ zur Basis
+  $B$. Die Variablen $x_{B}$ heißen
+  \emph{Basisvariablen}\index{Basisvariablen}, $x_{N}$ heißen
+  \emph{Nichtbasisvariablen}\index{Nichtbasisvariablen}. Die
+  Basislösung $x$ zur Basis $B$ heißt \emph{zulässige
+  Basislösung}\index{Basislösung!zulässige}, falls $x\geq 0$.
+\end{defin}
+
+\begin{bem*}
+  Wegen $x_{N}=0$ hat eine Basislösung höchstens $m$ von Null
+  verschiedene Komponenten. Für die Zulässigkeit eines Basislösung
+  reicht es zu fordern, dass $x_{B}\geq 0_{n}$ ist.
+\end{bem*}
+
+\begin{bsp}
+  Es sei ein lineares Optimierungsproblem in kanonischer Form mit den
+  Nebenbedingungen $Ax\geq b$ gegeben. Zur Transformation auf die
+  Standardform benutzen wir die Schlupfvariablen
+  $x_{n+1},\ldots,x_{n+m}$:
+  \begin{gather*}
+    \underbrace{(A-I_{m})}_{=: \tilde{A}} \begin{pmatrix}x_{1}\\
+					    \vdots \\
+					    x_{n+m}\end{pmatrix} = b
+  \end{gather*}
+  Der Rang der Matrix $\tilde{A}$ ist $m$. Hier bietet es sich an,
+  $J_{B}= \{n+1,\ldots,n+m\}, J_{N}=\{1,\ldots,n\}$ zu wählen, d.\,h.
+  $A_{B}=-I_{m}, B=(-e^{1},\ldots,-e^{m})$, wobei $e_{i}$ der $i$-te
+  Einheitsvektor ist.\\
+  zulässige Basislösung:
+  \begin{align*}
+    x_{N} &= \begin{pmatrix}x_{1}\\\vdots\\x_{N}\end{pmatrix} = 0_{n}\\
+    x_{B} &= A_{B}^{-1} b = -I_{m}^{-1} b= -I_{m}b=-b
+  \end{align*}
+  Das bedeutet, $x=(0,\ldots,0,-b_{1},\ldots,b_{m})^{T}$ und $x$ ist
+  zulässig, wenn $x_{B}=-b\geq 0_{m}$, d.\,h. $b\leq 0_{m}$.
+\end{bsp}
+
+\begin{bsp}[siehe Beispiel~\ref{bsp:236}]
+    \begin{align*}
+    (A|b) &= \begin{pmatrix}0 & 1 & 5 & 1 & | & 2\\
+	       1 & 0 & -1 & 0 & | & 2\\
+	       1 & 0 & 2 & 1 & | & 3\end{pmatrix} & m &= 3 & n &= 4
+  \end{align*}
+  Wir wählen $J_{B}=\{1,2,4\}, J_{N}=\{3\}$. Dann ist
+  $A_{B}=\begin{pmatrix}0 & 1 & 1\\1 & 0 & 0\\1 & 0 & 1\end{pmatrix}$.
+  Die eindeutig bestimmte Lösung zur Basis $B$ ist gegeben durch
+  $x_{N}=(x_{3})=0, x_{B}=A_{B}^{-1}\Leftrightarrow A_{B} x_{B}=b$
+\end{bsp}
+
+\begin{satz}[allgemeine Charakterisierung einer Ecke]
+  Sei $\FF= \set{x\in\R^{n}| Ax=b, x\geq 0}$ zulässige Menge eines
+  linearen Optimierungsproblems in Standardform, $A\in\R^{m\times n},
+  m\leq n, \rg(A)=m, b\in\R^{m}$. Ein Punkt $x\in\FF$ ist Ecke von
+  $\FF$ genau dann, wenn $x$ zulässige Basislösung ist.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $x$ Ecke von $\FF$ und $I(x)=
+      \set{1\leq i\leq n| x_{i}>0}$. Nach der Voraussetzung ist $b=Ax=
+      \sum_{i=1}^{n} x_{i} A_{.i} =\sum_{i\in I(x)} x_{i} A_{.i}$.
+      Nach Satz~\ref{satz:228} sind die Spaltenvektoren $A_{.i}$
+      linear unabhängig. Es sei $\tilde{B}:= \set{A_{.i}| i\in I(x)}$
+      und $p$ die Anzahl der Elemente von $\tilde{B}$. Falls $p=m$,
+      dann isr $\tilde{B}$ Basis von $A$ und $x$ ist zugehörige
+      Basislösung. Da $x\in\FF$, ist $x$ zulässig und es folgt, dass
+      $x$ zulässige Basislösung ist. Ist nun $p<m$, dann kann man
+      $\tilde{B}$ wegen $\rg(A)=m$ zu einer Basis von $A$ ergänzen und
+      $x$ ist wie oben zulässige Basislösung.
+     \item["`$\Leftarrow$"'] Sei $x$ zulässige Basislösung zu einer
+      Basis $B$ von $A$. Dann ist $x_{N}=0_{n-m}\Rightarrow
+      I(x)\subset J_{B}$. Die Spaltenvektoren $A_{.i}, i\in J_{B}$
+      sind linear unabhängig. Damit sind auch die Spaltenvektoren
+      $A_{.i}, i\in I(x)$ linear unabhängig und nach
+      Satz~\ref{satz:228} ist $x$ eine Ecke.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+\begin{kor}
+  Die Voraussetzungen seien wie oben. Dann existiert mindestens eine
+  Ecke von $\FF$ und höchsten $\binom{n}{m}$ Ecken.
+  \begin{proof}
+    Die Existenz einer Ecke ergibt sich aus Satz~\ref{satz:232}. Es
+    existieren $\binom{n}{m}$ Möglichkeiten um Spaltenvektoren
+    auszuwählen. Damit gibt es höchsten $\binom{n}{m}$ Basislösungen.
+  \end{proof}
+\end{kor}
+
+\begin{bsp}
+  \begin{align*}
+    A &= (\nicefrac{1}{2}, 1, 1) & b &= (3) & m &= 1 & n &= 3
+  \end{align*}
+  Es gibt höchstens $\binom{n}{m}=3$ Basislösungen. Für
+  $B=B_{1}=\{A_{.1}\}$ gilt $A_{B}^{-1} b=2\cdot 3=6\Rightarrow
+  x^{(1)}=(6, 0, 0)^{T}$. Für $B=B_{2}=\{A_{.2}\}$ gilt $A_{B}^{-1}
+  b=3\Rightarrow x^{(2)}=(0,3,0)^{T}$. Für $B=B_{3}=\{A_{3}\}$ gilt
+  $A_{B}^{-1}b=3\Rightarrow x^{(3)}=(0,0,3)^{T}$. Es gilt $x^{i}\geq
+  0, i=1,2,3\Rightarrow$ alle Basislösungen sind zulässig und Ecken.
+\end{bsp}
+
+\begin{bsp}
+  \begin{align*}
+    A &= \begin{pmatrix}-2 & -3 & -1 & 0\\-1 & 0 & 0 & -1\end{pmatrix}
+       & b &= \begin{pmatrix}-6\\-2\end{pmatrix} & n &= 4 & m &= 2
+  \end{align*}
+  Damit gibt es höchstens sechs Basislösungen:
+  \begin{align}
+    B_{1} &= \{A_{.1}, A_{.2}\} &\colon A_{B}^{-1} b &=
+       \begin{pmatrix}2\\\nicefrac{2}{3}\end{pmatrix} & x^{(1)} &=
+       (2,\nicefrac{2}{3},0,0)^{T}\\
+    B_{2} &= \{A_{.1}, A_{.3}\} &\colon A_{B}^{-1} b &=
+       \begin{pmatrix}2\\2\end{pmatrix} & x^{(2)} &=
+       (2,0,2,0)^{T}\\
+    B_{3} &= \{A_{.1}, A_{.4}\} &\colon A_{B}^{-1} b &=
+       \begin{pmatrix}3\\-1\end{pmatrix} & x^{(3)} &=
+       (3,0,0,-1)^{T}\\
+    B_{4} &= \{A_{.2}, A_{.3}\} &\colon A_{B}^{-1} b &
+        &  &  \text{keine Basislösung}\\
+    B_{5} &= \{A_{.2}, A_{.4}\} &\colon A_{B}^{-1} b &=
+       \begin{pmatrix}2\\2\end{pmatrix} & x^{(5)} &=
+       (0,2,0,2)^{T}\\
+    B_{6} &= \{A_{.3}, A_{.4}\} &\colon A_{B}^{-1} b &=
+       \begin{pmatrix}6\\2\end{pmatrix} & x^{(6)} &=
+       (0,0,6,2)^{T}
+  \end{align}
+  Außer den Gleichungen 2.5 (negative Komponente) und 2.6 sind alle
+  anderen Gleichungen Ecken.
+\end{bsp}
+
+Bei der Lösung eines linearen Optimierungsproblems können folgende
+Situationen auftreten:
+\begin{enumerate}
+ \item $\FF=\emptyset$: Dann existiert keine zulässige Basislösung.
+ \item $\FF\neq\emptyset$ und die Zielfunktion ist auf $\FF$ nach
+  unten beschränkt: Dann existiert mindestens eine Ecke. die Lösung ist.
+ \item $\FF\neq\emptyset$ und die Zielfunktion ist nicht nach unten
+  beschränkt.
+\end{enumerate}
+
+Für den zweiten Fall kann man folgende "`naive"' Strategie anwenden:
+\begin{itemize}
+ \item Bestimme alle möglichen Basislösungen
+ \item Teste auf Zulässigkeit und erhalte so alle Ecken
+ \item Bestimme die Ecke mit dem minimalen Funktionswert
+\end{itemize}
+
+\chapter{Das Simplexverfahren}
+
+Das Simplexverfahren wurde 1947 von George Dantzig entwickelt. Der
+amerikanische Mathematiker lebte 1914 bis 2005 und war Mitbegründer
+der Mathematical Programming Society.
+
+Der Ausgangspunkt für das Simplexverfahren ist ein lineares
+Optimierungsproblem in Standardform $\min c^{T}x$ \unb $Ax=b, x\geq 0$
+mit $A\in\R^{m\times n}, c\in\R^{n}m b\in\R^{m}$. Als Voraussetzung
+soll $A$ den vollen Zeilenrang besitzen und es ergibt sich die
+folgende Vorgehensweise:
+\begin{enumerate}
+ \item Man bestimme die Ausgangsecke (Phase 1).
+ \item Iteration: Ist die aktuelle Ecke optimal, dann stoppe.
+ \item Falls die Ecke nicht optimal ist, berechne eine neue bessere
+  Ecke. Dies wird solange wiederholt, bis die optimale Ecke gefunden
+  wurde (Phase 2), wobei die Ecken zulässige Basislösungen sind.
+\end{enumerate}
+
+\section{Grundlagen des Simplexverfahren}
+
+Ist $x^{*}$ Ecke zur Basis $B$, dann gilt: $x_{N}^{*}=0_{n-m},
+x_{B}=A_{B}^{-1}(b-A_{N}x_{N}$. In der Phase zwei ergibt sich folgende
+Vorgehensweise:
+\begin{itemize}
+ \item Test, ob Ecke $x^{*}$ optimal
+ \item Falls $x^{*}$ nicht optimal, Test, ob Zielfunktion auf
+  zulässiger Menge nach unten beschränkt ist. Falls nein, existiert
+  keine Lösung und das Programm kann abbrechen.
+ \item Berechnung einer neuen Ecke mit dem Ziel, dass der
+  Zielfunktionswert in der neuen Ecke kleiner ist.
+\end{itemize}
+
+\subsection{Reduktion der Variablen}
+
+Wir betrachen das System $Ax=b$ mit $B$ Basis von $A$. Dann können wir
+das System nach $x_{B}$ auflösen:
+\begin{gather}\label{eq:26}
+  x_{B}= A_{B}^{-1}(b-A_{N}x_{N}) \qquad x_{N}\in\R^{n-m}
+\end{gather}
+Somit kann das Ausgangsproblem mit den $n$ Variablen auf ein Problem
+in den Variablen $x_{N}\in\R^{n-m}$ reduziert werden.
+
+Das Einsetzen in die Zielfunktion ergibt:
+\begin{align*}
+  c^{T}x &= c_{B}^{T} x_{B} c_{N}^{T} x_{N} = c_{B}^{T} A_{B}^{-1}
+     (b-A_{N}x_{N}) + c_{N}^{T}x_{N}\\
+  &= \underbrace{c_{B}^{T} A_{B}^{-1} b}_{=: z_{B}} +
+     (\underbrace{c_{N}^{T} - c_{B}^{T} A_{B}^{-1} A_{N}}_{ =:
+     s_{N}^{T}})x_{N}
+\end{align*}
+Dabei ist $z_{B}$ konstant und $s_{N}$ heißt Vektor der reduzierten
+Kosten. Mit:
+\begin{gather}\label{eq:27}
+  s_{N}^{T} = c_{N}^{T} - c_{B}^{T} A_{B}^{-1} A_{N} \in\R^{n-m}
+\end{gather}
+gilt
+\begin{gather}\label{eq:28}
+  c^{T}x = z_{B} + s_{N}^{T} x_{N}
+\end{gather}
+
+Die Vorzeichenbedingung $x\geq 0$ ist äquivalent zu $x_{B}\geq 0,
+x_{N}\geq 0\Leftrightarrow A_{B}^{-1} (b-A_{N}x_{N})\geq 0
+\Leftrightarrow A_{B}^{-1} A_{N} x_{N}\leq A_{B}^{-1}b$. Damit
+erhalten wir das zum linearen Problem äquivalente, reduzierte Problem
+\begin{gather}\label{eq:29}
+  \min s_{N}^{T} v + z_{B}\\
+  \text{\unb} v\in\FF_{B}=\set{v\in\R^{n-m}| v\geq 0, A_{B}^{-1}
+     A_{N}v \leq A_{B}^{-1}b}
+\end{gather}
+Die Konstante $z_{B}$ wird in der Regel weggelassen.
+
+\begin{lemma}
+  \label{lem:31}
+  Die Probleme seien wie oben definiert. Dann gilt:
+  \begin{enumerate}[(i)]
+   \item Ist $v\in\FF_{B}$ und ist $x\in\R^{n}$ definiert durch
+    $x_{N}=v, x_{B}=A_{B}^{-1} (b-A_{N}v)$. Dann ist $x\in\FF$. Ist
+    nun $x\in\FF$ und definiert man $v=x_{N}$, dann ist $v\in\FF_{B}$.
+
+    Somit hat man eine eineindeutige Zuordnung: $\FF_{B}\ni
+    v\Leftrightarrow x\in\FF$ mit $x_{N}=v, x_{B}=A_{B}^{-1} (b-A_{N}
+    x_{N})$.
+    \begin{proof}
+      klar
+    \end{proof}
+   \item Ist $v^{*}\in\FF_{B}$ Lösung des reduzierten Problems und ist
+    $x^{*}$, definiert durch $x_{N}^{*}=v^{*}, x^{*}_{B} = A_{B}^{-1}
+    (b-a_{N}v^{*})$, Lösung des linearen Optimierungsproblems.
+    \todo{Satzbau verbessern, nachschlagen}
+    \begin{proof}
+      Sei $v^{*}\in\FF_{B}$ Lösung von \ref{eq:29}, $x^{*}$ definiert
+      durch $x^{*}_{N}=v, x_{B}^{*}= A_{B}^{-1}(b-A_{N} x_{N})$. Nach
+      dem ersten Punkt ist $x^{*}\in\FF$. Sei $x\in\FF$ beliebig. Dann
+      gilt nach Gleichung~\ref{eq:28}: $c^{T}x=z_{B}+s_{N}^{T} x_{N}
+      \geq z_{B} +s_{N}^{T} v^{*}=c^{T}x^{*}$, d.\,h. $x^{*}$ ist
+      Lösung des linearen Problems.
+
+      Sei umgekehrt $x^{*}$ Lösung des linearen Problems und
+      $v^{*}=x_{N}^{*}$. Nach dem ersten Punkt ist $v^{*}\in\FF_{B}$.
+      Sei $v\in\FF_{B}$ und $x$ definiert durch $x_{N}=v, x_{B} =
+      A_{B}^{-1} (b-A_{N}x_{N}$. Dann ergibt sich $z_{B} + s_{N}^{T}
+      v= z_{B}+s_{N}^{T} x_{N}= c^{T}x\geq c^{T}x^{*}=z_{B}+ s_{N}^{T}
+      x_{N}^{*}= z_{B}+ s_{N}^{T}v^{*}$, d.\,h. $s_{N}^{T} v \geq
+      s_{N}^{T} v^{*}$ für alle $v\in\FF_{B}$.
+    \end{proof}
+   \item Ist $x^{*}$ zulässige Basislösung des linearen Problems zur
+      Basis $B$, dann ist $x^{*}$ genau dann Lösung, wenn
+      $x^{*}0_{n-m}$ Lösung des Problems~\ref{eq:29} ist.
+    \begin{proof}
+      Sei $x^{*}$ Basislösung zur Basis $B$. Dann ist
+      $x_{N}^{*}=0_{n-m}$. Nach Punkt (ii) ist $x^{*}$ genau dann
+      Lösung des linearen Problems, wenn $v^{*}=x_{N}^{*}= 0_{n-m}$
+      Lösung von \ref{eq:29} ist.
+    \end{proof}
+  \end{enumerate}
+\end{lemma}
+
+Damit folgt der Optimalitätstest\index{Optimalitätstest}: Sei
+$x^{*}\in\FF$ zulässige Basislösung zur Basis $B$. Man stellt
+(theoretisch) das reduzierte Problem~\ref{eq:29} auf und prüft, ob
+$v^{*} =0_{n-m}$ Lösung von \ref{eq:29} ist. Falls ja, ist $x^{*}$
+Lösung des linearen Problems.
+
+\subsection{Ein Optimalitätskriterium}
+
+Gesucht ist eine hinreichende Bedingung dafür, dass $v^{*}=0_{n-m}$
+Lösung von \ref{eq:29} ist.
+
+Es gilt $s_{N}^{T} v^{*}=0$, d.\,h. $v^{*}$ ist Lösung, wenn gilt
+$s_{N}^{T} v\geq s_{N}^{T} v^{*}=0$. Für $v\in\FF_{B}$ gilt $v\geq 0$
+und es folgt, wenn
+\begin{gather}\label{eq:34}
+  s_{N} \geq 0
+\end{gather}
+erfüllt ist, gilt $s_{N}^{T} v\geq 0=s_{N}^{T} v^{*}$
+
+
+\begin{lemma}
+  Ist unter den obigen Voraussetzungen $s_{N}\geq 0$, dann ist die
+  aktuelle Ecke $x^{*}$ optimal. Wenn $s_{N}>0$, dann ist $x^{*}$
+  eindeutig bestimmt.
+  \begin{proof}
+    Der erste Teil ist klar. Für den zweiten Teil sei $x\in\FF$. Dann
+    ist $x_{N}\geq 0, x_{B}= A_{B}^{-1}(b-A_{N} x_{N})\geq 0$. Ist
+    $x\neq x^{*}\Rightarrow x_{N}\neq x_{N}^{*}=v^{*}=0_{n-m}$, d.\,h.
+    für mindestens eine Komponente je $J_{N}$ gilt $x_{j}>0\Rightarrow
+    S_{N}^{T} x_{N} >0 \Rightarrow c^{T}x =z_{B} +
+    \underbrace{s_{N}^{T} x_{N}}_{>0} >z_{B} + \underbrace{s_{N}^{T}
+    v^{*}}_{=0} =c^{T}x^{*}$, d.\,h. $c^{T}x> c^{T}x^{*}$ für alle
+    $x\in\FF, x\neq x^{*}$. Somit ist $x$ eindeutig bestimmte Lösung.
+  \end{proof}
+\end{lemma}
+
+Für den Optimalitätstest ergibt sich nun: Sei $x^{*}$ die aktuelle
+Ecke eine zulässige Basislösung zur Basis $B$. Berechne $s_{N}$ nach
+Gleichung~\ref{eq:27}, prüfe, ob $s_{N}\geq 0$. Falls ja, ist $x^{*}$
+optimal.
+
+\begin{bsp}
+  \label{bsp:33}
+  Sei folgendes Problem gegeben:
+  \begin{align*}
+    \min 2x_{1} &+ 6x_{2} &-  7x_{3} &+ 2x_{4} &+ 4x_{5} &\\
+         4x_{1} &- 3x_{2} &+  8x_{3} &-  x_{4} &         &= 12\\
+                &-  x_{2} &+ 12x_{3} &- 3x_{4} &+ 4x_{5} &= 20\\
+                &         &          &         & x_{i}   &\geq 0
+  \end{align*}
+  Damit folgt:
+  \begin{align*}
+    A &= \begin{pmatrix}4 & -3 & 8 & -1 & 0\\
+	   0 & -1 & 12 & -3 & 4\end{pmatrix} & b &=
+       \begin{pmatrix}12\\ 20\end{pmatrix} & c &= (2,6,-7,2,4)^{T}
+  \end{align*}
+  Wir wählen $J_{B}=\{1,5\}, J_{N}=\{2,3,4\}, B=\{A_{.1}, A_{.5}\}$.
+  \begin{align*}
+    A_{B} &= \begin{pmatrix}4&0\\0&4\end{pmatrix} & A_{B}^{-1} &=
+       \begin{pmatrix}\nicefrac{1}{4} & 0\\0 &
+	 \nicefrac{1}{4}\end{pmatrix}\\
+    c_{B} &= (2,4)^{T} & A_{B}^{-1}b &= \begin{pmatrix}3\\
+					  5\end{pmatrix}\\
+    A_{B}^{-1} A_{N} &= \begin{pmatrix}-\nicefrac{3}{4} & 2 &
+			  -\nicefrac{1}{4}\\
+			  -\nicefrac{1}{4} & 3 &
+			  -\nicefrac{3}{4}\end{pmatrix} &
+       s_{N}^{T} &= c_{N}^{T}- c_{B}^{T} A_{B}^{-1}A_{N} =
+       (\nicefrac{17}{2}, -23, \nicefrac{11}{2})^{T}
+  \end{align*}
+  Somit ist das Optimalitätskriterium nicht erfüllt.
+\end{bsp}
+
+Nunmehr stellt sich die Frage, ob die Bedingung $s_{N}^{T}\geq 0$ auch
+notwendig ist. Dies ist mit ja zu beantworten, falls die Ecke $x^{*}$
+nicht entartet ist.
+
+\begin{defin}
+  Sei $A\in\R^{m\times n}$ mit $\rg(A)=m\leq n, b\in\R^{m}, \FF=
+  \set{x\in\R^{n}| Ax=b, x\geq 0}, B$ Basis von $A$. Eine zulässige
+  Basislösung $x\in\FF$ heißt \emph{nicht entartet}, wenn $x_{B}>0$
+\end{defin}
+
+\begin{bem*}
+  Zu jeder Basis $B$ existiert genau eine Basislösung $x$ mit
+  $x_{N}=0_{n-m}, x_{B}= A_{B}^{-1}(b-A_{N}x_{N})$, d.\,h. zu jeder
+  Basis existiert höchstens eine Ecke.
+
+  Ist $x\in\FF$ Ecke, dann kann $x$ zu verschiedenen Basen die
+  zugehörige Ecke sein.
+\end{bem*}
+
+\begin{bsp}
+  \begin{align*}
+    A &= (I_{m}, I_{m}) & b &= (0,1,\ldots,1)^{T}\in\R^{m} & x &=
+       \begin{pmatrix}b\\0_{m}\end{pmatrix}
+  \end{align*}
+  Dann ist $x$ zulässige Basislösung zur Basis mit den Indizes $J_{B}
+  = \{1,\ldots,n\}$, aber auch zu $J_{B} = \{2,\ldots,m+1\}$
+\end{bsp}
+
+\begin{lemma}
+  Sei $x\in\FF$ eine nicht entartete Ecke. Ist $x^{*}\in\FF$ Lösung
+  des linearen Problems, dann ist $s_{N}\geq 0$.
+  \begin{proof}
+    Nach Lemma~\ref{lem:31} gilt $v^{*}=x_{N}^{*}=0_{n-m}$ ist Lösung
+    des reduzierten Problems. Angenommen, es existiert ein $j\in
+    \{1,\ldots,n-m\}$ mit $s_{N,j}<0$. Wir definieren die Richtung
+    $d\in\R^{n-m}$ durch $d_{j}=1, d_{i}=0$ für $i\in \{1,\ldots,n-m\}
+    \setminus \{j\}$ ($j$-ter Einheitsvektor von $\R^{n-m}$) und
+    zeigen, $d$ ist eine zulässige Abstiegsrichtung im Punkt
+    $v^{*}=0_{n-m}$. Sei $v(t) := v^{*}+td=td\geq 0$ für $t\geq 0$
+    sowie $\widehat{A}:= A_{B}^{-1}A_{N}$ und $\widehat{A_{.j}}$ der zu obigen
+    Index $j$ gehörige Spaltenvektor. Da $x^{*}_{B}$ nicht entartet
+    ist, gilt, $0< x_{B}^{*}=A_{B}^{-1}b$. Für hinreichend kleines
+    $t>0$ gilt:
+    \begin{gather*}
+      t\widehat{A_{.j}} <A_{B}^{-1}b\Rightarrow \exists \sigma>0\colon
+	 A_{B}^{-1} A_{N} v(t)=t\widehat{A_{.j}}\leq A_{B}^{-1}b \qquad
+	 \forall t\in[0,\sigma]
+    \end{gather*}
+    Damit ist $v(t)\in\FF_{B}$ (zulässig für reduziertes Problem).
+    Speziell gilt: $v(\sigma)\in\FF_{B}$ und $s_{N}^{T} v(\sigma)=
+    \sigma s_{N}^{T}d= \sigma s_{N,j}<0$. Dies ist jedoch eine
+    Widerspruch zur Optimalität von $v^{*}$.
+  \end{proof}
+\end{lemma}
+
+\subsection{Ein Unbeschränkheitskriterium}
+
+Sei wieder $x^{*}$ Ecke und damit zulässige Basislösung zur Basis $B$
+von $A$. Das Optimalitätskriterium $s_{N}\geq 0$ sei nicht erfüllt,
+d.\,h. es existiert ein $j\in\{1,\ldots,n-m\}\colon s_{N,j} <0$. Wir
+definieren wie oben $d\in\R^{n-m}$ durch $d_{j}=1, d_{i}=0$ für
+$i\in\{1,\ldots,n-m\}\setminus \{j\}$. Dann gilt wieder $v(t):= v^{*}
++td=td\geq 0$ für alle $t\geq 0$. Weiter sei $\widehat{A}:= A_{B}^{-1}
+A_{N}$. Für den $j$-ten Spaltenvektor gelte $\widehat{A_{.j}}\leq 0$. Dann
+folgt für $t\geq 0$:
+\begin{gather*}
+  A_{B}^{-1}A_{N} v(t) =t\widehat{A_{.j}}\leq 0\leq x_{B}^{*}=A_{B}^{-1} b
+\end{gather*}
+d.\,h. $v(t)\in\FF_{B}$ und $\FF_{B}$ ist unbeschränkheit. Nach
+Lemma~\ref{lem:31} ist $x(t)\in\FF$ mit $x_{N}(t)=v(t), x_{B}(t)=
+A_{B}^{-1} (b-A_{N}v(t))$. Damit ist auch $\FF$ beschränkt.
+
+Zusammen mit $s_{N,j}< 0$ folgt, $c^{T}x(t)= z_{B}+s_{N}^{T} v(t)=
+z_{B}+ ts_{N,j}\xrightarrow{t\rightarrow+\infty} -\infty$, d.\,h. die
+Zielfunktion des linearen Problems ist auf $\FF$ nicht nach unten
+beschränkt. Also existiert keine Lösung.
+
+\begin{lemma}
+  Existiert ein Index $j\in\{1,\ldots,n-m\}$ mit
+  \begin{gather}
+    \label{eq:35}
+    s_{N,j}<0 \text{ und }\widehat{A_{.j}} \leq 0
+  \end{gather}
+  dann ist $\FF$ nicht nach unten beschränkt und die Zielfunktion ist
+  auf $\FF$ nicht nach unten beschränkt.
+\end{lemma}
+
+\begin{bsp}[Fortsetzung von Beispiel~\ref{bsp:33}]
+  Im obigen Beispiel hatten wir den Vektor
+  $s_{N}^{T}=(\nicefrac{17}{2}, -23, \nicefrac{11}{2})^{T}$ berechnet.
+  Für $j=2$ ist $\widehat{A_{.j}}=\begin{pmatrix}2\\3\end{pmatrix}>0$,
+  d.\,h. die Gleichung~\ref{eq:35} ist nicht erfüllt.  
+\end{bsp}
+
+\subsection{Basiswechsel}
+
+Sei $x^{*}\in\FF$ Ecke mit Basis $B$ von $A$. Das
+Optimalitätskriterium und das Unbeschränkheitskriterium seien nicht
+erfüllt. Das Ziel ist nun, eine neue Basis $B^{+}$ zu konstruieren, so
+dass für $x^{+}$ gilt:
+\begin{gather*}
+  c^{T}x^{+} \leq c^{T} x^{*}
+\end{gather*}
+
+Dazu definieren wir $d$ wie oben. Dann gilt $v(t):= v^{*}+td
+\in\FF_{B}$ mit $t\geq 0$ nicht zu groß. Bestimme das maximale
+$\sigma$, so dass $v(\sigma)\in\FF_{B}$. Sei $x(\sigma)$ definiert
+durch $x_{N}(\sigma) =v(\sigma), x_{B}(\sigma)= A_{B}^{-1}(b-A_{N}
+v(\sigma))$. Dann kann man $x^{+}=x(\sigma)$ wählen.
+
+Bezeichnungen: $J_{B}= \{b(1),\ldots,b(m)\}, J_{N}=\{n(1),\ldots,n(m)\}$
+
+Dann ist $B=\{A_{.,b(1)},\ldots,A_{.,b(m)}\},
+N=\{A_{.,n(1)},\ldots,A_{.,n(m)}\}, x_{B,i}= x_{b(i)}, i=1,\ldots,m,
+x_{N}=x_{n(i)}, i=1,\ldots,n-m, \overline{A}:= A_{B}^{-1}, \widehat{A}=
+A_{B}^{-1}A_{N}$.
+
+Ist die Gleichung~\ref{eq:34} nicht erfült, dann existiert ein
+\begin{gather}\label{eq:36}
+  s_{N,j} <0 \qquad j\in\{1,\ldots,n-m\}
+\end{gather}
+Wir definieren:
+\begin{align}\label{eq:37}
+  d_{j} &=1 & d_{i} &= 0 \quad j\in\{1,\ldots,n-m\}\setminus\{j\}
+\end{align}
+Damit ist $d$ eine zulässige Abstiegsrichtung für das reduzierte
+Problem, falls $x^{*}$ nicht entartet ist. Weiter definieren wir:
+\begin{gather*}
+  v(t):= \underbrace{v^{*}}_{0_{n-m}} +td=td \qquad \forall t\geq 0
+\end{gather*}
+
+Ist das Unbeschränkheitskriterium erfüllt, dann gilt $v(t)\in\FF_{B}$.
+Sei jetzt das Unbeschränkheitskriterium nicht erfüllt. Wir wollen das
+$\max \sigma\geq 0$ mit $v(t)\in\FF_{B}$ für alle $t\in[0,\sigma]$
+bestimmen. Wegen $v(t)\geq 0$ ist die Vorzeichenbedingung immer
+erfüllt. Wir müssen nur noch die Restriktion
+\begin{gather}\label{eq:38}
+  \underbrace{A_{B}^{-1}A_{N}}_{=\widehat{A}} v(t)\leq A_{B}^{-1}b
+\end{gather}
+einhalten. Diese Bedingung ist äquivalent zu:
+\begin{gather}\label{eq:39}
+  t\widehat{A_{.j}}\leq x_{B}^{*}
+\end{gather}
+Sei $\nu\in\{1,\ldots,m\}$ ein Index mit $\widehat{A_{\nu, j}}\leq
+0\Rightarrow t\widehat{A_{\nu,j}}\leq 0 \leq x_{B,\nu}^{*}$, d.\,h.
+entscheidend sind nur die Indizes $\nu\in\{1,\ldots,m\}$ mit
+$\widehat{A_{\nu,j}}>0$. Für einen solchen Index gilt:
+\begin{gather*}
+  t\widehat{A_{\nu,j}}\leq x_{B,\nu}^{*}\Leftrightarrow t\leq
+     \frac{x_{B,\nu}}{\widehat{A_{\nu,j}}}
+\end{gather*}
+
+Damit folgt:
+\begin{gather}\label{eq:310}
+  \sigma= \min\Set{\frac{x_{B,\nu}^{*}}{\widehat{A_{\nu,j}}}| \nu\in
+     \{1,\ldots,m\} \text{ mit } \widehat{A_{\nu,j}}>0}
+\end{gather}
+
+Der Punkt $v(\sigma)$ ist \emph{Randpunkt} von $\FF_{B}$. Zunächst
+gilt, $x^{+}\in\FF$ wegen des Lemma~\ref{lem:31}. Wir müssen noch eine
+Basis $B^{+}$ von $A$ finden, so dass $x^{+}$ Basislösung von $B^{+}$
+ist.
+
+Sei $j\in\{1,\ldots,n-m\}$ der Index mit $s_{N}<0$ nach\ref{eq:36} und
+weiter $l\in\{1,\ldots,m\}$ ein Index mit $\widehat{A_{l,j}}>0$ und
+\begin{gather}\label{eq:312}
+  \sigma=\frac{x_{B,l}^{*}}{\widehat{A_{l,j}}}
+\end{gather}
+Die neue Basis $B^{+}$ wird dann definiert durch:
+\begin{align*}
+  J_{B^{+}} &:= (J_{B}\setminus \{b(l)\})\cup \{n(j)\} & B^{+} &=
+     \set{A_{.i}| i\in J_{B^{+}}}\\
+  J_{N^{+}} &:= (J_{N}\setminus \{n(j)\})\cup \{b(l)\} & N^{+} &=
+     \set{A_{.i}| i\in J_{N^{+}}}
+\end{align*}
+
+Damit $x^{+}$ Basislösung zu $B^{+}$ ist, muss gelten, $x_{j}^{+}=0$,
+d.\,h. wir müssen zeigen, $x_{N,\mu}^{+}=0, \forall \mu\in\{1,\ldots,
+n-m\}\setminus \{j\}$ und $x_{B,l}^{+}=0, \forall j\in J_{N^{+}}$.
+Wegen $v(\sigma)=\sigma d=x_{N}^{+}$ ist $x_{N,\mu}^{+}=0$ und nach
+der Wahl von $l$ gilt: $\sigma\widehat{A_{l,j}}=
+x_{B,l}^{*}\Rightarrow x_{B,l}^{+} =
+(\underbrace{A_{B}^{-1}b}_{=x_{B}^{*}} - \underbrace{A_{B}^{-1}A_{N}
+v(\sigma)}_{=\sigma \widehat{A_{l,j}}}= x_{B,l}^{*}- \sigma
+\widehat{A_{l,j}}=0$. Damit ist $x_{N^{+}}=0_{n-m}$ und es ist noch zu
+zeigen, dass $A_{B^{+}}x_{B^{+}}^{+}=b$.
+
+Wir wissen, dass $x\in \FF$. Es gilt, $b=Ax^{+}=\sum_{i=1}^{n} A_{.i}
+x_{i}^{+}= \sum_{i\in J_{B^{+}}} x_{i}^{+} A_{.i} = A_{B^{+}}
+x_{B^{+}}^{+}$. Somit bleibt noch zu zeigen, dass $B^{+}$ eine Basis
+von $A$ ist.
+
+\begin{lemma}
+  Sei $B=\{v^{(2)},\ldots,v^{(m)}\}\subseteq \R^{m}$ eine Basis des
+  $\R^{m}$, $l\in\{1,\ldots,m\}$ ein Index, $w\in\R^{m}$ ein Vektor
+  sowie $V$ eine $m\times m$-Matrix mit den Spaltenvektoren
+  $v^{(1)},\ldots,v^{(m)}$. Bildet man $B^{+}$ aus $B$ durch
+  Basistausch des Vektors $v^{(l)}$ gegen $w$, also $B^{+}=
+  \{v^{(1)},\ldots,v^{(l-1)},w, v^{(l+1)},\ldots,v^{(m)}\}$, dann
+  gilt, dass $B^{+}$ genau dann Basis des $\R^{m}$ ist, wenn
+  $\hat{w_{l}} \neq 0$ mit $\hat{w_{l}}:= V^{-1}w$.
+  \begin{proof}
+    Sei $V^{+}$ die Matrix mit den Spaltenvektoren
+    $v^{(1)},\ldots,v^{(l-1)}, w, v^{(l+1)},\ldots,v^{(m)}$. Wir
+    zeigen, dass $V^{+}$ genau dann invertierbar ist, wenn
+    $\hat{w_{l}} \neq 0$ gilt. Wir wissen, $V^{+}$ ist genau dann
+    invertierbar, wenn $V^{-1}V^{+}$ invertierbar ist und es gilt,
+    $V^{-1}V^{+}=(e^{(1)},\ldots,e^{(l-1)}, \hat{w_{l}},
+    e^{(l+1)},\ldots,e^{(m)})$ \todo{Beweis prüfen und weiter
+    vervollständigen}
+  \end{proof}
+\end{lemma}
+
+\begin{bem*}
+  Die obigen Betrachtungen zeigen, $x_{n(j)}^{*}=0$, da
+  $x_{N}^{*}=0_{n-m}, x_{n(j)}^{+}=\sigma$. Für $\sigma$ gilt:
+  $\sigma>0$, falls die Ecke $x^{*}$ nicht entartet ist und
+  andernfalls ist $\sigma=0$, d.\,h. in diesem Fall ist es möglich,
+  dass nur der Basiswechsel stattfindet. Die aktuelle Ecke ändert sich
+  dann nicht.
+
+  Wie berechnet sich nun der Wert der Zielfunktion in der neuen Ecke
+  $x^{+}$? Nach der Gleichung\ref{eq:33} gilt:
+  \begin{gather}\label{eq:313}
+    c^{T}x^{+} = z_{B} +s_{N}^{T} x_{N}^{+} = z_{B} + s_{N}^{T}
+       v(\sigma)= \underbrace{z_{B}}_{=c^{T}x^{*}} + \sigma s_{N,j}
+  \end{gather}
+  Somit folgt, $c^{T}x^{+}\leq z_{B}=c^{T}x^{*}$ und, falls $x^{*}$
+  nicht entartet ist: $c^{T}x^{+}<z_{B}=c^{T}x^{*}$
+\end{bem*}
+
+\begin{satz}
+  \label{satz:310}
+  Sei $x^{*}$ Ecke von $\FF$ zur Basis $B$ von $A$. Ist $x^{*}$ nicht
+  optimal und ist das Unbeschränkheitskriterium nichterfüllt, dann ist
+  die zur neuen Basis gehörige Basislösung $x^{+}$ zulässig und damit
+  Ecke von $\FF$ mit $c^{T}x^{+}\leq c^{T}x^{*}$.
+\end{satz}
+
+\section{Durchführung des Simplexverfahrens}
+\subsection{Verfahrenskonzept}
+
+Für die Phase~2 des Simplexverfahrens lässt sich folgendes Verfahren
+beschreiben: Gegeben seien eine Basis $B=B^{(0)}$ von $A$, die
+Matrizen $\overline{A}=A_{B}^{-1}, \widehat{A_{B}^{-1}}=A_{B}^{-1}
+A_{N}$, der Testvektor $x_{B}^{(0)}$ und die Indexmengen $J_{B},
+J_{N}$. Berechne den Testvektor $s_{N}^{T}= c_{N}^{T}-c_{B}^{T}
+A_{B}^{-1} A_{N}$ und den Zielfunktionswert $z_{B}=c_{B}^{T}
+x_{B}^{(0)}$. Setze $k:=0$. Danach werden folgende Iterationsschritte
+ausgeführt:
+\begin{enumerate}
+ \item Optimalitätskriterium: Gilt $s_{N}\geq 0$, dann ist die
+  aktuelle Ecke $x^{*}$ optimal. Das Programm endet hier.
+ \item Unbeschränkheitskriterium: Wähle einen Index
+  $j\in\{1,\ldots,n-m \}$ mit $s_{N,j}<0$. Gilt nun $\widehat{A.j}<0$,
+  ist die Zielfunktion nich nach unten beschränkt und das Programm
+  endet.
+ \item Setze $B^{(k+1)}:= B:= B^{+}$. Berechne mit der neuen Basis
+  $\overline{A}=A_{B}^{-1}, \widehat{A_{B}^{-1}}A_{N}$, den Vektor
+  $s_{N}$ und $z_{B}$.
+ \item Setze $k:=k+1$ und gehe zum ersten Punkt.
+\end{enumerate}
+
+\subsection{Konvergenz des Simplexverfahrens}
+
+\begin{satz}
+  Sind alle Ecken $x^{(k)}$ zu den berechneten Basen $B^{(k)}$ nicht
+  entartet, dann stoppt das Verfahren nach endlich vielen Schritten
+  mit einer optimalen Basis oder das Unbeschränkheitskriterium ist
+  erfüllt.
+  \begin{proof}
+    Sei $x^{(k)}$ die in der $k$-ten Iteration berechnete Ecke zur
+    Basis $B^{(k)}$. Dabei sei weder das Optimalitätskriterium noch
+    das Unbeschränkheitskriterium erfüllt. Nach dem
+    Satz~\ref{satz:310} folgt: Das Verfahren berechnet eine neue Basis
+    $B^{+}= B^{(k+1)}$, so dass für die zugehörige Ecke $x^{(k+1)}$
+    gilt:
+    \begin{gather*}
+      c^{T}x^{(k+1)} < c^{T} x^{(k)}
+    \end{gather*}
+    d.\,h. $x^{(k+1)}$ ist nicht entartet. Da es nur endlich viele
+    Ecken gibt, kann der Fall nur endlich oft auftreten.
+  \end{proof}
+\end{satz}
+
+\subsection{Tableaudarstellung}
+
+\begin{tabular}{c|c|c|c}
+  & $J_{N}$ & & $J_{B}$\\
+  \toprule
+  $J_{B}$ & $\hat{A}=A_{B}^{-1}A_{N}$ & $x_{B}^{*}= A_{B}^{-1}b$ &
+     $A_{B}^{-1}$
+\end{tabular}
+\end{document}
