@@ -1,108 +1,155 @@
-\documentclass[draft,twoside]{scrreprt}
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\documentclass[draft,twoside,german,halfparskip*]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
 
 \usepackage{ifthen}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
 
-% Die nächsten drei Befehle sind für das Umschiffen der Probleme mit
-% Hyperref+ntheorem. Wenn beide Pakete geladen sind, werden die
-% Bezeichnungen "Satz", "Bemerkung", ... mit \thref nicht angezeigt. Für
-% eine Druckversion ist das wichtig! Daher dieser Hack.
-% Weiter unten, wird hyperref entsprechend eingebunden, ntheorem mit oder
-% ohne die Option "`hyperref"' geladen.
-%
-% Achtung: Die Korrektur von \thref muss von Hand auskommentiert werden,
-% wenn hyperref nicht geladen wird!
-\newboolean{withHyperref}
-\setboolean{withHyperref}{true} % true, false
-\ifthenelse{\boolean{withHyperref}}{}%
-	   {\newcommand{\texorpdfstring}[2]{#1}%
-	    \newcommand{\pdfbookmark}[3][]{}%
-	   }
-
-\usepackage{makeidx}
 \usepackage{amssymb}
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
-	   {}
 \usepackage[leqno]{amsmath}
 \usepackage{fixmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+
 \usepackage{paralist}
-\usepackage{helvet}
+
+\usepackage[latin1]{inputenc}
 \usepackage{ngerman}
-\usepackage{ae}
 \usepackage[T1]{fontenc}
 
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[draft=false,colorlinks,bookmarksnumbered]{hyperref}}%
-	   {}
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
 
-% http://user.informatik.uni-goettingen.de/~may/Ntheorem/
-\ifthenelse{\boolean{withHyperref}}%
-	   {\usepackage[amsmath,thref,thmmarks,hyperref]{ntheorem}}%
-	   {\usepackage[amsmath,thref,thmmarks]{ntheorem}}%
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
 
-% Zur Korrektur von \thref
-% <news:col095$me8$2@n.ruf.uni-freiburg.de>
 \makeatletter
-\def\thref#1{%
-   \expandafter\ifx\csname r@#1@type\endcsname\None
-     \PackageWarning{\basename}{thref: Reference Type of `#1' on page
-       \thepage \space undefined}\G@refundefinedtrue
-     \else\csname r@#1@type\endcsname~\fi%
-   \expandafter\@setref\csname r@#1\endcsname\@firstoffive{#1}%
-}
-
-% Korrektur der Platzierung der Gleichungsnummer
-% <news:opsm0fhzf321pc7i@noname.hjortespring.dk>
-\def\SetOnlyEndMark{%
-   \global\tag@true
-   \iftagsleft@
-     \gdef\df@tag{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{\hss\PotEndMark{\maketag@@@}}}}%
-   \else
-     \gdef\df@tag{\PotEndMark{\maketag@@@}}%
-   \fi}
-\def\SetTagPlusEndMark{%
-   \iftagsleft@
-     \gdef\maketag@@@##1{%
-       \hfuzz\displaywidth
-       \hbox to 1sp{%
-         \hbox to \displaywidth{%
-           \m@th\normalfont##1\hss\PotEndMark{\hss}}%
-       }%
-     }%
-   \else
-     \gdef\maketag@@@##1{%
-       \hbox{\m@th\normalfont##1%
-         \llap{\hss\PotEndMark{\raisebox{-1.3em}}}}}%
-   \fi}
-
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
 \makeatother
 
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
 \theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
 \newtheorem{satz}{Satz}
 \newtheorem{defini}{Definition}
 \newtheorem{bem}{Bemerkung}
 
 \theoremstyle{nonumberbreak}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
 \theoremsymbol{\ensuremath{_\blacksquare}}
-\newtheorem{proof}{\textnormal{\scshape Beweis:}}
+\newtheorem{proof}{Beweis:}
 
-\newcommand{\gramma}{[X,N,S,R]}
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+
+\pagestyle{headings}
+
+\newcommand*{\gramma}{[X,N,S,R]}
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
 
 \begin{document}
 
-\title{Formale Sprachen und Automaten\thanks{$LastChangedRevision$ von $LastChangedDate$}}
+\title{Formale Sprachen und Automaten}
 \date{SS 2004}
 \author{Lischke}
 \maketitle
 
+\clearpage
+\chapter*{Vorwort}
+
+% entspricht Vorlage: 426
+
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2004)
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \texttt{<jens@kubieziel.de>}} (2006)
+  \end{itemize}
+\end{itshape}
+
+\clearpage
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
 \clearpage
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
 
 \chapter{Einf"uhrung und Wiederholung}
 
@@ -302,7 +349,7 @@ Avram Noam Chomsky
     der L"ange $t-1$ Widerspruch dazu, dass $t$ eine stets k"urzeste L"ange
     ist. $\longrightarrow L(G'')\setminus{e}\subseteq L(G')$
     
-    Ist $q_{1}q_{2}=e [B,A] \in R' \longrightarrow B´in W
+    Ist $q_{1}q_{2}=e [B,A] \in R' \longrightarrow B\in W
     \longrightarrow \alpha j'<j nit w_{j}=w_{j'1}Cw_{j'2}
     w_{j'+1} = w_{j'+1} \ldots\ldots \longrightarrow$ Schluss
     analog mit $BX$ statt $AB$
