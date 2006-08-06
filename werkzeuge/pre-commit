@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec 3>&2 2>/tmp/joergs.aee.$$
+exec 3>&2 2>/tmp/joergs.$$.pre >&2
 set -x
 
 # PRE-COMMIT HOOK
@@ -55,9 +55,9 @@ if ! $SVNLOOK log --transaction "$TXN" "$REPOS" | grep --quiet "[a-zA-Z0-9]"; th
     exit 1
 fi
 
-if $SVNLOOK changed --transaction "$TXN" "$REPOS" | \
-  sed 's/^....//; s+/.*+/+' | uniq --count | \
-  grep --quiet -invert-match '^ *1 .*/'; then
+if [ $($SVNLOOK changed --transaction "$TXN" "$REPOS" | \
+     sed 's/^....//; s+/.*+/+' | uniq | wc -l) -ne 1 ]; then
+    $SVNLOOK changed --transaction "$TXN" "$REPOS" >&2
     echo "Nur Änderungen an einem Skript in einem Commit machen!" >&3
     exit 1
 fi

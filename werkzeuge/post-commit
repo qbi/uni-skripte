@@ -1,9 +1,9 @@
 #!/bin/sh
 
-set -e -u
-
-exec >/tmp/joerg.adf.$$ 2>&1
+exec >/tmp/joergs.$$.post 2>&1
 set -x
+
+set -e -u
 
 # POST-COMMIT HOOK
 #
@@ -55,21 +55,20 @@ update_skript()
     svnlook cat /home/stud/md01/joergs/.svnroot/skripte \
       werkzeuge/erzeuge-ausgabe.sh > $tmp
     cd /
-    if [ -e "$log" ]; then
-        rm "$log"
-    fi
+    rm --force "$log"
     nice -n 4 env PATH="/mnt/local/joergs/texlive/bin/i386-linux:/home/stud/md01/joergs/xindy/bin:$PATH" \
       sh $tmp "$skript" "$WEB" > "$log" 2>&1
     rm $tmp
 
     mail -a "Reply-To: skripte@listserv.uni-jena.de" \
-      -s "[$skript] r$REV build" skripte-commit@listserv.uni-jena.de < $log
+      -s "[$skript] r$REV build" skripte-commit@listserv.uni-jena.de \
+      -- -f $(id -nu)@minet.uni-jena.de < $log
 }
 
 skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/!q')
 
 /usr/lib/subversion/hook-scripts/commit-email.pl "$REPOS" "$REV" \
-  -r skripte@listserv.uni-jena.de -s "[$skript]" \
+  -r skripte@listserv.uni-jena.de -s "[$skript]" -h minet.uni-jena.de \
   skripte-commit@listserv.uni-jena.de
 
 svnlook changed "$REPOS" --revision "$REV" | while read action file; do
