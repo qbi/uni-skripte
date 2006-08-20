@@ -6,7 +6,7 @@
 % rubber: makeidx.tool      xindy
 % rubber: makeidx.language  german-din
 
-\documentclass{scrreprt}
+\documentclass[german]{scrreprt}
 
 \usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
                           % oder solche, die man nicht in LaTeX verwenden
@@ -42,15 +42,52 @@
 \usepackage{microtype} % Verbesserung der Typographie
 
 \newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{defin}[bsp]{Definition}
-\newtheorem{lemma}[bsp]{Lemma}
-\newtheorem{satz}[bsp]{Satz}
-\newtheorem{bem}[bsp]{Bemerkung}
-\newtheorem{kor}[bsp]{Korollar}
+\newtheorem{defin}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{satz}{Satz}
+\newtheorem{bem}{Bemerkung}
+\newtheorem{kor}{Korollar}
 
 %% schwarzes Quadrat für das Ende eines Beweises
 \theoremsymbol{\ensuremath{_{\blacksquare}}}
 \newtheorem*{proof}{Beweis:}
+
+\makeatletter
+% \autoref unterscheidet die Umgebungen, die angesprochen werden, anhand
+% ihres Zählernamens. Da sich aber alle Umgebungen einen Zähler mit satz
+% teilen sollen, bezeichnet \autoref alles mit "`Satz"'. Daher bekommt
+% jede Umgebung einen eigenen Zähler, der in Wirklichkeit ein Alias zu
+% satz ist
+% <news:m3wvitk0o9.fsf@sgifford.tir.com>
+\renewcommand*{\c@defin}{\c@bsp}
+\renewcommand*{\p@defin}{\p@bsp}
+\renewcommand*{\thedefin}{\thebsp}
+\renewcommand*{\c@lemma}{\c@bsp}
+\renewcommand*{\p@lemma}{\p@bsp}
+\renewcommand*{\thelemma}{\thebsp}
+\renewcommand*{\c@satz}{\c@bsp}
+\renewcommand*{\p@satz}{\p@bsp}
+\renewcommand*{\thesatz}{\thebsp}
+\renewcommand*{\c@bem}{\c@bsp}
+\renewcommand*{\p@bem}{\p@bsp}
+\renewcommand*{\thebem}{\thebsp}
+\renewcommand*{\c@kor}{\c@bsp}
+\renewcommand*{\p@kor}{\p@bsp}
+\renewcommand*{\thekor}{\thebsp}
+\makeatother
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\definautorefname}{Definition}
+\newcommand*{\lemmaautorefname}{Lemma}
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemautorefname}{Bemerkung}
+\newcommand*{\korautorefname}{Korollar}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
 %% Bezeichnungen diverser Zahlenmengen
 \newcommand*{\R}{\mathbb{R}}
@@ -207,12 +244,12 @@ Die Funktion $f$ heißt \emph{Ziel-} oder \emph{Kostenfunktion}.
 \begin{defin}[Lokale Minima]
   Ein Punkt $\tilde{x}\in\FF$ (zulässiger Punkt) heißt \emph{lokales
     Minimum} von $f$ auf $\FF$ oder \emph{lokale Lösung} von
-  (\ref{eq:P}), falls es ein $r>0$ mit $f(x)\geq f(\tilde{x})$ für
+  \autoref{eq:P}, falls es ein $r>0$ mit $f(x)\geq f(\tilde{x})$ für
   alle $x\in\FF\cap B(\tilde{x}, r)$ gibt.
 
   Ein Punkt $\tilde{x}\in\FF$ heißt \emph{striktes lokales Minimum}
   von $f$ auf $\FF$ oder \emph{strikte lokale Lösung}  von
-  (\ref{eq:P}), falls es ein $r>0$ mit $f(x)>f(\tilde{x})$ für alle
+  \autoref{eq:P}, falls es ein $r>0$ mit $f(x)>f(\tilde{x})$ für alle
   $x\in \FF\cap B(\tilde{x}, r)$ mit $x\neq \tilde{x}$ gibt.
 \end{defin}
 
@@ -541,7 +578,7 @@ Optimierungsproblemen.
 \end{defin}
 
 \begin{bsp}
-  siehe Beispiel \ref{bsp:prodplan-16}
+  siehe \autoref{bsp:prodplan-16}
   \begin{align*}
     \max 1,5x_1+ x_2+ 2x_3+ 1,4x_4 && \\
     x_1+ x_2+ \leq 1300 &&\\
@@ -740,7 +777,7 @@ Webseite \url{http://www.scilab.org/}.
   $i=1,\ldots,s$ bzw. $C_{i}= \set{x\in\R^{n}| \langle a^{(i)},
   x\rangle\leq b_{i}}$ mit $i=s+1,\ldots,n$. Dann ist
   $K=\bigcap_{i=1}^{m} C_{i}$ konvex nach
-  Lemma~\ref{lem:konvDurchsch}.
+  \autoref{lem:konvDurchsch}.
 
   Ein lineares Optimierungsproblem in allgemeiner, kanonischer oder
   Standardform ist vom Typ $\min c^{T}x$ \unb $x\in K$, wobei $K$ ein
@@ -783,7 +820,7 @@ Webseite \url{http://www.scilab.org/}.
 
 \begin{bem*}
   Die Aussage von Satz~\autoref{satz:218-lokglobLsg} gilt allgemein
-  für konvexe Zielfunktion. Dabei heißt eine Funktion $f\colon
+  für konvexe Zielfunktionen. Dabei heißt eine Funktion $f\colon
   \R^{n}\rightarrow \R$ konvex auf $K$, wenn gilt: $f((1-\alpha) x+
   \alpha y)\leq (1-\alpha)f(x)+\alpha f(y)$ für alle $x,y\in K$ und
   $\alpha\in[0,1]$. Im Spezialfall $f(x)=c^{T}x$ gilt sogar
@@ -868,7 +905,7 @@ ist.
 
 \begin{bsp}
   siehe das lineare Optimierungsproblem aus
-  Abschnitt~\ref{sec:212-grafLsg}
+  \autoref{sec:212-grafLsg}
 \end{bsp}
 
 \begin{bsp}
@@ -909,7 +946,7 @@ Es gibt folgende Spezialfälle:
   Vektoren $A_{.i}$ linear unabhängig sind.
   \begin{proof}
     Ist $x=0_{n}$ (d.\,h. $I(x)=\emptyset$), dann ist $x$ Ecke von
-    $\FF$ (Bemerkung~\ref{bem:224}). Sei jetzt $I(x)=\emptyset$ ($x$
+    $\FF$ (\autoref{bem:224}). Sei jetzt $I(x)=\emptyset$ ($x$
     hat mindestens eine Komponente, die größer als 0 ist).
     \begin{itemize}
      \item["`$\Rightarrow$"'] Sei $x$ Ecke von $\FF$. Dann ist zu
@@ -966,7 +1003,7 @@ Es gibt folgende Spezialfälle:
 \end{bem*}
 
 \begin{bsp}
-  siehe die Beispiele 2.27 bzw. 2.28 \todo{Referenz einfügen}
+  siehe die Beispiele 2.27 bzw. 2.28  \todo{Referenz einfügen}
 
   Die Ecken der zulässigen Mengen sind anschaulich die Punkte:
   \begin{align*}
@@ -983,7 +1020,7 @@ Es gibt folgende Spezialfälle:
     A &= \begin{pmatrix}-2 & -3\\-1 & 0\end{pmatrix} & b &=
        \begin{pmatrix}-6\\-2\end{pmatrix}
   \end{align*}
-  Um Satz~\ref{satz:228} anzuwenden, müssen wir das Problem in
+  Um \autoref{satz:228} anzuwenden, müssen wir das Problem in
   Standardform bringen:
   \[\tilde{A} = \begin{pmatrix}-2 & -3 & -1 & 0\\
 		  -1 & 0 & 0 -1\end{pmatrix}\]
@@ -1056,11 +1093,11 @@ Es gibt folgende Spezialfälle:
     Induktion geführt:
     \begin{itemize}
      \item[Induktionsanfang] $p=p_{0}$
-     \item[Induktionsvoraussetzung] Es gelte Gleichung~\ref{eq:234}
+     \item[Induktionsvoraussetzung] Es gelte \autoref{eq:234}
       für $x\in\FF$ und höchstens $n-1$ positiven Komponenten.
      \item[Induktionsbeweis] Sei $x\in\FF$ ein Vektor mit genau $p$
       positiven Komponenten ($I(x):= \set{1\leq i\leq n| x_{i}\geq
-      0}$). Sei nun $x$ keine Ecke von $\FF$. Nach Satz~\ref{satz:228}
+      0}$). Sei nun $x$ keine Ecke von $\FF$. Nach \autoref{satz:228}
       folgt, dass die $A_{.i}$ linear abhängig sind, d.\,h. $\exists
       w\in\R^{n}\setminus\{0\}$ mit $w_{i}=0$ für $i\not\in I(x)$ und
       $\sum_{i=1}^{n} w_{i} A_{.i} =0$.
@@ -1105,10 +1142,10 @@ Es gibt folgende Spezialfälle:
 	Man definiert $x^{(2)}$ und $\lambda_{2}$ wie oben. Die
 	Beweisführung erfolgt wie im zweiten Fall.
       \end{enumerate}
-      Sei $\FF$ nun  beschränkt. Dann folgt nach Lemma~\ref{lem:233},
+      Sei $\FF$ nun  beschränkt. Dann folgt nach \autoref{lem:233},
       dass es kein $d\in\R^{n}\setminus \{0\}$ mit $d\geq 0$ und
       $Ad=0$ gibt. Damit hat jedes $x\in\FF$ eine Darstellung wie in
-      Gleichung~\ref{eq:234} mit $d=0_{n}$, d.\,h. für alle $x\in\FF$
+      \autoref{eq:234} mit $d=0_{n}$, d.\,h. für alle $x\in\FF$
       ist Konvexkombination der Ecken $v^{(1)},\ldots,v^{k}\in\FF
       \Rightarrow \FF\subseteq \co \{v^{(1)},\ldots,v^{(k)}\}$. Da
       $\FF$ konvex und $v^{(1)},\ldots,v^{(k)}\in\FF\Rightarrow \FF
@@ -1142,7 +1179,7 @@ Es gibt folgende Spezialfälle:
       Betrachten jetzt $\forall d\in\R^{n}$ mit $d\geq 0, Ad=0\colon
       c^{T}d\geq 0$. Es ist zu zeigen, dass mindestens eine der Ecken
       von $\FF$ Lösung ist. Seien $v^{(1)},\ldots,v^{(k)}$ Ecken. Nach
-      Satz~\ref{satz:234} hat jedes $x\in\FF$ die Darstellung:
+      \autoref{satz:234} hat jedes $x\in\FF$ die Darstellung:
       \begin{align*}
 	x &= \sum_{i=1}^{k} \alpha_{i} v^{(i)} +d\\
 	\Rightarrow c^{T}x &= c^{T} \left(\sum_{i=1}^{k} \alpha_{i}
@@ -1162,7 +1199,7 @@ Es gibt folgende Spezialfälle:
 
       Sei $x$ beliebige Lösung des linearen Optimierungsproblems in
       Standardform. Dann ist zu zeigen, dass das $x$ eine
-      Konvexkombination ist. Nach Satz~\ref{satz:234} gilt, $x=
+      Konvexkombination ist. Nach \autoref{satz:234} gilt, $x=
       \sum_{i=1}^{k} \alpha_{i} v^{(i)}$ mit $\alpha_{i}\geq 0,
       \sum_{i=1}^{k} \alpha_{i}=1, i=1,\ldots,k$. Wir zeigen,
       $\alpha_{i}=0$ für alle nichtoptimalen Ecken. Wissen
@@ -1239,7 +1276,7 @@ folgt, dass die Lösungsmenge
 \end{gather*}
 ein Unterraum des $\R^{n}$ ist. Die Dimension des Lösungsraumes ist
 $n-m$. In jedem $x_{N}\in\R^{n-m}$ existiert genau eine Lösung, wobei
-$x_{B}$ durch die Gleichung~\ref{eq:25} bestimmt ist.
+$x_{B}$ durch die \autoref{eq:25} bestimmt ist.
 
 Für die Optimierung ist die Lösung $x$ zu $x_{N}=0_{n-m}$ von
 besonderem Interesse, d.\,h. $x_{B}=A_{B}^{-1}b\Leftrightarrow A_{B}
@@ -1287,7 +1324,7 @@ x_{B}=b$.
   zulässig, wenn $x_{B}=-b\geq 0_{m}$, d.\,h. $b\leq 0_{m}$.
 \end{bsp}
 
-\begin{bsp}[siehe Beispiel~\ref{bsp:236}]
+\begin{bsp}[siehe \autoref{bsp:236}]
     \begin{align*}
     (A|b) &= \begin{pmatrix}0 & 1 & 5 & 1 & | & 2\\
 	       1 & 0 & -1 & 0 & | & 2\\
@@ -1309,7 +1346,7 @@ x_{B}=b$.
      \item["`$\Rightarrow$"'] Sei $x$ Ecke von $\FF$ und $I(x)=
       \set{1\leq i\leq n| x_{i}>0}$. Nach der Voraussetzung ist $b=Ax=
       \sum_{i=1}^{n} x_{i} A_{.i} =\sum_{i\in I(x)} x_{i} A_{.i}$.
-      Nach Satz~\ref{satz:228} sind die Spaltenvektoren $A_{.i}$
+      Nach \autoref{satz:228} sind die Spaltenvektoren $A_{.i}$
       linear unabhängig. Es sei $\tilde{B}:= \set{A_{.i}| i\in I(x)}$
       und $p$ die Anzahl der Elemente von $\tilde{B}$. Falls $p=m$,
       dann isr $\tilde{B}$ Basis von $A$ und $x$ ist zugehörige
@@ -1322,7 +1359,7 @@ x_{B}=b$.
       I(x)\subset J_{B}$. Die Spaltenvektoren $A_{.i}, i\in J_{B}$
       sind linear unabhängig. Damit sind auch die Spaltenvektoren
       $A_{.i}, i\in I(x)$ linear unabhängig und nach
-      Satz~\ref{satz:228} ist $x$ eine Ecke.
+      \autoref{satz:228} ist $x$ eine Ecke.
     \end{itemize}
   \end{proof}
 \end{satz}
@@ -1331,7 +1368,7 @@ x_{B}=b$.
   Die Voraussetzungen seien wie oben. Dann existiert mindestens eine
   Ecke von $\FF$ und höchsten $\binom{n}{m}$ Ecken.
   \begin{proof}
-    Die Existenz einer Ecke ergibt sich aus Satz~\ref{satz:232}. Es
+    Die Existenz einer Ecke ergibt sich aus \autoref{satz:232}. Es
     existieren $\binom{n}{m}$ Möglichkeiten um Spaltenvektoren
     auszuwählen. Damit gibt es höchsten $\binom{n}{m}$ Basislösungen.
   \end{proof}
@@ -1486,10 +1523,10 @@ Die Konstante $z_{B}$ wird in der Regel weggelassen.
     (b-a_{N}v^{*})$, Lösung des linearen Optimierungsproblems.
     \todo{Satzbau verbessern, nachschlagen}
     \begin{proof}
-      Sei $v^{*}\in\FF_{B}$ Lösung von \ref{eq:29}, $x^{*}$ definiert
+      Sei $v^{*}\in\FF_{B}$ Lösung von \autoref{eq:29}, $x^{*}$ definiert
       durch $x^{*}_{N}=v, x_{B}^{*}= A_{B}^{-1}(b-A_{N} x_{N})$. Nach
       dem ersten Punkt ist $x^{*}\in\FF$. Sei $x\in\FF$ beliebig. Dann
-      gilt nach Gleichung~\ref{eq:28}: $c^{T}x=z_{B}+s_{N}^{T} x_{N}
+      gilt nach \autoref{eq:28}: $c^{T}x=z_{B}+s_{N}^{T} x_{N}
       \geq z_{B} +s_{N}^{T} v^{*}=c^{T}x^{*}$, d.\,h. $x^{*}$ ist
       Lösung des linearen Problems.
 
@@ -1503,26 +1540,26 @@ Die Konstante $z_{B}$ wird in der Regel weggelassen.
     \end{proof}
    \item Ist $x^{*}$ zulässige Basislösung des linearen Problems zur
       Basis $B$, dann ist $x^{*}$ genau dann Lösung, wenn
-      $x^{*}0_{n-m}$ Lösung des Problems~\ref{eq:29} ist.
+      $x^{*}0_{n-m}$ Lösung des \autoref{eq:29} ist.
     \begin{proof}
       Sei $x^{*}$ Basislösung zur Basis $B$. Dann ist
       $x_{N}^{*}=0_{n-m}$. Nach Punkt (ii) ist $x^{*}$ genau dann
       Lösung des linearen Problems, wenn $v^{*}=x_{N}^{*}= 0_{n-m}$
-      Lösung von \ref{eq:29} ist.
+      Lösung von \autoref{eq:29} ist.
     \end{proof}
   \end{enumerate}
 \end{lemma}
 
 Damit folgt der Optimalitätstest\index{Optimalitätstest}: Sei
 $x^{*}\in\FF$ zulässige Basislösung zur Basis $B$. Man stellt
-(theoretisch) das reduzierte Problem~\ref{eq:29} auf und prüft, ob
-$v^{*} =0_{n-m}$ Lösung von \ref{eq:29} ist. Falls ja, ist $x^{*}$
+(theoretisch) das reduzierte \autoref{eq:29} auf und prüft, ob
+$v^{*} =0_{n-m}$ Lösung von \autoref{eq:29} ist. Falls ja, ist $x^{*}$
 Lösung des linearen Problems.
 
 \subsection{Ein Optimalitätskriterium}
 
 Gesucht ist eine hinreichende Bedingung dafür, dass $v^{*}=0_{n-m}$
-Lösung von \ref{eq:29} ist.
+Lösung von \autoref{eq:29} ist.
 
 Es gilt $s_{N}^{T} v^{*}=0$, d.\,h. $v^{*}$ ist Lösung, wenn gilt
 $s_{N}^{T} v\geq s_{N}^{T} v^{*}=0$. Für $v\in\FF_{B}$ gilt $v\geq 0$
@@ -1551,7 +1588,7 @@ erfüllt ist, gilt $s_{N}^{T} v\geq 0=s_{N}^{T} v^{*}$
 
 Für den Optimalitätstest ergibt sich nun: Sei $x^{*}$ die aktuelle
 Ecke eine zulässige Basislösung zur Basis $B$. Berechne $s_{N}$ nach
-Gleichung~\ref{eq:27}, prüfe, ob $s_{N}\geq 0$. Falls ja, ist $x^{*}$
+\autoref{eq:27}, prüfe, ob $s_{N}\geq 0$. Falls ja, ist $x^{*}$
 optimal.
 
 \begin{bsp}
@@ -1618,7 +1655,7 @@ nicht entartet ist.
   Sei $x\in\FF$ eine nicht entartete Ecke. Ist $x^{*}\in\FF$ Lösung
   des linearen Problems, dann ist $s_{N}\geq 0$.
   \begin{proof}
-    Nach Lemma~\ref{lem:31} gilt $v^{*}=x_{N}^{*}=0_{n-m}$ ist Lösung
+    Nach \autoref{lem:31} gilt $v^{*}=x_{N}^{*}=0_{n-m}$ ist Lösung
     des reduzierten Problems. Angenommen, es existiert ein $j\in
     \{1,\ldots,n-m\}$ mit $s_{N,j}<0$. Wir definieren die Richtung
     $d\in\R^{n-m}$ durch $d_{j}=1, d_{i}=0$ für $i\in \{1,\ldots,n-m\}
@@ -1655,7 +1692,7 @@ folgt für $t\geq 0$:
   A_{B}^{-1}A_{N} v(t) =t\widehat{A_{.j}}\leq 0\leq x_{B}^{*}=A_{B}^{-1} b
 \end{gather*}
 d.\,h. $v(t)\in\FF_{B}$ und $\FF_{B}$ ist unbeschränkheit. Nach
-Lemma~\ref{lem:31} ist $x(t)\in\FF$ mit $x_{N}(t)=v(t), x_{B}(t)=
+\autoref{lem:31} ist $x(t)\in\FF$ mit $x_{N}(t)=v(t), x_{B}(t)=
 A_{B}^{-1} (b-A_{N}v(t))$. Damit ist auch $\FF$ beschränkt.
 
 Zusammen mit $s_{N,j}< 0$ folgt, $c^{T}x(t)= z_{B}+s_{N}^{T} v(t)=
@@ -1673,11 +1710,11 @@ beschränkt. Also existiert keine Lösung.
   auf $\FF$ nicht nach unten beschränkt.
 \end{lemma}
 
-\begin{bsp}[Fortsetzung von Beispiel~\ref{bsp:33}]
+\begin{bsp}[Fortsetzung von \autoref{bsp:33}]
   Im obigen Beispiel hatten wir den Vektor
   $s_{N}^{T}=(\nicefrac{17}{2}, -23, \nicefrac{11}{2})^{T}$ berechnet.
   Für $j=2$ ist $\widehat{A_{.j}}=\begin{pmatrix}2\\3\end{pmatrix}>0$,
-  d.\,h. die Gleichung~\ref{eq:35} ist nicht erfüllt.  
+  d.\,h. die \autoref{eq:35} ist nicht erfüllt.  
 \end{bsp}
 
 \subsection{Basiswechsel}
@@ -1703,7 +1740,7 @@ N=\{A_{.,n(1)},\ldots,A_{.,n(m)}\}, x_{B,i}= x_{b(i)}, i=1,\ldots,m,
 x_{N}=x_{n(i)}, i=1,\ldots,n-m, \overline{A}:= A_{B}^{-1}, \widehat{A}=
 A_{B}^{-1}A_{N}$.
 
-Ist die Gleichung~\ref{eq:34} nicht erfült, dann existiert ein
+Ist die \autoref{eq:34} nicht erfült, dann existiert ein
 \begin{gather}\label{eq:36}
   s_{N,j} <0 \qquad j\in\{1,\ldots,n-m\}
 \end{gather}
@@ -1745,11 +1782,11 @@ Damit folgt:
 \end{gather}
 
 Der Punkt $v(\sigma)$ ist \emph{Randpunkt} von $\FF_{B}$. Zunächst
-gilt, $x^{+}\in\FF$ wegen des Lemma~\ref{lem:31}. Wir müssen noch eine
+gilt, $x^{+}\in\FF$ wegen des \autoref{lem:31}. Wir müssen noch eine
 Basis $B^{+}$ von $A$ finden, so dass $x^{+}$ Basislösung von $B^{+}$
 ist.
 
-Sei $j\in\{1,\ldots,n-m\}$ der Index mit $s_{N}<0$ nach\ref{eq:36} und
+Sei $j\in\{1,\ldots,n-m\}$ der Index mit $s_{N}<0$ nach \autoref{eq:36} und
 weiter $l\in\{1,\ldots,m\}$ ein Index mit $\widehat{A_{l,j}}>0$ und
 \begin{gather}\label{eq:312}
   \sigma=\frac{x_{B,l}^{*}}{\widehat{A_{l,j}}}
@@ -1808,7 +1845,7 @@ von $A$ ist.
   dann nicht.
 
   Wie berechnet sich nun der Wert der Zielfunktion in der neuen Ecke
-  $x^{+}$? Nach der Gleichung\ref{eq:33} gilt:
+  $x^{+}$? Nach der \autoref{eq:33} gilt:
   \begin{gather}\label{eq:313}
     c^{T}x^{+} = z_{B} +s_{N}^{T} x_{N}^{+} = z_{B} + s_{N}^{T}
        v(\sigma)= \underbrace{z_{B}}_{=c^{T}x^{*}} + \sigma s_{N,j}
@@ -1860,7 +1897,7 @@ ausgeführt:
     Sei $x^{(k)}$ die in der $k$-ten Iteration berechnete Ecke zur
     Basis $B^{(k)}$. Dabei sei weder das Optimalitätskriterium noch
     das Unbeschränkheitskriterium erfüllt. Nach dem
-    Satz~\ref{satz:310} folgt: Das Verfahren berechnet eine neue Basis
+    \autoref{satz:310} folgt: Das Verfahren berechnet eine neue Basis
     $B^{+}= B^{(k+1)}$, so dass für die zugehörige Ecke $x^{(k+1)}$
     gilt:
     \begin{gather*}
