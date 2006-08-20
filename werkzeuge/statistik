@@ -1,0 +1,48 @@
+#!/usr/bin/perl -Wn --
+
+BEGIN
+{
+    $BOTS=qr/^(Googlebot-Image\/|htdig|egothor|(msn|schibstedsok|Seek|ps|IRL)bot)|(Yahoo! Slurp)|Googlebot/;
+    if ( defined($ARGV[1]) )
+    {
+        open ("-", "<", $ARGV[1]) or die "couldn't open logfile";
+    }
+    our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS);
+}
+END
+{
+    print "Skript                   : Anzahl  aus Uni  über Google\n";
+    foreach (sort { $PDF_ACCESS{$b} <=> $PDF_ACCESS{$a} } keys %PDF_ACCESS)
+    {
+        printf "%-25s: %4d  %8d  %11d\n", $_, $PDF_ACCESS{$_},
+          (defined $PDF_UNI_ACCESS{$_})?$PDF_UNI_ACCESS{$_}:0,
+          (defined $PDF_GOOGLE_ACCESS{$_})?$PDF_GOOGLE_ACCESS{$_}:0;
+    }
+}
+
+next if ($_ eq "\n");
+
+unless (/([\d.]*) - - \[([^\]]*)\] "([A-Z]*) ([^ ]*) HTTP\/1\.\d" (\d*) (\d*|-) "([^ ]*)" "(.*)"/)
+{
+    print "could not parse line $.: $_\n";
+    next;
+}
+
+my ($ip, $date, $method, $url, $ret_code, $size, $referer, $agent) =
+    ($1, $2, $3, $4, $5, $6, $7, $8);
+
+next unless ($url =~ /\/~joergs\/skripte\// and $method eq "GET");
+
+next if ($agent =~ /$BOTS/);
+print "bot line: $_\n" if ($agent =~ /bot/i);
+
+if ($url =~ /\/([^\/]*)\.pdf$/)
+{
+    my $skript = $1;
+    ++$PDF_ACCESS{$skript};
+    ++$PDF_UNI_ACCESS{$skript} if ($ip =~ /^141\.35\./);
+    ++$PDF_GOOGLE_ACCESS{$skript} if ($referer =~ /^http:\/\/www\.google/);
+}
+
+# print "$_\n" foreach ($ip, $date, $method, $url, $ret_code, $size, $referer, $agent);
+# print "\n";
