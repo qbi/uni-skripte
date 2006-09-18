@@ -2251,14 +2251,235 @@ Wir definieren $Q$ durch $Q:=(\overline{x}, \overline{A})$ und $q:=
 \end{bsp}
 
 \begin{lemma}
+  \label{lem:324}
   Wird $l$ für den Basistausch nach der zusatzregel und sind die
   Zeilenvektoren von $Q$ lexikalisch positiv, dann gilt:
   \begin{enumerate}[a)]
    \item Zeilenvektoren von $Q^{+}$ sind lexikalisch positiv
    \item $q^{+}\prec q$
   \end{enumerate}
+  \begin{proof}
+    Nach der Voraussetzung sind die Zeilenvektoren $Q$ lexikalisch
+    positiv:
+    \begin{gather*}
+      \begin{pmatrix}
+	\overline{x}_{i}\\\overline{A}_{i}
+      \end{pmatrix}\prec 0\qquad i=1,\dotsc,m
+    \end{gather*}
+    Für $i=l$ gilt nach \autoref{eq:319} und \autoref{eq:320}:
+    \begin{gather*}
+      \begin{pmatrix}
+	\overline{x}_{l}^{+}\\\overline{A}_{l}^{+}
+      \end{pmatrix}=\underbrace{\frac{1}{\hat{A}_{l,j}}}_{>0}
+	 	 \begin{pmatrix}
+		   \overline{x}_{l}\\\overline{A}_{l}
+		 \end{pmatrix}\prec 0
+    \end{gather*}
+    Für $i\in\{1,\dotsc,n-m\}\setminus\{l\}$ gilt
+    \begin{gather*}
+      \begin{pmatrix}
+	\overline{x}_{i}^{+}\\\overline{A}_{i}^{+}
+      \end{pmatrix}=
+	 	 \begin{pmatrix}
+		   \overline{x}_{i}\\\overline{A}_{i}
+		 \end{pmatrix}+\hat{A}_{i,j}^{+}
+	 	 \begin{pmatrix}
+		   \overline{x}_{l}\\\overline{A}_{l}
+		 \end{pmatrix}=
+	 	 \begin{pmatrix}
+		   \overline{x}_{i}\\\overline{A}_{i}
+		 \end{pmatrix}-\frac{\hat{A}_{i,j}}{\hat{A}_{l,j}}
+	 	 \begin{pmatrix}
+		   \overline{x}_{l}\\\overline{A}_{l}
+		 \end{pmatrix}
+    \end{gather*}
+    Für $i\notin\overline{J}$ gilt $\hat{A}_{i,j}\leq 0\Rightarrow
+    \begin{pmatrix}\overline{x}_{i}^{+}
+      \\\overline{A}_{i}^{+}\end{pmatrix} \prec 0$ und für
+    $i\in\overline{J}$ schreiben wir die obige Formel um:
+    \begin{gather*}
+      \begin{pmatrix}
+	\overline{x}_{i}^{+}\\\overline{A}_{i}^{+}
+      \end{pmatrix}\hat{A}_{i,j} \left( \frac{1}{\hat{A}_{i,j}}
+	 \begin{pmatrix}\overline{x}_{i}\\
+	   \overline{A}_{i}\end{pmatrix} -\frac{1}{\hat{A}_{l,j}}
+	 	 \begin{pmatrix}
+		   \overline{x}_{l}\\\overline{A}_{l}
+		 \end{pmatrix}\right)\prec 0
+    \end{gather*}
+
+    Der Punkt b) folgt aus \autoref{eq:323} und \autoref{eq:321}:
+    $q^{+}=q+ \hat{s}_{j} \hat{A}_{l,j}
+    \begin{pmatrix}\overline{x}_{l}\\ \overline{A}_{l}\end{pmatrix}
+    \Rightarrow q^{+}\prec q$ 
+  \end{proof}
 \end{lemma}
 
+\begin{satz}
+  Die Zeilenvektoren der zur Basis $B$ gehörenden Matrix $Q$ seien
+  lexikalisch positiv. Wird $l$ für den Basistausch in jedem
+  Iterationsschritt nach der Zusatzregel gewonnen, dann stoppt das
+  Verfahren nach endlich vielen Schritten, wobei das
+  Optimalitätskriterium oder das Unbeschränkheitskriterium erfüllt sind.
+  \begin{proof}
+    Seien $B^{(k)}$ Basen für $k=1,2,3,\dotsc$ und $Q^{k}, q^{(k)}$
+    die zugehörigen Matrizen $Q$ und Vektoren $q$. Dann gilt nach
+    \autoref{lem:324} $q^{(k+1)}\prec q^{(k)}$ für alle $k$. Nehmen
+    wir an, es gelte $B^{(k+\nu)}=B^{(k)}$ mit einem $\nu>0$. Nach der
+    Definition von $q$ bzw. $\overline{z}, \overline{y}$ müsste dann
+    gelten: $q^{(k+\nu)}=q^{(k)}$. Dies ist allerdings ein Widersprch.
+  \end{proof}
+\end{satz}
+
+\begin{bem}
+  Sei ein lineares Programm $\min c^{T}x$ \unb $Ax\leq b, x\geq 0$ mit
+  $b\geq 0$ gegeben. Durch die Einführung von Schlupfvariablen
+  $y=\begin{pmatrix}y_{1}\\\vdots\\y_{m}\end{pmatrix}$ erhalten wir
+  $\min (c^{T}, 0_{m})\begin{pmatrix}x\\y\end{pmatrix}$ \unb
+  $\underbrace{(A,I_{m})}_{\tilde{A}} \begin{pmatrix}x\\y\end{pmatrix}=b,
+  \begin{pmatrix}x\\y\end{pmatrix} \geq 0$. Startbasis sind die
+  letzten $m$ Spaltenvektoren von $\tilde{A}$. Dann ist
+  $\overline{x}=b$ und $Q= \begin{pmatrix}b_{1}& | & 1 & \hdots & 0\\
+			     \vdots & | & \vdots & \ddots & \vdots\\
+			     b_{m} & | & 0 & \hdots & 1\end{pmatrix}$.
+\end{bem}
+
+\begin{bsp}
+  \todo{Tabelle einfügen}
+\end{bsp}
+
+\subsection{Implemtierung des Austauschschritts}
+
+Sei ein Tableau mit den Daten $b, n, \hat{A}, \overline{A},
+\overline{x}, \hat{s}, \overline{y}, \overline{z}$ gegeben. Weiterhin
+seien $j\in\{1,\dotsc,n-m\}$ und $l\in\{1,\dotsc,m\}$ die Indizes für
+den Basistausch.
+\begin{enumerate}
+ \item Neuberechnung der Pivotspalte nach \autoref{eq:317}
+ \item Neuberechnung von $\overline{x}$ nach \autoref{eq:319}
+ \item Neuberechnung von $\overline{z}$ mit \autoref{eq:323},
+  $\overline{y}$ nach \autoref{eq:321} und $\hat{s}$ nach
+  \autoref{eq:322}
+ \item Neuberechnung der restlichen Spalten von $\hat{A}$ nach
+  \autoref{eq:318}
+ \item Neuberechnung von $\overline{A}$ nach \autoref{eq:320}
+ \item Indextausch
+\end{enumerate}
+
+\subsection{Die lexikografische Zusatzregel}
+
+\begin{defin}
+  Ein Vektor $x\in\R^{n}\setminus\{0_{n}\}$ heißt \emph{lexikografisch
+  positiv}\index{lexikografisch positiv}, wofür wir $x\prec 0_{n}$
+  schreiben, wenn die erste von Null verschieden Komponente größer als
+  Null ist.\\
+  Sind $x,y\in\R^{n}$, dann heißt $x$ lexikografisch größer $y$, falls
+  $x-y>0$ ist.
+\end{defin}
+
+\begin{bsp}
+  Die Vektoren $x=(0,1,2)^{T}, y=(0,2,-1)^{T}$ sind lexikografisch
+  positiv. Weiter gilt $x-y= (0,-1,3)^{T}\prec 0, y-x= (0,1,-3)^{T}
+  \succ 0\Rightarrow y\prec x$.
+\end{bsp}
+
+\begin{bem}
+  Zwei Vektoren $x,y\in\R^{n}$ sind bezüglich der lexikografischen
+  Ordnung immer vergleichbar, d.\,h. $x\neq y\Rightarrow x\succ y
+  \wedge x\prec y$.
+
+  Sei $y\in\R^{n}$ fest und $K=\Set{x\in\R| x\succeq y}$. Dann ist $K$
+  nicht immer abgeschlossen. Dazu betrachten wir einen
+  Iterationsschritt des Simplexverfahrens. Sei $B$ eine aktuelle
+  Basis, $j\in \{1,\dotsc,n-m\}$ mit $s_{N,j}<0, \sigma=\min\Set{
+  \frac{\overline{x}_{\nu}}{\hat{A}_{\nu,l}}| \nu\in\{1,\dotsc,m\}
+  \text{ mit } \hat{A}_{\nu,l}>0}, J=\Set{\mu\in \{1,\dotsc,m\}|
+  \hat{A}_{\mu,j}>0, \sigma=\frac{\overline{x}_{\mu}}{\hat{A}_{\mu,j}}}$
+
+  Mit $\overline{A}_{i}$ bezeichnen wir den $i$-ten Zeilenvektor von
+  $\overline{A}=A_{B}^{-1}$. Für die Bestimmung von $l$ benützen wir
+  die lexikografische Zusatzregel. Wähle $l\in J$ so, dass
+  $\frac{1}{\hat{A}_{l,j}} \overline{A}_{l}\prec
+  \frac{1}{\hat{A}_{\mu,l}} \overline{A}_{\mu}$ für alle $\mu\in
+  J\setminus \{l\}$.
+\end{bem}
+
+\begin{bem}
+  Hat $J$ mehr als ein Element, dann sind die Vektoren
+  $\frac{\overline{A}_{\mu}}{\hat{A}_{\mu,j}}, \mu\in J$ paarweise
+  verschieden. Damit ist $l$ durch die lexikografische Zusatzregel
+  eindeutig bestimmt.
+
+  Definieren $\overline{J}= \Set{\nu\in \{1,\dotsc,m\}|
+  \hat{A}_{\nu,j}>0}\Rightarrow J\leq \overline{J}$. Nach der
+  Definition von $J$ und $\overline{J}$ gilt für $\mu\in J\colon
+  \sigma= \frac{\overline{x}_{\mu}}{\hat{A}_{\mu,j}}$. Betrachten
+  $\frac{\overline{x}_{\nu}}{\hat{A}_{\nu,j}}$ für alle $\nu\in
+  \overline{J}\setminus J\Rightarrow \sigma<
+  \frac{\overline{x}_{\nu}}{\hat{A}_{\nu,j}}$. Damit erhält man die
+  äquivalente Form der lexikografischen Zusatzregel: Wähle
+  $l\in\overline{J}$ so, dass gilt:
+  \begin{gather*}
+    \frac{1}{\hat{A}_{l,j}}\begin{pmatrix}\overline{x}_{l} \\
+			     \hat{A}_{l}\end{pmatrix} \prec \frac{1}{\hat{A}_{\nu,j}}
+       \begin{pmatrix}
+	 \overline{x}_{\nu}\\ \overline{A}_{\nu}
+       \end{pmatrix}\qquad \nu\in\overline{J}\setminus\{l\}
+  \end{gather*}
+\end{bem}
+
+\section{Phase 1 des Simplexverfahrens}
+
+Ausgangspunkt ist ein lineares Programm in Standardform. Die Phase 1
+löst das Hilfsproblem (HP) und man erhält aus der Lösung des
+Hilfsproblems
+\begin{itemize}
+ \item die Startbasis für die Phase 2 oder
+ \item die Information, dass die zulässige Menge nichtleer ist oder
+ \item die Information, dass der Rang von $A$ kleiner als $m$ ist
+  (redundante Gleichungen)
+\end{itemize}
+
+\minisec{Das Hilfsproblem}
+Wir bezeichnen den Einheitsvektor mit $e=(1,1,\dotsc,1)^{T}$ und die
+Variablen des Hilfsproblems mit $z= (z_{1},\dotsc, z_{n},
+z_{n+1},\dotsc, z_{n+m})^{T} = (x_{1},\dotsc, x_{n}, y_{1},\dotsc,
+y_{m})^{T}$. Das Hilfsproblem lautet $\min e^{T}y= \sum_{i=1}^{m}
+y_{i}$ \unb $\begin{pmatrix}x\\y\end{pmatrix} \in\tilde{\FF} :=
+\Set{z=\begin{pmatrix}x\\y\end{pmatrix} \in\R^{n+m}|
+  \begin{pmatrix}x\\y\end{pmatrix} \geq 0, (A, I_{m})
+  \begin{pmatrix}x\\y\end{pmatrix}=b}=
+\Set{z=\begin{pmatrix}x\\y\end{pmatrix}| x,y\geq 0, Ax+y=b}$.
+
+Ist $\begin{pmatrix}x\\y\end{pmatrix} \in\tilde{\FF}$ und
+$y=0_{m}\Rightarrow Ax=b$, d.\,h. $x\in\FF$. Wir schreiben das
+Hilfsproblem als lineares Programm in Standardform: Definieren
+$\tilde{c}= \begin{pmatrix}0_{n}\\e\end{pmatrix}, \tilde{A}=(A,I_{m})$
+und es ist $\min \tilde{c}^{T} z$ \unb $z\geq 0, \tilde{A}z=b$. Sei
+o.\,B.\,d.\,A. $b\geq0$. Es gilt, $\FF\neq \emptyset$. Die
+Zielfunktion ist durch 0 nach unten beschränkt. Nach dem Hauptsatz der
+linearen Optimierung existiert eine Ecke, die Lösung ist.
+
+Nun wenden wir die Phase 2 des Simplexverfahrens auf das Hilfsproblem
+an. Wir wählen die letzten $m$ Spalten von $\tilde{A}$ als Basis. Dann
+ist:
+\begin{align*}
+  J_{B} &= \{n+1,\dotsc,n+m\} & J_{N} &= \{1,\dotsc,n\} &
+     \tilde{A}_{B} &= I_{m} & \tilde{A}_{N} &=A
+\end{align*}
+
+Die zugehörige Basislösung ist
+$z_{B}=\underbrace{\tilde{A}_{B}^{-1}}_{=I_{m}} b=b, z_{N}=0_{n}$.
+Wegen $b\geq 0$ ist $\tilde{z}_{B}\geq0\Rightarrow$ zulässige
+Basislösung. Einträge für das Starttableau:
+\begin{align*}
+  \tilde{A}_{B}^{-1} &= I_{m}\\
+  \tilde{A}_{B}^{-1} \tilde{A}_{N} &= \tilde{A}_{N}=A\\
+  \hat{s}^{T} &= \tilde{c}_{N}^{T} - \tilde{c}_{B}^{T}
+     \tilde{A}_{B}^{-1} \tilde{A}_{N} = 0_{n}-e^{T}I_{m}A=-e^{T}A\\
+  \tilde{c}^{T}z &= \tilde{c}_{B}^{T} z_{b} = e^{T}b\\
+  y^{T} &= \tilde{c}_{B}^{T} \tilde{A}_{B}^{-1}=e^{T}
+\end{align*}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
