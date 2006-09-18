@@ -1489,7 +1489,7 @@ Kosten. Mit:
   s_{N}^{T} = c_{N}^{T} - c_{B}^{T} A_{B}^{-1} A_{N} \in\R^{n-m}
 \end{gather}
 gilt
-\begin{gather}\label{eq:28}
+\begin{gather}\label{eq:33}
   c^{T}x = z_{B} + s_{N}^{T} x_{N}
 \end{gather}
 
@@ -1526,7 +1526,7 @@ Die Konstante $z_{B}$ wird in der Regel weggelassen.
       Sei $v^{*}\in\FF_{B}$ Lösung von \autoref{eq:29}, $x^{*}$ definiert
       durch $x^{*}_{N}=v, x_{B}^{*}= A_{B}^{-1}(b-A_{N} x_{N})$. Nach
       dem ersten Punkt ist $x^{*}\in\FF$. Sei $x\in\FF$ beliebig. Dann
-      gilt nach \autoref{eq:28}: $c^{T}x=z_{B}+s_{N}^{T} x_{N}
+      gilt nach \autoref{eq:33}: $c^{T}x=z_{B}+s_{N}^{T} x_{N}
       \geq z_{B} +s_{N}^{T} v^{*}=c^{T}x^{*}$, d.\,h. $x^{*}$ ist
       Lösung des linearen Problems.
 
@@ -1816,6 +1816,7 @@ x_{B^{+}}^{+}$. Somit bleibt noch zu zeigen, dass $B^{+}$ eine Basis
 von $A$ ist.
 
 \begin{lemma}
+\label{lem:39}
   Sei $B=\{v^{(2)},\ldots,v^{(m)}\}\subseteq \R^{m}$ eine Basis des
   $\R^{m}$, $l\in\{1,\ldots,m\}$ ein Index, $w\in\R^{m}$ ein Vektor
   sowie $V$ eine $m\times m$-Matrix mit den Spaltenvektoren
@@ -1920,6 +1921,7 @@ ausgeführt:
 \end{tabular}
 
 \begin{bsp}
+  \label{bsp:313}
   \begin{tabular}{c|ccc|c|cc}
     & 2 & 3 & 4& & 1 &5\\
     \toprule
@@ -1999,8 +2001,264 @@ Wir führen folgende, neue Bezeichnungen ein:
 Mit den neuen Bezeichnungen wählen wir zum Basistausch einen Index
 $\{1,\dotsc,n-m\}$ mit $\hat{s}_{j}<0$ und einen Index
 $l\in\{1,\dotsc,m\}$ mit $\frac{\overline{x}_{l}}{\hat{A}_{l,j}} =\min
-\Set{\frac{\overline{x}_{\nu}}{\hat{A}_{\nu,j}}| \nu\in\{\1,\dotsc,m\}
+\Set{\frac{\overline{x}_{\nu}}{\hat{A}_{\nu,j}}| \nu\in\{1,\dotsc,m\}
 \text{ mit } \hat{A}_{\nu,j}>0}$.
+
+\section{Der Austauschschritt}
+\label{sec:der-austauschschritt}
+
+Die Spalten des Simplextableaus sind von der Form $A_{B}^{-1}v$. Zum
+Update des Tableaus müssen wir die entsprechenden Vektoren
+$A_{B^+}^{-1}v$ berechnen. Betrachten wir die allgemeine Situation von
+\autoref{lem:39}:
+
+Sei $B=\{v^{(1)},\ldots, v^{(m)}\}$ eine Basis des $\R^m$. Weiter sei
+$l\in \{1,\ldots,m\}$ ein gegebener Index, $w\in\R^m$ und $V=[v^{(1)},
+\ldots, v^{(m)}]$. Die Koordinaten $\hat{w}=V^{-1}w$ von $w$ bezüglich
+Basis $B$ seien bekannt. Weiter sei $\hat{w}_l\neq 0$. Tauscht man
+$v^{(l)}$ gegen $w$, d.\,h. definiert man
+\[B^{+}=\{v^{(1)},\dotsc, v^{(l-1)},w,v^{(l+1)},\dotsc, v^{(m)}\}\]
+nach \autoref{lem:39} ist $B^{+}$ wieder eine Basis.
+
+Sei $V^{+}=[v^{(1)},\dotsc, v^{(l-1)}, w, v^{(l+1)},\dotsc, v^{(m)}]$.
+Für beliebige $v\in\R^{m}$ sei $\hat{v}=V^{-1}v$ und
+$v^{+}=(V^{+})^{-1}v$. Berechnen $w^{+}=(V^{+})^{-1}v^{(l)}$. Wir
+kennen $\hat{w}= V^{-1}w\Leftrightarrow V\hat{w}=w\Leftrightarrow w=
+\sum_{i=1}^{m} \hat{w}_{i}v^{(i)}\Rightarrow \hat{w}_{l}v^{(l)} = w-
+\sum_{i=1, i\neq l}^{m} \hat{w}_{i}v^{(i)}$. Da $\hat{w}_{l}\neq 0$ folgt,
+$v^{(l)}= \frac{w}{\hat{w}_{l}}- \sum_{i=1,i\neq l}^{m}
+\frac{\hat{w}_{i}}{\hat{w}_{i}} v^{(i)}$. Dann folgt:
+\begin{gather}\label{eq:314}
+  v^{(l)} = V^{+}w^{+} \text{ mit } w^{+}=
+     \begin{cases}
+       \frac{1}{\hat{w}_{l}} & i=l\\
+       -\frac{\hat{w}_{i}}{\hat{w}_{l}} & i\in\{1,\dotsc,m\}\setminus
+       \{l\}
+       \end{cases}
+\end{gather}
+
+Nachdem man $w^{+}$ entsprechend \autoref{eq:314} berechnet hat, kann
+man für beliebigen Vektor $v\in\R^{n}$ jetzt aus $\hat{v}=V^{-1}v$
+einfach $v^{+}=(V^{+})^{-1}v$ berechnen. Es gilt:
+\[\hat{v}=V^{-1}v\Leftrightarrow v=V\hat{v}\Leftrightarrow
+v=\sum_{i=1}^{m}\hat{V}_{i}v^{(i)}\]
+Für $v^{(l)}$ setzen wir die Darstellung $v^{(l)}=V^{+}w^{+}$ ein:
+\begin{align*}
+  v &= \sum_{i=1, i\neq l}^{m} \hat{v}_{i} v^{(i)}+ \hat{v}_{l}v^{(l)}=
+     \sum_{i=1, i\neq l}^{m} \hat{v}_{i}v^{(i)}+ \hat{v}_{l}V^{+}w^{+}\\
+  &= \sum_{i=1, i\neq l}^{m} \hat{v}_{i}v^{(i)}+ \hat{v}_{l}
+     \sum_{i=1, i\neq l}^{m} w_{i}^{+}v^{(i)} + \hat{v}_{l}w_{l}^{+}w\\
+  &= \sum_{i=1, i\neq l}^{m} (\hat{v}_{i}+\hat{v}_{l}w_{i}^{+})v^{(i)}
+     + \hat{v}_{l}w_{l}^{+}w
+\end{align*}
+
+\todo{zwei Tabellen einfügen}
+
+Allgemeine Situation beim Basistausch:\\
+aktuelle Basis: $B=\{v^{(1)},\dotsc, v^{(l-1)}, v^{(l)},
+v^{(l+1)},\dotsc, v^{(m)}\}$\\
+neue Basis: $B^{+}=\{v^{(1)},\dotsc,v^{(l-1)}, w, v^{(l+1)},\dotsc,
+v^{(m)}\}$ mit $w\in\R^{m}, \hat{w}_{l}\neq 0$, wobei $\hat{w}=V^{-1}w$
+
+Seien $w^{+}:= (V^{+})^{-1}v^{(l)}$ Koordinaten von $v^{(l)}$
+(des aus der aktuellen Basis gestrichenen Vektors) bezüglich der neuen
+Basis $B^{+}$
+
+\begin{gather}\label{eq:315}
+  w_{i}^{+}=
+     \begin{cases}
+       \frac{1}{\hat{w}_{l}} & i=l\\
+       -\frac{\hat{w}_{i}}{\hat{w}_{l}} & i\neq l
+     \end{cases}
+\end{gather}
+Sei allgemein $v\in\R^{m}$ ein beliebiger Vektor, $\hat{v}:=
+A_{B}^{-1}v$ (Koordinaten von $v$ bezüglich der aktuellen Basis $B$),
+$v^{+}:= A_{B^{+}}^{-1}v$ (Koordinaten von $v$ bezüglich der neuen
+Basis $B^{+}$).
+\begin{gather}\label{eq:316}
+  v_{i}^{+}=
+     \begin{cases}
+       \hat{v}_{l}\hat{w}_{l} & i=l\\
+       \hat{v}_{i}+\hat{v}_{l}\hat{w}_{i} & i\neq l
+     \end{cases}
+\end{gather}
+
+Anwendung auf das Simplextableau:
+\begin{itemize}
+ \item Umrechnung der Pivotspalte nach \autoref{eq:315}
+ \item Umrechnung der restlichen Spalten von $\hat{A}$ nach
+  \autoref{eq:316}
+ \item Umrechnung von $\overline{x}$ unf $\overline{A}$ nach
+  \autoref{eq:316}
+ \item Umrechnung von $\hat{s}, \overline{z}, \overline{y}$
+\end{itemize}
+
+\subsection{Neuberechnung des Simplextableaus}
+
+Indextausch: $b^{+}(l)= n(j), n^{+}(j)=b(l)$, restliche Indizes
+bleiben unverändert
+
+Neuberechnung der Pivotspalte: Der Vektor der aktuellen Pivotspalte
+ist $\hat{w} =\hat{A}_{.j}$ und $\hat{w}$ wird durch den Vektor
+$w^{+}=\hat{A}_{.j}^{+}$ ersetzt (Koordinaten des aus der Basis
+entfernten Vektors $v^{(l)}=A_{b(l)}$ bezüglich der neuen Basis
+$B^{+}$), d.\,h. wir können \autoref{eq:315} anwenden mit
+$\hat{w}=\hat{A}_{.j}$ (aktuelle Pivotspalte) und wir erhalten
+\begin{gather}\label{eq:317}
+  \hat{A}_{i,j}^{+}=
+     \begin{cases}
+       \frac{1}{\hat{A}_{i,j}} & i=l\\
+       -\frac{\hat{A}_{i,j}}{\hat{A}_{l,j}} & i\neq l
+     \end{cases}
+\end{gather}
+
+\begin{bsp}[Problem aus \autoref{bsp:313}]
+  \label{bsp:315}
+  Mit \autoref{eq:317} erhalten wir als neue Spalte:
+  \begin{align*}
+    \hat{A}_{1,2}^{+} &= \frac{1}{\hat{A}_{1,2}} = \frac{1}{2} &
+       \hat{A}_{2,2}^{+} &= -\frac{\hat{A}_{2,2}}{\hat{A}_{1,2}} =
+       -\frac{3}{2}
+  \end{align*}
+\end{bsp}
+
+\minisec{Berechnung von $\hat{A}^{+}$ (ohne Pivotspalte)}
+Wir benutzen \autoref{eq:316}, wobei $w^{+}=\hat{A}_{.j}^{+}$ die
+bereits neu berechnete Pivotspalte ist. Weiter ist
+$\hat{v}=\hat{A}_{.\nu}, \nu\in\{1,\dotsc,n-m\}, \nu\neq j$.
+\begin{gather}\label{eq:318}
+  \hat{A}_{i,\nu}^{+}=
+     \begin{cases}
+       \hat{A}_{l,\nu}\hat{A}_{l,j}^{+} & i=l\\
+       \hat{A}_{i,\nu}+\hat{A}_{l,\nu}\hat{A}_{i,j}& i\neq l
+     \end{cases}
+\end{gather}
+
+\begin{bsp}[Fortsetzung von \autoref{bsp:315}]
+  \label{bsp:316}
+  Zur Neuberechnung der Spalten 1 und 3 von $\hat{A}$ erhalten wir aus
+  \autoref{eq:318} mit $\nu=1,3$:
+  \begin{align*}
+    \hat{A}_{1,1}^{+} &= \hat{A}_{1,1}\hat{A}_{1,2}^{+}=
+       -\frac{3}{4}\cdot \frac{1}{2}= -\frac{3}{8}\\
+    \hat{A}_{1,3}^{+} &= \hat{A}_{1,3}\hat{A}_{1,2}^{+}= -\frac{1}{8}\\
+    \hat{A}_{2,1}^{+} &= \hat{A}_{2,1}+\hat{A}_{1,1}\hat{A}_{2,2}^{+}=
+       \frac{7}{8}\\
+    \hat{A}_{2,3}^{+} &= -\frac{3}{8}
+  \end{align*}
+
+  neues Tableau: \todo{Tableau einfügen}
+\end{bsp}
+
+Berechnung von $\overline{x}^{+}$: Anwendung von \autoref{eq:317} mit
+$w^{+}:= \hat{A}_{.j}^{+}$ und $\hat{v}=\overline{x}$
+\begin{gather}\label{eq:319}
+  \overline{x}_{i}^{+} =
+     \begin{cases}
+       \overline{x}_{l}\hat{A}_{l,j}^{+} & i=l\\
+       \overline{x}_{i}+\overline{x}_{l}\hat{A}_{i,j}^{+} & i\neq l
+     \end{cases}
+\end{gather}
+
+\begin{bem}
+  Zusammen mit \autoref{eq:316} und \autoref{eq:312} erhalten wir:
+  \[x_{l}^{+} = \overline{x}_{l} \hat{A}_{l,j}^{+}=
+  \frac{\overline{x}_{l}}{\hat{A}_{l,j}}=\sigma\]
+  Für $i\neq l$ gilt:
+  \[x_{i}^{+} =\overline{x}_{i}+\overline{x}_{l}\hat{A}_{i,j}^{+}=
+  \overline{x}_{i} -\overline{x}_{l}
+  \frac{\hat{A}_{i,j}}{\hat{A}_{l,j}} = \overline{x}_{i}- \sigma
+  \hat{A}_{i,j}\]
+\end{bem}
+
+\begin{bsp}[Fortsetzung von \autoref{eq:316}]
+  \label{bsp:317}
+  $\overline{x}_{1}^{+}= \overline{x}_{1}
+  \hat{A}_{1,2}^{+}=\nicefrac{3}{2}, \overline{x}_{2}^{+}=
+  \overline{x}_{2}+ \overline{x}_{1}\hat{A}_{2,2}^{+}=\nicefrac{1}{2}$
+\end{bsp}
+
+Berechnung von $\overline{A}^{+}$: Analog zur Berechnung von
+$\overline{x}^{+}$ und $\hat{A}^{+}$ erhält man für $\mu=1,\dotsc,m$:
+\begin{gather}\label{eq:320}
+  \overline{A}_{i,\mu}^{+}=
+     \begin{cases}
+       \overline{A}_{l,\mu} \hat{A}_{l,j}^{+} & i=l\\
+       \overline{A}_{i,\mu} +\overline{A}_{l,\mu} \hat{A}_{i,j}^{+} &
+       i\neq l
+     \end{cases}
+\end{gather}
+
+\begin{bsp}[Fortsetzung von \autoref{bsp:317}]
+  \label{bsp:318}
+  siehe voriges Tableau, Zahlen sind dort mit ergänzt.
+\end{bsp}
+
+Berechnung von $\overline{y}^{+}$: Nach der Definition ist
+$\overline{y}^{+} =((A_{B^{+}})^{-1})^{+}c_{B^{+}}=
+(\overline{A}^{+})^{-1} c_{B^{+}}$. Mit \autoref{eq:320} erhalten wir
+für $\mu= 1,\dotsc,m$:
+\begin{align*}
+  \overline{y}_{\mu}^{+} &= \sum_{i=1, i\neq l}^{m} c_{b(i)}
+     \overline{A}_{i,\mu}^{+} + c_{n(j)} \overline{A}_{l,\mu}^{+}\\
+  &= \sum_{i=1, i\neq l}^{m} c_{b(i)} (\overline{A}_{i,\mu}+
+     \overline{A}_{l,\mu} \hat{A}_{i,j}^{+}) +c_{n(j)}
+     \overline{A}_{l,\mu} \hat{A}_{l,j}^{+}\\
+  &= \sum_{i=1, i\neq l}^{m} c_{b(i)} \overline{A}_{i,\mu}+ c_{b(l)}
+     \overline{A}_{l,\mu} + \sum_{i=1, i\neq l}^{m} c_{b(i)}
+     \overline{A}_{l,\mu} \hat{A}_{i,j}^{+} - c_{b(l)}
+     \overline{A}_{l,\mu} + c_{n(j)} \overline{A}_{l,\mu}
+     \hat{A}_{l,j}^{+}
+\end{align*}
+Zusammen mit $\sum_{i=1}^{m} c_{b(i)} \overline{A}_{i,\mu}=
+\overline{y}_{\mu}$ und Einsetzen von \autoref{eq:317} folgt:
+\begin{align*}
+  \overline{y}_{\mu}^{+} &= \overline{y}_{\mu} - \sum_{i=1}^{m}
+     c_{b(i)} \overline{A}_{l,\mu} \frac{\hat{A}_{i,j}}{\hat{A}_{l,j}}
+     + c_{n(j)} \overline{A}_{l,\mu} \frac{1}{\hat{A}_{l,j}}\\
+  &= \overline{y}_{\mu} + \frac{\overline{A}_{l,\mu}}{\hat{A}_{l,j}}
+     \underbrace{\left(c_{n(j)} - \sum_{i=1}^{m} c_{b(i)}
+     \hat{A}_{i,j}\right)}_{\hat{s}_{j}}
+\end{align*}
+Daraus folgt:
+\begin{align}\label{eq:321}
+  \overline{y}_{\mu}^{+} &= \overline{y}_{\mu} +\hat{s}_{j}
+     \frac{\overline{A}_{l,\mu}}{\hat{A}_{l,j}}= \overline{y}_{\mu} +
+     \hat{s}_{j}\overline{A}_{l,\mu}\hat{A}_{l,j}\\
+  \label{eq:322}
+     \hat{s}_{\nu}^{+} &=
+     \begin{cases}
+       -\hat{s}_{j}\hat{A}_{l,j}^{+} & \nu =j\\
+       \hat{s}_{\nu}-\hat{s}_{j}\hat{A}_{l,j}^{+} \hat{A}_{l,\nu} &
+       \nu\neq j
+     \end{cases}\\
+  \label{eq:323}
+     \overline{z}^{+} &= \overline{z}+ \hat{s}_{j} \overline{x}_{l}^{+}
+\end{align}
+
+Wir definieren $Q$ durch $Q:=(\overline{x}, \overline{A})$ und $q:=
+\begin{pmatrix}\overline{z}\\\overline{y}\end{pmatrix}$.
+
+\begin{bsp}
+  In \autoref{bsp:313} ist $Q=\begin{pmatrix}3 & | & \nicefrac{1}{4} &
+				0\\
+				5 & | & 0 &
+				\nicefrac{1}{4}\end{pmatrix}$. Die
+  Zeilenvektoren von $Q$ sind lexikalisch positiv. Mit der neuen Basis
+  $B^{+}$ nach dem Basistausch sei $Q^{+}:= (\overline{x}^{+},
+  \overline{A}^{+})$ und $q^{+}=\begin{pmatrix}\overline{z}^{+}
+				  \\\overline{y}^{+}\end{pmatrix}$.
+\end{bsp}
+
+\begin{lemma}
+  Wird $l$ für den Basistausch nach der zusatzregel und sind die
+  Zeilenvektoren von $Q$ lexikalisch positiv, dann gilt:
+  \begin{enumerate}[a)]
+   \item Zeilenvektoren von $Q^{+}$ sind lexikalisch positiv
+   \item $q^{+}\prec q$
+  \end{enumerate}
+\end{lemma}
+
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
