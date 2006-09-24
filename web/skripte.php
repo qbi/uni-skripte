@@ -61,10 +61,10 @@ echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
 und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
 machen -- damit ist auch viel geholfen!</p>";
 
-if ($id != "SKRIPT" && file_exists("./$id.Changelog"))
+if ($id != "SKRIPT" && file_exists("$id.Changelog"))
 {
     echo "<h2>Letzte Änderungen</h2>\n<pre>",
-      htmlentities(readfile("./$id.Changelog"), ENT_COMPAT, "UTF-8"),
+      htmlentities(file_get_contents("$id.Changelog"), ENT_COMPAT, "UTF-8"),
       "</pre>\n";
 }
 
