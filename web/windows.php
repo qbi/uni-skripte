@@ -3,25 +3,18 @@
 include('header.php');
 
 if (!$id) {
+	$id="SKRIPT";
 	echo "<h1>Allgemeine Windowsanleitung</h1>
 	Im folgenden ist SKRIPT der Name eines der Projekte für das jeweilige
 	Vorlesungsskript. Zur Zeit gibt es die folgenden:
-	<ul><li>Maß und Integral, Prof. Dr. Hans-Jürgen Engelbert: engelbert-mass-integral</li>
-	<li>Kommunikationssysteme, Prof. Dr. Werner Erhard: erhard-komm-sys</li>
-	<li>Parallelität, Prof. Dr. Hans-Dietrich Hecker: hecker-parallel</li>
-	<li>Formale Sprachen, Dr. Gerhard Lischke: lischke-form-sprachen</li>
-	<li>Höhere Analysis, Prof. Dr. Hans-Jürgen Schmeißer: schmeisser-hoehere-ana</li>
-	<li>Informatik 4, Dr. Jörg Vogel: vogel-info4</li>
-	<li>Mathematik für Informatiker 3 (Wahrscheinlichkeitstheorie), Prof. Dr. Linde: linde-stochastik</li>
-	<li>Rechnerarchitektur 1&nbsp;und&nbsp;2, Prof. Dr. Fey: fey-recharch</li>
-	<li>Das allgemeine Projekt für alle Skript: skripte</li></ul>
-	<li>Analysis 3, Prof. Dr. Hans-Jürgen Schmeißer: schmeisser-ana3</li></ul>";
-	$id="SKRIPT";
+	<ul>";
+    	list_skripte("windows.php");
+        echo "</ul>";
 } else {
 	echo "<h1>Windows-Anleitung für das Skript: $id</h1>
 	<p>(Zur <a href='./windows.php'>allgemeinen Windowsanleitung</a>)</p>";
 }
-	
+
 echo "<h2>direkte SVN-Unterstützung im Explorer (geht nicht in der Uni)</h2>
 <ol>
    <li>Den <a href='http://tortoisesvn.tigris.org/download.html'>SVN-Client</a>
@@ -29,16 +22,15 @@ echo "<h2>direkte SVN-Unterstützung im Explorer (geht nicht in der Uni)</h2>
    <li>Die heruntergeladene Datei ausführen</li>
    <li>In den Ordner \"Eigene Dateien\" gehen und dort die rechte Maustaste
    klicken. \"SVN Checkout\" wählen und folgende Angaben machen:<br>
-   URL: <pre>svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/$id</pre>
-   FRZ-Login ist *dein* Benutzername im FRZ!";
+   URL: <pre>svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/$id</pre>
+   FRZ-Login ist <b>dein</b> Benutzername im FRZ!";
    if ($id=="SKRIPT"){
-   	echo "$id aus der obigen Liste auswählen (und in der URL ersetzen),
-   	z.B. hecker-parallel
-   	Beispiel:
-   	<pre>svn+ssh://peter3@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/hecker-parallel</pre>";
-   	}
+   	echo " $id aus der obigen Liste auswählen (und in der URL ersetzen),
+   	z.&nbsp;B. für <tt>hecker-parallel</tt>
+   	<pre>svn+ssh://peter3@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/hecker-parallel</pre>";
+   }
    echo "</li>
-   <li>skript.latex im Texnic-Center öffnen</li>
+   <li><tt>skript.latex</tt> im Texnic-Center öffnen</li>
    <li>LATEX->PDF einstellen und 3-mal (in Worten: drei mal) übersetzen</li>
    <li>Ist alles gut gegangen -> weiter bei 9.</li>
    <li>Ist eine Fehlermeldung der Art
@@ -91,7 +83,7 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
 
 <h1>wenn der SVN-Client nicht geht (Windowspool)</h1>
 
-<p>Ihr sollte auf alle Fälle eine Mail an frz@minet.uni-jena.de schicken mit
+<p>Ihr sollte auf alle Fälle eine E-Mail an frz@minet.uni-jena.de schicken mit
 der Bitte den SVN-Client zu installiern oder dies wenigstens zu
 ermöglichen.</p>
 
@@ -100,18 +92,17 @@ ermöglichen.</p>
 http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html</a>
    herunterladen und installieren</li>
    <li>Putty starten und als Rechnername ppc214.mipool.uni-jena.de angeben.
-   SSH auswählen. Unter Connection->SSH den Punkt 2 bei bevorzugte
+   SSH auswählen. Unter Connection->SSH den Punkt&nbsp;2 bei bevorzugte
    SSH-Protokollversion wählen.</li>
-   <li>Öffnen klicken und in dem neuen Fenster erst *deinen* Benutzernamen
+   <li>Öffnen klicken und in dem neuen Fenster erst <b>deinen</b> Benutzernamen
    eingeben und dann das Unix-Passwort.</li>
    <li>Du siehst eine Kommandozeile.</li>
    <li>Gebe folgendes ein:
-   <pre>svn checkout file:///home/stud/md01/joergs/.svnroot/$id</pre>";
+   <pre>svn checkout file:///home/stud/md01/joergs/.svnroot/skripte/$id</pre>";
    if ($id=="SKRIPT") {
    	echo "$id aus der obigen Liste auswählen (und statt $id einsetzen),
-   	z.B. hecker-parallel
-   	Beispiel:
-   	<pre>svn+ssh://peter3@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/hecker-parallel</pre>";
+   	z.&nbsp;B. für <tt>hecker-parallel</tt>
+   	<pre>file:///home/stud/md01/joergs/.svnroot/skripte/hecker-parallel</pre>";
    	}
    echo "</li>
    <li>Im Texnic-Center solltest du jetzt auf Laufwerk M: (das Laufwerk von

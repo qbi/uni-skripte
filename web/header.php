@@ -1,20 +1,45 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' "http://www.w3.org/TR/html4/loose.dtd">
 <!-- $Id$ -->
-<?
-	echo"
-	<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' \"http://www.w3.org/TR/html4/loose.dtd\">
+
+<?php
+function list_skripte($link)
+{
+	$lines = array_map('rtrim', file('./available_skripte'));
+	sort($lines);
+    	$lines = array("web\tWebseite") + $lines;
+	foreach ($lines as $line)
+	{
+		$fields = preg_split("/\t+/", $line);
+		echo '<li>';
+		if (count($fields) >= 2)
+		{
+			echo $fields[1];
+			if (count($fields) == 3)
+				echo ', ', $fields[2];
+			echo ': ';
+                }
+            	if ( !empty($link) )
+			echo '<a href="', $link, '?id=', $fields[0], '">';
+            	echo $fields[0];
+            	if ( !empty($link) )
+                     echo '</a>';
+            	echo "</li>\n";
+	}
+}
+?>
 
 <html>
 
   <head>
     <title>Vorlesungsskripte der Fakultät für Mathematik und Informatik
 
-</title>
+    </title>
     <link rel='stylesheet' href='./skripte.css'
 	  type='text/css'>
     <meta name='description'
 	  content='Vorlesungsskripte der Fakultät für Mathematik und Informatik'>
   </head>
-  
+
   <body>
 
     <h1 id='logo'><a href='./'><img alt='Logo' border='0' src='./images/logo.png'/></a></h1>
@@ -29,81 +54,41 @@
 	    <div class='navheading'>
 	      <a href='./'>Startseite</a>
 	    </div>
-	    
+
 	    <div class='navheading'>
 	      <a href='./'>&Uuml;ber</a>
-	    </div> 
+	    </div>
 
 	    <div class='navheading'>
 	      <a href='./news.php'>Aktuelles</a>
 	    </div>
 
-	   <div class='navheading'>
+	    <div class='navheading'>
               Skripte
 
-	    <div class='navmenu'>
-	      <a href='./skripte.php?id=carl-ana1'>Analysis 1</a>
-   	    </div>
-
-	    <div class='navmenu'>
-	      <a href='./skripte.php?id=carl-ana2'>Analysis 2</a>
-   	    </div>
-
-	    <div class='navmenu'>
-	      <a href='./skripte.php?id=schmeisser-ana3'>Analysis 3</a>
-   	    </div>
-
-	    <div class='navmenu'>
-	      <a href='./skripte.php?id=engelbert-mass-integral'>Maß und Integral</a>
-   	    </div>
-
-	    <div class='navmenu'>
-	      <a href='./skripte.php?id=erhard-komm-sys'>Kommunikationssysteme</a>
-   	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=fichtner-ewms'>EWMS</a></div>
-	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=hecker-parallel'>Parallelität</a></div>
-	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=lischke-form-sprachen'>Formale Sprachen</a></div>
-	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=schmeisser-hoehere-ana'>H&ouml;here Analysis</a></div>
-	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=vogel-dml2'>DML 2</a></div>
-	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=vogel-info4'>Informatik 4</a></div>
-	    </div>
-
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=linde-stochastik'>Mathematik für Informatiker&nbsp;3</a></div>
-	    </div>
-	    
-	     <div class='navmenu'>
-	      <div><a href='./skripte.php?id=fey-recharch'>Rechnerarchitektur 1&nbsp;und&nbsp;2</a></div>
-	    </div>
-	    
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php?id=mundhenk-logik'>Logik</a></div>
-	    </div>
+	    <?php
+              $lines = array_map('rtrim', file('./available_skripte'));
+              sort($lines);
+              foreach ($lines as $line)
+              {
+                  $fields = preg_split("/\t+/", $line);
+                echo "<div class=\"navmenu\"><a href=\"./skripte.php?id=",
+                  $fields[0], "\">";
+                if (count($fields) >= 2)
+                  echo $fields[1];
+                else
+                  echo $fields[0];
+                echo "</a></div>\n";
+              }
+            ?>
 	</div>
-	    
+
 	<div class='navheading'>
 	      Download
 
 	    <div class='navmenu'>
 	      <div><a href='./skripte.php'>Quellcode</a></div>
-	      <div><a href='./pdf/'>PDFs</a></div>
+	    <!--  <div><a href='./pdf/'>PDFs</a></div> -->
 	    </div>
 	    </div>
 
@@ -117,7 +102,6 @@
 
 	    <div class='navheading'>
 	      Dokumentation
-	
 
 	    <div class='navmenu'>
 	      <div><a href='./windows.php'>SVN Anleitung f&uuml;r Windows</a></div>
@@ -138,7 +122,7 @@
 	    <div class='navheading'>
 	      <a href='./links.php'>Links</a>
             </div>
-	
+
 	    <div class='navheading'>
 	      <a href='./kontakt.php'>Kontakt</a>
 	    </div>
@@ -146,5 +130,3 @@
 	  </td>
 
 	  <td rowspan='1' colspan='1' align='left' valign='top'>
-	";
-?>
