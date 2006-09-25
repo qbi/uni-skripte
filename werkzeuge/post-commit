@@ -41,6 +41,9 @@ WEB=/home/stud/md01/joergs/.www/skripte
 REPOS="$1"
 REV="$2"
 
+# Damit svnlook log und commit-email.pl die Ausgabe nicht verstümmeln
+export LANG=de_DE.UTF-8
+
 # find "$REPOS/db/" "$REPOS/locks" -mindepth 1 -not -name fs-type -not -perm -666 -exec chmod go+rw {} \;
 #chmod go+w "$REPOS/db/current" "$REPOS/locks/"*
 #chmod go+w "$REPOS/db/revs/$REV" "$REPOS/db/revprops/$REV"
@@ -71,23 +74,31 @@ skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; 
   -r skripte@listserv.uni-jena.de -s "[$skript]" -h minet.uni-jena.de \
   skripte-commit@listserv.uni-jena.de
 
+case "$skript" in
+  web)
+    rm -f $WEB/"$skript".Changelog $WEB/"$skript".Author $WEB/"$skript".Date
+    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+    svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
+    svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
+    ;;
+  *-*)
+    # create Changelog
+    rm -f $WEB/"$skript".Changelog
+    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+
+    update_skript "$skript" &
+    ;;
+esac
+
 svnlook changed "$REPOS" --revision "$REV" | while read action file; do
     : $action $file
     case "$file" in
-      werkzeuge*) ;;
-      "$skript/")
-        # A Skript was added or deleted
+      web/*)
         case "$action" in
-          A*) echo "$skript" >> $WEB/available_skripte;;
-          D*) sed --in-place "/^$skript\$/d" $WEB/available_skripte;;
-        esac
-        ;;
-      web)
-        case "$action" in
-          A*)
+          [AU]*)
             case "$file" in
               */) mkdir "$WEB/$file";;
-              *) svnlook cat "$REPOS" --revision "$REV" "$file" > "$WEB/$file";;
+              *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}";;
             esac
             chmod go+w "$WEB/$file"
             ;;
@@ -97,19 +108,15 @@ svnlook changed "$REPOS" --revision "$REV" | while read action file; do
               *) rm --force "$WEB/$file";;
             esac
             ;;
-          U*) svnlook cat "$REPOS" --revision "$REV" "$file" > "$WEB/$file";;
 #          _U) ;; # SVN property update
         esac
         ;;
-      *)
-        # create Changelog
-        rm -f $WEB/"$skript".Changelog $WEB/"$skript".Author $WEB/"$skript".Date
-        svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
-        svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
-        svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
-
-        update_skript "$skript" &
-        exit 0
+      "$skript/")
+        # A Skript was added or deleted
+        case "$action" in
+          A*) echo "$skript" >> $WEB/available_skripte;;
+          D*) sed --in-place "/^$skript\$/d" $WEB/available_skripte;;
+        esac
         ;;
     esac
 done
