@@ -4,7 +4,7 @@
 <ul><li>
  <a href='http://www.dante.de'>
  DANTE</a>:
- DANTE, Deutschsprachige Anwendervereinigung TeX e.V.</li>
+ DANTE, Deutschsprachige Anwendervereinigung TeX e.&thinsp;V.</li>
 
  <li><a href='http://www.kubieziel.de/computer/latex-tutorial.html'>
  LaTeX-Tutorial</a>: Eine Einführung in LaTeX</li>
@@ -14,7 +14,7 @@
  werden sollen.</li>
 
  <li><a href='http://www.dante.de/faq/de-tex-faq/'>DE-TeX-FAQ: German FAQ
- about TeX and DANTE e.V.</a>: Fragen und Antworten zu LaTeX -- kann
+ about TeX and DANTE e.&thinsp;V.</a>: Fragen und Antworten zu LaTeX &ndash; kann
  sehr hilfreichsein, ist aber auch sehr umfangreich</li>
 
  <li>Eine <a href='http://www.zvisionwelt.de/typokurz.pdf'>kurze Einführung
