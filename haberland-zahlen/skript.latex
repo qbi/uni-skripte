@@ -1,0 +1,464 @@
+% Notiz:
+%  + mit \log ist immer \ln gemeint -> ersetzen
+
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+\usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\PZ}{\mathbb{P}}     % Primzahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+               {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+
+\DeclareMathOperator{\card}{card}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Einführung in die algebraische und analytische Zahlentheorie}
+\author{Prof. Dr. Haberland}
+\date{Semester: WS 2006/07}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+% entspricht Vorlage: 395
+
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2006)
+  \end{itemize}
+\end{itshape}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\clearpage
+\begin{thebibliography}{99}
+ \bibitem{bore} Borevich, Shafarevich: Number theorie, Hayka, Moskau 1985
+ \bibitem{zagier} D. Zagier: Zetafunktion und quadratische Zahlenkörper,
+  Springer 1981
+ \bibitem{edwards} Edwards: Fermat's last theorem, Springer 1977
+ \bibitem{hasse} H. Hasse: Vorlesungen über Zahlentheorie, Springer 1950
+ \bibitem{Hecke} E. Hecke: Vorlesungen über die Theorie der algebraischen
+  Zahlen, Geest \& fortig, Leipzig 1954
+ \bibitem{neukirch} J. Neukirch: Algebriasche Zahlentheorie, Springer 1992
+\end{thebibliography}
+
+\chapter{Elementare Zahlentheorie}
+\section{Die ganzen Zahlen}
+
+Die Standardbezeichnung der Menge der ganzen Zahlen ist $\Z = \{ \dotsc, -2,
+-1, 0, 1, 2, \dotsc \}$ mit der Addition und Multiplikation, mit gutartigen
+Eigenschaften.
+
+\begin{defini}
+  $a,b\in\Z$, $a|b$ (gespr. $a$ teilt $b$) $:=$ $\exists c\in\Z\colon b=ac$.
+\end{defini}
+
+\begin{bemerk}
+  $\pm1$ teilen jede ganze Zahl, jede ganze Zahl teile die Null.
+\end{bemerk}
+
+\begin{defini}
+  Eine ganzen Zahl $m\ne\pm 1$ heißt \highl{Primzahl} \gdwdef sie besitzt
+  genau 4~Teiler.
+\end{defini}
+
+\begin{bemerk}
+  Die Menge der positiven Primzahlen sei $\PZ$. Euklid hat gezeigt\help{stimmt
+  das?} $\PZ$ ist unendlich.
+\end{bemerk}
+
+Die aktuell, größe Primzahl von heute morgen ist $2^{32582657}-1$. Quelle GIMPS.
+
+\subsection{11 Beweise, dass \texorpdfstring{$\PZ$}{P} unendlich ist}
+
+\begin{proof}[Nach Euklid]
+  Angenommen: $\PZ$ ist endlich, dann hat das Produkt aller Primzahlen vermehrt
+  um 1 keine Primteiler.
+\end{proof}
+
+\begin{proof}[Ch. Hermite (1870)]
+  Sei $p_{n}$ der kleinste Primteiler von $n!+1$, dann ist $p_{n}>n$.
+\end{proof}
+
+\begin{proof}[T. Stieltjes (1890)]
+  Sei $\PZ = \{p_{1},\dotsc, p_{n}\}$ und $D=p_{1}\cdot \dotsm \cdot p_{n}$.
+  Zerlege $D=m\cdot n$, $m,n> 1$. Für jede Primzahl gilt: $p|m$ oder $p|n$ ,
+  aber nicht beide. Also hat $m+n$ keine Primteiler.
+\end{proof}
+
+\begin{proof}[J. Braun (1890)]
+  $\PZ = \{p_{1},\dotsc, p_{n}\}, D=p_{1}\cdot\dotsm\cdot p_{n}$
+  \begin{gather*}
+    \sum \frac{1}{p_{i}} = \frac{a}{D} \quad \text{mit } a=\frac{D}{p_{i}}
+  \end{gather*}
+  Nun ist $a/D \geq \nicefrac{1}{2} + \nicefrac{1}{3} + \nicefrac{1}{5} =
+  \nicefrac{31}{30} > 1$. Also muss $a$ Primteiler haben, z.\,B. $p_{k}$. Es
+  folgt: $p_{k}$ teilt $a$ und jedes $\nicefrac{D}{p_{i}}, i\ne k$. Also auch
+  $\nicefrac{D}{p_{k}}$. Widerspruch.
+\end{proof}
+
+\begin{proof}[Euler (1759) (falscher Beweis)]
+  Wir wollen
+  \begin{gather*}
+    \prod_{p\in\PZ} 1-\frac{1}{p} = 0
+  \end{gather*}
+
+  Setze dazu
+  \begin{align*}
+    x &= 1 + \frac{1}{2} + \frac{1}{3} + \dotsb\\
+    \frac{1}{2} x &= \frac{1}{2} + \frac{1}{2} + \frac{1}{6} + \dotsb\\
+    \frac{1}{2} x &= 1 + \frac{1}{3} + \frac{1}{5} + \frac{1}{7} + \dotsb\\
+    \frac{1}{6} x &= \frac{1}{3} + \frac{1}{9} + \frac{1}{15} + \dotsb\\
+    \Rightarrow \frac{1\cdot 2}{2\cdot 3} x = 1+ \frac{1}{5} + \frac{1}{7} +
+       \dotsb = \sum_{n \text{ prim zu } 6} \frac{1}{n}\\
+    \Rightarrow \frac{(p_{1}-1)(p_{2}-1)\dotsm (p_{k}-1)}{p_{1}p_{2}\dotsm
+       p_{k}} x = \sum_{n \text{ prim zu } p_{1}\cdots p_{k}}\\
+    \Rightarrow \prod_{p\in\PZ}(1-\frac{1}{p}) x =1
+  \end{align*}
+  Da $x=\infty$ ist, folgt $\prod_{p\in\PZ}(1-\frac{1}{p}) = 0$
+\end{proof}
+
+\begin{proof}[Sylvester (1888)]
+  Korrektur des Beweises von Euler.
+  \begin{gather*}
+    \prod_{p \leq x} (1-\frac{1}{p})^{-1} = \prod_{p \leq x} (1+\frac{1}{p}
+       +\frac{1}{p^{2}} +\dotsb) \geq \sum_{n\leq x} \frac{1}{n} \geq
+       \int_{2}^{x}\frac{dt}{t} = \ln x - \ln 2 \rightarrow \infty
+  \end{gather*}
+\end{proof}
+
+\begin{proof}[Perrot (1881)]
+  Für $n>2$ ist die Anzahl der natürlichen Zahlen $\leq N$, welche
+  quadratische Teiler $>1$ besitzen, beschränkt durch
+  \begin{gather*}
+    \sum_{2\leq n\leq N}\frac{N}{n^{2}} < N \Big(\frac{1}{4} +\sum_{n=3}^{\infty}
+       \frac{1}{n^{2}}\Big) \leq N \Big( \frac{1}{4} +
+       \int_{2}^{\infty}\frac{dt}{t^{2}}\Big) = \frac{3}{4}N
+  \end{gather*}
+  Also existieren im Intervall $[1,N]$ mindestens $\frac{N}{4}$ quadratfreie
+  Primzahlen.
+
+  Sei $P=\{p_{1},\dotsc, p_{n}\}$. Dann existieren genau $2^{n}$ quadratfreie
+  Zahlen: $p_{i_{1}},\dotsc, p_{i_{r}}, 1\leq i_{1} < i_{r} \leq n$.
+\end{proof}
+
+$X$ Menge, $O$ Familie von Teilmengen, so dass
+\begin{enumerate}
+ \item $\emptyset, X\in O$
+ \item $U,V\in O$ $\Rightarrow$ $U\cap V\in O$
+ \item $\forall U_{i}\in O, i\in I$ $\Rightarrow$ $\bigcup U_{i}\in O$
+\end{enumerate}
+$(X,O)$ heißt \highl{topologischer Raum} oder \highl{Topologie}, $U\in O$
+offene Menge.
+
+Eine \highl{arithmetische Progression} in $\Z$: $a+m\Z, m>0$. Diese bilden
+Familie von Teilmengen in $\Z$, welche durchschnittsabgeschlossen ist. Sie
+erzeugt also durch Vereinigung die Topologie auf $\Z$.
+
+\begin{proof}[Fürstenberg (1955)]
+  Jede arithmetische Progression ist offen und abgeschlossen.
+  Sei $A_{p} = p\cdot\Z$, $A = \bigcup_{p\in\PZ} A_{p}$.
+
+  $\Z\setminus A = \{-1, 1\}$ ist nicht offen, also ist $A$ nicht
+  abgeschlossen. Die $A_{p}$ sind abgeschlossen, also auch jede endliche
+  Vereinigung.
+\end{proof}
+
+\begin{proof}[Tchebyshev (18??)]
+  Für eine reelle Zahl $x$ gilt: $x-1 < [x] \leq x$. Es folgt
+  \begin{gather*}
+    [x+y] - [x] - [y] \in \{0,1\}
+  \end{gather*}
+
+  Wie oft geht eine Primzahl $p$ in $n!$ auf?
+  \begin{gather*}
+    [\ln (n!) = n\ln n - n +\frac{1}{2} \ln 2\pi n + \frac{\Theta(n)}{12 n}
+       \quad\text{wobei } \abs{\Theta(n)} < 1]\\
+    \operatorname{ord}_{p}(n!) = [\frac{n}{p}] + [\frac{n}{p^{2}}] +
+       [\frac{n}{p^{3}}] + \dotsb
+  \end{gather*}
+  Also $\operatorname{ord}_{p}(\binom{n}{k}) = \sum_{r=1}^{\infty} ( [\frac{n}{p^{r}}] -
+  [\frac{n}{p^{r}}] - [\frac{n-k}{p^{r}}]) \leq \frac{\ln n}{ \ln p}$.
+
+  Es folgt:
+  \begin{gather*}
+    p^{\alpha p} || \binom{n}{k} \Rightarrow p^{\alpha p} \leq n
+  \end{gather*}
+  Also
+  \begin{gather*}
+    \binom{n}{k} = \prod_{p \leq n} p^{\alpha p} \leq n^{\pi(n)}\quad
+       \pi(n) = \card \{p\leq n\}\\
+    2^{n} = \sum_{k=0}^{n} \binom{n}{k} \leq (n+1) n^{\pi(n)}\\
+    n \ln 2 \leq \ln (n+1) + \pi(n) \ln n\\
+    \Rightarrow \pi(n) \geq \ln 2 \frac{n}{\ln n} - \frac{\ln n+1}{\ln n} \geq
+       \frac{2}{3} \frac{n}{\ln n}\qquad (n\geq 200)
+  \end{gather*}
+  Analog: $\pi(n) \leq 1,7\frac{n}{\ln n}$.
+  \todo{Irgendwie formulieren: $\frac{n}{\ln n}$ ist fast $n$, Quadratzahlen
+    gibt es nur $\sqrt{n}$, also mehr Primzahlen als Quadratzahlen}
+\end{proof}
+
+\subsection{Primzahlverteilung}
+
+$x\in\R_{+}$
+\begin{gather*}
+  \pi(x) \cong \frac{x}{\ln x}\quad\text{für }x\rightarrow\infty
+\end{gather*}
+
+\begin{gather*}
+  \pi(x) = \operatorname{li}(x) + R(x)\\
+  \operatorname{li}(x) = \int_{2}^{x} \frac{dt}{\ln t} + c = \frac{x}{\ln x} + \frac{x}{2!
+     (\ln x)^{2}} + \frac{x}{3! (\ln x)^{3}} + \dotsb
+\end{gather*}
+
+\begin{lemma}[Goldbach-Vermutung]
+  \begin{enumerate}
+   \item Jede ungerade natürliche Zahl ist Summe dreier positiver ungerader
+    Primzahlen. Bewiesen von Vinogradov (1937).
+   \item Jede gerade natürliche Zahl ist Summer zweier positiver ungerader
+    Primzahlen.
+  \end{enumerate}
+\end{lemma}
+
+\begin{itemize}
+ \item Als einen \highl{Primzahlzwilling} bezeichnet man eine Zahl $p\in\PZ$,
+  wobei gilt $p+2\in\PZ$.
+
+ \item Unbewiesen ist Primzahlen der Form $n^{2}+1$ gibt es unendlich viele.
+  Vermutung: Ja
+
+ \item Arithmetische Progressionen enthalten so viele Primzahl:
+  \begin{gather*}
+    a+m\Z \cap \PZ \text{ist unendlich, falls } (a,m) = 1.
+  \end{gather*}
+\end{itemize}
+
+Nette Aufgabe zum Schluss: Sei
+\begin{gather*}
+  f(n) = (n-1) [ [\frac{n!+1}{n+1}] - \frac{n!-n}{n+1} ] +2
+\end{gather*}
+$f\colon \N^{\ast} \rightarrow \N^{\ast}$. Dann hat $f$ nur Primzahlwerte und
+jede Primzahl tritt als Wert auf.
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
