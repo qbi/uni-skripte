@@ -2,10 +2,18 @@
 <!-- $Id$ -->
 
 <?php
+function map_line($line)
+{
+    $dash_pos = strpos($line, '-');
+    $tab_pos = strpos($line, "\t");
+    return substr($line, $dash_pos+1, $tab_pos-1-$dash_pos);
+}
+
 function list_skripte($link)
 {
 	$lines = array_map('rtrim', file('./available_skripte'));
-	sort($lines);
+	$lines = array_combine(array_map('map_line', $lines), $lines);
+	ksort($lines);
     	$lines = array("web\tWebseite") + $lines;
 	foreach ($lines as $line)
 	{
@@ -67,8 +75,9 @@ function list_skripte($link)
               Skripte
 
 	    <?php
-              $lines = array_map('rtrim', file('./available_skripte'));
-              sort($lines);
+	      $lines = array_map('rtrim', file('./available_skripte'));
+	      $lines = array_combine(array_map('map_line', $lines), $lines);
+	      ksort($lines);
               foreach ($lines as $line)
               {
                   $fields = preg_split("/\t+/", $line);
