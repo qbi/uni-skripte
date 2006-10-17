@@ -1,0 +1,370 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+               {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Kryptologie -- von einer Geheimwissenschaft zu einer Wissenschaft
+  von den Geheimnissen}
+\author{Dr.\, Jörg Vogel}
+\date{WS 2006/07}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+% entspricht Vorlage: 395
+
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \texttt{<joerg@alea.gnuu.de>}} (2006)
+  \end{itemize}
+\end{itshape}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Einführung}
+
+\begin{defini}
+  Kryptologie ist die Wissenschaft von der sicheren \textit{Übertragung}
+  (und Speicherung) von Nachrichten! Die Übertragung erfolgt über
+  \highl{Kanäle}: Boten, Kupferleitungen, Glasfaser, drahtlose
+  Verbindungen, \dots
+\end{defini}
+
+Beeinträchtigungen bei der Übertragung
+\begin{itemize}
+ \item zufällige Störungen -- der Boote stürzt in eine Felsspalte
+ \item systematische (physikalische bedingte) Störungen --
+ \item passive Beeinträchtigungen -- Abhören von Telefongesprächen,
+  Auslesen von Speichermedien
+ \item aktive Beeinträchtigungen -- fälschen von Nachrichten und Daten
+\end{itemize}
+Mit den ersten beiden Punkten beschäftigt sich die Kodierungstheorie. Die
+passiven und aktiven Beeinträchtigungen sind Gegenstand der Kryptologie.
+
+Anforderungen an kryptologische Verfahren:
+\begin{itemize}
+ \item Geheimhaltung -- Lesen der Nachricht für Unbefugte möglichst
+  schwierig zu machen
+ \item Authentifizierung -- Identitätsnachweis des Senders; Empfänger
+  weiß, dass die Nachricht nicht von einem Unbefugten stammt
+ \item Integrität -- Nachricht wurde während der Übertragung nicht
+  geändert, ohne das es bemerkt wird
+ \item Verbindlichkeit -- Sender kann nicht leugnen, dass die Nachricht
+  von ihm stammt
+\end{itemize}
+
+Die Anforderungen haben sich mit der Zeit geändert.
+\begin{center}
+  \begin{tabular}{p{.3\linewidth}|p{.3\linewidth}}
+    früher & heute\\
+    \hline
+    Geheimhaltungen (bei militärischen Anwendungen) & zivile Anwendungen
+       durch enormen Zuwachs der Kommunikation in Netzwerken
+  \end{tabular}
+\end{center}
+
+\section{Grundbegriffe}
+\begin{description}
+ \item[Sender:] (Alice) Nachricht + Schlüssel (Klartext, plain text)
+ \item[Verfahren:] Geheimtext (Chiffretext, Kryptogramm) --
+  Verschlüsselungsverfahren, Chiffrierung, encryption
+ \item[Übertragung:] Problem der Codierungstheorie
+ \item[Empfänger:] (Bob) Schlüssel
+ \item[Verfahren:] Entschlüsselung, Dechiffrierung, decryption
+ \item[Klartext]
+\end{description}
+
+\begin{defini}[Kryptosystem]
+  Bestandteile eines \highl{Kryptosystems}
+  \begin{enumerate}
+   \item Eine Menge von Nachrichten: \highl{Klartextraum} $\mathcal{M}$
+    ($\subseteq\Sigma^{\ast}$)
+   \item \highl{Chiffretextraum} $\mathcal{C}$ ($\subseteq\Gamma^{\ast}$) (die
+    verschlüsselte Botschaft)
+   \item \highl{Schlüsselraum} $\mathcal{K}$: jeder \highl{Schlüssel} $k\in\mathcal{K}$ ist
+    ein Paar $k=(k_{e}, k_{d})$ zur Verschlüsselung $k_{e}$ und
+    Entschlüsselung $k_{d}$
+   \item \highl{Verschlüsselungsalgorithmus} $\mathcal{E}\colon\mathcal{M}\times
+    \mathcal{K}\rightarrow\mathcal{C}$ für den gilt $E(m, k_{e}) = c$,
+    wobei für $m_{1}\ne m_{2}$ gilt $E(m_{1}, k_{e}) \ne E(m_{2}, k_{e})$
+   \item \highl{Entschlüsselungsalgorithmus} $D\colon \mathcal{C}\times\mathcal{K}
+    \rightarrow \mathcal{M}$ mit der Forderung $D(c, k_{d}) = m$
+  \end{enumerate}
+  Ein Kryptosystem $\mathcal{S}$ ist also damit ein Fünftupel
+  $\mathcal{S}=(\mathcal{M}, \mathcal{C}, \mathcal{K}, E, D)$.
+\end{defini}
+
+\begin{defini}
+  Ein Kryptosystem $\mathcal{S}$ heißt \highl{symetrisch}, falls $k_{e}\ne
+  k_{d}$ (bzw. $k_{d}$ sich "`leicht"' (polynomiell) aus $k_{e}$ berechnen lässt).
+
+  Ein Kryptosystem $\mathcal{S}$ heißt \highl{asymetrisch}, falls die
+  Kenntnis von $k_{e}$ praktisch nichts über $k_{d}$ aussagt.
+\end{defini}
+
+Konsequenzen:
+\begin{enumerate}
+ \item Vor der Übertragung müssen sich Sender und Empfänger über das
+  Verfahren einigen.
+ \item Viele Schlüssel sind eine notwendige Vorraussetzung für die
+  Sicherheit eines Verfahrens.
+ \item Vor der Übertragung müssen sich Alice und Bob auf ein
+  Schlüsselpaar $k=(k_{e},k_{d})$ einigen.
+ \item Geheimhalten werden muss der Schlüssel $k_{d}$ zur Entschlüsselung.
+\end{enumerate}
+
+\begin{bemerk}
+  zu 3) Brauchen eine sichere Übertragung des Schlüssels! Warum dann
+  nicht gleich die Nachricht selbst sicher übertragen?
+  \begin{itemize}
+   \item Im Allgemeinen ist die Nachricht wesentlich länger als der
+    Schlüssel.
+   \item Der Zeitpunkt der Schlüsselübergabe ist frei wählbar.
+   \item Mit demselben Schlüssel lassen sich mehrere Schlüssel
+    verschlüsseln.
+  \end{itemize}
+\end{bemerk}
+
+\begin{defini}[Das Kerkhoff'sche Prinzip]
+  Die \highl{Sicherheit} eines Kryptosystems hängt nur von der
+  Geheimhaltung des Schlüssels ab nicht von der Geheimhaltung des
+  Algorithmus'.
+\end{defini}
+
+Nochmal zur Erläuterung einiger Begriffe: Kryptologie besteht aus zwei
+Teilen: der Krypographie -- Die Kunst des Verschlüsselns -- und
+Kryptoanalyse -- Die Kunst des Codebrechens.
+
+\begin{bsp}
+  \highl{Freimaurercode} -- keine Kryptosystem\\
+  \highl{Cäsarschiffre} -- nicht sicher
+  % abcdcefkghbdghbihbj
+  % uzvjvijrkqzjkxvyvzd
+  % tfzzgredfyabxiffhxy
+\end{bsp}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
