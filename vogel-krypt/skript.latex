@@ -183,7 +183,7 @@
 \clearpage
 \chapter*{Vorwort}
 
-% entspricht Vorlage: 395
+% entspricht Vorlage: 426
 
 \begin{itshape}
   Dieses Dokument wurde als Skript für die auf der
@@ -241,7 +241,7 @@
 % \theoremlisttype{all}
 \listtheorems{defini,festl}
 
-\chapter{Einführung}
+\chapter{Einführung in die Kryptologie}
 
 \begin{defini}
   Kryptologie ist die Wissenschaft von der sicheren \textit{Übertragung}
@@ -298,9 +298,11 @@ Die Anforderungen haben sich mit der Zeit geändert.
   Bestandteile eines \highl{Kryptosystems}
   \begin{enumerate}
    \item Eine Menge von Nachrichten: \highl{Klartextraum} $\mathcal{M}$
-    ($\subseteq\Sigma^{\ast}$)
+    ($\subseteq\Sigma^{\ast}$), $m\in\mathcal{M}$ ist eine \highl{Nachricht}
+    (Klartext)
    \item \highl{Chiffretextraum} $\mathcal{C}$ ($\subseteq\Gamma^{\ast}$) (die
-    verschlüsselte Botschaft)
+    verschlüsselte Botschaft), $c\in\mathcal{C}$ ist eine Geheimtext
+    (Chiffretext)
    \item \highl{Schlüsselraum} $\mathcal{K}$: jeder \highl{Schlüssel} $k\in\mathcal{K}$ ist
     ein Paar $k=(k_{e}, k_{d})$ zur Verschlüsselung $k_{e}$ und
     Entschlüsselung $k_{d}$
@@ -355,13 +357,145 @@ Nochmal zur Erläuterung einiger Begriffe: Kryptologie besteht aus zwei
 Teilen: der Kryptographie -- Die Kunst des Verschlüsselns -- und
 Kryptoanalyse -- Die Kunst des Codebrechens.
 
-\begin{bsp}
-  \highl{Freimaurercode} -- keine Kryptosystem\\
-  \highl{Cäsarchiffre} -- nicht sicher
-  % abcdcefkghbdghbihbj
-  % uzvjvijrkqzjkxvyvzd
-  % tfzzgredfyabxiffhxy
+% 18.10.2006
+
+Ein Beispiel zur Kryptographie:
+\begin{bsp}[praktische Kryptographie]
+  \begin{center}
+    dieser satz ist geheim\\
+    % abcdcefkghbdghbihbj
+    \help{Die Zeichen des Freimaurercodes einfügen; am Besten mit
+      MetaPost zeichnen}
+  \end{center}
+  Der
+  \href{http://de.wikipedia.org/wiki/Freimaurer-Alphabet}{\highl{Freimaurercode}}
+  arbeitet ohne Schlüssel; Es wird jeder Buchstabe des Alphabets durch
+  ein Geheimzeichen ersetzt. Damit ist der Freimaurercode kein
+  Kryptosystem, da das Kerkhoff'sche Pinzip verlettzt ist: Die Sicherheit
+  des Kryptosystems hängt von der Geheimhaltung des Algorithmus' ab.
+
+  \begin{center}
+    \verb+UZVJVI JRKQ ZJK XVYVZD+
+  \end{center}
+  Beim \highl{Cäsarcode} wird jeder Buchstabe des Alphabets für sich
+  durch den Buchstaben, der $x$ Positionen weiter hinten steht.
+  $x\in\{1,2,\dotsc,25\} = \mathcal{K}$ ist der Schlüsel dieses
+  Kryptosystems -- im obigen Beispiel ist $x=17$. nicht sicher
+
+  \begin{center}
+    \verb+TFZZGR EDFY ABX IFFHXY+
+  \end{center}
+  \highl{One-Time-Pad} Algorithmus: wähle (unabhängig und
+  gleichverteilt) für jeden einzelnen Buchstaben eine Position
+  $x=\{0,1,2,\dotsc,25\}$, um die dieser Buchstabe verschoben wird. Der
+  Schlüssel ist ein $n$-Tupel $c=(x_{1},x_{2},\dotsc, x_{n})$ für eine
+  Nachricht $m=(m_{1},m_{2},\dotsc, m_{n})$. Dieses Kryptosystem schützt
+  sich nicht nur durch den großen Schlüsselraum $26^{n}$, sondern auch
+  dadurch, dass jeder beliebige Text mit dem geeigneten Schlüssel erzeugt
+  werden kann.
 \end{bsp}
+
+zur Kryptoanalyse: qualitative Unterscheidungen:
+\begin{description}
+ \item[vollständiges Aufbrechen:] der Schlüssel $k_{d}$ wird entdeckt.
+  (jede Nachricht $m$, dir mit $k_{e}$ verschlüsselt wird, kann
+  entschlüsselt werden)
+
+ \item[globale Deduktion:] ohne Kenntniss von $k_{d}$ wird eine zu $D(\_,
+  k_{d})$ äquivalente Übersetzung gefunden.
+
+ \item[lokale Deduktion:] finden des Klartextes für einen einzelnen
+  Chiffretext.
+\end{description}
+
+Arten von \highl{Angriffen} auf eine Kryptosystem:
+\begin{description}
+ \item[Cypthertext-Only-Attack:] Der Kryptoanalytiker verfügt über eine
+  gewisse Menge von Geheimtexten.
+
+ \item[Known-Plaintext-Attack:] Für einen gewissen Chiffretext ist der
+  Klartext bekannt.
+
+ \item[Chosen-Plaintext-Attack:] Für einen beliebigen Klartext ist es
+  möglich sich den zugehörigen Chiffretext zu besorgen. (Typisch für
+  public key-Verfahren)
+
+ \item[Angriff durch Gewalt/Erpressung/Entführung]
+ \item[Brute-Force-Attack:] Alle möglichen Schlüssel austesten.
+\end{description}
+
+Der Angreifer heißt Otto -- im wahren Leben heißt er Eve.
+
+Klassifikation der Verfahren entsprechend der Sicherheit:
+\begin{description}
+ \item[uneingeschränkt sicher:] one-time-pad
+ \item[praktisch sicher:] in praktikabler Zeit keine Lösung; Die
+  Tageszeitung von Morgen erst nächste Woche entschlüsseln.
+ \item[unsicher:] z.\,B. \highl{Caesarcode}
+\end{description}
+
+\subsection{Beispiel einer praktischen Kryptoanalyse}
+Bedeuten "`viele"' Schlüssel "`hohe"' Sicherheit? \textit{Ansatz}:
+Anstelle der Verschiebung der Buchstaben (beim Caesarcode) betrachten wir
+eine Permutation der Buchstaben. -- Diese Zuordnung nennt man
+\highl{monoalphabetisch}: Jedem Buchstaben wird ein Zeichen zugeordnung
+\help{stimmt das? ist das die Definition?}.
+
+Die Klartextbuchstaben: a b c d \dots x y z\\
+Permutation (der Schlüssel): V J C E \dots A H D
+
+Wieviele Schlüssel gibt es? $26! = 403\,291\,461\,126\,605\,635\,584\,000\,000$
+
+Trotz dieses großen Schlüsselraums ist es möglich die Verschlüsselung zu
+brechen.
+
+\highl{Häufigkeitsanalyse:}
+\begin{description}
+ \item[1.\,Schritt] Buchstaben zählen:
+  \texttt{C}: 62-mal, \texttt{Z}: 31-mal, \texttt{T}: 29-mal, \texttt{A}:
+  27-mal, \texttt{F}: 22-mal, \texttt{L}: 20-mal, \texttt{J}: 19-mal, \dots
+  \help{Tabelle mit Häufigkeiten der Buchstaben im Deutsch besorgen.}
+
+ \item[2.\,Schritt] Häufige Buchstaben ersetzen: \texttt{C} entspricht
+  \texttt{e}.
+
+  Da die Zeichenfolge \texttt{ZZ} vorkommt, ist eine weiterer Ansatz,
+  dass das \texttt{Z} dem \texttt{n} entspricht
+
+  Aus den Teilen \texttt{CHZ} (\texttt{eHn}) und \texttt{CHZCZ}
+  (\texttt{eHnen}) kann man schließen, dass das \texttt{H} dem \texttt{i}
+  entspricht.
+
+  Auffällig ist die Häufung des Wortes \texttt{CT} (\texttt{eT}). Dies
+  könnte \texttt{er} oder \texttt{es} sein.
+
+  Ebenso fällt das Wort \texttt{LCT} auf. Möglich: \texttt{der} oder
+  \texttt{des}. Da "`der"' häufiger in deutschen Texten vorkommt,
+  verwenden wir \texttt{r} für \texttt{T} und \texttt{d} für \texttt{L}.
+
+ \item[3.\,Schritt] Lücken schließen:
+  \begin{itemize}
+   \item \texttt{iUn} ist sehr wahrscheinlich \texttt{ihn}; \texttt{U}
+    entspricht \texttt{h}.
+
+   \item \texttt{eJ} ist nicht \texttt{er} oder \texttt{ei} (da
+    \texttt{r} und \texttt{i} schon vergeben), also \texttt{es};
+    \texttt{J} entspricht \texttt{s}
+
+   \item \texttt{dAJJ} ist \texttt{dass}; \texttt{A} ist \texttt{a}
+
+   \item \texttt{UAFFe} ist \texttt{haFFe}, also \texttt{hatte};
+    \texttt{F} ist \texttt{t}
+
+   \item Erster Teilsatz: "`es hatte ein Wann einen eseN,"'; Aus dem
+    Kontext folgt: \texttt{W} entspricht \texttt{m} und \texttt{N} ist
+    \texttt{e}.
+
+   \item weiter: "`der sDhOn LauGe Sahre die saeDVe"'; \texttt{D}
+    entspricht \texttt{c}, \texttt{O} ist \texttt{o}, \texttt{G} ist
+    \texttt{g} und \texttt{S} ist \texttt{j} und \texttt{V} ist \texttt{k}.
+  \end{itemize}
+\end{description}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
