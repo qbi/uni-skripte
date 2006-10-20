@@ -7,11 +7,12 @@ BEGIN
     {
         open ("-", "<", $ARGV[1]) or die "couldn't open logfile";
     }
-    our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS);
+    our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS, $FIRST_DATE, $LAST_DATE);
 }
 END
 {
-    print "Skript                   : Anzahl  aus Uni  über Google\n";
+    print "Auswertung vom $FIRST_DATE bis zum $LAST_DATE\n\n".
+          "Skript                   : Anzahl  aus Uni  über Google\n";
     foreach (sort { $PDF_ACCESS{$b} <=> $PDF_ACCESS{$a} } keys %PDF_ACCESS)
     {
         printf "%-25s: %4d  %8d  %11d\n", $_, $PDF_ACCESS{$_},
@@ -31,7 +32,11 @@ unless (/([\d.]*) - - \[([^\]]*)\] "([A-Z]*) ([^ ]*) HTTP\/1\.\d" (\d*) (\d*|-) 
 my ($ip, $date, $method, $url, $ret_code, $size, $referer, $agent) =
     ($1, $2, $3, $4, $5, $6, $7, $8);
 
-next unless ($url =~ /\/~joergs\/skripte\// and $method eq "GET");
+$FIRST_DATE = $date unless ( defined $FIRST_DATE );
+$LAST_DATE = $date;
+
+next unless ($url =~ /\/~joergs\/skripte\// and $method eq "GET" and
+             $ret_code eq "200");
 
 next if ($agent =~ /$BOTS/);
 print "bot line: $_\n" if ($agent =~ /bot/i);
