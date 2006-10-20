@@ -14,4 +14,9 @@ Anmeldung wie oben, aber bei der Adresse <a
 href="mailto:skripte-commit-request@listserv.uni-jena.de">skripte-commit-request@listserv.uni-jena.de</a>.
 </p>
 
+<p>Ein Archiv der Nachrichten, die bisher über die Liste gegangen sind,
+befindet sich hier: <a href="http://lc03.rz.uni-jena.de/pipermail/skripte/">
+<tt>http://lc03.rz.uni-jena.de/pipermail/skripte/</tt></a>
+</p>
+
 <?php include('footer.php'); ?>
