@@ -17,7 +17,7 @@ if (!$id) {
 
 echo "<h2>direkte SVN-Unterstützung im Explorer (geht nicht in der Uni)</h2>
 <ol>
-   <li>Den <a href='http://tortoisesvn.tigris.org/download.html'>SVN-Client</a>
+   <li>Den <a href='http://tortoisesvn.net/download'>SVN-Client</a>
    herunterladen</li>
    <li>Die heruntergeladene Datei ausführen</li>
    <li>In den Ordner \"Eigene Dateien\" gehen und dort die rechte Maustaste
@@ -84,7 +84,7 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
 <h1>wenn der SVN-Client nicht geht (Windowspool)</h1>
 
 <p>Ihr sollte auf alle Fälle eine E-Mail an frz@minet.uni-jena.de schicken mit
-der Bitte den SVN-Client zu installiern oder dies wenigstens zu
+der Bitte den SVN-Client zu installieren oder dies wenigstens zu
 ermöglichen.</p>
 
 <ol><li>Putty von
