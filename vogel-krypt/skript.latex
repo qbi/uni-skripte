@@ -377,7 +377,7 @@ Ein Beispiel zur Kryptographie:
   \begin{center}
     \verb+UZVJVI JRKQ ZJK XVYVZD+
   \end{center}
-  Beim \highl{Cäsarcode} wird jeder Buchstabe des Alphabets für sich
+  Beim \highl{Caesarcode} wird jeder Buchstabe des Alphabets für sich
   durch den Buchstaben, der $x$ Positionen weiter hinten steht.
   $x\in\{1,2,\dotsc,25\} = \mathcal{K}$ ist der Schlüsel dieses
   Kryptosystems -- im obigen Beispiel ist $x=17$. nicht sicher
@@ -496,6 +496,191 @@ brechen.
     \texttt{g} und \texttt{S} ist \texttt{j} und \texttt{V} ist \texttt{k}.
   \end{itemize}
 \end{description}
+
+% 23. Okt. 2006
+
+\section{Klassische symmetrische Verfahren}
+
+symbolisch: Zwei identische (daher symmetrisch) Schlüssel -- einer beim
+Empfänger, einer beim Sender --, die beide eine Schatzkiste öffnen.
+
+2 Unterscheidungsmerkmale:
+\begin{enumerate}
+ \item \highl{Substitution} vs. \highl{Translation}
+  \begin{description}
+   \item[Substitution]
+    \begin{itemize}
+     \item jeder Buchstabe wird verschlüssel durch ein Geheimtextalphabet
+     \item jeder Buchstabe an seinem Platz
+    \end{itemize}
+
+   \item[Translation]
+    \begin{itemize}
+     \item jeder Buchstabe seine Gestalt
+     \item die Buchstaben ändern ihre Position
+    \end{itemize}
+  \end{description}
+
+  heute: Verallgemeinerung durch Kombination beider "`Urformen"'.
+
+ \item \highl{Stromchiffren} vs. \highl{Blockchiffren}
+  \begin{description}
+   \item[Stromchiffren]
+    \begin{itemize}
+     \item jeder Buchstabe wird einzeln für sich verschlüsselt
+
+     \item häufig wird für eine Nachricht $m=m_{1}m_{2}\dotso m_{n}$ und
+      einen Anfangsschlüssel $k$ ein "`Strom von Schlüsseln"'
+      $k_{1},k_{2},\dotsc, k_{n}$ erzeugt.
+    \end{itemize}
+
+   \item[Blockchiffren]
+    \begin{itemize}
+     \item Aufteilung des Klartextes in (längere) Blöcke, dir
+      verschlüsselt werden
+    \end{itemize}
+  \end{description}
+\end{enumerate}
+
+\chapter{Substitionen}
+
+Substitutionen werden unterschieden als:
+\begin{enumerate}
+ \item \highl{monoalphabetisch}: jeder Buchstabe des Klartextalphabets
+  wird stets durch denselben Buchstaben des Geheimtextalphabets ersetzt
+
+ \item \highl{polyalphabetisch} sonst
+\end{enumerate}
+
+\section{Monoalphabetische Substitutionen}
+
+O.\,B.\,d.\,A. ist Klartextalphabet $\Sigma =$ Geheimtextalphabet $\Gamma$.
+Wir legen uns weiter auf das Beispielalphabet $\{a,b,c,\dotsc,x,y,z\}$ fest
+und schreiben es in der Form $X=\{0,1,2,\dotsc, 23,24,25\}$. Dann gilt:
+$\abs{X} = 26$. Für $\abs{X}=n$ denken wir uns $X=\{0,1,2,\dotsc, n-2, n-1\}$.
+
+\subsection{Verschlüsselungsverfahren}
+
+Eine \highl{Verschlüssung} in diesem Rahmen ist eine Permution $\pi\colon X
+\mapsto> X$ (Schlüssel). Aus einer Nachricht $m=m_{1}m_{2}\dotso m_{k}$ wird
+der Geheimtext $c=\pi(m_{1})\pi(m_{2})\dotso \pi(m_{k})$. Es gibt hier $n!$
+verschiedene Schlüssel, aber wir wissen bereits, dass dieses Verfahren
+krypographisch auf Grund der \highl{Häufigkeitsverteilung} auch bei
+\highl{Ciphertext-Only-Attakten} unsicher ist.
+
+\subsection{Verschiebechiffre (Caesar)}
+
+\begin{description}
+ \item[Algorithmus:] $x\in X, x \mapsto x+1 \pmod{n}$
+ \item[Schlüssel:] $i\in\{0,1,2,\dotsc,25\} = X$
+ \item[Nachricht:] $m=m_{1}m_{2}\dotso m_{k}$
+ \item[Geheimtext:] $c= (m_{1}+i \pmod{n}) (m_{2}+i \pmod{n}) \dotso (m_{k}+i
+  \pmod{n}) = c_{1} c_{2} \dotso c_{k}$
+ \item[Entschlüsselung:] $y\in X\colon y \mapsto y-1 \pmod{n}$ und es gilt: $m=
+  (c_{1}-i \pmod{n}) (c_{2}-i \pmod{n}) \dotso (c_{k}-i \pmod{n}) = m_{1}
+  m_{2}\dotso m_{k}$
+\end{description}
+
+Nachteile des Ganzen:
+\begin{itemize}
+ \item wenige ($n$) Schlüssel
+ \item Verschlüsselung ist geknackt, wenn \textit{ein} Buchstabe übersetzt ist
+\end{itemize}
+
+Dies gibt Anlass zu folgender Verallgemeinerung.
+
+\subsection{Tauschchiffren (affine Chiffren)}
+\begin{description}
+ \item[Algorithmus] $x\in X\colon x\mapsto a\cdot x+b \pmod{n}$
+ \item[Schlüssel:] $(a,b), a, b\in X$ mit der Forderung, dass die Zuordnung
+  bijektiv ist!
+
+  Dazu muss gelten: $a$ und $n$ sind teilerfremd!
+
+  (Beispiel: $n=26, a=13, b=0$ $E(2) = 13\cdot 2+0 \pmod{26} = 0 = 13 \cdot 0
+  +0 \pmod{26} = E(0)$)
+\end{description}
+
+Es gibt also $\phi(n)$ Möglichkeiten $a$ zu wählen und insgesamt $\phi(n)\cdot
+n$ Schlüssel $(a,b)$.
+
+\texttt{text} = $19~04~23~19 \mapsto 04~07~24~04$ = \texttt{EHYE}, mit
+$x\mapsto 5x+13$
+
+Nachteile:
+\begin{itemize}
+ \item Verschlüsselung ist gekackt, wenn \textit{zwei} Buchstaben übersetzt
+  sind.
+ \item Häufigkeitsverteilung der natürlichen Sprache.
+\end{itemize}
+
+\section{Homophone Substitutionen}
+
+\highl{Homophone Substitutionen} versuchen die strukturelle Schwäche, die
+durch die Häufigkeitsverteilung der Buchstaben bei natürlichen Sprachen
+gegeben ist, der monoalphabetischen Verschlüsselung aufzuheben.
+
+Dafür führt man ein \textit{neues} und \textit{größeres} Geheimtextalphabet
+$Y=\Gamma$ und eine Abbildung $f\colon X\mapsto \mathfrak{P}(Y)$ \help{sollte
+das nicht $\mathfrak{P}(X)$ sein?} ein, wobei verschiedene Buchstaben
+disjunkten Teilmengen entsprechen. Für eine Nachricht $m=m_{1}m_{2}\dotso
+m_{k}$ ist der Geheimtext $c=c_{1}c_{2}\dotso c_{k}$, wobei $c_{i}$ zufällig
+aus $f(m_{i})$ gewäht wird. (Italien um 1400).
+
+Der Vorteil einer solchen homophonen Substitution besteht darin, dass die
+Häufigkeitsverteilung der Klartextbuchstaben wird zerstört, unter folgender
+Randbedingung: für $x\in X$ sei $p(x)$ die relative Häufigkeit mit der der
+Buchstabe $x$ in Texten auftritt. Dann wird $f(x)$ so gewählt, dass
+$\frac{p(x)}{\abs{f(x)}} \approx konst.$ ist!
+
+Der Effekt des Ganzen ist: Im Geheimtext treten alle Buchstaben aus
+$\bigcup_{x\in X} f(x)$ etwa gleichwahrscheinlich auf!
+
+\begin{bemerk}
+  Es gibt ein homophones Verschlüsselungsverfahren mit folgender Eigenschaft:
+  Für jeden Geheimtext~$c$ gibt es mindestens zwei verschiedene Schlüssel, die
+  $c$ in zwei verschiedene sinnvolle Klartexte überführen.
+\end{bemerk}
+
+Wie funktioniert dies? Das Klartextalphabet sei $X$ (mit $\abs{X}=n$). Dann
+ist das Geheimtextalphabet $Y = \{1,2,\dotsc,n^{2}\}$. Der Schlüsselraum wird
+beschrieben durch eine $n\times n$-Matrix. Die Zeilen und Spalten werden mit
+den Buchstaben aus $X$ indiziert.
+\begin{table}
+  \centering
+  \begin{tabular}{c|*{4}{c}}
+     & $x_{1}$ & $x_{2}$ & \dots & $x_{i}$ & \dots & $x_{n}$\\
+    \hline
+    $x_{1}$ &\\
+    $x_{2}$ &\\
+    \dots &\\
+    $x_{j}$ &\\
+    \dots &\\
+    $x_{n}$ &
+  \end{tabular}
+  \caption{Das ist eine leere Tabelle}
+\end{table}
+
+Die Eintragungen sind die (zufälligen angeordneten) Buchstaben von $Y$. Wir
+definieren zwei Abbildungen:
+\begin{align*}
+  f_{1}(x_{j}) = \{ y\in Y\colon y \text{~steht in der $j$-ten Zeile} \}\\
+  f_{2}(x_{i}) = \{ y\in Y\colon y \text{~steht in der $i$-ten Spalte} \}
+\end{align*}
+
+Es sei $m=m_{1}m_{2}\dotso m_{k}$ der zu verschlüsselnde Klartext. Suchen
+einen weiteren Klartext $l'=l_{1}'l_{2}'\dotso l_{k}'$ gleicher Länge.
+
+Verschlüsselung: $m_{i}\mapsto c_{i}\in f_{1}(m_{i}) \cap f_{2}(l_{i})$.
+$c_{i}$ ist der Eintrag in der Matrix, der im Schnittpunkt von $m_{i}=x_{r}$
+und $l_{i}=x_{s}$ ($r$-ter Zeile und $s$-ter Spalte).
+
+Ein \highl{Brute-force-Angriff} bleibt prinzipell wirkungslos, weil jeder
+Geheimtext in zwei verschiedene Klartexte übersetzt werden kann!
+
+Es bleibt ein Nachteil: für alle $x\in X$ ist $\abs{f(x)}$ gleich groß. Damit
+ist $\frac{p(x)}{\abs{f(x)}}$ verletzt. Aber die Idee ist, dass der Angreifer
+nicht sagen kann, welcher der beiden konkorierenden Klartexte der richtige ist.
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
