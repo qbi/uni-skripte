@@ -20,7 +20,7 @@
                           % soll -- l2tabu-Checker in LaTeX
 \usepackage{ifthen}
 \usepackage{makeidx}
-% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage[final]{graphicx}  % Für Grafiken
 \usepackage{color}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
 
@@ -55,7 +55,7 @@
                          % dafür muss in SVN noch das Flag svn:keywords
                          % auf "LastChangedRevision LastChangedDate"
                          % gesetzt werden
-% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+\usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
                          % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
 \usepackage{ellipsis}    % Korrektur für \dots
 \usepackage{fixltx2e}
@@ -167,10 +167,39 @@
 		 \begin{description}}%
 		 {\end{description}}
 
+% rubber: depend fmc.mp
+\iffalse\includegraphics{fmc.1}\fi
+% rubber: clean fmc.1 fmc.2 fmc.3 fmc.4 fmc.5 fmc.6 fmc.7 fmc.8 fmc.9 fmc.10
+% rubber: clean fmc.11 fmc.12 fmc.13 fmc.14 fmc.15 fmc.16 fmc.17 fmc.18 fmc.19
+% rubber: clean fmc.20 fmc.21 fmc.22 fmc.23 fmc.24 fmc.25 fmc.26 fmc.log
+\newcommand*{\fmc}[1]{\startfmc#1\Endfmc}
+\newcounter{Zeichen}
+\newcommand*{\Endfmc}{}
+\makeatletter
+\newcommand*{\startfmc}[1]{%
+  \ifx#1\Endfmc%
+  \else%
+    \setcounter{Zeichen}{\the\lccode`#1}%
+    \ifthenelse{\theZeichen < 97 \OR \theZeichen>122}{#1}%
+               { \addtocounter{Zeichen}{-96}%
+                 \includegraphics{fmc.\theZeichen}%
+               }%
+    \expandafter\startfmc%
+  \fi%
+}
+\makeatother
+
 \makeindex
 
 \SVN $LastChangedRevision$
 \SVN $LastChangedDate$
+
+\newcounter{cnt}
+\setcounter{cnt}{1}
+\whiledo{\thecnt < 27}{%
+  \DeclareGraphicsRule{.\thecnt}{\ifpdf mps\else eps\fi}{*}{}%
+  \stepcounter{cnt}%
+}
 
 \begin{document}
 
@@ -361,31 +390,25 @@ Kryptoanalyse -- Die Kunst des Codebrechens.
 
 Ein Beispiel zur Kryptographie:
 \begin{bsp}[praktische Kryptographie]
-  \begin{center}
-    dieser satz ist geheim\\
-    % abcdcefkghbdghbihbj
-    \help{Die Zeichen des Freimaurercodes einfügen; am Besten mit
-      MetaPost zeichnen}
-  \end{center}
   Der
   \href{http://de.wikipedia.org/wiki/Freimaurer-Alphabet}{\highl{Freimaurercode}}
-  arbeitet ohne Schlüssel; Es wird jeder Buchstabe des Alphabets durch
+  (zweite Zeile) arbeitet ohne Schlüssel; Es wird jeder Buchstabe des Alphabets durch
   ein Geheimzeichen ersetzt. Damit ist der Freimaurercode kein
   Kryptosystem, da das Kerkhoff'sche Pinzip verlettzt ist: Die Sicherheit
   des Kryptosystems hängt von der Geheimhaltung des Algorithmus' ab.
-
-  \begin{center}
-    \verb+UZVJVI JRKQ ZJK XVYVZD+
+  \begin{center}\ttfamily\large
+    dieser satz ist geheim\\
+    \fmc{dieser~satz~ist~geheim}\\
+    UZVJVI JRKQ ZJK XVYVZD\\
+    TFZZGR EDFY ABX IFFHXY
   \end{center}
-  Beim \highl{Caesarcode} wird jeder Buchstabe des Alphabets für sich
+
+  Beim \highl{Caesarcode} (dritte Zeile) wird jeder Buchstabe des Alphabets für sich
   durch den Buchstaben, der $x$ Positionen weiter hinten steht.
   $x\in\{1,2,\dotsc,25\} = \mathcal{K}$ ist der Schlüsel dieses
   Kryptosystems -- im obigen Beispiel ist $x=17$. nicht sicher
 
-  \begin{center}
-    \verb+TFZZGR EDFY ABX IFFHXY+
-  \end{center}
-  \highl{One-Time-Pad} Algorithmus: wähle (unabhängig und
+  \highl{One-Time-Pad} (vierte Zeile) Algorithmus: wähle (unabhängig und
   gleichverteilt) für jeden einzelnen Buchstaben eine Position
   $x=\{0,1,2,\dotsc,25\}$, um die dieser Buchstabe verschoben wird. Der
   Schlüssel ist ein $n$-Tupel $c=(x_{1},x_{2},\dotsc, x_{n})$ für eine
@@ -648,7 +671,7 @@ beschrieben durch eine $n\times n$-Matrix. Die Zeilen und Spalten werden mit
 den Buchstaben aus $X$ indiziert.
 \begin{table}
   \centering
-  \begin{tabular}{c|*{4}{c}}
+  \begin{tabular}{c|*{6}{c}}
      & $x_{1}$ & $x_{2}$ & \dots & $x_{i}$ & \dots & $x_{n}$\\
     \hline
     $x_{1}$ &\\
