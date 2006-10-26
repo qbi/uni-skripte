@@ -1,3 +1,8 @@
+% ToDo:
+%   + Es sollte Befehle für Klartext und Chiffretext geben, damit die Texte im
+%     gesamten Dokument gleich aussehen. z.\,B. \klartext=\texttt\uppercase
+%     und \chiffretext=\texttt\lowercase; \MakeUppercase \MakeLowercase
+
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
 % rubber: clean $base.thm
@@ -477,7 +482,8 @@ brechen.
  \item[1.\,Schritt] Buchstaben zählen:
   \texttt{C}: 62-mal, \texttt{Z}: 31-mal, \texttt{T}: 29-mal, \texttt{A}:
   27-mal, \texttt{F}: 22-mal, \texttt{L}: 20-mal, \texttt{J}: 19-mal, \dots
-  \help{Tabelle mit Häufigkeiten der Buchstaben im Deutsch besorgen.}
+  \help{Tabelle mit Häufigkeiten der Buchstaben im Deutsch besorgen.
+    Wikipedia}
 
  \item[2.\,Schritt] Häufige Buchstaben ersetzen: \texttt{C} entspricht
   \texttt{e}.
@@ -579,8 +585,8 @@ Substitutionen werden unterschieden als:
 
 O.\,B.\,d.\,A. ist Klartextalphabet $\Sigma =$ Geheimtextalphabet $\Gamma$.
 Wir legen uns weiter auf das Beispielalphabet $\{a,b,c,\dotsc,x,y,z\}$ fest
-und schreiben es in der Form $X=\{0,1,2,\dotsc, 23,24,25\}$. Dann gilt:
-$\abs{X} = 26$. Für $\abs{X}=n$ denken wir uns $X=\{0,1,2,\dotsc, n-2, n-1\}$.
+und schreiben es in der Form $X=\{0,1,2,\dotsc,\linebreak[4] 23,24,25\}$. Dann gilt:
+$\abs{X} = 26$. Für $\abs{X}=n$ denken wir uns $X=\{0,1,2,\dotsc, n-2,\linebreak[4] n-1\}$.
 
 \subsection{Verschlüsselungsverfahren}
 
@@ -644,8 +650,7 @@ durch die Häufigkeitsverteilung der Buchstaben bei natürlichen Sprachen
 gegeben ist, der monoalphabetischen Verschlüsselung aufzuheben.
 
 Dafür führt man ein \textit{neues} und \textit{größeres} Geheimtextalphabet
-$Y=\Gamma$ und eine Abbildung $f\colon X\mapsto \mathfrak{P}(Y)$ \help{sollte
-das nicht $\mathfrak{P}(X)$ sein?} ein, wobei verschiedene Buchstaben
+$Y=\Gamma$ und eine Abbildung $f\colon X\mapsto \mathfrak{P}(X)$ ein, wobei verschiedene Buchstaben
 disjunkten Teilmengen entsprechen. Für eine Nachricht $m=m_{1}m_{2}\dotso
 m_{k}$ ist der Geheimtext $c=c_{1}c_{2}\dotso c_{k}$, wobei $c_{i}$ zufällig
 aus $f(m_{i})$ gewäht wird. (Italien um 1400).
@@ -705,6 +710,124 @@ Es bleibt ein Nachteil: für alle $x\in X$ ist $\abs{f(x)}$ gleich groß. Damit
 ist $\frac{p(x)}{\abs{f(x)}}$ verletzt. Aber die Idee ist, dass der Angreifer
 nicht sagen kann, welcher der beiden konkorierenden Klartexte der richtige ist.
 
+% 25. 10. 2006
+
+\begin{bsp}
+  Geheimtextalphabet $Y=\{00, 01, \dotsc, 10, 11,\dotsc,99\}$
+  ($\abs{Y}=100$). Wähle eine Zuordnung $f\colon X\rightarrow
+  \mathfrak{P}(Y)$ wo gilt: $\abs{f(Buchstaben)}\approx p(Buchstaben)\cdot
+  100$
+
+  Tabelle mit Häufigkeiten der Buchstaben. z.\,B. tritt \texttt{c} mit
+  der Wahrscheinlichkeit 3,06\% auf. Also wählen wir zufällig für
+  \texttt{c} drei Zeichen aus $Y$, z.\,B. $07, 23, 42$.
+\end{bsp}
+
+\subsection{Ansatz zur Kryptoanalyse einer homophonen Verschlüsselung}
+
+Idee: Wir suchen weitere Unregelmäßigkeiten -- neben der Häufigkeiten der
+Buchstaben -- in der deutschen Sprache. Wir betrachten sogenannte
+\highl{Digramme} (Zweierfolgen von Buchstaben) in Texten. Es gibt
+insgesamt $2^{26}$ mögliche Paare. Beispiele für Digramme sind "`en"' und
+"`er"' mit einer Wahrscheinlichkeit von ca.~4\%, "`ch"' mit ca.~2,75\% und
+"`de"', "`te"', "`nd"', "`ei"', "`ie"', "`es"', "`in"' mit ca.~2\%.
+
+Wärend die Zeichen \glq{}e\grq{} und \glq{}n\grq{} häufig sind und "`en"'
+häufig, weicht das Digramm "`ch"' davon ab, denn \glq{}c\grq{} und
+\glq{}h\grq{} sind seltene Buchstaben. Das ist eine Unregelmäßigkeit.
+
+Ausgangspunkt: Verschlüsselung von \glq{}c\grq{}. Es $\abs{f(c)} =k$
+(z.\,B. $k=3$) Dann müssen (etwa) folgende Relationen erfüllt sein:
+$\abs{f(\mathtt{e})}\approx 6k, \abs{f(\mathtt{n})} \approx 3k,
+\abs{f(\mathrm{i})} \approx 2,5k, \abs{f(\mathrm{r})} \approx 2,5k$
+
+"`en"' wird auf $6k\cdot 3k = 18k^{2}$ verschiedene Weisen verschlüsselt.
+"`ch"' wird auf $k\cdot 1,5k = 1,5k^{2}$ verschiedene Weisen verschlüsselt.
+
+Ein Digramm, dass "`en"' verschlüsselt, tritt mit einer Häufigkeit von
+$\frac{4\%}{18}\approx 0,25\%$ auf. Für "`ch"' ist die Häufigkeit
+$\frac{2,5\%}{1,5\%}\approx 1,6\%$.
+
+Dies ist ein Ansatz zunächst die Verschlüsselung für \glq{}c\grq{} und
+\glq{}h\grq{} zu knacken. Vorraussetzung zum Knacken ist ein wirklich
+langer Geheimtext!
+
+\section{Polyalphabetische Verschlüssung}
+
+Polyalphabetische Verschlüssung hat ebenfalls das Ziel, die Häufigkeit
+der Buchstaben zu verwischen. Prominentes Beispiel:
+\highl{Vigenère-Chiffre} (Blaise Vigenère, 16.\,Jh., franz. Diplomat)
+
+Idee: Jeder Buchstabe wird mit einer anderen Caesar-Chiffre
+verschlüsselt, aber nicht zufällig, sondern strukturiert. Mithilfe eines
+Schlüsselworts.
+
+\begin{bsp}
+  Als Schlüsselwort nehmen wir "`ALLGAEU"' und als Klartext "`emmentaler"'.
+  \todo{Viginere-Quadrat einfügen}
+
+  ALLGAEUALLGAEU\\
+  emmentaler\\
+  EXXKNXULPC
+
+  Verschlüsselung ist einfach.
+\end{bsp}
+
+\begin{bemerk}
+  Wir sehen folgendes in dem Beispiel: "`e"' wird zu "`E"', "`K"' und
+  "`P"'. Umgekehrt entsteht "`X"' aus "`m"' und "`t"'.
+
+  Das ist eine neue Situation.
+\end{bemerk}
+
+\subsection{Formale Beschreibung}
+
+zunächst allgemein: ein Klartextalphabet $X$ mit $\abs{X}=n$ (z.\,B.
+$n=26$) und $d$ Geheimtextalphabete $Y_{0}, Y_{1}, \dotsc, Y_{d-1}$. Dazu
+$d$ bijektive Abbildungen $f_{i}\colon X \mapsto> Y_{i}$
+\todo{Symbol für $\mapsto>$ finden, war auch schon mal weiter oben.}
+($i=0,\dotsc,d-1$) und eine surjektive Abbildung $h\colon\N\mapsto
+\{0,1,\dotsc,d-1\}$ ($h(x)=x\pmod{d}$).
+
+Klartext: $m=m_{1}m_{2}\dotso m_{t}$ ($m_{j}\in X$)\\
+Geheimtext: $c= f_{h(1)}(m_{1}) f_{h(2)}(m_{2}) \dotso f_{h(t)}(m_{t}) =
+c_{1} c_{2}\dotso c_{t}$\\
+Schlüssel: ist bestimmt durch $h$ und $f_{0}, f_{1}, \dotsc, f_{d-1}$. Es
+wird der "`Schlüsselstrom"' $f_{h(1)}, f_{h(2)}, \dotsc, f_{h(t)}$
+erzeugt. Daher \highl{Stromchiffre}.
+
+jetzt für Vigenère: $X=\{0,1,\dotsc,n-1\}$ und $n=26$
+$Y_{0}=Y_{1}=\dotsb= Y_{d} = X$. Dabei ist $d$ die Länge des
+Schlüsselworts. $h(x) = x\pmod{d}$ (für jede Position $x\in\N$).
+$f_{i}(a) = a+ j_{i}\pmod{n}$ (für $a\in X$) für festes $j_{i}\in X$.
+Der Schlüssel ist dabei $j_{0},j_{1},j_{2},\dotsc$.
+
+Effekt: Unterschiedliche Buchstabenhäufigkeiten werden ausgeglichen!
+
+Und weil's so schön war, noch ein
+\begin{bsp}
+  Statt dem Alphabet $\{a, b, c, \dotsc, x,y,z\}$ verwenden wir
+  $X=\{0,1,\dotsc,25\}$. Als Schlüsselwort nehmen wir "`KRYPTO"' ($d=6$
+  mit sechs verschidenen Buchstaben) als $10,17,24,15,19,14 =
+  j_{0},j_{1}, j_{2}, j_{3}, j_{4}, j_{5}$. Klartext:
+  "`kommemorgennicht"' = $10,14,12,12,04,12,14,17,06,04,13,13,08,02,07,19$
+
+  Wir machen uns eine Tabelle.
+  \begin{tabular}{l*{6}{|c}|}
+    Schlüsselwort & 10 & 17 & 24 & 15 & 19 & 14\\
+    \hline
+    1.\,Zeile     & 10 & 14 & 12 & 12 & 04 & 12\\
+                  & 20 & 05 & 10 & 01 & 23 & 00\\
+    \hline\hline
+    3.\, Zeile    & 14 & 17 & 06 & 04 & 13 & 13\\
+                  & 24 & 08 & 04 & 19 & 06 & 01\\
+    \hline\hline
+    5.\,Zeile     & 08 & 02 & 07 & 19\\
+                  & 18 & 19 & 05 & 08
+  \end{tabular}
+
+  Geheimtext: UFKBXAYIETGBSTFI
+\end{bsp}
 \clearpage
 \pdfbookmark[0]{Index}{index}
 \printindex

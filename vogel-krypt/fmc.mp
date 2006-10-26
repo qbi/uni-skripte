@@ -64,9 +64,9 @@ beginfig(9); quadrat(false,  true, false, false,  true); endfig;
 
 %% J--M
 beginfig(10); dreieck(false,   "oben"); endfig;
-beginfig(11); dreieck(false, "rechts"); endfig;
-beginfig(12); dreieck(false,  "unten"); endfig;
-beginfig(13); dreieck(false,  "links"); endfig;
+beginfig(11); dreieck(false, "links"); endfig;
+beginfig(12); dreieck(false,  "rechts"); endfig;
+beginfig(13); dreieck(false,  "unten"); endfig;
 
 %% N--V
 % obere Zeile von links nach rechts
@@ -86,8 +86,8 @@ beginfig(22); quadrat( true,  true, false, false,  true); endfig;
 
 %% W--Z
 beginfig(23); dreieck( true,   "oben"); endfig;
-beginfig(24); dreieck( true, "rechts"); endfig;
-beginfig(25); dreieck( true,  "unten"); endfig;
-beginfig(26); dreieck( true,  "links"); endfig;
+beginfig(24); dreieck( true, "links"); endfig;
+beginfig(25); dreieck( true,  "rechts"); endfig;
+beginfig(26); dreieck( true,  "unten"); endfig;
 
 end.
