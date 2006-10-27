@@ -186,11 +186,32 @@
   \else%
     \setcounter{Zeichen}{\the\lccode`#1}%
     \ifthenelse{\theZeichen < 97 \OR \theZeichen>122}{#1}%
-               { \addtocounter{Zeichen}{-96}%
+               {\addtocounter{Zeichen}{-96}%
                  \includegraphics{fmc.\theZeichen}%
                }%
     \expandafter\startfmc%
   \fi%
+}
+\makeatother
+
+% Dr. Vogel gebraucht gern das Zeichen |->> für bijektive Abbildungen.
+% <news:ehom5s$bk9$1@news.BelWue.DE> <news:ehqi2q$bb4$02$1@news.t-online.com>
+\makeatletter
+\newcommand*{\mapstoto}{%
+  \mathrel{%
+    \ifpdf
+      \pdfliteral direct{%
+        /Span<</ActualText<FEFF2905>>>BDC%
+      }%
+    \fi
+    \mathrel{\mapstochar\twoheadrightarrow}%
+    \ifpdf
+      \pdfliteral direct{EMC}%
+    \fi
+  }%
+}
+\def\@palette@rlap#1#2{%
+  \rlap{$#1#2$}%
 }
 \makeatother
 
@@ -482,8 +503,28 @@ brechen.
  \item[1.\,Schritt] Buchstaben zählen:
   \texttt{C}: 62-mal, \texttt{Z}: 31-mal, \texttt{T}: 29-mal, \texttt{A}:
   27-mal, \texttt{F}: 22-mal, \texttt{L}: 20-mal, \texttt{J}: 19-mal, \dots
-  \help{Tabelle mit Häufigkeiten der Buchstaben im Deutsch besorgen.
-    Wikipedia}
+
+  \begin{table}
+    \centering
+    \begin{tabular}{cc*{3}{||cc}}
+      Bst. & Wsk. & Bst. & Wsk. & Bst. & Wsk. & Bst. & Wsk.\\
+      \hline
+      E & 17,40\,\% & D & 5,08\,\% & O & 2,51\,\% & V & 0,67\,\%\\
+      N & 9,78\,\%  & H & 4,76\,\% & B & 1,89\,\% & ß & 0,31\,\%\\
+      I & 7,55\,\%  & U & 4,35\,\% & W & 1,89\,\% & J & 0,27\,\%\\
+      S & 7,27\,\%  & L & 3,44\,\% & F & 1,66\,\% & Y & 0,04\,\%\\
+      R & 7,00\,\%  & C & 3,06\,\% & K & 1,21\,\% & X & 0,03\,\%\\
+      A & 6,51\,\%  & G & 3,01\,\% & Z & 1,13\,\% & Q & 0,02\,\%\\
+      T & 6,15\,\%  & M & 2,53\,\% & P & 0,79\,\% & \\
+    \end{tabular}
+    \parbox{12cm}{
+      \caption{Häufigkeitsverteilung der Buchstaben der deutschen
+        Sprache. Die Buchstaben ä, ö, ü wurden wie ae, oe, ue gezählt.
+        \textit{Quelle:
+        \href{http://de.wikipedia.org/wiki/Buchstabenh\%C3\%A4ufigkeit}%
+             {Wikipedia}}}}
+    \label{tab:buchswsk}
+  \end{table}
 
  \item[2.\,Schritt] Häufige Buchstaben ersetzen: \texttt{C} entspricht
   \texttt{e}.
@@ -591,7 +632,7 @@ $\abs{X} = 26$. Für $\abs{X}=n$ denken wir uns $X=\{0,1,2,\dotsc, n-2,\linebreak
 \subsection{Verschlüsselungsverfahren}
 
 Eine \highl{Verschlüssung} in diesem Rahmen ist eine Permution $\pi\colon X
-\mapsto> X$ (Schlüssel). Aus einer Nachricht $m=m_{1}m_{2}\dotso m_{k}$ wird
+\mapstoto X$ (Schlüssel). Aus einer Nachricht $m=m_{1}m_{2}\dotso m_{k}$ wird
 der Geheimtext $c=\pi(m_{1})\pi(m_{2})\dotso \pi(m_{k})$. Es gibt hier $n!$
 verschiedene Schlüssel, aber wir wissen bereits, dass dieses Verfahren
 krypographisch auf Grund der \highl{Häufigkeitsverteilung} auch bei
@@ -645,24 +686,41 @@ Nachteile:
 
 \section{Homophone Substitutionen}
 
-\highl{Homophone Substitutionen} versuchen die strukturelle Schwäche, die
-durch die Häufigkeitsverteilung der Buchstaben bei natürlichen Sprachen
-gegeben ist, der monoalphabetischen Verschlüsselung aufzuheben.
+\highl{Homophone Substitutionen} versuchen die strukturelle Schwäche der
+monoalphabetischen Verschlüsselung, die durch die Häufigkeitsverteilung
+der Buchstaben bei natürlichen Sprachen gegeben ist, aufzuheben.
 
-Dafür führt man ein \textit{neues} und \textit{größeres} Geheimtextalphabet
-$Y=\Gamma$ und eine Abbildung $f\colon X\mapsto \mathfrak{P}(X)$ ein, wobei verschiedene Buchstaben
-disjunkten Teilmengen entsprechen. Für eine Nachricht $m=m_{1}m_{2}\dotso
-m_{k}$ ist der Geheimtext $c=c_{1}c_{2}\dotso c_{k}$, wobei $c_{i}$ zufällig
-aus $f(m_{i})$ gewäht wird. (Italien um 1400).
+Dazu führt man ein \textit{neues} und \textit{größeres} Geheimtextalphabet $Y$
+und eine Abbildung $f\colon X\mapsto \mathfrak{P}(Y)$ ein, wobei verschiedene
+Buchstaben disjunkten Teilmengen entsprechen. Für eine Nachricht
+$m=m_{1}m_{2}\dotso m_{k}$ ist der Geheimtext $c=c_{1}c_{2}\dotso c_{k}$,
+wobei $c_{i}$ zufällig aus $f(m_{i})$ gewäht wird. (Italien um 1400).
+
+\begin{bsp}
+  Für das Klartextalphabet $X=\{a,b,c\}$, wobei die Buchstaben mit den
+  Wahrscheinlichkeiten 0,5\,\%, 0,35\,\% und 0,15\,\% vorkommen, verwenden wir das
+  Geheimalphabet $Y=\{0,1,\dotsc,7\}$. Dazu definieren wir die Abbildung $f$
+  wie folgt
+  \begin{gather*}
+    f(x) =
+       \begin{cases}
+         \{0, 3, 4, 7\} &\colon x= a\\
+         \{1, 5, 6\} &\colon x=b\\
+         \{2\} &\colon x=c
+       \end{cases}
+  \end{gather*}
+
+  Der Buchstabe $b$ wird also durch die drei Zeichen 1, 5 und 6 codiert.
+\end{bsp}
 
 Der Vorteil einer solchen homophonen Substitution besteht darin, dass die
-Häufigkeitsverteilung der Klartextbuchstaben wird zerstört, unter folgender
-Randbedingung: für $x\in X$ sei $p(x)$ die relative Häufigkeit mit der der
-Buchstabe $x$ in Texten auftritt. Dann wird $f(x)$ so gewählt, dass
-$\frac{p(x)}{\abs{f(x)}} \approx konst.$ ist!
+Häufigkeitsverteilung der Klartextbuchstaben zerstört wird, wenn für alle
+$x\in X$, wobei $p(x)$ die relative Häufigkeit ist, mit der der Buchstabe $x$
+in Texten auftritt, $f(x)$ so gewählt wird, dass $\frac{p(x)}{\abs{f(x)}}$ für
+alle $x$ annähernd gleich ist!
 
-Der Effekt des Ganzen ist: Im Geheimtext treten alle Buchstaben aus
-$\bigcup_{x\in X} f(x)$ etwa gleichwahrscheinlich auf!
+Der Effekt des Ganzen ist, dass im Geheimtext alle Buchstaben des
+Geheimtextalphabets~$Y$ etwa gleichwahrscheinlich auftreten!
 
 \begin{bemerk}
   Es gibt ein homophones Verschlüsselungsverfahren mit folgender Eigenschaft:
@@ -670,33 +728,36 @@ $\bigcup_{x\in X} f(x)$ etwa gleichwahrscheinlich auf!
   $c$ in zwei verschiedene sinnvolle Klartexte überführen.
 \end{bemerk}
 
-Wie funktioniert dies? Das Klartextalphabet sei $X$ (mit $\abs{X}=n$). Dann
-ist das Geheimtextalphabet $Y = \{1,2,\dotsc,n^{2}\}$. Der Schlüsselraum wird
-beschrieben durch eine $n\times n$-Matrix. Die Zeilen und Spalten werden mit
-den Buchstaben aus $X$ indiziert.
 \begin{table}
   \centering
   \begin{tabular}{c|*{6}{c}}
      & $x_{1}$ & $x_{2}$ & \dots & $x_{i}$ & \dots & $x_{n}$\\
     \hline
-    $x_{1}$ &\\
-    $x_{2}$ &\\
-    \dots &\\
+    $x_{1}$ & $y_{\frac{n^{2}}{9}}$ & $y_{\frac{7n^{2}}{8}}$ &
+       \dots & $y_{\frac{n^{2}}{4}}$ & \dots & $y_{\frac{n^{2}}{2}}$\\
+    $x_{2}$ & $y_{n^{2}}$ & $\ddots$\\
+    \vdots &\\
     $x_{j}$ &\\
-    \dots &\\
-    $x_{n}$ &
+    \vdots & & & & & $\ddots$ & \vdots\\
+    $x_{n}$ & & & & & \dots & $y_{\frac{n^{2}}{12}}$
   \end{tabular}
-  \caption{Das ist eine leere Tabelle}
+  \caption{Zuordnung von $n$ Zeichen des Klartextalph. auf $n^{2}$
+    Zeichen des Geheimalph.}
+  \label{tab:1}
 \end{table}
 
-Die Eintragungen sind die (zufälligen angeordneten) Buchstaben von $Y$. Wir
-definieren zwei Abbildungen:
+Wie funktioniert dies? Das Klartextalphabet sei $X$ (mit $\abs{X}=n$). Dann
+ist das Geheimtextalphabet $Y = \{1,2,\dotsc,n^{2}\}$. Der Schlüsselraum wird
+beschrieben durch eine $n\times n$-Matrix. Die Zeilen und Spalten werden mit
+den Buchstaben aus $X$ indiziert und die Eintragungen sind die (zufällig
+angeordneten) Buchstaben von $Y$. Siehe \autoref{tab:1}. Wir definieren zwei
+Abbildungen:
 \begin{align*}
-  f_{1}(x_{j}) = \{ y\in Y\colon y \text{~steht in der $j$-ten Zeile} \}\\
-  f_{2}(x_{i}) = \{ y\in Y\colon y \text{~steht in der $i$-ten Spalte} \}
+  f_{1}(x_{j}) &= \{ y\in Y\colon y \text{~steht in der $j$-ten Zeile} \}\\
+  f_{2}(x_{i}) &= \{ y\in Y\colon y \text{~steht in der $i$-ten Spalte} \}
 \end{align*}
 
-Es sei $m=m_{1}m_{2}\dotso m_{k}$ der zu verschlüsselnde Klartext. Suchen
+Es sei $m=m_{1}m_{2}\dotso m_{k}$ der zu verschlüsselnde Klartext und wir suchen
 einen weiteren Klartext $l'=l_{1}'l_{2}'\dotso l_{k}'$ gleicher Länge.
 
 Verschlüsselung: $m_{i}\mapsto c_{i}\in f_{1}(m_{i}) \cap f_{2}(l_{i})$.
@@ -719,38 +780,44 @@ nicht sagen kann, welcher der beiden konkorierenden Klartexte der richtige ist.
   100$
 
   Tabelle mit Häufigkeiten der Buchstaben. z.\,B. tritt \texttt{c} mit
-  der Wahrscheinlichkeit 3,06\% auf. Also wählen wir zufällig für
+  der Wahrscheinlichkeit 3,06\,\% auf. Also wählen wir zufällig für
   \texttt{c} drei Zeichen aus $Y$, z.\,B. $07, 23, 42$.
 \end{bsp}
 
 \subsection{Ansatz zur Kryptoanalyse einer homophonen Verschlüsselung}
 
-Idee: Wir suchen weitere Unregelmäßigkeiten -- neben der Häufigkeiten der
-Buchstaben -- in der deutschen Sprache. Wir betrachten sogenannte
-\highl{Digramme} (Zweierfolgen von Buchstaben) in Texten. Es gibt
-insgesamt $2^{26}$ mögliche Paare. Beispiele für Digramme sind "`en"' und
-"`er"' mit einer Wahrscheinlichkeit von ca.~4\%, "`ch"' mit ca.~2,75\% und
-"`de"', "`te"', "`nd"', "`ei"', "`ie"', "`es"', "`in"' mit ca.~2\%.
+Eine weitere Idee für einen Angriff ist andere Unregelmäßigkeiten --~neben der
+Häufigkeitsverteileung der Buchstaben~-- in der deutschen Sprache zu finden.
+Dazu betrachten wir sogenannte \highl{Digramme} (Zweierfolgen von Buchstaben)
+in Texten. Dafür gibt es insgesamt $2^{26}$ mögliche Paarungen. Beispiele für
+Digramme sind \textit{en} und \textit{er}, die mit einer Wahrscheinlichkeit
+von ca.~4\,\% in deutschen Texten auftreten. Das Digramm \textit{ch} tritt mit
+einer Wahrscheinlichkeit von ca.~2,75\,\% und die Digramme \textit{de},
+\textit{te}, \textit{nd}, \textit{ei}, \textit{ie}, \textit{es}, \textit{in}
+treten mit der Wahrscheinlichkeit von ca.~2\,\% auf.
 
-Wärend die Zeichen \glq{}e\grq{} und \glq{}n\grq{} häufig sind und "`en"'
-häufig, weicht das Digramm "`ch"' davon ab, denn \glq{}c\grq{} und
-\glq{}h\grq{} sind seltene Buchstaben. Das ist eine Unregelmäßigkeit.
+Damit haben wir bereits eine Anomalie gefunden. Wärend die Buchstaben
+\textit{e} und \textit{n} häufig auftreten und auch das Digramm aus beiden
+\textit{en} häufig auftritt, ist es im Fall von \textit{c}, \textit{h} und
+\textit{ch} nicht so. Die einzelnen Buchstaben sind recht selten (siehe
+\autoref{tab:buchswsk}), das Digramm jedoch tritt sehr häufig auf.
 
 Ausgangspunkt: Verschlüsselung von \glq{}c\grq{}. Es $\abs{f(c)} =k$
 (z.\,B. $k=3$) Dann müssen (etwa) folgende Relationen erfüllt sein:
 $\abs{f(\mathtt{e})}\approx 6k, \abs{f(\mathtt{n})} \approx 3k,
-\abs{f(\mathrm{i})} \approx 2,5k, \abs{f(\mathrm{r})} \approx 2,5k$
+\abs{f(\mathrm{i})} \approx 2\mathord{,}5k, \abs{f(\mathrm{r})} \approx
+2\mathord{,}5k$
 
 "`en"' wird auf $6k\cdot 3k = 18k^{2}$ verschiedene Weisen verschlüsselt.
-"`ch"' wird auf $k\cdot 1,5k = 1,5k^{2}$ verschiedene Weisen verschlüsselt.
+"`ch"' wird auf $k\cdot 1\mathord{,}5k = 1\mathord{,}5k^{2}$ verschiedene Weisen verschlüsselt.
 
 Ein Digramm, dass "`en"' verschlüsselt, tritt mit einer Häufigkeit von
-$\frac{4\%}{18}\approx 0,25\%$ auf. Für "`ch"' ist die Häufigkeit
-$\frac{2,5\%}{1,5\%}\approx 1,6\%$.
+$\frac{4\,\%}{18}\approx 0\mathord{,}25\,\%$ auf. Für "`ch"' ist die Häufigkeit
+$\frac{2\mathord{,}5\,\%}{1\mathord{,}5\,\%}\approx 1\mathord{,}6\,\%$.
 
-Dies ist ein Ansatz zunächst die Verschlüsselung für \glq{}c\grq{} und
-\glq{}h\grq{} zu knacken. Vorraussetzung zum Knacken ist ein wirklich
-langer Geheimtext!
+Dies ist ein Ansatz zunächst die Verschlüsselung für \textit{c} und
+\textit{h} zu knacken. Vorraussetzung für einen solchen Angriff ist aber
+ein wirklich langer Geheimtext!
 
 \section{Polyalphabetische Verschlüssung}
 
@@ -784,8 +851,7 @@ Schlüsselworts.
 
 zunächst allgemein: ein Klartextalphabet $X$ mit $\abs{X}=n$ (z.\,B.
 $n=26$) und $d$ Geheimtextalphabete $Y_{0}, Y_{1}, \dotsc, Y_{d-1}$. Dazu
-$d$ bijektive Abbildungen $f_{i}\colon X \mapsto> Y_{i}$
-\todo{Symbol für $\mapsto>$ finden, war auch schon mal weiter oben.}
+$d$ bijektive Abbildungen $f_{i}\colon X \mapstoto Y_{i}$
 ($i=0,\dotsc,d-1$) und eine surjektive Abbildung $h\colon\N\mapsto
 \{0,1,\dotsc,d-1\}$ ($h(x)=x\pmod{d}$).
 
