@@ -111,11 +111,14 @@ svnlook changed "$REPOS" --revision "$REV" | while read action file; do
 #          _U) ;; # SVN property update
         esac
         ;;
-      "$skript/")
+      */*/) ;; # dummy to case the case of a subdirectory
+      */)
         # A Skript was added or deleted
         case "$action" in
-          A*) echo "$skript" >> $WEB/available_skripte;;
-          D*) sed --in-place "/^$skript\$/d" $WEB/available_skripte;;
+          A*) echo "${file%/}" >> $WEB/available_skripte;;
+          D*) sed --in-place "/^${file%/}\>/d" $WEB/available_skripte
+              rm -f $WEB/"${file%/}".*
+              ;;
         esac
         ;;
     esac
