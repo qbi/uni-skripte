@@ -1,0 +1,2497 @@
+% TODO:
+%   * eine Umgebung für Schreibweisen/Notationen
+%   * Algorithmen in eine eigene Umgebung und einheitlich formatieren
+%   * einen Abstract -- Kurzzusammenfassung des Inhalts
+% zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
+
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{ifthen}
+
+\usepackage{makeidx}
+\usepackage[final]{graphicx}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+\usepackage[latin1]{inputenc}
+% \usepackage{nicefrac}
+
+% Schrift, die als serifen-Schrift (normale Text) verwendet wird
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}		% cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften verwenden -- besser für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[thmmarks,hyperref]{ntheorem}
+\usepackage{xspace}
+\usepackage{slashbox}
+
+\usepackage{paralist}
+\usepackage{ngerman}
+\usepackage{svn}
+%\usepackage{wasysym}  % \lightning
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% \newtheoremstyle{break}{3pt}{3pt}{}{}{\bfseries}{}{\newline}{}
+
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+\newtheorem{satz}{Satz}[section]
+\newtheorem{defini}{Definition}[section]
+\newtheorem{folg}{Folgerung}[section]
+\newtheorem{lemm}{Lemma}[section]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+\newtheorem{bemerk}{Bemerkung}
+\newtheorem{bsp}{Beispiel}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\faktautorefname}{Fakt}
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\makeatletter
+% \autoref unterscheidet die Umgebungen, die angesprochen werden, anhand
+% ihres Zählernamens. Da sich aber alle Umgebungen einen Zähler mit satz
+% teilen sollen, bezeichnet \autoref alles mit "`Satz"'. Daher bekommt
+% jede Umgebung einen eigenen Zähler, der in Wirklichkeit ein Alias zu
+% satz ist
+% <news:m3wvitk0o9.fsf@sgifford.tir.com>
+\renewcommand*{\c@defini}{\c@satz}
+\renewcommand*{\p@defini}{\p@satz}
+\renewcommand*{\thedefini}{\thesatz}
+\renewcommand*{\c@folg}{\c@satz}
+\renewcommand*{\p@folg}{\p@satz}
+\renewcommand*{\thefolg}{\thesatz}
+\renewcommand*{\c@lemm}{\c@satz}
+\renewcommand*{\p@lemm}{\p@satz}
+\renewcommand*{\thelemm}{\thesatz}
+\makeatother
+
+% \setdefaultenum{(1)}{(a)}{i.}{A.}
+\pagestyle{headings}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\F}{\mathbb{F}}
+\renewcommand{\L}{\mathfrak{L}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Prr}{\PP\mathrm{r}}  % The command \Pr already exist
+\newcommand{\Pa}{\PP\mathrm{a}}
+\newcommand{\TM}{\ensuremath{\mathcal{TM}}}
+\newcommand{\REG}{\ensuremath{\textrm{REG}}}
+\newcommand{\CF}{\ensuremath{\textrm{CF}}}
+\newcommand{\CS}{\ensuremath{\textrm{CS}}}
+\newcommand{\sgn}{\textrm{sgn}}
+\newcommand{\SUCC}{\textrm{succ}}
+\newcommand{\SUB}{\textrm{SUB}}
+\newcommand{\PR}{\textrm{PR}}
+\newcommand{\ra}{\ensuremath{\rightarrow}}
+\newcommand{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand{\todo}[1]{\textcolor{red}{todo: #1}}
+\newcommand*{\listlinebreak}{\mbox{}\vspace{-\parskip}}
+\newcommand*{\algokeyword}[1]{\underline{\texttt{#1}}\xspace}
+\newcommand{\graphic}[1]{{\vskip0.5cm\centerline{\convertMPtoPDF{#1}{1}{1}}\vskip0.5cm}\noindent}
+
+% Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
+% und in den Index aufgenommen werden.
+\newcommand{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
+\newcommand*{\taglabel}[1]{%
+  \refstepcounter{equation}\tag{\theequation}\label{#1}%
+}
+
+\newcommand*{\indexsection}{\minisec}
+
+\newcommand{\obda}{o.\,B.\,d.\,A.\xspace}
+\newcommand{\sonst}{\text{sonst}}
+\newcommand{\leerz}{\ifthenelse{\boolean{mmode}}%
+			       {\text{\textvisiblespace}}%
+			       {\textvisiblespace}}
+% \newcommand{\ndef}{\ifthenelse{\boolean{mmode}}%
+% 			       {\text{n.\,def.}}%
+% 			       {n.\,def.\xspace}}
+\newcommand*{\ndef}{\ifthenelse{\boolean{mmode}}%
+ 			       {\perp}%
+ 			       {$\perp$\xspace}}
+% \newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+% 			       {\Leftrightarrow}%
+% 			       {$\Leftrightarrow$\xspace}}
+% \newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+% 			       {:\Leftrightarrow}%
+% 			       {$:\Leftrightarrow$\xspace}}
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+\newcommand{\ddef}{=_{df}}
+\renewcommand{\vdash}{\mathrel{|\mkern-4mu-}\mathrel{\mkern-10mu-}}
+\newcommand{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand{\norm}[2][]{#1\lVert#2#1\rVert}
+
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand*{\mod}{\bmod}
+
+\newcounter{schritt}
+\newenvironment{schritte}%
+	       {\begin{list}{\textit{\underline{\arabic{schritt}.\,Schritt:}}}%
+		      {\usecounter{schritt}%
+			\settowidth{\labelwidth}{\textit{\underline{99.\,Schritt:}}}%
+			\setlength{\leftmargin}{1cm}%
+			\setlength{\itemindent}{4mm}%
+			\addtolength{\itemindent}{\labelwidth}%
+			\addtolength{\itemindent}{-\leftmargin}%
+		      }}%
+	       {\end{list}}
+
+
+\newenvironment{mdescription}%
+	       {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+\newenvironment*{auflistung}[1][\linewidth]%
+               {\tabularx{#1}{r@{\;\ldots\;}X}}%
+               {\endtabularx}
+
+\makeindex
+
+\SVN $LastChangedRevision: 1 $
+\SVN $LastChangedDate: 2006-07-08 00:16:31 +0200 (Sa, 08 Jul 2006) $ 
+
+\begin{document}
+
+\title{Grundlagen der theoretischen Informatik}
+\author{Dr.\,Harald Hempel}
+\date{SS 2006}
+\maketitle
+
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\clearpage
+\chapter*{Vorwort}
+
+% entspricht Vorlage: 91
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:kabel@cat0.de}{Matti Bickel
+    \texttt{<kabel@ca0t.de>}} (2006)
+  \end{itemize}
+\end{itshape}
+
+\part{Formale Sprachen}
+\chapter{Sprachen und Grammatiken}
+\section{Grundlagen}
+
+\begin{defini}\label{def:1.1.1}
+	Eine Menge $\Sigma$ heißt \highl{Alphabet}  \gdw sie endlich ist. (und nicht
+	leer $\Sigma\ne \emptyset$)
+\end{defini}
+
+\begin{bsp}\label{bsp:1.1.1}
+	$\Sigma_1 = \{a,b,c,\dots,y,z\}$\\
+	$\Sigma_2 = \{\textrm{APFEL},\textrm{FOR},\textrm{IF}\}$
+\end{bsp}
+Elemente von Alphabeten heißen Buchstaben.
+
+\begin{defini}\label{def:1.1.2}
+	Sei $\Sigma$ ein Alphabet. Ein \highl{Wort} $w$ über $\Sigma$ ist eine
+	endliche Folge von Buchstaben aus $\Sigma$.
+\end{defini}
+
+\begin{bemerk}\label{bem:1.1.2}
+	Wörter sind Aneinanderreihungen von Buchstaben: abba, FORFORFOR,
+	$\varepsilon$ (\emph{leeres} Wort)
+\end{bemerk}
+
+\begin{defini}\label{def:1.1.3}
+	Seien $w_1,w_2$ Wörter über $\Sigma$, d.h. $w_1 = x_1 x_2 \dots x_n$ und
+	$w_2 = y_1 y_2 \dots y_m$. Die Konkatenation von $w_1,w_2$ ($w_1w_2$) ist
+	definiert als $w_1w_2 = x_1\dots x_n y_1\dots y_m$.\\
+	Die L\"ange des Wortes $w_1$, $|w_1|$, ist definiert als die Zahl der
+	Buchstaben von $w_1 = n$.
+\end{defini}
+
+\begin{bemerk}\label{bem:1.1.3}
+	$\varepsilon$ ist das eindeutig bestimmte Wort mit der L\"ange $0$.
+\end{bemerk}
+
+\begin{defini}\label{def:1.1.4}
+	Sei $\Sigma$ Alphabet. Der \highl{Kleene-Abschluss} von $\Sigma$,
+	$\Sigma^{*}$ wird wie folgt definiert:
+	\begin{gather*}
+		\Sigma^{0} = \{\varepsilon\}\\
+		\Sigma^{i+1} = \{ uv : u\in \Sigma \wedge v\in \Sigma^{i}\}
+	\end{gather*}
+\end{defini}
+
+\begin{bemerk}\label{bem:1.1.4}
+	\begin{gather*}
+		\Sigma^1 = \{ uv : u\in \Sigma \wedge v\in \Sigma^0 \} = \Sigma\\
+		\Sigma^{i} = \textrm{ Menge der } i \textrm{-buchstabigen Wörter}\\
+		\Sigma^{*} = \textrm{ Menge aller Wörter über } \Sigma
+	\end{gather*}
+\end{bemerk}
+
+\begin{defini}\label{def:1.1.5}
+	Sei $\Sigma$ Alphabet. $A$ heißt (formale) \highl{Sprache} über $\Sigma \gdw A\subseteq \Sigma^{*}$
+\end{defini}
+
+\begin{bemerk}\label{bem:1.1.5}
+	$\emptyset$ Sprache über $\Sigma_1$\\
+	$\{abba, beatles, tokio\}$ Sprachen über $\Sigma_1$.
+\end{bemerk}
+
+Notation: $a$ Buchstabe: $a^0 = \varepsilon$, $a^i = \underbrace{aa\dots a}_{i\textrm{-mal}}$\\
+Am Beispiel: $\{a^i b^i : i,j\in \N\}$ Sprache über $\Sigma$ (unendliche Sprache)
+
+\begin{defini}\label{def:1.1.6}
+	Seien $A$ und $B$ zwei Sprachen über $\Sigma$.
+	\begin{equation*}
+		A\cdot B = \{ uv : u\in A \wedge v\in B\}
+	\label{eq:1.1.6}
+	\end{equation*}
+\end{defini}
+
+\begin{bemerk}\label{bem:1.1.6}
+	$A\cap B$, $A\cup B$, $\bar{A}$, \dots sind wie üblich definiert.\\
+	Gilt: $A\times B = A\cdot B$?\\
+	$A = \{a,aa\}$, $B = \{ab,b\}$\\
+	$A\times B = \{(a,ab), (a,b),(aa,ab),(aa,b)\}$\\
+	$A\cdot B = \{aab, ab, aaab\}$
+\end{bemerk}
+
+\section{Grammatiken}
+Sei $A$ Sprache über $\Sigma$, $A$ unendlich. Offenbar gibt es schnelle
+Algorithmen, die für eine solche Sprache ($A=\textrm{FOO++}$) für ein gegebenes Wort $w$
+entscheiden, ob $w\in A$ oder $w\notin A$.\\ Algorithmus läuft auf einem (endl.)
+Computer, wie kann $A$ also repräsentiert werden?
+\begin{enumerate}
+	\item Erzeugendensystem
+	\item Gleichungssysteme
+	\item wohlgeformte Ausdrücke
+\end{enumerate}
+
+Grammatiken benötigen Bausteine:
+\begin{enumerate}
+	\item Alphabet
+	\item Hilfssymbole
+	\item Anfang für Ersetzungen
+	\item Ersetzungsregeln
+\end{enumerate}
+
+\begin{defini}\label{def:1.2.1}
+	Eine \highl{Grammatik} ist ein 4-Tupel: $G=(\Sigma,N,S,R)$ mit folgenden
+	Bedingungen:
+	\begin{enumerate}
+		\item $\Sigma$ endl. Menge
+		\item $N$ endl. Menge, $\Sigma\cap N = \emptyset$
+		\item $S\in N$
+		\item $R$ endl. Menge, $R\subseteq (N^{*}\backslash
+			\{\varepsilon\})\times (\Sigma\cup N)^{*}$
+	\end{enumerate}
+\end{defini}
+
+\begin{bemerk}\label{bem:1.2.1}
+	$\Sigma$ - Buchstaben, Terminalsymbole (Konvention: Kleinbuchstaben)\\
+	$N$ - Hilfssymbole, Nichtterminalsymbole (Konvention: Großbuchstaben)\\
+	$S$ - Startsymbol\\
+	$R$ - Regelmenge $(p,q)\in R$, $p\in N^{*}\backslash\{\varepsilon\}$ ist
+	eine Folge von Nichtterminalsymbolen, $q\in (\Sigma\cup N)^{*}$ eine Folge
+	von Terminal und Nichtterminalsymbolen
+\end{bemerk}
+
+\begin{bsp}\label{bsp:1.2.1}
+	\begin{eqnarray*}
+		G=(\{a,b\}, \{A,B\}, S, \{(S,AB), (A,aA), (B,Bb), (A,a), (B,b)\})\\
+		S\vdash AB \vdash aB \vdash ab
+		\L(G)=\{ a^i b^i : i,j \in \N \wedge i,j\ge 0 \}
+	\end{eqnarray*}
+	$\L(G)$ enthält die Wörter über $\Sigma$, die aus dem Startsymbol durch
+	Anwendung der Regeln abgeleitet werden können.
+\end{bsp}
+
+\begin{bemerk}\label{bem:1.2.1-2}
+	$*$ ist Hüllenoperator:
+	\begin{enumerate}
+		\item $A\subseteq A^{*}$
+		\item $A\subseteq B\ra A^{*} \subseteq B^{*}$
+		\item $(A^{*})^{*} = A^{*}$
+	\end{enumerate}
+
+	Definieren: $A^{+} = A^{*}\backslash\{\varepsilon\}$
+
+	Bei Regeln stehen links nur Nichtterminalsymbile, aber mindestens eines.
+	Rechts stehen beliebig lange Wörter über dem Alphabet $(\Sigma\cup N)^{*}$
+
+	Kommentar: allgemeine Regeldefinition: $R$ endlich und $R\subseteq
+	(\Sigma\cup N)^{*}\times (\Sigma\cup N)^{*}$. Man kann zeigen: es gibt zu
+	jeder so definierten Regelmenge eine Regelmenge $N^{+}\times (\Sigma\cup
+	N)^{*})$, die äquivalent ist.
+
+	Ist $(p.q)\in R$, so schreiben wir auch $p\ra q$.
+\end{bemerk}
+
+\begin{defini}\label{def:1.2.2}
+	Seien $w,w^{'}$ Wörter über $\Sigma$, d.h. $w,w^{'}\in (\Sigma\cup N)^{*}$
+	und $G=(\Sigma,N,S,R)$ eine Grammatik.\\
+	$w^{'}$ heißt aus $w$ ableitbar (in einem Schritt und Regeln aus $G$) \gdw
+	folgendes gilt:
+	\[
+		\exists p_1, p_2, p, q: (p_1,p_2,q\in (\Sigma\cup
+		N)^{*}\wedge p\in N^{+} \wedge w=p_1 p p_2 \wedge w^{'}=p_1 q p_2 \wedge
+		(p,q)\in R)
+	\]
+	Notation: $w\vdash_{G} w{'}$
+\end{defini}
+
+\begin{bemerk}\label{bem:1.2.2}
+	$\vdash_{G}$ ist eine binäre Relation über $(\Sigma\cup N)^{*}$\\
+	$\vdash_{G}^{*}$ ist reflexiv, transitive Hülle von $\vdash_{G}$
+\end{bemerk}
+
+\begin{defini}\label{def:1.2.3}
+	Seien $w,w^{'},G$ wie in Def. \ref{def:1.2.2}. $w{'}$ heißt aus $w$
+	ableitbar (in bel. vielen Schritten mit Regeln aus $G$),
+	$w\vdash_{G}^{*}w^{'}$, \gdw
+	\[
+		\exists n\in\N, w_1,\dots,w_n\in (\Sigma\cup
+		N)^{*}: (w=w_1\vdash_{G} w_2 \wedge w_2\vdash_{G} w_3 \wedge \dots
+		\wedge w_{n-1}\vdash_{G} w_n = w^{'})
+	\]
+\end{defini}
+\begin{defini}\label{def:1.2.4}
+	Sei $G=(\Sigma,N,S,R)$ Grammatik. Die von $G$ generierte (erzeugte) Sprache
+	$\L(G) = \{ w\in \Sigma^{*}\ |\ S\vdash_{G}^{*} w\}$
+\end{defini}
+Zum Beispiel sei $\L(G) = \{a^i b^i : i,j\ge 1\}$. Dann sind $ab, aabb,
+a^{14}b^{16},\dots \in \L(G)$ \emph{aber} $BA, ba, \varepsilon, \dots \notin
+\L(G)$.
+
+\begin{bsp}\label{bsp:1.2.4}
+	suchen Grammatik, die alle aussagenlogischen Aussagen mit den Variablen
+	$a,b,c$ generiert:
+	\begin{gather*}
+		G = (\{a,b,c,(,),\wedge,\vee,\ra,\leftrightarrow,\neg\},
+		%\{S,\dots\},S,R)\\
+		R = \{S\ra (A), S\ra A, A\ra B\wedge C,\dots\}
+	\end{gather*}
+
+	Ableitungsbaum einer Grammatik $G$:\\
+	\todo{ Baumgrafik } Baum ist i.A. unendlich groß; Blätter sind $\L(G)$
+
+	Syntaxbaum des Wortes $aabb$ bezüglich $G$:\\
+	\todo{ Baumgrafik } Baum endlich, stellt Ableitung eines Wortes $w$,
+	$S\vdash^{*} w$, dar; Reihenfolge der Anwendung der Regeln i.A. nicht mehr
+	ersichtlich
+\end{bsp}
+
+Offenbar ist die von $G$ generierte Sprache $\L(G)$ eindeutig bestimmt.
+Umgekehrt kann es zu einer Sprache $A\subseteq \Sigma^{*}$ mehr als eine
+erzeugende Grammatik geben.
+\begin{bsp}\label{bsp:1.2.4-2}
+	$\hat{G} = (\{a,b\}, \{F,X,Y\}, F, \{F\ra XY, X\ra aX, Y\ra Yb, X\ra a, Y\ra
+	b\})$\\
+	$\L(G) = \L(\hat{G}) = \{ a^i b^i : i,j\ge 1\}$
+\end{bsp}
+
+\begin{defini}\label{def:1.2.5}
+	Zwei Grammatiken $G_1$ und $G_2$ heißen äquivalent, \gdw $\L(G_1)=\L(G_2)$\\
+	Notation: $G_1 \sim G_2$
+\end{defini}
+
+\begin{bemerk}\label{bem:1.2.5}
+	zu jeder Grammatik für die lediglich $R\subseteq (\Sigma\cup N)^{*}\times
+	(\Sigma\cup N)^{*}$ gilt, gibt es eine äq. Grammatik für die $R\subseteq
+	N^{+}\times (\Sigma\cup N)^{*}$ gilt.
+\end{bemerk}
+
+\section{Die Chomsky-Hierarchie}
+
+\begin{defini}\label{def:1.3.1}
+	Sei $G = (\Sigma,N,S,R)$ eine Grammatik gemäß Definition \ref{def:1.2.1}.
+	\begin{enumerate}
+		\item $G$ heißt auch Phrasenstrukturgrammatik bzw.
+			\highl{Typ-0-Grammatik}.
+		\item $G$ heißt nicht verkürzend (\highl{kontextsensitiv}) bzw.
+			Typ-1-Grammatik\\ \gdw $\forall (p,q)\in R: |p|\le |q|$
+		\item $G$ heißt \highl{kontextfrei} bzw. Typ-2-Grammatik\\ \gdw $G$
+			Typ-1-Grammatik und $\forall (p,q)\in R: p\in N$
+		\item $G$ heißt \highl{regulär} bzw. Typ-3-Grammatik\\ \gdw $G$
+			Typ-2-Grammatik und $\forall (p,q)\in R: q\in \Sigma\lor q\in
+			\Sigma\cdot N$
+	\end{enumerate}
+\end{defini}
+
+\begin{bsp}\label{bsp:1.3.1}
+	$G$ ist Typ-0,1,2-Grammatik. Gibt es $G^{'} \sim G$ mit $G^{'}$ regulär?\\
+	ja: $G^{'} = (\{a,b\}, \{S,A,B\},S,\{S\ra aA, A\ra aA, A\ra b, A\ra bB, B\ra
+	bB, B\ra b\})$
+\end{bsp}
+
+\begin{defini}\label{def:1.3.2}
+	Eine Sprache $A\subseteq \Sigma^{*}$ heißt:\\
+	von einer Grammatik erzeugbar (Typ-0-Sprache)\\
+	kontextsensitiv (Typ-1-Sprache),\\
+	kontextfrei (Typ-2-Sprache),\\
+	regulär (Typ-3-Sprache), \gdw sie von einer Sprache irhen Typs erzeugt
+	werden kann.
+\end{defini}
+
+Entsprechend definiert man folgende Teilmengen von $\PP(\Sigma^{*})$:\\
+$\L_0$ - Menge der Typ-0-Sprachen\\
+\CS - Menge der Typ-1-Sprachen\\
+\CF - Menge der Typ-2-Sprachen\\
+\REG - Menge der Typ-3-Sprachen\\
+
+Beispiel: $\{a^i b^i : i,j\ge 1\}\in \REG$
+
+\begin{satz}\label{satz:1.3.3}
+	$\REG \subseteq \CF \subseteq CS \subseteq \L_0$
+	\begin{proof}
+		folgt unmittelbar aus Definition \ref{def:1.1.1}/\ref{def:1.1.2}.
+	\end{proof}
+\end{satz}
+
+\begin{bemerk}\label{bem:1.3.3}
+	später zeigen: $\REG \subsetneqq \CF \subsetneqq \CS \subsetneqq \L_0$
+\end{bemerk}
+Problem: $\{\varepsilon\}\notin \CS$, da jede erzeugende Grammatik verkürzend
+ist ($|S|=1$, $|\varepsilon|=0$)\\
+Lösung: Vereinbarung bzgl. $\varepsilon$:
+\begin{enumerate}
+	\item $S\ra \varepsilon$ ist als verkürzende Regel in
+		Typ-(1,2,3)-Grammatiken erlaubt
+	\item Ist $S\ra \varepsilon$ eine Regel der Grammatik, so kommt $S$ in
+		keiner rechten Seite einer Regel vor ($T\ra aS$)
+\end{enumerate}
+
+\begin{satz}\label{satz:1.3.4}
+	Zu jeder Grammatik $G=(\Sigma,N,S,R)$ vom Typ $\{1,2,3\}$ gibt es eine
+	Grammatik, für die Folgendes gilt:
+	\begin{itemize}
+		\item[$a)$] $G^{'}$ enthält $S^{'}\ra \varepsilon$ und $G^{'}$ erfüllt
+			Sondervereinbarung: ($S^{'}$ kommt auf keiner rechten Seite vor)
+		\item[$b)$] $\L(G^{'})=\L(G)\cup \{\varepsilon\}$
+	\end{itemize}
+	\begin{proof}
+		$G^{'}=(\Sigma,N^{'},S^{'},R^{'})$ def:\\
+		\begin{gather*}
+			N^{'} = N\cup S^{'}\\
+			S^{'}\notin \Sigma\cup N\\
+			R^{'} = R\cup \{S^{'}\ra \varepsilon, S^{'}\ra S\}
+		\end{gather*}
+		funktioniert nur mit Typ-1,2-Grammatiken, für Typ-3-Grammatiken muss man
+		anders vorgehen: $R^{'} = $ Menge aller Regeln aus $R$ in denen $S$ auf
+		der linken Seite vorkommt, bei denen wir $S$ durch $S^{'}$ ersetzen $\cup
+		R$\\
+		Man sieht leicht $\L(G^{'})=\L(G)\cup \{\varepsilon\}$
+	\end{proof}
+\end{satz}
+
+\chapter{Reguläre Sprachen}
+
+\underline{Plan}: 
+\begin{itemize}
+	\item Charakterisierung für \REG
+	\item Automatenmodell
+	\item Beispiele: $`\left\{ w\in \{a,b\}^{*} : w \textrm{ beginnt mit } a
+		\right\}$
+	\item $\{a^i b^i : i\in [1,\infty)\}$
+	\item alle endlichen Sprachen
+\end{itemize}
+
+\section{Endliche Automaten (deterministisch)}
+Grammatik - generiert Sprachen\\
+Automat - akzeptiert bzw. entscheidet eine Sprache
+
+\begin{defini}\label{def:2.1.1}
+	Ein deterministischer endlicher Automat (\highl{DFA}) $M$ ist ein 5-Tupel
+	$M=(\Sigma,Z,z_0,\delta,Z_E)$ mit folgenden Eigenschaften:
+	\begin{enumerate}
+		\item $\Sigma$ ist endliche Menge (Eingabealphabet)
+		\item $Z$ ist endliche Menge (Zustandsmenge)
+		\item $z_0 \in Z$
+		\item $\delta : \Sigma\times Z\mapsto Z$ (Überführungsfunktion)
+		\item $Z_E \subseteq Z$ (Endzustandsmenge)
+	\end{enumerate}
+\end{defini}
+
+\begin{bemerk}\label{bem:2.1.1}
+	DFA: engl. \underline{d}efinite \underline{f}inite \underline{a}utomaton
+
+	Veranschaulichung: \todo{ Grafik mit Turingband und Programm $\delta$ }\\
+	Startsituation: 
+	\begin{itemize}
+		\item Kopf befindet sich auf 1. Symbol der Eingabe
+		\item Zustand $z_0$
+	\end{itemize}
+	Arbeitsschritt: \begin{itemize}
+		\item abhängig vom aktuellen zustand und dem aktuell gelesenen
+			Eingabesymbol wird gemäß Überführungsfunktion ein neuer Zustand
+			angenommen
+		\item Lesekopf bewegt sich eine Zelle nach rechts
+	\end{itemize}
+	Endsituation: 
+	\begin{itemize}
+		\item alle Eingabesymbole gelesen
+		\item vorliegender Zustand in $Z_E$
+	\end{itemize}
+\end{bemerk}
+
+DFAs lassen sich sehr elegant durch sogenannte Überführungsgraphen darstellen.
+\begin{bsp}\label{bsp:2.1.1}
+	$M= (\{a,b\}, \{z_0,z_1,z_2,z_3\}, z_0, \delta, Z_E=\{z_3\})$
+
+	\begin{displaymath}
+		\begin{array}{c | c c c c}
+			\delta & z_0 & z_1 & z_2 & z_3\\
+			\hline
+			a	   & z_1 & z_2 & z_3 & z_3\\
+			b      & z_0 & z_3 & z_0 & z_3
+		\end{array}
+	\end{displaymath}
+	\graphic{blatt5.1}
+
+	Abarbeitung: von abba: $z_0\ra^{a} z_1\ra^{b} z_3\ra^{b} z_3\ra^{a} z_3$\\
+	abba wird akzeptiert, baba wird auch akzeptiert, \emph{aber} alle Wörter
+	$b^i:i\in \N$ werden nicht akzeptiert.
+\end{bsp}
+
+Die von einem DFA akzeptierte Sprache ist gerade die Menge aller Wörter, bei
+denen sich $M$ nach Abarbeitung in einem Zustand aus $Z_E$ befindet.
+
+\begin{defini}\label{def:2.1.2}
+	Sei $M=(\Sigma,Z,z_0,\delta,Z_E)$ ein DFA.
+	\begin{enumerate}
+		\item Die erweiterte Überführungsfunktion $\delta^{*}:\Sigma^{*}\times
+			Z\ra Z$ ist wie folgt definiert: für alle $a\in \Sigma,w\in
+			\Sigma^{*}, z\in Z$ ist:
+			\begin{gather*} 
+				\delta^{*}(\varepsilon,z) = z\\
+				\delta^{*}(aw,z) = \delta^{*}(w, \delta(a,z))
+			\end{gather*}
+			$\delta^{*}(aw,z)$ ist der Zustand, der vorliegt, wenn $M$ bei
+			Start im Zustand $z$ das Wort $aw$ abarbeitet
+		\item Die von $M$ akzeptierte Sprache $L(M)$ ist dann definiert als
+			\[L(M)=\{w\in \Sigma^{*}: \delta^{*}(w,z_0)\in Z_E\}\].
+	\end{enumerate}
+\end{defini}
+
+\begin{bsp}\label{bsp:2.1.2}
+	Baue DFA für $A=\{w\in \{a,b\}^{*}: w \textrm{ beginnt mit } a\}$
+	\graphic{blatt5.2.1}
+\end{bsp}
+
+\begin{satz}\label{satz:2.1.3}
+	Jede Sprache, die von einem DFA akzeptiert wird, ist \highl{regulär}.
+	\begin{proof}
+		Sei $A\subseteq \Sigma^{*}$ und sei $M=(\Sigma,Z,z_0,\delta,Z_E)$ DFA
+		und $L(M)=A$. Wir geben nun eine reguläre Grammatik $G=(\Sigma,N,S,R)$
+		an, für die $\L(G)=A$ gilt.\\
+		Setzen: $N=Z$, $S=z_0$.
+		\begin{description}
+			\item[1. Fall:] $\varepsilon\notin A$: 
+				$R=\{z\ra az^{'}: \delta(a,z)=z^{'}\}\cup \{z\ra a:
+				\delta(a,z)\in Z_E\}$\\
+				Offenbar gilt nun für jedes Wort $w=w_1\dots w_n\in \Sigma^{*}$
+				($w_i\in \Sigma$):
+				\begin{align*}
+					w\in A &\leftrightarrow w\in L(M)\\
+					&\leftrightarrow\delta^{*}(w,z_a)\in Z_E\\
+					&\leftrightarrow \textrm{ es gibt eine Folge von Zuständen
+					von $M$, } z_0, z_1,\dots,z_n \textrm{ mit } z_0\\
+					&\qquad \textrm{Startzustand und $z_n\in Z_E$ und für alle }
+					    i, 0\le i\le n-1\textrm{, gilt: }\\
+					&\qquad \delta(a_{i+1},z_i)=z_{i+1}\\
+					&\leftrightarrow \textrm{ es gibt eine Folge von
+					Nichtterminalen von } G \textrm{, und zwar die Folge von}\\
+					&\qquad z_0\vdash_{G} w_1 z_2\vdash_{G} w_1 w_2
+					z_2\vdash \dots \vdash_{G} w_1 w_2 \dots w_{n-1}
+					z_{n-1}\vdash_{G} w_1\dots w_n\\
+					&\leftrightarrow w\in \L(G)\\
+					&\Rightarrow A\in \REG
+				\end{align*}
+			\item[2. Fall:] Folgt unmittelbar aus Fall 1 unter Berücksichtung
+				von Satz \ref{satz:1.3.4}.
+		\end{description}
+	\end{proof}
+\end{satz}
+
+\section{Nichtdeterministische endliche Automaten}
+Unterscheidung (Nicht-)Determinismus:
+
+\highl{Determinismus}: gegenwärtiger Zustand bestimmt den zukünftigen Zustand
+eindeutig. Beispiel: übliche Algorithmen, DFA
+
+\highl{Nichtdeterminismus}: Die aktuelle Situation bestimmt die nachfolgende
+\underline{nicht} eindeutig. Es gibt mehrere Folgesituationen. Beispiel:
+Grammatiken, NFA.
+
+\subsection*{Nichtdeterministische endliche Automaten (NFA)}
+Idee: 
+\begin{itemize}
+	\item endlich viele gerichtete Kanten von einem Knoten (Zustand) ausgehend
+	\item endlich viele Startzustände erlaubt
+\end{itemize}
+
+\todo{ Grafik möglicher NFA }
+
+Wort wird akzeptiert \gdw es gibt einen Startzustand und ausgehend von diesem
+Startzustand gibt es einen Weg zu einem Endzustand, der das Wort abschließt.
+
+\begin{defini}\label{def:2.2.1}
+	Ein endlicher nichtdeterministischer Automat (\highl{NFA})
+	$N=(\Sigma,Z,Z_0,\delta,Z_E)$ ist ein 5-Tupel mit folgenden Eigenschaften:
+	\begin{enumerate}
+		\item $\Sigma$ Alphabet (Eingabealphabet)
+		\item $Z$ endliche Zustandsmenge
+		\item $Z_0\subseteq Z$ Startzustandsmenge
+		\item $\delta: \Sigma\times Z\ra \PP(Z)$ Überführungsfunktion
+		\item $Z_E\subseteq Z$ Endzustandsmenge
+	\end{enumerate}
+\end{defini}
+
+Ganz ähnlich zur Def. \ref{def:2.1.2} (erweiterte Überführungsfunktion für DFA)
+definiert man die erweiterte Überführungsfunktion des NFA $N$ wie folgt:
+\[ \delta^{*}: \Sigma^{*}\times \PP(Z)\ra \PP(Z) \]
+Für alle $\tilde{Z}\subset Z$, $a\in \Sigma$, $w\in \Sigma^{*}$ ist $\delta^{*}$
+so definiert:
+\begin{gather*}
+	\delta^{*}(\varepsilon,\tilde{Z}) = \tilde{Z}\\
+	\delta^{*}(aw,\tilde{Z}) = \bigcup_{z\in \tilde{Z}}\delta^{*}(w,\delta(a,z))
+\end{gather*}
+
+Die von einem NFA $N$ akzeptierte Sprache $L(N)$ ist definiert als
+\[ L(N) = \{ w\in \Sigma^{*}: \delta^{*}(w,Z_0)\cap Z_E\ne \emptyset \} \]
+\begin{bsp}\label{bsp:2.2.1}
+	\graphic{blatt6.1}
+	\begin{align*}
+		\delta^{*}(1,z_0) &= \delta^{*}(\varepsilon,\delta(1,z_0))\cup
+		  \delta^{*}(\varepsilon,\delta(1,z_3))\cup
+		  \delta^{*}(\varepsilon,\delta(1,z_6))\\
+		&= \delta^{*}(\varepsilon,\{z_1\})\cup
+		  \delta^{*}(\varepsilon,\emptyset)\cup \delta(\varepsilon,\{z_6\})\\
+		&= \{z_1\}\cup \emptyset\cup \{z_6\}\\
+		&= \{z_1,z_6\} \Rightarrow 1\in L(\tilde{N})
+	\end{align*}
+	Offenbar ist $L(N)=\{0,1\}^{*}$
+\end{bsp}
+
+\begin{bemerk}\label{bem:2.2.1}
+	Jeder DFA ist auch NFA.
+\end{bemerk}
+
+Eine "`fast"' Umkehrung von Satz \ref{satz:2.1.3}:
+\begin{satz}\label{satz:2.2.2}
+	Jede reguläre Sprache kann von einem NFA akzeptiert werden.
+	\begin{proof}
+		Sei $A\in \REG$, $A\subseteq \Sigma^{*}$. Gemäß Definition
+		\ref{def:1.3.2} gibt es eine reguläre Grammatik $G=(\Sigma,N,S,R)$ mit
+		$\L(G)=A$.\\
+		\underline{Idee}: $G: A\ra aB,\ A\ra aC,\ A\ra a$ NFA:
+		\graphic{blatt7.1}
+
+		Wir betrachten folgenden NFA $N=(\Sigma,Z,Z_0,\delta,Z_E)$:
+		\begin{gather*}
+			Z\ddef N\cup \{F\},\quad F\notin N, \textrm{ Endzustand}\\
+			Z_0\ddef \{S\},\quad Z_E\ddef \underbrace{\{S,F\}}_{\textrm{falls
+			}S\ra \varepsilon\,\in R} \vee \underbrace{\{F\}}_{\textrm{sonst}}
+		\end{gather*}
+		Für $a\in \Sigma$ und $A\in N$ ist: $\delta(a,A)=\left\{
+		\begin{array}{ll}
+			\{B\in N: A\ra aB\in R\} \textrm{  falls } A\ra a\, \notin R\\
+			\{B\in N: A\ra aB\in R\}\cup \{F\} \textrm{  sonst}
+		\end{array}\right.$
+
+		In allen anderen Fällen ist $\delta(a,A)=\emptyset$, insbesondere
+		$\delta(a,F)=\emptyset$ für alle $a\in \Sigma$.
+
+		Offenbar gilt nun für alle $w\in \Sigma^{*}$, $w=a_1a_2\dots a_n,\
+		a_i\in \Sigma$:
+		\begin{align*}
+			w\in A &\leftrightarrow w\in \L(G)\\
+			&\leftrightarrow a_1 a_2\dots a_n \in \L(G)\\
+			&\leftrightarrow \textrm{ es gibt eine Folge von Nichtterminalen }
+			A_1,A_2,\dots A_{n-1}\in N\textrm{, so dass }\\
+			&\qquad S\vdash a_1 A_1\vdash a_1 a_2 A_2\vdash\dots \vdash a_1\dots a_{n-1}A_{n-1}\vdash a_1\dots a_n\\
+			&\leftrightarrow \textrm{ es gibt eine Folge von Zuständen }
+			A_1,\dots a_{n-1}\in Z \textrm{ mit }\\
+			&\qquad A_1\in \delta(a_1,S)\wedge \dots \wedge A_{n-1}\in
+			\delta(a_{n-1},A_{n-2})\wedge F\in \delta(a_n, A_{n-1})\\
+			&\leftrightarrow F\in \delta^{*}(a_1\dots a_n, S)\\
+			&\leftrightarrow w\in L(N)\\
+			&\Rightarrow A=L(N)
+		\end{align*}
+	\end{proof}
+\end{satz}
+
+\begin{satz}\label{satz:2.2.3}
+	Jede Sprache, die von einem NFA akzeptiert wird, wird auch von einem DFA
+	akzeptiert.
+	\begin{proof}
+		Sei $A\subset\Sigma^{*}$ und sei $N=(\Sigma,Z,Z_0,\delta,Z_E)$ mit
+		$L(N)=A$. Wir wollen einen DFA $M$ konstruieren, so dass $L(M)=A$.
+
+		\underline{Idee}: NFA bei Abarbeitung $a_1 a_2\dots a_n$
+		\graphic{blatt7.2.1}
+		\underline{DFA}: Zustände sind Mengen von Zuständen des NFA:
+		\graphic{blatt7.3.1}
+		Wir definieren den DFA $M=(\Sigma,Z^{'},z_0,\delta^{'},Z_{E}^{'})$
+		so:
+		\begin{gather*}
+			z^{'} = \PP(Z)\\
+			z_0 = Z_0\\
+			Z^{'}_{E} = \{\tilde{Z}\in \PP(z): \tilde{Z}\cap Z_E \ne \emptyset\}
+		\end{gather*}
+		Für alle $a\in \Sigma$, $\tilde{Z}\in \PP(Z)$ ist
+		$\delta^{'}(a,\tilde{Z})=\bigcup_{z\in\tilde{Z}}
+		\delta(a,z)=(\delta^{*}(a,\tilde{Z}))$
+		
+		Für jedes Wort $w=a_1 a_2 \dots a_n\in \Sigma^{*}$ gilt:
+		\begin{align*}
+			w\in L(N) &\leftrightarrow \delta^{*}(w,Z_0)\cap Z_E\ne \emptyset\\
+			&\leftrightarrow \textrm{ es gibt eine Folge von Teilmengen }
+			Z_1,Z_2,\dots,Z_n\subseteq Z \textrm{ und } \\
+			&\qquad \delta^{*}(a_1,Z_0)=Z_1\wedge\dots\wedge\delta^{*}(a_n,
+			Z_{n-1})=Z_n \textrm{ und } Z_n\cap Z_E\ne\emptyset\\
+			&\leftrightarrow \textrm{ es gibt eine Folge von Zuständen } Z_0,
+			Z_1,\dots, Z_n \textrm{ von } M,\\
+			&\qquad \textrm{ mit } \delta^{'}(a_1,Z_0)=Z_1\wedge\dots\wedge\delta^{'}(a_n,Z_{n-1})=Z_n
+			\textrm{ und } Z_n\in Z_E\\
+			&\leftrightarrow \delta^{'*}(a_1 \dots a_n, Z_0)\in Z_E\\
+			&\leftrightarrow w\in L(M)
+		\end{align*}
+	\end{proof}
+\end{satz}
+
+\begin{bsp}\label{bsp:2.2.3}
+	NFA $N=(\{0,1\},\{z_0,z_1,z_2\},\{z_0,z_1,z_2\},\delta,\{z_2\})$
+	\[ L(N)=\{0^i 1^j: i\in \{0,1,2\}\wedge j\in\N\} \]
+	\graphic{blatt8.1}
+
+	DFA $M=(\{0,1\},\PP(\{z_0,z_1,z_2\}), \{z_0,z_1,z_2\},\delta^{'},
+	\{\{z_2\},\{z_1,z_2\},\{z_0,z_2\},\{z_0,z_1,z_2\}\})$.
+
+	\todo{ Hier fehlt der Graph, sowohl naiv als auch vereinfacht }
+\end{bsp}
+
+\begin{bemerk}\label{bem:2.2.3}
+	\begin{itemize}
+		\item nicht immer gibt es im konstruierten DFA nicht erreichbare
+			(streichbare) Zustände, d.h. es gibt Sprachen bei denen NFAs mit $n$
+			Zuständen auskommen, DFAs aber expotentiell viele ($2^n$) Zustände
+			benötigen.
+		\item wie klein (in Bezug auf Zustände) kann man DFAs machen ($\ra$
+			später)
+	\end{itemize}
+\end{bemerk}
+
+\begin{folg}\label{folg:2.2.4}
+	Sei $A\subseteq \Sigma^{*}$ eine Sprache. Die folgenden Aussagen sind äquivalent:
+	\begin{enumerate}
+		\item $A\in \REG$ (es gibt reguläre Grammatik $G$ und $\L(G)=A$)
+		\item $A$ kann von einem DFA erzeugt werden
+		\item $A$ kann von einem NFA erzeugt werden
+	\end{enumerate}
+	\begin{proof}
+		$2\ra 1$ s. Satz \ref{satz:2.1.3}\\
+		$1\ra 3$ s. Satz \ref{satz:2.2.2}\\
+		$3\ra 2$ s. Satz \ref{satz:2.2.3}
+	\end{proof}
+\end{folg}
+\begin{bemerk}\label{bem:2.2.4}
+	hat man eine reguläre Programmiersprache, so würde ein Syntaxprüfer der DFA
+	für diese Sprache sein. Das heißt lineare Laufzeit für Syntaxtest (DFA prüft
+	jedes Symbol einmal)
+\end{bemerk}
+
+\section{Reguläre Ausdrücke und Gleichungssysteme}
+\begin{itemize}
+	\item reguläre Ausdrücke: Beschreibungsvariante für reguläre Sprachen
+	\item Gleichungssysteme: dienen zur Berechnung der von einem DFA/NFA
+		erzeugten Sprache
+\end{itemize}
+
+\begin{defini}\label{def:2.3.1}
+	Sei $\Sigma$ ein Alphabet.
+
+	Die Menge der regulären Ausdrücke $RA(\Sigma)$ über $\Sigma$ wird induktiv
+	so definiert:
+	\begin{enumerate}
+		\item $\emptyset$ und $\varepsilon$ sind reguläre Ausdrücke
+		\item Für jedes $a\in \Sigma$ ist $a$ ein regulärer Ausdruck
+		\item Sind $\alpha, \beta$ reguläre Ausdrücke, so sind auch
+			$\alpha\beta, (\alpha + \beta), (\alpha)^{*}$ reguläre Ausdrücke
+		\item Andere reguläre Ausdrücke gibt es nicht
+	\end{enumerate}
+\end{defini}
+
+\begin{bemerk}\label{bem:2.3.1}
+	$\Sigma=\{a,b\}$
+	\begin{gather*}
+		\left( \left( (\varepsilon + \emptyset) \right)^{*} + (a)^{*} \right)
+		(b)^{*} \quad \in RA(\Sigma)\\
+		\left( (a + b) \right)^{*} b\quad \in RA(\Sigma)
+	\end{gather*}
+\end{bemerk}
+
+Wir ordnen nun den regulären Ausdrücken Sprachen zu. Dabei gehen wir induktiv
+vor (wie in Definition \ref{def:2.3.1})
+
+\begin{defini}\label{def:2.3.2}
+	Sei $\Sigma$ Alphabet und $\gamma$ ein regulärer Ausdruck über $\Sigma$,
+	d.h. $\gamma\in RA(\Sigma)$. Die mit $\gamma$ assozierte Sprache $L(\gamma)$
+	ist so definiert:
+	\begin{enumerate}
+		\item $L(\emptyset)=\emptyset$ und $L(\varepsilon)=\{\varepsilon\}$
+		\item Für jedes $a\in \Sigma$ ist $L(a)=\{a\}$
+		\item $L(\gamma)= \left\{
+			\begin{array}{ll}
+				L(\alpha)\cdot L(\beta) & \textrm{ falls } \gamma =
+				\alpha\beta\\
+				L(\alpha)\cup L(\beta) & \textrm{ falls } \gamma =
+				(\alpha+\beta)\\
+				L(\alpha)^{*} & \textrm{ falls } \gamma = (\alpha)^{*}
+			\end{array}\right.$
+	\end{enumerate}
+\end{defini}
+
+\begin{bsp}\label{bsp:2.3.2}
+	$L\left( \left( \left( \left( (\varepsilon+\emptyset) \right)^{*} \right) + (a)^{*}
+	\right)(b)^{*} \right) \Rightarrow \{a^i b^j: i,j\in \N\}$\\
+	$L(\varepsilon)= \{\varepsilon\}$, $L(\emptyset)=\emptyset$
+	\begin{gather*}
+		L\left( \left( (\varepsilon + \emptyset) \right)^{*} \right) =
+		\{\varepsilon\}^{*} = \{\varepsilon\}\\
+		L\left( (a)^{*} \right) = \{a\}^{*}\\
+		L\left( (b)^{*} \right) = \{b\}^{*}
+	\end{gather*}
+\end{bsp}
+
+\begin{satz}\label{satz:2.3.3}
+	Eine Sprache ist genau dann regulär, wenn es einen regulären Ausdruck
+	$\gamma$ gibt, so dass $L(\gamma)=A$.
+\end{satz}
+\begin{bemerk}\label{bem:2.3.3}
+	weiteres Mittel um schnell zeigen zu können, dass eine Sprache regulär ist
+\end{bemerk}
+
+\subsection*{Gleichungssysteme}
+\underline{Ziel}: Bestimmen der von einem NFA $N$ akzeptierten Sprache
+$L(N)$.\\
+\underline{Gegeben} sei ein NFA $N=(\Sigma,Z,Z_0,\delta,Z_E)$ mit
+$Z=\{z_0,\dots,z_n\}$\\
+\underline{Gesucht} ist $L(N)$.
+
+\underline{Lösung}: bilden lineares Gleichungssystem mit $n+1$ Variablen
+$X_0,\dots,X_n$ und $n+1$ Gleichungen.\\
+\underline{Idee}: $L(N)=\{w\in \sigma^{*}:$ bei Start in einem
+Zustand aus $Z_0$ kann ich einen Zustand aus $Z_E$ nach Abarbeitung von $w$
+erreichen$\}$.\\
+Wir setzen gedanklich: $X_i$ Menge aller Wörter, die ich bei Start im
+Zustand $z_i$ akzeptieren kann.
+
+Wir stellen für $N$ folgendes Gleichungssystem auf:
+\begin{enumerate}
+	\item Für jedes $z_i\in Z$ ist $X_i$ eine Variable auf einer linken
+		Seite einer Gleichung ($X_i$ steht dort alleine)
+	\item Ist $z_j \in \delta(a,z_i)$ für $z_i,z_j\in Z$ und $a\in \Sigma$,
+		so ist $aX_j$ ein Summand auf der rechten Seite der Gleichung, deren
+		linke Seite $X_i$ ist.
+	\item Ist $z_i\in Z_E$, so ist $\emptyset^{*}$ ein Summand auf der
+		rechten Seite der Gleichung $x_i=\dots$
+\end{enumerate}
+
+Offenbar steht $x_i$ für die Menge aller Wörter, die der NFA akzeptiert,
+wenn er mit der Abarbeitung in $z_i$ startet.\\
+Streng genommen ist die RHS jeder Gleichung ein regulärer Ausdruck (mit
+Klammereinsparung) und den zusätzlichen Symbolen $X_0,X_1,\dots,X_n$
+\[ L(N) = \bigcup_{z_i\in Z_0} X_i \]
+Wie löst man ein derartiges Gleichungssystem?\\
+Hat es stets eine eindeutige Lösung?\\
+Wir werden im Folgenden für $X_i=a_1 X_1 + \dots + a_n X_n$ die Gleichung
+$X_i = \{a_1\}X_1 \cup \{a_2\} X_2 \cup \dots \cup \{a_n\}X_n$ schreiben.
+
+\begin{lemm}\label{lemm:2.3.4}
+	Sind $A$ und $B$ reguläre Sprachen mit $\varepsilon\notin A$, so gibt es
+	genau eine reguläre Sprache $X$, die die Gleichung $x=AX\cup B$ erfüllt.
+	\begin{proof}
+		\begin{enumerate}
+			\item Existenz von $X$: Offenbra ist $X=A^{*}\cdot B$ eine Lösung
+				von $x=AX\cup B$\\
+				\begin{align*}
+					A(A^{*}B)\cup B &= (A(A_0\cup A_1\cup \dots))B\cup B\\
+					&= \{\varepsilon\}(B)\cup (A^1 \cup A^2\cup \dots )B\\
+					&= A^0B\cup (A^1\cup \dots)B\\
+					&=(A^0\cup A^1\cup \dots)B\\
+					&= A^{*}B
+				\end{align*}
+			\item Eindeutigkeit der Lösung: z.z. Ist $X$ eine Lösung für
+				$X=AX\cup B$, so gilt $X=A^{*}B$. Sei $x$ eine solche Lösung.\\
+				Dann gilt $AX\cup B\subseteq X\ \Rightarrow B\subseteq
+				X\rightarrow AB\subseteq AX\subseteq AX\cup B\subseteq X$\\
+				$\Rightarrow \underbrace{A(AB)}_{A^2B} \subseteq AX\subseteq
+				AX\cup B\subseteq X$\\
+				$\vdots$\\
+				$\Rightarrow A^iB\subseteq X\qquad \forall i\in \N$\\
+				$A^{*}B\subseteq X$
+
+				n.z.z. $X\subseteq A^{*}B$\\
+				Nachweis indirekt, Annahme: $A^{*}B \subsetneq X \Rightarrow
+				X\backslash A^{*}B \ne \emptyset$
+
+				Sei $y\in X$ ein Wort kürzestester Länge in $X\backslash
+				A^{*}B$.
+				\[ \Rightarrow y\notin B\quad (y\in B\rightarrow y\in A^{*}B) \]
+				Wegen $X=AX\cup B$ und $y\notin B$ muss $y\in AX$ gelten.
+				Folglich gibt es Wörter $u,v$ mit $u\in A$ und $v\in X$, so dass
+				$y=uv$. Wegen $\varepsilon\notin A$ folgt $|u|\ge 1$.\\
+				Damit gilt $|v|<|y|$.
+
+				Da $v\in X$ und $y$ ein kürzestestes Wort aus $X\backslash
+				A^{*}B$ war, muss $v\in A^{*}B$ gelten.\\
+				$\Rightarrow u\in A\wedge v\in A^{*}B \Rightarrow y = uv\in
+				A^{*}B$\\
+				ist $u\in A$ und $v\in A^{*}B$, so ist $v\in A^{i}B$ für ein
+				$i\in \N$ und sonst $uv\in A^{i+1}B$. \emph{Widerspruch} zu
+				$y\in X\backslash A^{*}B$\\
+				$\Rightarrow$ Annahme $A^{*}B\subsetneq X$ war falsch\\
+				$\Rightarrow A^{*}B=X$ wegen $A^{*}B\subseteq X$ und
+				$A^{*}B\nsubseteq X$\\
+				$\Rightarrow x=AX\cup B$ hat genau eine Lösung, diese ist
+				$X=A^{*}B$.
+
+				Aufgrund der Abschlusseigenschaft von \REG{} sieht man leicht dass
+				$A^{*}B\in \REG$ ist. (s. Abschnitt über Abschlusseigenschaften)
+		\end{enumerate}
+	\end{proof}
+\end{lemm}
+
+\begin{satz}\label{satz:2.3.5}
+	Ein Gleichungssytem der Form
+	\begin{align*}
+		x_0 &= A_{00}X_0 \cup A_{01}X_1 \cup \dots \cup A_{0n}X_n \cup B_0\\
+		x_1 &= A_{10}X_0 \cup A_{11}X_1 \cup \dots \cup A_{1n}X_n \cup B_1\\
+		\vdots\\
+		x_n &= A_{n0}X_0 \cup A_{n1}X_1 \cup \dots \cup A_{nn}X_n \cup B_n
+	\end{align*}
+	mit regulären Sprachen $A_{ij}$, $B_i$, $0\le i,j\le n$ hat eine eindeutige
+	Lösung durch reguläre Sprachen $x_0, x_1, \dots, x_n$, wenn keine der
+	Sprachen $A_{ij}$ das leere Wort enthalten.
+	\begin{proof}
+		Gibt es eine Gleicung mit $A_{ii}=\emptyset$ (d.h. keine Schlinge an
+		$z_i$ im NFA), so kann man $x_i$ in allen Gleichungen durch die rechte
+		Seite der Gleicung $x_i=\dots$ ersetzen (erhalte damit nur noch $n$
+		Gleichungen mit $n$ Unbekannten).\\
+		Dabei sollte man natürlich nach dem Einsetzen entsprechend
+		zusammenfassen. ($UX\cup VX = (U\cup V)X$)\\
+		Sind alle $A_{ii}\ne \emptyset (0\le i\le n)$, so hat die erste
+		Gleichung \[x_0=A_{00}X_0 \cup \underbrace{A_{01}X_1 \cup \dots \cup
+		B}_{B}\] die Form aus Lemma \ref{lemm:2.3.4}: $x_0=AX_0 \cup B$. Folglich
+		ist $x_0 = A^{*}B$, d.h.
+		\[ x_0 = A^{*}_{00}(A_{01}X_1\cup A_{02}X_2\cup \dots\cup B_0) \]
+		Diesen Ausdruck für $x_0$ setzt man nun in alle anderen Gleichungen ein
+		und wiederholt das Verfahren mit $x_1$.
+	\end{proof}
+\end{satz}
+
+\begin{bsp}\label{bsp:2.3.5}
+	$A,B,C,D,E,F\in \REG$ mit $\varepsilon\notin A,B,C,D,E$
+	\begin{gather}
+		X = AX\cup BY\cup C\nonumber\\
+		Y = BX\cup EZ\qquad \rightarrow A_{ii} = \emptyset\label{eq:2.3.5}\\
+		Z = DX\cup EZ\cup F\nonumber
+	\end{gather}
+	Setzen Term für $Y$ in die anderen rechten Seiten ein:
+	\begin{align*}
+		X &= AX\cup B(BX\cup EZ)\cup C\\
+		Z &= DX\cup EZ\cup F\\
+		X &= AX\cup B(BX\cup EZ)\cup C\\
+		  &= (A\cup B^2)X\cup (BE)Z\cup C
+	\end{align*}
+	Lemma \ref{lemm:2.3.4}: $X = (A\cup B^2)X\cup [(BE)Z\cup C]$\\
+	Lösung: $X = (A\cup B^2)^{*} \left( (BE)Z \cup C \right)$\\
+	Ersetze in $Z$:
+	\begin{align*}
+		Z &= D\left( (A\cup B)^{*}\left( (BE)Z\cup C \right) \right)\cup EZ\cup F\\
+		  &= (D (A\cup B^2)^{*}BE\cup E) Z\cup D(A\cup B^2)^{*}C\cup F\\
+		  &= (D (A\cup B^2)^{*}BE\cup E)Z\cup D(A\cup B^2)^{*}C\cup F
+	\end{align*}
+	Lemma \ref{lemm:2.3.4}: $Z = (D(A\cup B^2)^{*}BE\cup E)^{*}(D(A\cup
+	B^2)C\cup F)$\\
+	$X = (A\cup B^2)^{*}[BEZ \cup C]$\\
+	$Y = $ ähnlich, allerdings zu langer Ausdruck
+
+	Folgender NFA: $N$
+	\graphic{blatt11.1}
+	Gleichungssysteme:
+	\begin{align*}
+		X &= \{0\}X\cup \{1\}Y\cup \emptyset^{*}\\
+		Y &= \{1\}X\cup \underbrace{\{0\}Z\cup \{1\}Z}_{\{0,1\}Z}\\
+		Z &= \{1\}X\cup \{0,1\}Z\cup \emptyset^{*}
+	\end{align*}
+	Dies ist ein Spezialfall vom Gleichungssystem \ref{eq:2.3.5} mit
+	\begin{gather*}
+		A = \{0\}, \quad B=\{1\},\quad C = \emptyset^{*}\\
+		E = \{0,1\},\quad D=\{1\}, \quad F = \emptyset^{*}
+	\end{gather*}
+	setzt man jetzt entsprechend der eben bestimmten Lösung ein, erhält man eine
+	Beschreibung der Sprachen $X,Y,Z$ und damit auch eine Beschreibung von
+	$L(N)=X\cup Y$.
+\end{bsp}
+
+\section{Äquivalenzrelationen und Minimalautomaten}
+Wie kann man zeigen, dass eine Sprache nicht regulär ist?\\
+(s. auch Pumping Lemma)
+
+\begin{defini}\label{def:2.4.1}
+	Sei $L\subseteq \Sigma^{*}$ eine Sprache. Die Relation $R_L$ ist eine binäre
+	Relation über $\Sigma^{*}$, die wie folgt definiert ist:
+	\[ \forall x,y\in \Sigma^{*}: xR_L y \Leftrightarrow_{df} \forall z\in
+	\Sigma^{*}: (xz\in L\leftrightarrow yz\in L) \]
+\end{defini}
+\begin{bsp}\label{bsp:2.4.1}
+	$L = \emptyset:\qquad R_L = \{ (x,y) : \forall z\in \Sigma^{*}: (xz\in
+	\emptyset \leftrightarrow yz\in \emptyset)\}$\\
+	$\varepsilon R_L \varepsilon, \quad \varepsilon R_L 0 : \forall z:
+	\underbrace{\varepsilon z\in \emptyset}_{0} \leftrightarrow
+	\underbrace{0z\in \emptyset}_{0}$
+
+	$\hat{L} = \{a^n b^n : n\in \N\}$\\
+	$a R_{\hat{L}} a, \not (a R_{\hat{L}} \varepsilon) (\textrm{ da } ab\in \hat{L}\wedge
+	\varepsilon b\notin \hat{L})$\\
+	$a R_{\hat{L}} a^3 b^2,\quad abba R_{\hat{L}} babba, \dots$
+\end{bsp}
+\underline{Beobachtung}: Für alle $L\subseteq \Sigma^{*}$ ist $R_L$ stets eine
+Äquivalenzrelation.
+
+Uns interessiert nun die Anzahl der Äquivalenzklassen von $R_L$.
+\begin{bsp}\label{bsp:2.4.1-2}
+	$L=\emptyset$ Äquivalenzklasse von $R_L$: $[\varepsilon] = [0] = [1] = \dots
+	= \{\varepsilon,0,1,01,10,\dots\}$
+
+	$\hat{L} = \{a^n b^n : n\in \N\}$ Äquivalenzklassen:
+	\begin{align*}
+		[\varepsilon] &= \{\varepsilon\}\\
+		[a^2 b] &= \{a^2 b,a^3 b^2, \dots \} = \{a^{i+1} b^i : i\in \N\}\\
+		[b] &= \{ b, bb, \dots, abba, babba, \dots\}\\
+		&\vdots\\
+		[a^k b] &= \{a^{i+k-1} b^i : i,k\in \N_{+}\}
+	\end{align*}
+	unendlich viele Äquivalenzklassen!
+\end{bsp}
+Eine Äquivalenzrelation kann man statt für Sprachen auch für DFAs definieren:\\
+Sei $M=(\Sigma,Z,z_0,\delta,Z_E)$ ein DFA. Wir definieren die Relation $R_M
+\subseteq \Sigma^{*}\times \Sigma^{*}$ so:
+\[ \forall x,y\in \Sigma^{*} : x R_M y \leftrightarrow_{df} \delta^{*}(x,z_0) =
+\delta^{*}(y,z_0) \]
+
+Bemerkung: $R_M$ ist auch eine Äquivalenzrelation.
+
+\begin{satz}[Myhill, Nerode]\label{satz:2.4.2}
+	Sei $L\subseteq \Sigma^{*}$ eine Sprache. Die folgenden Aussagen sind
+	äquivalent:
+	\begin{enumerate}
+		\item $L$ ist regulär
+		\item $L$ ist die Vereinigung von Äquivalenzklassen einern
+			rechtsinvarianten Äquivalenzrelation mit endlichem Index
+		\item $R_L$ hat einen endlichen Index
+	\end{enumerate}
+\end{satz}
+\begin{bemerk}\label{bem:2.4.2}
+	\begin{itemize}
+		\item eine Äquivalenzrelation $R$ heißt \highl{rechtsinvariant} (bzgl.
+			Verkettung) \gdw für alle $x,y\in \Sigma^{*}$ gilt:
+			\[ x\,R\,y \leftrightarrow \forall z\in \Sigma^{*}: (xz\,R\,yz) \]
+			($R_M$ ist offenbar rechtsinvariant)
+		\item Der Index einer Äquivalenzrelation $R$ ist gerade die Zahl der
+			Äquivalenzklassen von $R$.
+	\end{itemize}
+\end{bemerk}
+\begin{proof}
+	Zeigen: $1\rightarrow 2$, $2\rightarrow 3$, $3\rightarrow 1$
+
+	($1\rightarrow 2$): Sei $A\subseteq \Sigma^{*}$ eine reguläre Sprache. Sei
+	$M=(\Sigma,Z,z_0,\delta,Z_E)$ ein DFA mit $L(M)=A$. Wir betrachten $R_M$.
+	Wir wissen $R_M$ ist eine Äquivalenzrelation, sogar rechtsinvariant und
+	$R_M$ kann nur endlich viele Äquivalenzklassen haben (jedes $z\in Z$
+	definiert genau eine Äq.klasse über $\{x\in \Sigma^{*}:
+	\delta^{*}(x,z_0)=z\}$)\\
+	Nun ist aber $L=L(M)=\{x\in \Sigma^{*}: \delta^{*}(x,z_0)\in Z_E\} =
+	\bigcup_{z\in Z_E}\{\underbrace{x\in \Sigma^{*}:
+	\delta^{*}(x,z_0)=z}_{\textrm{Äq.klasse über } R_M}\}$
+
+	($2\rightarrow 3$): Sei $R$ eine rechtinvariante Äquivalenzrelation mit
+	endlichem Index und sei $L$ die Vereinigung von Äquivalenzklassen von $R$.
+	Wir werden zeigen, dass $R$ eine Verfeinerung von $R_L$ ist.
+	Damit hat $R_L$ höchstens so viele Äquivalenzklassen wie $R$, also endlich
+	viele.
+	Z.z.:
+	\[ \forall x,y\in \Sigma^{*}: x\,R\, y\ra x\,R_L\, y \]
+	Seien $x,y\in \Sigma^{*}$:
+	\begin{align*}
+		x\,R\,y &\ra \forall z\in \Sigma^{*}: xz\,R\,yz \quad\textrm{($R$
+		rechtsinvariant)}\\
+		& \ra \forall z\in\Sigma^{*}: xz\in [xz]_R \wedge yz\in [xz]_R\\
+		& \ra \forall z\in\Sigma^{*}: xz\in L\leftrightarrow yz\in L
+		\quad\textrm{(da $L$ Vereinigung von Äquivalenzklassen von $R$)}\\
+		& \ra x\, R_L\, y
+	\end{align*}
+
+	($3\ra 1$): $R_L$ habe endlichen Index. Sei $[x]_{R_L} = \{y\in \Sigma^{*}:
+	x\,R_L\,y\}$ für alle $x\in \Sigma^{*}$.\\
+	Wir geben nun einen DFA für $L$ an: $M=(\Sigma,Z,z_0,\delta,Z_E)$ mit:\\
+	\begin{align*}
+		Z &= \{[x]_{R_L} : x\in \Sigma^{*}\},\ z_0 = [\varepsilon]_{R_L}\\
+		Z_E &= \{[x]_{R_L}: x\in L\}\\
+		\delta(a,[x]_{R_L}) &= [xa]_{R_L} \textrm{ für alle } x\in \Sigma^{*},\
+		a\in \Sigma
+	\end{align*}
+	Es gilt nun $L=L(M)$, denn für alle $x\in \Sigma^{*}$ gilt:\\
+	\begin{align*}
+		x\in L &\leftrightarrow [x]_{R_L}\in Z_E\quad \textrm{(nach Definition
+		von } Z_E\\
+		&\leftrightarrow \delta^{*}(x,[\varepsilon]_{R_L}
+		&\leftrightarrow x\in L(M)
+	\end{align*}
+\end{proof}
+\begin{bemerk}\label{bem:2.4.2-2}
+	Der im Beweis von $3\ra 1$ konstruierte Automat heißt
+	Äquivalenzklassenautomat. Er ist bzgl. der Zustandsanzahl ein kleinster DFA
+	für die Sprache.
+\end{bemerk}
+\begin{bsp}\label{bsp:2.4.2}
+	\[ L = \{0^{2^n}: n\in \N\}\in \REG ?\quad L=\{0,00,0000,\dots\} \]
+	Betrachten $R_L$. Hat $R_L$ unendlich viele Äquivalenzklasen?\\
+	\underline{Idee}: $0^{2^i}\neg{R_L} 0^{2^j}$ für $i\ne j$\\
+	Sei $i\ne j$ \obda $i<j$: $\ra$ $0^{2^i}0^{2^i} = 0^{2^i+2^i} =
+	0^{2^{i+1}}\in L$\\
+	aber: $0^{2^i}0^{2^j} = 0^{2^i+2^j}\notin L$ da $2^i<2^j$ und $2^{j+1}=
+	2^j+2^j$
+\end{bsp}
+
+\section{Das Pumping-Lemma}
+Das Pumping-Lemma für reguläre Sprachen ist eine Aussage der Form
+\[ A\in \REG \ra \textrm{ "`großer Ausdruck"'} \]
+Man kann daher das Pumping-Lemma \emph{nicht} benutzen, um zu zeigen, dass eine
+Sprache regulär ist.
+
+Das PL kann man lediglich anwenden, um zu zeigen, dass eine Sprache nicht
+regulär ist, indem man zeigt, dass sie "`großen Ausdruck"' nicht erfüllt
+(Kontraposition).
+
+\begin{satz}\label{satz:2.5.1}
+	Sei $A\subseteq \Sigma^{*}$ Sprache. Es gilt:
+\begin{align*} 
+	A\in \REG \ra & \exists n\in \N\, \forall x\in A, |x|\ge n\, \exists u,v,w\in
+	\Sigma^{*}:\\ & (x=uvw \wedge |v|\geq 1 \wedge |uv|\leq n \wedge \forall i\in
+	\N: uv^iw\in A)
+\end{align*}
+	$\Rightarrow x=uvw$ Zerlegung von $x$\\
+	$\Rightarrow n$ nennt man Pumping-Zahl
+\end{satz}
+Anwendung: zeigen $\{a^nb^n: n\in \N\}\notin \REG$:
+\[ \forall n\in \N\, \exists x\in A, |x|\geq n\, \forall u,v,w\in \Sigma^{*}: (x\ne
+uvw \lor |v|=0 \lor |uv|>n \lor \exists i\in \N : uv^iw\in L) \]
+(auch möglich: indirekt, annehmen Sprache sei regulär, Gegenbeispiel finden)\\
+Sei $n\in \N$. Betrachten $a^n b^n$: Seien $u,v,w\in \Sigma^{*}$ und sei nun
+$x=uvw \wedge |v|=0 \wedge |uv|\leq n$. Wegen $x=a^n b^n$ und $|uv|\leq n$ folgt
+$uv\in \{a\}^{*}$. Wegen $|v|\geq 1$ folgt $v=a^k$ mit $k\geq 1$. Damit gilt:
+\[ uv^0w=uw=a^{n-k} b^n \notin A \]
+
+\section{Abschlusseigenschaften}
+\begin{defini}\label{def:2.6.1}
+	Sei $C$ eine Familie von Sprachen und $f$ eine Funktion, die Sprachen
+	(event. mehrere) auf Sprachen abbildet (z.B. Vereinigung, Durchschnitt,
+	Komplement). Die Familie $C$ heißt abgeschlossen bzgl. $f$ genau dann, wenn
+	für alle $c_1,\dots,c_n \in C$ gilt:
+	\[ f(c_1,\dots,c_n)\in C \]
+\end{defini}
+\begin{satz}\label{satz:2.6.2}
+	\REG{} ist abgeschlossen bzgl.
+	\begin{enumerate}
+		\item Verein
+		\item Durchschnitt
+		\item Komplement
+		\item Produkt
+		\item Kleeneabschluss ($.^{*}$)
+		\item Mengendifferenz
+		\item Reversal ($L^R = \{w^R: w\in L\}$, $w^R = w_n w_{n-1}\dots w_1$ mit
+			$w=w_1 \dots w_n$)
+	\end{enumerate}
+	\begin{proof}
+		1., 4. 5. über reguläre Ausdrücke (s. Sätze
+		\ref{satz:2.3.3}/\ref{def:2.3.2})\\
+		zu 3.: Idee: bulgarisch akzeptieren, nehmen DFA mit $L(M)=A$ und
+		invertieren die Endzustandsmenge, offenbar gilt:
+		$L(M^{'})=\overline{A}$\\
+		bis auf 7. zurückführen auf 1., 3.
+	\end{proof}
+\end{satz}
+
+\chapter{Kontextfreie Sprachen}
+Dies ist die nächstgrößte Klasse in der Chomsky-Hierarchie. Alle vernünftigen
+Programmiersprachen sind kontextfrei.
+\begin{satz}\label{satz:3.0.1}
+	$\REG \subsetneq \CF$
+	\begin{proof}
+		wissen bereits: $\REG \subseteq \CF$, offenbar ist $\{a^n b^n : n\in
+		\N\}\in \CF\backslash \REG$\\
+		Eine kontextfreie Grammatik für $\{a^n b^n : n\in \N\}$ sieht so aus:
+		\[ G=(\{a,b\},\{S,S^{'}\}, S, \{S\ra \varepsilon, S\ra ab, S\ra aS^{'}b,
+		S^{'}\ra ab, S^{'}\ra aS^{'}b\}) \]
+		wissen: $\{a^n b^n : n\in \N\}\notin \REG$
+	\end{proof}
+\end{satz}
+\section{Normalformen}
+Um leichter lesbare Grammatiken anzugeben, erlauben wir bei
+kontextfreien Grammatiken Regeln der Form $A\ra \varepsilon$ für $A\in N$ und
+$A\ne S$
+\begin{defini}\label{def:3.1.1}
+	Eine Regel der Form $A\ra \varepsilon$ heißt $\varepsilon$-Regel, $A\ne
+	S$.\\
+	Eine Regel der Form $A\ra B$, $A,B\in N$ heißt Kettenregel.
+
+	Eine Grammatik $G$ heißt $\varepsilon$-frei \gdw sie
+	\begin{enumerate}
+		\item keine $\varepsilon$-Regeln enthält und
+		\item nur die eine $\varepsilon$-enthaltende Regel $S\ra \varepsilon$
+			enthält und $S$ nicht auf der rechten Seite einer Regel vorkommt.
+	\end{enumerate}
+\end{defini}
+$\varepsilon$-Regeln dienen lediglich der Vereinfachung von Grammatiken.
+\begin{satz}\label{satz:3.1.2}
+	Zu jeder kontextfreien Grammatik $G$ (mit $\varepsilon$-Regeln) gibt es eine
+	äquivalente $\varepsilon$-freie kontextfreie Grammatik.
+	\begin{proof}
+		Sei $G=(\Sigma,N,S,R)$ eine kontextfreie Grammatik mit
+		$\varepsilon$-Regeln.\\
+		\obda Sei $\varepsilon\notin \L(G)$ (sonst hinzufügen nach Satz
+		\ref{satz:1.3.4})\\
+		Wir bestimmen $N_\varepsilon = \{A\in N : A\vdash^{*} \varepsilon \in
+		R\}$ so
+		\begin{enumerate}
+			\item Ist $(A,\varepsilon)\in R$, so ist $A\in N_\varepsilon$
+			\item Ist $(A_1,\dots,A_k)\in R$ und sind $k\geq 1$ und
+				$A_1,\dots,A_k\in N_\varepsilon$, so ist $A\in N_\varepsilon$
+		\end{enumerate}
+		Wir entfernen alle $\varepsilon$-Regeln aus $R$ und fügen jede Regel der
+		Form $B\ra uAv,\ A\in N_\varepsilon,\ B\in N,\ u,v\in (\Sigma\cup
+		N)^{*}$ die Regel $B\ra uv$ zu $R$ hinzu.\\
+		Die resultierende Grammatik ist $\varepsilon$-frei und äquivalent zu
+		$G$.
+	\end{proof}
+\end{satz}
+\begin{satz}\label{satz:3.1.3}
+	Zu jeder kontextfreien Grammatik $G$ gibt es eine kontextfreie Grammatik
+	ohne Kettenregeln.
+	\begin{proof}
+		\obda sei $G$ eine $\varepsilon$-freie kontextfreie Grammatik. Die
+		Kettenregeln von $G$ induzieren einen gerichteten Graphen auf der
+		Knotenmenge $N$.
+		\underline{Bsp}:
+		%\includegraphic{kreis.jpg}
+		\begin{enumerate}
+			\item Eliminieren alle Kreise in diesem Graphen.\\
+				Ein Kreis \[ A_{i_1}\ra A_{i_2}, A_{i_2}\ra
+				A_{i_3},\dots,A_{i_{n-1}}\ra A_{i_n}, A_{i_n}\ra A_{i_1} \]
+				wird eliminiert, in dem wir alle diese Regeln aus $R$ entfernen
+				und in den verbleibenden Regeln $A_{i_j},\ 1\leq j\leq n$ durch
+				$A_{i_1}$ ersetzen.
+			\item Wir benennen die verbleibenden Nichtterminale so um, dass die
+				neuen Namen $\{B_1,\dots,B_l\}$ sind und aus $B_i\ra B_j$ stets
+				$i<j$ folgt. (Regeln $B_i\ra B_i$ können sofort entfernt werden)
+			\item Für $i=l-1,l-2,\dots$ ersetzen wir die Regeln $B_i\ra B_j$ so:
+				sind die Regeln, die $B_j$ auf der linken haben
+				\[B_j\ra u_1,\ B_j\ra u_2,\ B_j\ra u_m\quad u\in \{\Sigma\cup
+				N\}^{+} \]
+				so entferne $B_i\ra B_j$ und füge $B_i\ra u_1|u_2|\dots|u_m$
+				hinzu.
+		\end{enumerate}
+	\end{proof}
+\end{satz}
+\begin{defini}\label{def:3.1.4}
+	Eine kontextfreie Grammatik $G=(\Sigma,N,S,R)$ heißt Grammatik in
+	\highl{Chomksy-Normalform}, \gdw jede Regel in $R$ eine der folgenden Formen
+	hat:
+	\begin{align*}
+		A\ra BC&& A,B,C \in N,\ A\ne B,\ A\ne C\\
+		A\ra a && A\in N,\ a\in \Sigma\\
+		S\ra \varepsilon && \textrm{(in diesem Fall kommt $S$ in keiner rechten
+		Seite vor)}
+	\end{align*}
+\end{defini}
+\begin{bemerk}\label{bem:3.1.4}
+	Der Syntaxbaum von Chomksy-Normalformen ist "`fast"' ein Binärbaum:
+	%\includegraphics{baum.jpg}
+	Nachteil: meist viel mehr Regeln notwendig.
+\end{bemerk}
+\begin{satz}\label{satz:3.1.5}
+	Zu jeder kontextfreien Grammatik $G=(\Sigma,N,S,R)$ gibt es eine äquivalente
+	kontextfreie Grammatik in Chomksy-Normalform (CNF)
+	\begin{proof}
+		Sei $G$ eine Grammatik wie oben. \obda enthält $R$ keine Kettenregeln
+		und $G$ ist $\varepsilon$-frei. Wir formen $G$ zu $G^{'}$ um ($G^{'}$
+		wird in CNF sein)
+		\begin{enumerate}
+			\item Für jedes $a\in \Sigma$ führen wir ein neues Nichtterminal
+				$C_a$ ein: $\{C_a : a\in \Sigma\}\cap N = \emptyset$
+			\item In jeder Regel von $R$ wird $a$ durch $C_a$ ersetzt
+			\item Alle Regeln $C_a\ra a$ werden zu $R$ hinzugefügt
+			\item Für jede Regel der Form
+				\[ A\ra B_1 B_2\dots B_m\quad m>2 \]
+				die jetzt vorhanden ist, führen wir $m-1$ neue
+				Nichtterminalsymbole ein, $D_1,\dots,D_{m-1}$. Die Regel $A\ra
+				B_1\dots B_m$ wird durch $A\ra B_1D_1,D_1\ra
+				B_2D_2,\dots,D_{m-1}\ra B_{m-1}B_m$ ersetzt.\\
+				Offenbar ist $G^{'}$ in CNF und äquivalent zu $G$.
+		\end{enumerate}
+	\end{proof}
+\end{satz}
+Es gibt eine weitere wichtige Normalform für kontextfreie Grammatiken.
+\begin{defini}\label{def:3.1.6}
+	Eine kontextfreie Grammatik heißt Grammatik in \highl{Greibach-Normalform}
+	\gdw jede Regel eine der folgenden Formen hat:
+	\begin{align*}
+		A\ra aB_1 \dots B_m && A,B_1,\dots,B_m\in N,\ a\in \Sigma\\
+		A\ra a              && A\in N,\ a\in \Sigma\\
+		S\ra \varepsilon    && \textrm{ und $S$ kommt auf keiner rechten Seite
+		vor}
+	\end{align*}
+\end{defini}
+\begin{satz}\label{satz:3.1.7}
+	Zu jeder kontextfreien Grammatik gibt es eine Grammatik in
+	Greibach-Normalform.
+\end{satz}
+\section{Das Pumping-Lemma für kontextfreie Sprachen}
+
+"`unser wahrscheinlich einziges Mittel, um nicht vorhandene Kontextfreiheit von
+Sprachen nachzuweisen."'
+
+\begin{satz}\label{satz:3.2.1}
+	Sei $A\subseteq \Sigma^{*}$ eine Sprache. Es gilt:
+	\begin{align*}
+		A\in \CF \ra 
+		& \exists n\in \N\ \forall x\in A, |x|\ge n \exists
+		u,v_1,\tilde{v},v_2,w \in \Sigma^{*}: \\
+		& (x= u\,v_1\,\tilde{v}\,v_2\,w \wedge |v_1 v_2| \ge 1 \wedge 
+		|v_1 \tilde{v} v_2|\le n \wedge \forall i\in \N : u\,
+		v_{1}^{i}\, \tilde{v}\, v_{2}^{i}\, w \in A )
+	\end{align*}
+	\begin{proof}
+		Sei $A\in \CF$ und sei $G=(\Sigma,N,S,R)$ eine kontextfreie Grammatik in
+		Chomsky Normalform mit $\L(G)=A$.\\
+		Wir wählen $n=2^{|N|}$.\\
+		Sei $x\in A$ und $|x|\geq n$. Der Syntaxbaum von $x$ bezüglich $G$ sieht so aus:\\
+		(Binärbaum (nicht notwendigerweise vollständig) bis auf letzte Ebene)\\
+		\begin{center}\includegraphics{blatt16-1.pdf}\end{center}
+
+		Dieser Baum hat mindestens $2^{|N|}$ Blätter.
+
+		\begin{lemm}\label{lemm:3.2.2}
+			In jedem Binärbaum (jeder Knoten hat $2$ oder $0$ Kinder) mit
+			mindestens $2^k$ gibt es einen Pfad (von Wurzel bis Blatt) der Länge
+			mindestens $k$. (Beweis später)
+		\end{lemm}
+
+		Wir betrachten den Syntaxbaum von $x$ ohne die letzte Ebene. Hier gibt
+		es immer noch $2^{|N|}$ Blätter.\\
+		$\Rightarrow$ Es gibt einen Pfad Wurzel zu Blatt mit mindestens $|N|$
+		Kanten.\\
+		$\Rightarrow$ Der Pfad berührt mindestens $|N|+1$ Knoten im Baum\\
+		$\Rightarrow$ Es gibt ein Nichtterminal, welches auf dem Pfad zweimal
+		vorkommt.\\
+		\begin{center}\includegraphics{blatt16-2.pdf}\end{center}
+		$\Rightarrow$ Obere Vorkommen von $\tilde{A}$ ist höchstens $|N|$ von
+		der Blattebene entfernt. Wir betrachten die Teilgebiete, die aus den
+		beiden $\tilde{A}$ abgeleitet werden: $u, v_1, \tilde{v}, v_2, w$ (s.
+		Abb.)\\
+		Offenbar ist $uv_1\tilde{v}v_2w$ eine Zerlegung von $x$.
+
+		Da das obere $\tilde{A}$ mittels einer Regel $\tilde{A}\ra BC$
+		umgeformt wird, und nur eines von $B$ oder $C$ auf $p$ liegt und $G$
+		$\varepsilon$-frei ist, folgt $|v_1 v_2|\geq 1$.
+
+		\begin{proof}[Lemma \ref{lemm:3.2.2}] 
+		induktiv über $k$:\\
+			\underline{IA}: $k=0$ klar.\\
+			\underline{IS}: Aussage gelte für ein $k$. Betrachte Baum mit mindestens
+			$2^{k+1}$ Blättern.\\
+			Einer der Teilbäume hat $\geq 2^{k+1}/2$ Blätter. Nach IV gibt es in
+			ihm einen Pfad der Länge $k$ $\ra$ nimmt man zu diesem Pfad noch die
+			Kante des Teilbaums zur Wurzel des Gesamtbaums hinzu erhält man
+			einen Pfad der Länge $k+1$.
+		\end{proof}	
+	\end{proof}
+	Anwendung des PL: $L= \{a^n b^n c^n : n\in \N\}\notin \CF$ indirekt zeigen.
+\end{satz}
+
+\begin{satz}\label{satz:3.2.3}
+	Jede kontextfreie Sprache über einem einbuchstabigen Alphabet ist regulär.
+\end{satz}
+\begin{bemerk}\label{bemerk:3.2.3}
+	wissen $\hat{L}=\{ 0^{(n^2)} : n\in \N \} \notin \REG \Rightarrow
+	\hat{L} \notin \CF$.
+\end{bemerk}
+
+\section{Abschlusseigenschaften}
+\begin{satz}\label{satz:3.3.1}
+	Die Sprachklasse \CF ist abgeschlossen bezüglich:
+	\begin{enumerate}
+		\item Vereinigung
+		\item Produkt
+		\item Kleeneabschluss
+		\item Differenz und Schnitt mit regulären Mengen
+	\end{enumerate}
+	Die Sprachklasse \CF ist nicht abgeschlossen bezüglich:
+	\begin{enumerate}
+		\item Durchschnitt
+		\item Komplement
+		\item Differenz
+	\end{enumerate}
+
+	\begin{proof}
+		Durchschnitt: betrachten die Sprachen
+		\begin{gather*}
+			L_1 = \{ a^i b^i c^j : i,j \in \N \}\\
+			L_2 = \{ a^j b^i c^i : i,j \in \N \}\\
+			L_1 \cap L_2 = L = \{ a^i b^i c^i : i\in \N \} \notin \CF
+		\end{gather*}
+
+		Komplement: De-Morgan-Regeln\\
+		Differenz: Komplement und Schnitt
+	\end{proof}
+\end{satz}
+
+\section{Kellerautomaten}
+Ziel: DFA mit Zähler (fifo, Stack)
+
+\begin{defini}\label{def:3.4.1}
+	Ein nichtdeterministischer \highl{Kellerautomat} $M$ (push-down-automaton,
+	\highl{PDA}) ist ein 6-Tupel $M=(\Sigma, \Gamma, Z, z_0, \delta, Z_E)$ mit
+	folgenden Eigenschaften:
+	\begin{enumerate}
+		\item $\Sigma$ ist ein Alphabet (Eingabealphabet)
+		\item $\Gamma$ ist ein Alphabet (Kelleralphabet), $\Box \in \Gamma$
+		\item $Z$ ist endliche Menge (Zustandsmenge)
+		\item $z_0 \in Z$ ist Startzustand
+		\item $\delta : (\Sigma \cup \{\varepsilon\})\times \Gamma \times Z \ra
+			\PP_{\textrm{fin}}(\Gamma^{*} \times Z)$ (Überführungsfunktion)
+		\item $Z_E \subseteq Z$
+	\end{enumerate}
+\end{defini}
+Vorstellung: \\
+\begin{center}\includegraphics{blatt17.pdf}\end{center}
+
+Eingabeband: nur lesen, d.h. jedes Symbol kann nur einmal gelesen werden\\
+Keller: lesen und schreiben, Topelement des Stacks wird gelesen und durch ein
+$w\in \Gamma^{*}$ ersetzt. Neues Topelement ist oberster Buchstabe von
+$\Gamma^{*}$. Bei Arbeitsbeginn steht nur ein $\Box$ im Keller.
+
+Schreibweise: $\delta(a,A,z)=\{(B_1\dots B_n, z_1), \dots , (\varepsilon,
+z_n)\}$
+
+\begin{defini}\label{def:3.4.2}
+	Sei $M=(\Sigma, \Gamma, Z, z_0, \delta, Z_E)$ ein PDA. Eine Konfiguration
+	$K$ von $M$ ist ein Tripel $K\in \Sigma^{*} \times \Gamma^{*} \times Z$.
+	Dabei ist für $K=(u,v,z)$ das Wort $u$ der noch nicht gelesene Teil der
+	Eingabe, das Wort $v$ der aktuelle Kellerinhalt und $z$ der aktuelle
+	Zustand.
+\end{defini}
+\begin{bemerk}\label{bem:3.4.2}
+	Anfangskonfiguration $(w,\Box,z_0)$, $w\in \Sigma^{*}$ ist Eingabe.
+	Akzeptierende Endkonfiguration $(\varepsilon, p, z)$ mit $p\in
+	\Gamma^{*}$ und $z\in Z_E$.
+
+	Wir definieren auf $\Sigma^{*}\times \Gamma^{*}\times Z$, der Menge aller
+	Konfigurationen eine binäre Relation wie folgt:
+	\begin{align*}
+		(u,v,w) \vdash_M (u^{'},v^{'},z^{'})\ \Leftrightarrow\ 
+		& \exists x\in \Sigma \cup \{\varepsilon\}\ \exists y\in \Gamma\cup 
+		\{\varepsilon\}\ \exists y^{'}\in \Gamma^{*}\ \exists r\in \Gamma^{*}:\\
+		& (u=xu^{'} \wedge v=yr \wedge v^{'}=y^{'}r \wedge 
+		(y^{'},z^{'})\in \delta(x,y,z))
+	\end{align*}
+	Ganz analog zu $\vdash_{G}^{*}$ für Grammatiken $G$ definiert man
+	$\vdash_{M}^{*}$ als reflexive, transitive Hülle von $\vdash_M$.\\
+	Die von $M$ akzeptierte Sprache $\L(M)$ ist definiert als:
+	\[ \L(M) = \{ w\in \Sigma{*} : \exists z\in Z_E\ \exists p\in \Gamma{*} :
+	(w,\Box,z_0) \vdash_{M}^{*} (\varepsilon, p, z) \} \]
+\end{bemerk}
+
+\begin{bsp}
+	PDA für $\{a^n b^n : n\in \N\}$\\
+	$M = (\{a,b\}, \{\Box, |\}, \{z_0, z_1, z_{+}, z_{-}\}, z_0, \delta, \{z_{+}\})$
+
+	\[\begin{array}{c c c c c}
+		\delta & z_0         & z_1        & z_{+}       & z_{-}\\
+		a,\Box & (z_1,|\Box) & \emptyset  & \emptyset   & \emptyset\\
+		a,|    & \emptyset   & (z_1,||)   & \emptyset   & \emptyset\\
+		b,\Box & \emptyset   & \emptyset  & \emptyset   & \emptyset\\
+		b,| & \emptyset & (z_{-},\varepsilon) & \emptyset & (z_{-},\varepsilon)\\
+		\varepsilon,\Box & (z_{+},\Box) & \emptyset & \emptyset & (z_{+},\Box)\\
+		\varepsilon,| & \emptyset & \emptyset & \emptyset & \emptyset
+	\end{array}\]
+\end{bsp}
+\begin{bsp}
+	PDA für $\{w\,w^{R} : w\in \{a,b\}^{*}\}$\\
+	$z_l$ -- lesen, $z_v$ -- vergleichen\\
+	\[\begin{array}{c c c}
+		\delta & z_v & z_l\\
+		a,\Box & (a\Box, z_l) & \\
+		a,a    & {} & \{(aa,z_l),(\varepsilon,z_v)\}\\
+		a,b    & {} & \{(ab,z_l)\}\\
+		b,\Box\\
+		b,a\\
+		b,b\\
+	\end{array}\]
+\end{bsp}
+\begin{bemerk}
+	In der Literatur auch: PDA akzeptiert mit leerem Keller (ist äquivalent zu
+	unserem Akzeptanzbegriff) $\ra$ selber beweisen und dann verwenden!
+\end{bemerk}
+
+\begin{satz}\label{satz:3.4.4}
+	Eine Sprache ist genau dann kontextfrei, wenn sie von einem PDA akzeptiert
+	wird.
+\end{satz}
+
+\section{Deterministisch kontextfreie Sprachen}
+\underline{wissen}: "`DFA = NFA"', der Nichtdeterminismus bei endlichen
+Automaten bringt nichts Neues.
+
+Bedingungen: 
+\begin{enumerate}
+	\item $\delta : (\Sigma\cup \{\varepsilon\})\times \Gamma\times Z \ra
+	(\Gamma^{*}\times Z)$
+	\item $||\delta(a,A,Z)|| + ||\delta(\varepsilon,A,Z)|| \le 1$
+\end{enumerate}
+$\CF_{\textrm{det}}$ ist die Menge aller Sprachen, die von deterministischen PDA
+akzeptiert werden.\\
+Beobachtung: $\REG \subsetneq \CF_{\textrm{det}} \subsetneq \CF$
+
+\begin{satz}\label{satz:3.5.1}
+	$\CF_{\textrm{det}}$ ist abgeschlossen bezüglich:
+	\begin{enumerate}
+		\item Komplement
+		\item Schnitt bezüglich regulären Mengen
+		\item keiner weiteren Operation
+	\end{enumerate}
+\end{satz}
+\begin{folg}\label{folg:3.5.2}
+	\[ \CF_{\textrm{det}} \subsetneq \CF \]
+	\begin{proof}
+		folgt aus den Abschlusseigenschaften
+	\end{proof}
+\end{folg}
+\begin{proof}[von Satz \ref{satz:3.5.1}]
+	Zuerst \emph{Durchschnitt}: Die im Beweis, dass $\CF$ bezüglich Schnitt
+	nicht abgeschlossen ist, angegebenen Sprachen sind sogar in
+	$\CF_{\textrm{det}}$ und somit $L_1 \cap L_2 \notin \CF_{\textrm{det}}$.
+
+	Dann \emph{Vereinigung}: mit 1. und Durchschnitt
+
+	wir beweisen \emph{Komplement}:
+	\begin{lemm}\label{lemm:3.5.3}
+		zu jedem DPDA $M^{'}$ der für jede Eingabe $w\in \Sigma^{*}$ stets die
+		gesamte Eingabe abarbeitet, also
+		\[ \forall w\in \Sigma^{*}\ \exists z\in Z\ \exists \alpha\in
+		\Gamma^{*} : (w, \Box, z_0) \vdash_{M}^{*} (\varepsilon,\alpha,z) \]
+	\end{lemm}
+	Sei $A\subseteq \Sigma^{*}$ und $A\in \CF_{\textrm{det}}$. Sei $M$ ein
+	DPDA mit $\L(M)=A$; \obda sei $M$ ein DPDA, der die Eingabe vollständig
+	liest (s. \ref{lemm:3.5.3})\\
+	Wir definieren einen DPDA $\tilde{M} =
+	(\Sigma,\Gamma,Z\times\{+,-,f\},\tilde{z_0},\tilde{\delta},Z\times\{f\})$
+	mit 
+	\[\tilde{z_0} = \left\{
+		\begin{array}{l l} 
+			(z_0,+) & \textrm{ falls } z_0\in Z_E\\
+			(z_0,-) & \textrm{ falls } z_0\notin Z_E
+		\end{array}\right.\]
+	und ist $\delta(\varepsilon,A,z) = \{(\alpha,z^{'})\}$ für $A\in \Gamma$,
+	$\alpha\in \Gamma^{*}$, $z,z^{'}\in Z$, so ist
+	\[\tilde{\delta}(\varepsilon,A,(z,+)) = \{(\alpha,(z^{'},+))\}\] und
+	\[\tilde{\delta}(\varepsilon,A,(z,-)) = \left\{
+		\begin{array}{l l} 
+			(\alpha,(z^{'},+)) & \textrm{ falls } z^{'}\in Z_E\\
+			(\alpha,(z^{'},-)) & \textrm{ falls } z^{'}\notin Z_E
+		\end{array}\right.
+	\]
+	Ist $\delta(a,A,z)=\{(\alpha,z^{'})\}$ für $a\in \Sigma$, $A\in \Gamma$,
+	$\alpha\in \Gamma^{*}$, $z,z^{'}\in Z$, so ist 
+	\[\tilde{\delta}\left( (\varepsilon,A,(z,-))\right) = \{(A,(z,f))\}\]
+	und 
+	\[ \tilde{\delta}\left( (
+	a,A,(z,+))\right) = \left\{
+		\begin{array}{l l}
+			\{(\alpha,(z^{'},+))\} & \textrm{ falls } z^{'}\in Z_E\\
+			\{(\alpha,(z^{'},-))\} & \textrm{ falls } z^{'}\notin Z_E
+		\end{array}\right.
+	\]
+	In allen anderen Fällen ist $\tilde{\delta}=\emptyset$\\
+	Sei $w=a_1a_2\dots a_n \in \L(M)\ \Rightarrow $ es gibt eine 
+	Konfigurationenfolge von $M$
+	\[ (w,\Box,z) \vdash_{M}^{*} (a, A\beta, \tilde{z}) \vdash_M
+	(\varepsilon,\alpha\beta,z^{'})\] 
+	mit $a\in \Sigma\cup\{\varepsilon\},\,A\in \Gamma,\,\alpha,\beta\in
+	\Gamma^{*}$	und $z^{'}\in Z_E$
+
+	Für jede Konfigurationenfolge von $\tilde{M}$ gilt
+	\begin{enumerate}
+		\item falls $a=a_n$ bzw. $\delta(a_n,A,\tilde{z}) = \{(\alpha,z^{'})\}$
+		so endet die Konfigurationenfolge von $\tilde{M}$ so:
+		\[ \dots \vdash_{\tilde{M}} (\varepsilon, \alpha\beta, (z^{'},+)) \]
+		\item falls $a=\varepsilon$ bzw. $\delta(\varepsilon,A,\tilde{z}) =
+		\{(\alpha,z^{'})\}$ so endet die Konfigurationenfolge von
+		$\tilde{M}$ so:
+		\[ \dots \vdash_{\tilde{M}} (\varepsilon, \alpha\beta, (z^{'}, +)) \]
+	\end{enumerate}
+	$\Rightarrow w\notin \L(M)$
+
+	Sei nun $w = a_1\dots a_n \notin \L(M)$.\\
+	$\Rightarrow$ Für jede (endliche) Konfigurationenfolge von $M$ (gibt es
+	gemäß unserer Vorraussetzung) $(w,\Box,z_0) \vdash_{M}^{*} (a, A\beta,
+	\tilde{z}) \vdash_M (\varepsilon,\alpha\beta,z^{'})$ mit $a\in \Sigma\cup
+	\{\varepsilon\}$, $A\in \Gamma$, $\alpha,\beta\in \Gamma^{*}$,
+	$\tilde{z}\in Z$ gilt $z^{'}\notin Z_E$\\
+	$\Rightarrow$ Es gibt eine Konfigurationenfolge von $\tilde{M}$
+	\[ \dots \vdash_{\tilde{M}}^{*} (\varepsilon, \alpha\beta, (z^{'},-))
+	\vdash_{\tilde{M}} (\varepsilon,\alpha\beta,(z^{'}, f)) \]
+\end{proof}
+
+\section{Das Wortproblem für kontextfreie Sprachen}
+Wortproblem:\\
+\underline{gegeben}: Sprache $L \subseteq \Sigma^{*}$ in Form einer
+Grammatik oder eines Automaten\\
+\underline{gesucht}: $w\in L$?
+
+Wortproblem für reguläre Sprachen: Reguläre Sprache sei in Form eines DFA
+gegeben, so haben wir einen Algorithmus mit $O(n)$-Komplexität ($n=$ die Anzahl
+der Buchstaben in $w$).
+
+Sprachen werden uns in Form von CNF-Grammatiken gegeben. Sei $G=(\Sigma,N,S,R)$
+eine solche Grammatik. Sei $w=a_1\dots a_n \in \Sigma^{*}$ mit $a_i\in \Sigma$
+für $i=1,\dots,n$.\\
+\underline{Frage}: $w\in \L(G)$?\\
+\underline{naiver Ansatz}: Breitensuche im Ableitungsbaum (expotentielle
+Laufzeit)\\
+\underline{besser als naiv}: dynamische Programmierung.\\
+Wir betrachten folgende Mengen:
+\[ N[i,j] = \{A\in N : A \vdash_{G}^{*} a_ia_{i+1}\dots a_{i+j-1}\} \]
+mit $1\le i\le n$ und $1\le j\le n-i+1$.\\
+Offenbar ist $w\in \L(G) \leftrightarrow S\in N[1,n]$\\
+Außerdem gilt, da $G$ in CNF ist:
+\begin{align*}
+	N[i,1] &= \{ A\in N : A\vdash_{G}^{*} a_i\} = \{ A\in N : A \vdash_G a_i
+	\}\\
+	&= \{A\in N : (A\ra a_i)\in R)\}
+\end{align*}
+$\Rightarrow$ die $N[i,1]$ sind einfach zu bestimmen.
+Für $j\ge 2$ werden die $N[i,j]$ mit dynamischer Programmierung bestimmt: Sei
+$j\ge 2$. Offenbar gilt $A\in N[i,j]$, gdw.
+\begin{gather*}
+	A\ra BC\ \in R \textrm{ mit einem } B,C\in N \textrm{ und}\\
+	B\in N[i,l] \textrm{ und } C\in N[i+l,j-l] \textrm{ für ein } l\\
+	(B \vdash_{G}^{*} a_i\dots a_{i+l-1})\qquad (C\vdash_{G}^{*} a_{i+l}\dots
+	a_{i+j-1})
+\end{gather*}
+$\Rightarrow$ rekursive Beschreibung des $N[i,j]$:
+\[ N[i,j] = \bigcup_{l=1}^{j-1} \{ A\in N : \exists B,C \in N : ( (A\ra BC) \in
+R \wedge B\in N[i,l] \wedge C\in N[l-1,j-l] ) \} \]
+Das liefert im Wesentlichen den Algorithmus von Cocke, Younger, Kasami -
+\highl{CYK-Algorithmus}
+\begin{equation*}
+\begin{array}{|c c c c c}
+N[1,n]  \\
+N[1,n-1] & N[2,n-1]\\
+\vdots   & \vdots  & \ddots\\
+N[1,2]   & N[2,2]  & \hdots & N[n-1,2]\\
+N[1,1]   & N[2,1]  & \hdots & \hdots  & N[n,1]\\
+\hline
+a_1      & a_2     & \hdots & \hdots  & a_n
+\end{array}
+\end{equation*}
+\begin{algorithm}
+\caption{CYK-Algorithmus}
+\label{alg1}
+\begin{algorithmic}
+	\REQUIRE $w = a_1\dots a_n$
+	\FOR{$i=1,\dots,n$}
+		\STATE $N[i,1] = \{A\in N : (A\ra a_i)\in R\}$
+	\ENDFOR
+	\FOR{$j=2,\dots,n$}
+		\FOR{$i=1,\dots,n+1-j$}
+			\STATE $N[i,j] = \emptyset$
+			\FOR{$l=1,\dots,j-1$}
+				\STATE \vspace*{-6ex}\begin{multline*}N[i,j] = N[i,j] \cup \{A\in N : \exists
+				B,C\in N :\\ (A\ra BC)\in R \wedge B\in N[i,l] \wedge C\in
+				N[l+i,j-l]\}
+				\end{multline*}
+			\ENDFOR
+		\ENDFOR
+	\ENDFOR
+	\IF{$S\in N[1,n]$} \STATE \underline{return} $w\in \L(G)$
+	\ELSE \STATE \underline{return} $w\notin \L(G)$
+	\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\underline{Analyse}:\\
+Zeit: $O(n^3)$ (falls $G$ nicht in CNF gegeben + entsprechender Zeit für
+Umformung)\\
+Platz: $O(n^2)$
+
+\begin{bsp}\label{bsp:a1}
+	Betrachten einfaches Beispiel $w = aabb \in L$ mit
+	\[ L = \{ a^n b^n : n\ge 1 \}\qquad G = (\{a,b\},\{S,A,B,C\},S,R) \]
+	mit \[ R = \{ S\ra AB|AC,\ C\ra SB,\ A\ra a,\ B\ra b\} \]
+	mit $\L(G)=L$ und $G$ in CNF.
+
+	\begin{equation*}
+		\begin{array}{|c c c c}
+			\{S\}\\
+			\emptyset & \{C\}\\
+			\emptyset & \{S\} & \emptyset\\
+			\{A\} & \{A\} & \{B\} & \{B\}\\
+			\hline
+			a & a & b & b
+		\end{array}
+	\end{equation*}
+\end{bsp}
+
+\chapter{Kontexsensitive und $\L_0$-Sprachen}
+kontextsensitiv: nicht verkürzende Grammatik (Ausnahme $S\ra \varepsilon$)\\
+$\L_0$-Sprachen: (Normalform-)Grammatiken
+
+\section{Turingmaschinen}
+Entwickelt von Alan Turing 1936.
+
+\underline{Anschaulich}:\\
+\includegraphics{blatt20.pdf} 
+
+Arbeitsweise: abhängig vom gelesenen Symbol und
+dem aktuellen Zustand wird ein neues Symbol geschrieben, der Zustand verändert
+und der Kopf bewegt.
+
+\begin{defini}\label{def:4.1.1}
+Ein 7-Tupel $M=(\Sigma,\Gamma,Z,z_0,\delta,Z_E,\Box)$ heißt
+\highl{Turingmaschine} gdw. folgendes gilt:
+\begin{enumerate}
+	\item $\Sigma$ Eingabealphabet
+	\item $\Gamma$ Arbeitsalphabet, $\Box\in \Gamma$, $\Sigma\subseteq \Gamma$
+	\item $Z$ ist Zustandsmenge
+	\item $z_0\in Z$ Startzustand
+	\item $\delta : \Gamma\times Z\ra \PP_{\textrm{fin}}(\Gamma\times Z\times
+	\{L,R,0\})$
+	\item $Z_E\subseteq Z$ Endzustandsmenge
+	\item $\Box\in \Gamma$ Leersymbol
+\end{enumerate}
+\end{defini}
+
+\begin{bemerk}\label{bem:4.1.1}
+statt $\delta(z,a)=\{(b,\hat{z},L)\}$ schreiben wir $(a,z)\ra (b,\hat{z},L)$
+
+Um Berechnungen von TMs beschreiben zu können, benötigen wir den Begriff der
+Konfigurationen. Dazu benötigen wir folgende Informationen:
+\begin{itemize}
+	\item Was steht auf dem Band
+	\item Wie lautet der aktuelle Zustand
+	\item Wo steht der Kopf
+\end{itemize}
+Kodierung: \includegraphics[scale=0.5]{blatt20-2.pdf} $\Rightarrow$
+MO$\beta$ST (ein Wort aus $\Gamma^{*}\dot Z\dot \Gamma^{*}$)\\
+Eine Berechnung einer TM $M$ ist damit eine Folge von Konfigurationen mit
+Startkonfiguration $z_0 w$.
+\end{bemerk}
+
+\begin{defini}\label{def:4.1.2}
+Sei $M$ eine TM. Wir definieren eine binäre Relation $\vdash_M$ über
+$\Gamma^{*}\dot Z\dot \Gamma^{*}$, wobei $K\vdash_M K^{'}$ gerade bedeuten soll,
+dass $K^{'}$ in einem Takt aus $K$ hervorgeht.\\
+Sei $K=\alpha u z v\beta$ mit $\alpha,\beta\in \Gamma^{*}$, $u,v\in \Gamma$,
+$z\in Z$. Dann ist
+\begin{equation*} K^{'} = \left\{
+	\begin{array}{l l}
+		\alpha u \hat{v} z^{'}\beta & (v,z)\ra (\hat{v}, z^{'},R)\\
+		\alpha z^{'} u \hat{v} \beta & (v,z)\ra (\hat{v},z^{'},L)\\
+		\alpha u z^{'} \hat{v}\beta & (v,z)\ra (\hat{v}, z^{'}, 0)
+	\end{array}\right.
+\end{equation*}
+\end{defini}
+Wir betrachten die reflexive und transitive Hülle $\vdash_{M}^{*}$ von
+$\vdash_M$
+
+Die von $M$ akzeptierte Sprache $\L(M)$ ist definiert als:
+\[ \L(M) = \{w\in \Sigma^{*} : \exists z\in Z_E\ \exists \alpha,\beta\in
+\Gamma^{*} : z_0 w \vdash_{M}^{*} \alpha z \beta \} \]
+
+\begin{bsp}
+Eine TM für $L=\{a^n b^n c^n : n\ge 1\}$:
+\[
+M=\left\{ \{ a,b,c \}, \{ a,b,c,\$,\Box \}, \{ z_0,\dots,z_5,z_E \},
+\delta, z_0, \{ z_E \}, \Box \right\}
+\]
+\begin{tabular}{c | l l}
+      & Bedeutung              & Absicht\\
+\hline
+$z_0$ & Startzustand           & Starte neuen $(a,b,c)$-Zyklus\\
+$z_1$ & $a$ gemerkt            & $b$ suchen\\
+$z_2$ & $a$ und $b$ gemerkt    & $c$ suchen\\
+$z_3$ & $a,b$ und $c$ gefunden u. ersetzt  & rechten Rand suchen\\
+$z_4$ & rechten Rand erreicht  & Rücklauf und Test, ob alle $a,b,c$ ersetzt\\
+$z_5$ & Test nicht erfolgreich & zum linken Rand laufen, neuen Zyklus starten\\
+$z_E$ & alles gut              & Akzeptieren
+\end{tabular}
+
+$\begin{array}{l l l l l l l l}
+  & z_0 & z_1 & z_2 & z_3 & z_4 & z_5 & z_E\\
+a & (\$,z_1,R) & (a,z_1,R) & & & & (a,z_5,L)\\
+b & & (\$,z_2,R) & (b,z_2,R) & & & (b,z_5,L)\\
+c & & & (\$,z_3,R) & (c,z_3,R) & (c,z_5,L) & (c,z_5,L)\\
+\$ & (\$,z_0,R) & & (\Box,z_4,L) & (\$,z_4,L) & (\$,z_5,L)\\
+\Box & & & & & (\Box,z_E,0) & (\Box,z_0,R)
+\end{array}$
+\end{bsp}
+
+\begin{bemerk}\label{bem:4.1.2}
+Akzeptanzkriterien:
+\begin{description}
+	\item[PDA:] 
+		\begin{enumerate} 
+			\item akzeptieren mit Endzustand 
+			\item akzeptieren mit leerem Keller
+		\end{enumerate}
+	\item[TM:]
+		\begin{enumerate}
+			\item akzeptieren mit Endzustand
+			\item akzeptieren gdw. Berechnung anhält (keine Folgekonfiguration
+			vorhanden)
+		\end{enumerate}
+\end{description}
+\end{bemerk}
+
+\section{Linear beschränkte Turingmaschinen (LBA)}
+LBA sind TM, die den Bereich der Eingabe bei jeder Berechnung niemals verlassen.
+Dafür ist es zweckmäßig, dass linker und rechter Rand der Eingabe markiert
+sind.\\
+Dazu: Verdoppeln das Eingabealphabet $\Sigma = \Sigma\cup \hat{\Sigma}$ mit
+$\hat{\Sigma} = \{ \hat{a} : a\in \Sigma\}$. Statt Eingabe $x_1\dots x_n$
+arbeitet LBA mit Eingabe $\hat{x_1}x_2\dots x_{n-1} \hat{x_n}$.
+
+\begin{defini}\label{def:4.2.1}
+Eine TM $M=(\Sigma,\Gamma,Z,z_0,\delta,Z_E,\Box)$ heißt \highl{linear
+beschränkter Automat (LBA)}, falls für alle Wörter $x=x_1\dots x_n\in
+\Sigma^{*}$ und für alle Konfigurationen $\alpha z \beta$ von $M$ mit
+\[ z_0 x \vdash_{M}^{*} \alpha z \beta \textrm{ gilt: } |\alpha\beta| = n \]
+und kein $\Box$ jemals durch ein $u\in \Gamma$ überschrieben wird.
+\end{defini}
+
+Die von einem LBA $M$ akzeptierte Sprache $\L(M)$ ist
+\[ 
+\L(M) = \{ w = a_1\dots a_n \in \Sigma^{*} : \exists z\in Z_E\ \exists
+\alpha,\beta\in \Gamma^{*} : z_0\hat{a_1}a_2\dots a_{n-1}\hat{a_n}
+\vdash_{M}^{*} \alpha z \beta \}
+\]
+\begin{satz}\label{satz:4.2.2}
+Eine Sprache ist genau dann kontextsensitiv, wenn sie von einem LBA akzeptiert
+werden kann.
+\end{satz}
+\begin{satz}\label{satz:4.2.3}
+Es gilt $\CF\subsetneq \CS$
+\begin{proof}
+$\CF\subseteq \CS$ bekannt, aber $\{ a^n b^n c^n : n\in \N\} \in
+\CS\setminus\CF$
+\end{proof}
+\end{satz}
+\begin{bemerk}\label{bem:4.2.5}
+Können deterministische LBAs genausoviel wie nichtdeterministische LBAs?
+\end{bemerk}
+
+\section{$\L_0$-Sprachen}
+\begin{satz}\label{satz:4.3.1}
+	Eine Sprache gehört genau dann zu $\L_0$, wenn sie von einer
+	(nichtdeterministischen) TM akzeptiert werden kann.
+\end{satz}
+\begin{satz}\label{satz:4.3.2}
+	$\CS \subsetneq \L_0$, Beweisidee: Diagonalisierung, Beispiele.
+\end{satz}
+\begin{satz}\label{satz:4.3.3}
+	Es gibt Sprachen, die von keiner Grammatik generiert werden können.
+	\begin{proof}[mit Zählargument]
+		Sei $\Sigma$ unser Alphabet.
+		\begin{enumerate}
+			\item Wie viele Grammatiken $G=(\Sigma,N,S,R)$ gibt es?\\
+			Grammatiken können als Wörter über einem geeigneten Alphabet
+			$\Gamma$ notiert werden:
+			\[ \Gamma = \Sigma \cup \{ (,\ ),\ ,\ \triangle, \nabla \textrm{(für
+			die Nichtterminale)},\ S,\ \ra\} \]
+			Es gibt nur abzählbar unendlich viele Grammatiken.
+			\item Wie viele Sprachen gibt es? (Wie groß ist
+			$\PP(\Sigma^{*})$?)\\
+			\[ |\PP(\Sigma^{*})| = \aleph_1 \qquad \textrm{(überabzählbar
+			unendlich)} \]
+		\end{enumerate}
+		$\Rightarrow$ es gibt mehr Sprachen als Grammatiken, also auch Sprachen,
+		die von keiner Grammatik erzeugt werden.
+	\end{proof}
+\end{satz}
+
+\part{Berechenbarkeit}
+\chapter{Churchsche These}
+\section{Einführung}
+Was bedeutet Berechenbarkeit?\\
+Welche Funktionen sind (nicht) berechenbar?\\
+Ideen: Halteproblem, Wahrheitswertberechnungen, chaotische Funktionen (lassen
+sich nicht mit endlich vielen Zeichen beschreiben)
+
+Wir benötigen ein Berechenbarkeitsmodell:\\
+Ein intuitiver Berechenbarkeitsbegriff hängt vom Menschen ab. Wenn wir
+Berechenbarkeit formal definieren wollen, müssen wir ein zugrundeliegendes
+Berechenbarkeitsmodell definieren.\\
+Zum Beispiel: Papier-und-Stift-B., Maple-B., C++-B.
+
+\section{Grundlagen}
+$\N = \{0,1,2,\dots\}$\\
+$\N^{\N} = \tilde{\F_1}$ - Menge aller einstelligen (totalen)
+zahlentheoretischer Funktionen
+\begin{align*}
+	\tilde{\F_1} &= \N^{\N} & \F_1 &= \{f\ |\ f: \N\ra \N\}\\
+	\tilde{\F_2} &= \N^{\N\times\N} & \F_2 &= \{f\ |\ f: \N\times\N \ra \N\}\\
+	\tilde{\F} &= \bigcup_{i\in\N}\tilde{\F_i} & \F &= \bigcup_{i\in\N}\F_i
+\end{align*}
+
+\section{Turing-Berechenbarkeit}
+\begin{defini}\label{def:5.3.1}
+	Eine Funktion $f\in \F_i$ heißt Turing-berechenbar, genau dann wenn es eine TM
+	$M=(\{0,1,\dots,9,\#\},\Gamma, Z,z_0,\delta,Z_E,\Box)$ gibt, so dass für alle
+	$(n_1,\dots,n_i)\in \N^i$ gilt:
+	\begin{enumerate}
+		\item $(n_1,\dots,n_i)\in D_f \leftrightarrow$ $M$ erreicht bei Eingabe
+			von $n_1\#n_2\#\dots\#n_i$ einen Zustand aus $Z_E$
+		\item $(n_1,\dots,n_i)\in D_f \leftrightarrow$ es gibt ein $z\in Z_E$
+			und $x\in \Gamma^{*}$, so dass $z_0n_1\#n_2\#\dots\#n_i
+			\vdash_{M}^{*} \alpha z m$, wobei $m=f(n_1,\dots,n_i)$ ($\alpha z m$
+			liegt vor bei erstmaligem Erreichen eines Zustandes $z\in Z_E$)
+	\end{enumerate}
+\end{defini}
+\begin{bemerk}\label{bem:5.3.1}
+	Die TM transformiert das Eingabewort in endlich vielen Schritten so, dass
+	der "`Zeiger"' (Lesekopf) der TM am Beginn des Rückgabewertes steht und
+	rechts vom Rückgabewert nur noch Leersymbole stehen (links vom Lesekopf kann
+	alles mögliche stehen)
+\end{bemerk}
+\begin{bsp}\label{bsp:5.3.1}
+	Eine TM für $f(x) = x+1$:
+	$M=(\{|\},\{|,\Box\},\{z_0,z\},z_0,\delta,\{z\},\Box)$
+	\[ \begin{array}{l | l l}
+		\delta & z_0 & z\\
+		\hline
+		| & (|,z_0,L)\\
+		\Box & (|,z,0)
+	\end{array} \]
+\end{bsp}
+Betrachten folgende Funktion:
+\[ \chi_A(x) = 
+\begin{cases}
+	1 & \textrm{falls } x\in A\\
+	n.d. & \textrm{sonst}
+\end{cases} \]
+$\chi_A$ ist Turing-berechenbar: modifizieren $M$ so zu $M^{'}$:
+\begin{itemize}
+	\item $M^{'}(x)$ simuliert $M(x)$
+	\item gerät $M(x)$ in einen Endzustand und ist $\alpha z \beta$, $z\in Z_E$
+		die Konfiguration von $M$, so ersetzt $M^{'}$ $\beta$ durch $1$ und geht
+		in einen Endzustand $z^{'}\in Z^{'}_E$
+\end{itemize}
+$\Rightarrow$ partiell charakteristische $\chi_A$ für $A\in \L_0$ sind
+turing-berechenbar.
+
+Wie steht es mit der charakteristischen Funktion?\\
+Ist $A\subseteq \Sigma^{*}$ so ist $c_A$ die charakteristische Funktion von $A$,
+\[ c_A =
+\begin{cases}
+	1 & \textrm{für } x\in A\\
+	0 & \textrm{für } x\notin A
+\end{cases}
+\]
+Ist $c_A$ turing-berechenbar? (später: ganz sicher nicht!)
+
+\section{Andere Typen von Turing-Maschinen}
+Bisher hatten wir \emph{nichtdeterministische} und \emph{deterministische}
+Turing-Maschinen.\\
+Was können wir noch verändern?
+\begin{itemize}
+	\item mehrdimensionale Bänder
+	\item mehrere Köpfe
+	\item zusätzliche Bänder
+	\item Bänder mit speziellen Funktionen (Eingabeband, Ausgabeband,
+		Rechenband,\dots)
+\end{itemize}
+
+\begin{satz}\label{satz:5.4.1}
+	Alle genannten Typen von Turingmaschinen (und Kombinationen davon) sind im
+	Hinblick auf ihre Berechnungskraft äquivalent.
+\end{satz}
+\begin{bemerk}\label{bem:5.4.1}
+	wichtig ist die \emph{endliche} Beschreibung!
+\end{bemerk}
+
+\section{Die Churchsche These}
+\begin{satz}[Churchsche These]\label{satz:5.5.1}
+	Die durch die formale Definition der Turing-Berechenbarkeit erfasste Klasse
+	von Funktionen stimmt genau mit der Klasse der im primitiven Sinne
+	berechenbaren Funktionen überein.
+\end{satz}
+\begin{bemerk}\label{bem:5.5.1}
+	Kein Beweis, lediglich Plausibilitätsbetrachtung. Beachte: die These trifft
+	keine Effizienzaussage, es zählt nur die reine Berechenbarkeit.
+\end{bemerk}
+
+\chapter{Primitv rekursive und partiell rekursive Funktionen}
+\underline{Idee}: 
+\begin{itemize}
+	\item starten mit ganz wenigen, einfachen Funktionen
+	\item definieren ein paar einfache Operationen, die aus Funktionen neue
+		Funktionen machen
+\end{itemize}
+
+\section{Primitiv rekursive Funktionen}
+\begin{defini}\label{def:6.1.1}
+	Grundfunktionen ($E$)
+	\begin{enumerate}
+		\item Nachfolgerfunktion: $\SUCC : \N\mapsto \N : \SUCC(n) = n+1$
+		\item konstante Funktion: $C_k^m : \N^m\mapsto \N : C(m_1,\dots,m_m) =
+			k$
+		\item Projektionsfunktionen: $id_l^m : \N^m\mapsto \N :
+			id_l^m(m_1,\dots,m_m) = m_l$
+	\end{enumerate}
+	Die genannten Funktionen bilden die Menge $E$ der Grundfunktionen.
+\end{defini}
+Jetzt die Operationen:
+\begin{defini}\label{def:6.1.2}
+	\begin{description}
+		\item[Substitution:] $\SUB_i^m :
+			\F_i\times\underbrace{(\F_m)^i}_{i\times\F_m\textrm{-stellige
+			Funktionen}}$\\
+			Ist $g\in \F_i$ und sind $h_1,\dots,h_i\in \F_m$, so ist die
+			Funktion $\SUB_i^m(g,h_1,\dots,h_i)$ definiert durch:
+			\[ \SUB_i^m(g,h_1,\dots,h_i)(n_1,\dots,n_m) =
+			g(h_1(n_1,\dots,n_m),\dots,h_i(n_1,\dots,n_m)) \]
+		\item[Primitive Rekursion:] $\PR^{m+1} : \F_m\times\F_{m+2} \mapsto
+			\F_{m+1}$\\
+			Sind $g\in \F_m$ und $h\in \F_{m+2}$, so ist die Funktion $f =
+			\PR^{m+1}(g,h)$ definiert durch:
+			\begin{align*} 
+				f(0,n_1,\dots,n_m) &= g(n_1,\dots,n_m)\\
+				f(n+1,n_1,\dots,n_m) &= h(n,n_1,\dots,n_m, f(n,n_1,\dots,n_m))
+			\end{align*}
+	\end{description}
+\end{defini}
+\begin{bsp}\label{bsp:6.1.2}
+	\[ \SUB_1^1(\SUCC,\SUCC)(n) = n+2 \]
+	ähnlich $n+k$: $n+5 =
+	\SUB(\SUCC,\SUB_1^1(\SUCC,\SUB_1^1(\SUCC,\SUB_1^1(succ,succ))))$
+
+	$\PR^3(\SUCC, id_3^3) = f$\\
+	\begin{align*}
+		f(0,m) &= \SUCC(m) = m+1\\
+		f(n+1,m) &= id_3^3(n,m,f(n,m)) = f(n,m)\\
+		f(n,m) &= m+1
+	\end{align*}
+	
+	\underline{Addition}: $add(n,m) = n+m$, $add(0,m) = m$, $add(n+1,m) =
+	add(n,m) + 1$\\
+	Damit gilt für $add = \PR(g,h)$: 
+	\begin{gather*}
+		g(m) = m\mapsto g=id_1^1\\
+		h(n,m,add(n,m)) = \SUCC(id_3^3(n,m,add(n,m)))\\
+		h = \SUB_1^3(\SUCC,id_3^3)
+	\end{gather*}
+	Damit ist $add = \PR(id_1^1, \SUB_1^3(\SUCC, id_3^3))$
+\end{bsp}
+
+\begin{defini}\label{def:6.1.3}
+	Die Klasse $\Prr$ der primitv rekursiven Funktionen ist definiert als 
+	\[ \Prr = \Gamma_{\{\SUB,\PR\}} (\{\SUCC\}\cup\{c_k^m : m,k\in\N\}\cup
+	\{id_l^m : 1\le l\le m\}) \]
+	der Menge aller Funktionen, die sich durch endlichmalige Anwendung von $\SUB$
+	und $\PR$ aus den Grundfunktionen gewinnen lassen.
+\end{defini}
+\begin{bemerk}\label{bem:6.1.3}
+	$\Gamma_{\{\SUB,\PR\}}(E)$ ist algebraische Hülle auf $E$.
+\end{bemerk}
+
+\section{Beispiele für primitiv rekursive Funktionen}
+\underline{Multiplikation}:\\
+mult: $\N^2\mapsto \N$ mit mult$(n,m) = n\cdot m$
+\begin{gather*}
+	\textrm{mult}(0,m) = 0 = g(m)\\
+	\textrm{mult}(n+1,m) = \textrm{mult}(n,m) + m = h(n,m,\textrm{mult}(n,m))
+\end{gather*}
+Damit gilt für mult $= \PR(g,h)$:
+\begin{gather*}
+	g = C_0^1\\
+	h = \SUB_2^3(\textrm{add}, id_2^3, id_3^3)
+\end{gather*}
+$\Rightarrow$ mult $= \PR(C_0^1, \SUB_2^3(\textrm{add}, id_2^3, id_3^3))$
+
+\underline{Potenz}:\\
+pot: $\N^2\mapsto \N$ pot$(n,m)=m^n$
+\begin{gather*}
+	\textrm{pot}(0,m) = 1 = g(m) \ra g = C_1^1\\
+	\textrm{pot}(n+1,m) = m\cdot \textrm{pot}(n,m) = h(n,m,\textrm{pot}(n,m))\\
+	\Rightarrow h = \SUB_2^3(\textrm{mult}, id_2^3, id_3^3)
+\end{gather*}
+
+\underline{$\hat{\textrm{pot}}$}: $\N^2\mapsto \N$ $\hat{\textrm{pot}}(n,m) =
+n^m$
+\[ \hat{\textrm{pot}} = \SUB_2^2(\textrm{pot}, id_2^2, id_1^2) \]
+
+\underline{modifizierter Vorgänger}:\\
+pred: $\N\mapsto \N$ 
+pred$(n) = 
+\begin{cases} 
+	0 & \textrm{für } n=0\\ 
+	n-1 & \textrm{für } n\ne 0
+\end{cases}$
+\begin{gather*}
+	\textrm{pred}(0) = 0 \textrm{ ($g$ müsste nullstellige Funktion $C_0^0$
+	sein)}\\
+	\textrm{pred}(n+1) = 1 + \textrm{pred}(n)\\
+	h(n,\textrm{pred}(n)) \ra h = \SUB_1^2(\SUCC, id_2^2)
+\end{gather*}
+Umweg über eine zweistellige Vorgängerfunktion:\\
+\[ \textrm{pred}_2(n,m) = 
+\begin{cases}
+	0 & \textrm{falls } n=0\\
+	n-1 & \textrm{sonst}
+\end{cases} \]
+\begin{gather*}
+	\textrm{pred}_2(0,m) = 0\qquad \ra g = C_0^1\\
+	\textrm{pred}_2(n+1,m) = 1 + \textrm{pred}_2(n,m)\qquad \ra
+	h(n,m,\textrm{pred}_2(n,m))\\
+	h = \SUB_1^3(\SUCC,id_3^3)\\
+	\textrm{pred}_2 = \PR(C_0^1,\SUB_1^3(\SUCC,id_3^3))
+\end{gather*}
+Daraus gewinnt man durch einfache Substitution die Vorgängerfunktion:
+\[ \textrm{pred}(n) = \textrm{pred}(n,n)\qquad \textrm{pred} =
+\SUB_2^1(\textrm{pred}_2, id_1^1, id_1^1) \]
+
+Weitere Beispiele könnten sein: ganzzahlige Division, Rest, Teiler,
+Primzahltest, Primzahlanzahl, Primfaktorzerlegung,\dots
+
+\section{Weitere Rekursionsarten}
+\subsection*{Werteverlaufsrekursion}
+\begin{bsp}\label{bsp:6.3.0}
+	Fibonaccizahlen $F_i$:
+	\begin{gather*}
+		F_0 = F_1  = 1\\
+		F_{n+1} = F_n + F_{n-1}
+	\end{gather*}
+\end{bsp}
+Die Funktion geht durch Werteverlaufsrekursion aus den Funktionen
+$g_0,g_1,g_2,\dots,g_k,h$ hervor, genau dann, wenn gilt:
+\begin{gather*}
+	f(0,n_1,\dots,n_m) = g_0(n_1,\dots,n_m)\\
+	f(1,n_1,\dots,n_m) = g_1(n_1,\dots,n_m)\\
+	\vdots\\
+	f(k,n_1,\dots,n_m) = g_k(n_1,\dots,n_m)\end{gather*}
+\begin{align*}
+	f(n+1,n_1,\dots,n_m) = h( & n,n_1,\dots,n_m,\\
+	 & f(n,n_1,\dots,n_m),f(n-1,n_1,\dots,n_m),\dots,f(n-l,n_1,\dots,n_m))\\
+	 & n+1 > k,\quad l\le k
+\end{align*}
+
+\begin{satz}\label{satz:6.3.1}
+	Die Klasse $\Pr$ ist abgeschlossen bezüglich Werteverlaufsrekursion.
+	\begin{proof}
+		Sieen $g_0,\dots,g_n,h\in \Pr$ und sei $f$ durch Werteverlaufsrekursion
+		basierend auf $g_0,\dots,g_k,h$ definiert\\
+		z.z.: $f\in \Pr$ (\obda $f$ einstellig)\\
+		Wir wählen eine clevere Codierung für die Funktionswerte
+		$f(0),f(1),\dots,f(n)$:
+		\[ \varphi(n) = \prod_{i=0} pz(i)^{f(i)} \]
+		$pz(i)$ steht hier für die Funktion, die die $i$-te Primzahl
+		errechnet ($p(0)=2,p(1)=3,\dots$).\\
+		(Idee: $f(n)$ kann leicht aus $\varphi(n)$ gewonnen werden und
+		$\varphi\in\Pr$)
+
+		Behauptung: $\varphi\in \Pr$
+
+		\underline{Beweis}: $\varphi(0) = 2^{f(0)}$ bzw. $\varphi(0)=2^{a_0}$
+		mit $a_0=f(0)$\\
+		$\varphi(n+1) = \varphi(n)\cdot pz(n+1)^{f(n+1)} = \varphi(n)\cdot
+		pz(n+1)^{g(n,\varphi(n))}$\\
+		wobei $g$ so beschaffen sein soll, dass $f(n+1) = g(n,\varphi(n))$.\\
+		$\Rightarrow$ $\varphi$ lässt sich mittels primitver Rekursion und $pz,
+		g, C_{a_0}^1$ beschreiben.\\
+		$\Rightarrow$ $\varphi\in \Pr$
+	\end{proof}
+\end{satz}
+\begin{bemerk}\label{bem:6.3.1}
+	$g\in\Pr$? $g$ stellt basierend auf $\varphi(n)$ und $n$ den Wert $f(n+1)$
+	zur Verfügung.
+	\[ g(n,\varphi(n)) \stackrel{!}{=} f(n+1) = h(n,f(n),f(n-1),\dots,f(f(n-l)))
+	\]
+	$\Rightarrow$ $g(n,\varphi(n)) =
+	h(n,exp(pz(n),\varphi(n)),exp(pz(n-1),\varphi(n)),\dots,exp(pz(n-l),\varphi(n)))$\\
+	$g$ lässt sich mittels $\SUB$ und $exp$ (Exponent von $pz(a)$ in der
+	Primfaktorzerlegung von $n$), $pz$, $div$ und Vorgängerfunktion ausdrücken.
+\end{bemerk}
+
+\subsection*{Simultanrekursion}
+$f_1(0) = k_1\qquad f_2(0) = k_2$\\
+$f_1(n+1) = h_1(n,f_1(n),f_2(n))\qquad f_2(n+1) = h_2(n,f_1,(n),f_2(n))$
+
+Beispiel: $f(2n) = f_1(n)$ und $f(2n+1) = f_2(n)$
+
+\begin{satz}\label{satz:6.3.2}
+	$\Prr$ ist abgeschlossen bezüglich simultaner Rekursion.
+	\begin{proof}
+		Seien $h_1,h_2\in \Prr$ und $k_1,k_2\in \N$\\
+		Sei $f_1(0)=k_1$ und $f_2(0)=k_2$ und $f_1(n+1) = h_1(\dots)$ und
+		$f_2(n+1) = h_2(\dots)$ wie oben.
+		\[ f(n) =
+		\begin{cases}
+			f_1(\frac{n}{2}) & n\textrm{ gerade}\\
+			f_2(\frac{n-1}{2}) & n \textrm{ ungerade}
+		\end{cases} \]
+		$\Rightarrow$ $f(0) = k_1$ und $f(1) = k_2$
+
+		\begin{gather*}
+			f(2n+2) = f_1(n+1) = h_1(n,f_1(n),f_2(n))\\
+			f(2n+3) = f_2(n+1) = h_2(n,f_1(n),f_2(n))
+		\end{gather*}
+		bzw.
+		\[ f(n+1) = 
+		\begin{cases}
+			h_2(\frac{n-2}{2},f(n-2),f(n-1)) & n\textrm{ gerade}\\
+			h_1(\frac{n-1}{2},f(n-1),f(n))   & n\textrm{ ungerade}
+		\end{cases} \]
+
+		Zudem ist 
+		\begin{gather*}
+			n\textrm{ gerade }\leftrightarrow\ \overline{\sgn}(\mod(n,2))=1\\
+			n\textrm{ ungerade }\leftrightarrow\ \overline{\sgn}(\mod(n,2))=1\\
+		\end{gather*}
+
+		$\ra\ f$ ist durch Werteverlaufsrekursion und Fallunterscheidung
+		definiert $\Rightarrow\ f\in\Prr$.
+	\end{proof}
+\end{satz}
+Gibt es Funktionen, die man vernünftigerweise als berechenbar ansehen sollte,
+die aber nicht in $\Prr$ liegen?\\
+Antwort: \emph{ja}: alle Funktionen in $\Prr$ sind total. Allerdings ist die
+Funktion $nd : \N\mapsto\N$ mit $nd(n) = $ n.d. für alle $n$ als berechenbar
+anzusehen.
+
+Gibt es auch totale Funktionen, die zwar vernünftigerweise als berechenbar
+gelten, aber nicht in $\Prr$ liegen?\\
+Antwort: \emph{ja}.
+
+\section{Allgemein rekursive und partiell rekursive Funktionen}
+Wir überlegen zunächst, dass D. Hilbert mit seiner Aussage, es gebe keine
+berechenbaren, totalen Funktionen au\ss{}erhalb von $\Prr$, irrte.
+
+nicht konstruktiv:\\
+jede Funktion in $\Prr$ lässt sich als Wort über einem geeigneten Alphabet
+$\Gamma$ darstellen. Man kann alle Wörter über $\Gamma$ nummerieren. Man kann
+weiter alle Wörter über $\Gamma$ nummerieren, die zu Funktionen in $\Prr$
+gehören. Also kann man Funktionen in $\Prr$ mittels ihrer Wörter nummerieren.\\
+Jetzt definieren wir eine Funktion mittels Diagonalisierung:
+\[ \begin{array}{l l l l}
+	N & 0 & 1 & \dots\\
+	f_0\\
+	f_1\\
+	\vdots
+\end{array} \]
+$f(n) = f_n(n) +1$ - offenbar ist die Funktion einstellig total, aber nicht
+$\in\Prr$, jedoch sehr wohl XFOO++ berechenbar.
+
+\begin{defini}\label{def:6.4.3}
+	Die Peter-Funktion (auch \highl{Ackermann-Funktion})
+	\[ P : \N^2\mapsto \N \]
+	ist definiert durch
+	\begin{gather*}
+		P(0,x) = y+1\\
+		P(x+1,0) = P(x,1)\\
+		P(x+1,y+1) = P(x,P(x+1,y))
+	\end{gather*}
+\end{defini}
+\begin{bemerk}\label{bem:6.4.3}
+	Vernünftigerweise ist diese Funktion berechenbar, aber nicht primitiv
+	rekursiv.
+\end{bemerk}
+\begin{bsp}\label{bsp:6.4.3}
+	\begin{gather*}
+		P(0,y) = y+1\\
+		P(1,0) = P(0,1) = 2 \qquad \ra\ P(1,y) = y+2\\
+		P(1,y+1) = P(0,P(1,y)) = P(1,y) + 1\\
+		P(2,0) = P(1,1) = 3\\
+		P(2,y+1) = P(1,P(2,y)) = P(2,y)+2 \qquad \ra\ P(3,y) = 2y+3\\
+		P(3,0) = P(2,1) = 5\\
+		P(3,y+1) = P(2,P(3,y)) = 2\cdot P(3,y) + 3 \qquad \ra\ P(3,y) =
+		2^{y+3}-3\\
+		P(4,0) = P(3,1) = 2^{1+3} -3 = 13\\
+		P(4,y+1) = P(3,P(4,y)) = 2^{P(4,y)+3} -3\qquad \ra\ P(4,y) =
+		2^{\underbrace{\ddots 2^{16}}_{y\textrm{-mal}}} -3\\
+		P(4,1) = 2^{13+3} -3 = 65.533\\
+		P(4,2) = 2^{2^{16}} -3 = ? \leftarrow\textrm{ Zahl mit 21.000
+		Dezimalstellen}
+	\end{gather*}
+\end{bsp}
+
+\begin{satz}\label{satz:6.4.4}
+	$P\notin\Prr$
+\end{satz}
+Wie könnte man $\Prr$ erweitern, um alle berechenbaren Funktionen beschreiben zu
+können?
+
+\begin{defini}\label{def:6.4.5}
+	Der $\mu$-Operator
+
+	Ist $g\in \F_{m+1}$ so ist $f=\mu g$ (ausführlich schreibt man
+	$f(n_1,\dots,n_m) = \mu g(g(n_1,\dots,n_m,y) = 0)$) genau dann wenn
+	\begin{enumerate}
+		\item $f(n_1,\dots,n_m) = \min{y\in\N : g(n_1,\dots,n_m,y) = 0}$ sofern
+			dieses Minimum existiert \underline{und} für alle $m< \min{y\in\N :
+			g(n_1,\dots,n_m,y) = 0}$ der Funktionswert $g(n_1,\dots,n_m,m)$
+			definiert ist
+		\item In allen anderen Fällen ist $f$ nicht definiert
+	\end{enumerate}
+\end{defini}
+
+\begin{bemerk}\label{bem:6.4.5}
+	Das entspricht einer while-Schleife
+	\begin{algorithmic}
+		\WHILE{$g(n_1,\dots,n_m,x) \ne 0$}
+			\STATE $x := x+1;$
+		\ENDWHILE
+		\STATE OUTPUT $x$
+	\end{algorithmic}
+\end{bemerk}
+Beispiel: die nirgends definierte Funktion $g(n,m) = C_1^2(n,m)$
+
+\begin{defini}\label{def:6.4.6}
+	Die Klasse der \highl{partiell rekursiven Funktionen} $\PP$ ist definiert
+	durch
+	\[ \PP = \Gamma_{\{\SUB,\PR,\mu\}}(E) \]
+\end{defini}
+\begin{bemerk}\label{bem:6.4.6}
+	Man kann zeigen: $\PP = \Gamma_{\{\mu\}}(\Prr)$
+\end{bemerk}
+\begin{defini}\label{def:6.4.7}
+	Die Klasse der \highl{allgemein rekursiven Funktionen} $\R$ ist definiert
+	als Menge der totalen Funktionen in $\PP$.
+\end{defini}
+
+\begin{satz}\label{satz:6.4.8}
+	Es gilt:
+	\[ \emptyset \subsetneq \Prr \subsetneq \R \subsetneq \PP \subsetneq \F \]
+	\includegraphics{blatt28.pdf}
+\end{satz}
+
+Wir wollen uns mit dem Zusammenhang zwischen $\PP$ und der Menge der
+Turing-berechenbaren Funktionen befassen.\\
+"`$\PP \subseteq $ TM-berechenbar"' zeigt, dass Bestandteile von $f\in \PP$ von
+TM simuliert werden können.
+
+\end{document}
