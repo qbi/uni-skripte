@@ -84,6 +84,7 @@
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{folger}{Folgerung}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -116,6 +117,7 @@
 \newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
 \newcommand*{\PZ}{\mathbb{P}}     % Primzahlen
+\newcommand*{\F}{\mathbb{F}}      % der |F-Körper
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -172,6 +174,26 @@
 			      {\hspace\labelsep\normalfont ##1}%
 		 \begin{description}}%
 		 {\end{description}}
+
+% Nach Vorschlag von Norbert Stuhrmann in
+% <news:e6kc7d$pr8$1@f1node01.rhrz.uni-bonn.de>
+\newcounter{falli}
+\newcounter{fallii}
+\newcounter{falldepth}
+\setcounter{falldepth}{0}
+\newcommand{\falliformat}{\itshape Fall \arabic{falli}:}
+\newcommand{\falliiformat}{\falliformat\alph{fallii}}
+\newenvironment*{faelle}%
+     {\stepcounter{falldepth}%
+      \begin{list}{\csname fall\roman{falldepth}format\endcsname}
+                  {\usecounter{fall\roman{falldepth}}%
+           \settowidth{\labelwidth}{\csname fall\roman{falldepth}\endcsname}%
+                      \setlength{\leftmargin}{1.3cm}%
+                      \setlength{\itemindent}{3mm}%
+                      \addtolength{\itemindent}{\labelwidth}%
+                      \addtolength{\itemindent}{-\leftmargin}%
+                    }}%
+             {\end{list}\addtocounter{falldepth}{-1}}
 
 \DeclareMathOperator{\card}{card}
 
@@ -268,7 +290,7 @@ Die Standardbezeichnung der Menge der ganzen Zahlen ist $\Z = \{ \dotsc, -2,
 Eigenschaften.
 
 \begin{defini}
-  $a,b\in\Z$, $a|b$ (gespr. $a$ teilt $b$) $:=$ $\exists c\in\Z\colon b=ac$.
+  $a,b\in\Z$, $a\vert b$ (gespr. $a$ teilt $b$) $:=$ $\exists c\in\Z\colon b=ac$.
 \end{defini}
 
 \begin{bemerk}
@@ -300,7 +322,7 @@ Die aktuell, größe Primzahl von heute morgen ist $2^{32582657}-1$. Quelle GIMPS.
 
 \begin{proof}[T. Stieltjes (1890)]
   Sei $\PZ = \{p_{1},\dotsc, p_{n}\}$ und $D=p_{1}\cdot \dotsm \cdot p_{n}$.
-  Zerlege $D=m\cdot n$, $m,n> 1$. Für jede Primzahl gilt: $p|m$ oder $p|n$ ,
+  Zerlege $D=m\cdot n$, $m,n> 1$. Für jede Primzahl gilt: $p\vert m$ oder $p\vert n$ ,
   aber nicht beide. Also hat $m+n$ keine Primteiler.
 \end{proof}
 
@@ -400,7 +422,7 @@ erzeugt also durch Vereinigung die Topologie auf $\Z$.
 
   Es folgt:
   \begin{gather*}
-    p^{\alpha p} || \binom{n}{k} \Rightarrow p^{\alpha p} \leq n
+    p^{\alpha p} \Vert \binom{n}{k} \Rightarrow p^{\alpha p} \leq n
   \end{gather*}
   Also
   \begin{gather*}
@@ -484,7 +506,7 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
   $r_{n}$ ist der größte gemeinsame Teiler von $a$ und $b$.
 
   \begin{proof}
-    Von unten nach oben: $r_{n}| r_{n-1}, r_{n-2}, \dotsc, b, a$.
+    Von unten nach oben: $r_{n}\vert  r_{n-1}, r_{n-2}, \dotsc, b, a$.
 
     Sei $d$ Teiler von $a$ und $b$. Von oben nach unten: $d$ teilt $r_{n}$.
   \end{proof}
@@ -497,7 +519,7 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 \end{defini}
 
 \begin{folger}
-  Der $\ggt$ von $a,b$ ist $\Z$-Linearkombination von $a$ und $b$:
+  Der $\operatorname{ggT}$ von $a,b$ ist $\Z$-Linearkombination von $a$ und $b$:
   \begin{gather*}
     \exists x,y\in\Z\colon (a,b) = xa + yb
   \end{gather*}
@@ -508,11 +530,11 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 \end{folger}
 
 \begin{folger}
-  Sei $p\in\P, a,b\in\Z$. Dann gilt: $p|ab$ $\Rightarrow$ $p|a$ oder $p|b$.
+  Sei $p\in\PZ, a,b\in\Z$. Dann gilt: $p\vert ab$ $\Rightarrow$ $p\vert a$ oder $p\vert b$.
 
   \begin{proof}
-    Annahme: $p\not| b$ $\Rightarrow$ $(p,b)=1$ $\Rightarrow$ $xp+yb = 1$
-    $\Rightarrow$ $xap + yab = a$ $\Rightarrow$ $p|a$.
+    Annahme: $p\not\vert  b$ $\Rightarrow$ $(p,b)=1$ $\Rightarrow$ $xp+yb = 1$
+    $\Rightarrow$ $xap + yab = a$ $\Rightarrow$ $p\vert a$.
   \end{proof}
 \end{folger}
 
@@ -525,12 +547,12 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 
     \begin{description}
      \item[Exisitenz:] Induktion: richtig für alle $m<n$, ist
-      $n\in\Primzahl$, so fertig. sonst: $n=kl, k>1, l>1$ $\Rightarrow$
+      $n\in\PZ$, so fertig. sonst: $n=kl, k>1, l>1$ $\Rightarrow$
       $k<n, l <n$ $\Rightarrow$ IV.
 
      \item[Eindeutigkeit] $p_{1}^{a_{1}}\dotsm p_{r}^{a_{r}} =
       q_{1}^{b_{1}}\dotsm q_{s}^{b_{s}}$. $p_{1}$ teil RHS $\Rightarrow$
-      $p\teilt q_{j}^{b_{j}}$ $\Rightarrow$ $p_{1}=q_{j}$. Teile durch
+      $p\vert q_{j}^{b_{j}}$ $\Rightarrow$ $p_{1}=q_{j}$. Teile durch
       $p_{1}$ und IV.
     \end{description}
   \end{proof}
@@ -591,8 +613,8 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 \end{bsp}
 
 \begin{fakt}
-  Für $m=p\in\Primzahl$ ist $\nicefrac{\Z}{p\Z} = \F_{p}$ ein
-  \highl{Körper}. Für $m\not\in\P$ ist $\nicefrac{\Z}{p\Z}$ kein Körper.
+  Für $m=p\in\PZ$ ist $\nicefrac{\Z}{p\Z} = \F_{p}$ ein
+  \highl{Körper}. Für $m\not\in\PZ$ ist $\nicefrac{\Z}{p\Z}$ kein Körper.
 
   \begin{proof}
     $m=a\cdot b, a>1, b>1$. Dann gilt $\nicefrac{\Z}{m\Z}\colon ab=0$,
@@ -626,8 +648,8 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
   \times \nicefrac{\Z}{b\Z}$ ist eindeutig.
 
   \begin{proof}
-    Sei das Bild von $x+ab\Z$ gleich $(0,0)$ $\Rightarrow$ $a\teilt x,
-    b\teilt x$, wegen $(a,b) =1$ folgt $ab\teilt x$. Also $x+ab\Z=0$.
+    Sei das Bild von $x+ab\Z$ gleich $(0,0)$ $\Rightarrow$ $a\vert x,
+    b\vert x$, wegen $(a,b) =1$ folgt $ab\vert x$. Also $x+ab\Z=0$.
   \end{proof}
 \end{fakt}
 
@@ -644,7 +666,7 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 
 \begin{fakt}
   \begin{gather*}
-    \phi(m) = m \prod_{p\teilt m} (1-\frac{1}{p})
+    \phi(m) = m \prod_{p\vert m} (1-\frac{1}{p})
   \end{gather*}
 
   \begin{proof}
@@ -671,7 +693,7 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 \end{fakt}
 
 \begin{fakt}[kleiner Fermat'scher Satz]
-  Ist $a$ prime Restklasse modulo $m$, so gilt $a^{\phi(m)} \kongr 1(mod
+  Ist $a$ prime Restklasse modulo $m$, so gilt $a^{\phi(m)} \equiv 1(mod
   m)$ oder in $\nicefrac{\Z}{m\Z}$: $a^{\phi(m)} =1$.
 
   \begin{proof}
@@ -688,21 +710,21 @@ Wei\help{was heißt das?} : $q_{1}=q, r_{1}=r$
 
   \begin{proof}
     \begin{gather*}
-      10^{p-1} \kongr 1 (mod p)
+      10^{p-1} \equiv 1 (mod p)
     \end{gather*}
   \end{proof}
 \end{folger}
 
 \begin{fakt}
   \begin{gather*}
-    \sum_{d\teilt m} \phi(d) = m
+    \sum_{d\vert m} \phi(d) = m
   \end{gather*}
 
   \begin{proof}
     Unter den Brüchen $\frac{1}{m}, \frac{2}{m}, \dotsc, \frac{m-1}{m},
     \frac{m}{m}$ gilt es genau $\phi(m)$ viele, die sich nicht kürzen
     lassen. Die anderen kürzen wir soweit es geht. Danach treten alle
-    $d\teilt m$ als Nenner auf und zwar $\phi(d)$ mal.
+    $d\vert m$ als Nenner auf und zwar $\phi(d)$ mal.
   \end{proof}
 \end{fakt}
 
@@ -783,11 +805,11 @@ mit $a_{d}\ne0$ heißt \highl{Polynom} $d$-ten Grades.
       ($d=(a,f) \Rightarrow (x^{a})^{\frac{f}{d}} =1$)
     \end{itemize}
 
-    Es gibt für jedes $f\teilt (p-1)$ entweder gar keine oder $\phi(f)$ viele
+    Es gibt für jedes $f\vert (p-1)$ entweder gar keine oder $\phi(f)$ viele
     Elemente dder Ordnung $f$.
 
-    Zerlege $\F_{p}^{\ast} = \prod_{f\teilt p-1} \Phi_{f}$. $\Phi_{f}$ sind
-    alle Elemente der Ordnung $f$. $\Rightarrow$ $p-1 = \sum_{f\teilt p-1}
+    Zerlege $\F_{p}^{\ast} = \prod_{f\vert p-1} \Phi_{f}$. $\Phi_{f}$ sind
+    alle Elemente der Ordnung $f$. $\Rightarrow$ $p-1 = \sum_{f\vert p-1}
     \epsilon_{f} \phi(f)$, $\epsilon_{f}=0$ oder $\epsilon_{f}=1$.
 
     Formel von oben: Alle $\epsilon_{f}=1$. Insbesondere existieren Elemente
@@ -803,8 +825,8 @@ mit $a_{d}\ne0$ heißt \highl{Polynom} $d$-ten Grades.
 \begin{bsp}
   $p=13$, $\phi(12)= \phi(4)\phi(3) = 4$
 
-  \begin{tabular}
-    $x$ & $\operatorname{ord}(x)$\\
+  \begin{tabular}{c|ll}
+    $x$ & $\operatorname{ord}(x)$ &\\
     \hline
     1 & 1\\
     2 & 12 & 1,2,4,8,3,6,12,11,9,5,10,7,1\\
@@ -887,7 +909,7 @@ mit $a_{d}\ne0$ heißt \highl{Polynom} $d$-ten Grades.
 \end{bemerk}
 
 \begin{bemerk}
-  $-1$ ist Quadrat in $\F_{p}^{\ast}$ \gwd $p\equiv 1\pmod{4}$
+  $-1$ ist Quadrat in $\F_{p}^{\ast}$ \gdw $p\equiv 1\pmod{4}$
 \end{bemerk}
 
 \begin{defini}
@@ -1020,15 +1042,15 @@ Wir multiplizierne die Gleichungen $as = e_{s}(a) s'$ über $s\in S$ auf:
 
     Sei $P$ Anzahl der positiven $py-lx$, $N$ die Anzahl der negativen.
     Also $P+N = m\cdot n$. Wir fixieren $x$ und fragen: Wie viele $y$
-    liefern negative Werte: $py-lx < 0$? Anzahl ist $\[\frac{lx}{p}\]$.
+    liefern negative Werte: $py-lx < 0$? Anzahl ist $[\frac{lx}{p}]$.
 
     Somit
     \begin{gather*}
-      N = \sum_{x=1}^{m} \[\frac{lx}{p}\]
+      N = \sum_{x=1}^{m} [\frac{lx}{p}]
     \end{gather*}
     Analog
     \begin{gather*}
-      P = \sum_{y=1}^{n} \[\frac{py}{l}\]
+      P = \sum_{y=1}^{n} [\frac{py}{l}]
     \end{gather*}
 
     In oberen Dreieck liegen die Gitterpunkte, welche in $P$ gezählt
@@ -1036,7 +1058,7 @@ Wir multiplizierne die Gleichungen $as = e_{s}(a) s'$ über $s\in S$ auf:
 
     Sei $S=\{1,2,\dotsc,m\}, T=\{1,2,\dotsc,n\}$. Sei $x\in S$, dann ist
     \begin{gather*}
-      lx = \[\frac{lx}{p}\]\cdot p + r(x),\quad 1\leq r(x) \leq 2m
+      lx = [\frac{lx}{p}]\cdot p + r(x),\quad 1\leq r(x) \leq 2m
     \end{gather*}
 
     Die $lx$ bilden $\pod{p}$ wieder ein Halbsystem, also auch die $r(x)$.
@@ -1048,9 +1070,9 @@ Wir multiplizierne die Gleichungen $as = e_{s}(a) s'$ über $s\in S$ auf:
     $\alpha = $ Anzahl der $r(x)$, welche in $-S$ liegen.
 
     \begin{gather*}
-      \sum_{x=1}^{m} lx = \sum_{x=1}^{m} (\[\frac{lx}{p}\]\cdot p + r(x))\\
+      \sum_{x=1}^{m} lx = \sum_{x=1}^{m} ([\frac{lx}{p}]\cdot p + r(x))\\
       \Longrightarrow
-         l\cdot \frac{m(m+1)}{2} = p \sum_{x=1}^{m} \[\frac{lx}{p}\] +
+         l\cdot \frac{m(m+1)}{2} = p \sum_{x=1}^{m} [\frac{lx}{p}] +
          \sum_{x=1}^{m} r(x)\\
       \sum_{x=1}^{m} r(x) = \sum_{r(x)\in S} r(x) + \sum_{r(x)\in -S} r(x)
     \end{gather*}
@@ -1061,15 +1083,15 @@ Wir multiplizierne die Gleichungen $as = e_{s}(a) s'$ über $s\in S$ auf:
     \begin{gather*}
       \sum_{x=1}^{m} r(x) = \sum_{x=1}^{m} x + \alpha p\pmod{2}\\
       \Rightarrow
-         l\frac{m(m+1)}{2} \equiv p\sum_{x\in S} \[\frac{lx}{p}\] +
+         l\frac{m(m+1)}{2} \equiv p\sum_{x\in S} [\frac{lx}{p}] +
          \frac{m(m+1)}{2} + \alpha p\pmod{2}\\
       \Rightarrow
-         \sum_{x\in S} \[\frac{lx}{p}\] \equiv \alpha\pmod{2}
+         \sum_{x\in S} [\frac{lx}{p}] \equiv \alpha\pmod{2}
     \end{gather*}
 
     Analog
     \begin{gather*}
-      \sum_{y\in T} \[\frac{py}{l}\] \equiv \beta\pmod{2} \quad\text{mit}
+      \sum_{y\in T} [\frac{py}{l}] \equiv \beta\pmod{2} \quad\text{mit}
          (\frac{p}{l}) = (-1)^{\beta}
     \end{gather*}
     Es gilt $\alpha+\beta \equiv P+N\pmod{2} \equiv m\cdot n\pmod{2}$.
