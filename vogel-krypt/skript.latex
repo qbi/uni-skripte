@@ -835,7 +835,8 @@ ein wirklich langer Geheimtext!
 
 Polyalphabetische Verschlüssung hat ebenfalls das Ziel, die Häufigkeit
 der Buchstaben zu verwischen. Ein prominentes Beispiel ist
-\highl{Vigenère-Chiffre} von dem franz. Diplomat Blaise Vigenère (16.\,Jh.).
+\highl{Vigenère-Chiffre} von dem franz. Diplomat Blaise Vigenère (16.\,Jh.),
+die erst im 19.\,Jahrhundert gebrochen wurde.
 
 \begin{table}
   \centering
@@ -937,6 +938,137 @@ Und weil's so schön war, noch ein
 
   Geheimtext: UFKBXAYIETGBSTFI
 \end{bsp}
+
+% 2006-10-30
+
+\subsection{Analyse der polyalphabetischen Verschlüsselung}
+
+Angriffspunkt: Die Verschlüsselung ist periodisch. Die Teiltexte sind
+monoalphabetische verschlüsselt. Zwei Globalschritte: 1) Bestimmung der
+Periode und 2) Entschlüsselung der monoalphabetischen Teiltexte mithilfe der
+Häufigkeitsanalyse. Bemerkung: Warum funktioniert die Häufigkeitsanalyse bei
+den Teiltexten? Obwohl die Teiltexte keine sinnvollen Texte sind, stellt sich
+bei "`langen"' Texten die gleiche Häufigkeitsverteilung der Buchstabe ein.
+
+Bei einer Periodenlänge~$d$ stehen die \highl{Teiltexte} an den Positionen
+$k+nd$ mit $1\leq k \leq d$ und $n\in\N_{0}$.
+
+Frage: Wie kann man $d$ bestimmten? Es folgen zwei verschiedene Möglichkeiten:
+
+\subsubsection{Brute-force-Angriff auf polyalphabetische Verschlüsselung}
+
+Teste systematisch $d=1,2,3,\dotsc$
+
+Erstelle Häufigkeitsanalyse für die entstehenden Teiltexte. Falls eine
+natürliche Häufigkeitsverteilung auftritt, dann nimm dieses $d$. (Die
+Erfahrung zeigt, dass für unpassende $d$ die Häufiggkeitsverteilung nivelliert
+ist.).
+
+Dies Funktioniert nur für kleine $d$!
+
+\subsubsection{Kasiski-Test}
+
+(eigentlich von Charles Babbage 1854 entdeckt, aber von Kasiski das erste Mal
+veröffentlicht)
+
+Beobachtung: (Typische) Buchstabenfolgen (Teilwörter), die sich im Abstand
+eines Vielfachen der Periodenlänge wiederholen, werden auf das gleiche Muster
+abgebildet! Für "`genügend lang"' Texte kommt dies auch vor.
+
+Ansatz: Suche alle mehrfach auftretenden Muster der Länge größer zwei.
+Bestimme die Abstände, bestimme die Primfaktoren für die Abstände, entscheide
+sich für häufig vorkommende Teiler (z.\,B. es treten fast immer 2 und 3 auf,
+dann vermute, dass $d=6$ -- ich glaube, man sagt $\operatorname{ggT}$ dazu.),
+teste mit dem brute-force-Angriff.
+
+\subsubsection{Friedmann-Test}
+
+von Wilhelm Friedmann (1893--1969); "`Mathematik hilft"', genauer "`Statistik
+hilf"', beim Ausrechnen der Periodenlänge. Die entscheidende statistische
+Größe ist der Koinzidenzindex~$I(t)$ für einen Text~$t$. Für ein Alphabet
+$A=\{a_{1},\dotsc, a_{n}\}$ (mit $\abs{A}=n$) und einen Text~$t$ der
+Länge~$l$ ist der \highl{Koinzidenzindex}~$I(t)$ die Wahrscheinlichkeit dafür,
+dass an zwei zufällig gewählten Positionen in dem Text der selbe Buchstabe
+steht.
+
+Es sei $l_{i}$ die relative Häufigkeit (Anzahl der Vorkommen) des
+Buchstaben~$a_{i}$, d.\,h.
+\begin{gather*}
+  l=\sum_{i=1}^{n} l_{i}
+\end{gather*}
+Die Anzahl der Mengen von zwei zufällig gewählten Positionen von $t$ ist
+$\binom{l}{2}$.
+
+Die Anzahl der Mengen von zwei zufällig gewählten Positionen mit gleichen
+Buchstaben beträgt
+\begin{gather*}
+  \sum_{i=1}^{n} \binom{l_{i}}{2} = \sum_{i=1}^{n} \frac{l_{i}(l_{1}-1)}{2}
+\end{gather*}
+
+Jetzt können wir die Wahrscheinlichkeit, dass für eine zufällig gewählte Menge
+von zwei zufällig gewählten Positionen zwei gleiche Buchstaben in $t$ stehen,
+bestimmen:
+\begin{gather*}
+  I(t) = \frac{\sum_{i=1}^{n} l_{i}(l_{i}-1)}{l(l-1)}
+\end{gather*}
+
+Wir betrachten jetzt das Alphabet $A=\{a,b,c,\dotsc,x,y,z\}$ (codiert durch
+$\{0,1,\dotsc,25\}$, also $n=26$). Fakt: für lange deutsche Texte gilt:
+$I_{\mathrm{deutsch}}(t) = I_{d} \approx 0\mathord{,}0762$
+Diese Größe wurde statistisch ermittelt.
+
+Man stellt dagegen den \highl{Koinzidenzindex} für "`reine Zufallstexte"'. Für
+solche Texte gilt: $l_{1}=l_{2}=\dotsb= l_{26}$
+\begin{gather*}
+  I = \frac{\sum_{i=1}^{26} l_{i}(l_{i}-1)}{l(l-1)}
+     = \frac{\sum_{i=1}^{26} l_{i}^{2}}{l(l-1)}
+     - \frac{\sum_{i=1}^{26} l_{i}}{l(l-1)}
+     = \frac{\sum_{i=1}^{26}l_{i}^{2}}{l(l-1)}
+     - \frac{1}{l(l-1)}
+     = \frac{\sum_{i=1}^{26} l_{i}^{2}}{l^{2}(1-\frac{1}{l})} - \frac{1}{l-1}
+     = \frac{l}{l-1} \sum_{i=1}^{26} \frac{l_{i}^{2}}{l^{2}} - \frac{1}{l-1}
+  \intertext{für größe $l$}
+  \approx \sum_{i=1}^{26} \frac{l_{i}^{2}}{l^{2}} = \sum_{i=1}^{26}
+     \Big(\frac{l_{i}}{l}\Big)^{2} = \sum_{i=1}^{26}
+     \Big(\frac{1}{26}\Big)^{2} = \frac{1}{26} = 0\mathord{,}0385 =: I_{z}
+\end{gather*}
+
+Fazit: Die Wahrscheinlichkeit an zufällig gewählten Positionen denselben
+Buchstaben zu finden, ist in deutschen Texten doppelt so groß wie in
+Zufallstexten.
+
+Wir betrachten einen Geheimtext, der das Ergebnis einer polyalphabetischen
+Verschlüsselung mit Periode~$d$ (und lang genug) ist. Wir betrachten die
+Teiltexte $1, d+1, 2d+1,\dotsc; 2, d+2, 2d+2,\dotsc; 3, d+3,
+2d+3,\dotsc;\dotsc$ Wenn die Teiltexte lang genug sind, stellen sich in den
+Teiltexten die natürlichen Häufigkeiten ein, aber zwischen den Teiltexten
+(d.\,h. von einer Spalte zu einer anderen) zufällige Häufigkeiten. Wählt man
+zufällig zwei Positionen in einem Teiltext: $I_{d} = 0\mathord{,}0762$. Wählt
+man zufällig zwei Positionen in unterschiedlichen Teiltexten: $I_{z}=
+0\mathord{,}0385$.
+
+\begin{bemerk}
+  Aussage 2 ("`Wählt man zufällig zwei Positionen in unterschiedlichen
+  Teiltexten: $I_{z}= 0\mathord{,}0385$."') tritt dann zu, wenn durch die
+  verwendeten verschiedenen Permutationen (Verschiebungen) sich die
+  Buchstabenhäufigkeiten nivellieren!
+\end{bemerk}
+
+Wir betrachten nun einen Geheimtext~$c$ der Länge~$l$ (mit Periode~$d$). Dann
+haben die Teiltexte etwas die Länge~$\frac{l}{d}$. Dann gibt es etwa
+\begin{gather*}
+  \frac{1}{2} \cdot \frac{l}{d}\cdot (\frac{l}{d}-1)\cdot d = \frac{l(l-d)}{2d}
+\end{gather*}
+zufällige Paare in ein und demselben Teiltext über alle Teiltexte.
+
+Und es gibt etwa
+\begin{gather*}
+  \frac{1}{2} \cdot l\cdot (l-\frac{l}{d}) = \frac{l^{2}(d-1)}{2d}
+\end{gather*}
+(das erste $l$ ist die Anzahl der Möglichkeiten für die erste Position;
+$l-\frac{l}{d}$ ist die Anzahl der Möglichkeiten für die zweite Position)
+zufällige Paare, die in verschiedenen Teiltexten liegen.
+
 \clearpage
 \pdfbookmark[0]{Index}{index}
 \printindex
