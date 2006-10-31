@@ -6,7 +6,8 @@ function map_line($line)
 {
     $dash_pos = strpos($line, '-');
     $tab_pos = strpos($line, "\t");
-    return substr($line, $dash_pos+1, $tab_pos-1-$dash_pos);
+    return substr($line, $dash_pos+1, $tab_pos-1-$dash_pos) . '-' .
+      substr($line, 0, $dash_pos);
 }
 
 function list_skripte($link)
