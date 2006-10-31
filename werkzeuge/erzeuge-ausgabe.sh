@@ -93,14 +93,16 @@ rubber-info --warnings $src | grep -E '(nag|onlyamsmath)'
 #   unübersichtlich
 # * z.(| |~|\ )B. und d. h. müssen als z.\,B. geschrieben sein
 #   http://www.dante.de/dante/DTK/dtk96_4/Text/dtk96_4_neubauer_feinheiten.pdf
-# * kein Komma vor etc.
+# * kein Komma vor etc. oder usw.
+# * vor dem Prozentzeichen \% muss kein kleiner Zwischenraum \, sein
 perl -wn -e 'BEGIN {$in_doc = 0; }' \
   -e 's/%.*// if (/(^|[^\\])%/);' \
   -e '$in_doc = 1 if ($_ =~ /^[^%]*\\begin{document}/);' \
   -e 'print "$.\t$_" if ($_ =~ /\\(re)?newcommand/ and $in_doc);' \
   -e 'print "$.\t$_" if ($_ =~ /[[:alpha:]]\.([^[:alpha:][:digit:]{}]*)[[:alpha:]]\./
                          and $1 ne "\\,");' \
-  -e 'print "$.\t$_" if ($_ =~ /,[[:space:]]etc/);' *tex
+  -e 'print "$.\t$_" if ($_ =~ /,[[:space:]](etc|usw)/);' \
+  -e 'print "$.\t$_" if ($_ =~ /[^\\][^,]\\%/);' *tex
 
 cd /
 rm -r $TMP
