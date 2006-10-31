@@ -1,7 +1,7 @@
 % TODO:
-%   * eine Umgebung für Schreibweisen/Notationen
-%   * Algorithmen in eine eigene Umgebung und einheitlich formatieren
-%   * einen Abstract -- Kurzzusammenfassung des Inhalts
+%   + Die ganzen \textrm im Mathemodus sollen \mathrm sein.
+%   + Ganz viele Doppelpunkt im Mathemodus sollen \colon sein.
+
 % zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
 % rubber: clean $base.thm
@@ -10,6 +10,9 @@
 % rubber: makeidx.tool      xindy
 % rubber: makeidx.language  german-din
 % rubber: makeidx.modules   indexstyle.xdy
+%  rubber traut sich nicht die folgenden Dateien zu löschen, weil er nicht
+%  weiß, dass er sie aus der .pdf-Datei erzeugt hat.
+% rubber: clean blatt20-2.eps blatt20.eps blatt16-1.eps blatt16-2.eps blatt28.eps
 
 \documentclass[halfparskip*,german,draft,twoside]{scrreprt}
 
@@ -17,8 +20,6 @@
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
 
-\usepackage{tabularx}
-\usepackage{longtable}
 \usepackage{ifthen}
 
 \usepackage{makeidx}
@@ -26,11 +27,9 @@
 \usepackage{color}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
 \usepackage[latin1]{inputenc}
-% \usepackage{nicefrac}
 
 % Schrift, die als serifen-Schrift (normale Text) verwendet wird
 \usepackage{lmodern}		% Latin Modern
-% \usepackage{type1ec}		% cm-super
 \usepackage[T1]{fontenc}        % T1-Schriften verwenden -- besser für PDFs
 \usepackage{textcomp}           % wird benötigt, damit der \textbullet
                                 % für itemize in lmodern gefunden wird.
@@ -45,16 +44,15 @@
 \usepackage{xspace}
 \usepackage{slashbox}
 
-\usepackage{paralist}
 \usepackage{ngerman}
 \usepackage{svn}
-%\usepackage{wasysym}  % \lightning
 \usepackage{ellipsis}    % Korrektur für \dots
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
-\usepackage{graphicx}
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{ifpdf}            % wird für \ifpdf gebraucht
+
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \addtokomafont{sectioning}{\boldmath}
@@ -72,7 +70,6 @@
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
-\newtheorem{fakt}{Fakt}
 \newtheorem{bemerk}{Bemerkung}
 \newtheorem{bsp}{Beispiel}
 
@@ -87,7 +84,6 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
-\newcommand*{\faktautorefname}{Fakt}
 \renewcommand*{\subsectionautorefname}{Abschnitt}
 \renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
@@ -112,102 +108,54 @@
 % \setdefaultenum{(1)}{(a)}{i.}{A.}
 \pagestyle{headings}
 
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\C}{\mathbb{C}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\F}{\mathbb{F}}
-\renewcommand{\L}{\mathfrak{L}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\K}{\mathbb{K}}
-\newcommand{\PP}{\mathbb{P}}
-\newcommand{\Prr}{\PP\mathrm{r}}  % The command \Pr already exist
-\newcommand{\Pa}{\PP\mathrm{a}}
-\newcommand{\TM}{\ensuremath{\mathcal{TM}}}
-\newcommand{\REG}{\ensuremath{\textrm{REG}}}
-\newcommand{\CF}{\ensuremath{\textrm{CF}}}
-\newcommand{\CS}{\ensuremath{\textrm{CS}}}
-\newcommand{\sgn}{\textrm{sgn}}
-\newcommand{\SUCC}{\textrm{succ}}
-\newcommand{\SUB}{\textrm{SUB}}
-\newcommand{\PR}{\textrm{PR}}
-\newcommand{\ra}{\ensuremath{\rightarrow}}
-\newcommand{\help}[1]{\textcolor{green}{help: #1}}
-\newcommand{\todo}[1]{\textcolor{red}{todo: #1}}
-\newcommand*{\listlinebreak}{\mbox{}\vspace{-\parskip}}
-\newcommand*{\algokeyword}[1]{\underline{\texttt{#1}}\xspace}
-\newcommand{\graphic}[1]{{\vskip0.5cm\centerline{\convertMPtoPDF{#1}{1}{1}}\vskip0.5cm}\noindent}
+\newcommand*{\R}{\mathbb{R}}
+\newcommand*{\N}{\mathbb{N}}
+\newcommand*{\F}{\mathbb{F}}
+\renewcommand*{\L}{\mathfrak{L}}
+\newcommand*{\PP}{\mathbb{P}}
+\newcommand*{\Prr}{\PP\mathrm{r}}  % The command \Pr already exist
+\newcommand*{\REG}{\ensuremath{\textrm{REG}}}
+\newcommand*{\CF}{\ensuremath{\textrm{CF}}}
+\newcommand*{\CS}{\ensuremath{\textrm{CS}}}
+\newcommand*{\sgn}{\textrm{sgn}}
+\newcommand*{\SUCC}{\textrm{succ}}
+\newcommand*{\SUB}{\textrm{SUB}}
+\newcommand*{\PR}{\textrm{PR}}
+\newcommand*{\ra}{\ensuremath{\rightarrow}}
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
-\newcommand{\highl}[2][]{\textbf{\boldmath{#2}}%
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
   \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
-}
-
-% <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
-\newcommand*{\taglabel}[1]{%
-  \refstepcounter{equation}\tag{\theequation}\label{#1}%
 }
 
 \newcommand*{\indexsection}{\minisec}
 
-\newcommand{\obda}{o.\,B.\,d.\,A.\xspace}
-\newcommand{\sonst}{\text{sonst}}
-\newcommand{\leerz}{\ifthenelse{\boolean{mmode}}%
-			       {\text{\textvisiblespace}}%
-			       {\textvisiblespace}}
-% \newcommand{\ndef}{\ifthenelse{\boolean{mmode}}%
-% 			       {\text{n.\,def.}}%
-% 			       {n.\,def.\xspace}}
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
 \newcommand*{\ndef}{\ifthenelse{\boolean{mmode}}%
  			       {\perp}%
  			       {$\perp$\xspace}}
-% \newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
-% 			       {\Leftrightarrow}%
-% 			       {$\Leftrightarrow$\xspace}}
-% \newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
-% 			       {:\Leftrightarrow}%
-% 			       {$:\Leftrightarrow$\xspace}}
 \newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
 			       {\mspace{8mu}gdw\mspace{8mu}}%
 			       {$gdw$\xspace}}
-\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
-			       {$gdw_{def}$\xspace}}
-\newcommand{\ddef}{=_{df}}
-\renewcommand{\vdash}{\mathrel{|\mkern-4mu-}\mathrel{\mkern-10mu-}}
-\newcommand{\abs}[2][]{#1\lvert#2#1\rvert}
-\newcommand{\norm}[2][]{#1\lVert#2#1\rVert}
+\newcommand*{\ddef}{=_{df}}
+\renewcommand*{\vdash}{\mathrel{|\mkern-4mu-}\mathrel{\mkern-10mu-}}
 
-\renewcommand{\epsilon}{\varepsilon}
-\renewcommand*{\mod}{\bmod}
-
-\newcounter{schritt}
-\newenvironment{schritte}%
-	       {\begin{list}{\textit{\underline{\arabic{schritt}.\,Schritt:}}}%
-		      {\usecounter{schritt}%
-			\settowidth{\labelwidth}{\textit{\underline{99.\,Schritt:}}}%
-			\setlength{\leftmargin}{1cm}%
-			\setlength{\itemindent}{4mm}%
-			\addtolength{\itemindent}{\labelwidth}%
-			\addtolength{\itemindent}{-\leftmargin}%
-		      }}%
-	       {\end{list}}
-
-
-\newenvironment{mdescription}%
-	       {\renewcommand{\descriptionlabel}[1]%
-			      {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		 {\end{description}}
-\newenvironment*{auflistung}[1][\linewidth]%
-               {\tabularx{#1}{r@{\;\ldots\;}X}}%
-               {\endtabularx}
+\renewcommand*{\mod}[1]{\bmod{#1}}
 
 \makeindex
 
-\SVN $LastChangedRevision: 1 $
-\SVN $LastChangedDate: 2006-07-08 00:16:31 +0200 (Sa, 08 Jul 2006) $ 
+\ifpdf
+  \DeclareGraphicsRule{.mps}{mps}{*}{}%
+\else
+  \DeclareGraphicsRule{.mps}{eps}{*}{}%
+  \DeclareGraphicsExtensions{.mps,.eps}%
+\fi
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$ 
 
 \begin{document}
 
@@ -647,7 +595,7 @@ DFAs lassen sich sehr elegant durch sogenannte Überführungsgraphen darstellen.
 			b      & z_0 & z_3 & z_0 & z_3
 		\end{array}
 	\end{displaymath}
-	\graphic{blatt5.1}
+	\begin{center}\includegraphics{blatt5}\end{center}
 
 	Abarbeitung: von abba: $z_0\ra^{a} z_1\ra^{b} z_3\ra^{b} z_3\ra^{a} z_3$\\
 	abba wird akzeptiert, baba wird auch akzeptiert, \emph{aber} alle Wörter
@@ -676,7 +624,7 @@ denen sich $M$ nach Abarbeitung in einem Zustand aus $Z_E$ befindet.
 
 \begin{bsp}\label{bsp:2.1.2}
 	Baue DFA für $A=\{w\in \{a,b\}^{*}: w \textrm{ beginnt mit } a\}$
-	\graphic{blatt5.2.1}
+	\begin{center}\includegraphics{blatt5-2}\end{center}
 \end{bsp}
 
 \begin{satz}\label{satz:2.1.3}
@@ -761,7 +709,7 @@ so definiert:
 Die von einem NFA $N$ akzeptierte Sprache $L(N)$ ist definiert als
 \[ L(N) = \{ w\in \Sigma^{*}: \delta^{*}(w,Z_0)\cap Z_E\ne \emptyset \} \]
 \begin{bsp}\label{bsp:2.2.1}
-	\graphic{blatt6.1}
+	\begin{center}\includegraphics{blatt6}\end{center}
 	\begin{align*}
 		\delta^{*}(1,z_0) &= \delta^{*}(\varepsilon,\delta(1,z_0))\cup
 		  \delta^{*}(\varepsilon,\delta(1,z_3))\cup
@@ -786,7 +734,7 @@ Eine "`fast"' Umkehrung von Satz \ref{satz:2.1.3}:
 		\ref{def:1.3.2} gibt es eine reguläre Grammatik $G=(\Sigma,N,S,R)$ mit
 		$\L(G)=A$.\\
 		\underline{Idee}: $G: A\ra aB,\ A\ra aC,\ A\ra a$ NFA:
-		\graphic{blatt7.1}
+		\begin{center}\includegraphics{blatt7}\end{center}
 
 		Wir betrachten folgenden NFA $N=(\Sigma,Z,Z_0,\delta,Z_E)$:
 		\begin{gather*}
@@ -830,9 +778,9 @@ Eine "`fast"' Umkehrung von Satz \ref{satz:2.1.3}:
 		$L(N)=A$. Wir wollen einen DFA $M$ konstruieren, so dass $L(M)=A$.
 
 		\underline{Idee}: NFA bei Abarbeitung $a_1 a_2\dots a_n$
-		\graphic{blatt7.2.1}
+		\begin{center}\includegraphics{blatt7-2}\end{center}
 		\underline{DFA}: Zustände sind Mengen von Zuständen des NFA:
-		\graphic{blatt7.3.1}
+		\begin{center}\includegraphics{blatt7-3}\end{center}
 		Wir definieren den DFA $M=(\Sigma,Z^{'},z_0,\delta^{'},Z_{E}^{'})$
 		so:
 		\begin{gather*}
@@ -864,7 +812,7 @@ Eine "`fast"' Umkehrung von Satz \ref{satz:2.1.3}:
 \begin{bsp}\label{bsp:2.2.3}
 	NFA $N=(\{0,1\},\{z_0,z_1,z_2\},\{z_0,z_1,z_2\},\delta,\{z_2\})$
 	\[ L(N)=\{0^i 1^j: i\in \{0,1,2\}\wedge j\in\N\} \]
-	\graphic{blatt8.1}
+	\begin{center}\includegraphics{blatt8}\end{center}
 
 	DFA $M=(\{0,1\},\PP(\{z_0,z_1,z_2\}), \{z_0,z_1,z_2\},\delta^{'},
 	\{\{z_2\},\{z_1,z_2\},\{z_0,z_2\},\{z_0,z_1,z_2\}\})$.
@@ -1120,7 +1068,7 @@ $X_i = \{a_1\}X_1 \cup \{a_2\} X_2 \cup \dots \cup \{a_n\}X_n$ schreiben.
 	$Y = $ ähnlich, allerdings zu langer Ausdruck
 
 	Folgender NFA: $N$
-	\graphic{blatt11.1}
+	\begin{center}\includegraphics{blatt11}\end{center}
 	Gleichungssysteme:
 	\begin{align*}
 		X &= \{0\}X\cup \{1\}Y\cup \emptyset^{*}\\
@@ -1481,7 +1429,7 @@ Sprachen nachzuweisen."'
 		Wir wählen $n=2^{|N|}$.\\
 		Sei $x\in A$ und $|x|\geq n$. Der Syntaxbaum von $x$ bezüglich $G$ sieht so aus:\\
 		(Binärbaum (nicht notwendigerweise vollständig) bis auf letzte Ebene)\\
-		\begin{center}\includegraphics{blatt16-1.pdf}\end{center}
+		\begin{center}\includegraphics{blatt16-1}\end{center}
 
 		Dieser Baum hat mindestens $2^{|N|}$ Blätter.
 
@@ -1498,7 +1446,7 @@ Sprachen nachzuweisen."'
 		$\Rightarrow$ Der Pfad berührt mindestens $|N|+1$ Knoten im Baum\\
 		$\Rightarrow$ Es gibt ein Nichtterminal, welches auf dem Pfad zweimal
 		vorkommt.\\
-		\begin{center}\includegraphics{blatt16-2.pdf}\end{center}
+		\begin{center}\includegraphics{blatt16-2}\end{center}
 		$\Rightarrow$ Obere Vorkommen von $\tilde{A}$ ist höchstens $|N|$ von
 		der Blattebene entfernt. Wir betrachten die Teilgebiete, die aus den
 		beiden $\tilde{A}$ abgeleitet werden: $u, v_1, \tilde{v}, v_2, w$ (s.
@@ -1578,7 +1526,7 @@ Ziel: DFA mit Zähler (fifo, Stack)
 	\end{enumerate}
 \end{defini}
 Vorstellung: \\
-\begin{center}\includegraphics{blatt17.pdf}\end{center}
+\begin{center}\includegraphics{blatt17}\end{center}
 
 Eingabeband: nur lesen, d.h. jedes Symbol kann nur einmal gelesen werden\\
 Keller: lesen und schreiben, Topelement des Stacks wird gelesen und durch ein
@@ -1865,7 +1813,7 @@ $\L_0$-Sprachen: (Normalform-)Grammatiken
 Entwickelt von Alan Turing 1936.
 
 \underline{Anschaulich}:\\
-\includegraphics{blatt20.pdf} 
+\includegraphics{blatt20} 
 
 Arbeitsweise: abhängig vom gelesenen Symbol und
 dem aktuellen Zustand wird ein neues Symbol geschrieben, der Zustand verändert
@@ -1896,7 +1844,7 @@ Konfigurationen. Dazu benötigen wir folgende Informationen:
 	\item Wie lautet der aktuelle Zustand
 	\item Wo steht der Kopf
 \end{itemize}
-Kodierung: \includegraphics[scale=0.5]{blatt20-2.pdf} $\Rightarrow$
+Kodierung: \includegraphics[scale=0.5]{blatt20-2} $\Rightarrow$
 MO$\beta$ST (ein Wort aus $\Gamma^{*}\dot Z\dot \Gamma^{*}$)\\
 Eine Berechnung einer TM $M$ ist damit eine Folge von Konfigurationen mit
 Startkonfiguration $z_0 w$.
@@ -2369,8 +2317,8 @@ Beispiel: $f(2n) = f_1(n)$ und $f(2n+1) = f_2(n)$
 
 		Zudem ist 
 		\begin{gather*}
-			n\textrm{ gerade }\leftrightarrow\ \overline{\sgn}(\mod(n,2))=1\\
-			n\textrm{ ungerade }\leftrightarrow\ \overline{\sgn}(\mod(n,2))=1\\
+			n\textrm{ gerade }\leftrightarrow\ \overline{\sgn}(\mod{(n,2)})=1\\
+			n\textrm{ ungerade }\leftrightarrow\ \overline{\sgn}(\mod{(n,2)})=1\\
 		\end{gather*}
 
 		$\ra\ f$ ist durch Werteverlaufsrekursion und Fallunterscheidung
@@ -2486,12 +2434,16 @@ Beispiel: die nirgends definierte Funktion $g(n,m) = C_1^2(n,m)$
 \begin{satz}\label{satz:6.4.8}
 	Es gilt:
 	\[ \emptyset \subsetneq \Prr \subsetneq \R \subsetneq \PP \subsetneq \F \]
-	\includegraphics{blatt28.pdf}
+	\includegraphics{blatt28}
 \end{satz}
 
 Wir wollen uns mit dem Zusammenhang zwischen $\PP$ und der Menge der
 Turing-berechenbaren Funktionen befassen.\\
 "`$\PP \subseteq $ TM-berechenbar"' zeigt, dass Bestandteile von $f\in \PP$ von
 TM simuliert werden können.
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
 
 \end{document}
