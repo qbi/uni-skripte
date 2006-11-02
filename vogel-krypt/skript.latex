@@ -792,7 +792,7 @@ Klartexte der richtige ist.
   p(x)\cdot 100$.
 
   In der Tabelle mit Häufigkeiten der Buchstaben \autoref{tab:buchswsk} sehen
-  wir, dass. z.\,B. \texttt{c} mit der Wahrscheinlichkeit 3,06\,\% auftritt.
+  wir, dass z.\,B. \texttt{c} mit der Wahrscheinlichkeit 3,06\,\% auftritt.
   Also wählen wir zufällig für \texttt{c} drei Zeichen aus $Y$, z.\,B. $07, 23, 42$.
 \end{bsp}
 
@@ -1068,6 +1068,116 @@ Und es gibt etwa
 (das erste $l$ ist die Anzahl der Möglichkeiten für die erste Position;
 $l-\frac{l}{d}$ ist die Anzahl der Möglichkeiten für die zweite Position)
 zufällige Paare, die in verschiedenen Teiltexten liegen.
+
+% 2006-11-01
+
+Es wird auf die Tabelle mit der Verschlüsselung von KRYPTO im letzten Beispiel
+bezug genommen. Text ist der 1.\,Spalte $1, 1+d, 1+2d$, 2.\,Spalte $2, 2+d,
+2+2d$,\dots für große $l$ (im Vergleich zu $d$) ist der Text innerhalb einer
+Spalte "`natürlich"' ($I_{d}$) und zwischen den Spalten "`zufällig"' ($I_{z}$).
+
+Positionen innerhalb einer Spalte: $\frac{l(l-d)}{2d}$, Positionen in
+verschiedene Spalten: $\frac{l^{2}(d-1)}{2d}$.
+
+Wahrscheinlichkeit für zwei gleiche Buchstaben:
+\begin{gather*}
+  I(c) \approx \frac{\frac{l(l-d)}{2d}\cdot 0\mathord{,}0762 +
+                 \frac{l^{2}(d-1)}{2d}\cdot 0\mathord{,}0385}%
+                    { \frac{l(l-1)}{2} }\\
+  d \approx \frac{0\mathord{,}0377 l}{(l-1) I(c) + 0\mathord{,}0762 -
+     0\mathord{,}0385 l}\\
+  I(c) = \frac{\sum_{i=1}^{26} l_{i}(l_{i}-1)}{l(l-1)}
+\end{gather*}
+Schätzwert für die Periodenlänge~$d$! Vergleich mit Brute-force-Methode und
+Kasiski-Test.
+
+Siehe Übung.
+
+\subsection{Möglichkeiten der Verteidigung gegen die Analyse}
+
+Ausgangspunk: Die oben formulierten Tests funktionieren nur für kleine
+Periodenlängen ($d\ll l$)! Deshalb: 1) Betrachten von großen Periodenlängen,
+technische Realisierung in der \highl{ENIGMA} -- 1920 deutsches Patent mit
+drei Rotoren: Periodenlänge $26^{3}$, Einsatz im Krieg mit fünf Rotoren:
+Periodenlänge $26^{5}$.
+
+2.\,Ansatz: nicht periodische Verschlüsselung: a) mit einem
+"`Schlüsselroman"', d.\,h. aus einem vorher gewählten Buch wird ein Text
+ausgewählt -- Schlüssel ist dann (Seite, Zeile, Buchstabe). Aber dann
+funktioniert wieder die Häufigkeitsanalyse, weil der Roman wieder die
+Charakteristik einer natürlichen Sprache hat. (in diese Kategorie fällt auch
+das anhängen des Klartextes an das Schlüsselwort.)
+
+b) mit Zufallstexten, führt wieder zu \highl{One-time-pad} und damit zum
+absolut sicheren Code -- aber unpraktikabel.
+
+\chapter{Transpositionen}
+
+Klartextbuchstaben bleiben Klartextbuchstaben, ändern aber ihr Position. Die
+Häufigkeitsanalyse von Buchstaben als Angriff ist wirkungslos, da der Text nur
+permutiert wurde. (Aber Digramme sind ein Versuch wert!)
+
+Verschiedene Ansätze der Verschlüsselung:
+\begin{itemize}
+ \item \highl{Blocktransposition}: Klartext wird in Blöcker einer festen
+  Länge~$k$ eingeteilt. Diese Blöcke werden derselben Permutation~$\pi$
+  unterworfen. Beispiel: $a_{i_{1}}a_{i_{2}}\dotso a_{i_{k-1}}a_{i_{k}} =
+  a_{i_{\pi(1)}} a_{i_{\pi(2)}}\dotso a_{i_{\pi(k-1)}}a_{\pi(i_{k})}$.
+
+  Analyse:
+  \begin{enumerate}[1.\,{Schritt}]
+   \item Rate/Bestimme die Blocklänge~$k$
+   \item Erzeuge durch geegnete Permutationen bekannte Anagramme. teste an
+    anderen Blöcken
+  \end{enumerate}
+  Dies funktioniert sehr gut.
+
+ \item \highl{Spaltentransposition}:
+  \begin{enumerate}
+   \item Klartext wird zeilenweise in ein Rechteck der Breite~$k$ eingelesen
+    (Höhe hängt von der Länge~$l$ des Klartexts ab)
+   \item permutiere die $k$~Spalten (wie oben)
+   \item Lies den Geheimtext spaltenweise aus (Im Unterschied zur
+    Blocktransposition, wo der Geheimtext zeilenweise ausgelesen wird.)
+  \end{enumerate}
+\end{itemize}
+
+\begin{bemerk}
+  Wenn für die Spaltentransposition die Identität als Permutation verwendet
+  wird, hat man die \highl{Gartenzaunchiffre}.
+\end{bemerk}
+
+\begin{bsp}
+  Klartext:
+  \begin{verbatim}
+  krypto  rptoky
+  logieu  oieulg
+  nddate  datend
+  nsiche  scheni
+  rheita  hitare
+  \end{verbatim}
+  Das letzte \textit{a} ist Füllmaterial, $k=6, \pi = (1, 5, 3, 6, 4, 2)$
+
+  Text für Blockchiffre: "`rodsh\,piaci\,tetht\,oueea\,ygdie"'
+\end{bsp}
+
+Analyse:
+\begin{enumerate}[1.\,{Schritt}]
+ \item Schätze die Spaltenzahl~$k$, Teiler der Gesamtlänge~$l$
+ \item Bestimmung benachbarter Spalten (suche nach Anagrammen)
+\end{enumerate}
+
+\begin{bsp}
+  Die erste Zeile für $k=11$ enthält zu viele Konsonanten und die letzte Zeile
+  zu viele Vokale für einen deutschen Text.
+
+  Idee: 1. und letzte Spalte liegen nebeneinander, da auf ein \textit{c} sehr
+  of ein \textit{k} oder ein \textit{h} folgt.
+
+  Die sechse Spalte kommt vor die erste und dann können wir das Wort in der
+  ersten Zeile erraten "`zwei"': 3., 5., 1. 6. 2. 4.
+\end{bsp}
+
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
