@@ -1,0 +1,408 @@
+% Jedes Dokument muss an einer beliebigen Stelle eine Zeile der folgenden
+% Form enthalten, wobei XY die Version (svn info) der Vorlage im
+% Repository "`skripte"' ist, auf der das Dokument basiert.
+%
+% entspricht Vorlage: 395
+%
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+\usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                         % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+\DeclareMathOperator{\gt}{gT}
+\DeclareMathOperator{\ggt}{ggT}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+               {\renewcommand{\descriptionlabel}[1]%
+			      {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		 {\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Algebra I}
+\author{Prof. Dr. Burkhard Külshammer}
+\date{Semester:  WS 2006/07}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Jens Kubieziel \texttt{<jens@kubieziel.de>}} (2006)
+  \end{itemize}
+\end{itshape}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Elementare Zahlentheorie}
+\section{Division mit Rest}
+
+\begin{satz}[Division mit Rest]\label{satz:1.1}
+  Zu $a\in\Z$ und $m\in\N$ existiert stets eindeutig bestimmte
+  $q,r\in\Z$ mit $a=qm+r$ und $0\leq r<m$.
+
+  \begin{proof}
+    Sei $R:=\{a-qm\colon q\in\Z\}$. Dann ist $R\cap
+    \N_{0}\neq\emptyset$. Denn für $a\geq 0$ ist $a-0m=a\in\N_{0}$ und
+    für $a<0$ ist $a-am=a(1-m)\in\N_{0}$.
+
+    Bekanntlich enthält jede nichtleere Teilmenge der natürlichen
+    Zahlen ein kleinstes Element. Sei $r:=a-qm:= \min R\cap N_{0}$ mit
+    $q\in\Z$. Dann folgt, dass $r\geq 0$, aber $r-m=a-(q+1)m<0$. Dies
+    folgt, da $a-(q+1)m<a-qm$, aber $a-(q+1)m\in R$. Das bedeutet,
+    dass $r<m$ ist. Also sind $r,q$ wie gewünscht und es folgt die
+    Existenz.
+
+    Seien nun auch $q',r'\in\Z$ mit $a?q'm+r'$ und $0\leq r'<m$. Dann
+    $r-r'= (q'-q)m$. Wegen $\abs{r-r'} <m\Rightarrow q'-q=0$. Denn
+    sonst wäre $\abs{(q'-q)m}\geq m$. Also ist $q'=q$, d.\,h. $r'=r$
+    und auch die Eindeutigkeit ist gezeigt.
+  \end{proof}
+\end{satz}
+
+\begin{defini}
+  Die Zahl $q$ heißt \highl{Quotient} und $r$ heißt  \highl{Rest}.
+\end{defini}
+
+\section{Teiler}
+\begin{defini}
+  Man nennt $a\in\Z$ \highl{Teiler} von $b\in\Z$ und schreibt $a|b$,
+  wenn ein $c\in\Z$ mit $b=ac$ existiert.
+
+  Man sagt auch: $a$ teilt $b$, $b$ ist Vielfaches von $a$, $b$
+  ist durch $a$ teilbar usw.
+\end{defini}
+
+\begin{satz*}[Eigenschaften der Teilbarkeit]
+  \label{satz:1.2}
+  Für alle $a,b,c,x,y\in\Z$ gilt:
+  \begin{enumerate}[(i)]
+   \item $a|0, 1|a, a|a$
+   \item $a|b\Rightarrow \pm a|\pm b$
+   \item $a|b \wedge b|c \Rightarrow a|c$
+   \item $a|b\wedge b|a\Rightarrow a=\pm b$
+   \item $a|b\wedge a|c\Rightarrow a|bx+cy$
+   \item $0|\Leftrightarrow a=0$
+   \item $a|b\wedge a,b\in\N\Rightarrow a\leq b$
+  \end{enumerate}
+  \begin{proof}
+    Es wird nur der fünfte Punkt bewiesen. Der Rest kann analog
+    durchgeführt werden.
+
+    Nach der Voraussetzung existieren $g,h\in\Z$ mit $b=ag, c=ah$.
+    Folglich $bx+cy=agx+ahy=a\underbrace{(gx+hy)}_{\in\Z}$, d.\,h.
+    $a|bx+cy$.
+  \end{proof}
+\end{satz*}
+
+\section{Gemeinsamer Teiler}
+\begin{defini}
+  Seien $a_{1},\dotsc, a_{n}, t\in\Z$ mit $t|a_{1},\dotsc, t|a_{n}$.
+  Dann heißt $t$ \highl{gemeinsamer Teiler} von $a_{1},\dotsc, a_{n}$.
+  Setze $\gt(a_{1},\dotsc, a_{n}):= \{t\in\Z\colon t \text{gemeinsamer
+  Teiler von } a_{1},\dotsc, a_{n}\}$
+\end{defini}
+
+\begin{bemerk}
+  Wegen $\gt(a_{1},\dotsc, a_{n})=\gt(\pm a_{1},\dotsc, \pm a_{n})$
+  kann man $a_{1},\dotsc, a_{n}\in\N_{0}$ annehmen. Weiterhin kann man
+  die Zahlen permutieren, also ist es zulässig anzunehmen, dass
+  $a_{1}\geq \dotsb\geq a_{n}$, sogar $a_{1} >\dotsb> a_{n}>0$.
+
+  Die Division mit Rest liefert $q,r\in\Z$ mit $a_{1}=qa_{n}+r, 0\leq
+  r< a_{n}$. Aus \autoref{satz:1.2} Punkt (v) folgt leicht:
+  \begin{gather*}
+    \gt(a_{1},\dotsc, a_{n})=\gt(\underbrace{a_{1}-qa_{n}}_{=r<a_{n}},
+       a_{2},\dotsc, a_{n}) \qquad r+a_{2}+\dotsb+ a_{n}<
+       a_{1}+a_{2}+\dotsb+ a_{n}
+  \end{gather*}
+  Die Iteration ergibt schließlich $\gt(a_{1},\dotsc, a_{n})=\gt(b)$.
+  Dieses Verfahren heißt \highl{euklidischer Algorithmus}
+  (\textsc{Euklid}: 365-300).
+\end{bemerk}
+
+\begin{bsp}
+  \begin{align*}
+    \gt(45,27,12) &= \gt(45-3\cdot 12, 27, 12)= \gt(27,12,9)=
+       \gt(27-3\cdot 9, 12, 9)\\
+    &= \gt(12,9)=\gt(12-1\cdot 9,9)= \gt(9,3)= \gt(9-3\cdot 3, 3)\\
+    &= \gt(3)=\{\pm1, \pm3\}
+  \end{align*}
+\end{bsp}
+
+\section{Größter gemeinsamer Teiler}
+\begin{defini}
+  Seien $a_{1},\dotsc, a_{n}\in\Z$. Ein $d\in\N_{0}\cap
+  \gt(a_{1},\dotsc, a_{n})$ heißt \highl{größter gemeinsamer Teiler}
+  von $a_{1},\dotsc, a_{n}$ (ggT), falls $d$ durch jeden gemeinsamen
+  Teiler von $a_{1},\dotsc, a_{n}$ teilbar ist.
+\end{defini}
+
+\begin{satz}
+  Zu $a_{1},\dotsc, a_{n}\in\Z$ existiert stets genau ein größter
+  gemeisamer Teiler $d$.
+  \begin{proof}
+    Nach dem euklidischen Algorithmus ist $\gt(a_{1},\dotsc, a_{n})=
+    \gt(b)$ für ein $b\in\N_{0}$. Dann ist $b$ ein größter gemeisamer
+    Teiler von $a_{1},\dotsc, a_{n}$. Ist $b'\in\N_{0}$ ein weiterer
+    größter gemeisamer Teiler von $a_{1},\dotsc, a_{n}$, so gilt
+    $b|b'$ und $b'|b$, also $b=\pm b$. Nach \autoref{satz:1.2} und
+    wegen $b,b'\in\N_{0}$ folgt $b=b'$.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Man schreibt: $d=\ggt(a_{1},\dotsc, a_{n})$ und zeigt leicht
+  $d=\ggt(a_{1}, \ggt(a_{2},\dotsc, a_{n}))$. Daher genügt es, den
+  größten gemeisamen Teiler von zwei Zahlen zu berechnen.
+\end{bemerk}
+
+\section{Erweiterter euklidischer Algorithmus}
+\begin{satz}[Erweiterter euklidischer Algorithmus]
+  Seien $a,b\in\N$. Setze $(x_{0}, y_{0}, z_{0}) := (1,0,a), (x_{1},
+  y_{1}, z_{1}):= (0,1,b), i:=1$. Im Fall $z_{i}=1$ brechen wir ab.
+  Andernfalls liefert die Division mit Rest $q_{i}, r_{i}\in\Z$ mit
+  $z_{i-1}=q_{i}z_{i}+r_{i}, 0\leq r_{i}<z_{i}$. Wir setzen $(x_{i+1},
+  y_{i+1}, z_{i+1}) := (x_{i-1}-q_{i}x_{i}, y_{i-1}-q_{i}y_{i},
+  \underbrace{z_{i-1}-q_{i}z_{i}}_{=r_{i}})$, erhöhen um~1 und
+  iterieren. Dieses Verfahren bricht ab und am Ende ist:
+  \begin{gather*}
+    \ggt(a,b) = z_{i-1}=x_{i-1}a + x_{i-1}b
+  \end{gather*}
+  \begin{proof}
+    Wegen $b=z_{1}>z_{2}>\dotsb> z_{i-1}>z_{i}=0$ bricht das Verfahren
+    ab. Am Anfang ist $\ggt(a,b)=\ggt(z_{i-1}, z_{i})$ und das bleibt
+    während des Verfahrens erhalten\footnote{Beachte: $\ggt(z_{i-1},
+    z_{i})= \ggt(z_{i}, z_{i+1})$.}. Am Ende ist $z_{i}=0$, also
+    $\ggt(a,b)=\ggt(z_{i-1}, z_{i})=z_{i-1}$. Am Anfang ist $x_{i}a+
+    y_{i}b=z$ und das bleibt während des Verfahrens erhalten:
+    \begin{gather*}
+      x_{i+1}a+y_{i+1}b = x_{i-1}a-q_{i}x_{i}a+ y_{i-1}b- q_{i}y_{i}b
+	 = z_{i-1}-q_{i}(\underbrace{x_{i}a+y_{i}b}_{=z_{i}})= z_{i+1}
+    \end{gather*}
+  \end{proof}
+\end{satz}
+\clearpage
+%\appendix
+%\begin{thebibliography}{99}
+% \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+%  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+%\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
