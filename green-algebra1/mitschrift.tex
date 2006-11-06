@@ -1,55 +1,150 @@
-\documentclass[titlepage,twoside,a4paper,10pt]{report}
+% TODO:
+%  + ganz, ganz viele $$ $$ müssen beseitigt werden.
+
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden.
+
+\documentclass[german,draft,twoside]{scrreprt}
+
+\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+                          % oder solche, die man nicht in LaTeX verwenden
+                          % soll -- l2tabu-Checker in LaTeX
+\usepackage{makeidx}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+
+\usepackage[latin1]{inputenc}
 \usepackage{ngerman}
-\usepackage[latin1]{inputenc} 
-\usepackage{amssymb}
+
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+
+\usepackage{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
 
 \usepackage[thmmarks,hyperref]{ntheorem}
 
+\usepackage{svn}
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{float}
-\usepackage{amsmath}
-
 \usepackage{enumerate}
 
-\usepackage{makeidx} 
-
-\usepackage[T1]{fontenc}
-
-\oddsidemargin-1in
-\oddsidemargin0.5cm
-\evensidemargin-1in
-\evensidemargin0.5cm
-\textwidth15cm
-\topmargin-1in
-\topmargin0cm
-\textheight23cm
-
-\pagestyle{headings}
-
-
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
 \theoremstyle{break}
-\theoremheaderfont{\normalfont\bfseries} 
+\theoremheaderfont{\normalfont\bfseries}
 \theorembodyfont{\upshape}
 
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[chapter]
-\newtheorem{lemma}[satz]{Lemma}
+\newtheorem{lemma}{Lemma}
 \newtheorem{defi}{Definition}[chapter]
 \newtheorem{bem}{Bemerkung}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 
-\theoremstyle{nonumberbreak} 
+\makeatletter
+% \autoref unterscheidet die Umgebungen, die angesprochen werden, anhand
+% ihres Zählernamens. Da sich aber alle Umgebungen einen Zähler mit satz
+% teilen sollen, bezeichnet \autoref alles mit "`Satz"'. Daher bekommt
+% jede Umgebung einen eigenen Zähler, der in Wirklichkeit ein Alias zu
+% satz ist
+% <news:m3wvitk0o9.fsf@sgifford.tir.com>
+\renewcommand*{\c@lemma}{\c@satz}
+\renewcommand*{\p@lemma}{\p@satz}
+\renewcommand*{\thelemma}{\thesatz}
+\makeatother
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremheaderfont{\scshape}
-\theorembodyfont{\normalfont} 
-\theoremsymbol{\ensuremath{_\Box}} 
-\newtheorem{beweis}{Beweis:} 
+\theorembodyfont{\normalfont}
+\theoremsymbol{\ensuremath{_\Box}}
+\newtheorem{beweis}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\lemmaautorefname}{Lemma}
+\newcommand*{\defiautorefname}{Definition}
+\newcommand*{\bemautorefname}{Bemerkung}
+\newcommand*{\bspautorefname}{Beispiel}
+
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
 
 \makeindex
 
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
 \begin{document}
 
-\title{\Huge \bfseries Algebra 1}
-\author{\Large von: \\Moritz Schmidt}
+\title{Lineare Algebra und Geometrie 1}
+\author{Prof. Green}
+\date{Semester: WS 2006/07}
 \maketitle
 
+\clearpage
+\chapter*{Vorwort}
+
+% entspricht Vorlage: XY
+\begin{itshape}
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}%
+                  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das Dokument wurde nach bestem Wissen und Gewissen
+  angefertigt. Denoch garantiert weder der auf der Titelseite genannte Dozent,
+  die Personen, die an dem Dokument mitgewirkt haben, noch die Mitglieder des
+  Projekts für dessen Fehlerfreiheit. Für etwaige Fehler und dessen Folgen
+  wird von keiner der genannten Personen eine Haftung übernommen. Es steht
+  jeder Person frei, dieses Dokument zu lesen, zu verändern oder auf anderen
+  Medien verfügbar zu machen, solange ein Verweis auf die Internetadresse des
+  Projekts \url{http://www.minet.uni-jena.de/~joergs/skripte/} enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
+  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
+  des Projekts verfügbar.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:moritz.schmidt@obtineo.de}{Moritz Schmidt
+    \texttt{<moritz.schmidt@obtineo.de>}} (2006)
+  \end{itemize}
+\end{itshape}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
 \tableofcontents
 
 %%%%%%%%%%%%%%%%%%%
@@ -1350,5 +1445,6 @@ Für den Primkörper $P$ von $K$ gilt:
 \end{beweis}
 
 \clearpage
+\pdfbookmark[0]{Index}{index}
 \printindex
 \end{document}
