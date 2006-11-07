@@ -7,12 +7,6 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-if [ $(hostname) != "ppc214" ]; then
-    echo "Das Programm muss auf ppc214 aufgerufen werden," \
-      "damit TexLive verfügbar ist"
-    exit 1
-fi
-
 joergs=/home/stud/md01/joergs
 
 export LANG=C
@@ -85,8 +79,8 @@ if ! grep --quiet --ignore-case --line-regexp \
     echo "F: Das Skript ist nicht mehr auf dem aktuellen Stand der Vorlage"
 fi
 
-echo "I: Prüfe auf schlechten LaTeX-Stil und überprüfe Microtypographie..."
-rubber-info --warnings $src | grep -E '(nag|onlyamsmath)'
+echo "I: Prüfe auf schlechten LaTeX-Stil und überprüfe Microtypographie ..."
+rubber-info --warnings $src | grep -E '(nag|onlyamsmath)' > $TMP/typo_check
 
 # * keine \newcommand oder \renewcommand nach \begin{document}
 #   Alle Definitionen sollen in der Präampel stehen, sonst wird es
@@ -102,7 +96,14 @@ perl -wn -e 'BEGIN {$in_doc = 0; }' \
   -e 'print "$.\t$_" if ($_ =~ /[[:alpha:]]\.([^[:alpha:][:digit:]{}]*)[[:alpha:]]\./
                          and $1 ne "\\,");' \
   -e 'print "$.\t$_" if ($_ =~ /,[[:space:]](etc|usw)/);' \
-  -e 'print "$.\t$_" if ($_ =~ /[^\\][^,]\\%/);' *tex
+  -e 'print "$.\t$_" if ($_ =~ /[^\\][^,]\\%/);' *tex > $TMP/typo_check
+
+if [ -s $TMP/typo_check ]; then
+    echo "I: ... nichts gefunden."
+else
+    echo "W: ... $(wc -l < $TMP/typo_check) Fehler gefunden"
+    cat $TMP/typo_check
+fi
 
 cd /
 rm -r $TMP
