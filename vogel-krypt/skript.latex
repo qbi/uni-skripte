@@ -1171,6 +1171,163 @@ Analyse:
   ersten Zeile erraten "`zwei"': 3., 5., 1. 6. 2. 4.
 \end{bsp}
 
+\todo{Hier fehlt die Vorlesung vom 6.11.}
+
+% 8.11.06
+
+\section{Kryptoanalyse affin linearer Blockchiffren}
+
+\highl{known-plaintext-attack}: Legen uns fest auf $\Z_{k}$ (als kommutativer
+Ring) und Blocklänge~$n$, Schlüssel $(A,b)$ wobei $A\in\Z_{k}^{(n\times n)},
+b\in\Z_{k}^{(1\times n)}$ und eine lineare Abbildung $v\mapsto v\cdot A+b$.
+
+Annahme: für $n+1$ Klartextblöcke $m_{0},m_{1},\dotsc, m_{n}$ sind die
+Geheimtextblöcke $c_{0},c_{1},\dotsc, c_{n}$ bekannt.
+
+Wir betrachten folgende Matrix~$M$
+\begin{gather*}
+  M =
+     \begin{pmatrix}
+       m_{1}-m_{0}\\
+       \vdots\\
+       m_{n}-m_{0}
+     \end{pmatrix}_{n\times n}
+\end{gather*}
+und nehmen an, dass $\det M$ eine Einheit in $\Z_{k}$ ist!
+
+Außerdem sei
+\begin{gather*}
+  C =
+     \begin{pmatrix}
+       c_{1}-c_{0}\\
+       \vdots\\
+       c_{n}-c_{0}
+     \end{pmatrix}
+\end{gather*}
+
+\begin{bemerk}
+  Dies kommt nicht zu selten vor! (z.\,B. $\phi(26)=12$ ist die Anzahl der
+  Einheiten in $\Z_{26}$)
+\end{bemerk}
+
+Denn es gilt für folgende Folge $x_{k}:=\frac{\phi(k)}{k}$
+$\limsup_{k\rightarrow\infty} x_{k}=1$.
+
+\begin{bemerk}
+  In einer halbgeordneten Menge kann man definieren:
+  \begin{gather*}
+    \limsup_{k\rightarrow\infty} x_{k} = \inf\{ \sup\{ x_{l}\colon l\geq
+       k\}\colon k\in\N\}
+  \end{gather*}
+  In vollständigen Verbänden existiert stets der Limes superior und Limes
+  inferior und es gilt $\liminf_{k\rightarrow\infty} x_{k} \leq
+  \limsup_{k\rightarrow\infty} x_{k}$.
+\end{bemerk}
+
+Es gilt außerdem für $\delta>0$:
+\begin{gather*}
+  \lim_{k\rightarrow\infty} \frac{\phi(k)}{k^{1-\delta}} = \infty
+\end{gather*}
+
+Es gilt: $M\cdot A=C$
+
+\begin{align*}
+  c_{0} &= m_{0}A + b\\
+  c_{1} &= m_{1}A + b\\
+  \dotso\\
+  c_{n} &= m_{n} A+b
+\end{align*}
+
+\begin{gather*}
+  \begin{pmatrix}
+    c_{1}-c_{0} = m_{1}A - m_{0} A = (m_{1}-m_{0})A
+    \dotso 
+  \end{pmatrix}
+\end{gather*}
+\todo{Die Gleichungen noch ausfüllen.}
+
+Nach Vorraussetzung ($\det M$ ist Einheit in $\Z_{k}$) existiert $M^{-1}$.
+Hieraus folgt $A=M^{-1}C$ und weiter $b= c_{0}-m_{0}A$.
+
+\begin{bemerk}
+  Für \highl{Hill-Chiffren} (d.\,h. $b=0$) genügen $n$~Paare $(m_{j},c_{j})$.
+\end{bemerk}
+
+\begin{bsp}
+  Es sei $k=26$ und $n=2$. Der Klartext sei "`HERBST"' und der Geheimtext sei
+  "`SOMMER"'. Die Aufgabe ist den Schlüssel $(A,b)$ zu bestimmen.
+
+  Bestimmen wir erstmal $M$: "`HERBST"' = $\underbrace{7~4}_{m_{0}}~
+  \underbrace{17~1}_{m_{1}}~ \underbrace{18~19}_{m_{2}}$
+  \begin{gather*}
+    M =
+       \begin{pmatrix}
+         m_{1}-m_{0}\\
+         m_{2}-m_{0}
+       \end{pmatrix}
+       =
+       \begin{pmatrix}
+          10 & 23\\
+          11 & 15
+        \end{pmatrix}
+  \end{gather*}
+
+  Bestimme $C$: "`SOMMER"' = $\underbrace{18~14}_{c_{0}}~
+  \underbrace{12~12}_{c_{1}}~ \underbrace{4~17}_{c_{2}}$
+  \begin{gather*}
+    C =
+       \begin{pmatrix}
+         c_{1}-c_{0}\\
+         c_{2}-c_{0}
+       \end{pmatrix}
+       =
+       \begin{pmatrix}
+         20 & 24\\
+         12 & 3
+       \end{pmatrix}
+  \end{gather*}
+
+  3. Schritt: Bestimme die Determinante von $M$
+  \begin{gather*}
+    \det M =
+       \begin{pmatrix}
+          10 & 23\\
+          11 & 15
+        \end{pmatrix} = 10\cdot15 - 23\cdot11 = -103 = 1 + (-4)\cdot26 \equiv
+       1\pmod{26}
+  \end{gather*}
+
+  4. Schritt: Bestimme $M^{-1} = (\det M)^{-1} \begin{pmatrix}15 & -23\\-11 &
+  10\end{pmatrix} \equiv \begin{pmatrix}15 & 3\\15 & 10\end{pmatrix}$.
+
+  5. Schritt bestimme
+  \begin{gather*}
+    A = M^{-1}\cdot C =
+       \begin{pmatrix}15 & 3\\15 & 10\end{pmatrix}\cdot
+       \begin{pmatrix}20 & 24\\12 & 3\end{pmatrix}
+       = \begin{pmatrix}336 & 369\\420 & 390\end{pmatrix}
+       \equiv \begin{pmatrix}24 & 5\\4 & 0\end{pmatrix}
+  \end{gather*}
+
+  6. Schritt bestimmt $b$
+  \begin{gather*}
+    b = c_{0}-m_{0}
+       = \begin{pmatrix}18 & 14\end{pmatrix}
+       - \begin{pmatrix}7 & 4\end{pmatrix}
+       \cdot \begin{pmatrix}24 & 5\\4 & 0\end{pmatrix}
+       = \begin{pmatrix}18 & 14\end{pmatrix}
+       - \begin{pmatrix}184 & 35\end{pmatrix}
+       = \begin{pmatrix}18 & 14\end{pmatrix}
+       - \begin{pmatrix}2 & 9\end{pmatrix}
+       = \begin{pmatrix}16 & 5\end{pmatrix}
+  \end{gather*}
+\end{bsp}
+
+\begin{bemerk}
+  Alles gut ausrechenbar. Der Schutz besteht nur darin, den Schlüsselraum
+  wesentlich größer machen.
+\end{bemerk}
+
 \clearpage
 \appendix
 \chapter{Übungsaufgaben}
@@ -1204,6 +1361,33 @@ Bestimmen Sie den Klartext.
   JGEIZU  ZOIZOE  LFVLAH  RKFNMT  IBCBIQ  VUHXVS  SOGOFN  ILEFSY
   MEFSSR  KBXORU  TEGEEU  IEDLCE  NVRDHN  IE
 \end{verbatim}
+
+\chapter{Lösungen}
+\section{Blatt 1}
+\subsection*{Aufgabe 1}
+\begin{enumerate}[a)]
+ \item Kasiski-Test (Wiederholung von Zeichenketten länger als 2), Beispiele:
+  \begin{tabular}{l|l}
+    KFEIUERX & $50 = 2\cdot 5\cdot 5$\\
+    TIB & $138 = 2\cdot3\cdot23$\\
+    IZO
+       LAH
+       GYR
+  \end{tabular}
+
+ \item Friedman-Test: $I(c) = 0,0483$ und $d\approx3\mathord{,}93$.
+
+ \item Wir entscheiden uns für $d=5$.
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+Es bleibt: suchen 5 Caesar-Chiffren
+1. Spalte: F für E, d.\,h. B für A (Verschiebung 1)\\
+2. Spalte: E für E, d.\,h. B für A (Verschiebung 0)\\
+3. Spalte:  für E, d.\,h. B für A (Verschiebung )\\
+4. Spalte:  für E, d.\,h. B für A (Verschiebung )\\
+5. Spalte:  für E, d.\,h. B für A (Verschiebung )\\
+
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
