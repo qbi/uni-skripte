@@ -67,7 +67,10 @@ if ($id=="SKRIPT") {
                 <form method=\"post\" action=\"mail.php\">
                   <input type=\"hidden\" name=\"id\" value=\"$id\"/>
                   <textarea name=\"body\" cols=\"60\" rows=\"10\"></textarea>
-                  <input type=\"submit\" name=\"dummy\" value=\"Absenden\"/>
+                  <br>
+                  <input type=\"submit\" name=\"knopf\" value=\"Verwerfen\"/>
+                  <input type=\"submit\" name=\"knopf\" value=\"Absenden\"/>
+                  <input type=\"submit\" name=\"knopf\" value=\"Verwerfen\"/>
                 </form>
               </p>";
 
