@@ -11,7 +11,7 @@
 % zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
 % unterschieden.
 
-\documentclass[german,draft,twoside]{scrreprt}
+\documentclass[ngerman,draft,twoside]{scrreprt}
 
 \usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
                           % oder solche, die man nicht in LaTeX verwenden
@@ -39,6 +39,9 @@
 \usepackage{float}
 \usepackage{enumerate}
 \usepackage{nicefrac}
+
+% Für Linien in Tabellen
+\usepackage{booktabs}
 
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
 % Körpers ist normal und der Kopf wird fett gesetzt
@@ -99,8 +102,39 @@
 \newcommand*{\PZ}{\mathbb{P}}
 \newcommand*{\F}{\mathbb{F}}
 \newcommand*{\ZmZ}[1]{\nicefrac{\mathbb{Z}}{#1\mathbb{Z}}}
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+%\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+%  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+%}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
 
 \newcommand*{\addindex}[1]{\index{#1}\emph{#1}}
+
+\DeclareMathOperator{\gt}{gT}
+\DeclareMathOperator{\ggt}{ggT}
 
 \makeindex
 
@@ -149,6 +183,8 @@
   \begin{itemize}
    \item \href{mailto:moritz.schmidt@obtineo.de}{Moritz Schmidt
     \texttt{<moritz.schmidt@obtineo.de>}} (2006)
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+       \texttt{<jens@kubieziel.de>}} (2006)
   \end{itemize}
 \end{itshape}
 
@@ -167,43 +203,43 @@
 %%%%%%%%%%%%%%%%%%%
 \index{Division mit Rest}
 \begin{satz}[Division mit Rest]\label{satz:1.1}
-Zu a $\in \Z$ und m $\in \N$ \marginpar{$\N = [1, \infty[$} existiert stets eindeutig bestimmt q, r $\in \Z$ mit $a = qm + r$ und $0 \leq r < m$.
+Zu $a \in \Z$ und $m \in \N$ \marginpar{$\N = [1, \infty[$} existiert
+stets eindeutig bestimmt $q, r \in \Z$ mit $a = qm + r$ und $0 \leq r < m$.
+\begin{beweis}
+Sei $R := \{a - qm \colon q \in \Z\}$. Dann $R \cap \N_{0} \neq
+\varnothing$. Denn f"ur $a \geq 0$ ist $a - 0m = a \in \N_{0}$, und
+f"ur $a < 0$ ist $a - am = a(1 - m) \in \N_{0}$ ein kleinstes
+Element. Sei $r := a - qm := \min R \cap \N_{0}$ mit $q \in \Z$. Dann
+$r \geq 0$, aber $r - m = a - (q + 1)m < 0$, d.\,h. $r < m$. Also $q,
+r$ wie gew"unscht.
+
+Seien auch $q'$, $r' \in \Z$ mit $a = q'm + r'$ und $0 \leq r' <
+m$. Dann $r - r' = (q' - q)m$. Wegen $\abs{r - r'} < m$ folgt $q' - q
+= 0$, sonst $\abs{(q' - q)m} \geq m$. Also $q' = q$, d.h. $r' = r$.
+\end{beweis}
 \end{satz}
 
 %%%%%%%%%%%%%%%%%%%
 % Definition 1.1
 %%%%%%%%%%%%%%%%%%%
 \begin{defi}
-q Quotient, r Rest
+Man bezeichnet $q$ als Quotient $r$ als Rest.
 \end{defi}
-
-%%%%%%%%%%%%%%%%%%%
-% Beweis
-%%%%%%%%%%%%%%%%%%%
-\begin{beweis}
-Sei $R := \{a - qm \colon q \in \Z\}$. Dann: $R \cap \N_{0} \neq \varnothing$.\\
-Denn: f"ur $a \geq 0$ ist $a - 0m = a \in \N_{0}$, und f"ur $a < 0$ ist $a - am = a(1 - m) \in \N_{0}$ ein kleinstes Element.\\
-Sei $r := a - qm := min R \cap \N_{0} (q \in \Z)$.\\
-Dann: $r \geq 0$, aber $r - m = a - (q + 1)m < 0$, d.h. $r < m$.\\
-Also q, r wie gew"unscht.\\\\
-Seien auch $q'$, $r' \in \Z$ mit $a = q'm + r'$ und $0 \leq r' < m$.\\
-Dann: $r - r' = (q' - q)m$.\\
-Wegen $\left|r - r'\right| < m$ folgt $q' - q = 0$ sonst $\left|(q' - q)m\right| \geq m$.\\
-Also: $q' = q$, d.h. $r' = r$.
-\end{beweis}
 
 %%%%%%%%%%%%%%%%%%%
 % Definition 1.2
 %%%%%%%%%%%%%%%%%%%
 \begin{defi}\label{defi:1.2}
-Man nennt $a \in \Z$ \addindex{Teiler} von $b \in \Z$ und schreibt $a|b$, wenn ein $c \in \Z$ mit $b = ac$ existiert. Man sagt auch a teilt b, b ist Vielfaches von a, b ist durch a teilbar usw.
+  Man nennt $a \in \Z$ \addindex{Teiler} von $b \in \Z$ und schreibt
+  $a|b$, wenn ein $c \in \Z$ mit $b = ac$ existiert. Man sagt auch $a$
+  teilt $b$, $b$ ist Vielfaches von $a$, $b$ ist durch $a$ teilbar usw.
 \end{defi}
 
 %%%%%%%%%%%%%%%%%%%
 % Satz 1.2
 %%%%%%%%%%%%%%%%%%%
 \begin{satz}\label{satz:1.2}
-F"ur alle a, b, c, x, y $\in \Z$ gilt:
+F"ur alle $a, b, c, x, y \in \Z$ gilt:
 \begin{enumerate}[(i)]
 	\item $a|0$, $1|a$, $a|a$
 	\item $a|b \Rightarrow \pm a|\pm b$
@@ -213,23 +249,22 @@ F"ur alle a, b, c, x, y $\in \Z$ gilt:
 	\item $0|a \Rightarrow a = 0$
 	\item $a|b \wedge a,b \in \N \Rightarrow a \leq b$
 \end{enumerate}
-\end{satz}
-
-%%%%%%%%%%%%%%%%%%%
-% Beweis
-%%%%%%%%%%%%%%%%%%%
 \begin{beweis}
-Beweis nur f"ur $(v)$ [Rest analog].\\
-Nach Voraussetzung existiert $g,h \in \Z$ mit $b = ag$, $c = ah$. Folglich: \[bx + cy = agx + ahy = \underbrace{a(gx + hy)}_{\in \Z}\], d.h. $a|gx + hy$.
+  Der Beweis wird nur f"ur den Punkt (v) geführt. Der Rest ist
+  analog. Nach Voraussetzung existiert $g,h \in \Z$ mit $b = ag$, $c =
+  ah$. Folglich:
+  \[bx + cy = agx + ahy = \underbrace{a(gx + hy)}_{\in \Z}\] d.\,h. $a|gx + hy$.
 \end{beweis}
+\end{satz}
 
 %%%%%%%%%%%%%%%%%%%
 % Definition 1.3
 %%%%%%%%%%%%%%%%%%%
 \begin{defi}\label{defi:1.3}
-Seien $a_{1}, \ldots, a_{n}, t \in \Z$ mit $t|a_{1}, \ldots, t|a_{n}$.\\
-Dann heißt $t$ \addindex{Gemeinsamer Teiler} von $a_{1}, \ldots, a_{n}$.\\
-Setze $gT(a_{1}, \ldots, a_{n}) = \left\{t \in \Z \colon t\ gemeinsamer\ Teiler\ von\ a_{1}, \ldots, a_{n}\right\}$.
+Seien $a_{1}, \ldots, a_{n}, t \in \Z$ mit $t|a_{1}, \ldots,
+t|a_{n}$. Dann heißt $t$ \addindex{gemeinsamer Teiler} von $a_{1},
+\ldots, a_{n}$. Setze $\gt(a_{1}, \ldots, a_{n}) = \left\{t \in \Z
+  \colon t\text{ gemeinsamer Teiler von } a_{1}, \ldots, a_{n}\right\}$.
 \end{defi}
 
 %%%%%%%%%%%%%%%%%%%
@@ -237,11 +272,11 @@ Setze $gT(a_{1}, \ldots, a_{n}) = \left\{t \in \Z \colon t\ gemeinsamer\ Teiler\
 %%%%%%%%%%%%%%%%%%%
 \index{Euklidischer Algorithmus}
 \begin{bem}\label{bem:1.3}
-Wegen $gT(a_{1}, \ldots, a_{n}) = gT(\pm a_{1}, \ldots, \pm a_{n})$ kann man $a_{1}, \ldots, a_{n} \in \N_{0}$ annehmen. Da man $a_{1}, \ldots, a_{n}$ auch permutieren darf, kann man $a_{1} \geq \ldots \geq a_{n}$ annehmen, sogar $a_{1} > \ldots > a_{n} > 0$. Division mit Rest liefert $q, r \in \Z$ mit $a_{1} = qa_{n} + r$, $0 \leq r < a_{n}$. Aus Satz \ref{satz:1.2} folgt leicht:
-\[gT(a_{1}, \ldots, a_{n}) = gT(a_{1} - qa_{n}, a_{2}, \ldots, a_{n})\]
+Wegen $\gt(a_{1}, \ldots, a_{n}) = \gt(\pm a_{1}, \ldots, \pm a_{n})$ kann man $a_{1}, \ldots, a_{n} \in \N_{0}$ annehmen. Da man $a_{1}, \ldots, a_{n}$ auch permutieren darf, kann man $a_{1} \geq \ldots \geq a_{n}$ annehmen, sogar $a_{1} > \ldots > a_{n} > 0$. Division mit Rest liefert $q, r \in \Z$ mit $a_{1} = qa_{n} + r$, $0 \leq r < a_{n}$. Aus Satz \ref{satz:1.2} folgt leicht:
+\[\gt(a_{1}, \ldots, a_{n}) = \gt(a_{1} - qa_{n}, a_{2}, \ldots, a_{n})\]
 mit $r + a_{2} + \ldots + a_{n} < a_{1} + a_{2} + \ldots + a_{2}$.\\
 Iteration ergibt schlie"slich:\\
-\[gT(a_{1}, \ldots, a_{n}) = gT(b).\]
+\[\gt(a_{1}, \ldots, a_{n}) = \gt(b).\]
 Dieses Verfahren hei"st euklidischer Algorithmus (\textsc{Euklid} 365--300).
 \end{bem}
 
@@ -249,45 +284,50 @@ Dieses Verfahren hei"st euklidischer Algorithmus (\textsc{Euklid} 365--300).
 % Beispiel
 %%%%%%%%%%%%%%%%%%%
 \begin{bsp}
-	\[\begin{array}{lll}
-			gT(45, 27, 12) & = & gT(\overbrace{45 - 3 \times 12}^{9}, 27, 12)\\
-			& = & gT(27, 12, 9)\\
-			& = & gT(27 - 3 \cdot 9, 12, 9)\\
-			& = & gT(12, 9)\\
-			& = & gT(12 - 1 \cdot 9, 9)\\
-			& = & gT(9, 3)\\
-			& = & gT(9 - 3 \cdot 3, 3) = gT(3).\\
-		\end{array}\]
+Das Beispiel zeigt die Anwendung des euklidischen Algorithmus'.
+\begin{align*}
+  \gt(45, 27, 12) & = \gt(\overbrace{45 - 3 \times 12}^{9}, 27, 12) =
+  \gt(27, 12, 9) = \gt(27 - 3 \cdot 9, 12, 9)\\
+  & = \gt(12, 9) = \gt(12 - 1 \cdot 9, 9) = \gt(9, 3) = \gt(9 - 3
+  \cdot 3, 3)\\
+  & = \gt(3)
+\end{align*}
 \end{bsp}
 
 %%%%%%%%%%%%%%%%%%%
 % Definition 1.4
 %%%%%%%%%%%%%%%%%%%
-\index{Größter gemeinsamer Teiler}
+%\index{Größter gemeinsamer Teiler}
 \begin{defi}\label{defi:1.4}
-Seien $a_{1}, \ldots, a_{n} \in \Z$.\\
-Ein $d \in \N_{0} \cap gT(a_{1}, \ldots, a_{n})$ heißt \emph{größter gemeinsamer Teiler} von $a_{1}, \ldots, a_{n}$ ($ggT$), falls d durch jeden gemeinsamen Teiler von $a_{1}, \ldots, a_{n}$ teilbar ist.
+  Seien $a_{1}, \ldots, a_{n} \in \Z$. Ein $d \in \N_{0} \cap
+  \gt(a_{1}, \ldots, a_{n})$ heißt \addindex{größter gemeinsamer
+    Teiler}\footnote{Bezeichnung: ggT} von $a_{1}, \ldots, a_{n}$,
+  falls $d$ durch jeden gemeinsamen Teiler von $a_{1}, \ldots, a_{n}$
+  teilbar ist.
 \end{defi}
 
 %%%%%%%%%%%%%%%%%%%
 % Satz 1.3
 %%%%%%%%%%%%%%%%%%%
-\begin{satz}[Existenz ggT]\label{satz:1.3}
-Zu $a_{1}, \ldots, a_{n} \in \Z$ existiert stets genau ein $ggT d$.
-\end{satz}
-
-%%%%%%%%%%%%%%%%%%%
-% Beweis
-%%%%%%%%%%%%%%%%%%%
+\begin{satz}[Existenz des größten gemeinsamen Teilers]\label{satz:1.3}
+Zu $a_{1}, \ldots, a_{n} \in \Z$ existiert stets genau ein $\ggt d$.
 \begin{beweis}
-Nach Bemerkung \ref{bem:1.3} ist $gT(a_{1}, \ldots, a_{n}) = gT(b)$ für ein $b \in \N_{0}$. Dann ist $b$ ein $ggT$ von $a_{1}, \ldots, a_{n}$. Ist $b' \in \N_{0}$ ein weiterer $ggT$ von $a_{1}, \ldots, a_{n}$, so gilt:\[b|b'\ und\ b'|b,\] also $b = \pm b'$ nach Satz \ref{satz:1.2}. Wegen $b, b' \in \N_{0}$ folgt $b = b'$.
+  Nach Bemerkung \ref{bem:1.3} ist $\gt(a_{1}, \ldots, a_{n}) =
+  \gt(b)$ für ein $b \in \N_{0}$. Dann ist $b$ ein größter gemeinsamer
+  Teiler von $a_{1}, \ldots, a_{n}$. Ist $b' \in \N_{0}$ ein weiterer
+  größter gemeinsamer Teiler von $a_{1}, \ldots, a_{n}$, so
+  gilt \[b|b'\ und\ b'|b,\] also $b = \pm b'$ nach
+  Satz~\ref{satz:1.2}. Wegen $b, b' \in \N_{0}$ folgt $b = b'$.
 \end{beweis}
+\end{satz}
 
 %%%%%%%%%%%%%%%%%%%
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-Man schreibt $d = ggT(a_{1}, \ldots, a_{n})$ und zeigt leicht:\[d = ggT(a_{1}, ggT(a_{2}, \ldots, a_{n})).\] Daher genügt es meist, den $ggT$ von zwei Zahlen zu berechnen.
+  Man schreibt $d = \ggt(a_{1}, \ldots, a_{n})$ und zeigt leicht:\[d =
+  \ggt(a_{1}, \ggt(a_{2}, \ldots, a_{n})).\] Daher genügt es meist,
+  den größten gemeinsamen Teiler von zwei Zahlen zu berechnen.
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -295,10 +335,34 @@ Man schreibt $d = ggT(a_{1}, \ldots, a_{n})$ und zeigt leicht:\[d = ggT(a_{1}, g
 %%%%%%%%%%%%%%%%%%%
 \index{Erweiterter Euklidischer Algorithmus}
 \begin{satz}[Erweiterter Euklidischer Algorithmus]\label{satz:1.4}
-Seien $a, b \in \N$. Setze \[\begin{array}{lll}(x_{0}, y_{0}, z_{0}) & := & (1, 0, a),\\ (x_{1}, y_{1}, z_{1}) & := & (0, 1, b)\\\end{array}\] und $i := 1$.\\
-Im Fall $z_{i} = 0$ brechen wir ab.\\
-Im Fall $z_{i} \neq 0$ liefert Division mit Rest $q_{i}, r_{i} \in \Z$ mit $z_{i-1} = q_{i}z_{i} + r_{i}, 0 \leq r_{i} < z_{i}$.\\
-Wir setzen \[(x_{i+1}, y_{i+1}, z_{i+1}) := (x_{i+1} - q_{i}x_{i}, y_{i-1} - q_{i}y_{i}, z_{i-1} - q_{i}z_{i}),\] erhöhen i um 1 und iterieren. Dieses Verfahren bricht ab, und am Ende ist \[ggT(a, b) = z_{i-1} = x_{i-1}a + y_{i-1}b.\]
+  Seien $a, b \in \N$. Setze
+  \begin{align*}
+    (x_{0}, y_{0}, z_{0}) & := (1, 0, a) & (x_{1}, y_{1}, z_{1}) & :=
+    (0, 1, b)
+  \end{align*}
+  und $i := 1$. Im Fall $z_{i} = 0$ brechen wir ab. Im Fall $z_{i}
+  \neq 0$ liefert Division mit Rest $q_{i}, r_{i} \in \Z$ mit $z_{i-1}
+  = q_{i}z_{i} + r_{i}, 0 \leq r_{i} < z_{i}$. Wir setzen
+  \[(x_{i+1}, y_{i+1}, z_{i+1}) := (x_{i+1} - q_{i}x_{i}, y_{i-1} -
+  q_{i}y_{i}, z_{i-1} - q_{i}z_{i}),\]
+  erhöhen $i$ um 1 und iterieren. Dieses Verfahren bricht ab, und am
+  Ende ist
+  \[\ggt(a, b)  = z_{i-1} = x_{i-1}a + y_{i-1}b.\]
+\begin{beweis}
+Wegen $b = z_{1} > z_{2} > \ldots > z_{i-1} > z_{i} = 0$ bricht das
+Verfahren ab.
+
+Am Anfang ($i = 1$) ist $\ggt(a, b) = \ggt(z_{i-1}, z_{i})$, und das
+bleibt während des Verfahrens erhalten. Beachte $\ggt(z_{i-1},
+  z_{i} = \ggt(z_{i}, \underbrace{z_{i+1}}_{z_{i-1} -
+    q_{i}z_{i}}))$. Am Ende ist $z_{i} = 0$, also $\ggt(a, b) =
+\ggt(z_{i-1}, z_{i}) = z_{i-1}$. Am Anfang $(i = 0, 1)$ ist $x_{i}a +
+y_{i}b = z_{i}$, und das bleibt w"ahrend des Verfahrens erhalten:
+
+\[x_{i+1}a + y_{i+1}b = (x_{i-1} - q_{i}x_{i})a + (y_{i-1} -
+q_{i}y_{i})b = \underbrace{x_{i-1}a + y_{i}b}_{z_{i-1}} -
+q_{i}\underbrace{(x_{i}a + y_{i}b)}_{z_{i}} = z_{i+1}\] 
+\end{beweis}
 \end{satz}
 
 %%%%%%%%%%%%%%%%%%%
@@ -306,80 +370,87 @@ Wir setzen \[(x_{i+1}, y_{i+1}, z_{i+1}) := (x_{i+1} - q_{i}x_{i}, y_{i-1} - q_{
 %%%%%%%%%%%%%%%%%%%
 \begin{bsp}
 $a = 143, b = 91$:\\
-\[\begin{array}{llll}
-x_{i} & y_{i} & z_{i} & q_{i}\\
+\begin{tabular}{c|c|c|c}
+$x_{i}$ & $y_{i}$ & $z_{i}$ & $q_{i}$\\
+\toprule
 1 & 0 & 143\\
 0 & 1 & 91 & 1\\
 1 & -1 & 52 & 1\\
 -1 & 2 & 39 & 1\\
 2 & -3 & 13 & 3\\
-& & 0 \\
-\end{array}\]
-Also $ggT(143, 91) = 13 = 2 \times 143 - 3 \times 91$!
+& & 0\\
+\bottomrule
+\end{tabular}
+Also ist $\ggt(143, 91) = 13 = 2 \cdot 143 - 3 \cdot 91$.
 \end{bsp}
-
-%%%%%%%%%%%%%%%%%%%
-% Beweis
-%%%%%%%%%%%%%%%%%%%
-\begin{beweis}
-Wegen $b = z_{1} > z_{2} > \ldots > z_{i-1} > z_{i} = 0$ bricht das Verfahren ab.\\
-Am Anfang $(i = 1)$ ist $ggT(a, b) = ggT(z_{i-1}, z_{i})$, und das bleibt während des Verfahrens erhalten. $\left[\text{beachte: } ggT(z_{i-1}, z_{i} = ggT(z_{i}, \underbrace{z_{i+1}}_{z_{i-1} - q_{i}z_{i}}))\right]$\\
-Am Ende ist $z_{i} = 0$, also $ggT(a, b) = ggT(z_{i-1}, z_{i}) = z_{i-1}$.\\
-Am Anfang $(i = 0, 1)$ ist $x_{i}a + y_{i}b = z_{i}$, und das bleibt w"ahrend des Verfahrens erhalten:
-\[x_{i+1}a + y_{i+1}b = (x_{i-1} - q_{i}x_{i})a + (y_{i-1} - q_{i}y_{i})b = \underbrace{x_{i-1}a + y_{i}b}_{z_{i-1}} - q_{i}\underbrace{(x_{i}a + y_{i}b)}_{z_{i}} = z_{i+1}\]
-\end{beweis}
 
 %%%%%%%%%%%%%%%%%%%
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-Der erweiterte euklidische Algorithmus liefert also nicht nur $d := ggT(a, b)$, somdern auch $x, y \in \Z$ mit $d = ax + by$.\\
-Ist man an $x, y$ nicht interessiert, so kann man bei der Iteration die $x_{i}, y_{i}$ weglassen.
+  Der erweiterte euklidische Algorithmus liefert also nicht nur $d :=
+  \ggt(a, b)$, somdern auch $x, y \in \Z$ mit $d = ax + by$. Ist man
+  an $x, y$ nicht interessiert, so kann man bei der Iteration die
+  $x_{i}, y_{i}$ weglassen.
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
 % Satz 1.5
 %%%%%%%%%%%%%%%%%%%
 \begin{satz}\label{satz:1.5}
-F"ur $a_{1}, \ldots a_{n}, b \in \Z$ gilt:\[\exists\ x_{1}, \ldots, x_{n} \in \Z \colon b = x_{1}a_{1} + \ldots + x_{n}a_{n} \Leftrightarrow ggT(a_{1}, \ldots, a_{n})|b.\]
-\end{satz}
-
-%%%%%%%%%%%%%%%%%%%
-% Beweis
-%%%%%%%%%%%%%%%%%%%
+  F"ur $a_{1}, \ldots a_{n}, b \in \Z$ gilt:
+  \[\exists\ x_{1}, \ldots, x_{n} \in \Z \colon b = x_{1}a_{1} +
+  \ldots + x_{n}a_{n} \Leftrightarrow \ggt(a_{1}, \ldots, a_{n})|b.\]
 \begin{beweis}
-\underline{\glqq$\Rightarrow$\grqq}: Sei $b = x_{1}a_{1} + \ldots + x_{n}a_{n} (x_{1}, \ldots, x_{n} \in \Z).$\\
-Für $t \in gT(a_{1}, \ldots, a_{n})$ gilt dann $t|x_{1}a_{1} + \ldots + x_{n}a_{n} = b$. Insbesondere $ggT(a_{1}, \ldots, a_{n})|b$.\\\\
-\underline{\glqq$\Leftarrow$\grqq}: Sei $d := ggT(a_{1}, \ldots, a_{n}|b)$, etwa $b = cd$.\\
-Es gen"ugt zu zeigen, dass $y_{1}, \ldots, y_{n} \in \Z$ existieren mit $d = y_{1}a_{1} + \ldots + y_{n}a_{n}$, denn dann ist $b = cd = \underbrace{cy_{1}}_{x_{1}}a_{1} + \ldots + \underbrace{cy_{n}}_{x_{n}}a_{n}$.\\
-Die Existenz von $y_{1}, \ldots, y_{n}$ zeigen wir induktiv.\\ 
-Im Fall $n = 1$ ist $d = \pm a_{1}$.\\
-Im Fall $n = 2$ folgt die Existenz von $y_{1}, y_{2}$ aus Satz \ref{satz:1.4}.\\
-Im Fall $n > 2$ existieren nach Induktion $z_{1}, \ldots, z_{n} \in \Z$ mit \[ggT(a_{2}, \ldots, a_{n}) = z_{2}a_{2} + \ldots + z_{n}a_{n}.\]
-Außerdem existieren $v_{1}, v_{2} \in \Z$ mit \[d = ggT(a_{1}, ggT(a_{2}, \ldots, a_{n})) \stackrel{Satz\ \ref{satz:1.5}}{=} v_{1}a_{1} + v_{2}ggT(a_{2}, \ldots, a_{n}) = v_{1}a_{1} + v_{2}z_{2}a_{2} + \ldots + v_{2}z_{n}a_{n}.\]
+  \begin{itemize}
+  \item "`$\Rightarrow$"' Sei $b = x_{1}a_{1} + \ldots + x_{n}a_{n}
+    (x_{1}, \ldots, x_{n} \in \Z)$. Für $t \in \gt(a_{1}, \ldots,
+    a_{n})$ gilt dann $t|x_{1}a_{1} + \ldots + x_{n}a_{n} =
+    b$. Insbesondere $\ggt(a_{1}, \ldots, a_{n})|b$.
+  \item "`$\Leftarrow$"' Sei $d := \ggt(a_{1}, \ldots, a_{n}|b)$, etwa
+    $b = cd$. Es gen"ugt zu zeigen, dass $y_{1}, \ldots, y_{n} \in \Z$
+    existieren mit $d = y_{1}a_{1} + \ldots + y_{n}a_{n}$, denn dann
+    ist $b = cd = \underbrace{cy_{1}}_{x_{1}}a_{1} + \ldots +
+    \underbrace{cy_{n}}_{x_{n}}a_{n}$. Die Existenz von $y_{1},
+    \ldots, y_{n}$ zeigen wir induktiv. Im Fall $n = 1$ ist $d = \pm
+    a_{1}$. Im Fall $n = 2$ folgt die Existenz von $y_{1}, y_{2}$ aus
+    Satz~\ref{satz:1.4}. Im Fall $n > 2$ existieren nach Induktion
+    $z_{1}, \ldots, z_{n} \in \Z$ mit $\ggt(a_{2}, \ldots, a_{n}) =
+    z_{2}a_{2} + \ldots + z_{n}a_{n}$. Außerdem existieren $v_{1},
+    v_{2} \in \Z$ mit $d = \ggt(a_{1}, \ggt(a_{2}, \ldots, a_{n}))$
+    und sind nach Satz~\ref{satz:1.5} gleich $v_{1}a_{1} +
+    v_{2}\ggt(a_{2}, \ldots, a_{n}) = v_{1}a_{1} + v_{2}z_{2}a_{2} +
+    \ldots + v_{2}z_{n}a_{n}$.
+  \end{itemize}
 \end{beweis}
+\end{satz}
 
 %%%%%%%%%%%%%%%%%%%
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-Daher gilt: \[ggT(a_{1}, \ldots, a_{n}) = 1 \Leftrightarrow \exists\ x_{1}, \ldots, x_{n} \in \Z \colon x_{1}a_{1} + \ldots + x_{n}a_{n} = 1.\]
-Gegebenenfalls heißen $a_{1}, \ldots, a_{n}$ \addindex{Teilerfremd}.
+  Daher gilt: \[\ggt(a_{1}, \ldots, a_{n}) = 1 \Leftrightarrow
+  \exists\ x_{1}, \ldots, x_{n} \in \Z \colon x_{1}a_{1} + \ldots +
+  x_{n}a_{n} = 1.\] Gegebenenfalls heißen $a_{1}, \ldots, a_{n}$
+  \addindex{teilerfremd}.
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
 % Definition 1.5
 %%%%%%%%%%%%%%%%%%%
 \begin{defi}\label{defi:1.5}
-Eine natürliche Zahl $p \neq 1$ heißt Primzahl, falls $\pm 1, \pm p$ ihre einzigen Teiler sind. Setze \[\PZ = \left\{p \in \N \colon p \ Primzahl\right\}.\]
-Ist $a \in \Z$ und $p \in \PZ$ mit $p|a$, so hei"st $p$ \addindex{Primteiler} (\addindex{Primfaktor}) von $a$.
+  Eine natürliche Zahl $p \neq 1$ heißt \addindex{Primzahl}, falls
+  $\pm 1, \pm p$ ihre einzigen Teiler sind. Setze
+  \[\PZ = \left\{p \in \N \colon p \ Primzahl\right\}\]
+  Ist $a \in \Z$ und $p \in \PZ$ mit $p|a$, so hei"st $p$ \addindex{Primteiler}
+  (\addindex{Primfaktor}) von $a$.
 \end{defi}
 
 %%%%%%%%%%%%%%%%%%%
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-$\PZ = \left\{2, 3, 5, 7, 11, 13, \ldots\right\}$
+$\PZ = \{2, 3, 5, 7, 11, 13, \ldots\}$
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -387,17 +458,16 @@ $\PZ = \left\{2, 3, 5, 7, 11, 13, \ldots\right\}$
 %%%%%%%%%%%%%%%%%%%
 \begin{satz}\label{satz:1.6}
 Jede nat"urliche Zahl $a \neq 1$ hat einen Primteiler.
+\begin{beweis}
+  Wegen $1 \neq a|a$ ist $D := \{d \in \N \colon 1 \neq d|a\} \neq
+  \varnothing$. Folglich existiert $p := min \ D$. W"are $p \notin
+  \PZ$, so h"atte $p$ einen Teiler $t \in \N$ mit $1 \neq t \neq
+  p$. Dann w"are aber $t < p$ und $t \in D$ im Widerspruch zur Wahl
+  von $p$. Also $p \in \PZ$.
+\end{beweis}
 \end{satz}
 
-%%%%%%%%%%%%%%%%%%%
-% Beweis
-%%%%%%%%%%%%%%%%%%%
-\begin{beweis}
-Wegen $1 \neq a|a$ ist $D := \left\{d \in \N \colon 1 \neq d|a\right\} \neq \varnothing.\\$
-Folglich existiert $p := min \ D.$\\
-W"are $p \notin \PZ$, so h"atte $p$ einen Teiler $t \in \N$ mit $1 \neq t \neq p$.\\
-Dann w"are aber $t < p$ und $t \in D$ im Widerspruch zur Wahl von $p$. Also $p \in \PZ$!
-\end{beweis}
+%%%weiter ueberarbeiten
 
 %%%%%%%%%%%%%%%%%%%
 % Satz 1.7
@@ -433,7 +503,7 @@ F"ur $a, b \in \Z$ ist jeder Primteiler $p$ von $ab$ ein Teiler von $a$ oder $b$
 \begin{beweis}
 Im Fall $p|a$ sind wir fertig.\\
 Sei also $p \not| a.$\\ 
-Dann: $1 = ggT(p, a) = xp + ya$ mit geeigneten $x, y \in \Z.$\\
+Dann: $1 = \ggt(p, a) = xp + ya$ mit geeigneten $x, y \in \Z.$\\
 Folglich: $p|xpb + yab = (xp + ya)b = 1b = b$
 \end{beweis}
 
@@ -467,7 +537,7 @@ Zu jeder nat"urlichen Zahl $m \neq \ 1$ existieren $p_1, \ldots, p_r \in \PZ$ mi
 \begin{enumerate}[(i)]
 	\item Man nennt $m = p_1 \ldots p_r$ die Primfaktorzerlegung von $m$. Durch zusammenfassen mehrfach auftretender Faktoren kann man diese auch in der Form $m = q_1^{a_1} \ldots q_t^{a_t}$ mit paarweisen verschiedenen $q_1, \ldots, q_t \in \PZ$ und beliebigen $a_1, \ldots, a_t \in \N$ schreiben. Eine weitere Schreibweise ist $m = \prod\limits_{p \in \PZ}p^{b_p}$, wobei $b_p \in \N_0$ f"ur alle $p \in \PZ$ und $\left|\left\{p \in \PZ \colon b_p \neq 0\right\}\right| < \infty$ ist. So kann man auch $ 1 = \prod\limits_{p \in \PZ}p^0$ als Primfaktorzerlegung der 1 auffassen.
 	\item Die Teiler von $m = \prod\limits_{p \in \PZ}p^{b_p}$ sind genau die Zahlen $\pm \prod\limits_{p \in \PZ}p^{t_p}$ mit $t_p \leq b_p$ f"ur alle $p \in \PZ$.
-	\item Die gemeinsamen Teiler von $m = \prod\limits_{p \in \PZ}p^{b_p}$ und $n = \prod\limits_{p \in \PZ}p^{c_p}$ sind also genau die Zahlen $\pm \prod\limits_{p \in \PZ}p^{t_p}$ mit $t_p \leq min \left\{b_p, c_p\right\}$ f"ur alle $p \in \PZ$. Daher ist $ggT(a, b) = \prod\limits_{p \in \PZ}p^{min\left\{b_p, c_p\right\}}$.
+	\item Die gemeinsamen Teiler von $m = \prod\limits_{p \in \PZ}p^{b_p}$ und $n = \prod\limits_{p \in \PZ}p^{c_p}$ sind also genau die Zahlen $\pm \prod\limits_{p \in \PZ}p^{t_p}$ mit $t_p \leq min \left\{b_p, c_p\right\}$ f"ur alle $p \in \PZ$. Daher ist $\ggt(a, b) = \prod\limits_{p \in \PZ}p^{min\left\{b_p, c_p\right\}}$.
 	\item Die Konstruktion gro"ser Primzahlen und die Primfaktorzerlegung gro"ser nat"urlicher Zahlen sind von erheblicher Bedeutung f"ur die Kryptographie, d.h. die Lehre vom Ver- sowie Entschl"usseln geheimer Nachrichten.
 \end{enumerate}
 \end{bem}
@@ -541,8 +611,8 @@ Also: $\left|\ZmZ{m}\right| = m$.
 \begin{satz}\label{satz:2.2}
 F"ur $a, b, c \in \Z$ und $m \in \N$ gilt:\\
 \begin{enumerate}[(i)]
-  \item $m|ab \wedge ggT(a, m) = 1 \Rightarrow m|b$.
-  \item $ab \equiv ac\pmod m \Leftrightarrow b \equiv c \pmod{\frac{m}{ggT(a, m)}}$.
+  \item $m|ab \wedge \ggt(a, m) = 1 \Rightarrow m|b$.
+  \item $ab \equiv ac\pmod m \Leftrightarrow b \equiv c \pmod{\frac{m}{\ggt(a, m)}}$.
 \end{enumerate}
 \end{satz}
 
@@ -551,8 +621,8 @@ F"ur $a, b, c \in \Z$ und $m \in \N$ gilt:\\
 %%%%%%%%%%%%%%%%%%%
 \begin{beweis}
 \begin{enumerate}[(i)]
-  \item Sei $ggT(a, m) = 1$. Dann existieren $x, y \in \Z$ mit $xa + ym = 1$, d.h. $xab + ymb = b$. Aus $m|ab$ folgt $m|b$.
-  \item \underline{\glqq$\Rightarrow$\grqq}: Sei $ab \equiv ac\pmod m$, d.h. $m|ab - ac$, etwa $a(b - c) = mz$ f"ur ein $z \in \Z$. Dann $\frac{a}{d}\left(b - c\right) = \frac{m}{d}z$ mit $d := ggT(a, m)$. Wegen $ggT\left(\frac{a}{d}, \frac{m}{d}\right) = 1$ folgt aus (i): \[\frac{m}{d}|b - c \text{, d.h. } b \equiv c\pmod{\frac{m}{d}}\]
+  \item Sei $\ggt(a, m) = 1$. Dann existieren $x, y \in \Z$ mit $xa + ym = 1$, d.h. $xab + ymb = b$. Aus $m|ab$ folgt $m|b$.
+  \item \underline{\glqq$\Rightarrow$\grqq}: Sei $ab \equiv ac\pmod m$, d.h. $m|ab - ac$, etwa $a(b - c) = mz$ f"ur ein $z \in \Z$. Dann $\frac{a}{d}\left(b - c\right) = \frac{m}{d}z$ mit $d := \ggt(a, m)$. Wegen $\ggt\left(\frac{a}{d}, \frac{m}{d}\right) = 1$ folgt aus (i): \[\frac{m}{d}|b - c \text{, d.h. } b \equiv c\pmod{\frac{m}{d}}\]
 \underline{\glqq$\Leftarrow$\grqq}: Sei $b \equiv c\pmod{\frac{m}{d}}$, d.h. $b - c = z\frac{m}{d}$ f"ur ein $z \in \Z$.\\
 Dann: $a(b - c) = zm\frac{a}{d}$, d.h. $ab \equiv ac\pmod m$.
 \end{enumerate}
@@ -569,7 +639,7 @@ $2 \cdot 6 \equiv 2 \cdot 2\pmod 8$, aber $6 \not\equiv 2\pmod 8$ siehe Satz \re
 % Satz 2.3
 %%%%%%%%%%%%%%%%%%%
 \begin{satz}\label{satz:2.3}
-Seien $a, b \in \Z, m \in \N$ und $d := ggT(a, m)$. Genau dann hat die Kongruenz $ax \equiv b\pmod m$ eine Lösung $x \in \Z$, wenn $d|b$ gilt.\\
+Seien $a, b \in \Z, m \in \N$ und $d := \ggt(a, m)$. Genau dann hat die Kongruenz $ax \equiv b\pmod m$ eine Lösung $x \in \Z$, wenn $d|b$ gilt.\\
 Gegebenenfalls bilden die Lösungen \emph{eine Vereinigung} (disjunkte Vereinigung) von $d$ Restklassen $modulo \ m$.
 \end{satz}
 
@@ -579,7 +649,7 @@ Gegebenenfalls bilden die Lösungen \emph{eine Vereinigung} (disjunkte Vereinigun
 \begin{beweis}
 \underline{\glqq$\Rightarrow$\grqq}: Sei $x \in \Z$ mit $ax \equiv b\pmod m$. Dann existiert $y \in \Z$ mit $ax - b = my$.\\
 Folglich: $d|ax - my = b$.\\
-\underline{\glqq$\Leftarrow$\grqq}: Sei $d|b, a_0 := \frac{a}{d}, m_0 := \frac{m}{d}, b_0 := \frac{b}{d}$. Wegen $ggT(a_0, m_0) = 1$ existiert $y_0, z_0 \in \Z$ mit $1 = a_0y_0 + m_0z_0$. Daher: $b = \underbrace{a_0b}_{= ab_0}y_0 + \underbrace{m_0b}_{= mb_0}z_0 \equiv ax_0\pmod{m}$ mit $x_0 = b_0y_0 \left(\Rightarrow \text{ Existenz einer Lösung}\right)$\\
+\underline{\glqq$\Leftarrow$\grqq}: Sei $d|b, a_0 := \frac{a}{d}, m_0 := \frac{m}{d}, b_0 := \frac{b}{d}$. Wegen $\ggt(a_0, m_0) = 1$ existiert $y_0, z_0 \in \Z$ mit $1 = a_0y_0 + m_0z_0$. Daher: $b = \underbrace{a_0b}_{= ab_0}y_0 + \underbrace{m_0b}_{= mb_0}z_0 \equiv ax_0\pmod{m}$ mit $x_0 = b_0y_0 \left(\Rightarrow \text{ Existenz einer Lösung}\right)$\\
 Für $x \in \Z$ gilt: \[ax \equiv b\pmod m \Leftrightarrow ax = ax_0\pmod m \stackrel{Satz ~ \ref{satz:2.2}}{\Leftrightarrow} x \equiv x_0\pmod m \Leftrightarrow x \in x_0 + m_0 \Z\] Sei $z \in \Z$. Division mit Rest liefert $q, r \in \Z$ mit $z = qd + r$ und $0 \leq r < d$.\\
 Also: $zm_0 = q\underbrace{dm_0}_{= m} rm_0 \in rm_0 + m\Z$.\\
 Daher: $m_0\Z = \bigcup\limits_{r = 0}^{d - 1}(rm_0 + m\Z)$ und $x_0 + m_0\Z = \bigcup\limits_{r = 0}^{d - 1}(x_0 + rm_0 + m\Z)$
@@ -628,8 +698,8 @@ Daher ist $k := \prod\limits_{p \in \PZ}p^{\max{\left\{b_{1p}, \ldots, b_{np}\ri
 Für $a_1, \ldots, a_n \in \Z$ gilt stets:
 \begin{enumerate}[(i)]
 	\item $kgV(a_1, \ldots, a_n) = kgV(a_1, kgV(a_2, \ldots, a_n))$ \footnotesize{(Assoziativgesetz)}\normalsize
-	\item $kgV(a_1, ggT(a_2, \ldots, a_n)) = ggT(kgV(a_1, a_2), \ldots, kgV(a_1, a_n))$ \footnotesize{(Distributivgesetz)}\normalsize
-	\item $ggT(a_1, kgV(a_2, \ldots, a_n)) = kgV(ggT(a_1, a_2), \ldots, ggT(a_1, a_n))$
+	\item $kgV(a_1, \ggt(a_2, \ldots, a_n)) = \ggt(kgV(a_1, a_2), \ldots, kgV(a_1, a_n))$ \footnotesize{(Distributivgesetz)}\normalsize
+	\item $\ggt(a_1, kgV(a_2, \ldots, a_n)) = kgV(\ggt(a_1, a_2), \ldots, \ggt(a_1, a_n))$
 \end{enumerate}
 \end{satz}
 
@@ -639,8 +709,8 @@ Für $a_1, \ldots, a_n \in \Z$ gilt stets:
 \begin{beweis}
 Wir beweisen nur (iii) [Rest analog].\\
 Im Fall $a_1 = 0$ steht auf beiden Seiten $kgV(a_2, \ldots, a_n)$.\\
-Sei also $a_1 \neq 0$. Im Fall $a_i = 0$ für ein $i \in \left\{2, \ldots, n\right\}$ steht links $ggT(a_1, 0) = a_1$.\\
-Wegen $ggT(a_1, a_2), \ldots, ggT(a_1, a_n)|a_1 = ggT(a_1, a_i)$ steht auch rechts $a_1$.\
+Sei also $a_1 \neq 0$. Im Fall $a_i = 0$ für ein $i \in \left\{2, \ldots, n\right\}$ steht links $\ggt(a_1, 0) = a_1$.\\
+Wegen $\ggt(a_1, a_2), \ldots, \ggt(a_1, a_n)|a_1 = \ggt(a_1, a_i)$ steht auch rechts $a_1$.\
 Sei also $a_1 \cdot \ldots \cdot \neq 0$. Schreibe $a_i = \prod\limits_{p \in \PZ}p^{b_{ip}} \ (i = 1, \ldots, n)$. Dann:
 \[\text{\underline{links:}} \prod_{p \in \PZ}p^{\min{\left\{b_{1p}, \max{\left\{b_{2p}, \ldots, b_{np}\right\}}\right\}}} \ \ \ \text{ \underline{rechts:}} \prod_{p \in \PZ}p^{\max{\left\{\min{\left\{b_{1p}, b_{2p}\right\}}, \ldots, \min{\left\{b_{1p}, b_{np}\right\}}\right\}}}\]
 Beide Seiten sind gleich, da für alle $p \in \PZ$ gilt:
@@ -654,7 +724,7 @@ Beide Seiten sind gleich, da für alle $p \in \PZ$ gilt:
 Seien $a_1, \ldots, a_k \in \Z$ und $m_1, \ldots, m_k$. Genau dann ist das System von Kongruenzen:
 \[(\ast) \ x \equiv a_i \pmod{m_i} \ \ (i = 1, \ldots, k)\]
 Simultan lösbar, wenn gilt:
-\[(\ast\ast) \ a_i \equiv a_j \pmod{ggT(m_i, m_j)} \ \ (i, j = 1, \ldots, k)\]
+\[(\ast\ast) \ a_i \equiv a_j \pmod{\ggt(m_i, m_j)} \ \ (i, j = 1, \ldots, k)\]
 Gegebenenfalls bilden die Lösungen eine Restklasse $modulo \ kgV(m_1, \ldots, m_k)$
 \end{satz}
 
@@ -662,16 +732,16 @@ Gegebenenfalls bilden die Lösungen eine Restklasse $modulo \ kgV(m_1, \ldots, m_
 % Beweis
 %%%%%%%%%%%%%%%%%%%
 \begin{beweis}
-\underline{\glqq$\Rightarrow$\grqq}: Sei ($\ast$) erfüllt. Für $i, j = 1, \ldots, k$ gilt dann: $a_i \equiv x \equiv a_j \pmod{ggT(m_i, m_j)}$.\\
+\underline{\glqq$\Rightarrow$\grqq}: Sei ($\ast$) erfüllt. Für $i, j = 1, \ldots, k$ gilt dann: $a_i \equiv x \equiv a_j \pmod{\ggt(m_i, m_j)}$.\\
 \underline{\glqq$\Leftarrow$\grqq}: Sei ($\ast\ast$) erfüllt. Wie argumentieren mit Induktion.\\
 Im Fall $k = 1$ ist nichts zu tun. \footnotesize(können einfach $x = a_1$ wählen)\normalsize\\
-Sei also $k \geq 2$, $d := ggT(m_1, m_2)$, $e := kgV(m_1, m_2)$.\\
+Sei also $k \geq 2$, $d := \ggt(m_1, m_2)$, $e := kgV(m_1, m_2)$.\\
 Schreibe $d = ym_1 + zm_2 (y, z \in \Z)$.\\
 Setze: $b := a_1 + (a_2 - a_1)\frac{ym_1}{d} = a_2 + (a_1 - a_2)\frac{zm_2}{d}$.\\
 Dann: $b \equiv a_1 \pmod{m_1}$ \footnotesize ($a_1 \equiv a_2 \pmod{d} \Rightarrow d|a_2 - a_1$) \normalsize und $b \equiv a_2 \pmod{m_2}$.\\
 Im Fall $k = 2$ ist also ($\ast$) lösbar.\\
-Sei also $k \geq 3$. Für $i = 3, \ldots, k$ ist $a_i \equiv a_1 \equiv b \pmod{ggT(m_i, m_1)}$ und $a_i \equiv a_2 \equiv b \pmod{ggT(m_i, m_2)}$.\\
-Daraus folgt: $a_i \equiv b \pmod{kgV(ggT(m_i, m_1), ggT(m_i, m_2))} \stackrel{Satz \ref{satz:2.3}(iii)}{=} ggT(m_i, kgV(m_1, m_2)) = ggT(m_i, e)$.\\
+Sei also $k \geq 3$. Für $i = 3, \ldots, k$ ist $a_i \equiv a_1 \equiv b \pmod{\ggt(m_i, m_1)}$ und $a_i \equiv a_2 \equiv b \pmod{\ggt(m_i, m_2)}$.\\
+Daraus folgt: $a_i \equiv b \pmod{kgV(\ggt(m_i, m_1), \ggt(m_i, m_2))} \stackrel{Satz \ref{satz:2.3}(iii)}{=} \ggt(m_i, kgV(m_1, m_2)) = \ggt(m_i, e)$.\\
 Nach Induktion existiert ein $x \in \Z$ mit $x \equiv b \pmod{e}$ und $x \equiv a_i \pmod{m_i}$ für $i = 3, \ldots, k$ \footnotesize (Man muss hierfür ($\ast\ast$) für dieses System von Kongruenzen überprüfen) \normalsize\\
 Für $i = 1,2$ ist $x \stackrel{x \equiv b \pmod{e}}{\equiv} b \equiv a_i \pmod{m_i}$.\\
 \emph{Eindeutigkeit:} Sei $x' \in \Z$ weitere Lösung von ($\ast$). Dann: $x' \equiv a_i \equiv x \pmod{m_i}$ für $i = 1, \ldots, k$, d.h. $x' \equiv x \pmod{kgV(m_1, \ldots, m_k)}$. Dann ist $x' \equiv x \equiv a_i \pmod{m_i} \ \ (i = 1, \ldots, k)$, d.h. $x'$ ist auch Lösung von ($\ast$).
@@ -782,16 +852,16 @@ $\ZmZ{6}$ ist kein Körper. z.B.: ist $\underbrace{(2 + 6\Z)}_{\neq 0 + 6\Z}\unde
 	\begin{array}{lcl}
 	U(R) & = & \left\{a + m\Z \colon \exists \ b \in \Z \colon (a + m\Z)(b + m\Z) = 1 + m\Z\right\}\\
 	     & = & \left\{a + m\Z \colon \exists \ b \in \Z \colon ab \equiv 1 \pmod{m}\right\}\\
-	     & \stackrel{Satz \ref{satz:2.3}}{=} & \left\{a + m\Z \colon ggT(a, m) = 1\right\}
+	     & \stackrel{Satz \ref{satz:2.3}}{=} & \left\{a + m\Z \colon \ggt(a, m) = 1\right\}
 	\end{array}
 	\] \addindex{Prime Restklassengruppe $modulo \ m$} \footnotesize(Gruppe ist nicht prim, sondern nur die Restklassen)\\\normalsize
 	z.B.: ist $U(\ZmZ{6}) = \left\{1 + 6\Z, 5 + 6\Z\right\}$ \footnotesize(bei einem Körper müssen alle Elemente inverterierbar sein!)\\ \normalsize
 	\item Für $a + m\Z \in U(\ZmZ{m})$ berechnet man $(a + m\Z)^{-1}$ mit dem erweiterten euklidischen Algorithmus.\\
-	Im Fall $a + m\Z = 39 + 100\Z$ erhalten wir z.B.: \[1 = ggT(39, 100) = 16 \cdot 100 - 41 \cdot 39 \equiv 59 \cdot 39 \pmod{100}\] Also: $(39 + 100\Z)^{-1} = 59 + 100\Z$.
+	Im Fall $a + m\Z = 39 + 100\Z$ erhalten wir z.B.: \[1 = \ggt(39, 100) = 16 \cdot 100 - 41 \cdot 39 \equiv 59 \cdot 39 \pmod{100}\] Also: $(39 + 100\Z)^{-1} = 59 + 100\Z$.
 	\item Die \addindex{Eulerische $\varphi$-Funktion} $\varphi \colon \N \mapsto \N$ (\textsc{Euler} 1707--1783) wird definiert durch:
 	\[ \begin{array}{lcl}
-	\varphi(m) & := & \left|U(\ZmZ{m})\right| = \left|\left\{a + m\Z \colon ggT(a, m) = 1\right\}\right|\\
-	           & = & \left|\left\{a \in \N \colon 1 \leq a \leq m, ggT(a, m) = 1\right\}\right| \ \ \ (m \in \N)
+	\varphi(m) & := & \left|U(\ZmZ{m})\right| = \left|\left\{a + m\Z \colon \ggt(a, m) = 1\right\}\right|\\
+	           & = & \left|\left\{a \in \N \colon 1 \leq a \leq m, \ggt(a, m) = 1\right\}\right| \ \ \ (m \in \N)
 	\end{array}\]
 	z.B. ist $\varphi(6) = 2$
 \end{enumerate}
@@ -810,8 +880,8 @@ Für $m \in \N$ ist $\sum\limits_{d|m} \varphi(d) = m$; dabei durchläuft die Summ
 \begin{beweis}
 \[\begin{array}[t]{lcl}
 m & = & \left|\left\{a \in \N \colon 1 \leq a \leq m\right\}\right|\\
-  & = & \sum\limits_{d|m}\left|\left\{a \in \N \colon 1 \leq a \leq m, ggT(a, m) = d\right\}\right|\\
-  & = & \left|\left\{b \in \N \colon 1 \leq b \leq \frac{m}{d}, ggT(b, \frac{m}{d}) = 1\right\}\right|\\
+  & = & \sum\limits_{d|m}\left|\left\{a \in \N \colon 1 \leq a \leq m, \ggt(a, m) = d\right\}\right|\\
+  & = & \left|\left\{b \in \N \colon 1 \leq b \leq \frac{m}{d}, \ggt(b, \frac{m}{d}) = 1\right\}\right|\\
   & = & \sum\limits_{d|m} \varphi(\frac{m}{d}) = \sum\limits_{d|m} \varphi(d)
 \end{array}\].
 \end{beweis}
@@ -850,7 +920,7 @@ $\mu(1) := 1$
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-$ggT(m, n) = 1 \Rightarrow \mu(mn) = \mu(m) \cdot \mu(n)$
+$\ggt(m, n) = 1 \Rightarrow \mu(mn) = \mu(m) \cdot \mu(n)$
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -920,7 +990,7 @@ Möbius-Inversion mit $f := \varphi, F := id_{\N}$ ergibt:\\
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-$ggT(m, n) = 1 \Rightarrow \varphi(mn) = \varphi(m) \varphi(n)$
+$\ggt(m, n) = 1 \Rightarrow \varphi(mn) = \varphi(m) \varphi(n)$
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -978,7 +1048,7 @@ Für $K := \ZmZ{p}$ erhält man: $\underbrace{\prod\limits_{i = 1}^{p - 1}(i + p\Z
 % Satz 3.8
 %%%%%%%%%%%%%%%%%%%
 \begin{satz}[\textsc{Euler-Fermat}]\label{satz:3.8}
-Für jede endliche abelsche Gruppe $G$ und jedes $g \in G$ gilt: \[g^{\left|G\right|}.\] Insbesondere ist $a^{\varphi(m)} \equiv 1 \pmod{m}$ für alle $m \in \N$, $a \in \Z$ mit $ggT(a, m) = 1$.
+Für jede endliche abelsche Gruppe $G$ und jedes $g \in G$ gilt: \[g^{\left|G\right|}.\] Insbesondere ist $a^{\varphi(m)} \equiv 1 \pmod{m}$ für alle $m \in \N$, $a \in \Z$ mit $\ggt(a, m) = 1$.
 \end{satz}
 
 %%%%%%%%%%%%%%%%%%%
@@ -1105,9 +1175,9 @@ Dabei gilt wie in $\Z$:
 	\item $\varphi|\psi \wedge \varphi|\omega \Rightarrow \varphi|\alpha\psi + \beta\omega \ \ \left(\alpha, \beta \in K \left[x\right]\right)$
 \end{enumerate}
 Seien $\varphi_1, \ldots, \varphi_n \in K\left[x\right]$. Ein $\tau \in K\left[x\right]$ mit $\tau|\varphi_1, \ldots, \tau|\varphi_n$ heißt \addindex{Gemeinsamer Teiler} von $\varphi_1, \ldots, \varphi_n$.\\
-Mit $gT(\varphi_1, \ldots, \varphi_n)$ bezeichnen wir die Menge aller gemeinsamer Teiler von $\varphi_1, \ldots, \varphi_n$. Ein normiertes Polynom $\delta \in gT(\varphi_1, \ldots, \varphi_n)$ heißt \addindex{Größter gemeinsamer Teiler} ($ggT$), von $\varphi_1, \ldots, \varphi_n$, falls $\tau|\delta$ für alle $\tau \in gT(\varphi_1, \ldots, \varphi_n)$ gilt.\\
-Wie in $\Z$ kann man zeigen, dass $\varphi_1, \ldots, \varphi_n$ stets genau einen $ggT \delta$ haben. Wir schreiben $\delta = ggT(\varphi_1, \ldots, \varphi_n)$. Wie in $\Z$ ist $\delta = ggT(\varphi_1, ggT(\varphi_2, \ldots, \varphi_n))$.\\
-Daher genügt es meist, den $ggT$ von zwei Polynomen zu berechnen. Dies geschieht win in $\Z$ mit dem erweiterten euklidischen Algorithmus:
+Mit $\gt(\varphi_1, \ldots, \varphi_n)$ bezeichnen wir die Menge aller gemeinsamer Teiler von $\varphi_1, \ldots, \varphi_n$. Ein normiertes Polynom $\delta \in \gt(\varphi_1, \ldots, \varphi_n)$ heißt \addindex{Größter gemeinsamer Teiler} (größten gemeinsamen Teiler), von $\varphi_1, \ldots, \varphi_n$, falls $\tau|\delta$ für alle $\tau \in \gt(\varphi_1, \ldots, \varphi_n)$ gilt.\\
+Wie in $\Z$ kann man zeigen, dass $\varphi_1, \ldots, \varphi_n$ stets genau einen $\ggt \delta$ haben. Wir schreiben $\delta = \ggt(\varphi_1, \ldots, \varphi_n)$. Wie in $\Z$ ist $\delta = \ggt(\varphi_1, \ggt(\varphi_2, \ldots, \varphi_n))$.\\
+Daher genügt es meist, den größten gemeinsamen Teiler von zwei Polynomen zu berechnen. Dies geschieht win in $\Z$ mit dem erweiterten euklidischen Algorithmus:
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -1123,14 +1193,14 @@ Erweiterter euklidischer Algorithmus:\\
 -\frac{1}{2}x + \frac{1}{2} & \frac{1}{2}x + \frac{1}{2} & x^2 + 1 & \\
  & & 0 & 
 \end{array}\]
-Also $x^2 + 1 = ggT(\varphi, \psi) = \left(-\frac{1}{2}x + \frac{1}{2}\right)\varphi + \left(\frac{1}{2}x + \frac{1}{2}\right)\psi$
+Also $x^2 + 1 = \ggt(\varphi, \psi) = \left(-\frac{1}{2}x + \frac{1}{2}\right)\varphi + \left(\frac{1}{2}x + \frac{1}{2}\right)\psi$
 \end{bsp}
 
 %%%%%%%%%%%%%%%%%%%
 % Satz 5.2
 %%%%%%%%%%%%%%%%%%%
 \begin{satz}\label{satz:5.2}
-Für $\varphi_1, \ldots, \varphi_n, \psi \in K\left[x\right]$ gilt: \[ggT(\varphi_1, \ldots, \varphi_n)|\psi \Leftrightarrow \exists \ \xi_1, \ldots, \xi_n \in K\left[x\right] \colon \xi_1\varphi_1 + \ldots + \xi_n\varphi_n = \psi\]
+Für $\varphi_1, \ldots, \varphi_n, \psi \in K\left[x\right]$ gilt: \[\ggt(\varphi_1, \ldots, \varphi_n)|\psi \Leftrightarrow \exists \ \xi_1, \ldots, \xi_n \in K\left[x\right] \colon \xi_1\varphi_1 + \ldots + \xi_n\varphi_n = \psi\]
 \end{satz}
 
 %%%%%%%%%%%%%%%%%%%
@@ -1144,7 +1214,7 @@ Analog wie in $\Z$.
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}
-Für $\varphi_1, \ldots, \varphi_n \in K\left[x\right]$ ist also genau dann $ggT(\varphi_1, \ldots, \varphi_n) = 1$, wenn $\xi_1, \ldots, \xi_n \in K\left[x\right]$ existiert mit $\xi_1\varphi_1 + \ldots + \xi_n\varphi_n = 1$ Gegebenfalls heißen $\varphi_1, \ldots, \varphi_n$ \addindex{Teilerfremd}.
+Für $\varphi_1, \ldots, \varphi_n \in K\left[x\right]$ ist also genau dann $\ggt(\varphi_1, \ldots, \varphi_n) = 1$, wenn $\xi_1, \ldots, \xi_n \in K\left[x\right]$ existiert mit $\xi_1\varphi_1 + \ldots + \xi_n\varphi_n = 1$ Gegebenfalls heißen $\varphi_1, \ldots, \varphi_n$ \addindex{Teilerfremd}.
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -1279,7 +1349,7 @@ Für $\alpha \in K[x]$ und $0 \neq \in K[x]$ sind äquivalent:
 \begin{enumerate}[(1)]
 	\item $\alpha + (\varphi)$ ist in $K[x] / (\varphi)$ invertierbar
 	\item Es existiert ein $\beta \in K[x]$ mit $\alpha\beta \equiv 1 \pmod{p}$
-	\item $ggT(\alpha, \varphi) = 1$
+	\item $\ggt(\alpha, \varphi) = 1$
 \end{enumerate}
 \end{satz}
 
@@ -1294,7 +1364,7 @@ Analog zu $\ZmZ{m}$.
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
 \begin{bem}\label{bem:6.3}
-Für $0 \neq \varphi \in K[x]$ gilt nach Satz \ref{satz:6.1}: \[U\left(K[x] / (\varphi)\right) = \left\{\alpha + (\varphi) \colon \alpha \in K[x], ggT(\alpha, \varphi) = 1\right\}.\] Der erweiterte euklidische Algorithmus liefert zu $\alpha \in K[x]$ mit $ggT(\alpha, \varphi) = 1$, Polynome $\beta, \gamma \in K[x]$ mit $\alpha\beta + \varphi\gamma = 1$. Dann: $\alpha\beta \equiv 1 \pmod{\varphi}$, d.h. $\left[\alpha + (\varphi)\right]\left[\beta + (\varphi)\right] = 1 + (\varphi).$ Also ist $\left[\alpha + (\varphi)\right]^{-1} = \beta + (\varphi)$.
+Für $0 \neq \varphi \in K[x]$ gilt nach Satz \ref{satz:6.1}: \[U\left(K[x] / (\varphi)\right) = \left\{\alpha + (\varphi) \colon \alpha \in K[x], \ggt(\alpha, \varphi) = 1\right\}.\] Der erweiterte euklidische Algorithmus liefert zu $\alpha \in K[x]$ mit $\ggt(\alpha, \varphi) = 1$, Polynome $\beta, \gamma \in K[x]$ mit $\alpha\beta + \varphi\gamma = 1$. Dann: $\alpha\beta \equiv 1 \pmod{\varphi}$, d.h. $\left[\alpha + (\varphi)\right]\left[\beta + (\varphi)\right] = 1 + (\varphi).$ Also ist $\left[\alpha + (\varphi)\right]^{-1} = \beta + (\varphi)$.
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
@@ -1311,7 +1381,7 @@ Sei $0 \neq \varphi \in K[x]$ normiert, dann gilt: \[K[x] / (\varphi) \text{ Kör
 \underline{\glqq$\Rightarrow$\grqq}: Sei $K[x] / (\varphi)$ Körper. Wegen $K[x] / (\varphi) \neq \left\{0\right\} ist \deg\varphi > 0$.\\
 Wäre $\varphi$ reduzibel, so wäre $\varphi = \alpha\beta$ mit $\alpha, \beta \in K[x]$, $\deg\alpha < \deg\varphi$, $\deg\beta < \deg\varphi$. Dann wäre $\alpha + (\varphi) \neq 0 \neq \beta + (\varphi)$, aber $\left[\alpha + (\varphi)\right]\left[\beta + (\varphi)\right] = \alpha\beta + (\varphi) = \varphi + (\varphi) = 0 + (\varphi) \Rightarrow$ Widersprich!\\
 \underline{\glqq$\Leftarrow$\grqq}: Sei $\varphi$ irreduzibel. Dann $\deg\varphi > 0$ und $K[x] / (\varphi) \neq \left\{0\right\}$. Sei $0 \neq \alpha \in K[x]$ mit $\deg\alpha < \deg\varphi$.\\
-Dann: $\varphi\not|\alpha$, also $ggT(\alpha, \varphi) = 1$\\
+Dann: $\varphi\not|\alpha$, also $\ggt(\alpha, \varphi) = 1$\\
 Folglich: $\alpha + (\varphi) \in U\left(K[x]/(\varphi)\right)$. Also $K[x] / (\varphi)$ Körper.
 \end{beweis}
 
@@ -1482,7 +1552,7 @@ Es gibt also keine Körper mit $6$ oder $10$ Elementen. Anzahl kann nur $p^n \ \l
 Für ein Element $a$ einer Gruppe $G$ nennt man $ord(a) := \min{\left\{n \in \N \colon a^n = 1\right\}}$ die Ordnung von $a$. Existiert das Minimum nicht, so sagt man, dass $a$ unendliche Ordnung hat, und schreibt: $ord(a) = \infty$. Ist $G$ endlich, so hat jedes Element in $G$ endliche Ordnung (ÜA 10).\\
 Im Folgenden sei $ord(a) = n < \infty$.\\
 Nach ÜA 10 enthält dann \[\left\{a^m \colon m \in \Z\right\} = \left\{1, a, a^2, \ldots, a^{n-1}\right\}\] genau $n$ verschiedene Elemente.
-Genauer gilt: $a^k = a^l \Leftrightarrow k \equiv l \pmod{n}$. Insbesondere gilt für $m \in \Z \colon a^m = 1 \Leftrightarrow n|m$. Für $i \in \Z$ folgt daraus: $ord(a^i) = \nicefrac{n}{ggT(i, n)}$.
+Genauer gilt: $a^k = a^l \Leftrightarrow k \equiv l \pmod{n}$. Insbesondere gilt für $m \in \Z \colon a^m = 1 \Leftrightarrow n|m$. Für $i \in \Z$ folgt daraus: $ord(a^i) = \nicefrac{n}{\ggt(i, n)}$.
 \end{bem}
 
 %%%%%%%%%%%%%%%%%%%
