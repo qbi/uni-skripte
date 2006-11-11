@@ -68,9 +68,9 @@ for ext in pdf ps; do
 done
 
 echo "I: Zusammenfassung: $(rubber-info --errors $src | wc -l) Fehler,\
- $(rubber-info --boxes $src | wc -l) übervolle Boxen,\
  $(rubber-info --warnings $src | wc -l) Warnungen,\
- $(rubber-info --refs $src | wc -l) fehlerhafte Referenzen"
+ $(rubber-info --boxes $src | wc -l) Boxen,\
+ $(rubber-info --refs $src | wc -l) Referenzen"
 
 vorlver=$(svnlook history $SKRIPTE_PFAD vorlage/skript.latex |
   sed -e 1,2d -e 's@[[:space:]]*@@g; s@/.*@@; q')
@@ -99,13 +99,12 @@ perl -wn -e 'BEGIN {$in_doc = 0; }' \
   -e 'print "$.\t$_" if ($_ =~ /[^\\][^,]\\%/);' *tex > $TMP/typo_check
 
 if [ -s $TMP/typo_check ]; then
-    echo "I: ... nichts gefunden."
+    sed 's/^/W: /' $TMP/typo_check
 else
-    echo "W: ... $(wc -l < $TMP/typo_check) Fehler gefunden"
-    cat $TMP/typo_check
+    echo "I: ... nichts gefunden."
 fi
 
 cd /
 rm -r $TMP
 
-echo "I: ... fertig."
+echo "I: fertig."
