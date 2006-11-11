@@ -65,41 +65,51 @@ function list_skripte($link)
 	    </div>
 
 	    <div class='navheading'>
-	      <a href='./'>&Uuml;ber</a>
+	      <a href='./news.php'>Aktuelles</a>
 	    </div>
 
 	    <div class='navheading'>
-	      <a href='./news.php'>Aktuelles</a>
+	      Dokumentation
+
+	      <div class='navmenu'>
+	        <div><a href='./windows.php'>SVN Anleitung f&uuml;r Windows</a></div>
+	        <div><a href='./skripte.php'>SVN Anleitung allgemein</a></div>
+	        <div><a href='./form.php'>Hinweise zur Form</a></div>
+	      </div>
 	    </div>
 
 	    <div class='navheading'>
               Skripte
 
-	    <?php
-	      $lines = array_map('rtrim', file('./available_skripte'));
-	      $lines = array_combine(array_map('map_line', $lines), $lines);
-	      ksort($lines);
-              foreach ($lines as $line)
-              {
-                  $fields = preg_split("/\t+/", $line);
-                echo "<div class=\"navmenu\"><a href=\"./skripte.php?id=",
-                  $fields[0], "\">";
-                if (count($fields) >= 2)
-                  echo $fields[1];
-                else
-                  echo $fields[0];
-                echo "</a></div>\n";
-              }
-            ?>
-	</div>
+	      <?php
+	        $lines = array_map('rtrim', file('./available_skripte'));
+	        $lines = array_combine(array_map('map_line', $lines), $lines);
+	        ksort($lines);
+                foreach ($lines as $line)
+                {
+                    $fields = preg_split("/\t+/", $line);
+                  echo "<div class=\"navmenu\"><a href=\"./skripte.php?id=",
+                    $fields[0], "\">";
+                  if (count($fields) >= 2)
+                    echo $fields[1];
+                  else
+                    echo $fields[0];
+                  echo "</a></div>\n";
+                }
+              ?>
+	    </div>
 
-	<div class='navheading'>
+	    <div class='navheading'>
+	      <a href='./status.php'>Status&uuml;bersicht</a>
+	    </div>
+
+	    <div class='navheading'>
 	      Download
 
-	    <div class='navmenu'>
-	      <div><a href='./skripte.php'>Quellcode</a></div>
-	    <!--  <div><a href='./pdf/'>PDFs</a></div> -->
-	    </div>
+	      <div class='navmenu'>
+	        <div><a href='./skripte.php'>Quellcode</a></div>
+	        <!--  <div><a href='./pdf/'>PDFs</a></div> -->
+	      </div>
 	    </div>
 
 	    <!--<div class='navheading'>
@@ -109,25 +119,6 @@ function list_skripte($link)
 	    <div class='navheading'>
 	      <a href='./mailingliste.php'>Mailingliste</a>
             </div>
-
-	    <div class='navheading'>
-	      Dokumentation
-
-	    <div class='navmenu'>
-	      <div><a href='./windows.php'>SVN Anleitung f&uuml;r Windows</a></div>
-	      <div><a href='./skripte.php'>SVN Anleitung allgemein</a></div>
-	      <div><a href='./form.php'>Hinweise zur Form</a></div>
-	    </div>
-	    </div>
-
-	    <!--<div class='navheading'>
-	    Probleme
-
-	    <div class='navmenu'>
-	      <div><a href='./diag.php'>Diagnose</a></div>
-	      <div><a href='./bugs.php'>Fehler</a></div>
-	    </div>
-	    </div>-->
 
 	    <div class='navheading'>
 	      <a href='./links.php'>Links</a>
