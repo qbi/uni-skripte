@@ -3,8 +3,7 @@
 include('header.php');
 
 // echo "<b>id=-$id- body=-$body- knopf=$knopf $HTTP_REFERER</b><br>";
-if ($id and $body and $knopf == Absenden and
-    strpos($HTTP_REFERER, "skripte.php?id=$id") )
+if ($id and $body and $knopf == Absenden)
 {
     $id = trim($id);  // remove all newlines and something more that should
                       // not be there to prevent cross site scripting in mails
