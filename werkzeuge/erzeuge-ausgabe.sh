@@ -90,7 +90,7 @@ rubber-info --warnings $src | grep -E '(nag|onlyamsmath)' > $TMP/typo_check
 # * kein Komma vor etc. oder usw.
 # * vor dem Prozentzeichen \% muss kein kleiner Zwischenraum \, sein
 perl -wn -e 'BEGIN {$in_doc = 0; }' \
-  -e 's/%.*// if (/(^|[^\\])%/);' \
+  -e 's/%.*// if (/(^|[^\\])(\\\\)*%/);' \
   -e '$in_doc = 1 if ($_ =~ /^[^%]*\\begin{document}/);' \
   -e 'print "$.\t$_" if ($_ =~ /\\(re)?newcommand/ and $in_doc);' \
   -e 'print "$.\t$_" if ($_ =~ /[[:alpha:]]\.([^[:alpha:][:digit:]{}]*)[[:alpha:]]\./
