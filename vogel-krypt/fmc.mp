@@ -39,7 +39,8 @@ begingroup
 
     if punkt:
         pickup pencircle scaled 2pt;
-        draw .5 * (breite, breite);
+        % breite * ( (0.5, 0.5) + ((0.5, 0.5) - (p[0] + (p[2]-p[0])/2)) ) / 2
+        draw breite * .25 * (p[0] + p[2] + (1, 1));
     fi;
 endgroup;
 enddef;
