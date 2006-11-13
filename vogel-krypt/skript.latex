@@ -112,6 +112,7 @@
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\F}{\mathbb{F}}      % für $\F_{2}=\{0,1\}$
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -1327,6 +1328,146 @@ Hieraus folgt $A=M^{-1}C$ und weiter $b= c_{0}-m_{0}A$.
   Alles gut ausrechenbar. Der Schutz besteht nur darin, den Schlüsselraum
   wesentlich größer machen.
 \end{bemerk}
+
+% 13.11.06
+
+\section{Blockchiffren -- Allgemeines}
+
+Wir bleiben zunächst noch bei den symetrischen Verschlüsselungsverfahren und
+versuchen durch eine Vergrößerung des Schlüsselraums die Verfahren sicherer zu
+machen. Im Folgenden beschränken wir uns auf (rechnerfreundliche) Bitfolgen
+$\subset\F_{2}^{n}$.
+
+Klartexte werden zerlegt in Blöcke einer frei wählbaren aber fixierten
+Blocklänge~$n$. Wir betrachten Verschlüsselungen von Blöcken auf der
+Metaebene:
+\begin{itemize}
+ \item gleich Blöcke werden gleich verschlüsselt -- in Analogie zur
+  monoalphabetischen Verschlüsselung (lineare affine Blockchiffren) oder
+ \item gleiche Blöcke werden in Abhängigkeit von ihrer Position auf
+  verschiedene Weise verschlüsselt -- in Analogie zur polyalphabetischen
+  Verschlüsselung.
+\end{itemize}
+
+Diese Bilder von Blöcken der Länger~$n$ sind wieder Blöcke der Länge~$n$ über
+$\F_{2}$.
+
+Daraus ergibt sich eine maximale Anzahl an Blockchiffren von
+\begin{gather*}
+  (\underbrace{0,\dotsc,0,0}_{n}), (\underbrace{0,\dotsc,0,1}_{n}),\dotsc,
+     (\underbrace{1,1,\dotsc,1}_{n}) -- 2^{n}~\text{Blöcke}\\
+  (i_{1},i_{2},\dotsc, i_{n}), (i_{1}',i_{2}',\dotsc,i_{n}'), \dotsc --
+     (2^{n})!~\text{Blöcke}\\
+  \text{wobei: es gibt ein $\mu$ mit $i_{\mu}\ne i_{\mu}'$}
+\end{gather*}
+
+Beispiel: Blocklänge $n=64$
+
+Approximation mithilfe der Stirling-Formel: Die Länge~$l$ eines Schlüssels ist
+gegeben durch $l=\log (2^{n})!$.
+\begin{align*}
+  (2^{n})! &\approx \sqrt{\pi\cdot (2^{n+1})} \cdot (\frac{2^{n}}{l})^{2^{n}}\\
+  l &\approx \log \big(\sqrt{\pi\cdot (2^{n+1})} \cdot
+     (\frac{2^{n}}{l})^{2^{n}} \big)
+     \approx 2^{n} (n-1\mathord{,}5) \approx 2^{n}\cdot n
+\end{align*}
+
+für $n=64$ bedeutet dies: $l\approx 2^{64}\cdot 2^{6} = 2^{70} \approx
+10^{21}$. Dies bedeutet, die Speicherung \textit{eines} solchen Schlüssels
+erfordert 1~Mrd. Festplatten mit je 100\,GB. Eine Konsequenz daraus für die
+Praxis: "`kleine"' Teilmengen aus dem Schlüsselraum. Welche?
+
+z.\,B. die linearen Chiffren erlauben eine Darstellung des Schlüssels mit
+weniger Bits. Bei $n=64$ sind also $\{0,1\}$-Matrizen vom Typ $64\times 64$
+zulässig mit Determinante~$1$. Der Schlüssel ist dann eine Matrix
+$A\in\F_{2}^{(64\times64)}$ und die Schlüssellänge ist $64\cdot64=4096$~Bits.
+
+Wie viele solcher Schlüssel gibt es? Approximation: $\approx
+0\mathord{,}29\cdot 2^{4096}\approx 2^{2^{12}}$ (Im Vergleich zu $2^{10^{21}}$)
+
+Aufgabe:
+\begin{gather*}
+  (2^{64}-1)\cdot(2^{64}-2)\cdot \dotsm \cdot (2^{64}-2^{63})
+\end{gather*}
+verschiede Matrizen~$A$ mit $\det A=1$.
+
+Hintereinanderschaltung von Blockchiffren \textit{verscheidenen} Typs führen
+zu einer Erhöhung der Sicherheit. Oft realisiert man abwechselnde Folge von
+Substitutionen und Transpositionen mit den Ziel folgende \highl{Eigenschaften
+der Verschlüsselung} zu erreichen:
+\begin{itemize}
+ \item \highl{Diffusion}: Änderung eines Klartextbuchstaben bewirkt die
+  Änderung von vielen Buchstaben des Geheimtexts -- Nachteil: kleine Fehler
+  (Tippfehler) ändern den Text stark.
+ \item \highl{Konfusion}: Jedes Bit des Chiffretextes hängt von mehr als einem
+  Bit des Schlüssels ab.
+\end{itemize}
+(Dies Eigenschaften gehen zurück auf Claude Shannon -- Begründer der
+Informationstheorie)
+
+\section{Feistel-Chiffren}
+(nach Lucifer 1971) (als Vorläufer des DES-Algorithmus)
+
+Idee:
+\begin{itemize}
+ \item alternierende Folge von Substitutionen und Transpositionen,
+ \item aus einem (kurzen) Anfangsschlüssel wir eine Folge von Schlüsseln
+  erzeugt.
+\end{itemize}
+
+Ausgangssituation:
+\begin{itemize}
+ \item Blockchiffr über $\F_{2}$ der Länge~$n$,
+ \item $\mathcal{K}$ ist der Schlüsselraum,
+ \item zu einem Schlüssel~$K\in\mathcal{K}$ gehört eine
+  Verschlüsselungsfunktion $f_{K}\colon \F_{2}^{n}\mapsto\F_{2}^{n}$
+\end{itemize}
+
+Bei Feistel ist es so:
+\begin{itemize}
+ \item betrachten Blöcke der Länge~$2n$ für die Zerlegung des Klartextes,
+ \item Festlegung der \highl{Rundenzahl}~$r$,
+ \item Festlegung wie aus einem Ausgangsschlüssel eine folge von Schlüsseln
+  $K_{1},K_{2},\dotsc, K_{r}\in\mathcal{K}$ erzeugt wird.
+\end{itemize}
+
+Klartextblock $m=(L_{0}, R_{0})$ der Länger~$2n$ wird zerlegt in zwei
+Teilblöcke $L_{0}$ und $R_{0}$ der Länge~$n$.
+\begin{center}
+  \includegraphics{feilstel}
+\end{center}
+
+Wir kontruieren eine Folge:
+\begin{gather*}
+  (L_{i}, R_{i}) = (R_{i-1}, L_{i-1}\oplus f_{K_{i}(R_{i-1})})\quad
+     i=1,\dotsc,r-1\\
+  (L_{i-1}, R_{i-1}) \xrightarrow[durch Addition des Schlüsselworts
+     f_{K_{i}}(R_{i-1})]{Substitution des linken Teils} (L_{i-1} \oplus
+     f_{K_{i}}(R_{i-1)}) \xrightarrow{Transposition} (R_{i-1}, L_{i-1}\oplus
+     f_{K_{i}}(R_{i-1}))
+\end{gather*}
+(Anm.: $\oplus$ ist das Exclusive-Oder \texttt{xor})
+
+Die Entschlüsselung funktioniert genauso, nur mit der Schlüsselfolge $K_{r},
+K_{r-1}, \dotsc, K_{1}$.
+
+Begründung warum es funktioniert: Wir setzen neu an: $L_{0}':=L_{r},
+R_{0}':=R_{r}, K_{i}':= K_{r+1-i}$ für $i=1,\dotsc,r$. Verschlüsseln $(L_{0}',
+R_{0}')$ mit der Schlüsselfolge $K_{1}', K_{2}',\dotsc,K_{r}'$ und betrachten
+die Zwischenergebnisse $(L_{i}', R_{i}')$ für $i=1,\dotsc,r$.
+
+Erste Runde: liefert
+\begin{gather*}
+  (L_{1}', R_{1}') = (R_{0}', L_{0}'\oplus f_{K_{1}'}(R_{0}'))
+     = (R_{r}, L_{r} \oplus f_{K_{r}}(R_{r}))
+     = (R_{r-1}, (L_{r-1}\oplus f_{K_{r}}(R_{r-1})) \oplus f_{K_{r}}(R_{r-1}))
+     = (R_{r-1}, L_{r-1})
+\end{gather*}
+Zweite Runde liefert:
+\begin{gather*}
+  (L_{2}', R_{2}') = (R_{1}', L_{1}'\oplus f_{K_{2}'}(R_{1}')) = \dotsb =
+     (R_{r-2}, L_{r-2})
+\end{gather*}
 
 \clearpage
 \appendix
