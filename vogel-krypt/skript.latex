@@ -62,6 +62,7 @@
 \usepackage{ellipsis}    % Korrektur für \dots
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{nicefrac}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -112,7 +113,6 @@
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
-\newcommand*{\F}{\mathbb{F}}      % für $\F_{2}=\{0,1\}$
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -210,6 +210,8 @@
   \DeclareGraphicsRule{.\thecnt}{\ifpdf mps\else eps\fi}{*}{}%
   \stepcounter{cnt}%
 }
+
+\DeclareMathOperator{\sgn}{sgn}          % Signum/Vorzeichen
 
 \begin{document}
 
@@ -1193,7 +1195,162 @@ Analyse:
   ersten Zeile erraten "`zwei"': 3., 5., 1. 6. 2. 4.
 \end{bsp}
 
-\todo{Hier fehlt die Vorlesung vom 6.11.}
+% 6.11.06
+
+\chapter{Affinlineare Chiffren}
+
+zugrundeliegende algebraische Struktur ist ein kommutativer Ring $R=[R,
++,\cdot]$ mit dem Einselement 1. Ein typisches Beispiel für einen
+kommutativen Ring ist der Restklassenring modulo~$k$ ($k\in\N$).
+
+ganze Zahlen $\Z$: $a\equiv_{k} b$ $:\Leftrightarrow$ $\exists l\in\Z\colon
+a-b= l\cdot k$.
+
+Restklassen: $a\in\Z\colon [a]_{k} = \{a+lk\colon l\in\Z\} = a+k\cdot\Z$
+$[0]_{k}, [1]_{k},\dotsc, [k-1]_{k}$
+
+Faktormenge $\Z_{k}:= \nicefrac{\Z}{\equiv_{k}} = \{ [0]_{k}, [1]_{k},\dotsc,
+[k-1]_{k} \}$.
+
+Übertrag der Addition und Multiplikation auf die Restklassen:
+\begin{align*}
+  [a]_{k} + [b]_{k} &= [a+b]_{k} &&\text{neutrales Element:~}[0]_{k}\\
+  [a]_{k} \cdot [b]_{k} &= [a\cdot b]_{k} &&\text{Einselement:~}[1]_{k}\\
+\end{align*}
+
+für jedes $[a]_{k}$ gibt es ein entgegengesetztes Element $-[a]_{k} :=
+[-a]_{k} = [k-a]_{k}$. Ein Element $[a]_{k}$ heißt \highl{Einheit}
+$:\Leftrightarrow$ es existiert ein $[b]_{k}$ mit $[a]_{k} \cdot [b]_{k} =
+[1]_{k}$ (in diesem Fall heißt $[b]_{k}$ \highl{invers} zu $[a]_{k}$)
+
+Frage: Wann ist $[a]_{k}$ eine Einheit?
+
+Es gibt ein $[b]_{k}$ mit $[a]_{k}\cdot [b]_{k} = [a\cdot b]_{k} = [1]_{k} =
+1+k\Z$, d.\,h. es gibt ein $b$ und ein $l4$, so dass $ab= 1+kl$, also $ab
+-kl=1$. Dies gilt gdw. $\operatorname{ggT}(a,b)=1$. Also gibt es in $\Z_{k}$
+genau $\phi(k)$ Einheiten. Falls $k=p$ Primzahl, dann gibt es $\phi(p)=p-1$
+Einheiten und $\Z_{p}$ ist ein Körper.
+
+Kurzschreibweise: $\Z_{k} = \{0,1,2,\dotsc,k-1\}$
+
+typisches Beispiel in der Kryptologie: $\Z_{26} = \{0,1,\dotsc,25\}$
+
+Im Grunde sind alle endlichen Alphabete kommutative Ringe!
+
+Vorteil: können mit Buchstaben rechnen. dies gilt bereits für die
+Caesar-Chiffre.
+
+Es gilt: $\abs{\Z_{26}} = 26, \phi(26) = \phi(2\cdot13) = \phi(2)\cdot\phi(13)
+= 1\cdot12$ ($1,3,5,7,9,11,15,17,19,21,23,25$)
+
+lineare Algebra: Wir betrachten $n\times n$-Matrizen, deren Einträge Elemente
+aus einem beliebigen kommutativen Ring~$[R,+\cdot]$ sind.
+\begin{gather*}
+  R^{n\times n} = \{ \begin{pmatrix}
+                       r_{11} & r_{12} & \dotso & r_{1n}\\
+                       r_{21} & r_{22} & \dotso & r_{2n}\\
+                       \vdots & \vdots & & \vdots\\
+                       r_{n1} & r_{n2} & \dotso & r_{nn}
+                     \end{pmatrix}
+                    \colon r_{ij}\in R, 1\leq i,j \leq n\}
+\end{gather*}
+
+speziell: $\Z_{k}^{n\times n}$
+
+Matrizenaddition und -multiplikation wie üblich $[R^{n\times n}, +, \cdot]$.
+
+Bemerkung zu Zeilen- und Spaltenvektoren:
+\begin{align*}
+  R^{1\times n} &= \{ \begin{pmatrix}b_{1} & b_{2} & \dotso & b_{n}\end{pmatrix}
+                    \colon b_{i}\in R, 1\leq i \leq n\}\\
+  R^{n\times1} &= \{ \begin{pmatrix}b_{1} & b_{2}&\dotso&b_{n}\end{pmatrix}^{T}
+                    \colon b_{i}\in R, 1\leq i \leq n\}\\
+\end{align*}
+
+Determinanten von quadratischen Matrizen: Es sei $A\in R^{n\times n},
+A=(a_{ij})_{n\times n}$
+
+Leibniz:
+\begin{gather*}
+  \det A := \sum_{\sigma\in S_{n}} \sgn(\sigma) \cdot \prod a_{1}\sigma_{(1)}
+     a_{2}\sigma_{(2)} \dotso a_{n}\sigma_{(n)}\\
+  \sgn(\sigma) = \begin{cases}
+                   +1 &:\text{die Anzahl der Inversionen ist gerade}\\
+                   -1 &:\text{die Anzahl der Inversionen ist ungerade}
+                 \end{cases}
+\end{gather*}
+
+Beispiel: $n=1$ $A=(a_{11}), \sigma=\begin{pmatrix}1\\1\end{pmatrix},
+\sgn(\sigma) = +1, \det A = a_{11}$
+
+$n=2$ $A=\begin{pmatrix}a_{11}&a_{12}\\a_{21}&a_{22}\end{pmatrix},
+\sigma_{1}=\begin{pmatrix}1&2\\1&2\end{pmatrix}, \sgn(\sigma_{1})=+1,
+\sigma_{2}=\begin{pmatrix}1&2\\2&1\end{pmatrix}, \sgn(\sigma_{2})=-1,
+\det A = a_{11} a_{22} - a_{12}a_{21}$
+
+Laplace: Entwickeln einer Spalte oder Zeile:
+\begin{gather*}
+  \det A = \sum_{j=1}^{n} (-1)^{i+j} a_{ij} A_{ij}
+\end{gather*}
+wobei $A_{ij}$ diejenige Matrix ist, die durch Streichen der $i$-ten Zeile und
+$j$-ten Spalte aus $A$ entsteht.
+
+Frage: Wann besitzt $A$ eine Inverse? Es muss gelten:
+\begin{gather*}
+  A\cdot A^{-1} = A^{-1}\cdot A = E_{n} =
+     \begin{pmatrix}
+       1\\
+       & 1 & & \text{\huge 0}\\
+       & & \ddots\\
+       & \text{\huge 0} & & 1\\
+       & & & & 1\
+     \end{pmatrix}_{n\times n}
+\end{gather*}
+$A$ besitzt eine Inverse $A^{-1}$ gdw. $\det A$ eine Inverse in $[R,+,\cdot]$
+besitzt gdw. $\det A$ ist Einheit von $[R,+,\cdot]$. Dabei gilt: $A^{-1}\equiv
+(\det A)^{-1} B$, wobei $(b_{ij})=(-1)^{i+j}\cdot \det A_{ij}$
+
+Kryptologie: Affinlineare Blockchiffren
+
+Klartext wird condiert in $\Z_{k}$, wird in Blöcke der Länge~$n$ eingeteilt,
+die einzeln nach demselben Schema verschlüsselt werden.
+
+Verschlüsselung: es sei $v=\begin{pmatrix}v_{1}& \dotso &v_{n}\end{pmatrix}
+\in \Z_{k}^{1\times n}$ gegeben. $v$ wird verschlüsselt mit Hilfe von $A\in
+\Z_{k}^{n\times n}$ und $b\in\Z_{k}^{1\times n}$ zu $v\mapsto v\cdot A+b$
+
+Schlüssel: ist ein Paar $(A,b)$
+
+Diese Abbildung ist injektiv gdw. $A$ ein Inverses $A^{-1}$ besitzt gdw.
+$\operatorname{ggT}(\det A, k)=1$
+
+Entschlüsselung: für $w=v\cdot A+b$ gilt $v=(w-b)A^{-1}$
+
+Spezialfall: $b=0$: $w=v\cdot A$ liefert \highl{Hill-Chiffre} (1929).
+
+Diese Verschlüsselung ist weder eine Substitution (ein Eintrag $w_{i}$ hängt
+i.\,A. von allen $v_{1},\dotsc, v_{n}$ ab) noch keine Transposition.
+
+Aber:
+\begin{bsp}
+  Die \highl{Vigenère-Verschlüsselung} ist affinlinear $v\mapsto v\cdot
+  E_{n}+b$ mit der Einheitsmatrix~$E_{n}$ und dem Schlüsselwort~$b$
+\end{bsp}
+
+\begin{bsp}
+  Blocktranspositionen, Permutationen $\sigma$ von $\{1,\dotsc,n\}$ Wir
+  definieren die folgende Permutation $P_{\sigma}=(p_{ij})_{n\times n}$
+  \begin{gather*}
+    p_{ij} =
+       \begin{cases}
+         0 & \sigma(i) \ne j\\
+         1 & \sigma(i) = j
+       \end{cases}
+  \end{gather*}
+  mit dem Effekt $\begin{pmatrix}v_{1} & v_{2} & \dotso & v_{n}\end{pmatrix}
+  P_{\sigma} = \begin{pmatrix}v_{\sigma(1)} & v_{\sigma(2)} & \dotso &
+  v_{\sigma(n)}\end{pmatrix}$ und $P_{\sigma}^{-1} = P_{\sigma^{-1}}$
+\end{bsp}
 
 % 8.11.06
 
@@ -1357,7 +1514,7 @@ Hieraus folgt $A=M^{-1}C$ und weiter $b= c_{0}-m_{0}A$.
 Wir bleiben zunächst noch bei den symetrischen Verschlüsselungsverfahren und
 versuchen durch eine Vergrößerung des Schlüsselraums die Verfahren sicherer zu
 machen. Im Folgenden beschränken wir uns auf (rechnerfreundliche) Bitfolgen
-$\subset\F_{2}^{n}$.
+$\subset\Z_{2}^{n}$.
 
 Klartexte werden zerlegt in Blöcke einer frei wählbaren aber fixierten
 Blocklänge~$n$. Wir betrachten Verschlüsselungen von Blöcken auf der
@@ -1371,7 +1528,7 @@ Metaebene:
 \end{itemize}
 
 Diese Bilder von Blöcken der Länger~$n$ sind wieder Blöcke der Länge~$n$ über
-$\F_{2}$.
+$\Z_{2}$.
 
 Daraus ergibt sich eine maximale Anzahl an Blockchiffren von
 \begin{gather*}
@@ -1401,7 +1558,7 @@ Praxis: "`kleine"' Teilmengen aus dem Schlüsselraum. Welche?
 z.\,B. die linearen Chiffren erlauben eine Darstellung des Schlüssels mit
 weniger Bits. Bei $n=64$ sind also $\{0,1\}$-Matrizen vom Typ $64\times 64$
 zulässig mit Determinante~$1$. Der Schlüssel ist dann eine Matrix
-$A\in\F_{2}^{(64\times64)}$ und die Schlüssellänge ist $64\cdot64=4096$~Bits.
+$A\in\Z_{2}^{(64\times64)}$ und die Schlüssellänge ist $64\cdot64=4096$~Bits.
 
 Wie viele solcher Schlüssel gibt es? Approximation: $\approx
 0\mathord{,}29\cdot 2^{4096}\approx 2^{2^{12}}$ (Im Vergleich zu $2^{10^{21}}$)
@@ -1438,10 +1595,10 @@ Idee:
 
 Ausgangssituation:
 \begin{itemize}
- \item Blockchiffr über $\F_{2}$ der Länge~$n$,
+ \item Blockchiffr über $\Z_{2}$ der Länge~$n$,
  \item $\mathcal{K}$ ist der Schlüsselraum,
  \item zu einem Schlüssel~$K\in\mathcal{K}$ gehört eine
-  Verschlüsselungsfunktion $f_{K}\colon \F_{2}^{n}\mapsto\F_{2}^{n}$
+  Verschlüsselungsfunktion $f_{K}\colon \Z_{2}^{n}\mapsto\Z_{2}^{n}$
 \end{itemize}
 
 Bei Feistel ist es so:
