@@ -1619,10 +1619,11 @@ Wir kontruieren eine Folge:
 \begin{gather*}
   (L_{i}, R_{i}) = (R_{i-1}, L_{i-1}\oplus f_{K_{i}(R_{i-1})})\quad
      i=1,\dotsc,r-1\\
-  (L_{i-1}, R_{i-1}) \xrightarrow[durch Addition des Schlüsselworts
-     f_{K_{i}}(R_{i-1})]{Substitution des linken Teils} (L_{i-1} \oplus
-     f_{K_{i}}(R_{i-1)}) \xrightarrow{Transposition} (R_{i-1}, L_{i-1}\oplus
-     f_{K_{i}}(R_{i-1}))
+  (L_{i-1}, R_{i-1})
+    \xrightarrow{\text{Substitution}}
+    \bigl(L_{i-1} \oplus f_{K_{i}}(R_{i-1}), R_{i-1} \bigr)
+  \dotso \xrightarrow{Transposition}
+    \bigl(R_{i-1}, L_{i-1}\oplus f_{K_{i}}(R_{i-1}) \bigr)
 \end{gather*}
 (Anm.: $\oplus$ ist das Exclusive-Oder \texttt{xor})
 
@@ -1646,6 +1647,122 @@ Zweite Runde liefert:
   (L_{2}', R_{2}') = (R_{1}', L_{1}'\oplus f_{K_{2}'}(R_{1}')) = \dotsb =
      (R_{r-2}, L_{r-2})
 \end{gather*}
+
+% 15.11.
+
+Die Feistel-Chiffre ist eine symmetrische Verschlüsselung.
+
+Achtung: Die Transposition ist linear. Also dürfen nicht alle Substitutionen
+linear sein, da sonst Transposition und Substitution eine lineare
+Gesamtoperation darstellen. Die Substitution in Runde~$i$ gdw. $f_{K_{i}}$
+linear ist. Also dürfen nicht alle Transformationen $R_{i-1} \mapsto
+f_{K_{i}}(R_{i-1})$ linear sein.
+
+Angenommen: $f_{K_{i}}$ ist linear:
+\begin{gather*}
+  f_{K_{i}}(R_{i-1}) = R_{i-1}\cdot A_{i} + b
+\end{gather*}
+$A_{i}\in \Z_{2}^{(n\times n)}, b_{i} \in \Z_{2}^{(1\times n)}$
+
+Dann ist
+\begin{gather*}
+  (L_{i-1}\oplus f_{K_{i}}(R_{i-1}), R_{i}) = (L_{i-1}, R_{i-1})\cdot
+     \begin{pmatrix}
+       E_{n} & 0_{n}\\
+       A_{i} & E_{n}
+     \end{pmatrix}
+     + \begin{pmatrix}b_{i} & 0 & \dotso & 0\end{pmatrix}
+\end{gather*}
+
+\section{DES -- Data Encryption Standard}
+
+Der \highl{DES} wurde 1977 von IBM entwickelt. US National Bureau of
+Standards. Obwohl er 1986 aufgrund von Sicherheitsmängeln zurückgezogen wurdem
+ist er bis heute der am häufigsten verwendete kommerzielle
+Verschlüsselungsalgorithmus.
+
+Schlüssellänge beträgt 64~Bit, wobei davon 8~Bit als Prüfbits, weswegen der
+effektive Schlüsselraum nur 56~Bit ist.
+
+Schlüsselraum $\mathcal{K}=\{0,1\}^{56}$ sehr klein; kann heute mit einem
+Brute-Force-Angriff durchprobiert werden! 1 Million Prozessoren, die 1 Million
+Schlüssel pro Sekunde berechnen, dauert es etwa einen Tag. Jeder
+Schlüssel~$k\in\mathcal{K}$ erzeugt 16~Teilschlüssel $k_{1}, k_{2},\dotsc,
+k_{16}$ der Länge $\abs{k}=16$. Damit ist 16 die Rundenzahl. Jeder
+Schlüssel~$k_{i}$ wird in einem $SBB$ (Standard Building Block) benutzt.
+
+Jede Nachricht wird in Blöcke~$m$ der Länge 64 aufgeteilt und nach einer
+initialen Permutation~$IP$ durch 16 SBB gejagt und anschließend noch mal mit
+$IP^{-1}$ permutiert.
+
+Schema:
+\begin{gather*}
+  \xrightarrow[64]{m} \framebox{$IP$}
+     \begin{split}
+       \xrightarrow[32]{}\\
+       \xrightarrow[32]{}\\
+     \end{split}
+     K_{1}\downarrow 48 \framebox{$SBB_{1}$}
+     \begin{split}
+       \xrightarrow[32]{}\\
+       \xrightarrow[32]{}\\
+     \end{split}
+     K_{2}\downarrow 48 \framebox{$SBB_{2}$}
+     \dotso
+     K_{15}\downarrow 48 \framebox{$SBB_{15}$}
+     \begin{split}
+       \xrightarrow[32]{}\\
+       \xrightarrow[32]{}\\
+     \end{split}
+     K_{16}\downarrow 48 \framebox{$SBB_{16}$}
+     \begin{split}
+       \xrightarrow[32]{}\\
+       \xrightarrow[32]{}\\
+     \end{split}
+     \framebox{$IP^{-1}$}
+     \xrightarrow[64]{C}
+\end{gather*}
+
+Runde~$i$: Die Eingabe wird in eine linke und reche Hälfte $(L,R)$ geteilt.
+Die Ausgabe $(L', R')$ wird erzeugt durch $L'=R$ und $R'$ auf folgende Weise:
+\begin{enumerate}
+ \item Diffusionsschritt: Aus $R$ wird ein 48-Bit-Wort $R_{1}$ erzeugt
+ \item $R_{2}= R_{1}\oplus K_{i}$
+ \item Konfusionsschritt: aus $R_{2}$ wird durch eine nicht lineare
+  Transformation~$S$ ein 32-Bit-Wort $R_{3}$ erzeugt
+
+  $S$: Zerlegen in 8 Worte der Länge~6 und diese mit $S_{i}$ zur 8 Worten der
+  Länge~4 verknuddeln und diese wieder zu einem 32-Bit-Wort zusammenkleben.
+ \item Permutation von $R_{3}$ erzeugt $R_{4}$
+ \item $R' = L\oplus R_{4}$
+\end{enumerate}
+
+\todo{Hier gab es ein tolles Schema. Wollen wir das?}
+
+Schreiben wir die gesamte Transformation in Runde~$i$ als $L'=R$ und
+$R'=L\oplus f_{K_{i}}(R)$, dann folgt die Entschlüsselung auf dieselbe Weise,
+denn $R=L'$ und $L=R'\oplus f_{K_{i}}(L')$
+
+Wieder wie bei der Feistel-Chiffre: Schlüssel in umgekehrter Reihenfolge.
+
+Vorteil: Dasselbe Gerät kann zum Ver- und Entschlüsseln verwendet werden.
+
+Vereinbarung: Die gesamte Transformation bei einem kompletten Durchlauf
+beschreiben wir als $c= DES_{k}(m)$
+
+Abwandlungen zur Erhöhung der Sicherheit von DES:
+\begin{itemize}
+ \item $c = DES_{k_{2}}\bigl( DES_{k_{1}}(m) \bigr)$ keine wesentliche
+  Erhöhung der Sicherheit, da es einfach nur die Rundenzahl erhöht.
+
+ \item $c = DES_{k_{1}}\bigl( DES_{k_{2}}^{-1}( DES_{k_{1}}(m) ) \bigr)$ mit
+  chosen-plain-text-Angriff ist dies auch leicht knackbar.
+
+ \item $c= DES_{k_{3}}\bigl( DES_{k_{2}}^{-1}( DES_{k_{1}}(m) ) \bigr)$
+\end{itemize}
+Was ist der Unterschied zwischen $DES^{-1}_{k}$ und $DES_{k^{T}}$? DES
+beschreibt auch, wie die Teilschlüssel erzeugt werden und daher ist $k^{T}$
+nicht der permutierte Schlüssel, der bei $DES^{-1}_{k}$ verwendet wird.
 
 \clearpage
 \appendix
@@ -1680,6 +1797,39 @@ Bestimmen Sie den Klartext.
   JGEIZU  ZOIZOE  LFVLAH  RKFNMT  IBCBIQ  VUHXVS  SOGOFN  ILEFSY
   MEFSSR  KBXORU  TEGEEU  IEDLCE  NVRDHN  IE
 \end{verbatim}
+
+\section{Blatt 2}
+
+\subsection*{Aufgabe 1}
+\begin{enumerate}
+ \item Verschlüsseln Sie die Nachricht $m=\mathrm{WASSER}$ mit Hilfe der
+  Hill-Chiffre und verwenden Sie die Matrix
+  \begin{gather*}
+    K =
+    \begin{pmatrix}
+      7 & 3\\
+      5 & 8
+    \end{pmatrix}
+  \end{gather*}
+
+ \item Bestimmen Sie die enschrechende Matrix zur Entschlüsselung und wenden
+  Sie diese auf den in a) erhaltenen Geheimtext an.
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+Bestimmen Sie eine $2\times 2$-Matrix~$M$, durch die die Nachricht "`hund"'
+mit der Hill-Chiffre in den Geheimtext "`AFFE"' umgewandelt wird.
+
+\subsection*{Aufgabe 3}
+Wir definieren die Abbildung $\Phi_{a,b}\colon \Z_{26}\rightarrow\Z_{26}$ durch
+\begin{gather*}
+  \Phi_{a,b}(x) := (ax+b) \pmod{26}
+\end{gather*}
+Bestimmen Sie diejenigen ganzen Zahlen $a,b$, für die die Abbildung
+$\Phi_{a,b}$ bijektiv ist.
+
+\textbf{Bemerkung:} Diese Abbildung kann zum Verschlüsseln verwendet werden
+(affine Chiffre)
 
 \chapter{Lösungen}
 \section{Blatt 1}
