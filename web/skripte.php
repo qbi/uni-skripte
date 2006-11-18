@@ -17,7 +17,8 @@ if (!$id) {
 echo "<p>Für die Kommandozeile: Eine aktuelle Version von SVN selbst ist unter
 <a href=\"http://subversion.tigris.org/\">http://subversion.tigris.org/</a> verfügbar.</p>
 
-Die erste lokale Kopie wird mit folgendem Befehl erstellt:
+Die erste lokale Kopie wird mit folgendem Befehl erstellt
+(<b><tt>FRZ-Login</tt> durch den Unix-Benutzernamen ersetzen!</b>):
 <pre>svn checkout svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/$id</pre>
 
 Später wird die lokale Kopie mit folgendem Befehl aktualisiert (in dem lokalen Verzeichnis <tt>$id</tt>):
