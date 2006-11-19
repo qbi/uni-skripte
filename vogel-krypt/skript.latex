@@ -6,6 +6,7 @@
 %     \bstu = Buchstabe unverschlüsselt
 %     \textv = Text verschlüsselt
 %     \textu = Text unverschlüsselt
+%     \schlsl = Schlüssel
 
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
@@ -245,9 +246,9 @@
   \url{http://www.minet.uni-jena.de/~joergs/skripte/}
   enthalten ist.
 
-  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision\ und ist
-  vom \SVNDate. Eine (mögliche) aktuellere Ausgabe ist auf der Webseite
-  des Projekts verfügbar.
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
 
   Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
   Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
@@ -892,7 +893,6 @@ Mithilfe eines Schlüsselworts.
 
 \begin{bsp}
   Als Schlüsselwort nehmen wir "`ALLGAEU"' und als Klartext "`emmentaler"'.
-  \todo{Viginere-Quadrat einfügen}
 
   ALLGAEUALLGAEU\\
   emmentaler\\
@@ -1585,11 +1585,12 @@ Informationstheorie)
 
 \section{Feistel-Chiffre}
 
-Die Idee der \highl[Feistel-Chiffre]{Feistel"=Chiffre} wurde 1971 bei IBM in
+Die Idee zur \highl[Feistel-Chiffre]{Feistel"=Chiffre} wurde 1971 bei IBM in
 dem Projekt "`\href{http://de.wikipedia.org/wiki/Lucifer\_(Kryptographie)}{Lucifer}"'
-geboren und wurde später zum heute am häufigsten eingesetzen
-Verschlüsselungsalgorithmus DES --~dazu später mehr in \autoref{sec:des}~--
-weiterentwickelt. Als Erfinder der Feistel"=Chiffre gilt
+entwickelt und ist heute Grundlage für viele symmetrische Blockchiffren unter
+anderem dem heute am häufigsten eingesetzen Verschlüsselungsalgorithmus DES
+--~dazu später mehr in \autoref{sec:des}. Als Erfinder der Feistel"=Chiffre
+gilt
 \href{http://de.wikipedia.org/wiki/Horst_Feistel}{Host Feistel}, ein
 Mitarbeiter des Projekts Lucifer.
 
@@ -1598,6 +1599,11 @@ Substitutionen und Transpositionen verschlüsselt. Einen einzelnen Durchlauf
 von Substitution und Transposition bezeichnet man als \highl{Runde}. Die
 einzelnen Schlüssel für jede Runde werden dabei aus einem (Haupt"~)""Schlüssel
 erzeugt.
+\todo{Erklären, was die S-Box (Substitution) und die P-Box (Translation; von
+  Permutation) ist.}
+\todo{to produce a function with large amounts of what Claude Shannon
+  described as ``confusion and diffusion.'' Bit shuffling creates the diffusion
+  effect, while substitution is used for confusion.}
 
 Eine Nachricht~$m\in\Z_{2}^{n}$ der Länge~$n$ (o.\,B.\,d.\,A. sei $n$ gerade)
 wird in zwei gleichlange Teile~$L_{0}$ und $R_{0}$ zerlegt. Aus diesen beiden
@@ -1680,6 +1686,15 @@ Transformation. Man könnte also den gesamten Verschlüsselungsvorgang mit einer
 einzigen linearen Gleichung beschreiben.
 \help{Wer sagt, dass $\oplus$ linear ist?}
 
+Ist die Funktion~$f$ eine krytographisch sichere Pseudozufallsfunktion, so
+haben Michael Luby unnd Charles Rackoff gezeigt, reichen drei Runden um eine
+Pseudozufallspermutation zu erreichen. Mit vier Runden bekommt man sogar eine
+starke Pseudozufallspermutation.\footnote{Geklaut aus der
+\href{http://en.wikipedia.org/wiki/Feistel_cipher}{englischen Wikipedia}, die
+selbst auf "`M. Luby and C. Rackoff. ``How to Construct Pseudorandom
+Permutations and Pseudorandom Functions.'' In SIAM J. Comput.,
+vol. 17, 1988, pp. 373-386."' verweist.}
+
 % Angenommen: $f_{K_{i}}$ ist linear:
 % \begin{gather*}
 %   f_{K_{i}}(R_{i-1}) = R_{i-1}\cdot A_{i} + b\qquad
@@ -1697,51 +1712,81 @@ einzigen linearen Gleichung beschreiben.
 
 \section{DES -- Data Encryption Standard}\label{sec:des}
 
-Der \highl{DES} wurde 1977 von IBM entwickelt. US National Bureau of
-Standards. Obwohl er 1986 aufgrund von Sicherheitsmängeln zurückgezogen wurdem
-ist er bis heute der am häufigsten verwendete kommerzielle
-Verschlüsselungsalgorithmus.
+Der \highl{Data Encryption Standard} (\highl{DES}) wurde in den 1970ern von
+IBM für eine Ausschreibung des US~National Bureau of Standards entwickelt. Er
+basiert auf den vorangegangenen Entwicklungen des Projekts Lucifer das die
+Feistel"=Chiffre entwickelt hatte. 1977 wurde er dann als Standard für die
+Verschlüsselung in den amerikanischen Bundesbehörden veröffentlicht.
 
-Schlüssellänge beträgt 64~Bit, wobei davon 8~Bit als Prüfbits, weswegen der
-effektive Schlüsselraum nur 56~Bit ist.
+Die International Organization for Standardization~(ISO) übernahm den
+Algorithmus unter der Bezeichnung "`Data Encipherment No.\,1"'~(DEA1) in ihr
+Verzeichnis auf.
 
-Schlüsselraum $\mathcal{K}=\{0,1\}^{56}$ sehr klein; kann heute mit einem
-Brute-Force-Angriff durchprobiert werden! 1 Million Prozessoren, die 1 Million
-Schlüssel pro Sekunde berechnen, dauert es etwa einen Tag. Jeder
-Schlüssel~$k\in\mathcal{K}$ erzeugt 16~Teilschlüssel $k_{1}, k_{2},\dotsc,
-k_{16}$ der Länge $\abs{k}=16$. Damit ist 16 die Rundenzahl. Jeder
-Schlüssel~$k_{i}$ wird in einem $SBB$ (Standard Building Block) benutzt.
+1992 veröffentlichen Biham und Shamir den ersten theoretischen Angriff gegen
+\todo{gibt's dazu auch noch eine Quelle?}
+DES, der aber $2^{47}$ frei gewählte Klartexte erfordert. 1997 wird dann das
+erste Mal eine verschlüsselte Nachricht gebrochen. 1998 gelingt es der
+Electronic Frontier Foundation~(EFF) mit dem eigens dafür angefertigten
+Supercomputer "`Deep Crack"', der 88 Milliarden Schlüssel pro Sekunde testen
+konnte, durch Brute-Force-Angriff binnen 56~Stunden eine Verschlüsselung zu
+brechen. Ein halbes Jahr später im Januar~1998 gelang es durch die
+Zusammenarbeit von Deep Crack und
+\href{http://distributed.net}{distributed.net} einen DES"=Schlüssel in
+22~Stunden und 15~Minuten zu ermitteln --~mehr als 245 Milliarden Schlüssel
+wurden pro Sekunde getestet.
 
-Jede Nachricht wird in Blöcke~$m$ der Länge 64 aufgeteilt und nach einer
-initialen Permutation~$IP$ durch 16 SBB gejagt und anschließend noch mal mit
-$IP^{-1}$ permutiert.
+1999~wird der reine DES als Standard für die Verschlüsselung der
+amerikanischen Bundesbehörden widerrufen und schließlich 2002 durch den
+Advanced Encryption Standard~(AES) ersetzt.
+
+DES arbeitet nach dem gleichen Prinzip wie die Feistel"=Chiffre und ist
+damit eine symmetrische Blockchiffre. Die Schlüssellänge für die
+Verschlüsselung beträgt 64~Bit, wobei ein Bit pro Byte als Prüfbit verwendet
+wird, was den effektiven Schlüsselraum~$\mathcal{K} =\{0,1\}^{56}$ auf 56~Bit
+reduziert.
+
+DES arbeitet mit 16 Runden. Aus dem Schlüssel~$k\in\mathcal{K}$ werden
+16~Teilschlüssel $k_{1}, k_{2},\dotsc, k_{16}$ der Länge $\abs{k}=16$
+generiert, die jeweils in einem $SBB$ (Standard Building Block) verwendet
+werden.
+
+Die Nachricht wird in Blöcke~$m$ der Länge~64 aufgeteilt und nach einer
+initialen Permutation~$IP$ in den 16~SBB tranformiert und anschließend noch
+mal mit $IP^{-1}$ permutiert.
 
 Schema:
 \begin{gather*}
-  \xrightarrow[64]{m} \framebox{$IP$}
+  % Eine Runde "`Zeichnen für arme Leute"' :-))
+  \xrightarrow[64]{m}
+     \raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$IP$}}\:
      \begin{split}
        \xrightarrow[32]{}\\
        \xrightarrow[32]{}\\
      \end{split}
-     K_{1}\downarrow 48 \framebox{$SBB_{1}$}
+     \stackrel{K_{1}\downarrow 48}%
+              {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$SBB_{1}$}}}
      \begin{split}
        \xrightarrow[32]{}\\
        \xrightarrow[32]{}\\
      \end{split}
-     K_{2}\downarrow 48 \framebox{$SBB_{2}$}
+     \stackrel{K_{2}\downarrow 48}%
+              {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$SBB_{2}$}}}
      \dotso
-     K_{15}\downarrow 48 \framebox{$SBB_{15}$}
+     \stackrel{K_{15}\downarrow 48}%
+              {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$SBB_{15}$}}}
      \begin{split}
        \xrightarrow[32]{}\\
        \xrightarrow[32]{}\\
      \end{split}
-     K_{16}\downarrow 48 \framebox{$SBB_{16}$}
+     \stackrel{K_{16}\downarrow 48}%
+              {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$SBB_{16}$}}}
      \begin{split}
        \xrightarrow[32]{}\\
        \xrightarrow[32]{}\\
      \end{split}
-     \framebox{$IP^{-1}$}
+     \:\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$IP^{-1}$}}
      \xrightarrow[64]{C}
+     % und wer hat jetzt Lust das Bild auszumalen?
 \end{gather*}
 
 Runde~$i$: Die Eingabe wird in eine linke und reche Hälfte $(L,R)$ geteilt.
@@ -1760,14 +1805,6 @@ Die Ausgabe $(L', R')$ wird erzeugt durch $L'=R$ und $R'$ auf folgende Weise:
 
 \todo{Hier gab es ein tolles Schema. Wollen wir das?}
 
-Schreiben wir die gesamte Transformation in Runde~$i$ als $L'=R$ und
-$R'=L\oplus f_{K_{i}}(R)$, dann folgt die Entschlüsselung auf dieselbe Weise,
-denn $R=L'$ und $L=R'\oplus f_{K_{i}}(L')$
-
-Wieder wie bei der Feistel"=Chiffre: Schlüssel in umgekehrter Reihenfolge.
-
-Vorteil: Dasselbe Gerät kann zum Ver- und Entschlüsseln verwendet werden.
-
 Vereinbarung: Die gesamte Transformation bei einem kompletten Durchlauf
 beschreiben wir als $c= DES_{k}(m)$
 
@@ -1780,6 +1817,7 @@ Abwandlungen zur Erhöhung der Sicherheit von DES:
   chosen-plain-text-Angriff ist dies auch leicht knackbar.
 
  \item $c= DES_{k_{3}}\bigl( DES_{k_{2}}^{-1}( DES_{k_{1}}(m) ) \bigr)$
+  wird als \highl{Tipple-DES} (\highl{3DES}) bezeichnet.
 \end{itemize}
 Was ist der Unterschied zwischen $DES^{-1}_{k}$ und $DES_{k^{T}}$? DES
 beschreibt auch, wie die Teilschlüssel erzeugt werden und daher ist $k^{T}$
@@ -1808,7 +1846,6 @@ Schlüsselwort ab.
 \subsection*{Aufgabe 3}
 Bestimmen Sie den Klartext.
 
-\vspace{1cm}
 \begin{verbatim}
   FSGEXV  EVIISA  MGYFNX  EJTMUR  MPNYME  FMPSIH  EFIXUE  HQFOOU
   PGIAVI  KJSWLT  IIZJIJ  ELXVOT  YBKMEC  GYUELW  RHEHOR  ONIFVS
