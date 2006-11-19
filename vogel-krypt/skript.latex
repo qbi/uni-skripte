@@ -47,8 +47,8 @@
 \usepackage{amssymb}     % wird für \R, \C,... gebraucht
 \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
 
-\usepackage[thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
-                                         % (satz, defini, bemerk)
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
 \usepackage{paralist}    % besseres enumerate und itemize und neue
                          % compactenum/compactitem; s. texdoc paralist
 
@@ -224,7 +224,7 @@
 \clearpage
 \chapter*{Vorwort}
 
-% entspricht Vorlage: 426
+% entspricht Vorlage: 537
 
 \begin{itshape}
   Dieses Dokument wurde als Skript für die auf der
@@ -1583,98 +1583,119 @@ der Verschlüsselung} zu erreichen:
 (Dies Eigenschaften gehen zurück auf Claude Shannon -- Begründer der
 Informationstheorie)
 
-\section{Feistel-Chiffren}
-(nach Lucifer 1971) (als Vorläufer des DES-Algorithmus)
+\section{Feistel-Chiffre}
 
-Idee:
-\begin{itemize}
- \item alternierende Folge von Substitutionen und Transpositionen,
- \item aus einem (kurzen) Anfangsschlüssel wir eine Folge von Schlüsseln
-  erzeugt.
-\end{itemize}
+Die Idee der \highl[Feistel-Chiffre]{Feistel"=Chiffre} wurde 1971 bei IBM in
+dem Projekt "`\href{http://de.wikipedia.org/wiki/Lucifer\_(Kryptographie)}{Lucifer}"'
+geboren und wurde später zum heute am häufigsten eingesetzen
+Verschlüsselungsalgorithmus DES --~dazu später mehr in \autoref{sec:des}~--
+weiterentwickelt. Als Erfinder der Feistel"=Chiffre gilt
+\href{http://de.wikipedia.org/wiki/Horst_Feistel}{Host Feistel}, ein
+Mitarbeiter des Projekts Lucifer.
 
-Ausgangssituation:
-\begin{itemize}
- \item Blockchiffr über $\Z_{2}$ der Länge~$n$,
- \item $\mathcal{K}$ ist der Schlüsselraum,
- \item zu einem Schlüssel~$K\in\mathcal{K}$ gehört eine
-  Verschlüsselungsfunktion $f_{K}\colon \Z_{2}^{n}\mapsto\Z_{2}^{n}$
-\end{itemize}
+Bei der Feistel"=Chiffre wird der Text durch eine alternierende Folge von
+Substitutionen und Transpositionen verschlüsselt. Einen einzelnen Durchlauf
+von Substitution und Transposition bezeichnet man als \highl{Runde}. Die
+einzelnen Schlüssel für jede Runde werden dabei aus einem (Haupt"~)""Schlüssel
+erzeugt.
 
-Bei Feistel ist es so:
-\begin{itemize}
- \item betrachten Blöcke der Länge~$2n$ für die Zerlegung des Klartextes,
- \item Festlegung der \highl{Rundenzahl}~$r$,
- \item Festlegung wie aus einem Ausgangsschlüssel eine folge von Schlüsseln
-  $K_{1},K_{2},\dotsc, K_{r}\in\mathcal{K}$ erzeugt wird.
-\end{itemize}
+Eine Nachricht~$m\in\Z_{2}^{n}$ der Länge~$n$ (o.\,B.\,d.\,A. sei $n$ gerade)
+wird in zwei gleichlange Teile~$L_{0}$ und $R_{0}$ zerlegt. Aus diesen beiden
+wird durch die Zuordnung in \autoref{eq:feistel} ein neuer linker Teil~$L_{1}$
+und ein neuer rechter Teil~$R_{1}$ gewonnen. Diese beiden Zeichenketten
+wiederum werden als Eingabe für die nächste Runde verwendet. Die
+\highl{Rundenzahl}~$r$ bestimmt dabei, wie oft ein solcher Durchlauf
+stattfindet. In der letzten Runde wird die leicht modifizierte Vorschrift aus
+\autoref{eq:feistel-last} verwendet, bei der die Transposition entfällt
 
-Klartextblock $m=(L_{0}, R_{0})$ der Länger~$2n$ wird zerlegt in zwei
-Teilblöcke $L_{0}$ und $R_{0}$ der Länge~$n$.
-\begin{center}
-  \includegraphics{feilstel}
-\end{center}
-
-Wir kontruieren eine Folge:
+\begin{align}\label{eq:feistel}
+  \begin{split}
+    L_{i} &= R_{i-1}\\
+    R_{i} &= L_{i-1} \oplus f_{K_{i}}(R_{i-1})
+  \end{split}
+     &\text{für~}i=1,\dotsc,r-1\\
+  \label{eq:feistel-last}
+  \begin{split}
+    L_{r} &= L_{r-1} \oplus f_{K_{r}}(R_{r-1})\\
+    R_{r} &= R_{r-1}
+  \end{split}
+\end{align}
 \begin{gather*}
-  (L_{i}, R_{i}) = (R_{i-1}, L_{i-1}\oplus f_{K_{i}(R_{i-1})})\quad
-     i=1,\dotsc,r-1\\
   (L_{i-1}, R_{i-1})
-    \xrightarrow{\text{Substitution}}
-    \bigl(L_{i-1} \oplus f_{K_{i}}(R_{i-1}), R_{i-1} \bigr)
-  \dotso \xrightarrow{Transposition}
-    \bigl(R_{i-1}, L_{i-1}\oplus f_{K_{i}}(R_{i-1}) \bigr)
+     \xrightarrow{\text{Substitut.}}
+     \bigl(L_{i-1} \oplus f_{K_{i}}(R_{i-1}), R_{i-1} \bigr)
+     \xrightarrow{Transposit.}
+     \bigl(R_{i-1}, L_{i-1}\oplus f_{K_{i}}(R_{i-1}) \bigr)
 \end{gather*}
 (Anm.: $\oplus$ ist das Exclusive-Oder \texttt{xor})
 
-Die Entschlüsselung funktioniert genauso, nur mit der Schlüsselfolge $K_{r},
-K_{r-1}, \dotsc, K_{1}$.
+\begin{figure}
+  \centering
+  \input{feistel.pdf_t}
+  \caption{Schematische Darstellung der Feistel"=Chiffre}
+  \label{fig:feistel}
+\end{figure}
 
-Begründung warum es funktioniert: Wir setzen neu an: $L_{0}':=L_{r},
-R_{0}':=R_{r}, K_{i}':= K_{r+1-i}$ für $i=1,\dotsc,r$. Verschlüsseln $(L_{0}',
-R_{0}')$ mit der Schlüsselfolge $K_{1}', K_{2}',\dotsc,K_{r}'$ und betrachten
-die Zwischenergebnisse $(L_{i}', R_{i}')$ für $i=1,\dotsc,r$.
+Für die Entschlüsselung einer Nachricht kann man den gleichen Algorithmus mit
+der umgekehrten Schlüsselfolge $K_{i}':= K_{r+1-i}$ (für $i=1,\dotsc,r$) auf
+$c=(L_{0}', R_{0}')=(L_{r}, R_{r})$ verwenden und einfach die verschlüsselte
+Nachricht nochmals verschlüsseln. Dies hat zum Einen den Vorteil, dass man die
+gleiche Hard"~/""Software auf der Sender- und Empfängerseite einsetzen kann,
+und zum Anderen kann die Funktion~$f$ sehr kompliziert sein, da man nicht
+deren inverse Funktion benötigt.
 
-Erste Runde: liefert
-\begin{gather*}
-  (L_{1}', R_{1}') = (R_{0}', L_{0}'\oplus f_{K_{1}'}(R_{0}'))
-     = (R_{r}, L_{r} \oplus f_{K_{r}}(R_{r}))
-     = (R_{r-1}, (L_{r-1}\oplus f_{K_{r}}(R_{r-1})) \oplus f_{K_{r}}(R_{r-1}))
-     = (R_{r-1}, L_{r-1})
-\end{gather*}
-Zweite Runde liefert:
-\begin{gather*}
-  (L_{2}', R_{2}') = (R_{1}', L_{1}'\oplus f_{K_{2}'}(R_{1}')) = \dotsb =
-     (R_{r-2}, L_{r-2})
-\end{gather*}
+Bei der Entschlüsselung gilt in allen Runden $i=1,\dotsc,r$ der Zusammenhang
+$(L_{i}', R_{i}') = (L_{r-i}, R_{r-i})$ und für die letzte Runde ergibt sich
+dann der Klartext der Nachricht als $(L_{r}', R_{r}') = (L_{0}, R_{0})$.
+
+\begin{align*}
+  (L_{1}', R_{1}') &= \bigl(R_{0}',\; L_{0}' \oplus f_{K_{1}'}(R_{0}')\bigr)
+     &\text{nach \eqref{eq:feistel}}\\
+  &= \bigl(R_{r},\; L_{r}\oplus f_{K_{r}}(R_{r}) \bigr) &\text{nach IV.}\\
+  &= \bigl(R_{r-1},\; \bigl(L_{r-1} \oplus f_{K_{r}}(R_{r-1})\bigr) \oplus
+     f_{K_{r}}(R_{r-1}) \bigr) &\text{nach \eqref{eq:feistel-last}}\\
+  &= (R_{r-1}, L_{r-1}) &\text{da~}a\oplus a=a\displaybreak[0]\\[1.5ex]
+  (L_{n}', R_{n}') &= \bigl(R_{n-1}',\; L_{n-1} \oplus f_{K_{n}'}(R_{n-1}')
+     \bigr) & \text{nach \eqref{eq:feistel}}\\
+  &= \bigl(L_{r-n+1},\; R_{r-n+1} \oplus f_{K_{r+1-n}}(L_{r-n+1})\bigr)
+     &\text{nach IV.}\\
+  &= \bigl(R_{r-n},\; \bigl(L_{r-n}\oplus f_{K_{r-n+1}}(R_{r-n})\bigr) \oplus
+     f_{K_{r+1-n}}(R_{r-n}) &\text{nach \eqref{eq:feistel}}\\
+  &= (R_{r-n}, L_{r-n})
+\end{align*}
 
 % 15.11.
 
-Die Feistel-Chiffre ist eine symmetrische Verschlüsselung.
+Da die Schlüsselfolge $K_{1},\dotsc, K_{r}$ für die Ver- und Entschlüsselung
+aus dem gleichen (Haupt"~)""Schlüssel erzeugt wird, ist die Feistel"=Chiffre
+eine symmetrische Verschlüsselung.
 
-Achtung: Die Transposition ist linear. Also dürfen nicht alle Substitutionen
-linear sein, da sonst Transposition und Substitution eine lineare
-Gesamtoperation darstellen. Die Substitution in Runde~$i$ gdw. $f_{K_{i}}$
-linear ist. Also dürfen nicht alle Transformationen $R_{i-1} \mapsto
-f_{K_{i}}(R_{i-1})$ linear sein.
+Die Sicherheit der gesamten Verschlüsselung beruht auf der Eigenschaft, dass
+die Substitution, genauer die Funktion~$f_{K_{i}}$, eine nicht lineare
+Transformation ist. Wäre $f_{K_{i}}$ eine lineare Transformation, so wäre auch
+die Verkettung von Substitution und Tranlation\footnote{$\begin{pmatrix}R&L
+\end{pmatrix} = \begin{pmatrix}L& R\end{pmatrix}\cdot
+(\begin{smallmatrix}0& 1\\1& 0\end{smallmatrix})$} in jeder Runde eine lineare
+Transformation. Man könnte also den gesamten Verschlüsselungsvorgang mit einer
+einzigen linearen Gleichung beschreiben.
+\help{Wer sagt, dass $\oplus$ linear ist?}
 
-Angenommen: $f_{K_{i}}$ ist linear:
-\begin{gather*}
-  f_{K_{i}}(R_{i-1}) = R_{i-1}\cdot A_{i} + b
-\end{gather*}
-$A_{i}\in \Z_{2}^{(n\times n)}, b_{i} \in \Z_{2}^{(1\times n)}$
+% Angenommen: $f_{K_{i}}$ ist linear:
+% \begin{gather*}
+%   f_{K_{i}}(R_{i-1}) = R_{i-1}\cdot A_{i} + b\qquad
+%      A_{i}\in \Z_{2}^{(n\times n)}, b_{i} \in \Z_{2}^{(1\times n)}
+% \end{gather*}
+% dann ist die Substitution:
+% \begin{gather*}
+%   (L_{i-1}\oplus f_{K_{i}}(R_{i-1}), R_{i-1}) = (L_{i-1}, R_{i-1})\cdot
+%      \begin{pmatrix}
+%        E_{n} & 0_{n}\\
+%        A_{i} & E_{n}
+%      \end{pmatrix}
+%      + (b_{i}, 0)
+% \end{gather*}
 
-Dann ist
-\begin{gather*}
-  (L_{i-1}\oplus f_{K_{i}}(R_{i-1}), R_{i}) = (L_{i-1}, R_{i-1})\cdot
-     \begin{pmatrix}
-       E_{n} & 0_{n}\\
-       A_{i} & E_{n}
-     \end{pmatrix}
-     + \begin{pmatrix}b_{i} & 0 & \dotso & 0\end{pmatrix}
-\end{gather*}
-
-\section{DES -- Data Encryption Standard}
+\section{DES -- Data Encryption Standard}\label{sec:des}
 
 Der \highl{DES} wurde 1977 von IBM entwickelt. US National Bureau of
 Standards. Obwohl er 1986 aufgrund von Sicherheitsmängeln zurückgezogen wurdem
@@ -1743,7 +1764,7 @@ Schreiben wir die gesamte Transformation in Runde~$i$ als $L'=R$ und
 $R'=L\oplus f_{K_{i}}(R)$, dann folgt die Entschlüsselung auf dieselbe Weise,
 denn $R=L'$ und $L=R'\oplus f_{K_{i}}(L')$
 
-Wieder wie bei der Feistel-Chiffre: Schlüssel in umgekehrter Reihenfolge.
+Wieder wie bei der Feistel"=Chiffre: Schlüssel in umgekehrter Reihenfolge.
 
 Vorteil: Dasselbe Gerät kann zum Ver- und Entschlüsseln verwendet werden.
 
