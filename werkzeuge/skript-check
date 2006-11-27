@@ -131,7 +131,7 @@ our %paket_gefunden;
 sub usepackage
 {
     our ($zeile, %paket_gefunden);
-    $zeile =~ /\\usepackage(\[.*\])*{(\w*)}/;
+    $zeile =~ /\\usepackage(\[.*\])*{([\w\-,]*)}/;
     ++$paket_gefunden{$_} foreach ( split(',', $2) );
 }
 neue_funktions_regel(qr/\\usepackage/, 0, \&usepackage, undef);
@@ -164,12 +164,45 @@ neue_existiert_regel(qr/\\SVN \$LastChangedDate: .{3,} \$/, \&schimpfen,
                      '\SVN für LastChangedDate nicht gefunden; '.
                      '"svn propset svn:keyword LastChangedDate" aktiviert?');
 
+our $theoremstyle;
+sub thmstyle
+{
+    our ($zeile, $theoremstyle);
+    $zeile =~ /theoremstyle{(\w*)}/;
+    $theoremstyle = $1;
+}
+neue_funktions_regel(qr/\\theoremstyle/, 0, \&thmstyle, undef);
+
+our @umgebungen_gefunden;
+sub environment
+{
+    our ($zeile, @umgebungen_gefunden);
+    $zeile =~ /\\newenvironment\*?{(\w*)}/;
+    if ( defined($1) )
+    {
+        push(@umgebungen_gefunden, $1);
+    }
+    else
+    {
+        print "Problem in $.\n";
+    }
+}
+neue_funktions_regel(qr/\\newenvironment/, 0, \&environment, undef);
+
 our @theoreme_gefunden;
 sub theorem
 {
-    our ($zeile, @theoreme_gefunden);
+    our ($zeile, @theoreme_gefunden, $theoremstyle, @umgebungen_gefunden);
     $zeile =~ /\\newtheorem{(\w*)}/;
-    push(@theoreme_gefunden, $1);
+    my $thm = $1;
+    if  (defined($theoremstyle) and $theoremstyle =~ /^nonumber/)
+    {
+        push(@umgebungen_gefunden, $thm);
+    }
+    else
+    {
+        push(@theoreme_gefunden, $thm);
+    }
 }
 neue_funktions_regel(qr/\\newtheorem[^*]/, 0, \&theorem, undef);
 
@@ -206,22 +239,6 @@ sub mathop
     push(@mathops_gefunden, $1);
 }
 neue_funktions_regel(qr/\\DeclareMathOperator/, 0, \&mathop, undef);
-
-our @umgebungen_gefunden;
-sub environment
-{
-    our ($zeile, @umgebungen_gefunden);
-    $zeile =~ /\\newenvironment\*?{(\w*)}/;
-    if ( defined($1) )
-    {
-        push(@umgebungen_gefunden, $1);
-    }
-    else
-    {
-        print "Problem in $.\n";
-    }
-}
-neue_funktions_regel(qr/\\newenvironment/, 0, \&environment, undef);
 
 our $ntheorem_optionen;
 sub ntheorem
@@ -346,7 +363,7 @@ neue_funktions_regel(qr/[A-Z]\.$ltxspc[[:alpha]]\./, \&monieren,
                      'Am Satzanfang macht man keine Abkürzungen.');
 
 # http://www.dante.de/dante/DTK/dtk96_4/Text/dtk96_4_neubauer_feinheiten.pdf
-neue_funktions_regel(qr/%/, qr/\\,\s*%/, \&monieren,
+neue_funktions_regel(qr/\\%/, qr/\\,\s*\\%/, \&monieren,
                      'Vor dem Prozentzeichen muss ein Spatium stehen.');
 
 # Vor etc. und usw. kommt kein Komma, da man vor 'und' kein Komma schreibt.
@@ -425,7 +442,7 @@ foreach (@theoreme_gefunden, @umgebungen_gefunden)
 # Alle selbstdefinierten Befehle sollten auch im Dokument vorkommen
 foreach (@befehle_gefunden)
 {
-    neue_existiert_regel(qr/\\$_\W/, \&monieren,
+    neue_existiert_regel(qr/\\$_[\W_]/, \&monieren,
                      "Der Befehl '\\$_' wurde definiert, aber nie verwendet")
       unless ($_ eq 'todo' or $_ eq 'help' or $_ eq 'indexsection' or
               $_ =~ /autorefname$/);

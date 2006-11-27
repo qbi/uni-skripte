@@ -80,11 +80,13 @@ echo "I: Zusammenfassung: $(rubber-info --errors $src | wc -l) Fehler,\
 ( rubber-info --warnings $src | grep -E '(nag|onlyamsmath)';
   rubber-info --refs $src) | sed 's/^/W: /'
 
-svnlook cat "$SKRIPTE_PFAD/werkzeuge/skripte-check" > $TMP/sc
+svnlook cat "$SKRIPTE_PFAD" werkzeuge/skript-check > $TMP/sc
+chmod +x $TMP/sc
 
-dateien=$(find . -type f -name .svn -prune -o -name \*tex)
+dateien=$(find . -type f -name .svn -prune -o -name \*tex \
+                    -a -not -path "./$src")
 echo "I: skripte-check $src $dateien"
-sh $TMP/sc $src $dateien
+$TMP/sc $src $dateien
 
 if [ -e ${src%.*}.idx ] && ! [ -e ${src%.*}.idx ]; then
     echo "W: die Indexdatei ${src%.*}.idx existiert, ist aber leer."
@@ -116,6 +118,6 @@ if [ -n "$dateien" ]; then
 fi
 
 cd /
-rm -r $TMP
+rm -fr $TMP
 
 echo "I: fertig."
