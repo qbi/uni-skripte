@@ -103,7 +103,7 @@ svn status | while read aktion datei; do
     esac
 done
 
-# Wir sollten immer zu den Dateien die Qüllen im SVN ablegen und rubber
+# Wir sollten immer zu den Dateien die Quellen im SVN ablegen und rubber
 # daraus dann die Bilder bauen lassen
 dateien=$(find . -type f -name .svn -prune -o -name \*.ps -o -name \*.pdf)
 if [ -n "$dateien" ]; then
@@ -116,6 +116,14 @@ dateien=$(find . -type f -name .svn -prune -o -name \*.jpg -o -name \*.png)
 if [ -n "$dateien" ]; then
     echo "W: Dateien nicht im Vektorformat" $dateien
 fi
+
+##########
+#
+# Hilferufe extrahieren
+#
+dateien=$(find . -type f -name .svn -prune -o -name \*tex)
+sed -n '/\\help{/ { =; s/.*\\help{//; :mark /}/!{ N; s/\n/ /; b mark; }; s/}.*//; p;}' \
+  $dateien | sed 's/^/H: (/; s/$/) /; N; s/\n//;'
 
 cd /
 rm -fr $TMP

@@ -333,12 +333,16 @@ if ($paket_gefunden{index} or $paket_gefunden{makeidx})
 
 # Es ist ein Unterschied, ob man : oder \colon im Mathemodus schreibt.
 # Siehe Vorlage.
-neue_funktions_regel(qr/$(\w|\\\w+)${ltxspc}:${ltxspc}(\w|\\\w+)${ltxspc}\\(mapsto|rightarrow)/,
+# Ausdrücke der Form "$f:A \rightarrow"
+neue_funktions_regel(qr/\$\\?\w+$ltxspc:$ltxspc\\?\w$ltxspc\\(mapsto|rightarrow)/,
+                     0, \&monieren, 'das soll ein \colon und kein : sein');
+# Ausdrücke der Form "\{ x\in\Omega:"
+neue_funktions_regel(qr/\\\{\\?\w+$ltxspc(\\in$ltxspc\\?\w+$ltxspc)?:/,
                      0, \&monieren, 'das soll ein \colon und kein : sein');
 
 # Es gibt für einige Negationen spezielle Befehle, welche besser angepasst sind
 # und damit besser aussehen.
-neue_funktions_regel(qr/\\not\\(in|cong|exists|mid)/, 0, \&monieren,
+neue_funktions_regel(qr/\\not(=|\\(in|cong|exists|mid))/, 0, \&monieren,
                      'Statt \not\XY besser den Spezialbefehl verwenden');
 
 # LaTeX kann bei \includegraphics selbst die Endung herausfinden. Mit Endung
