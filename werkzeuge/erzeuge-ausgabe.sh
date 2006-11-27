@@ -22,7 +22,7 @@ TMP=$(mktemp -d)
 
 cd $TMP
 
-svn export $URL || exit
+svn checkout $URL || exit
 
 # erstmal das alte wegräumen, weil wir u. U. kein Schreibrecht auf die
 # Datei haben, wenn sie von einem anderen Benutzer angelegt wurde
@@ -67,41 +67,52 @@ for ext in pdf ps; do
     fi
 done
 
+##########
+#
+# Qualitätsprüfung
+#
+
 echo "I: Zusammenfassung: $(rubber-info --errors $src | wc -l) Fehler,\
  $(rubber-info --warnings $src | wc -l) Warnungen,\
  $(rubber-info --boxes $src | wc -l) Boxen,\
  $(rubber-info --refs $src | wc -l) Referenzen"
 
-vorlver=$(svnlook history $SKRIPTE_PFAD vorlage/skript.latex |
-  sed -e 1,2d -e 's@[[:space:]]*@@g; s@/.*@@; q')
-if ! grep --quiet --ignore-case --line-regexp \
-  "[[:space:]]*%[[:space:]]*entspricht[[:space:]]*vorlage:[[:space:]]*$vorlver" $src; then
-    echo "F: Das Skript ist nicht mehr auf dem aktuellen Stand der Vorlage"
+( rubber-info --warnings $src | grep -E '(nag|onlyamsmath)';
+  rubber-info --refs $src) | sed 's/^/W: /'
+
+svnlook cat "$SKRIPTE_PFAD/werkzeuge/skripte-check" > $TMP/sc
+
+dateien=$(find . -type f -name .svn -prune -o -name \*tex)
+echo "I: skripte-check $src $dateien"
+sh $TMP/sc $src $dateien
+
+if [ -e ${src%.*}.idx ] && ! [ -e ${src%.*}.idx ]; then
+    echo "W: die Indexdatei ${src%.*}.idx existiert, ist aber leer."
 fi
 
-echo "I: Prüfe auf schlechten LaTeX-Stil und überprüfe Microtypographie ..."
-rubber-info --warnings $src | grep -E '(nag|onlyamsmath)' > $TMP/typo_check
+rubber --clean --pdf --inplace $src
+rubber --clean --ps --inplace $src
 
-# * keine \newcommand oder \renewcommand nach \begin{document}
-#   Alle Definitionen sollen in der Präampel stehen, sonst wird es
-#   unübersichtlich
-# * z.(| |~|\ )B. und d. h. müssen als z.\,B. geschrieben sein
-#   http://www.dante.de/dante/DTK/dtk96_4/Text/dtk96_4_neubauer_feinheiten.pdf
-# * kein Komma vor etc. oder usw.
-# * vor dem Prozentzeichen \% muss kein kleiner Zwischenraum \, sein
-perl -wn -e 'BEGIN {$in_doc = 0; }' \
-  -e 's/%.*// if (/(^|[^\\])(\\\\)*%/);' \
-  -e '$in_doc = 1 if ($_ =~ /^[^%]*\\begin{document}/);' \
-  -e 'print "$.\t$_" if ($_ =~ /\\(re)?newcommand/ and $in_doc);' \
-  -e 'print "$.\t$_" if ($_ =~ /[[:alpha:]]\.([^[:alpha:][:digit:]{}]*)[[:alpha:]]\./
-                         and $1 ne "\\,");' \
-  -e 'print "$.\t$_" if ($_ =~ /,[[:space:]](etc|usw)/);' \
-  -e 'print "$.\t$_" if ($_ =~ /[^\\][^,]\\%/);' *tex > $TMP/typo_check
+svn status | while read aktion datei; do
+    case "$aktion" in
+      ?) echo "F: rubber hat die Datei $datei nicht weggeräumt";;
+      !) echo "F: rubber hat die Datei $datei gelöscht";;
+      *) echo "F: Die Datei $datei wurde verändert ($aktion)";;
+    esac
+done
 
-if [ -s $TMP/typo_check ]; then
-    sed 's/^/W: /' $TMP/typo_check
-else
-    echo "I: ... nichts gefunden."
+# Wir sollten immer zu den Dateien die Qüllen im SVN ablegen und rubber
+# daraus dann die Bilder bauen lassen
+dateien=$(find . -type f -name .svn -prune -o -name \*.ps -o -name \*.pdf)
+if [ -n "$dateien" ]; then
+    echo "W: Dateien in unüblichen Quellformat" $dateien
+fi
+
+# Wir sollten darauf achten, dass wir nur Vektorformate für die Grafiken
+# verwenden
+dateien=$(find . -type f -name .svn -prune -o -name \*.jpg -o -name \*.png)
+if [ -n "$dateien" ]; then
+    echo "W: Dateien nicht im Vektorformat" $dateien
 fi
 
 cd /

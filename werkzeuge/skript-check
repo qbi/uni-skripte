@@ -1,10 +1,10 @@
-#!/usr/bin/perl -W --
+#!/usr/bin/perl -WT --
 #
 # Copyright (c)
 #       2006        JÃ¶rg Sommer <joerg@alea.gnuu.de>
 #
 #       -*- This file is part of the project "Vorlesungsskripte -*-
-#       -*- der Fakultät Mathematik/Informatik an der FSU Jena" -*-
+#       -*- der FakultÃ¤t Mathematik/Informatik an der FSU Jena" -*-
 #
 # Description:   This program is lint for the latex documents. It checks
 #                for some condition and grouse or criticize if they are
@@ -20,70 +20,78 @@
 #	   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #	   PURPOSE.  See the GNU General Public License for more details.
 
+use strict;
+
 ##########
 #
 # Erstmal ein paar Hilfsfunktionen
 #
 sub schimpfen
 {
-    # Fixme: auf Zeilenlänge prüfen
-    print "F: ($NR) ".join(" ", @_)."\n";
+    # Fixme: auf ZeilenlÃ¤nge prÃ¼fen
+    print "F: ($.) ".join(" ", @_)."\n";
 }
 
 sub monieren
 {
-    # Fixme: auf Zeilenlänge prüfen
-    print "W: ($NR) ".join(" ", @_)."\n";
+    # Fixme: auf ZeilenlÃ¤nge prÃ¼fen
+    print "W: ($.) ".join(" ", @_)."\n";
 }
 
-my (@such_regeln, @kommentar_regeln, @treffer_regel);
+my (@such_regeln, @kommentar_regeln, @treffer_regeln, @existiert_regeln);
 
 sub neue_suchregel
 {
-    my $var = $_[1];
-    print "n_s: $var\n";
-    eval("\$$var = 0") if ( eval("!defined(\$$var)") );
+    ${$_[1]} = 0 if ( !defined( ${$_[1]} ) );
     push(@such_regeln, [@_]);
 }
 
 sub neue_kommentar_suchregel
 {
-    my $var = $_[1];
-    eval("\$$var = 0") if ( eval("!defined(\$$var)") );
-    push(@kommentar_regeln, $_);
+    ${$_[1]} = 0 if ( !defined( ${$_[1]} ) );
+    push(@kommentar_regeln, [@_]);
 }
 
-sub neue_sicherungs_regel
+sub neue_funktions_regel
 {
-    print "n_s_r: ".join(" ", @_)."\n";
-    push(@treffer_regel, $_);
+    push(@treffer_regeln, [@_]);
+}
+
+sub neue_existiert_regel
+{
+    my $var;
+    neue_suchregel(shift @_, \$var);
+    push(@existiert_regeln, [\$var, @_]);
 }
 
 sub pruefe_zeile
 {
-    my $zeile = $_[0];
+    our $zeile = shift @_;
 
     foreach (@kommentar_regeln)
     {
-        my ($regex, $var) = $_;
-        print "p_z1: $var $_\n";
-        eval("++\$$var") if ($zeile =~ $regex);
+        my ($regex, $var) = @$_;
+        ++$$var if ($zeile =~ $regex);
     }
     $zeile =~ s/%.*// if ($zeile =~ /(^|[^\\])(\\\\)*%/);
+    return if ($zeile =~ /^\s*$/);
 
     foreach (@such_regeln)
     {
-        ($regex, $var) = $_;
-        print "p_z2: $var\n";
-        eval("++\$$var") if ($zeile =~ $regex);
+        my ($regex, $var) = @$_;
+        ++$$var if ($zeile =~ $regex);
     }
-    foreach (@treffer_regel)
+    foreach (@treffer_regeln)
     {
-        my ($pre_regex, $fun, @args);
-        ($pre_regex, $regex, $fun, @args) = @_;
-        print "p_z3: $pre_regex, $regex, $fun\n";
-        eval("$fun(@args)") if ($zeile =~ $pre_regex and $zeile !~ $regex);
+        my ($pre_regex, $regex, $fun, $args) = @$_;
+        # print "$pre_regex\n";
+        &$fun($args) if ($zeile =~ $pre_regex and $zeile !~ $regex);
     }
+}
+
+sub alle_regeln_vergessen
+{
+    (@such_regeln, @kommentar_regeln, @treffer_regeln, @existiert_regeln) = ();
 }
 
 my $ltxspc = qr/(\s|~|\\([,:;]|q?quad))*/;
@@ -92,183 +100,400 @@ my $ltxspc = qr/(\s|~|\\([,:;]|q?quad))*/;
 #
 # Hier geht's jetzt los. Sieht man's schon?
 #
+die "Keine Dateien zum ÃœberprÃ¼fen angegeben" if ($#ARGV == -1);
 
 unless ( open(DATEI, "<".$ARGV[0]) )
 {
-    schimpfen "Das Hauptdokument lässt sich nicht öffnen: $!";
+    schimpfen "Das Hauptdokument lÃ¤sst sich nicht Ã¶ffnen: $!";
     exit 1;
 }
+print "I: lese ".$ARGV[0]." ein.\n";
 shift @ARGV;
 
 ##########
 #
-# Alles was vor \begin{document} geprüft werden soll:
+# Alles was vor \begin{document} geprÃ¼ft werden soll:
 #
-neue_kommentar_suchregel(qr/%*\s*rubber:\*watch\s*\$base\.thm/,
-                         'rubber_watch_gefunden');
+my ($rubber_watch_gefunden);
+neue_kommentar_suchregel(qr/^%[%\s]*rubber:\s*watch\s*\$base\.thm/,
+                         \$rubber_watch_gefunden);
 
-neue_suchregel(qr/\\usepackage\[.*all.*\]\{onlyamsmath\}/,
-               'onlyamsmath_gefunden');
-neue_suchregel(qr/\\usepackage\[l2tabu\]\{nag\}/, 'nag_gefunden');
-neue_suchregel(qr/\\usepackage\{fixmath\}/, 'fixmath_gefunden');
-neue_suchregel(qr/\\usepackage.*\{amsmath\}/, 'amsmath_gefunden');
-neue_suchregel(qr/\\usepackage.*\{ntheorem\}/, 'ntheorem_gefunden');
-neue_suchregel(qr/\\usepackage.*\{svn\}/, 'svn_gefunden');
-neue_suchregel(qr/\\usepackage.*\{makeidx\}/, 'makeidx_gefunden');
-neue_suchregel(qr/\\usepackage.*\{index\}/, 'index_gefunden');
-neue_suchregel(qr/\\makeindex/, 'makeindex_gefunden');
+# onlyamsmath muss verwendet werden, damit wir $$ $$ erkennen kÃ¶nnen
+neue_existiert_regel(qr/\\usepackage\[.*all.*\]\{onlyamsmath\}/, \&schimpfen,
+                     "Das Paket onlyamsmath muss verwendet werden!");
 
-neue_sicherungs_regel(qr/\\(re)?newcommand\s*\{/, 0, 'schimpfen',
-                      '\(re)newcommand nur mit * verwenden');
-neue_sicherungs_regel(qr/\\documentclass/, qr/\{scr/, 'schimpfen',
-                "Es sollen nur Klassen aus Koma-Skript verwendet werden!");
+# nag muss verwendet werden, damit wir veraltete Befehle finden
+neue_existiert_regel(qr/\\usepackage\[l2tabu\]\{nag\}/, \&schimpfen,
+                     "Das Paket nag muss verwendet werden!");
+
+# Kleiner Hack um alle Pakete mitzuschreiben
+our %paket_gefunden;
+sub usepackage
+{
+    our ($zeile, %paket_gefunden);
+    $zeile =~ /\\usepackage(\[.*\])*{(\w*)}/;
+    ++$paket_gefunden{$_} foreach ( split(',', $2) );
+}
+neue_funktions_regel(qr/\\usepackage/, 0, \&usepackage, undef);
+
+my ($makeindex_gefunden, $index_gefunden);
+neue_suchregel(qr/\\makeindex/, \$makeindex_gefunden);
+neue_suchregel(qr/\\index/, \$index_gefunden);
+
+# Die Variante mit * erfordert ein % am Ende der Zeile. Damit kÃ¶nnen sich nicht
+# ungewollt Leerzeichen in die Ausgabe einschleichen und die Definitionen
+# erfordern etwas mehr Sorgfalt.
+neue_funktions_regel(qr/\\(re)?new(command|environment)\s*\{/, 0, \&schimpfen,
+                      '\(re)new(command|environment) nur mit * verwenden');
+
+# Die Klassen aus Koma-Skript sind an die deutschen VerhÃ¤ltnisse des
+# Schriftsatz' besser angepasst, als die englischen. z.B. Ãœberschriften mit
+# serifenloser Schrift.
+neue_funktions_regel(qr/\\documentclass/, qr/\{scr/, \&schimpfen,
+                'Es sollen nur Klassen aus Koma-Skript verwendet werden!');
+
+# es muss in der PrÃ¤ampel der Befehl \SVN mit LastChangedDate und
+# LastChangedRevision aufgerufen werden, damit spÃ¤ter \SVNDate und
+# \SVNLastChangedRevision funktionieren. Es mÃ¼ssen die langen Versionen
+# verwendet werden, weil diese eine unbeabsichtigte Ersetzung innerhalb des
+# Textes wie bei $Id$ unwahrscheinlicher machen.
+neue_existiert_regel(qr/\\SVN \$LastChangedRevision: \d+ \$/, \&schimpfen,
+                     '\SVN fÃ¼r LastChangedRevision nicht gefunden; '.
+                  '"svn propset svn:keyword LastChangedRevision" aktiviert?');
+neue_existiert_regel(qr/\\SVN \$LastChangedDate: .{3,} \$/, \&schimpfen,
+                     '\SVN fÃ¼r LastChangedDate nicht gefunden; '.
+                     '"svn propset svn:keyword LastChangedDate" aktiviert?');
+
+our @theoreme_gefunden;
+sub theorem
+{
+    our ($zeile, @theoreme_gefunden);
+    $zeile =~ /\\newtheorem{(\w*)}/;
+    push(@theoreme_gefunden, $1);
+}
+neue_funktions_regel(qr/\\newtheorem[^*]/, 0, \&theorem, undef);
+
+our %autorefnames_gefunden;
+sub autorefname
+{
+    our ($zeile, %autorefnames_gefunden);
+    $zeile =~ /\\newcommand\*?\{\\(\w*)autorefname\}/;
+    $autorefnames_gefunden{$1} = 1;
+}
+neue_funktions_regel(qr/\\newcommand.*autorefname/, 0, \&autorefname, undef);
+
+our @befehle_gefunden;
+sub newcommand
+{
+    our ($zeile, @befehle_gefunden);
+    $zeile =~ /\\newcommand\*?{\\([\w@]*)}/;
+    if ( defined($1) )
+    {
+        push(@befehle_gefunden, $1);
+    }
+    else
+    {
+        print "Problem in $.\n";
+    }
+}
+neue_funktions_regel(qr/\\newcommand/, 0, \&newcommand, undef);
+
+our @mathops_gefunden;
+sub mathop
+{
+    our ($zeile, @mathops_gefunden);
+    $zeile =~ /\\DeclareMathOperator\*?{\\(\w*)}/;
+    push(@mathops_gefunden, $1);
+}
+neue_funktions_regel(qr/\\DeclareMathOperator/, 0, \&mathop, undef);
+
+our @umgebungen_gefunden;
+sub environment
+{
+    our ($zeile, @umgebungen_gefunden);
+    $zeile =~ /\\newenvironment\*?{(\w*)}/;
+    if ( defined($1) )
+    {
+        push(@umgebungen_gefunden, $1);
+    }
+    else
+    {
+        print "Problem in $.\n";
+    }
+}
+neue_funktions_regel(qr/\\newenvironment/, 0, \&environment, undef);
+
+our $ntheorem_optionen;
+sub ntheorem
+{
+    our ($zeile, $ntheorem_optionen);
+    $zeile =~ /usepackage\[([\w\d,]*)\]{ntheorem}/;
+    $ntheorem_optionen = $1;
+}
+neue_funktions_regel(qr/\\usepackage.*\{ntheorem\}/, 0, \&ntheorem, undef);
+
+# Wenn das Theoremendezeichen festgelegt wird, dann muss auch bei ntheorem
+# angegeben werden, dass diese verwendet wird.
+sub thmsym
+{
+    schimpfen('\\usepackage{ntheorem} fehlt die Option thmmarks')
+      unless (defined($ntheorem_optionen) and $ntheorem_optionen =~ /thmmarks/);
+}
+neue_funktions_regel(qr/\\theoremsymbol/, 0, \&thmsym, undef);
 
 ##########
 #
-# Die Präampel abarbeiten
+# Die PrÃ¤ampel abarbeiten
 #
 while (<DATEI>)
 {
-    last if (/\\begin\{document\}/);
+    last if (/^[^%]*\\begin\{document\}/);
     pruefe_zeile($_);
 }
 if ( !defined($_) )
 {
-    schimpfen("Im Hauptdokument gibt es kein \\begin{document}");
+    schimpfen('Im Hauptdokument gibt es kein \\begin{document}');
     exit 1;
+}
+foreach (@existiert_regeln)
+{
+    my ($var, $fun, $arg) = @$_;
+    &$fun($arg) unless ($$var);
 }
 
 ##########
 #
-# Jetzt können wir prüfen, was alles in der Präampel stehen muss/soll
+# Jetzt kÃ¶nnen wir prÃ¼fen, was alles in der PrÃ¤ampel stehen muss/soll
 #
 
-# onlyamsmath muss verwendet werden, damit wir $$ $$ erkennen können
-schimpfen("Das Paket onlyamsmath muss verwendet werden!")
-    unless ($onlyamsmath_gefunden);
-# nag muss verwendet werden, damit wir veraltete Befehle finden
-schimpfen("Das Paket nag muss verwendet werden!") unless ($nag_gefunden);
 # fixmath muss verwendet werden, weil wir uns an die ISO halten wollen
 schimpfen("Das Paket fixmath muss verwendet werden!")
-    unless ($fixmath_gefunden);
-
-# wenn ntheorem verwendet wird, muss rubber auf die Datei $base.thm achten
-schimpfen('rubber muss darüber informiert werden, dass die Datei $base.thm'.
-          'wichtig ist!')
-    if ($ntheorem_gefunden and not $rubber_watch_gefunden);
+    unless ($paket_gefunden{fixmath});
 
 # das Paket svn muss geladen werden, weil wir auch \SVNDate im Dokument
 # verlangen
-schimpfen("Das Paket svn muss verwendet werden!") unless ($svn_gefunden);
+schimpfen("Das Paket svn muss verwendet werden!") unless ($paket_gefunden{svn});
+
+# wenn ntheorem verwendet wird, muss rubber auf die Datei $base.thm achten
+schimpfen('rubber muss darÃ¼ber informiert werden, dass die Datei $base.thm '.
+          'wichtig ist!')
+    if ($paket_gefunden{ntheorem} and not $rubber_watch_gefunden);
+
+# Wenn die beiden Paket geladen werden, muss dies auch bei ntheorem angegeben
+# werden, da sich einige Definitionen der beiden Pakete Ã¼berschneiden und
+# ntheorem sonst nicht funktioniert oder etwas kaputt macht.
+foreach ('hyperref', 'amsmath')
+{
+    schimpfen("$_ geladen, aber nicht bei \\usepackage{ntheorem} angegeben")
+      unless (defined($ntheorem_optionen) and $ntheorem_optionen =~ /$_/);
+}
+
+alle_regeln_vergessen();
 
 ##########
 #
 # Hier kommen jetzt alle Regeln, die nach \begin{document} und in den anderen
-# Dokumenten geprüft werden sollen
+# Dokumenten geprÃ¼ft werden sollen
 #
-alle_regeln_vergessen();
 
-# (Neu-)Definitionen von Befehlen sollen in der Präampel stehen, weil
-# später die Befehle übersehen werden können und dadurch schwer erkennbare
-# Effekte hervortreten können.
-neue_sicherungs_regel(qr/\\(re)?newcommand/, 0, 'monieren',
+# (Neu-)Definitionen von Befehlen sollen in der PrÃ¤ampel stehen, weil
+# spÃ¤ter die Befehle Ã¼bersehen werden kÃ¶nnen und dadurch schwer erkennbare
+# Effekte hervortreten kÃ¶nnen.
+neue_funktions_regel(qr/\\(re)?newcommand/, 0, \&monieren,
      'Nach \begin{document} soll kein \(re)newcommand mehr verwendet werden');
 
-if ($index_gefunden or $makeidx_gefunden)
+if ($paket_gefunden{index} or $paket_gefunden{makeidx})
 {
-    neue_suchregel(qr/\\makeindex/, 'makeindex_gefunden');
-    neue_suchregel(qr/\\printindex/, 'printindex_gefunden');
-    neue_suchregel(qr/\\index/, 'index_cmd_gefunden');
+    neue_existiert_regel(qr/\\makeindex/, \&schimpfen,
+               'index oder makeidx geladen, aber \makeindex nicht verwendet')
+      unless ($makeindex_gefunden);
+    neue_existiert_regel(qr/\\printindex/, \&schimpfen,
+               'index oder makeidx geladen, aber \printindex nicht verwendet');
+    neue_existiert_regel(qr/\\index/, \&schimpfen,
+                   'index oder makeidx geladen, aber \index nicht verwendet')
+      unless ($index_gefunden);
 }
 
-neue_sicherungs_regel(qr/$(\w|\\\w+)${ltxspc}:${ltxspc}(\w|\\\w+)${ltxspc}\\(mapsto|rightarrow)/,
-                      0, 'monieren', 'das soll ein \colon und kein : sein');
-neue_sicherungs_regel(qr/\\not\\(in|cong|exists|mid)/, 0, 'monieren',
-                      'Statt \not\XY besser den Spezialbefehl verwenden');
+# Es ist ein Unterschied, ob man : oder \colon im Mathemodus schreibt.
+# Siehe Vorlage.
+neue_funktions_regel(qr/$(\w|\\\w+)${ltxspc}:${ltxspc}(\w|\\\w+)${ltxspc}\\(mapsto|rightarrow)/,
+                     0, \&monieren, 'das soll ein \colon und kein : sein');
+
+# Es gibt fÃ¼r einige Negationen spezielle Befehle, welche besser angepasst sind
+# und damit besser aussehen.
+neue_funktions_regel(qr/\\not\\(in|cong|exists|mid)/, 0, \&monieren,
+                     'Statt \not\XY besser den Spezialbefehl verwenden');
 
 # LaTeX kann bei \includegraphics selbst die Endung herausfinden. Mit Endung
-# geht die Flexibilität mit rubber verlohren.
-neue_sicherungs_regel(qr/\\includegraphics\[[^]]*\]\{\w*\.\D*\}/, 0, 'monieren',
-                      'Bei \includegraphics keine Dateiendung angeben.');
+# geht die FlexibilitÃ¤t mit rubber verlohren.
+neue_funktions_regel(qr/\\includegraphics\[[^]]*\]\{\w*\.\D*\}/, 0, \&monieren,
+                     'Bei \includegraphics keine Dateiendung angeben.');
 
-neue_sicherungs_regel(qr/[[:alpha:]]\.${ltxspc}[[:alpha:]]/, 0, 'monieren',
-                      'Zwischen Abkürzungen steht ein Spatium \,');
+# Zwischen AbkÃ¼rzungen muss ein halbes Leerzeichen stehen.
+# <news:Xns987A80E64D0A7nililandnililandabcd@nililand.de>
+# http://www.dante.de/dante/DTK/dtk96_4/Text/dtk96_4_neubauer_feinheiten.pdf
+neue_funktions_regel(qr/[[:alpha:]]\.(\s|~|\\([:;]|q?quad))*[[:alpha:]]\./, 0, \&monieren,
+                     'Zwischen AbkÃ¼rzungen steht ein Spatium \,');
 
-neue_sicherungs_regel(qr/,${ltxspc}(etc|uws)/, 0, 'monieren',
+# Nach abgekÃ¼rzten Teilen einer Sinneinheit muss ein Spatium stehen.
+# <news:Xns987A80E64D0A7nililandnililandabcd@nililand.de>
+neue_funktions_regel(qr/(Prof|Dr)\./, qr/(Prof|Dr)\.\s*\\,/, \&monieren,
+                     'Nach Prof. und Dr. kommt ein Spatium \,');
+
+# AbkÃ¼rzungen am Anfang des Satzes sehen komisch aus und sind kein guter Stil.
+# Siehe typokurz
+neue_funktions_regel(qr/[A-Z]\.$ltxspc[[:alpha]]\./, \&monieren,
+                     'Am Satzanfang macht man keine AbkÃ¼rzungen.');
+
+# http://www.dante.de/dante/DTK/dtk96_4/Text/dtk96_4_neubauer_feinheiten.pdf
+neue_funktions_regel(qr/%/, qr/\\,\s*%/, \&monieren,
+                     'Vor dem Prozentzeichen muss ein Spatium stehen.');
+
+# Vor etc. und usw. kommt kein Komma, da man vor 'und' kein Komma schreibt.
+neue_funktions_regel(qr/,${ltxspc}(etc|usw)/, 0, \&monieren,
                       'Vor etc. und usw. kommt kein Komma');
-
-# <news:>
-neue_sicherungs_regel(qr/(Prof|Dr)\.\s*\\,/, 0, 'monieren',
-                      'Nach Prof. und Dr. kommt ein Spatium \,');
 
 # \autoref bietet mehr Raum, wo man draufklicken kann, und es merkt sich die
 # Art der Umgebung (Satz, Bemerkung, ...) auf die man sich bezieht -- flexibler.
-neue_sicherungs_regel(qr/(Satz|Lemma|Beispiel)$ltxspc\\ref/, 0, 'monieren',
-                  'Für Referenzen besser hyperref und \autoref einsetzen');
+neue_funktions_regel(qr/(Satz|Lemma|Beispiel)$ltxspc\\ref/, 0, \&monieren,
+                  'FÃ¼r Referenzen besser hyperref und \autoref einsetzen');
 
-neue_suchregel(qr/\\tableofcontents/, 'toc_gefunden');
+# Alle unsere Skripte sollen ein Inhaltsverzeichnis haben
+neue_existiert_regel(qr/\\tableofcontents/, \&schimpfen,
+                     'Das Skript hat kein Inhaltsverzeichnis');
 
-for (;;)
+# Mit dieser Regel soll nur sichergestellt werden, dass wir die richtigen
+# Dokumente einlesen
+neue_funktions_regel(qr/\\begin{document}/, 0, \&monieren,
+                      'Ein zweites \begin{document} gefunden');
+
+# Es muss irgendwo im Dokument die aktuelle Versionsnummer und das Datum
+# auftauchen, sonst kÃ¶nnen wir bei Fehlermeldungen Ã¼berhaupt nicht
+# nachvollziehen wo die Fehler sind.
+neue_existiert_regel(qr/\\SVNDate/, \&schimpfen,
+                     'Das Skript enthÃ¤lt nicht die Angabe \SVNDate');
+neue_existiert_regel(qr/\\SVNLastChangedRevision/, \&schimpfen,
+             'Das Skript enthÃ¤lt nicht die Angabe \SVNLastChangedRevision');
+
+# Es sollen nicht die Umschreibungen fÃ¼r Umlaute verwendet werden, weil diese
+# die Arbeit mit Programmen wie sed erschweren. Noch schlimmer wird es bei
+# Dokumenten mit allen Formen: Tex \"a, ngerman "a und diekt Ã¤
+neue_funktions_regel(qr/(?<!\\)\\(3|ss|"[aou])/, 0, \&schimpfen,
+          'Umlaute direkt eingeben, nicht die TeX-Umschreibung verwenden.');
+neue_funktions_regel(qr/"[aous]/, 0, \&schimpfen,
+              'Umlaute direkt eingeben, nicht die Umschreibung verwenden.');
+
+# Bei equation kann es Probleme geben. Da gather Ã¤quivalent ist, muss diese
+# Verwendet werden <news:d9bfko$fdp$1@news.BelWue.DE>
+neue_funktions_regel(qr/\\begin{equation\*?}/, 0, \&schimpfen,
+          'Die Umgebung equation nicht verwenden. Stattdessen gather.');
+
+# Im Dokument muss irgendwo die Adresse der Webseite und die E-Mailadresse der
+# Mailingliste auftauchen. Beide Adressen dÃ¼rfen nicht das erste Argument von
+# \href sein, da der Link, auf den \href verweist nicht im PS bzw. im Ausdruck
+# zu sehen ist.
+neue_existiert_regel(qr'(?<!\\href\{<)http://www.minet.uni-jena.de/~joergs/skripte/'x,
+       \&schimpfen, 'Die Adresse der Webseite steht nirgendwo im Dokument');
+neue_existiert_regel(qr/\\texttt\{<?skripte\@listserv.uni-jena.de>?\}/,
+                     \&schimpfen,
+             'Die E-Mailadresse der Mailingliste steht nirgendwo im Dokument');
+
+neue_funktions_regel(qr/\\ref[^*]/, 0, \&monieren, 'Da hyperref geladen, '.
+                     'sollte auch mit \autoref gearbeitet werden')
+  if ($paket_gefunden{hyperref});
+
+# Im Dokument muss eine Titelseite sein, die \author, \title und \date enthÃ¤lt
+neue_existiert_regel(qr/\\date/, \&schimpfen,
+                     'Die Angabe \\date fÃ¼r die Titelseite fehlt');
+neue_existiert_regel(qr/\\title/, \&schimpfen,
+                     'Die Angabe \\title fÃ¼r die Titelseite fehlt');
+neue_existiert_regel(qr/\\author/, \&schimpfen,
+                     'Die Angabe \\author fÃ¼r die Titelseite fehlt');
+neue_existiert_regel(qr/\\maketitle/, \&schimpfen, 'Die Titelseite fehlt');
+
+my ($autoref_gefunden);
+neue_suchregel(qr/\\autoref/, \$autoref_gefunden);
+
+# Alle selbstdefinierten Theoremumgebungen sollten auch im Dokument vorkommen
+foreach (@theoreme_gefunden, @umgebungen_gefunden)
 {
-    map (pruefe_zeile, <DATEI>);
-    close(DATEI);
-    if (@ARGV)
+    neue_existiert_regel(qr/\\begin\{$_\}/, \&monieren,
+                     "Die Umgebung '$_' wurde definiert, aber nie verwendet")
+       unless ($_ eq 'proof');
+}
+
+# Alle selbstdefinierten Befehle sollten auch im Dokument vorkommen
+foreach (@befehle_gefunden)
+{
+    neue_existiert_regel(qr/\\$_\W/, \&monieren,
+                     "Der Befehl '\\$_' wurde definiert, aber nie verwendet")
+      unless ($_ eq 'todo' or $_ eq 'help' or $_ eq 'indexsection' or
+              $_ =~ /autorefname$/);
+}
+
+# Alle selbstdefinierten Matheoperatoren sollten auch im Dokument vorkommen
+foreach (@mathops_gefunden)
+{
+    neue_existiert_regel(qr/\\$_\W/, \&monieren,
+                   "Der Operator '\\$_' wurde definiert, aber nie verwendet");
+}
+
+##########
+#
+# Den Rumpf des LaTeX-Dokuments einlesen.
+#
+
+pruefe_zeile($_) while (<DATEI>);
+close(DATEI);
+
+while (@ARGV)
+{
+    if ( open(DATEI, "<".$ARGV[0]) )
     {
-        schimpfen("Die Datei ".$ARGV[0]." lies sich nicht öffnen")
-          unless ( open(DATEI, "<".$ARGV[0]) );
-        shift @ARGV;
+        print "I: lese ".$ARGV[0]." ein.\n";
+        pruefe_zeile($_) while (<DATEI>);
+        close(DATEI);
+    }
+    else
+    {
+        schimpfen("Die Datei ".$ARGV[0]." lies sich nicht Ã¶ffnen: $!")
+    }
+    shift @ARGV;
+}
+print "I: Alle Dateien eingelesen.\n";
+foreach (@existiert_regeln)
+{
+    my ($var, $fun, $arg) = @$_;
+    &$fun($arg) unless ($$var);
+}
+
+##########
+#
+# Ab hier kÃ¶nnen wir prÃ¼fen, was alles im Dokument gestanden haben muss.
+#
+
+# Wenn \autoref fÃ¼r die Theoremumgebungen verwendet wird und keine autorefname
+# fÃ¼r diese Umgebung definiert ist, gibt \autoref irgendwelchen BlÃ¶dsinn aus.
+if (exists $paket_gefunden{hyperref} and $autoref_gefunden)
+{
+    foreach (@theoreme_gefunden)
+    {
+        schimpfen("FÃ¼r die Theoremumgebung '$_' noch \\".$_.
+                  "autorefname definieren")
+          unless (exists $autorefnames_gefunden{$_});
     }
 }
 
-schimpfen('\makeindex, aber kein \printindex gefunden')
-    if ($makeindex_gefunden and not $printindex_gefunden);
-
-monieren('index/makeidx geladen, aber kein \index verwendet')
-    if ( ($index_gefunden or $makeidx_gefunden) and not $index_cmd_gefunden);
-
-# Alle unsere Skripte sollen ein Inhaltsverzeichnis haben
-schimpfen('Das Skript hat kein Inhaltsverzeichnis') if ( not $toc_gefunden);
-
-# Es muss irgendwo im Dokument die aktuelle Versionsnummer und das Datum
-# auftauchen, sonst können wir bei Fehlermeldungen überhaupt nicht
-# nachvollziehen wo sie sind.
-schimpfen('Das Skript muss die Angaben \SVNDate und \SVNLastChangedRevision enthalten')
-    unless ($svndate_gefunden and $svnrev_gefunden);
-
-# Fehler:
-# * svn
-#   Prüfen, ob Schlüsselwörter auch aktiviert sind:
-#   \SVN $LastChangedRevision: 14 $
-#   \SVN $LastChangedDate: 2006-05-08 09:41:28 +0200 (Mo, 08 Mai 2006) $
-# 
-# * \3, \ss \"a, ... "a "o
-# * Prüfen ob rubber alles wegräumt; (svn st) = ""
-# * \title \author \date \maketitle müssen vorhanden sein
-# * equation nicht verwenden! <news:d9bfko$fdp$1@news.BelWue.DE>
-# * if have ntheorem then
-# * bei hyperref und autoref für jedes Theorem ein \thautorefname definieren
-# 
-# * ntheorem mit amsmath (wenn paket) und hyperref (wenn paket) und \theoremsymbol
-# * http://www.minet.uni-jena.de/~joergs/skripte/, aber nicht
-#   \href{http://www.minet.uni-jena.de/~joergs/skripte/} da Link nicht im PS zu
-#   sehen
-# * \texttt{<skripte@listserv.uni-jena.de>}; wie http://
-# 
+#### 
 # Warnungen:
-# * Keine großen Abkürzungen: Z.$ltxspc B. D.$ltxspc H.
-# * bei hyperref mit \autoref statt \ref arbeiten
 # 
 #   Das sind alles Pakete, die in der Vorlage verwendet werden
-# * ifpdf Paket, aber kein \ifpdf
 # * xspace Paket, aber kein \xspace
-# * graphicx, aber kein \includegraphics
-# * longtable, aber keine longtable
-# * tabularx, aber keine tabularx
 # * slashbox, aber keine \(back)slashbox
-# 
-# * Theoremumgebung, die aber nicht genutzt wird
-# * ungenutze MathOperator
-# * Ungenutze Befehle; ausnahme \todo und \help
+#
 # * align, gather ohne label -> notag oder align*
-# 
-# * Grafiken nicht in Vektorformat oder nicht als Quellen (.fig)
+#
+# * ifpdf Paket, aber kein \ifpdf
+# * graphicx, aber kein \includegraphics
+# * tabularx, aber keine tabularx
+# * longtable, aber keine longtable
