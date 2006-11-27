@@ -6,7 +6,6 @@
     <th align="left">Name</th>
     <th align="center">Fehler</th>
     <th align="center">Warnungen</th>
-    <th align="center">Vorlage</th>
     <th align="center">TeX-Fehler</th>
     <th align="center">TeX-Warnungen</th>
     <th align="center">TeX-Boxen</th>
@@ -42,12 +41,6 @@ foreach ($lines as $line)
         echo '    <td align=center class='.($val == 0?good:bad).
           "_stat>$val</td>\n";
     }
-
-    if ( array_search('F: Das Skript ist nicht mehr auf dem aktuellen Stand '.
-                      "der Vorlage\n", $blog) === FALSE )
-      echo "    <td class='good_stat'>i.&thinsp;O.</td>\n";
-    else
-      echo "    <td class='bad_stat'>veraltet</td>\n";
 
     /* Dieses merkwürdig anmutende Konstrukt sucht nach der ersten Zeile, die
      * mit "I: Zusammenfassung: " beginnt. */
