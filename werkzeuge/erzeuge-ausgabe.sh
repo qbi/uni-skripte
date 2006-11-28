@@ -50,8 +50,15 @@ echo "I: Verwende $src als LaTeX-Datei"
 # anzulegen.
 export HOME=$TMP
 
-for ext in pdf ps; do
-    if rubber --quiet --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
+for ext in ps pdf; do
+    # Das Skript verwendet PSTricks. rubber muss aus dem PS das PDF erstellen.
+    if grep -q '^[^%]*\\usepackage.*{pst-' $src; then
+        opt=--ps
+    else
+        opt=
+    fi
+
+    if rubber --quiet $opt --$ext --inplace $src && [ -e ${src%.*}.$ext ]; then
         echo "I: Kopiere ${src%.*}.$ext nach $SKRIPT.$ext"
         rm -f $WEB/$SKRIPT.$ext
         cp ${src%.*}.$ext $WEB/$SKRIPT.$ext
