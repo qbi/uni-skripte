@@ -17,7 +17,6 @@
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
 \usepackage{makeidx}
-\usepackage{color}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
 
 \usepackage[latin1]{inputenc}
@@ -44,6 +43,25 @@
 \usepackage{booktabs}
 \usepackage{paralist}
 
+\usepackage{multicol}
+\usepackage{ifpdf}
+
+\ifpdf
+% Diese mgtex_23 lädt das Paket epic, das wahnsinnig viele Register braucht.
+% Dieser Hack soll das umgehen.
+% <news:d81_200005051400@antares.antar.com>
+% <news:13c_200104112323@antares.antar.com>
+% <news:3DC02262.85614760@stahlbock-online.de>
+\newcommand*{\mynewdimen}{}  % um sicherzustellen, dass es den Befehl nicht
+                             % schon gibt.
+\let\mynewdimen\newdimen    % alte Definition retten
+\let\newdimen\newskip
+% Quelle: http://www.math.uni-wuppertal.de/~fritzsch/kf_tex.htm
+\usepackage[pd]{mgtex_23}        % pd steht für PDF-Ausgabe
+\let\newdimen\mynewdimen
+\else
+\usepackage[ps]{mgtex_23}        % ps steht für PS-Ausgabe
+\fi
 
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
 % Körpers ist normal und der Kopf wird fett gesetzt
@@ -134,6 +152,7 @@
 \renewcommand*{\phi}{\varphi}
 
 \newcommand*{\addindex}[1]{\index{#1}\emph{#1}}
+\newcommand*{\mystackrel}[2]{\mathrel{\genfrac{}{}{0pt}{2}{#1}{#2}}}
 
 \DeclareMathOperator{\gt}{gT}
 \DeclareMathOperator{\ggt}{ggT}
@@ -615,7 +634,7 @@ $\abs{\PZ} = \infty$
 Wichtige Beispiele sind die Kongruenz von Dreiecken oder die
 "Ahnlichkeit von Matrizen. F"ur eine beliebige "Aquivalenzrelation
 $(M, M, R)$ und $x \in M$ hei"st $[x]_R := \{y \in M \colon xRy\}$ die
-\addindex{"Aquivalenzklasse} von $x$ bzgl. $R$. Mit $M/R := \{[x]_R
+\addindex{Äquivalenzklasse} von $x$ bzgl. $R$. Mit $M/R := \{[x]_R
   \colon x \in M\}$ bezeichnet man die Menge aller "Aquivalenzklassen
   von $M$ bzgl. $R$. Bekanntlich sind f"ur $x, y \in M$ die folgenden
 Eigenschaften gleichbedeutent:
@@ -925,7 +944,7 @@ Lösung von ($\ast$): $101 + 420\Z$
 % Kapitel 3
 %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%
-\chapter{Der Restklassenring modulo $m$}
+\chapter{Der Restklassenring modulo \texorpdfstring{$m$}{m}}
 %%%%%%%%%%%%%%%%%%%
 % Bemerkung
 %%%%%%%%%%%%%%%%%%%
