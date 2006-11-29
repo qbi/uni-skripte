@@ -1969,6 +1969,92 @@ und $R_{3}'=R_{2}'$ und damit $D(R_{2}') = (\tilde{A}', \tilde{B}')$.
 Die linke Hälfte von $f_{k_{3}}(R_{3})\oplus f_{k_{3}}(R_{3}') =
 S_{1}(\tilde{A})\oplus S_{1}(\tilde{A}')$ und sind in der Situation wie oben.
 
+\todo{Hier fehlt die Vorlesung vom 27.11.}
+
+% 29.11.
+
+\subsection{Analyse für vier Runden}
+
+Ansatz: Nichtgleichverteilung der Output-Differenzen.\\
+Idee: Versuchen eine Situation nach einer Runde so zu erreichen, dass wir dann
+die 3-Rundenanalyse ansetzten können.
+
+Dazu wählen wir Paare von Klartextblöcken $(L_{0}, R_{0})$ und $(L_{0}',
+R_{0}')$ mit folgenden Eigenschaften:
+\begin{enumerate}
+ \item $R_{0}^{*} = R_{0}\oplus R_{0}' = (001\,100)$
+
+  Bei der Bildung von $f_{K_{1}}(R_{0})$ und $f_{K_{1}}(R_{0}')$ passiert
+  folgendes:
+  \begin{gather*}
+    D(R_{0})\oplus D(R_{0}') = (00111100)
+  \end{gather*}
+  Input für $S_{1}$ ist $(0011)$ für $S_{2}$ ist es $(1100)$.
+
+  für $(0011)$ erwarten wir mit Wahrscheinlichkeit $\frac{3}{4}$ den Output
+  $(011)$ bei $S_{1}$ und für $(1100)$ erwarten wir mit Wahrscheinlichkeit
+  $\frac{1}{2}$ den Output $(010)$ bei $S_{2}$.
+
+  Wir betrachten die Outputs der beiden $S$-Boxen als unabhängig und erwarten
+  deshalb mit Wahrscheinlichkeit $\frac{3}{4}\cdot\frac{1}{2}=\frac{3}{8}$
+  eine Gesamt-Output-Differenz von $f_{K_{1}}(R_{0})\oplus f_{K_{1}}(R_{0}') =
+  (011\,010)$
+
+ \item $L_{0}^{*} = L_{0} \oplus L_{0}' = (011\,010)$
+
+  $R_{1}= L_{0}\oplus f_{K_{1}}(R_{0}), R_{1}' = L_{0}'\oplus
+  f_{K_{1}}(R_{0}')$. Für den Fall $f_{K_{1}}(R_{0}) \oplus f_{K_{1}}(R_{0}')
+  = (011\,010)$ ergibt sich:
+  \begin{align*}
+    R_{1}\oplus R_{1}' &= (L_{0}\oplus L_{0}') \oplus (f_{K_{1}}(R_{0}) \oplus
+       f_{K_{1}}(R_{0}))\\
+    & = (011\,010) \oplus (011\,010) = (000\,000)
+  \end{align*}
+  Da $R_{1} = R_{0}$ und $L_{1}' = R_{0}'$ gilt mit Wahrscheinlichkeit
+  $\frac{3}{8}$, dass $(L_{1}, R_{1})$ und $(L_{1}', R_{1}')$ die Eigenschaft
+  $R_{1}=R_{1}'$ haben und $(L_{1}\oplus R_{1})\oplus (L_{1}', R_{1}') =
+  (R_{0}\oplus R_{0}', 0\dotso 0) = (001\,100, 000000)$.
+\end{enumerate}
+
+Strategie: Wähle Klartextpaare $(L_{0}, R_{0})$ und $(L_{0}', R_{0}')$ mit der
+Summe $(011\,010, 001\,100)$ und bestimme dazu $(L_{4}, R_{4})$ und $(L_{4}',
+R_{4}')$. Angenommen es ist so, dass $R_{1}\oplus R_{1}' = (000\,000)$ (das
+gilt in 3 von 8~Fällen), dann haben wir die Ausgangssituation zur Analyse der
+Runden 2, 3 und 4 als 3-Rundenanalyse.
+
+Dort, wo die Annahme korrekt ist, erhalten wir eine Menge möglicher Schlüssel
+für $K_{4}^{L}$ bzw. $K_{4}^{R}$. Dort, wo die Annahme falsch ist (die
+Mehrzahl der Fälle), erhalten wir irgendwelche (zufälligen) Bitfolgen von
+acht Bits.
+
+\section{Sie Sicherheit von DES}
+
+\begin{enumerate}
+ \item Die Größe des Schlüsselraums ist $2^{56}$ (es güngig aber
+  $2^{55}$~Schlüssel zu testen), mit erschöpfender Suche war 1977 war defakto
+  nicht möglich.
+
+  1997: setzt die RSA-Data-Security US\,\$~10\,000 für die Dechiffrierung
+  eines DES-Textes aus. Nach 5 Monaten war der Schlüssel ermittelt von Ronald
+  Vesper -- durch organisiertes Parallelrechnen via Internet (25\,\%
+  des Schlüsselraums wurde getestet.)
+
+  1998: setzt die RSA-Data-Security wieder einen Preis aus und nach 39~Tagen
+  war wieder der Schlüssel gefunden, obwohl 85\,\% des Schlüsselraums
+  durchsucht wurden.
+
+  1999: Electronic Frontier Foundation, 1536 parallel arbeitende Spezialchips
+  benötigen im Schnitt $4\frac{1}{2}$~Tag um den kompletten Schlüsselraus zu
+  durchsuchen.
+
+  Quelle: 
+ \item Es gibt bei DES schwache Schlüssel, die für alle Runden den gleichen
+  Rundenschlüssel erzeugen. Aber man kann diese auch einfach beim Einsatz
+  vermeiden.
+
+ \item Differentielle Kryptoanalyse funktioniert nicht, wenn man die $S$-Boxen
+  geeignet wählt. (Nicht-Gleichverteilung vermeiden.)
+\end{enumerate}
 \clearpage
 \appendix
 \chapter{Übungsaufgaben}
@@ -2062,6 +2148,42 @@ Es bleibt: suchen 5 Caesar-Chiffren
 5. Spalte: R für E, d.\,h. N für A (Verschiebung 13)\\
 
 \todo{Ich bin mir nicht mehr sicher, ob das so richtig war. Bitte gegenprüfen.}
+
+\section{Blatt 3}
+
+Der folgende Text wurde mit der Vigenère-Chiffrierung verschlüsselt. Die
+Blockstruktur dient lediglich der besseren Lesbarkeit.
+
+\subsection*{Aufgabe 1}
+
+Bestimmen Sie eine mögliche Periodenlänge~$d$
+\begin{enumerate}
+ \item mithilfe des Kasiski-Tests.
+ \item mithilfe des Friedmann-Tests.
+ \item Formulieren Sie eine Hypothese für $d$.
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+
+Bestimmen Sie gemäß $d$ eine Häufigkeitsverteilung und leiten Sie darauf ein
+Schlüsselwort ab.
+
+\subsection*{Aufgabe 3}
+
+Bestimmen Sie den Klartext.
+
+\begin{verbatim}
+UEQPC  VCKAH  VNRZU  RNLAO  KIRVG  JTDVR  VRICV  IDLMY
+IYSBC  COJQS  ZNYMB  VDLOK  FSLMW  EFRZA  VIQMF  JTDIH
+CIFPS  EBXMF  FTDMH  ZGNMW  KAXAU  VUHJH  NUULS  VSJIP
+JCKTI  VSVMZ  JENZS  KAHZS  UIHQV  IBXMF  FILPC  XEQXO
+CAVBV  RTWMB  LNGNI  VRLPF  VTDMH  ZGNMW  KRXVR  QEKVR
+LKDBS  EIPUC  EAWJS  BAPMB  VSZCF  UEGIT  LEUOS  JOUOH
+UAVAG  ZEZIS  YRHVR  ZHUMF  RREMW  KULKV  KGHAH  FEUBK
+LRGMB  JIHLI  IFWMB  ZHUMP  LEUWG  RBHZO  LCKCW  THWDS
+ILDAG  VNEMJ  FRVQS  VIQMU  VSWMZ  CTHII  WGDJS  XEOWS
+JTKIH  KEQ
+\end{verbatim}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
