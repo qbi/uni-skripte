@@ -16,7 +16,7 @@
 %	   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 %	   PURPOSE.  See the GNU General Public License for more details.
 
-variable DEBUG;
+% variable DEBUG;
 
 private define string_list(list)
 {
@@ -105,7 +105,7 @@ define kasiski(text, min_block_len, max_block_len)
       throw ApplicationError, "Too few repetitions. Text too short";
 
     tmp = assoc_get_values(dist);
-    variable important_dists = tmp[ array_sort(tmp, &dist_cmp_reverse())[[0:2]] ];
+    variable important_dists = tmp[ array_sort(tmp, &dist_cmp_reverse())[[0:(length(tmp)-2)/2]] ];
 #if (is_defined("DEBUG"))
     message("");
     foreach i (important_dists)
@@ -118,7 +118,7 @@ define kasiski(text, min_block_len, max_block_len)
       gcd_so_far = gcd(gcd_so_far, i);
     return gcd_so_far;
 #endif
-    return 5;
+    return 0;
 }
 
 #if (path_basename(__argv[0]) == "kasiski.sl")
@@ -128,9 +128,4 @@ variable text = normalize( strjoin(fgetslines(stdin), "") );
 variable d = kasiski(text, 3, 15);
 
 message("d = $d"$);
-
-variable sub_texts = split(text, d);
-variable dec_sub_texts = array_map(String_Type, &hist_decode(), sub_texts);
-
-message( strjoin(transpose(dec_sub_texts), "") );
 #endif

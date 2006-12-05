@@ -29,6 +29,20 @@ define split(text, d)
     return ret;
 }
 
+define join(sub_texts, d)
+{
+    variable len = 0;
+    foreach (sub_texts)
+      len += strlen( () );
+
+    variable nachricht = UChar_Type[len], i;
+
+    _for i (0, d-1, 1)
+      nachricht[ [i:len-1:d] ] = bstring_to_array(sub_texts[i]);
+
+    return array_to_bstring(nachricht);
+}
+#iffalse
 define hist_decode(text)
 {
     variable i, table = Integer_Type[26];
@@ -39,3 +53,4 @@ define hist_decode(text)
     return strtrans(text, array_to_bstring(array_sort(table) + 'A'),
                     "QXYJVPZKFWBOMGCLUHDTARSINE");
 }
+#endif
