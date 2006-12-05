@@ -222,11 +222,13 @@ sub newcommand
     $zeile =~ /\\newcommand\*?{\\([\w@]*)}/;
     if ( defined($1) )
     {
-        push(@befehle_gefunden, $1);
+        my $var;
+        neue_suchregel(qr/\\$1[\W_]/, \$var);
+        push(@befehle_gefunden, [$1, \$var]);
     }
     else
     {
-        print "Problem in $.\n";
+        print "Problem in Zeile $.\n";
     }
 }
 neue_funktions_regel(qr/\\newcommand/, 0, \&newcommand, undef);
@@ -446,10 +448,11 @@ foreach (@theoreme_gefunden, @umgebungen_gefunden)
 # Alle selbstdefinierten Befehle sollten auch im Dokument vorkommen
 foreach (@befehle_gefunden)
 {
-    neue_existiert_regel(qr/\\$_[\W_]/, \&monieren,
-                     "Der Befehl '\\$_' wurde definiert, aber nie verwendet")
-      unless ($_ eq 'todo' or $_ eq 'help' or $_ eq 'indexsection' or
-              $_ =~ /autorefname$/);
+    my ($cmd, $var) = @$_;
+    neue_existiert_regel(qr/\\$cmd[\W_]/, \&monieren,
+                     "Der Befehl '\\$cmd' wurde definiert, aber nie verwendet")
+      unless ($$var > 0 or $cmd eq 'todo' or $cmd eq 'help' or
+              $cmd eq 'indexsection' or $cmd =~ /autorefname$/);
 }
 
 # Alle selbstdefinierten Matheoperatoren sollten auch im Dokument vorkommen
