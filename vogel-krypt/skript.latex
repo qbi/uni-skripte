@@ -32,7 +32,7 @@
 \usepackage{makeidx}
 \usepackage[final]{graphicx}  % Für Grafiken
 \usepackage{color}
-\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue]{hyperref}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
 
 \usepackage[latin1]{inputenc}
 \usepackage{ngerman}
@@ -2055,8 +2055,190 @@ acht Bits.
  \item Differentielle Kryptoanalyse funktioniert nicht, wenn man die $S$-Boxen
   geeignet wählt. (Nicht-Gleichverteilung vermeiden.)
 \end{enumerate}
+
+% 4.12.
+
+\subsection{DES und differentielle Kryptoanalyse}
+
+Die differentielle Kryptoanalyse war den Designern des DES bekannt und deshalb
+folgte die Verteidigung. $S$-Boxen sind so konstruiert, dass für höchstens ein
+Viertel der Zweiermengen $\{A, A'\}$ die Output-Differenzen $S(A)\oplus S(A')$
+übereinstimmen. Mit der Folge, dass für einen Chosen-Plaintext-Angriff
+$2^{47}$ Klartextblöcke benötigt werden. Ein Known-Plaintext-Angriff benötigt
+$2^{55}$ Klartextblöcke. Dies ist nicht wesentlich weniger als für einen
+Brute-Force-Angriff benötigt werden: $2^{56}$. Deshalb sind es 16~Runden!
+
+\subsection{DES und lineare Kryptoanalyse}
+
+Von M.\,Mitsui auf der Konferenz EUROCRYPT im Jahre 1993 vorgestellt. War den
+Designern von DES nicht bekannt.
+
+Weder die $S$-Boxen und damit auch die gesamte Verschlüsselung beschreibt eine
+lineare Abbildung. Damit sicher gegen solche Angriffe.
+
+Die Idee der \highl{linearen Kryptoanalyse} ist: Approximation der
+Verschlüsselung durch lineare Abbildungen. Ansatz: Bilde \texttt{xor} für
+einige Klartextbits und \texttt{xor} für eine Geheimtextbits und verknüpfe
+beide mit \texttt{xor}. Das Ergebnis ist ein einzelnes Bit, das als die
+\texttt{xor}-Verknüpfung einiger Schlüsselbits interpretiert wird. Das Ganze
+wieder für eine bestimmte Wahrscheinlichkeit~$p$. Wenn $p\ne\frac{1}{2}$,
+Ausnutzung der Asymetrie (insbesondere ist der fünfte $S$-Boxtyp des DES dafür
+anfällig) liefert eine Einschränkung der Schlüssel.
+
+In der Arbeit von M.\,Mitsui wurde gezeigt, dass man für einen
+Known-Plaintext-Angriff nur $2^{43}$~Paare, d.\,h. sie ist besser als die
+\highl{differentielle Kryptoanalyse}.
+
+\subsection{DES realisiert Diffusion und Konfusion}
+
+Diffusion: Die Änderung der Eingabe in eine $S$-Box in einem Bit ändert die
+Ausgabe in mindestens zwei Bits.
+
+Konfusion: Jedes Ausgabebit hängt nach fünf Runden von allen Eingabebits ab.
+
+\subsection{DES hat keine Gruppeneigenschaft}
+
+Die \highl{Gruppeneigenschaft} lässt sich folgender Maßen beschreiben:
+\begin{gather*}
+  \forall k_{1},k_{2}\in\mathcal{K} \exists k_{3}\colon
+     DES_{k_{1}} \circ DES_{k_{2}} = E_{k_{3}}
+\end{gather*}
+
+
+Für DES gilt aber im Allgemeinen für je drei Schlüssel $k_{1},k_{2},k_{3}$:
+\begin{gather*}
+       DES_{k_{1}} \circ DES_{k_{2}} \ne E_{k_{3}}
+\end{gather*}
+
+Das heißt $2^{56}$ mögliche Schlüssel erzeugen eine viel größere Gruppe
+innerhalb von $\mathcal{S}_{2^{64}}$. Beachte $\abs{\mathcal{S}_{2^{64}}} =
+(2^{64})! > 10^{10^{20}}$
+
+Gezeigt wurde (1993: David Coppersmith): Die Gruppe der DES-Verschlüsselungen
+umfasst mehr als $10^{2500}$ Verschlüsselungen, die sich durch Kombination
+ergeben.
+
+Konsequenz: DES wird bei Mehrfachverschlüsselung sicherer.
+
+\subsection{"`Meet-in-the-Middle"'-Angriff}
+
+Doppelte Verschlüsselung bewirkt eine Vergrößerung des Schlüsselraums auf
+$2^{112}$~Schlüssel. Der folgende Angriff beschränkt das Durchprobieren auf
+$2^{57}$~Versuche bei extremen Speicherplatzbedarf.
+
+Angenommen ein Angreifer kennt einen Klartext~$m$ und den doppelt chiffrierten
+Klartext $c=E_{k_{2}}(E_{k_{1}}(m))$ und sucht das Paar $(k_{1}, k_{2})$.
+\begin{enumerate}
+ \item Berechne und speichere $DES_{k}(m)$ für alle Schlüssel~$k$
+  ($2^{56}$~Stück).
+ \item Berechne und speichere $DES^{-1}_{k}(c)$ für alle Schlüssel~$k$
+  ($2^{56}$~Stück).
+ \item Vergleiche beide Listen nach Stellen, die die Gestalt $DES_{k_{1}}(m) =
+  DES^{-1}_{k_{2}}(c)$. Hierfür gilt $DES_{k_{2}}(DES_{k_{1}}(m))=c$ und damit
+  hat man $(k_{1},k_{2})$.
+\end{enumerate}
+
+Unter Umständen gibt es mehrere Schlüsselpaare, dann muss man das Verfahren
+nochmal mit einem anderen Paar $(m',c')$ wiederholen. Also sind für
+$n$~Schlüssel $2n$~Berechnungen nötig, anstelle von $n^{2}$~Berechnungen. (es
+sind noch $n\log n$~Vergleiche notwendig)
+
+\subsection{Dennoch in der Praxis}
+Denoch wird DES in der Praxis eingesetzt als: $DES_{k_{1}}\circ
+DES_{k_{2}}\circ DES_{k_{3}}$ und $DES_{k_{1}}
+\circ DES_{k_{2}}^{-1} \circ DES_{k_{1}}$, da DES schnell ist und weit
+verbreitet/Hardware vorhanden.
+
+\section{Weitere Blockchiffren}
+\subsection{IDEA}
+
+Beginn der 1990er Jahre von James Massey entwickelt. Anwendung im
+PGP-Verfahren. Ist eine Blocktextchiffre mit der Blocklänge 64~Bit und
+Schlüssellänge 128~Bit (Damit die eine erschöpfende Suche wesentlich großer
+als bei DES). 8~Runden.
+
+Prinzip: Jeder Block des Klartextes wird in vier Teilblöcke zu je 16~Bit
+zerlegt, die in 8~Runden transformiert werden, wobei pro Runde sechs
+Teilschlüssel eingesetzt werden für eine Verknüpfung von drei Operationen:
+$\oplus$~--~\texttt{xor}, $\boxplus$~--~Addition modulo $2^{16}$,
+$\odot$~--~Multiplikation modulo $2^{16}+1$
+
+\begin{enumerate}
+ \item $\alpha_{1} = x_{1}\odot k_{i_{1}}$
+ \item $\alpha_{2} = x_{2}\oplus k_{i_{2}}$
+ \item $\alpha_{3} = x_{3}\oplus k_{i_{3}}$
+ \item $\alpha_{4} = x_{4}\odot k_{i_{4}}$
+ \item $\beta_{1} = \alpha_{1} \oplus \alpha_{3}$
+ \item $\beta_{2} = \alpha_{2} \oplus \alpha_{4}$
+ \item $\gamma = \beta_{1} \odot k_{i_{5}}$
+ \item $\delta = \beta_{2} \boxplus \gamma$
+ \item $\epsilon = \delta \odot k_{i_{6}}$
+ \item $\zeta = \gamma \boxplus \epsilon$
+ \item $x_{1}' = \alpha_{1} \oplus \epsilon$
+ \item $x_{3}' = \alpha_{3} \oplus \epsilon$
+ \item $x_{2}' = \alpha_{2} \oplus \zeta$
+ \item $x_{4}' = \alpha_{4} \oplus \zeta$
+\end{enumerate}
+
+Nach den 8~Runden gibt es eine Schlüssrunde:
+\begin{enumerate}
+ \item $x_{1}\odot k_{9_{1}}$
+ \item $x_{2}\boxplus k_{9_{2}}$
+ \item $x_{3}\boxplus k_{9_{3}}$
+ \item $x_{4}\odot k_{9_{4}}$
+\end{enumerate}
+
+Bisher keine Sicherheitsprobleme bekannt und trotz der komplexeren Runden ist
+es doppelt so schnell wie DES.
+
+\subsection{RC-Familie}
+
+Alle entwickelt in 1990ern von Ron Rivest -- RSA Data Security.
+\help{Woher kommt das C im RC?}
+
+RC2: Klartextblocklänge 64~Bit, Schlüssellänge ist variablen zwischen 48 und
+1024~Bit. 1997
+\help{Rundenzahl von RC2?}
+
+RC5: 1995, Klartextblocklänge, Schlüssellänge und Rundenzahl variabel.
+z.\,B. Klartextblocklänge~32, Schlüssellänge~128 und Rundenzahl~12 beliebt.)
+ist sicher gegen differentielle und lineare Kryptoanalyse.
+
+RC6: war in der letzten Ausscheidungsrunde für AES. 1998.
+
 \clearpage
 \appendix
+
+\chapter{Literatur}
+\begin{thebibliography}{99}
+ \bibitem{schneier} Bruce Schneier: "`Angewandte Kryptographie"', Pearson
+  Studium, 1996
+ \bibitem{rothe} Jörg Rothe: "`Complexity theory and cryptology---an
+  introduction to cryptocomplexity"', Springer, 2005
+ \bibitem{buchmann} J.\,Buchmann: "`Einführung in die Kryptographie"',
+  Springer, 1999
+ \bibitem{menezes} A.\,J.\,Menezes, P.\,C.\,van Oorschot, S.\,A.\,Vanstone:
+  "`Handbook of Applied Cryptography"', CRC Press, 1997
+ \bibitem{trappe} Trappe, Washington: "`Introduction to cryptography by coding
+  theory"', Prantice Hall, 2002
+ \bibitem{watjen} D.\,Wätjen: "`Kryptographie -- Grundlagen, Algorithmen,
+  Protokolle"', Spektrum, 2004
+ \bibitem{douglas} Douglas Stinson: "`Cryptography---Theory and praxis"', CRC
+  Press, 1995
+ \bibitem{bauer} F.\,Bauer: "`Entzifferte Geheimnisse"', Springer, 2000
+ \bibitem{beutelspacher} A.\,Beutelspacher, J.\,Schwenk, K.-D.\,Wolfenstetter:
+  "`Moderne Verfahren der Kryptographie"', Vieweg, \todo{Jahr finden}
+ \bibitem{delfs} H.\,Delfs, H.\, Knebl: "`Introduction to cryptography"',
+  Springer, 2002
+ \bibitem{goldreich} O.\,Goldreich: "`Foundamentals of cryptography"',
+  Cambridge, 2001
+ \bibitem{diffihellman} W.\,Diffie, M.\,Hellman: "`New directions in
+  cryptography"', IEEE Transaction on information theory 22, Seiten
+  644--654, 1976
+ \bibitem{adleman} L.\,Adleman, R.\,Rivest, A.\,Shamir: "`On digital
+  signatures and public key cryptosystems"', MIT Press, 1977
+\end{thebibliography}
+
 \chapter{Übungsaufgaben}
 \section{Blatt 1}
 
@@ -2081,10 +2263,10 @@ Bestimmen Sie den Klartext.
 \begin{verbatim}
   FSGEXV  EVIISA  MGYFNX  EJTMUR  MPNYME  FMPSIH  EFIXUE  HQFOOU
   PGIAVI  KJSWLT  IIZJIJ  ELXVOT  YBKMEC  GYUELW  RHEHOR  ONIFVS
-  EHKCJS  WLFEEL  JIBNTS  VTIMGY  JDNECT  IBRQVE  HXJDHF  YVTSYP
+  EHKCJS  WLFEEL  JIBNTS  VTIMGY  JSNECT  IBRQVE  HXJDHF  YVTSYP
   EEIYWX  JLNRRU  UYVCJC  BELDHZ  YVSKFE  IUERXV  TGCFKF  IHIZOF
-  UGYFSP  IIGABV  VOGYRL  FGYRUL  AHKVOK  FEIUER  XRVFTY  XFHIII
-  JGEIZU  ZOIZOE  LFVLAH  RKFNMT  IBCBIQ  VUHXVS  SOGOFN  ILEFSY
+  UGYFSP  IIGABV  VOGYRL  FGYRUM  AHKVOK  FEIUER  XRVFTY  XFHIII
+  JGEIZU  ZOIZOE  LFVLAH  RKFNMT  IBCBIQ  VUHXVS  SOGYFN  ILEFSY
   MEFSSR  KBXORU  TEGEEU  IEDLCE  NVRDHN  IE
 \end{verbatim}
 
@@ -2121,34 +2303,6 @@ $\Phi_{a,b}$ bijektiv ist.
 \textbf{Bemerkung:} Diese Abbildung kann zum Verschlüsseln verwendet werden
 (affine Chiffre)
 
-\chapter{Lösungen}
-\section{Blatt 1}
-\subsection*{Aufgabe 1}
-\begin{enumerate}[a)]
- \item Kasiski-Test (Wiederholung von Zeichenketten länger als 2), Beispiele:
-  \begin{tabular}{l|l}
-    KFEIUERX & $50 = 2\cdot 5\cdot 5$\\
-    TIB & $138 = 2\cdot3\cdot23$\\
-    IZO
-       LAH
-       GYR
-  \end{tabular}
-
- \item Friedman-Test: $I(c) = 0,0483$ und $d\approx3\mathord{,}93$.
-
- \item Wir entscheiden uns für $d=5$.
-\end{enumerate}
-
-\subsection*{Aufgabe 2}
-Es bleibt: suchen 5 Caesar-Chiffren
-1. Spalte: F für E, d.\,h. B für A (Verschiebung 1)\\
-2. Spalte: E für E, d.\,h. A für A (Verschiebung 0)\\
-3. Spalte: H für E, d.\,h. D für A (Verschiebung 3)\\
-4. Spalte: I für E, d.\,h. E für A (Verschiebung 4)\\
-5. Spalte: R für E, d.\,h. N für A (Verschiebung 13)\\
-
-\todo{Ich bin mir nicht mehr sicher, ob das so richtig war. Bitte gegenprüfen.}
-
 \section{Blatt 3}
 
 Der folgende Text wurde mit der Vigenère-Chiffrierung verschlüsselt. Die
@@ -2173,17 +2327,132 @@ Schlüsselwort ab.
 Bestimmen Sie den Klartext.
 
 \begin{verbatim}
-UEQPC  VCKAH  VNRZU  RNLAO  KIRVG  JTDVR  VRICV  IDLMY
-IYSBC  COJQS  ZNYMB  VDLOK  FSLMW  EFRZA  VIQMF  JTDIH
-CIFPS  EBXMF  FTDMH  ZGNMW  KAXAU  VUHJH  NUULS  VSJIP
-JCKTI  VSVMZ  JENZS  KAHZS  UIHQV  IBXMF  FILPC  XEQXO
-CAVBV  RTWMB  LNGNI  VRLPF  VTDMH  ZGNMW  KRXVR  QEKVR
-LKDBS  EIPUC  EAWJS  BAPMB  VSZCF  UEGIT  LEUOS  JOUOH
-UAVAG  ZEZIS  YRHVR  ZHUMF  RREMW  KULKV  KGHAH  FEUBK
-LRGMB  JIHLI  IFWMB  ZHUMP  LEUWG  RBHZO  LCKCW  THWDS
-ILDAG  VNEMJ  FRVQS  VIQMU  VSWMZ  CTHII  WGDJS  XEOWS
-JTKIH  KEQ
+  UEQPC  VCKAH  VNRZU  RNLAO  KIRVG  JTDVR  VRICV  IDLMY
+  IYSBC  COJQS  ZNYMB  VDLOK  FSLMW  EFRZA  VIQMF  JTDIH
+  CIFPS  EBXMF  FTDMH  ZGNMW  KAXAU  VUHJH  NUULS  VSJIP
+  JCKTI  VSVMZ  JENZS  KAHZS  UIHQV  IBXMF  FIPLC  XEQXO
+  CAVBV  RTWMB  LNGNI  VRLPF  VTDMH  ZGNMW  KRXVR  QEKVR
+  LKDBS  EIPUC  EAWJS  BAPMB  VSZCF  UEGIT  LEUOS  JOUOH
+  UAVAG  ZEZIS  YRHVR  ZHUMF  RREMW  KNLKV  KGHAH  FEUBK
+  LRGMB  JIHLI  IFWMB  ZHUMP  LEUWG  RBHZO  LCKVW  THWDS
+  ILDAG  VNEMJ  FRVQS  VIQMU  VSWMZ  CTHII  WGDJS  XEOWS
+  JTKIH  KEQ
 \end{verbatim}
+
+\chapter{Lösungen}
+\section{Blatt 1}
+\subsection*{Aufgabe 1}
+\begin{enumerate}[a)]
+ \item Kasiski-Test (Wiederholung von Zeichenketten länger als 2), Beispiele:
+  \begin{tabular}{l|l}
+    KFEIUERX & $50 = 2\cdot 5\cdot 5$\\
+    TIB & $138 = 2\cdot3\cdot23$\\
+    IZO
+       LAH
+       GYR
+  \end{tabular}
+
+ \item Friedman-Test: $I(c) = 0,0483$ und $d\approx3\mathord{,}93$.
+
+ \item Wir entscheiden uns für $d=5$.
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+Schlüsselwort "`bauer"'.
+
+Es bleibt: suchen 5 Caesar-Chiffren
+1. Spalte: B für E, d.\,h. B für A (Verschiebung 1)\\
+2. Spalte: A für E, d.\,h. A für A (Verschiebung 0)\\
+3. Spalte: U für E, d.\,h. U für A (Verschiebung 3)\\
+4. Spalte: E für E, d.\,h. E für A (Verschiebung 4)\\
+5. Spalte: R für E, d.\,h. R für A (Verschiebung 13)\\
+
+\todo{Ich bin mir nicht mehr sicher, ob das so richtig war. Bitte gegenprüfen.}
+
+\subsection*{Aufgabe 3}
+Es mag ueberraschen, dass man von einem vorgelegten monoalphabetisch
+chiffrierten Text leichter sagen kann, ob er englisch oder franzoesisch ist
+als ihn zu entschluesseln. Dies gilt natuerlich auch fuer Klartext. Es gibt
+ein einfaches Verfahren genuegend langen Klartext auf Zugehoerigkeit zu einer
+bekannten Sprache zu untersuchen ohne seine Syntax und Semantik zu betrachten.
+
+\section{Blatt 2}
+\subsection*{Aufgabe 1}
+
+\begin{enumerate}
+ \item
+  $m=WASSER$\\
+  $22~0, 18~18, 4~17$\\
+  $w_{1} = v_{1}\cdot K = 24~14$\\
+  $w_{2} = v_{2}\cdot K = 8~16$\\
+  $w_{3} = v_{3}\cdot K = 9~18$\\
+  $c=YOIJS$
+
+ \item $K^{-1}$ kann man mit dem erweiterten euklidischen Algorithmus
+  bestimmen.
+  \begin{gather*}
+    K^{-1} = \begin{pmatrix}4& 5\\17& 23\end{pmatrix}\\
+    b_{ij} = \frac{1}{\det K} (-1)^{i+j} K_{ji}\\
+    b_{11} = 7\cdot8\pmod{26} = 56\pmod{26} = 4\\
+    b_{12} = -7\cdot 3\pmod{26} = -21\pmod{26} = 5\\
+    b_{21} = -7\cdot5\pmod{26} = -35\pmod{26} = 17\\
+    b_{22} = 7\cdot7\pmod{26} = 49\pmod{26} = 23\\
+    \det K = 7\cdot8 - 3\cdot5 \pmod{26} = 41\pmod{26} = 15 \\
+    \det(K^{-1}) = 7
+  \end{gather*}
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+hund = 7~20~13~3\\
+AFFE = 0~5~5~4
+
+\begin{gather*}
+  M \cdot \begin{pmatrix}7& 13\\20 & 3\end{pmatrix} =
+     \begin{pmatrix}
+       0& 5\\
+       20& 3
+     \end{pmatrix}\\
+  M =
+     \begin{pmatrix}
+       15& 13\\4& 9
+     \end{pmatrix} \cdot
+     \begin{pmatrix}
+       0& 5\\
+       20& 3
+     \end{pmatrix} =
+     \begin{pmatrix}
+       20& 19\\13& 23
+     \end{pmatrix}
+\end{gather*}
+
+\subsection*{Aufgabe 3}
+Bijektivität unabhängig von $b$
+\begin{gather*}
+  ax_{1} + b \equiv_{26} ax_{2}+ b \quad\Leftrightarrow\quad
+     ax_{1} \equiv_{26} ax_{2}
+\end{gather*}
+falls $\ggT(26, a) = 1$, dann $x_{1}\equiv_{26} x_{2}$.
+falls $\ggT(26, a) = g$, dann $x_{1}\equiv_{\frac{26}{g}} x_{2}$.
+
+\begin{gather*}
+  ax\equiv
+\end{gather*}
+
+Wenn $a$ teilerfremd zu 26, dann sind alle $\phi$ bijektiv. Wenn alle $a$
+nicht teilerfremd zu 26, dann gibt es keine bijektiven Abbildungen.
+\todo{bessere Erklärung}
+
+$\exists l\in\Z\colon a(x_{1}-x_{2}) = k\cdot 26$
+
+\section{Blatt 3}
+
+\subsection*{Aufgab 3}
+Den hoechsten Organisationsstand erfuhr die Kryptologie in Venedig, wo sie in
+Form einer staatlichen Buerotaetigkeit ausgeuebt wurde. Es gab
+Schluesselsekretaere die ihr Buero im Dogenpalast hatten und fuer ihre
+Taetigkeit rund zehn Dukaten im Monat bekamen. Es wurde dafuer gesorgt, dass
+sie waehrend ihrer Arbeit nicht gestoert wurden. Sie durften ihre bueros aber
+auch nicht verlassen, bevor sie eine gestellte Aufgabe geloest hatten.
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
