@@ -107,6 +107,7 @@
 
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\F}{\mathbb{F}}      % endliche Ringe
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -196,6 +197,7 @@
 }
 
 \DeclareMathOperator{\sgn}{sgn}          % Signum/Vorzeichen
+\DeclareMathOperator{\ggT}{ggT}          % größter gemeinsamer Teiler
 
 \begin{document}
 
@@ -991,7 +993,7 @@ abgebildet! Für "`genügend lang"' Texte kommt dies auch vor.
 Ansatz: Suche alle mehrfach auftretenden Muster der Länge größer zwei.
 Bestimme die Abstände, bestimme die Primfaktoren für die Abstände, entscheide
 sich für häufig vorkommende Teiler (z.\,B. es treten fast immer 2 und 3 auf,
-dann vermute, dass $d=6$ -- ich glaube, man sagt $\operatorname{ggT}$ dazu.),
+dann vermute, dass $d=6$ -- ich glaube, man sagt $\ggT$ dazu.),
 teste mit dem brute-force-Angriff.
 
 \subsubsection{Friedmann-Test}\index{Friedmann-Test}
@@ -1223,7 +1225,7 @@ Frage: Wann ist $[a]_{k}$ eine Einheit?
 
 Es gibt ein $[b]_{k}$ mit $[a]_{k}\cdot [b]_{k} = [a\cdot b]_{k} = [1]_{k} =
 1+k\Z$, d.\,h. es gibt ein $b$ und ein $l4$, so dass $ab= 1+kl$, also $ab
--kl=1$. Dies gilt gdw. $\operatorname{ggT}(a,b)=1$. Also gibt es in $\Z_{k}$
+-kl=1$. Dies gilt gdw. $\ggT(a,b)=1$. Also gibt es in $\Z_{k}$
 genau $\phi(k)$ Einheiten. Falls $k=p$ Primzahl, dann gibt es $\phi(p)=p-1$
 Einheiten und $\Z_{p}$ ist ein Körper.
 
@@ -1318,7 +1320,7 @@ Verschlüsselung: es sei $v=\begin{pmatrix}v_{1}& \dotso &v_{n}\end{pmatrix}
 Schlüssel: ist ein Paar $(A,b)$
 
 Diese Abbildung ist injektiv gdw. $A$ ein Inverses $A^{-1}$ besitzt gdw.
-$\operatorname{ggT}(\det A, k)=1$
+$\ggT(\det A, k)=1$
 
 Entschlüsselung: für $w=v\cdot A+b$ gilt $v=(w-b)A^{-1}$
 
@@ -2206,11 +2208,130 @@ ist sicher gegen differentielle und lineare Kryptoanalyse.
 
 RC6: war in der letzten Ausscheidungsrunde für AES. 1998.
 
+% 6.12.
+
+\subsection{Blowfish und Twofish}
+
+Blowfish (1994), Twofish (1998) von Bruce Schneier
+
+\begin{description}
+ \item[Blowfish] variable Schlüssellänge (bis 448~Bit), $S$-Boxen
+  schlüsselunabhängig, 16~Runden, Blöcklänge~64. Trotz aufwendiger $S$-Boxen
+  ein schnell zu implementierender Algorithmus (\texttt{xor} und Addition von
+  32-Bitwerten)
+
+ \item[Twofish] Runde der letzten 5 AES-Kandidaten. Schlüssellänge: 128, 192,
+  256, Blocklänge: 64, $8\times8$ $S$-Boxen, arithmetische Operationen in
+  $\F_{2^{8}}$ endlicher Körper der Ordnung $2^{8}$ (anstelle von $\Z_{2}=\F_{2}$)
+\end{description}
+
+\subsection{Sonstige}
+
+\begin{description}
+ \item[SAFER] 1995, Massey
+ \item[CAST] 1990, 1997 -- wird bei PGP benutzt
+ \item[SKipjack] NSA, 1990
+ \item[KASUMI] Weiterentwicklung von MISTY, wird zur Verschlüsselung bei UMTS
+  eingesetzt.
+\end{description}
+
+\subsection{Der Advanced (Data) Encryption Standard -- AES}
+
+1997: macht die US-Standardisierungsbehörte ein \textit{öffentliche}
+Ausschreibung eines Verfahrens als Nachfolgers von DES. Forderungen an das
+Verfahren: öffentlich, lizenzfrei, weltweit verfügbar, schneller als
+Triple-DES. Vorgaben: Blocklänge min. 128 und Schlüssellänge von 128, 192,
+256.
+
+1998: Wurden 15 Verfahren eingereicht. (darunter auch MAGENTA von der
+deutschen Telekom, das schon in der Präsentation gebrochen wurde)
+
+1999: 5 Kandidaten in der Endrunde: Twofisch (Platz 2, weil $\F_{256}$ und
+nicht $\F_{2}$), RC6, MARS (IBM, David Coppersmith), Serpent (ähnlich DES,
+über 32 Runden, Platz 3), Rijngdael
+
+2000: Wird Rijndael als Sieger bekannt gegeben.
+
+2002: Rijndael wird als AES (FIPS) veröffentlich.
+
+\subsubsection{Bescheibung des Verfahrens von Rijndael}
+
+iterirte Blockchiffre; keine Feistel-Chiffre; Block- und Schlüssellänge können
+unabhängig voneinander gewählt werden; Rundenzahl ist abhängig von 10, 12 oder
+14; in FIPS: 128 als Blocklänge, 128 als Schlüssellänge und 10 als Rundenzahl
+und eine Abschlussrunde
+
+\todo{Bild vom Schema}
+
+Was passiert in den Runden? Jede Runde (bis auf die letzte) besteht aus drei
+Schichten:
+\begin{enumerate}
+ \item ByteSub-Transformation: nicht lineare Transformation als Schutz vor
+  differenzieller und linearer Kryptoanalyse
+ \item SchiftRow-Transformation: zwischen Diffusion
+ \item MixColumn-Transformation
+\end{enumerate}
+
+\todo{Bild vom Schema der Runde~$i$}
+
+\subsubsection{Exkurs über endliche Körper}
+
+\paragraph{Endliche Körper von Primzahlordnung}
+wissen: Zerlegung der ganzen Zahlen in Äquivalenzklassen modulo $m$: $\Z_{m}
+:= \Z_{\nicefrac{}{\equiv (m)}}$; ergibt einen Ring $[\Z_{m}, +,\cdot]$ für
+$m>1$ mit dem Nullelement $0 := [0]_{m}$ und Einselemt $1 := [1]_{m}$. $\Z_{m}
+= \{ [0]_{m}, [1]_{m}, \dotsc, [m-1]_{m}\} = \{0,1,\dotsc,m-1\}$,
+$\abs{\Z_{m}}=m$. Ein Element $a\in\Z_{m}$ heißt \highl{Einheit} \gdwdef es
+gibt ein inverses Element $b$ mit $a\cdot b=1$. Es gilt: $a$ ist Einheit in
+$\Z_{m}$ \gdw $\ggT(a,m) = 1$
+
+$\Z_{m}^{*}:= \{a\in\Z_{m}\colon a~\text{ist Einheit}\}$, $\abs{\Z_{m}^{*}} =
+\phi(m)$ (Eulersche $\phi$-Funktion)
+
+Wenn $m=p$ eine Primzahl ist, dann ist $\Z_{p}^{*} = \{1, 2,\dotsc,p-1\}$
+($\phi(p)=p-1$) und $\Z_{p}$ ein endlicher Körper der Ordung~$p$.
+
+Ziel: Endliche Körper der Ordnung $p^{k}$ ($p$ ist Primzahl);
+Primzahlpotenzordnung.
+
+\paragraph{Polynomringe}
+
+Es sei $[R, +,\cdot]$ ein (endlicher) Ring, z.\,B. $[\Z_{m}, +,\cdot]$ und
+$x\notin R$ ist ein Symbol, dass nicht im Ring vorkommt. Wir definieren
+Polynome vom Grad~$k$, mit $r_{i}\in R$ für $i=0,\dotsc,k$ und $r_{k}\ne0$
+\begin{gather*}
+  p(x) := r_{k}\cdot x^{k} + r_{k-1}\cdot x^{k-1} + \dotsb+ r_{1} x^{1} + r_{0}
+\end{gather*}
+Bezeichnung $R[x]$ ist die Menge aller Polynome in $x$ über $R$.
+
+Addition und Multilikation komponentenweise wie üblich.
+
+$[R[x], +, \cdot]$ ist ein Ring und heißt \highl{Polynomring}. ist abzählbar
+unendlich
+
+\paragraph{$\F_{p^{k}}$ endlicher Körper der Ordnung $p^{k}$}
+
+Dazu benötigen wir ein \highl{irreduzibles Polynom} vom Grad~$k$. $m$
+Polynom als Modul
+\begin{gather*}
+  m(x) = a_{k} x^{k} + a_{k-1} x^{k-1} + \dotsb+ a_{1}x^{1} + a_{0}
+\end{gather*}
+$a_{k}\ne0$, z.\,B. $a_{k}=1$
+
+reduzibel = Polynom lässt sich schreiben als Produkt zweier Polynome schreiben
+$m(x) = p(x)\cdot q(x)$ für $p$ und $q$ vom Grad $\geq1$ -- Analogie zu prim
+für Polynome.
+
+Ansatz: $\F_{p^{k}}$ ist eine Menge aller Polynome über $\Z_{p}$ modulo des
+Polynoms $m$. Das heißt: $p(x) = q(x) \cdot m(x) + r(x)$; $r(x)$ Repräsentant
+von $p$ in $\F_{p^{k}}$
+
 \clearpage
 \appendix
 
-\chapter{Literatur}
+\stepcounter{chapter}
 \begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{\Alph{chapter}.~\bibname}
  \bibitem{schneier} Bruce Schneier: "`Angewandte Kryptographie"', Pearson
   Studium, 1996
  \bibitem{rothe} Jörg Rothe: "`Complexity theory and cryptology---an
@@ -2227,7 +2348,7 @@ RC6: war in der letzten Ausscheidungsrunde für AES. 1998.
   Press, 1995
  \bibitem{bauer} F.\,Bauer: "`Entzifferte Geheimnisse"', Springer, 2000
  \bibitem{beutelspacher} A.\,Beutelspacher, J.\,Schwenk, K.-D.\,Wolfenstetter:
-  "`Moderne Verfahren der Kryptographie"', Vieweg, \todo{Jahr finden}
+  "`Moderne Verfahren der Kryptographie"', 6.\,Auflage, Vieweg, 2006
  \bibitem{delfs} H.\,Delfs, H.\, Knebl: "`Introduction to cryptography"',
   Springer, 2002
  \bibitem{goldreich} O.\,Goldreich: "`Foundamentals of cryptography"',
