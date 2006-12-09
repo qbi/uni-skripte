@@ -1,0 +1,1304 @@
+\documentclass{scrreprt}%Was bewirkt das [draft,12pt] 
+
+\usepackage{listings}
+\usepackage{ngerman}
+\usepackage[draft=false]{hyperref}
+\usepackage{fancyvrb}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{color} 
+\usepackage{graphicx}
+%\usepackage{graphics}
+\usepackage{theorem}
+\usepackage{float}
+\usepackage{ecltree, epic}
+%\usepackage{epic, eepic, ecltree}
+
+% \usepackage{ae}  %probably interesting if font-collision
+                   % always remember to use pdflatex instead of
+                   % dvipdf, fonts are so much better the first way
+
+%\fvset{fontsize=\small,frame=single,numbers=left}
+
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+\newtheorem{beweis}{Beweis}
+\theorembodyfont{\itshape}
+\newtheorem{definition}{Definition}
+\newtheorem{satz}{Satz}
+\newfloat{Algorithmus}{h}{alg}[chapter]
+
+\begin{document}
+
+%\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort}, emphstyle=\textsc, escapeinside=~~}
+% 13.10.2003 Adrian Knoth <adi@thur.de>
+
+\author{Prof. Dr. Hans-Dietrich Hecker}
+\title{Algorithmen und Datenstrukturen}
+\date{Wintersemester~2003/04}
+\maketitle
+%\begin{abstract}
+%Zur Entst
+%
+%
+%Erg"anzend zur Vorlesung wird Literatur empfohlen. Dabei handelt es sich um die ersten vier Werke im Literaturverzeichnis auf der
+%letzten Seite dieses Dokuments.
+%
+%Au"ser Prof. Dr. Hecker waren nat"urlich noch weitere Personen an der Entstehung des Skriptes beteiligt. Das waren die
+%Studenten die Mitschriften anfertigten, Sebastian Oerding als studentischer Leiter des Projektes "`Skripts"' und Dr. Grajetzki, die die
+%Mitschriften auf verbliebene Fehler "ueberpr"ufte.
+%\end{abstract}
+						
+\tableofcontents 
+\listof{Algorithmus}{Algorithmenverzeichnis}
+
+%\frontmatter  % entfernt Kapitel-Numerierungen, r"omische Seitenzahlen
+
+\addchap{Vorwort}
+Ich danke allen, die mit ihrer Arbeit zum Skript beigetragen haben. Besonderer Dank gilt Sebastian Oerding, der die einzelnen
+Mitschriften zusammenfa"ste und korrigierte sowie Frau Dr. Grajetzki, die die fachliche Endkorrektur vornahm.
+
+\vspace{1eX}
+Bei der empfohlenen Literatur handelt es sich um die Werke \cite{cormen}--\cite{sedgewick} aus dem Literaturverzeichnis auf Seite
+\pageref{literaturverzeichnis}.
+
+\chapter{Einf"uhrung}
+
+Liest man heutzutage eine nahezu beliebige Einf"uhrung in die theoretische
+Informatik, so werden zwei Begriffe immer in einem Atemzug genannt:
+\textit{Algorithmen} und \textit{Daten"-struk"-turen}. Sie geh"oren zusammen
+wie die Marktl"ucke zum Unternehmensgr"under. Und tats"achlich kann der 
+wirtschaftliche Erfolg einer EDV-basierten Idee existentiell von der Wahl
+der passenden Algorithmen und Datenstrukturen abh"angen.
+
+W"ahrend ein \textbf{Algorithmus} die \emph{notwendigen Schritte zum L"osen
+eines Problems} be"-schreibt, dienen \textbf{Datenstrukturen}
+\emph{zum Speichern und Verwalten} der verwendeten Da"-ten.  
+
+\begin{figure}
+  \begin{center}\input{131003a.latex}\end{center}
+
+  \caption{"Uberlappen sich die drei Rechtecke?}
+  \label{131003a}
+\end{figure}
+
+Wie so oft beginnt ein Vorhaben mit den zwei Fragen "`Was \emph{habe}
+ich?"' und "`Was \emph{m"ochte} ich erhalten?"'. In Abbildung~\ref{131003a}
+sind drei einander schneidende Rechtecke zu sehen. Sie bilden die
+Ausgangssituation -- das "`Was habe ich?"'. Man spricht im Allgemeinen vom
+\textbf{Input}. Gesucht ist ein Algorithmus, der die zugeh"origen
+"Uberlappungen dieser drei Rechtecke ermittelt und ausgibt. Das Ergebnis (Menge der "Uberlappungen)
+hei"st \textbf{Output}.
+
+\begin{figure}
+  \begin{center}\input{131003b.latex}\end{center}
+  \caption{Das Segmentschnitt-Problem}
+  \label{131003b}
+\end{figure}
+
+Zum besseren Verst"andnis ist es jedoch sinnvoll, das allgemeinere
+\textsc{Segment"-schnitt-Pro"-blem} zu betrachten. Eine
+gegebene Menge von horizontal und vertikal verlaufenden Liniensegmenten
+in der Ebene soll auf sich schneidende Segmente untersucht werden.
+
+Die in Abbildung~\ref{131003b} dargestellten $n$ Linien beschreiben ein
+solches Segmentschnitt-Problem. Die triviale Idee, jede Strecke mit jeder
+anderen zu vergleichen und somit alle m"oglichen Schnittpunkte zu
+ermitteln, charakterisiert einen sogenannten
+\textbf{Brute-Force-Algorithmus}, der mittels ersch"opfenden Probierens zu
+einer L"osung gelangt. Solche Algorithmen sind im Allgemeinen sehr
+ineffizient und tats"achlich ben"otigt dieses Verfahren $n^2$ Vergleiche
+($n$: Anzahl der Rechteckkanten). Besteht der Input n"amlich nicht wie
+hier aus einigen wenigen Linien, sondern sollen statt dessen eine Million
+Strecken untersucht werden, dann sind bereits $10^{12}$ Vergleiche
+erforderlich.
+
+Im ung"unstigsten Fall k"onnen alle horizontal verlaufenden Linien
+alle vertikalen schnei"-den, und die H"alfte der Kanten verl"auft
+horizontal, die andere H"alfte vertikal, die Strecken bilden dann eine
+Art Schachbrett~\ref{131003c}. Jede Linie (Dimension) hat $\frac{n}{2}$ Segmente,
+die sich mit den anderen $\frac{n}{2}$ Linien schneiden.  Die Ausgabe
+(Output) besteht folglich aus $\frac{n^2}{4}$ Paaren. 
+
+\begin{figure}
+  \begin{center}\input{131003c.latex}\end{center}
+  \caption{Ung"unstigste Kantenanordnung, $\frac{n^2}{4}$ Kreuzungspunkte}
+  \label{131003c}
+\end{figure}
+
+Es ist somit eine berechtigte Frage, ob es "uberhaupt einen besseren
+Algorithmus als den bereits vorgestellten geben kann.
+
+In praktischen Anwendungen, zum Beispiel dem Chip-Design, ist so ein
+Kreuzungsbild wie in Abbildung~\ref{131003c} eher unwahrscheinlich. Die
+Anzahl der Kreuzungspunkte w"achst "ublicherweise in linearer
+Abh"angigkeit zu $n$ oder noch geringer. Die Suche nach einem neuen, im
+Allgemeinen besseren, Algorithmus ist also sinnvoll.
+
+Wenn wir $k$ als die Anzahl der resultierenden Schnitte f"ur das
+Segmentschnitt-Problem auffassen, k"onnen wir das Problem wie folgt
+formulieren: Existiert ein Al"-go"-rith"-mus mit besserer Laufzeit als $n^2$ in 
+Abh"angigkeit von $n$ und $k$?
+
+Mit dieser neuen Problemstellung wird die Zeitkomplexit"at von der L"ange
+der Eingabe \underline{und} der L"ange der Ausgabe abh"angig, man spricht
+von einem \textbf{output-sensitiven} Al"-go"-rith"-mus.
+
+Eine grundlegende Idee ist dabei die Reduktion der Komplexit"at durch
+Verminderung der Dimension. Wie kann man also den Test in der
+zweidimensionalen Ebene vermeiden und mit einem Test "uber eine
+Dimension, z.~B. entlang einer Horizontalen, alle Kanten"-schnit"-te
+finden?
+
+Dazu bedient man sich einer Gleitgeraden, die von links nach rechts
+"uber die gegebenen Liniensegmente streicht und nur an ihrer aktuellen
+Position pr"uft. Dieses Verfahren hei"st \textsc{Plane-Sweep-Algorithmus},
+eine detaillierte Beschreibung findet sich in Anhang~\ref{planesweep}.
+
+W"urde der Strahl stetig "uber die Segmente streichen, g"abe es
+"uberabz"ahlbar viele Pr"uf"-pun"-kte und das Verfahren w"are nicht maschinell
+durchf"uhrbar. Daher ist es auch hier wie "uberall sonst in der
+elektronischen Datenverarbeitung notwendig, mit diskreten Werten zu
+arbeiten.
+ 
+Zu diesem Zweck definiert man eine Menge mit endlich vielen \textbf{event
+points} (Ereignis"-punkte), an denen Schnitte gesucht werden sollen. Im
+vorliegenden Fall kommen daf"ur nur die $x$-Werte in Frage, an denen ein
+horizontales Segment beginnt oder endet bzw. die $x$-Koordinaten der
+vertikal verlaufenden Linien. Sie bilden die event points, an denen das
+"Uberstreichen simuliert wird. Eine solche Simulation ist einfach zu
+beschreiben:
+
+\textit{Speichere die horizontalen Linien und pr"ufe beim Auftreten einer
+senkrechten Linie, ob sie sich mit einer aktuell gemerkten horizontalen
+schneidet.}
+
+Prinzipiell geht man nach folgendem Algorithmus vor:
+\begin{enumerate}
+ \item Ordne die event points nach wachsender $x$-Koordinate (dies sei hier
+  als m"oglich vorausgesetzt, eine Diskussion "uber Sortierverfahren erfolgt
+  sp"ater)
+ \item Menge $Y := \emptyset$  
+  \begin{itemize}
+   \item \textit{INSERT (Aufnahme)} der horizontalen Strecken bzw.
+   \item \textit{DELETE (Entfernen)}
+  \end{itemize}
+  der zugeh"origen $y$-Werte
+ \item bei den event-points (vertikale Strecken):
+  \begin{itemize}
+   \item \textit{SEARCH (Suche)} im Vertikalintervall nach $y$-Werten aus der 
+    Menge $Y$
+   \item Ausgabe der Schnitte
+  \end{itemize}
+\end{enumerate}
+
+Die Implementierung des obigen
+\textsc{Plane-Sweep-Algorithmus'} in einer konkreten Programmiersprache
+sei als zus"atzliche "Ubungsaufgabe "uber"-lassen. Dazu ist jedoch ein dynamischer
+Datentyp f"ur die Menge $Y$ erforderlich, der die Operationen INSERT,
+DELETE und SEARCH unterst"utzt. Dieser wird in einem sp"ateren Kapitel noch behandelt. 
+
+\begin{definition}[Datenstruktur]
+  Die Art und Weise wie Daten problembezogen verwaltet und organisiert
+  werden, nennt man Datenstruktur.
+\end{definition}
+
+\label{ADT}
+\begin{definition}[Unterst"utzte Operationen]
+  Eine Operation hei"st unterst"utzt, wenn sie f"ur eine Eingabe
+  der L"ange $n$ proportional nicht mehr als $log(n)$ Teilschritte und
+  somit proportional $log(n)$ Zeiteinheiten ben"otigt.
+\end{definition}
+
+\begin{definition}[Abstrakter Datentyp (ADT)]
+  Eine Datenstruktur, zusammen mit den von ihr unter"-st"utzten Operationen, 
+  hei"st ab"-strakter Datentyp (ADT).
+\end{definition}
+
+\begin{definition}[dictionary]
+  Der abstrakte Datentyp, der das Tripel der Operationen \textit{INSERT},
+  \textit{DELETE}, \textit{SEARCH} unterst"utzt, hei"st \textbf{dictionary}.
+\end{definition}
+
+Der obige \textsc{Plane-Sweep}-Algorithmus ben"otigt O($n\,log(n)$) Schritte
+f"ur das Sortieren (siehe unten O-Notation). Da es sich um einen \textbf{output-sensitiven}
+Algorithmus handelt, belaufen sich seine Ge"-samtkosten auf
+O($n\,log(n)+k$), was meist deutlich besser ist als proportionales Verhalten
+zu $n^2$.
+
+Dieses Verfahren erweist sich jedoch mit Hilfe von Arrays als nicht
+realisierbar, ein guter Algorithmus n"utzt folglich nichts ohne eine
+geeignete Datenstruktur.
+
+Um die Effizienz von Algorithmen genauer betrachten zu k"onnen, ist es
+erforderlich, sich im Vorfeld "uber einige Dinge zu verst"andigen:
+
+\begin{description}
+ \item[Maschinenmodell:] RAM (Random access machine)
+  \begin{itemize}
+   \item Speicherzugriffszeiten werden ignoriert
+   \item arbeitet mit Maschinenw"ortern fester L"ange f"ur Zahlen und Zeichen
+   \item Speicher ist unendlich gro"s
+   \item Operationen wie Addition, Subtraktion, Multiplikation und Division
+    sind in \underline{einem} Schritt durchf"uhrbar
+  \end{itemize}
+ \item[Zeitkomplexit"at:] Mi"st die Rechenzeit des Algorithmus
+  \begin{itemize}
+   \item{abh"angig von der Gr"o"se der Eingabe und der Art}
+   \item{immer f"ur einen konkreten Algorithmus}
+  \end{itemize}
+\end{description}
+
+\begin{definition}
+  \begin{description}
+   \item[best-case:] minimale Rechenzeit f"ur einen Input der L"ange $n$
+   \item[average-case:] mittlere Rechenzeit f"ur einen Input der L"ange $n$
+   \item[worst-case:] maximale Rechenzeit f"ur einen Input der L"ange $n$
+  \end{description}
+\end{definition}
+
+F"ur die Analyse von Algorithmen ist der \textbf{worst-case} von ganz
+besonderer Bedeutung. "Uber ihn sind viele Dinge bekannt, er wird
+damit mathematisch fassbar und gut be"-re"-chen"-bar. Ein Algorithmus,
+der f"ur den worst-case gut ist, ist auch in allen anderen F"allen gut.
+
+Die worst-case-Zeit $T$ f"ur den Algorithmus $a$ f"ur Eingaben der L"ange $n$
+ist das Maximum der Laufzeiten f"ur alle m"oglichen Eingaben dieser
+L"ange:
+\begin{gather*}
+  T_a(n) = \max_{w:|w|=n}\big\{T_a(w)\big\}
+\end{gather*}
+
+Es sei an dieser Stelle angemerkt, da"s die worst-case-Betrachtung mitunter
+einen verzerrten Eindruck liefert und average-case-Betrachtungen aus
+praktischen Gr"unden die bessere Wahl darstellen.
+
+Zur Bewertung von Algorithmen haben sich verschiedene Notationen
+etabliert:
+\begin{definition}
+  \begin{description}
+   \item[O-Notation:]
+    Es bedeutet $T_a(n) \in O(n^2)$, dass der Algorithmus $a$
+    \textbf{h"ochstens} proportional zu $n^2$ viele Schritte ben"otigt. 
+   \item[$\Omega$-Notation:]
+    $T(n) \in \Omega (n^2)$ bedeutet, dass der Algorithmus \textbf{mindestens}
+    prop. zu $n^2$ viele Schritte ben"otigt. 
+   \item[$\Theta$-Notation:]
+    Der Algorithmus ben"otigt h"ochstens aber auch mindestens so viele
+    Schritte wie angegeben (Verkn"ufpung von O$\,$- und $\Omega$-Notation)
+  \end{description}
+\end{definition}
+Die genaue mathematische Definition erfolgt sp"ater.
+
+Zusammen mit dem vereinbarten
+Maschinenmodell l"a"st sich nun die Frage untersuchen, wieviel Schritte
+der obige \textsc{Plane-Sweep-Algorithmus} ben"otigt.
+Das Sortieren der event points zu Beginn erfordert $\Theta(n\, log~n)$
+Operationen (der Beweis hierf"ur erfolgt sp"ater). Damit ist $n\,log(n)$
+auch f"ur den Gesamtalgorithmus eine untere Schranke.
+
+Wenn die Menge $Y$ in einer Datenstruktur verwaltet wird, die 
+\textit{INSERT}, \textit{DELETE} und \textit{SEARCH} unterst"utzt, so
+reichen $O(n\: \log\,n)$ Schritte sowie zus"atzlich $O(k)$ Schritte f"ur
+die Ausgabe. Der gesamte Algorithmus ist somit in $O(n\:log\,n+k)$ zu
+bew"altigen.
+
+% 15.10.03 Nina Kottenhagen
+\section{"Uber schnelle und langsame Algorithmen}
+\begin{table}[h]
+  \begin{tabular}{*{7}{|l}|}
+    \hline
+    Zeit/ & 1 sec & $10^2$ sec & $10^4$ sec & $10^6$ & $10^8$ & $10^{10}$ \\
+    Komplexit"at & | & $\approx$ 1,7 min & $\approx$ 2,7 Std & 12 Tage & 3 Jahre & 3 Jhd.\\
+    \hline
+    $1000 \, n$ & $10^3$ & $10^5$ & $10^7$ & $10^9$ & $10^{11}$ & $10^{13}$ \\
+    $100 \, n \, log \, n$ & $1,4*10^2$ & $7,7*10^3$ & & & & $2,6*10^{11}$ \\
+    $100 \, n^2$ & $10^2$ & $10^3$ & $10^4$ & $10^5$ & $10^6$ & $10^7$\\
+    $10 \, n^3$ & 46 & $2,1*10^2$ & $10^3$ & $4,6*10^3$ & $2,1*10^4$ & $10^5$ \\
+    \multicolumn{7}{|c|}{\dotfill}\\
+%    \hline
+%    \hline
+    $2^n$ & 19 & 26 & 33 & 39 & 46 & 53\\
+    $3^n$ & 12 & 16 & 20 & 25 & 29 & 33\\
+    \hline
+  \end{tabular}
+  \caption{Zeitkomplexit"at im Verh"altnis zur Eingabegr"o"se}
+\end{table}
+
+Die Tabelle verdeutlicht die Wichtigkeit schneller Algorithmen. 
+In der linken Spalte steht die Rechenzeit, bezogen auf die Eingabegr"o"se, von Algorithmen. 
+Die Tabelleneintr"age geben an, wie gro"s eine Eingabe sein darf, damit ihr Ergebnis in der angegebenen Zeit berechnet werden kann. 
+
+Der konkrete Algorithmus ist hier irrelevant; z.B. werden mit der ersten Zeile alle Algorithmen mit der Laufzeit 1000 $n$ erfa"st. 
+
+Bei Algorithmen mit einer schnell wachsenden Laufzeit kann auch in wesentlich mehr Zeit bzw. mit wesentlich schnelleren Rechnern nur ein
+minimal gr"o"seres Problem gel"ost werden. Deswegen ist es wichtig, Algorithmen zu finden, deren Rechenzeit bei einer wachsenden
+Eingabegr"o"se m"oglichst langsam w"achst.
+
+Die punktierte Linie ist nach Cook "`die Trennung zwischen Gut und
+B"ose"'. Die Laufzeit der ersten Zeile ist linear und somit sehr gut.
+F"ur kleine Eingaben reichen auch Laufzeiten von O($n^2$) und von O($n^3$) aus.
+
+\section{Die Klassen \textit{P} und \textit{NP}}
+Das Problem des Handlungsreisenden, manchmal auch mit \textbf{TSP} abgek"urzt, sieht wie folgt aus:
+Es gibt n St"adte, die alle einmal besucht werden sollen. Dabei soll die
+Rundreise so kurz wie m"oglich sein.
+
+Dieses Problem hat eine Laufzeit von O($n!$) (exponentiell), da alle
+Reihenfolgen durchprobiert werden m"ussen.  Es dauert zu lange, die beste
+Route herauszufinden. Eine M"oglichkeit w"are es, nur eine Route zu
+testen.
+
+Das TSP ist ein typisches Beispiel f"ur Probleme der Klasse NP. 
+Nichtdeterministisch kann es in polynomialer Zeit  gel"ost werden, 
+deterministisch nur in exponentieller Zeit (es sei denn P=NP). Dies f"uhrt zur Definition der Klassen \textit {P} und \textit {NP}.
+
+\begin{description}
+ \item[P:] Die Klasse der Probleme, die f"ur eine Eingabe der Gr"o"se n in
+  $Pol(n)$ (polynomialer) Zeit gel"ost werden k"onnen.
+ \item[NP:] Die Klasse der Probleme, die f"ur eine Eingabe der Gr"o"se n
+  \textbf{nichtdeterministisch} in $Pol(n)$ Zeit gel"ost werden k"onnen 
+  (nur "uberpr"ufen, ob die L"osung richtig ist, typisch sind
+  rate-und-pr"ufe-Verfahren).
+\end{description}
+
+Die gro"se Frage lautet: $P=NP$? Kann man nichtdeterministische Algorithmen durch deterministische ersetzen,
+die im Sinne der $O$-Notation ebenfalls polynomiale Laufzeit haben?
+Dieses offene Problem besteht seit 1970; bisher gibt es keine Ans"atze zu einer L"osung. Ein
+dazu "aquivalentes Problem wurde aber bereits 1953 von G. Asser formuliert.
+
+Mehr dazu gibt es in der Informatik IV, hier besch"aftigen wir uns ausschlie"slich mit effizienten Algorithmen.
+
+\section{Effiziente Algorithmen}
+
+\begin{definition}[Effiziente Algorithmen]
+  Ein Algorithmus, dessen Laufzeit im schlimmsten Fall (\emph{worst
+  case}) von O($n^k$) ($k$ konst.) nach oben beschr"ankt wird, d.~h. er hat
+  \emph{polynomielle Laufzeit}, hei"st effizient.
+  
+  Es gilt also f"ur ein festes $k$:
+  \begin{equation*}
+    T_a (n)= O(n^k)     
+  \end{equation*}
+\end{definition}
+
+\subsection{Die Zeitanalyse an einem Beispiel}
+
+Allgemein stellt sich ein Sortierproblem wie folgt dar:
+\begin{description}
+ \item[INPUT] Folge $<\!a_1, \ldots, a_n\!>$, $n \in \mathbb{N}$, $a_i$
+  Elemente einer linear geordneten Menge (also eine Menge mit einer totalen, transitiven,
+  reflexiven und antisymmetrische Relation)
+ \item[OUTPUT:] umgeordnete Folge $<\!a_{\Pi(1)}, \ldots, a_{\Pi(n)}\!>:
+  a_{\Pi(1)} \le a_{\Pi(2)} \le {\ldots} \le a_{\Pi(n)}$, $\Pi$:
+  Permutation
+\end{description} 
+Die zu sortierende Folge liegt meist in einem Feld \verb@A[1@\ldots\verb@n]@ vor.
+
+\begin{definition}[\textsc{InsertionSort}]
+  Dieser Algorithmus funktioniert so, wie viele Menschen Karten
+  sortieren.
+  
+  Man nimmt eine Karte auf und vergleicht diese nacheinander
+  mit den Karten, die man bereits in der Hand h"alt. Sobald die Karte
+  wertm"a"sig zwischen zwei aufeinaderfolgenden Karten liegt, wird sie
+  dazwischen gesteckt.
+  
+  Die Karten vor uns auf dem Boden entsprechen der nicht sortierten Folge
+  in dem Feld $A$. Der Algorithmus daf"ur sind nun wie folgt aus:
+  \begin{Algorithmus}[h]
+  \addcontentsline{alg}{Algorithmus}{\textsc{InsertionSort}}
+    \lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort}, emphstyle=\textsc, escapeinside=~~}  
+    \begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{InsertionSort}, gobble=4]{InsertionSort}
+    for j := 2 to length(A) do
+      key := A[j];
+      i := j-1;
+      while (i > 0 and A[i] > key) do
+        A[i+1] := A[i];
+        i := i-1;
+      A[i+1] := key;
+    \end{lstlisting}
+   % \caption{\textsc{InsertionSort}}
+  \end{Algorithmus}
+\end{definition}
+
+\subsection{Beispiel f"ur \textsc{InsertionSort}}
+
+\begin{description}
+ \item[INPUT:] $A=<5,1,8,0>$
+ \item[OUPUT:] $<0,1,5,8>$
+ \item[Problemgr"o"se:] (= Gr"o"se der Eingabe) $n$
+ \item[Ablauf:]
+  \begin{tabular}[t]{*{4}{c}}
+    \texttt{for}-Z"ahler & \texttt{key} & \texttt{i} & Feld $A$
+       {(\small Am Ende der \texttt{while})}\\
+    \hline
+    Anfang& & & $<5,1,8,0>$\\
+    $j=2$ & 1 & 0 & $<1,5,8,0>$\\
+    $j=3$ & 8 & 1 & $<1,5,8,0>$\\
+    $j=4$ & 0 & 3 & $<1,5,0,8>$\\
+    $j=4$ & 0 & 2 & $<1,0,5,8>$\\
+    $j=4$ & 0 & 1 & $<0,1,5,8>$
+  \end{tabular}
+\end{description}
+
+Nun stellt sich nat"urlich die Frage nach der Laufzeit des Algorithmus f"ur eine Eingabe der Gr"o"se $n$.
+Dazu treffen wir erstmal folgende Festlegungen. Die Laufzeit wird im weiteren als Komplexit"at des Algorithmus bezeichnet.
+\bigskip
+
+\noindent \textbf {Definition:} $c_i$ sind die Kosten f"ur die Ausf"uhrung der i-ten Zeile des Algorithmus.
+
+\noindent \textbf {Definition:} $t_j$ ist Anzahl der Ausf"uhrungen des Tests der while-Bedingung f"ur A[j].
+\bigskip
+
+In der Tabelle wird die Anzahl der Ausf"uhrungen jeder Zeile des Pseudocodes angegeben. Daraus errechnen wir dann
+die Komplexit"at des Algorithmus, so erhalten wir eine Aussage "uber die G"ute des Verfahrens.
+
+\begin{table}[h]
+  \begin{tabular}{*{3}{l}}
+    Befehl & $c_i$ & Anzahl der Aufrufe\\
+    \hline
+    1 & $c_1$ & $n$\\
+    2 & $c_2$ & $n-1$\\
+    3 & $c_3$ & $n-1$\\
+    4 & $c_4$ & $\sum_{j=2}^{n}t_j$\\
+    5 & $c_5$ & $\sum_{j=2}^{n}t_j-1$\\
+    6 & $c_6$ & $\sum_{j=2}^{n}t_j-1$\\
+    7 & $c_7$ & $n-1$\\
+  \end{tabular}
+  \caption{Kosten f"ur \textsc{InsertionSort}} 
+\end{table}
+
+\begin{align*}
+  T(n) &= c_1\,n + c_2(n-1) + c_3(n-1) + c_4\sum_{j=2}^{n}t_j
+     + (c_5+c_6)\sum_{j=2}^{n}(t_j-1)\\
+  &=\underbrace{(c_1+c_2+c_3+c_4+c_7)}_{a}n -
+     \underbrace{(c_2+c_3+c_4+c_7)}_{b} +
+     \underbrace{(c_4+c_5+c_6)}_{d}\sum_{j=2}^{n}(t_j-1)\\
+  &=  a\,n-b+d\sum_{j=2}^{n}(t_j-1)
+\end{align*}
+
+Als Laufzeiten erhalten wir also
+\begin{tabbing}
+bester Fall (schon sortiert): \= $ \forall j \, \, t_j=1 \Rightarrow$ \= $T(n)=\sum_{j=2}^{n}(j-1)= \frac {n^2-n}{2} \,$ \= $O(n^2$) \kill
+bester Fall (schon sortiert): \> $ \forall j \, \, t_j=1 \Rightarrow$ \> $T(n)=a*n-b$ \> $=\Theta(n)$ \\ 
+schlechtester Fall: \> $ \forall j \, \, t_j=j \Rightarrow$ \> $T(n)=\sum_{j=2}^{n}(j-1)= \frac {n^2-n}{2}$ \> $=O(n^2$)\\
+durchschnittlicher Fall: \> \> $T(n)=\frac{d}{4}n^2+(a-\frac{d}{4})n-b$ \> $=O(n^2$)
+\end{tabbing}
+
+\noindent Anmerkungen dazu:
+
+F"ur den durchschnittlichen Fall wird angenommen, da"s alle
+Inputreihenfolgen gleichwahrscheinlich sind.
+Dieser Algorithmus braucht auch im \textbf{average case} O(n$^2)$. F"ur das Sortieren gibt es
+bessere Algorithmen.
+
+\section{Die O-Notation}
+$\forall_n^\infty$ bedeutet f"ur alle $n$ bis auf endlich viele
+Ausnahmen, gleichbedeutend mit $\exists n_0 \in \mathbb{N}: \forall n\geq n_0$
+\begin{align*}
+  O(g(n)) &:= \{ f(n) | \exists c_2 > 0, n_0 \in \mathbb{N}:\:
+    \forall_n^\infty: 0\leq f(n)\leq c_2\,g(n)\}\\
+  \Omega(g(n)) &:= \{ f(n) | \exists{}c_1 > 0, n_0 \in  \mathbb{N}:\:
+    \forall_n^\infty: 0\leq c_1\,g(n)\leq f(n) 
+    \} \\
+  \Theta(g(n)) &:= \{ f(n) | \exists c_1, c_2 > 0, n_0 \in \mathbb{N}:\: 
+    \forall_n^\infty: c_1\,g(n)\leq f(n)\leq c_2\,g(n)\} =
+    \hfill O(g(n)) \cap \Omega(g(n))\\
+o(g(n)) &:= \{ f(n) | \exists c_2 > 0, n_0 \in \mathbb{N}:\:
+    \forall_n^\infty: 0\leq f(n)< c_2\,g(n)\}\\
+\omega(g(n)) &:= \{ f(n) | \exists{}c_1 > 0, n_0 \in  \mathbb{N}:\:
+    \forall_n^\infty: 0\leq c_1\,g(n)< f(n) 
+    \}
+\end{align*} 
+
+$f$ w"achst mit zunehmendem $n$ proportional zu $g$.
+
+%
+%
+% Jonas Melzer
+
+\subsection{Ein Beispiel}
+Es sei $f(n) = n^2+99n$
+
+\begin{enumerate}
+\item   Behauptung: $f \in O(n^2)$\\
+        Beweis: Gesucht ist ein $c>0$ und ein $n_0 \in \mathbf{N}$, f"ur das gilt $f(n)\leq c\, n^2 $ 
+        f"ur alle $n\geq n_0$\\
+        Das bedeutet konkret f"ur unsere Behauptung:\\
+        $f(n)= n^2+99n \leq n^2+99n^2 =100 n^2$.\\
+        Mit den Werten $c=100$ und $n_0 = 1$ ist unsere Behauptung erf"ullt.
+
+\item   Behauptung: $f \in \Omega(n^2)$\\
+        Hier werden Werte $c>0, \, n_0 \in \mathbf{N}$ gesucht f"ur die gilt: $f(n) \geq c\, n^2 \ \forall n\geq n_0$. Also $n^2+99n \geq
+        c\, n^2$. Das l"a"st sich umformen zu $99n \geq (c-1)n^2$ und weiter zu $99 \geq (c-1)n$, also ist jedes $c: 0<c \leq 1$ eine
+        L"osung.
+
+\item   Behauptung: $f \in \Theta(n^2)$\\
+        Beweis: $f \in O(n^2), \quad f(\Omega(n^2)) \Rightarrow f \in O(n^2)\cap \Omega(n^2)=\Theta(n^2)$
+
+\item   Behauptung: $f \in O(n^2 \log\log n)$\\
+        Beweis: "Ubung
+\end{enumerate}
+
+\subsection{Einige Eigenschaften}
+\begin{description}
+\item[Transitivit"at:]
+\begin{tabbing}
+platzhalter \= \kill
+        \> $f(n) \in O(g(n))$ und $g(n) \in O(h(n))=f(n) \in O(h(n))$\\
+        \> $f(n) \in o(g(n))$ und $g(n) \in o(h(n)) \Rightarrow f(n) \in o(h(n))$\\
+        \> $f(n) \in \Omega(g(n))$ und $g(n) \in \Omega(h(n))=f(n) \in \Omega(h(n))$\\
+        \> $f(n) \in \omega(g(n))$ und $g(n) \in \omega(h(n)) \Rightarrow f(n) \in \omega(h(n))$\\
+        \> $f(n) \in \Theta(g(n))$ und $g(n) \in \Theta(h(n))=f(n) \in \Theta(h(n))$
+\end{tabbing}
+\item[Reflexivit"at:]
+        $f(n) \in O(f(n)), \quad f(n) \in \Theta(f(n)), \quad f(n) \in \Omega(f(n))$
+\item[Symmetrie:]
+        $f(n) \in \Theta(g(n)) \Leftrightarrow g(n) \in \Theta(f(n))$
+\item[Schiefsymmetrie:]
+        $f(n) \in O(g(n)) \Leftrightarrow g(n) \in \Omega(f(n))$
+\end{description}
+$\Theta$ ist eine "Aquivalenzrelation auf der Menge der schlie"slich positiven Funktionen.
+$O,o,$ $\Omega,\omega$ sind nichtlineare (totale) Ordnungen.
+
+Beispiel: $f(n)=n$ und $g(n)=n^{1+sin(n\Pi)}$ sind nicht vergleichbar mittels der O-Notation.
+
+\subsection{Konventionen}
+\begin{enumerate}
+\item   Wir f"uhren die Zeichen \emph{floor} $ \lfloor \rfloor$ und \emph{ceil} $\lceil \rceil$ ein,
+        wobei $\lfloor x \rfloor \, ( \lceil x \rceil)$ die gr"o"ste (kleinste) ganze Zahl kleiner oder gleich
+        (gr"o"ser oder gleich) $x$ bezeichnet. Z.B. $3=\lfloor 3,5\rfloor \leq 3,5 \leq \lceil 3,5 \rceil=4$
+\item   Der Logarithmus $\log$ soll immer als $\log_2$, also als dualer Logarithmus interpretiert werden. Im Sinne der O-Notation ist das
+irrelevant, da Logarithmen mit unterschiedlicher Basis in einem konstanten Verh"Altnis zueinander stehen. Z.B. $\log_2 n = 2 \, \log_4 n$
+\item   $\log^{(0)}n := n; \quad \log^{(i)}n := \log^{(i-1)}\log n$
+\item   $\log^{*}n := \min \, \{i \, | \, log^{(i)}n \leq1 \}$ Es gilt $ \lim\limits_{n \rightarrow \infty}{log^{*}n} = + \infty$
+\end{enumerate}
+
+\subsection{Eine Beispieltabelle}
+Die folgende Tabelle enth"alt, aufsteigend nach dem Wachstum geordnet, Beispielfunktionen.
+Dabei soll gelten: $f(n)=o(g(n));\ 0 < \alpha < \beta,\ 0<a<b,\ 1<A<B$,
+$\alpha,\ \beta,\ a,\ b, \ A,\ B \in \mathbb{R}$.
+
+Die Linie zwischen Formel Nummer neun und zehn repr"asentiert die bereits erw"ahnte Cook'sche Linie.
+\bigskip
+
+\begin{table}[h]
+\begin{tabular}{c|cr}
+    Nummer      &Funktion       \\ \hline
+    1   &       $\alpha (n)$    \\
+    2   &       $\log^{*}n$     \\
+    3   &       $\log \log n $  \\
+    4   &       ${(log \, n)}^{\alpha}$ \\
+    5   &       ${(log \, n)}^{\beta}$  \\
+    6   &       $n^a$           \\
+    7   &       $n \, (log \, n)^{\alpha}$      \\
+    8   &       $n^{\alpha}{(\log n)}^{\beta}$  \\
+    9   &       $n^b$           & noch polynomial\\ \hline
+    10  &       $A^n$           & exponentiell\\
+    11  &       $A^n n^a$       \\
+    12  &       $A^n n^b$       \\
+    13  &       $B^n$           
+\end{tabular}
+\end{table}
+
+Desweiteren gilt die folgende Regel:
+
+\noindent
+$(f_1(n)+ \dots +f_m(n)) \in O (\max\{f_1(n),\dots,f_m(n)\})$, mengentheoretisch ausgedr"uckt gilt also: $O(f_1(n)) \cup \dots
+\cup O(f_m(n)) = O (\max\{f_1(n),\dots,f_m(n)\})$
+
+
+\chapter{Jetzt geht's los}
+
+\section{Rekurrenzen}
+Hier werden ein rekursive Ans"atze verwendet. Das Ausgangsproblem wird also in immer kleinere Teilprobleme zerlegt.
+Irgendwann liegt, analog zu einem induktiven Beweis, ein Trivialfall vor, der sich einfach l"osen l"a"st. Aus den L"osungen der Trivialf"alle
+wird dann sukzessiv eine L"osung des Gesamtproblems konstruiert.
+
+\subsection{Sortieren "uber Divide and Conquer (Teile und Herrsche)}
+%
+% Christoph Henniger
+%
+Dazu wird zun"achst das Verfahren \textsc{MergeSort} vorgestellt und anhand eines Beispiels verdeutlicht
+\begin{definition}[\textsc{MergeSort}]
+        Eine Folge $A=a_l\ldots a_r$ von n=r-l+1 Schl"usseln wird sortiert, indem sie zun"achst rekursiv immer weiter
+	in m"oglichst gleich lange Teilfolgen gesplittet wird. Haben die Teilfolgen die L"ange 1 k"onnen jeweils zwei durch einen direkten
+	Vergleich sortiert werden. Dann werden die Teilfolgen wieder schrittweise zusammengemischt, bis schlie"slich die sortierte Eingabe
+	vorliegt. 
+\end{definition}
+
+%Sebastian Oerding
+\subsection{Ein Beispiel f"ur \textsc{MergeSort}}
+
+\begin{center}
+1 7 8 3 4 6 5 9
+\medskip
+
+1 7 8 3 \hspace{10pt} 4 6 5 9
+\medskip
+
+1 7 \hspace{10pt} 8 3 \hspace{10pt} 4 6 \hspace{10pt} 5 9
+\medskip
+
+$\underbrace{1 \hspace{15pt} 7 \hspace{15pt} 8 \hspace{15pt} 3 \hspace{15pt} 4 \hspace{15pt} 6 \hspace{15pt} 5 \hspace{15pt}
+9}_{\textrm{\textup{Aufsplitten \ der \ Eingabe}}}$
+\medskip
+
+1 7 \hspace{10pt} 3 8 \hspace{10pt} 4 6 \hspace{10pt} 5 9
+\medskip
+
+1 3 7 8 \hspace{10pt} 4 5 6 9
+\medskip
+
+$\underbrace{1 \hspace{5pt} 3 \hspace{5pt} 4 \hspace{5pt} 5 \hspace{5pt} 6 \hspace{5pt} 7 \hspace{5pt} 8 \hspace{5pt}
+9}_{\textrm{\textup{Sukzessives Zusammenmischen der sortierten Teilfolgen}}}$
+\end{center}
+
+Das Mischen funktioniert in O(n) Zeit, zur Verdeutlichung wird es nochmal exemplarisch skizziert, dazu werden zwei Folgen mit m
+Elementen zusammengemischt.
+
+$\left. 
+\begin{array}{l}
+{\textrm{\textup{a}}}_1<\ldots<{\textrm{\textup{a}}}_m\\
+\phantom{leer}\\
+{\textrm{\textup{b}}}_1<\ldots<{\textrm{\textup{b}}}_m
+\end{array}
+\right\} {\textrm{\textup{c}}}_1<\ldots<{\textrm{\textup{c}}}_{2m}$
+\bigskip
+
+Die beiden Folgen werden also zu einer in sich sortierten Folge der doppelten L"ange gemischt. Wie im folgenden zu sehen, werden immer genau
+zwei Elemente miteinander verglichen. Der Fall, da"s zwei Teilfolgen unterschiedliche L"ange haben, kann o.B.d.A. ignoriert werden.
+\bigskip
+
+b$_1<$a$_1 \leadsto \begin{array}{l}
+\downarrow\\
+{\textrm{\textup{b}}}_1
+\end{array} \leadsto$
+b$_2<$a$_1 \leadsto \begin{array}{l}
+\downarrow\\
+{\textrm{\textup{b}}}_2
+\end{array} \leadsto$
+a$_1<$b$_3 \leadsto \begin{array}{l}
+\downarrow\\
+{\textrm{\textup{a}}}_1
+\end{array} \leadsto \ldots \leadsto {\textrm{\textup{b}}}_1, \, {\textrm{\textup{b}}}_2, \, {\textrm{\textup{a}}}_1, \ldots$
+\bigskip
+
+An konkreten Zahlen l"a"st sich das vielleicht noch besser verfolgen, das Mischen im letzten Schritt aus dem Beispiel s"ahe wie folgt aus.
+\bigskip
+
+$1<4 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{1}}$} $\leadsto
+3<4 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{3}}$} $\leadsto
+7>4 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{4}}$} $\leadsto 
+7>5 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{5}}$} $\leadsto
+7>6 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{6}}$} $\leadsto$
+\medskip
+
+$7<9 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{7}}$} $\leadsto
+8<9 \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{8}}$} $\leadsto
+9<+\infty \leadsto$ \raisebox{-2.5ex}{$\stackrel
+{\downarrow}
+{\textcircled{9}}$} $
+\leadsto<1,3,4,5,6,7,8,9>$
+\medskip
+
+Der Vergleich mit $\infty$ vereinfacht das Mischen, da sich damit eine kompliziertere Fallunterscheidung f"ur den Fall er"ubrigt, 
+da"s alle Elemente einer Teilfolge beim Mischen bereits "`verbraucht"' wurden.
+
+Jeder Vergleich von zwei Elementen ergibt ein Element der neuen Folge und es werden immer nur zwei Werte verglichen, was in
+O(1) Zeit klappt. Also sind zwei Teilfolgen nach O(\textit{n}) Schritten zu einer neuen Folge zusammengemischt und man erh"alt
+O(\textit{n}) als Kosten f"ur das Mischen.
+F"ur das gesamte Verfahren \textsc{MergeSort} ergibt sich die \textit{Rekurrenz} T(n)=2T(n/2)+O(n), die zu einer Komplexit"at von O(n
+log n) f"uhrt. Verfahren f"ur das L"osen von Rekurrenzen werden nach Angabe des Pseudocodes und einer etwas
+formaleren Laufzeitanalyse f"ur \textsc{MergeSort} eingef"uhrt.
+
+% Christoph Henniger
+%
+\begin{Algorithmus}[h]
+\addcontentsline{alg}{Algorithmus}{\textsc{MergeSort}}
+\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort}, emphstyle=\textsc, escapeinside=~~}  
+    \begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{MergeSort}, gobble=3]{MergeSort}   
+   if (l < r) then
+     p :=$\lfloor\frac{l+r}{2}\rfloor$ 
+     MergeSort(A, l, p)
+     MergeSort(A, p+1, r)
+     Merge
+    \end{lstlisting}
+  \end{Algorithmus}
+  
+\begin{table}[h]
+  \begin{tabular}{*{2}{l}}
+    Zeile & Asymptotischer Aufwand\\
+    \hline
+    1 & $\Theta(1)$\\
+    2 & $\Theta(1)$\\
+    3 & $T(\frac{n}{2})$\\
+    4 & $T(\frac{n}{2})$\\
+    5 & $\Theta(n)$\\
+  \end{tabular}
+  \caption{Kosten f"ur \textsc{MergeSort}} 
+\end{table}
+
+Zeile 1 und 2 sind elementare Vergleichs- und Zuweisungsoperationen, welche in O(1) Zeit m"oglich sind. 
+Dem rekursiven Aufruf von Mergesort in Zeile 3 und 4 wird jeweils nur eine H"alfte der Schl"ussel "ubergeben, 
+daher ist der Zeitaufwand je $T(\frac{n}{2})$. F"ur das Zusammenf"uhren der beiden Teilmengen in Zeile 5 gilt: 
+F"ur zwei Teilmengen der L"ange $n_1$ und $n_2$ sind mindestens $min(n_1,n_2)$ und h"ochstens $n_1 + n_2 -1$ Schl"usselvergleiche notwendig. 
+Zum Verschmelzen zweier etwa gleich langer Teilfolgen der Gesamtl"ange n, werden also im ung"unstigsten Fall $\Theta(n)$ Schl"usselvergleiche ben"otigt.
+
+Wie bereits gezeigt, gilt f"ur die Gesamtlaufzeit die folgende Rekurrenz $T(n) = 2\cdot T(\frac{n}{2})+\Theta(n)$, zum L"osen einer
+Rekurrenz mu"s aber auch immer eine sog. boundary condition, zu deutsch Randbedingung, bekannt sein, analog zur L"osung des Trivialfalles einer rekursiven
+Funktion. Bei \textsc{MergeSort} gilt f"ur T(1) die Randbedingung $T(1) = 1\ (=\Theta(1))$
+
+Mit Hilfe des Mastertheorem - siehe Kapitel \textit{Methoden zur L"osung von Rekurrenzen} - ergibt sich folgende L"osung:
+
+$T(n) = \Theta(n\, \log n)$ 
+
+Anmerkung: Floors und ceilings werden jetzt und meist in Zukunft weggelassen - das ist vertretbar.
+
+\begin{description}
+	\item [Bin"arbaum-Paradigma:] 
+\end{description}
+	
+$$ \input{221003a.latex} $$
+
+\begin{definition}
+	  Ein Bin"arbaum ist eine Menge von drei Mengen von Knoten. Zwei davon sind wieder Bin"arbaume sind und heissen linker bzw.
+	  rechter Teilbaum, die dritte Menge ist die Einermenge \{ROOT\}. Andernfalls ist die Menge leer.
+	  
+	  Bei einem Baum, der nur aus der Wurzel besteht, sind also die Mengen linker Teilbaum und rechter Teilbaum jeweils die leere
+	  Menge.
+\end{definition}
+
+$$ \input{221003b.latex} $$
+
+Die Anwendung des Bin"arbaumparadigmas f"ur parallele Algorithmen wird durch die folgende, grobe Schilderung deutlich.
+Man stellt sich vor, auf jedem inneren Knoten des Baumes sitzt ein Prozessor, welcher parallel von Level zu Level fortschreitend die
+Aufgabe l"ost.
+
+Paralleles und optimales Sortieren ben"otigt $O(log\,n)$ Zeit. Der Beweis hierf"ur (Richard Cole) ist extrem schwer und wird an dieser Stelle nicht aufgef"uhrt.
+
+Daf"ur folgt hier ein einfacheres Beispiel: Addiere n Zahlen, die Eingabe liege wieder als Liste A ($=(a_1,\ldots,a_n)$) vor.
+
+\begin{Algorithmus}[h]
+\addcontentsline{alg}{Algorithmus}{\textsc{ParallelSort}}
+%\lstset{emph={Add}}
+\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort,Add}, emphstyle=\textsc, escapeinside=~~}
+\begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{ParallelSort}, gobble=1]{ParallelSort}
+ Zerlege A in A$_1$, A$_2$ (zwei H~\ttfamily{"a}~lften)
+  Add(A$_1$)
+  Add(A$_2$)
+      Add(A$_1$)$+$Add(A$_2$)
+      Ausgabe
+      \end{lstlisting}
+  \end{Algorithmus}
+
+$$ \input{221003c.latex} $$
+
+F"ur die Laufzeit gilt nun die Rekurrenz T$_{\textup{parallel}}(n) =$ T$_{\textup{parallel}}(\frac{n}{2}) + O(1)$,
+also T$(n)=$ T$(\frac{n}{2})+1$ und nach Aufl"osen der Rekurrenz T(n) = O(log n)
+
+\section{Methoden zur L"osung von Rekurrenzen}
+Viele Algorithmen enthalten rekursive Aufrufe. Die Zeitkomplexit"at solcher Algorithmen wird oft durch Rekurrenzen beschrieben.
+\begin{definition}[Rekurrenzen]
+Rekurrenzen sind Funktionen, welche durch ihren eigenen Wert f"ur kleinere Argumente beschrieben werden. F"ur den Trivialfall mu"s wie
+bei jeder rekursiven Funktion eine L"osung angegeben werden.
+\end{definition}
+Dieses Kapitel liefert vier Ans"atze zum L"osen von Rekurrenzen.
+%
+%
+Begonnen wird mit der Methode der vollst"andigen Induktion (Substitutionsmethode),
+bei der zur L"osung von Rekurrenzgleichungen im ersten Schritt eine m"ogliche L"osung der Gleichung erraten wird,
+die im zweiten Schritt mittels vollst"andiger Induktion best"atigt werden mu"s.		
+
+	\begin{description}
+		\item [Beispiel:] $T(n) = 2\, T\left(\frac{n}{2}\right) + n$, Randbedingung: $T(1)=1$
+
+		Ansatz: $T(n) \leq c\, n\, log\,n$; c ist konstant, $c \geq 1$
+		\begin{tabbing}
+			$T(n)$ \= $= 2\, T\left(\frac{n}{2}\right)+n\leq 2\, c\,\left(\frac{n}{2}\right)\, log\left(\frac{n}{2}\right)+n$\\
+			\> = $c\, n\, log\, n-c\, n\, log\,2+n$\\
+			\> = $c\, n\, log\, n-c\, n+n \leq c\, n\, log\, n$\\
+		\end{tabbing}
+		$\Rightarrow T(n)=O(n\, log\,n)$
+	\end{description}
+
+	\begin{description}
+		\item [Beispiel:] $T(n) = 2\, T\left(\frac{n}{2}\right) + b$, Randbedingung: $T(1)=1$
+
+		Ansatz: $T(n)=O(n)\Rightarrow T(n)\leq c\, n$; c ist konstant
+		\begin{tabbing}
+			$T(n)$ \= $= 2\, T(\frac{n}{2})+b$\\
+			\> = $2c\, \frac{n}{2} +b$\\
+			\> = $c\, n+b$; Annahme nicht erf"ullt, kein ausreichender Beweis
+		\end{tabbing}
+		neuer Ansatz: $T(n)\leq c\, n-b$
+		\begin{tabbing}
+			$T(n)$ \= $=2\, T\left(\frac{n}{2} \right)+b$\\
+			\> $\leq 2\left(c\, \frac{n}{2}-b\right)+b$\\
+			\> $=c\, n-2\, b+b$\\
+			\> $\leq c\, n-b$
+		\end{tabbing}
+		$\Rightarrow T(n)=O(n)$
+	\end{description}
+			
+Als n"achstes wird die Methode der Variablensubstitution gezeigt,
+bei der ein nicht elementarer Teilausdruck durch eine neue Variable substituiert wird. Dabei ist es wesentlich, da"s
+sich die dadurch neu entstandene Funktion gegen"uber der Ausgangsfunktion vereinfacht. Die vereinfachte Rekurrenzgleichung wird
+mittels anderer Verfahren gel"ost. Das Ergebnis wird anschlie"send r"ucksubstituiert.
+	\begin{description}
+		\item [Beispiel:] $T(n) = 2\, T(\lceil\sqrt{n}\rceil) + log\,n$, Randbedingung: $T(1)=1$
+
+		Substitutionsansatz: $k:=log\,n \Rightarrow 2^k=n$, nach Einsetzen gilt also: $T(2^k) = 2\, T(2^{\frac{k}{2}})+k$
+		
+		Jetzt wird $S(k) := T(2^k)$ gesetzt und somit gilt $S(k) = 2\, S\left(\frac{k}{2}\right)+k$, die Aufl"osung dieser
+		Rekurrenz z.B. mittels Induktion sei als "Ubungsaufgabe "uberlassen und ist deswegen im Anhang zu finden. 
+		F"ur die L"osung der Ausgangsrekurrenz mu"s dann aber noch die Substitution r"uckg"angig gemacht werden, dabei sei
+		ebenfalls auf Anhang~\ref{lsg_substitutionsansatz} verwiesen. 
+	\end{description}	
+
+Als dritttes wird die Methode der Rekursionsb"aume vorgestellt.
+Hierbei wird die Funktion mittels eines Rekursionsbaumes dargestellt. Dabei wird der nicht-rekursive Funktionsanteil in jeden Knoten
+geschrieben. F"ur jeden rekursiven Aufruf pro Funktionsaufruf erh"alt jeder Knoten einen Sohnknoten. Dies wird solange fortgef"uhrt bis
+in den Bl"attern ein Wert $< 1$ steht. Die Summe aller Knoteneintr"age bezeichnet die L"osung der Rekurrenz.
+	\begin{description}
+		\item [Beispiel:] $T(n) = 2\, T\left(\frac{n}{2}\right) + n$, Randbedingung: $T(1)=1$
+			
+		Ansatz: $T(n) = n + \frac{n}{2} + \frac{n}{2} + \frac{n}{4} + \frac{n}{4} + \frac{n}{4} + \frac{n}{4} + 8\, \frac{n}{8} + 
+		\ldots + {2^k} \, \frac{n}{2^{k+1}}\, T\left(\frac{n}{2^{k+1}}\right)$
+			
+		\input{221003d.latex}
+			
+		Der Aufwand jeder Zeile betr"agt O(n). Der Baum hat eine H"ohe von $log\,n$. Damit ergibt sich als L"osung: 
+		$O(n\, log\,n)$			
+		
+		\item [Beispiel:] $T(n) = 3\, T(\frac{n}{4}) + c\, n^2$
+						
+		Ansatz: $T(n) = c\, n^2 + \left(\frac{3}{16} \right) \, c\, n^2 + \left(\frac{3}{16}\right)^2\, c\, n^2 + \ldots +
+		\left(\frac{3}{16}\right)^{log\, \left(n-1\right)}\, c\, n^2 + \Theta\left(n^{\log_43}\right)$
+			
+		[es gilt: $n^{\log_43}=3^{\log_4n}$]
+			\begin{tabbing}
+				$T(n)$ \= $= \sum_{i=0}^{\log_4\left(n-1\right)}\left(\frac{3}{16}\right)^i\, c\, n^2+ \Theta\left(n^{\log_43}\right) 
+				< \sum_{i=0}^{\infty}\left(\frac{3}{16}\right)^i\, c\, n^2 + \Theta(n^{\log_43})$\\
+				\> $= \frac{1}{1-\frac{3}{16}}\, c\, n^2 + \Theta(n^{\log_43})=O(n^2)$
+			\end{tabbing}			
+		$$ \input{221003e.latex} $$
+	\end{description}
+		
+\begin{description}
+	\item [Beispiel:] $T(n) = T\left(\frac{n}{3}\right) + T\left(\frac{2\cdot n}{3}\right) + O(n)$, Randbedingung: $T(1)=1$
+	$$ \input{221003f.latex} $$
+	\end{description}		
+%Sebastian Oerding
+%
+Die vierte Methode, das L"osen mittels des sogenannten Mastertheorems erh"alt wegen ihres g"anzlich anderen Charakters einen eigenen
+Abschnitt.
+% Annette Eisenbraun
+%
+\section{Das Mastertheorem}
+Hier r"uckt das Wachstum des nicht-rekursiven Summanden im Vergleich zum Wachstum des rekursiven Anteils in den Mittelpunkt. Die Frage
+lautet also, wie f(n) im Vergleich zu \(\textup{T}\left(\frac{n}{b}\right)\) w"achst, die Vergleichsgr"o"se ist dabei \(n^{\log_ba}\).
+Im ersten Fall w"achst f(n) langsamer, im zweiten gleich schnell und im dritten polynomial schneller.
+
+Sei \(\textup{T}(n)=a\,\textup{T}\left(\frac{n}{b}\right)+\textup{f}(n)\) mit \( a \geq 1,\ b > 1\), 
+dann gilt asymptotisch f"ur gro"se $n$.
+
+\begin{enumerate}
+\item \(\textup{f}(n) \in \textup{O}(n^{\log_ba-\varepsilon} ) \) (mit \(\varepsilon > 0\) fest) \(\rightarrow \textup{T}(n) \in\Theta(n^{\log_ba})\)
+
+\item \(\textup{f}(n) \in\Theta(n^{\log_ba}) \rightarrow \textup{T}(n) \in\Theta(n^{\log_ba}\, \log n)\)
+
+\item \((\textup{f}(n) \in\Omega(n^{\log_ba+\varepsilon} ) \) (mit \( \varepsilon > 0 \) fest)
+\(\wedge\ \exists c < 1 : \forall^{\infty}_{n}
+a \, \textup{f}\left(\frac{n}{b}\right)  \leq c \, \textup{f}(n)) \rightarrow \textup{T}(n) \in \Theta(\textup{f}(n))\)
+\end{enumerate}
+
+Der Beweis ist etwas schwieriger und f"ur diese Vorlesung auch nicht von allzu gro"ser Bedeutung. R. Seidel hat auf seiner Homepage
+von 1995 den Kernsatz bewiesen, der ganze aber etwas kompliziertere Beweis ist in \cite{cormen} zu finden. 
+
+\subsection{Beispiele}
+\subsubsection{Beispiel: Bin"are Suche} 
+
+Eingabe ist eine sortierte Folge \(\textup{a}_1 < \dots < \textup{a}_{\textup{n}}\) und ein Wert $b$. Ausgegeben werden soll
+\(\iota \, \textup{i:a}_{\textup{i}} \leq b < \textup{a}_{\textup{i+1}}\), falls es existiert und ansonsten eine Fehlermeldung.
+\bigskip
+
+EXKURS: Bin"arer Suchb"aum
+\begin{figure}[H]
+	\begin{center}\input{271003a.latex}\end{center}
+	\caption{Bin"arbaum}
+	\label{271003a}
+\end{figure}
+
+Eigenschaften:
+\begin{itemize}
+	\item Die Werte sind in Bezug auf die Gr"o"se vergleichbar
+	\item Die rechten S"ohne eines Knotens enthalten gr"o"sere Werte als die linken S"ohne.
+\end{itemize}
+
+\begin{figure}
+	\begin{center}\input{271003b.latex}\end{center}
+	\caption{Suche im Bin"arbaum}
+	\label{271003b}
+\end{figure}
+
+Bei einer Anfrage an einen h"ohenbalancierten bin"aren Suchbaum werden in jedem Schritt die in Frage kommenden Werte halbiert (siehe Abbildung~\ref{271003b}), es
+werden praktisch Fragen der folgenden Form gestellt.
+
+ \quad \( b < a_{\frac{n}{2}} \) oder \( b \geq a_{\frac{n}{2}} \)?
+ 
+ \quad \( b < a_{\frac{n}{4}} \) oder \( b \geq a_{\frac{n}{4}} \)? bzw. \( b < a_{\frac{3n}{4}} \) oder \( b \geq a_{\frac{3n}{4}} \)?
+
+ \quad usw. 
+ 
+Die Suche l"auft bis zu der Stelle, an der der gesuchte Wert sein m"usste. Wenn er nicht dort ist, ist er nicht in der sortierten Folge
+vorhanden.
+%
+% Sebastian Oerding
+Der Einschr"ankung des Suchraumes durch eine Intervallhalbierung entspricht jeweils ein Abstieg innerhalb des Baumes um einen
+H"ohenlevel. D.h. die Anzahl der Rechenschritte ist so gro"s, wie der Baum hoch ist und es gilt die Rekurrenz: 
+\(\textup{T}(\textup{n})=\textup{T}(\frac{\textup{n}}{2}) + O(1)\)
+
+Zur Veranschaulichung einer alternativen Vorstellung, bei der in einem Feld gesucht wird, gehen wir von folgender Wette aus:
+
+\textit{Denke dir eine nat"urliche Zahl $a$ zwischen 0 und 1000. Wetten, da"s ich mit 10 Fragen herausbekomme, welche Zahl du dir gedacht
+hast!}
+
+Nun sei 128 die gedachte Zahl, die Fragen s"ahen dann so aus:
+
+1. Ist a$<$500? $\Rightarrow$ 0$\leq$a$<$500
+
+2. Ist a$<$250? $\Rightarrow$ 0$\leq$a$<$250
+
+3. Ist a$<$125? $\Rightarrow$ 125$\leq$a$<$250
+
+4. Ist a$<$187? $\Rightarrow$ 125$\leq$a$<$187
+
+5. Ist a$<$156? $\Rightarrow$ 125$\leq$a$<$156
+
+6. Ist a$<$141? $\Rightarrow$ 125$\leq$a$<$141
+
+7. Ist a$<$133? $\Rightarrow$ 125$\leq$a$<$133
+
+8. Ist a$<$129? $\Rightarrow$ 125$\leq$a$<$129
+
+9. Ist a$<$127? $\Rightarrow$ 127$\leq$a$<$129
+
+10. Ist a$<$128? $\Rightarrow$ 128$\leq$a$<$129 $\Rightarrow$ a=128 
+
+Bei einer Million Zahlen reichen "ubrigens 20 Fragen aus!
+\bigskip
+
+% 
+% Annette Eisenbraun
+Alternative Vorstellung schematisch:
+
+\begin{tabular}{lllllll}
+$a_1$     & $a_2$           & \dots   &  \( a_{\frac{n}{2}}\) & \( \vert a_{\frac{n}{2}+1}\) & \dots  & $a_n$ \\
+          &       ?         & $\geq$  & oder                  & $<$                          &  ?     &\\
+$\vert$   &                 &         & $\gets$               & $\vert$ $\to$                &        & $\vert$\\
+$\vert$   & $\gets$ & $\vert$ $\to$ & & $\vert$\\
+&         & $\vert$ $\gets$ & $\vert$ $\to$ & $\vert$
+\end{tabular}
+\bigskip
+
+Wie sieht nun die Einordung der bin"aren Suche in das Mastertheorem aus?
+Mit a = 1 und b = 2 gilt \(\log_ba = 0\), also \(\Theta\left(\textup{n}^{\log_ba}\right)=\Theta(1)\) und der zweite Fall kommt zur Anwendung.
+Also ist \(  \textup{T}(n) \in \Theta(n^{\log_ba}\log n)=\Theta(\log n) \).
+
+\subsubsection{Weitere Beispiele}
+\begin{enumerate}
+\item \( \textup{T}(n) = 9 \, \textup{T}\left(\frac{n}{3}\right) + 3 \, n\log n, \textup{also}\ a = 9,\ b = 3\ 
+\textup{und}\ n^{\log_ba} = n^{\log_39} = n^2.\)
+
+\(\textup{f}(n) = 3n\log n \in \textup{O}(n^{\log_ba-\varepsilon}) \)
+z.B. \(\textup{O}(n^{\frac{3}{2}})\) mit \( \varepsilon = \frac{1}{2} \)
+
+\( \Rightarrow \) Erster Fall \( \textup{T}(n) \in \Theta(n^{\log_ba}) = \Theta (n^2) \).
+
+\item \( \textup{T}(n) = 3 \, \textup{T}\left(\frac{n}{4}\right) + 2n\log n\).
+
+Die L"osung dieser "Ubungsaufgabe steht im Anhang~\ref{mastertheorem_Fall3}.
+
+\item \( \textup{T}(n) = 2 \, T(\frac{n}{2}) + 4n\log n\ \textup{also}\
+a = 2,\ b = 2\ \textup{und}\ n^{\log_ba} = n \).
+
+Wie man wei"s: \(4n\log n \in \Omega(n)\ \forall \epsilon >0\) aber \(4n\log n \notin \Omega(n^{1+\epsilon})\)
+	
+Es trifft {\underline {kein}} Fall zu!
+\end{enumerate}
+Das Mastertheorem deckt nicht alle F"alle ab!
+	
+\input{skriptb}
+% 13.10.2003 Adrian Knoth <adi@thur.de>
+\appendix    % ab hier ist Anhang
+
+\chapter{Der Plane-Sweep-Algorithmus im Detail}
+\label{planesweep}
+
+\begin{figure}
+  \begin{center} \input{131003d.latex} \end{center}
+  \caption{Liniensegmente mit Gleitgerade}
+  \label{131003d}
+\end{figure}
+
+Der \textsc{Plane-Sweep}-Algorithmus ist eine "au"serst bekannte
+Methode zur L"osung von Mengenproblemen. Der prim"are Gedanke
+besteht darin, eine vertikale Gerade, die \textit{Sweep\-line}, von
+links nach rechts durch die Ebene zu schieben und dabei den
+Schnitt der Geraden mit der Objektmenge zu beobachten. Es
+ist ebenfalls m"oglich, statt einer vertikalen Sweepline eine
+horizontale zu verwenden und diese von oben nach unten "uber die
+Objekte zu f"uhren. Einige Algorithmen ben"otigen mehrere Sweeps,
+durchaus in unterschiedliche Richtungen, um gewonnene Daten aus
+vorangegangenen "Uberstreich\-ungen zu verarbeiten.
+
+Dazu "`merkt"' sich die Sweepline entsprechend ihrer aktuellen
+Position die horizontal schneidenden Segmente anhand deren
+$y$-Koordinaten. Bei Erreichen eines vertikalen Elements
+werden alle in der Sweepline vorhandenen $y$-Koordinaten
+ermittelt, die im $y$-Intervall des vertikalen Segments
+liegen.
+
+Die Gleitgerade wird nicht stetig "uber die Objektmenge
+gef"uhrt, "uberabz"ahlbar viele Teststellen w"aren die Folge. 
+Lediglich $x$-Koordinaten, an denen ein Ereignis
+eintreten kann, werden in der Simulation ber"ucksichtigt.
+
+Im vorliegenden Fall sind das Anfangs- und End-$x$-Koordinaten von
+horizontalen Elementen sowie die $x$-Koordinate 
+vertikal verlaufender Strecken. Diese Werte bilden die Menge
+der \textit{event points}, sie kann h"aufig statisch implementiert werden.
+
+Die Sweepline-Status-Struktur hingegen mu"s dynamisch sein, da sich
+deren Umfang und Belegung an jedem event point "andern kann.
+
+Zur Beschreibung des Verfahrens ist es erforderlich, die nachfolgende
+Terminologie zu vereinbaren. Sie orientiert sich an der mathematischen
+Schreibweise:
+
+\begin{description}
+
+\item[$h=(x_1,x_2,y)$:] horizontal verlaufendes Liniensegment mit dem
+    Anfangspunkt $(x_1,y)$ und dem Endpunkt $(x_2,y)$
+\item[$v=(x,y_1,y_2)$:] vertikal verlaufendes Liniensegment mit dem
+    Anfangspunkt $(x,y_1)$ und dem Endpunkt $(x,y_2)$
+\item[$t_i$ f"ur $t=(x_1,\dots,x_n)$:] Zugriff auf die $i$-te Komponente des 
+   Tupels $t$, also $t_i=x_i$
+\item[$\pi_i(S)$:] F"ur eine Tupelmenge $S$ ist $\pi_i(S)$ die Projektion
+   auf die $i$-te Komponente
+\end{description} 
+
+Der Algorithmus nach G"uting~\cite{guting} gestaltet sich dann in dieser Weise:
+
+\textbf{Algorithmus} \textsc{SegmentIntersectionPS (H,V)}\\
+\{Eingabe ist eine Menge horizontaler Segmente H und eine Menge vertikaler
+ Segmente V, berechne mit Plane-Sweep die Menge aller Paare $(h,v)$
+mit $h{\in}H$ und $v{\in}V$ und $h$ schneidet $v$\}
+
+\begin{enumerate}
+\item
+Sei \begin{displaymath}
+  \begin{array}{rcl}
+  S =&& \{(x_1, (x_1,x_2;y)) | (x_1,x_2,y)\in H\}\\
+  &\cup& \{(x_2,(x_1,x_2,y)) | (x_1,x_2,y)\in H\}\\
+  &\cup& \{(x,(x,y_1,y_2)) | (x,y_1,y_2)\in V\};
+\end{array}
+\end{displaymath}
+($S$ ist also eine gemischte Menge von horizontalen und vertikalen Segmenten,
+in der jedes horizontale Segment einmal anhand des linken und einmal
+anhand des rechten Endpunkts dargestellt ist. Diese Menge beschreibt die
+Sweep-Event-Struktur.)\\
+Sortiere $S$ nach der ersten Komponente, also nach $x$-Koordinaten.
+
+\item
+Sei $Y$ die Menge horizontaler Segmente, deren $y$-Koordinate als
+Schl"ussel verwendet wird (Sweepline-Status-Struktur);\\
+$Y:=\emptyset$;\\
+durchlaufe $S$: das gerade erreichte Objekt ist
+\begin{enumerate}
+\item
+linker Endpunkt eines horizontalen Segments $h=(x_1,x_2,y)$:\\
+$Y := Y \cup \{(y,(x_1,x_2,y))\}$ (f"uge $h$ in $Y$ ein)
+\item
+rechter Endpunkt von $h=(x_1,x_2,y)$:\\
+$Y := Y \backslash \{(y,(x_1,x_2,y))\}$ (entferne $h$ aus $Y$)
+\item
+ein vertikales Segment $v=(x,y_1,y_2)$:\\
+$A :=$ 
+$\pi_2 (\{w\in Y | w_0 \in [y_1,y_2] \})$;
+ \hspace{1cm}  (finde alle Segmente in $Y$, deren
+   $y$-Koordinate im $y$-Intervall von $v$ liegt)\\
+gibt alle Paare in $A\times\{v\}$ aus
+\end{enumerate}
+\end{enumerate}
+\textbf{end} \textsc{SegmentIntersectionPS} 
+
+\chapter{Beispiele}
+%\mbox{\textcolor{red}{okay noch ziemlich popelig, ich lasse mir noch mehr einfallen bzw. strukturiere}}
+\section{L"osung Substitutionsansatz}
+\label{lsg_substitutionsansatz}
+
+Die Rekurrenz l"a"st sich nat"urlich auch anders als mit vollst"andiger Induktion l"osen, aber da dies mit der entsprechenden Absch"atzung ein
+gute Rechen"ubung ist, wird diese Methode benutzt.
+
+Als Verdacht wird S(k)$\leq(k\, log\,k)$ genommen.
+
+\noindent
+\(\textup{S}(k) = 2\, S\left(\frac{k}{2}\right)+k\leq 2\, \left(\frac{k}{2}\, log\, \frac{k}{2}\right)+k=\)
+\(k\, log\, \frac{k}{2}+k=k \left(log\, k-log\,2\right)+k=(k\, log\,k)\)
+
+Die R"ucksubstitution ist hier recht einfach und ergibt als Gesamtlaufzeit
+
+$\textup{T}(n)=\textup{T}(2^k)=\textup{S}(k)=\textup{O}(k\, log\,k)=\textup{O}(log\,n\, log^{(2)}\, n)$.
+
+\section{L"osung Mastertheorem}
+\label{mastertheorem_Fall3}
+
+\( \textup{T}(n) = 3 \, \textup{T}\left(\frac{n}{4}\right) + 2n\log n \Rightarrow a=3,\ b=4\) und \(\log_ba<1 \rightarrow 
+\textup{f}(n) \in \Omega(n^{log_43+\varepsilon})\) da \(\forall n \in \mathbb{N}:\,n>0:\,n^{log_43}<2n\log n\).
+
+Es k"onnte sich also um den dritten Fall handeln, dazu mu"s aber noch ein \(c < 1 : \forall^{\infty}_{n}:
+a \, \textup{f}\left(\frac{n}{b}\right)  \leq c \, \textup{f}(n)\) existieren. Gibt es also ein 
+\(c<1:\, \forall^{\infty}_{n}:\, 3\textup{f}\left(\frac{n}{4}\right) \leq c\textup{f}(n)\)? Ja, denn
+
+\begin{eqnarray*}
+3\textup{f}\left(\frac{n}{4}\right) & \leq & c\,\textup{f}(n)\\
+3\left[2\left(\frac{n}{4}\right) log \left(\frac{n}{4}\right)\right] & \leq & c\, 2n \log n\\
+\left(\frac{3}{4}\right) log \left(\frac{n}{4}\right) & \leq & c \log n\\
+\left(\frac{3}{4}\right) \log n- \log 4 & \leq & c \log n\\
+\left(\frac{3}{4}\right) \log n- 2 & \leq & c \log n\\
+\left(\frac{3}{4}\right) \frac{\log n}{\log n}-\frac{2}{\log n} & \leq & c\\
+\left(\frac{3}{4}\right) -\frac{2}{\log n} & \leq & c
+\end{eqnarray*}
+Da \(lim_{n \to \infty} \frac{2}{\log n}=0\) gilt die Ungleichung f"ur jedes \(c \in [\frac{3}{4},\ldots,1]\). %(offenes Intervall!) 
+Also handelt es sich um den dritten Fall des Mastertheorems und 
+\( \Rightarrow \textup{T}(n) \in \Theta (\textup{f}(n))=\Theta (n\log n)\).
+
+\section{Aufwandsabsch"atzung \textsc{Quicksort}}
+\label{quicksort}
+
+\begin{eqnarray}
+T(n) & = & (n+1)+ \frac{2}{n} \sum_{k=1}^nT(k-1) \rightarrow\\
+T(n-1) & = & n+\frac{2}{n-1} \sum_{k=1}^{n-1}T(k-1)\\
+(n-1)T(n-1) - (n-1)n & = & 2\sum_{k=1}^{n-1}T(k-1)
+\end{eqnarray}
+
+\begin{eqnarray*}
+n\, T(n) & = & (n+1)+ 2 \sum_{k=1}^nT(k-1)\\
+& = & n(n+1)+2\, T(n-1) +2 \sum_{k=1}^{n-1}T(k-1) \hspace{2cm} \textup{B.3 einsetzen}\\
+& = & (n+1)n+2\, T(n-1) + (n-1)T(n-1) -(n-1)n\\
+& = & [(n+1)-(n-1)]n+(2+n-1)\, T(n-1)\\
+& = & 2n+(n+1)T(n-1) \rightarrow 
+\end{eqnarray*}
+
+\begin{displaymath}
+\frac{T(n)}{n+1}= \frac{T(n-1)}{n}+ \frac{2}{n+1}	
+\end{displaymath}
+
+\section{Fertiger RS-Baum nach Rotation}
+\label{rsrotation}
+\begin{figure}[H]
+\begin{center}
+\input{261103e.latex}
+\end{center}
+\end{figure}
+
+\section{Der Drehsinn} \label{drehsinn}
+Bei vielen Problemen der algorithmischen Geometrie ist wie bei der konvexen H"ulle einer Menge der Drehsinn von Punkten (bzw. Geraden) zueinander wichtig.
+Dieser l"a"st sich mittels einer Determinante berechnen, wobei letzten Endes nur wichtig ist, ob die Determinante kleiner oder gr"o"ser
+0 ist. Zur
+mathematischen Berechnung des Drehsinns. Daf"ur braucht man nat"urlich wie in Skizze
+\ref{drehsinnskizze} drei Punkte (bzw. zwei Geraden) zwischen denen "uberhaupt ein Drehsinn berechnet werden kann.
+
+\begin{figure}[H]
+\begin{center}
+\input{031203c.latex}
+\end{center}
+\caption{Beispiel zur Berechnung des Drehsinns}
+\label{drehsinnskizze}
+\end{figure}
+
+Nun seien (1,0), (0,1), (1,1) und (0,0) die Koordinaten der Punkte $x,\ y,\ z \mbox{ und }y'$ 
+und wie "ublich mit $x_1,\  x_2,\ y_1,\ y_2,\ z_1,\ z_2 \mbox{ und } y'_1,\ y'_2$
+bezeichnet. Wie bereits angemerkt ist das Vorzeichen, nicht der genaue Wert der
+Determinante, entscheidend. Diese angenommen\-en Werte vereinfachen nur die Rechnung:
+
+\[ \left| 
+\begin{array}{ccc}
+1 & x_1 & x_2\\
+1 & y_1 & y_2\\
+1 & z_1 & z_2\\
+\end{array} 
+\right|=
+\left| 
+\begin{array}{ccc}
+1 & 1 & 0\\
+1 & 1 & 1\\
+1 & 0 & 1\\
+\end{array} 
+\right|=1-1+1=1>0 \]
+
+\[ \left| 
+\begin{array}{ccc}
+1 & x_1 & x_2\\
+1 & y'_1 & y'_2\\
+1 & z_1 & z_2\\
+\end{array} 
+\right|=
+\left| 
+\begin{array}{ccc}
+1 & 1 & 0\\
+1 & 0 & 0\\
+1 & 0 & 1\\
+\end{array} 
+\right|=-1<0 \]
+
+In dem einen Fall handelt es sich also um eine Linksdrehung, im anderen um eine Rechtsdrehung. Der Aufwand f"ur die Berechnung des
+Drehsinns liegt in O(1), da immer nur eine Determinante konstanter Gr"o"se berechnet werden mu"s.
+
+\section{Teleskopsummen} \label{Teleskopsumme}
+Ab und zu tauchen Summen "ahnlich zu der in der Potentialmethode auf. Folgende Trivialit"at hilft manchmal sehr
+beim Vereinfachen:
+\[\sum_{i=0}^n ({\Phi}_i-{\Phi}_{i-1})=
+\begin{array}{ll}
+& {\Phi}_1-{\Phi}_0\\
++ & {\Phi}_2-{\Phi}_1\\
+& \vdots \\
++ & {\Phi}_{n-1}-{\Phi}_{n-2}\\
++ & {\Phi}_n-{\Phi}_{n-1}\\
+\end{array}
+={\Phi}_n-{\Phi}_0\] 
+\begin{thebibliography}{99}
+\label{literaturverzeichnis}
+%\addcontentsline{toc}{Inhaltsverzeichnis}{Literaturverzeichnis}
+\bibitem{cormen}
+T.H.~Cormen, C.E.~Leierson, R.L.~Rivest, C.~Stein; \textit{Introduction to Algorithms}, MIT Press, 2$^{nd}$ edition, 2001
+\bibitem{ottmann}
+Ottmann, Widmeyer; \textit{Algorithmen und Datenstrukturen}, Spektrum Akademischer Verlag GmbH, ISBN 3-8274-1029-0
+\bibitem{schoening}
+Sch"oning; \textit{Algorithmik}, Spektrum Akademischer Verlag GmbH, ISBN 3-8274-1092-4
+\bibitem{sedgewick}
+Sedgewick; Algorithmen (mehrere unterschiedliche Fassungen verf"ugbar)
+\bibitem{klein}
+R.~Klein; \textit{Algorithmische Geometrie}, Addison--Wesley, 1997
+\bibitem{guting}
+R.~G"uting; \textit{Algorithmen und Datenstrukturen}, Teubner, 1992
+\end{thebibliography}
+\end{document}
+% LaTeX_output_format: pdf
