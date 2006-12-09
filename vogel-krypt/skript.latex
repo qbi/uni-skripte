@@ -150,6 +150,7 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
+\renewcommand*{\tilde}{\widetilde}
 
 % rubber: depend fmc.mp
 \iffalse\includegraphics{fmc.1}\fi
@@ -1533,15 +1534,6 @@ d.\,h. wir arbeiten mit Teilmengen von $\Z_{2}^{n}$.
   \textit{gleichen} Länge.
 \end{defini}
 
-% Bei der Verschlüsselung können
-% \begin{itemize}
-%  \item gleich Blöcke gleich verschlüsselt werden -- in Analogie zur
-%   monoalphabetischen Verschlüsselung (lineare affine Blockchiffren) oder
-%  \item gleiche Blöcke in Abhängigkeit von ihrer Position auf
-%   verschiedene Weise verschlüsselt -- in Analogie zur polyalphabetischen
-%   Verschlüsselung.
-% \end{itemize}
-
 Damit eine Entschlüsselung des Textes möglich ist, muss die Verschlüsselung
 bijektiv seien und da sie von $\Z_{2}^{n}$ auf $\Z_{2}^{n}$ abbildet, ist sie
 eine Permutation der $2^{n}$ möglichen Blöcke. Es gibt also $2^{n}!$
@@ -1557,7 +1549,7 @@ abschätzen:
      \Bigl(\frac{2^{n}}{e}\Bigr)^{2^{n}}\\
   l &\approx \log_{2} \big(\sqrt{2\pi} \cdot 2^{32} \cdot
      \Big(\frac{2^{64}}{e}\Big)^{2^{64}} \big)
-     \approx 64 \cdot 2^{64} = 2^{8+64}
+     \approx 64 \cdot 2^{64} = 2^{6+64}
 \end{align*}
 Es würden also zum Abspeichern \textit{eines} Schlüssels für eine Nachricht
 $\frac{1}{8}\cdot 2^{20}\approx 10^{5}$~Pebibyte benötigt. In der Praxis kann
@@ -1581,6 +1573,114 @@ Begründer der Informationstheorie, zurückgehen, zu erreichen:
   Bit des Schlüssels ab.
 \end{itemize}
 
+\subsection{Blockverknüpfungsmodi}
+
+Bei der Verschlüsselung können gleiche Blöcke gleich verschlüsselt werden
+--~in Analogie zur monoalphabetischen Verschlüsselung~-- oder sie werden in
+Abhängigkeit von ihrer Position im Klartext auf verschiedene Weise
+verschlüsselt --~in Analogie zur polyalphabetischen Verschlüsselung.
+
+\begin{figure}
+  \begin{minipage}[t]{.45\linewidth}
+    \input{ecb.pdf_t}
+    \caption{Electronic Code Book}
+    \label{fig:ecb}
+  \end{minipage}%
+  \begin{minipage}[t]{.55\linewidth}
+    \input{cbc.pdf_t}
+    \caption{Cipher Block Chaining}
+    \label{fig:cbc}
+  \end{minipage}%
+\end{figure}
+
+Die erste Variante bezeichnet man als Electronic Code Book Mode (\highl{ECB}).
+Jeder Block wird unabhängig von seiner Position mithilfe des Schlüssels durch
+die Funktion~$f$ in einen Geheimtextblock überführt. \autoref{fig:ecb}
+\begin{align*}
+  c_{i} &= E_{K}(m_{i})& m_{i} &= D_{K}(c_{i})
+\end{align*}
+
+Dies hat den Vorteil, dass die Verschlüsselung aller Blöcke parallel ablaufen
+kann. Jedoch bleiben die Anomalien des Klartextes (häufigeres Auftreten
+bestimmter Blöcke) erhalten. Da sich Änderungen an einem Klartext- oder
+Chiffretextblock nur auf genau einen Klartext bzw. Chiffretextblock auswirken,
+könnte ein Angreifer gezielt Daten verändern, ohne dass es bemerkt wird.
+Jedoch bietet dieser Umstand auch die Möglichkeit einzelne Blöcke gezielt zu
+entschlüsseln oder zu verändern, ohne die ganze Nachricht entschlüsseln zu
+müssen. Für eine Dateiverschlüsselung z.\,B. könnte gezielt der neue
+Klartextblock verschlüsselt und in dem Geheimtext ersetzt werden.
+
+Beim Cipher Block Chaining Mode (\highl{CBC}) wird der Klartextblock vor der
+Verschlüsselung mit dem Ergebnis der Verschlüsselung des vorherigen Blocks
+verknüpft, um für gleiche Klartextblöcke unterschiedliche Geheimtextblöcke zu
+erzeugen. Dies bringt jedoch die Nachteile mit sich, dass die Verschlüsselung
+der Blöcke nicht mehr parallel ablaufen kann und dass bei einer Änderung eines
+Klartextblocks alle folgenden Geheimtextblöcke neu berechnet werden müssen.
+\autoref{fig:cbc}
+\begin{align*}
+  c_{i} &= E_{K}(m_{i}\oplus c_{i-1}) & m_{i} &= D_{K}(c_{i}) \oplus c_{i-1}
+\end{align*}
+
+Eine Veränderung des $r$.~Geheimtextblocks ändert nur den $r$. und den
+folgenden Klartextblock:
+\begin{align*}
+  D_{K}(\tilde{c_{r}}) \oplus c_{r-1} &\ne m_{r}\\
+  D_{K}(c_{r+1}) \oplus \tilde{c_{r}} &\ne m_{r+1}\\
+  D_{K}(c_{r+2}) \oplus c_{r+1} &= m_{r+2}
+\end{align*}
+
+\begin{figure}
+  \centering
+  \input{cfb.pdf_t}
+  \caption{Cipher Feedback}
+  \label{fig:cfb}
+\end{figure}
+
+Cipher Feedback Mode (\highl{CFB}) ist ähnlich zu CBC. Der voherige
+Geheimtextblock wird verschlüsselt und dieses Ergebnis mit dem Klartextblock
+verknüpft, um Anomalien im Klartext auszugleichen. \autoref{fig:cfb}
+\begin{align*}
+  c_{i} &= E_{K}(c_{i-1}) \oplus m_{i} & m_{i} &= E_{K}(c_{i-1}) \oplus c_{i}
+\end{align*}
+
+Die Verschlüsselungsfunktion~$f$ muss nicht umkehrbar sein, da man zur
+Entschlüsselung ebenfalls die Verschlüsselungsfunktion verwendet.
+
+\begin{figure}
+  \centering
+  \input{ofb.pdf_t}
+  \caption{Output Feedback}
+  \label{fig:ofb}
+\end{figure}
+
+Für den Output Feedback Mode (\highl{OFB}) wird aus einem Initialwert eine
+Folge von verschlüsselten Blöcken generiert, die mit den Klartextblöcken
+verknüpft, die Geheimtextblöcke ergeben. \autoref{fig:ofb}
+\begin{align*}
+  c_{i} &= m_{i} \oplus s_{i} & m_{i} &= c_{i}\oplus s_{i} & s_{i} &=
+     E_{K}(s_{i-1})
+\end{align*}
+
+Dies bringt zwei Vorteile mit sich: Zum Einen kann eine solche Folge schon
+vorgeneriert werden, wodurch die eigentliche Verschlüsselung, bei Vorliegen
+des Klartextes, sehr schnell geht. (Vorteilhaft z.\,B. bei Streaming) Zum
+Anderen kann ein Klartextblock direkt ausgetauscht werden, ohne dass man die
+folgenden Blöcke oder die verschlüsselte Folge neu berechnen muss:
+$\tilde{c_{i}} = c_{i} \oplus m_{i} \oplus \tilde{m_{i}}$.
+
+\begin{table}
+  \centering
+  \begin{tabular}{l|cccc}
+    mode& Schreibzugriff & Manipulation zerstört \dots& Anomalien im Text\\
+    \hline
+    ECB& wahlfrei& diesen Block& unverändert\\
+    CBC& linear& aktuellen u. nächsten Block& verwischt\\
+    CFB& linear& aktuellen u. nächsten Block& verwischt\\
+    OFB& wahlfrei& diesen Block& verwischt
+  \end{tabular}
+  \caption{Übersicht der Eigenschaften von ECB, CBC, CFB und OFB}
+\end{table}
+
 \section{Feistel-Chiffre}
 
 Die Idee zur \highl[Feistel-Chiffre]{Feistel"=Chiffre} wurde 1971 bei IBM in
@@ -1592,7 +1692,7 @@ gilt
 \href{http://de.wikipedia.org/wiki/Horst_Feistel}{Horst Feistel}, ein
 Mitarbeiter des Projekts Lucifer.
 
-Bei der Feistel"=Chiffre wird der Text durch eine alternierende Folge von
+Bei der Feistel"=Chiffre werden die Klartextblöcke durch eine alternierende Folge von
 Substitutionen und Transpositionen verschlüsselt. Einen einzelnen Durchlauf
 von Substitution und Transposition bezeichnet man als \highl{Runde}. Die
 einzelnen Schlüssel für jede Runde werden dabei aus einem (Haupt"~)""Schlüssel
@@ -2378,7 +2478,7 @@ von $p$ in $\F_{p^{k}}$
 
 \stepcounter{chapter}
 \begin{thebibliography}{99}
-\addcontentsline{toc}{chapter}{\Alph{chapter}.~\bibname}
+\addcontentsline{toc}{chapter}{\thechapter.~\bibname}
  \bibitem{schneier} Bruce Schneier: "`Angewandte Kryptographie"', Pearson
   Studium, 1996
  \bibitem{rothe} Jörg Rothe: "`Complexity theory and cryptology---an
