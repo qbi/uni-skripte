@@ -84,7 +84,6 @@
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
-\newtheorem{fakt}{Fakt}
 
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
@@ -1523,75 +1522,64 @@ Hieraus folgt $A=M^{-1}C$ und weiter $b= c_{0}-m_{0}A$.
 
 Wir bleiben zunächst noch bei den symmetrischen Verschlüsselungsverfahren und
 versuchen durch eine Vergrößerung des Schlüsselraums die Verfahren sicherer zu
-machen. Im Folgenden beschränken wir uns auf (rechnerfreundliche) Bitfolgen
-$\subset\Z_{2}^{n}$.
+machen. Im Folgenden beschränken wir uns auf (rechnerfreundliche) Bitfolgen,
+d.\,h. wir arbeiten mit Teilmengen von $\Z_{2}^{n}$.
 
-Klartexte werden zerlegt in Blöcke einer frei wählbaren aber fixierten
-Blocklänge~$n$. Wir betrachten Verschlüsselungen von Blöcken auf der
-Metaebene:
-\begin{itemize}
- \item gleich Blöcke werden gleich verschlüsselt -- in Analogie zur
-  monoalphabetischen Verschlüsselung (lineare affine Blockchiffren) oder
- \item gleiche Blöcke werden in Abhängigkeit von ihrer Position auf
-  verschiedene Weise verschlüsselt -- in Analogie zur polyalphabetischen
-  Verschlüsselung.
-\end{itemize}
+\begin{defini}[Blockchiffre]
+  Bei einer \highl{Blockchiffre} wird der Klartext in Blöcke einer frei
+  wählbaren, aber festen Länge~$n$ (z.\,B. 32, 64 oder 128~Bit) zerlegt. Diese
+  wird als \highl{Blocklänge} bezeichnet. Eine Verschlüsselungsfunktion~$f$
+  erzeugt unter Verwendung eines Schlüssels Geheimtextblöcke der
+  \textit{gleichen} Länge.
+\end{defini}
 
-Diese Bilder von Blöcken der Länge~$n$ sind wieder Blöcke der Länge~$n$ über
-$\Z_{2}$.
+% Bei der Verschlüsselung können
+% \begin{itemize}
+%  \item gleich Blöcke gleich verschlüsselt werden -- in Analogie zur
+%   monoalphabetischen Verschlüsselung (lineare affine Blockchiffren) oder
+%  \item gleiche Blöcke in Abhängigkeit von ihrer Position auf
+%   verschiedene Weise verschlüsselt -- in Analogie zur polyalphabetischen
+%   Verschlüsselung.
+% \end{itemize}
 
-Daraus ergibt sich eine maximale Anzahl an Blockchiffren von
-\begin{gather*}
-  (\underbrace{0,\dotsc,0,0}_{n}), (\underbrace{0,\dotsc,0,1}_{n}),\dotsc,
-     (\underbrace{1,1,\dotsc,1}_{n}) -- 2^{n}~\text{Blöcke}\\
-  (i_{1},i_{2},\dotsc, i_{n}), (i_{1}',i_{2}',\dotsc,i_{n}'), \dotsc --
-     (2^{n})!~\text{Blöcke}\\
-  \text{wobei: es gibt ein $\mu$ mit $i_{\mu}\ne i_{\mu}'$}
-\end{gather*}
+Damit eine Entschlüsselung des Textes möglich ist, muss die Verschlüsselung
+bijektiv seien und da sie von $\Z_{2}^{n}$ auf $\Z_{2}^{n}$ abbildet, ist sie
+eine Permutation der $2^{n}$ möglichen Blöcke. Es gibt also $2^{n}!$
+mögliche Funktionen zur Verschlüsselung.
 
-Beispiel: Blocklänge $n=64$
-
-Approximation mithilfe der Stirling-Formel: Die Länge~$l$ eines Schlüssels ist
-gegeben durch $l=\log (2^{n})!$.
+Ein kleines Gedankenspiel: Für die Blocklänge~$n=64$ gibt es $2^{64}!$
+mögliche Verschlüsselungen und damit genau soviele Schlüssel. Um einen solchen
+Schlüssel abspeichern zu können, benötigt man $l=\log_{2}(2^{64}!)$~Bit.
+Mithilfe der Stirling-Formel kann man die Größe eines solchen Schlüssels
+abschätzen:
 \begin{align*}
-  (2^{n})! &\approx \sqrt{\pi\cdot (2^{n+1})} \cdot (\frac{2^{n}}{l})^{2^{n}}\\
-  l &\approx \log \big(\sqrt{\pi\cdot (2^{n+1})} \cdot
-     (\frac{2^{n}}{l})^{2^{n}} \big)
-     \approx 2^{n} (n-1\mathord{,}5) \approx 2^{n}\cdot n
+  2^{n}! &\approx \sqrt{2\pi\cdot 2^{n}} \cdot
+     \Bigl(\frac{2^{n}}{e}\Bigr)^{2^{n}}\\
+  l &\approx \log_{2} \big(\sqrt{2\pi} \cdot 2^{32} \cdot
+     \Big(\frac{2^{64}}{e}\Big)^{2^{64}} \big)
+     \approx 64 \cdot 2^{64} = 2^{8+64}
 \end{align*}
+Es würden also zum Abspeichern \textit{eines} Schlüssels für eine Nachricht
+$\frac{1}{8}\cdot 2^{20}\approx 10^{5}$~Pebibyte benötigt. In der Praxis kann
+man also nur mit "`kleinen"' Teilmengen des Schlüsselraums arbeiten.
 
-für $n=64$ bedeutet dies: $l\approx 2^{64}\cdot 2^{6} = 2^{70} \approx
-10^{21}$. Dies bedeutet, die Speicherung \textit{eines} solchen Schlüssels
-erfordert 1~Mrd. Festplatten mit je 100\,GB. Eine Konsequenz daraus für die
-Praxis: "`kleine"' Teilmengen aus dem Schlüsselraum. Welche?
+Für affin lineare Chiffren werden beispielsweise $\{0,1\}$-Matrizen vom Typ
+$64\times 64$ verwendet, deren Determinante~1 ist. Die Darstellung des
+Schlüssels ist also mit mit weniger als $64\cdot64 = 2^{12}$~Bit (im
+Vergleich zu $2^{70}$~Bit) möglich.
 
-z.\,B. die linearen Chiffren erlauben eine Darstellung des Schlüssels mit
-weniger Bits. Bei $n=64$ sind also $\{0,1\}$-Matrizen vom Typ $64\times 64$
-zulässig mit Determinante~$1$. Der Schlüssel ist dann eine Matrix
-$A\in\Z_{2}^{(64\times64)}$ und die Schlüssellänge ist $64\cdot64=4096$~Bits.
-
-Wie viele solcher Schlüssel gibt es? Approximation: $\approx
-0\mathord{,}29\cdot 2^{4096}\approx 2^{2^{12}}$ (Im Vergleich zu $2^{10^{21}}$)
-
-Aufgabe:
-\begin{gather*}
-  (2^{64}-1)\cdot(2^{64}-2)\cdot \dotsm \cdot (2^{64}-2^{63})
-\end{gather*}
-verschiede Matrizen~$A$ mit $\det A=1$.
-
-Hintereinanderschaltung von Blockchiffren \textit{verschiedenen} Typs führen
-zu einer Erhöhung der Sicherheit. Oft realisiert man abwechselnde Folge von
-Substitutionen und Transpositionen mit den Ziel folgende \highl{Eigenschaften
-der Verschlüsselung} zu erreichen:
+Die Hintereinanderschaltung von \textit{verschiedenen} Blockchiffren führt zu
+einer Erhöhung der Sicherheit. Oft realisiert man eine abwechselnde Folge von
+Substitutionen und Transpositionen mit dem Ziel die folgenden beiden
+\highl{Eigenschaften der Verschlüsselung}, die auf Claude Shannon, den
+Begründer der Informationstheorie, zurückgehen, zu erreichen:
 \begin{itemize}
- \item \highl{Diffusion}: Änderung eines Klartextbuchstaben bewirkt die
-  Änderung von vielen Buchstaben des Geheimtexts -- Nachteil: kleine Fehler
+ \item \highl{Diffusion}: Änderung eines Klartextbits bewirkt die
+  Änderung von vielen Bits des Geheimtexts -- Nachteil: kleine Fehler
   (Tippfehler) ändern den Text stark.
  \item \highl{Konfusion}: Jedes Bit des Chiffretextes hängt von mehr als einem
   Bit des Schlüssels ab.
 \end{itemize}
-(Dies Eigenschaften gehen zurück auf Claude Shannon -- Begründer der
-Informationstheorie)
 
 \section{Feistel-Chiffre}
 
@@ -2039,7 +2027,7 @@ Runden 2, 3 und 4 als 3-Rundenanalyse.
 Dort, wo die Annahme korrekt ist, erhalten wir eine Menge möglicher Schlüssel
 für $K_{4}^{L}$ bzw. $K_{4}^{R}$. Dort, wo die Annahme falsch ist (die
 Mehrzahl der Fälle), erhalten wir irgendwelche (zufälligen) Bitfolgen von
-acht Bits.
+acht Bit.
 
 \subsection{Die Sicherheit von DES}
 
@@ -2106,7 +2094,7 @@ Known-Plaintext-Angriff nur $2^{43}$~Paare, d.\,h. sie ist besser als die
 \subsubsection{DES realisiert Diffusion und Konfusion}
 
 Diffusion: Die Änderung der Eingabe in eine $S$-Box in einem Bit ändert die
-Ausgabe in mindestens zwei Bits.
+Ausgabe in mindestens zwei Bit.
 
 Konfusion: Jedes Ausgabebit hängt nach fünf Runden von allen Eingabebits ab.
 
@@ -2215,6 +2203,11 @@ Nach der 8.~Runde gibt es eine Schlussrunde:
   x_{3}' &= x_{3}\boxplus k_{9_{3}} &
      x_{4}' &= x_{4}\odot k_{9_{4}}
 \end{align*}
+
+Da IDEA andere algebraische Operationen einsetzt als die Feistel-Chiffre,
+bezeichnet man ihn auch nicht als eine Feistel-Chiffre. Denoch ist er so
+konstruiert, dass die Verschlüsselungsfunktion auch als
+Entschlüsselungsfunktion verwendet werden kann.
 
 Die Sicherheit von IDEA ist auf der Unverträglichkeit der drei
 unterschiedlichen arithmetischen Operationen begründet. Es ist zwar eine
@@ -2415,9 +2408,9 @@ von $p$ in $\F_{p^{k}}$
  \bibitem{rsafaq} RSA Laboratories: "`RSA Laboratories' Frequently Asked
   Questions About Today's Cryptography, Version 4.1"', RSA Security Inc.,
   2000,\\ \url{ftp://ftp.rsasecurity.com/pub/labsfaq/rsalabs_faq41.pdf}
- \bibitem{rc5save} Y.L. Yin: "`The RC5 encryption algorithm: two years on"',
+ \bibitem{rc5save} Y.\,L.\,Yin: "`The RC5 encryption algorithm: two years on"',
   CryptoBytes (3) 2, 1997
- \bibitem{idea-save} [DGV94] J.\,Daemen, R.\,Govaerts, J.\, Vandewalle: "`Weak 
+ \bibitem{idea-save} [DGV94] J.\,Daemen, R.\,Govaerts, J.\,Vandewalle: "`Weak 
   keys for IDEA, Advances in Cryptology -- Crypto '93"', Springer-Verlag, 1994
 \end{thebibliography}
 
