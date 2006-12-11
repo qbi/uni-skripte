@@ -54,3 +54,13 @@ define hist_decode(text)
                     "QXYJVPZKFWBOMGCLUHDTARSINE");
 }
 #endif
+
+define histogram(text)
+{
+    variable i, table = Integer_Type[26];
+    table[*] = 0;
+    foreach i (text)
+      ++table[i-'A'];
+
+    return table;
+}

@@ -3,7 +3,8 @@
 % Copyright (c)
 %       2006       Jörg Sommer <joerg@alea.gnuu.de>
 %
-% Description:   Using Kasiski test to decrypt a Vigenére encoded text.
+% Description:   Using Kasiski test and Friedman text to decrypt
+%                a Vigenére encoded text.
 %
 % License: This program is free software; you can redistribute it and/or
 %	   modify it under the terms of the GNU General Public License as
@@ -15,15 +16,19 @@
 %	   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 %	   PURPOSE.  See the GNU General Public License for more details.
 
-() = evalfile("kasiski.sl");
-() = evalfile("caesar.sl");
+() = evalfile("./kasiski.sl");
+() = evalfile("./caesar.sl");
+() = evalfile("./friedman.sl");
 
 variable text = normalize( strjoin(fgetslines(stdin), "") );
-variable d = kasiski(text, 3, 15);
+variable d_kasiski = kasiski(text, 3, 15);
 
-message("d = $d"$);
+message("Kasiski: d = $d_kasiski"$);
 
-d = 5;
+variable d_friedman = friedman(text);
+message("Friedman: d = $d_friedman"$);
+
+variable d = 5;
 variable sub_texts = split(text, d);
 
 variable words = [""];
