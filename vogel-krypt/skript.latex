@@ -969,43 +969,56 @@ Und weil's so schön war, noch ein
 
 \subsection{Analyse der polyalphabetischen Verschlüsselung}
 
-Angriffspunkt: Die Verschlüsselung ist periodisch. Die Teiltexte sind
-monoalphabetische verschlüsselt. Zwei Globalschritte: 1) Bestimmung der
-Periode und 2) Entschlüsselung der monoalphabetischen Teiltexte mit Hilfe der
-Häufigkeitsanalyse. Bemerkung: Warum funktioniert die Häufigkeitsanalyse bei
-den Teiltexten? Obwohl die Teiltexte keine sinnvollen Texte sind, stellt sich
-bei "`langen"' Texten die gleiche Häufigkeitsverteilung der Buchstabe ein.
+Der Angriffspunkt bei der polyalphabetischen Verschlüsselung ist die
+Periodizität. Bei einer Periodenlänge~$d$ bezeichnet man als einen
+\highl{Teiltext} die Buchstabenfolge an den Positionen $k+nd$ für
+$1\leq k \leq d$ und $n\in\N_{0}$. Wenn man den Text in Form einer Tabelle mit
+der Breite der Schlüsselwortlänge aufschreibt, dann ist jede Spalte von oben
+nach unten gelesen ein Teiltext.
 
-Bei einer Periodenlänge~$d$ stehen die \highl{Teiltexte} an den Positionen
-$k+nd$ mit $1\leq k \leq d$ und $n\in\N_{0}$.
+Obwohl die Teiltexte keine sinnvollen Texte sind, stellt sich bei "`langen"'
+Teiltexten die gleiche Häufigkeitsverteilung der Buchstaben wie bei einem
+richtigen Text ein. Innerhalb der Spalten findet man also eine
+Buchstabenhäuigkeit wie bei einem natürlichen Text.
 
-Frage: Wie kann man $d$ bestimmten? Es folgen zwei verschiedene Möglichkeiten:
+Die einzelnen Teiltexte sind also monoalphabetisch verschlüsselt. Man kann
+also im ersten Schritt die Schlüssellänge bestimmen und im zweiten Schritt die
+monoalphabetischen Teiltexte mit Hilfe der Häufigkeitsanalyse entschlüsseln.
 
 \subsubsection{Brute-force-Angriff auf polyalphabetische Verschlüsselung}
 
-Teste systematisch $d=1,2,3,\dotsc$
-
-Erstelle Häufigkeitsanalyse für die entstehenden Teiltexte. Falls eine
-natürliche Häufigkeitsverteilung auftritt, dann nimm dieses $d$. (Die
-Erfahrung zeigt, dass für unpassende $d$ die Häufiggkeitsverteilung nivelliert
-ist.).
+Aus Erfahrung weiß man, wenn ein Geheimtext, der durch polyalphabetische
+Verschlüsselung entstanden ist, mit einem Schlüssel der falschen Länge
+entschlüsselt wird, ist die Häufigkeitsverteilung nivelliert. Man kann also
+systematisch $d=1,2,3,\dotsc$ durchprobieren bis man für den entschlüsselten
+Text eine natürliche Verteilung der Buchstaben gefunden hat.
 
 Dies Funktioniert nur für kleine $d$!
 
 \subsubsection{Kasiski-Test}\index{Kasiski-Test}
 
-(eigentlich von Charles Babbage 1854 entdeckt, aber von Kasiski das erste Mal
-veröffentlicht)
+Diese Möglichkeit, die Länge des Schlüsselworts für einen polyalphabetisch
+verschlüsselten Text zu bestimmen, wurde 1854 von Charles Babbage entdeckt,
+aber nach Kasiski benannt, der sie das erste Mal veröffentlichte.
 
-Beobachtung: (Typische) Buchstabenfolgen (Teilwörter), die sich im Abstand
-eines Vielfachen der Periodenlänge wiederholen, werden auf das gleiche Muster
-abgebildet! Für "`genügend lang"' Texte kommt dies auch vor.
+Wenn man die polyalphabetische Verschlüsselung betrachtet, fällt auf, dass
+Buchstabenfolgen, die sich im Abstand eines Vielfachen der Periodenlänge
+wiederholen, auf das gleiche Muster im Geheimtext abgebildet werden. Häufig
+auftretenden Buchstabenkombinationen werden also an mehreren Stellen im Text
+auf die gleiche Weise verschlüsselt.
 
-Ansatz: Suche alle mehrfach auftretenden Muster der Länge größer zwei.
-Bestimme die Abstände, bestimme die Primfaktoren für die Abstände, entscheide
-sich für häufig vorkommende Teiler (z.\,B. es treten fast immer 2 und 3 auf,
-dann vermute, dass $d=6$ -- ich glaube, man sagt $\ggT$ dazu.),
-teste mit dem brute-force-Angriff.
+Beispiele für solche Muster können die Artikel der, die, das, ein oder eine
+sein, die häufig in einem Text vorkommen und somit auch wiederholt in der
+gleichen Spalte bei der Verschlüsselung beginnen.
+
+Findet man also in einem Geheimtext Muster, die Länger als zwei Zeichen sind
+und mehrfach auftreten, so können dies Buchstabenfolgen sein, die auf die
+gleiche Weise verschlüsselt wurden. Die Länge des Schlüsselworts muss also ein
+Teiler des Abstands der Wiederholungen des Musters sein.
+
+Man kann mit mehreren Mustern und anhand ihrer Struktur (längere Muster sind
+eher das Ergebnis eines Musters im Klartext als eine zufällig Wiederholung im
+Geheimtext) eine (oder ein paar) Vermutungen über die Schlüssellänge finden.
 
 \subsubsection{Friedman-Test}\index{Friedman-Test}
 
