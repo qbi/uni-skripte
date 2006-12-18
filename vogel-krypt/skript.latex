@@ -256,6 +256,9 @@
   \begin{itemize}
    \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
     \texttt{<joerg@alea.gnuu.de>}} (2006)
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \texttt{<jens@kubieziel.de>}} (2006)
+   \item Michael Preis (2006)
   \end{itemize}
 \end{itshape}
 
@@ -1946,7 +1949,145 @@ Was ist der Unterschied zwischen $DES^{-1}_{k}$ und $DES_{k^{T}}$? DES
 beschreibt auch, wie die Teilschlüssel erzeugt werden und daher ist $k^{T}$
 nicht der permutierte Schlüssel, der bei $DES^{-1}_{k}$ verwendet wird.
 
-\todo{Hier fehlt die Vorlesung vom 20.11.}
+% 20.11.
+
+\subsection{Ein Beispiel einer vereinfachten DES-Verschlüsselung}
+
+$n = 12$ und $\abs{L} = \abs{R} = 6$
+\todo{Bild}
+
+Ausgangsschlüssel~$k$ der Länge 9, Rundenschlüssel: $k_{1}, k_{2}, \dotsc$
+
+Erzeugung der Rundenschlüssel: das 1.\,Bit von $k_{i}$ ist das $i$.\,Bit von
+$k$ gefolgt von den nächsten 7~Bits in zyklischer Reihenfolge.
+$k=(\kappa_{1}\dotso\kappa_{9})$ $\rightarrow$ $k_{i} = (\kappa_{i}
+\kappa_{i+1}\dotso\kappa_{i+7})$; $k_{i} = k_{i+9} = k_{i+18} = \dotsb$
+
+\begin{enumerate}[1.\,{Schritt}]
+ \item Diffusion $D\colon \Z_{2}^{6} \mapsto \Z_{2}^{8}$ (wobei $R_{1}=D(R)$)
+  mit
+  \begin{gather*}
+    D(\alpha_{1},\dotsc,\alpha_{6}) = (\alpha_{1}, \alpha_{2}, \alpha_{4},
+       \alpha_{3}, \alpha_{4}, \alpha_{3}, \alpha_{5},\alpha_{6})
+  \end{gather*}
+  Damit ist $D$ eine lineare Abbildung:
+  \begin{gather*}
+    D(\alpha) = \alpha \cdot
+       \begin{pmatrix}
+         1& 0& 0& 0& 0& 0& 0& 0\\
+         0& 1& 0& 0& 0& 0& 0& 0\\
+         0& 0& 0& 1& 0& 1& 0& 0\\
+         0& 0& 1& 0& 1& 0& 0& 0\\
+         0& 0& 0& 0& 0& 0& 1& 0\\
+         0& 0& 0& 0& 0& 0& 0& 1
+       \end{pmatrix}
+  \end{gather*}
+
+ \item $R_{2} = R_{1} \oplus k_{i}$
+
+ \item Transformation mit zwei $S$-Boxen; eine $S$-Box ist eine Permutation
+  der Zahlen $\{0,\dotsc,7\}$ in jeweils zwei Zeilen:
+  \begin{gather*}
+    \sigma_{1} =
+       \begin{pmatrix}
+         5& 2& 1& 6& 3& 4& 7& 0\\
+         1& 4& 6& 2& 0& 7& 5& 3
+       \end{pmatrix}\\
+    \sigma_{2} =
+       \begin{pmatrix}
+         4& 0& 6& 5& 7& 1& 3& 2\\
+         5& 3& 0& 7& 6& 2& 1& 4
+       \end{pmatrix}
+  \end{gather*}
+
+  Die Eingabe für jede $S$-Box ist ein 4-Bit-Wort: dazu $R_{2} = (A, B)$ und
+  damit ist $A\in \Z_{2}^{4}$ die Eingabe für $S_{1}$ und $B\in\Z_{2}^{4}$ die
+  Eingabe für $S_{2}$. Das erste Bit der Eingabe gibt die Zeile in der $S$-Box
+  an: 0 für die erste und 1 für die zweite Zeile. Die verbleibenden drei Bits
+  beschreiben eine Zahl zwischen 0 und 7 und legen die Spalte fest: 000 ist
+  die erste Spalte, \dots, 111 für die achte Spalte.
+
+  Der Eintrag an dieser Position ist die Ausgabe der $S$-Box. Formal: $S\colon
+  \Z_{2}^{4} \mapsto \Z_{2}^{3}$ wobei
+  \begin{gather*}
+    (\alpha_{1},\dotsc,\alpha_{4}) \mapsto \sigma\bigl(\alpha_{1}+1,
+       bin^{-1}(\alpha_{2},\alpha_{3},\alpha_{4})\bigr)
+  \end{gather*}
+
+  $R_{3} = \bigl(S_{1}(A), S_{2}(B)\bigr)$
+\end{enumerate}
+
+\begin{bsp}
+  $K=(0100\,11001), R=(101011)$ Frage: Was ist $f_{k_{4}}(R)$
+
+  \begin{enumerate}[1.\,{Schritt}]
+    \addtocounter{enumi}{-1}
+   \item Bestimme $k_{4} = (0110\,0101)$
+   \item Bestimme $R_{1} = D(R) = (1001\,0111)$
+   \item Bestimme $R_{2} = R_{1}\oplus k_{4} = (1111\,0010)$
+   \item $A=(1111), B=(0010)$ $S_{1}(A) = S_{1}(1\,111) = (011)$ und $S_{2}(B)
+    = S_{2}(0\,010) = (110)$
+  \end{enumerate}
+  $\Rightarrow$ $f_{k_{4}}(R) = (011\,110)$
+
+  Wie sieht die gesamte 4.\,Runde des vereinfachten DES aus?
+
+  Angenommen: $(L_{3}\: R_{3}) = (001\,111\: 101\,011) \in \Z_{2}^{12}$, dann
+  ist $(L_{4}\: R_{4}) = (R_{3}\: L_{3}\oplus f_{k_{4}}(R_{3})) = (101\,011\:
+  010\,001)$
+\end{bsp}
+
+Wo ergeben sich jetzt Angriffspunkte?
+
+\subsection{Analyse des DES -- Differentielle Kryptoanalyse}
+
+Methode von Bahim und Shamir aus dem Jahr 1990. Methode speziell für DES
+entwickeln, funktioniert aber auch bei ähnlichen Verfahren.
+
+\highl{Chosen-Plaintext-Attack}: Der Angreifer kennt den Algorithmus, das Verfahren
+zur Erzeugung der Rundenschlüssel, die Diffusion und die $S$-Boxen. Er kennt
+nicht den Schlüssel~$k=(\kappa_{1}\dotso\kappa_{9})$
+
+Wir setzen weiter vorraus, dass der Angreifer für einen Klartext~$(L_{0},
+R_{0})$ das Resultat~$(L_{r}, R_{r})$ kennt.
+
+Idee: Analysiere Differenzen (modulo 2) verschiedener Klartextblöcke im
+Vergleich zu den verschlüsselten Blöcken.
+
+Zwei Blöcke
+\begin{gather*}
+  (L_{0}, R_{0}), (L_{0}', R_{0}') \mapsto (L_{0}\oplus L_{0}', R_{0}\oplus
+     R_{0}')\\
+  (L_{r}, R_{r}), (L_{r}', R_{r}') \mapsto (L_{r}\oplus L_{r}', R_{r}\oplus
+     R_{r}')
+\end{gather*}
+
+Warum ist ein solcher Ansatz erfolgsversprechend?
+\begin{itemize}
+ \item Differenzen ändern sich nicht, wenn zu zwei Blöcken ein und derselbe
+  Block (Rundenschlüssel) addiert wird.
+
+ \item Eigenschaften der $S$-Boxen: Es gibt für einie
+  Differenzen~$D\in\Z_{2}^{4}$, so dass für viele Eingabepaare mit dieser
+  Differenz~$D$ die Ausgabepaare wieder die Differenz haben.
+\end{itemize}
+
+\begin{bemerk}
+  Man muss bei der Konstruktion der $S$-Boxen darauf achten, diese Eigenschaft
+  zu vermeiden oder zu mindern.
+\end{bemerk}
+
+nun konkret am oberen Beispiel: Für zwei Eingabeblöcke $A$ und $A'$ für
+$S_{1}$ heißt $A\oplus A'$ \highl{Eingabedifferenz} (Input"=Differenz) und
+$S_{1}(A)\oplus S_{1}(A')$ \highl{Ausgabedifferenz} (Output"=Differenz).
+
+Es sei $A^{*}\in\Z_{2}^{4}$ beliebig. Für alle Paare $(A, A')\in
+\Z_{2}^{4}\times \Z_{2}^{4}$ mit der Eigenschaft $A\oplus A'=A^{*}$ können wir
+die Ausgabedifferenzen bestimmen. $S_{1}(A)\oplus S_{1}(A')$ und deren
+Verteilung in einer Tabelle festhalten.
+
+Beachte dabei folgendes: Für $A^{*}\ne(0000)$ gibt es genau \textit{acht}
+Belegungen $\{A,A'\}$ mit $A\oplus A'=A^{*}$, nämlich $\{A, A\oplus A^{*}\}$.
 
 % 22.11.
 
@@ -2592,12 +2733,188 @@ Koeffizienten aus $\Z_{2}$ und dem Modulpolynom
     end
     begin output
       b := b[i];
-      x := (-1) ** i * x[i];
-      y := (-1) ** i * y[i];
+      x := ((-1) ** i) * x[i];
+      y := ((-1) ** i) * y[i];
     end
   end
   \end{verbatim}
 \end{enumerate}
+
+% 18.12.
+
+\begin{bsp}
+  $b_{0}=220, b_{1} = 26$
+  \begin{gather*}
+    \begin{array}{c|cccc}
+      i& q_{i} & b_{i+1} & x_{i+1}& y_{i+1}\\
+      \hline
+      1& 8& 200-8\cdot 26=12& 1+0\cdot8=1& 0+1\cdot8=0\\
+      2& 2& 26-2\cdot 2=2& 0+1\cdot2=2& 1+2\cdot8 = 17\\
+      3& \multicolumn{4}{l}{2\mid 12 \rightarrow \text{Abbruch}}
+    \end{array}
+  \end{gather*}
+  $b= 2 = \ggT(b_{0}, b_{1}), x= (-1)^{3}\cdot 2 = -2, y=(-1)^{4}\cdot 17 = 17$
+
+  $2= -2\cdot 220 + 17\cdot 26 = -440 + 442$
+\end{bsp}
+
+\subsection{Erweiterter Euklidischer Algorithmus für Polynome}
+
+Eingabe: $b_{0}(x):=m(x) = x^{8} + x^{4} + x^{3} +x +1, b_{1}(x)$
+\begin{verbatim}
+begin
+  ux[0] := 1; vx[0] := 0;
+  ux[1] := 0; vx[1] := 1;
+  i := 1;
+  while bx[i] ist kein Teiler von bx[i-1] do
+  begin
+    qx[i] := bx[i-1] div bx[i];
+    bx[i+1] := bx[i-1] - qx[i] * bx[i];
+    ux[i+1] := ux[i-1] + qx[i] * ux[i];
+    vx[i+1] := vx[i-1] + qx[i] * vx[i]
+    i := i + 1;
+  end
+  begin output
+    bx := bx[i];
+    ux := ((-1) ** i) * ux[i];
+    vx := ((-1) ** i) * vx[i];
+  end output
+end
+\end{verbatim}
+
+\begin{bsp}
+  $b_{1} = x^{7} + x^{6} + x^{3} + x + 1$
+
+  \begin{enumerate}[1.\,{Schleifendurchlauf}]
+   \item $(x^{8} + x^{4} + x^{3} + x + 1) : (x^{7} + x^{6} + x^{3} + x +1) =x$\\
+    $\oplus (x^{8} +x^{7} + x^{4} + x^{2} +x)$\\
+    ---\\
+    $x^{7} + x^{3} + x^{2} + 1$\\
+    $\oplus (x^{7} + x^{6} + x^{3} +x +1)$\\
+    ---\\
+    $x^{6} + x^{2} + x$
+
+    $q_{1}(x) = x+1, b_{2}(x) = x^{6} + x^{2} + x, u_{2}(x) = 1+0, v_{2}(x) = 0+(x+1) 1$
+
+   \item $(x^{7} + x^{6} + x^{3} + x + 1) : (x^{6} + x^{2} + x) = x$\\
+    $\oplus(x^{7} + x^{3} + x^{2})$\\
+    ---\\
+    $x^{6} + x^{2} + x + 1$\\
+    $\oplus(x^{6} + x^{2} + x)$\\
+    ---
+    1
+
+    $q_{2}(x) = x+1, b_{3} = 1, u_{3} = 0+ (x+1) \cdot 1, v_{3}(x) = 1 +
+    (x+1)(x+1) = 1 + x^{2} + x + x + 1 = x^{2}$ (da $+ = \oplus$)
+  \end{enumerate}
+  $b(x) = 1, u(x) = x+1, v(x) = x^{2}$
+
+  $u(x)\cdot m(x) + v(x) \cdot a(x) = (x+1) (x^{8} + x^{4} + x^{3} + x + 1) +
+  x^{2} (x^{7} + x^{6} + x^{3} + x +1) = x^{9} + x^{5} + x^{4} +x^{2} + x +
+  x^{8} + x^{4} + x^{3} + x + 1 + x^{9} + x^{8} + x^{5} + x^{3} + x^{2} = 1$
+
+  Also gilt: $v(x) a(x) = u(x) m(x) + 1$ also $v(x) \odot a(x) = 1$, $v(x) =
+  a^{-1}(x)$. Oder als Bitfolgen geschrieben: $a(x) = (1100\,1011), a^{-1}(x)
+  = (0000\,0100)$
+\end{bsp}
+
+\section{2.\,Stufe: Polynome über dem Körper \texorpdfstring{$\F_{256}$}{F256}}
+
+Wir betrachten den Polynomring $\nicefrac{\F_{256}[x]}{(x^{4}+1)}$. Die
+Elemente sind Polynome höchstens dritten Grades.
+\begin{gather*}
+  c(x) = c_{3} x^{3} + c_{2} x^{2} + c_{1} x + c_{0}
+\end{gather*}
+dabie sind die Koeffizient~$c_{i}\in\F_{256}$ und erlauben die folgende
+Darstellung:
+
+\begin{bsp}
+  als Polynom: $c(x) = 01 x^{3} + 03 x^{2} + A1 x + 02$\\
+  Hexadezimal: $[01, 03, A1, 02]$\\
+  Binär: $[0000\,0001, 0000\,0011, 1010\,0001, 0000\,0010]$
+\end{bsp}
+
+Addition ist komponentenweis mit \texttt{xor} $\oplus$.
+\begin{gather*}
+  a(x)\oplus b(x) = (a_{3}\oplus b_{3}) x^{3} + (a_{2} \oplus b_{2}) x^{2} +
+     (a_{1}\oplus b_{1}) x + (a_{0} \oplus b_{0})
+\end{gather*}
+
+Multiplikation: $\otimes$ in zwei Schritten:
+\begin{enumerate}[1.\,{Schritt}]
+ \item Polynommultiplikation $c(x) = a(x)\odot b(x) = c_{6} x^{6} + \dotsb+
+  c_{1} x^{1} + c_{0}$, wobei
+  \begin{align*}
+    c_{6}& = (a_{3}\odot b_{3})\\
+    c_{5}& = (a_{3}\odot b_{2})\oplus (a_{2}\odot b_{3})\\
+    c_{4}& = (a_{3}\odot b_{1})\oplus (a_{2}\odot b_{2})\oplus
+       (a_{1}\odot b_{3})\\
+    c_{3}& = (a_{3}\odot b_{0})\oplus (a_{2}\odot b_{1})\oplus
+       (a_{1}\odot b_{2})\oplus (a_{0}\odot b_{3})\\
+    c_{2}& = (a_{2}\odot b_{0})\oplus (a_{1}\odot b_{1})\oplus
+       (a_{0}\odot b_{2})\\
+    c_{1}& = (a_{1}\odot b_{0})\oplus (a_{0}\odot b_{1})\\
+    c_{0}& = (a_{0}\odot b_{0})
+  \end{align*}
+
+ \item Faktorisierung modulo $(x^{4}+1)$
+
+  Fakt: $x^{i}\pmod{x^{4}+1} = x^{i\pmod{4}}$
+
+  Für das modulare Produkt gilt:
+  \begin{align*}
+    d(x) & = a(x)b(x) \pmod{x^{4}+1}\\
+    & = d_{3}x^{3}+d_{2}x^{2}+d_{1}x+d_{0}
+  \end{align*}
+  mit den Koeffizienten
+  \begin{align*}
+    d_{3}& = (a_{3}\odot b_{0}) \oplus (a_{2}\odot b_{1}) \oplus
+       (a_{1}\odot b_{2}) \oplus (a_{0}\odot b_{3})\\
+    d_{2}& = (a_{2}\odot b_{0})\oplus (a_{1}\odot b_{1})\oplus
+       (a_{0}\odot b_{2}) \oplus (a_{3}\odot b_{3})\\
+    d_{1}& = (a_{1}\odot b_{0})\oplus (a_{0}\odot b_{1}) \oplus
+       (a_{3}\odot b_{2})\oplus (a_{2}\oplus b_{3})\\
+    d_{0}& = (a_{0}\odot b_{0})\oplus (a_{3}\odot b_{1})\oplus
+       (a_{2}\odot b_{2})\oplus (a_{1}\odot b_{3})
+  \end{align*}
+
+  Matrizenschreibweise:
+  \begin{gather*}
+    \begin{pmatrix}
+      d_{3}\\
+      d_{2}\\
+      d_{1}\\
+      d_{0}
+    \end{pmatrix} =
+       \begin{pmatrix}
+         a_{0}& a_{1}& a_{2}& a_{3}\\
+         a_{3}& a_{0}& a_{1}& a_{2}\\
+         a_{2}& a_{3}& a_{0}& a_{1}\\
+         a_{1}& a_{2}& a_{3}& a_{0}
+       \end{pmatrix} :
+       \begin{pmatrix}
+         b_{3}\\
+         b_{2}\\
+         b_{1}\\
+         b_{0}
+       \end{pmatrix}
+  \end{gather*}
+\end{enumerate}
+
+\begin{bsp}
+  \begin{gather*}
+    [00,00,00,01] \otimes [47, 08, 1F, 2B] = [47, 08, 1F, 2B]\\
+    [01,00,00,00]\otimes [2B, 1F, 08, 47] = [47, 2B, 1F, 08]
+  \end{gather*}
+\end{bsp}
+
+Es gilt: $R=\nicefrac{\F_{256}[x]}{(x^{4}+1)}$ ist Ring, der kein Körper ist.
+Das bedeutet, dass nicht jedes Elment $c(x)\in R$ ein Inverses besitzt. AES
+benutzt
+\begin{gather*}
+  c(x) = 03 x^{3}+ 01 x^{2} + 01 x + 02
+\end{gather*}
+mit dem Inversen $c^{-1}(x) = 0B x^{3} + 0D x^{2} + 09 x + 0E$
 \clearpage
 \appendix
 
@@ -2851,7 +3168,7 @@ Den hoechsten Organisationsstand erfuhr die Kryptologie in Venedig, wo sie in
 Form einer staatlichen Buerotaetigkeit ausgeuebt wurde. Es gab
 Schluesselsekretaere die ihr Buero im Dogenpalast hatten und fuer ihre
 Taetigkeit rund zehn Dukaten im Monat bekamen. Es wurde dafuer gesorgt, dass
-sie waehrend ihrer Arbeit nicht gestoert wurden. Sie durften ihre bueros aber
+sie waehrend ihrer Arbeit nicht gestoert wurden. Sie durften ihre Bueros aber
 auch nicht verlassen, bevor sie eine gestellte Aufgabe geloest hatten.
 
 \clearpage
