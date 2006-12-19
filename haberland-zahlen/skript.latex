@@ -194,6 +194,7 @@
 \DeclareMathOperator{\ggT}{ggT}
 \DeclareMathOperator{\Tr}{Tr}              % Trace/Spur
 \DeclareMathOperator{\disc}{Disc}          % Diskriminante
+\DeclareMathOperator{\sgn}{sgn}            % Signum
 
 \DeclareGraphicsRule{.1}{\ifpdf mps\else eps\fi}{*}{}
 
@@ -4741,14 +4742,18 @@ Wir zeigen: $Cl_{K}$ ist endlich.
     Also die Gitterpunkte in $\lambda\Omega$
     \begin{gather*}
       \lim_{\lambda\rightarrow\infty} \frac{M(\Omega)}{\lambda^{2}} =
-         \frac{vol(\Omega)}{vol(\tilde{\ideal})}\\
-      vol(\Omega) = 2\int_{x,y\geq 0, xy \leq 1, \epsilon^{-2}\leq \frac{y}{x}
-         \leq 1} dx\,dy = 2\int_{0}^{1} dx \int_{\epsilon^{-2}x}^{x} dy
-         +2\int _{1}^{\epsilon} dx \int_{\epsilon^{-2}x}^{\frac{1}{x}} dy
-         = 2\int_{0}^{1} (1-\epsilon^{-2})x\,dx + 2 \int_{1}^{\epsilon}
-         (\frac{1}{x} - \epsilon^{-2}x)\,dx = 2(1-\epsilon^{-2})\frac{1}{2} +
-         2\log \epsilon - 2\epsilon^{-2} (\epsilon-1)
+         \frac{vol(\Omega)}{vol(\tilde{\ideal})}
     \end{gather*}
+
+    \begin{align*}
+      vol(\Omega) &= 2\int_{\substack{x,y\geq 0\\xy \leq 1\\\epsilon^{-2}\leq \frac{y}{x}
+         \leq 1}} dy\,dx = 2\int_{0}^{1} \int_{\epsilon^{-2}x}^{x} dy\,dx
+         +2\int _{1}^{\epsilon} \int_{\epsilon^{-2}x}^{\frac{1}{x}} dy\,dx\\
+      &= 2\int_{0}^{1} (1-\epsilon^{-2})x\,dx
+         + 2 \int_{1}^{\epsilon} \frac{1}{x} - \epsilon^{-2}x\,dx\\
+      &= 2(1-\epsilon^{-2})\frac{1}{2} + 2\log \epsilon - 2\frac{1}{2}
+         + 2\frac{1}{2}\epsilon^{-2}
+    \end{align*}
   \end{proof}
 \end{folger}
 
@@ -4768,6 +4773,218 @@ Wir zeigen: $Cl_{K}$ ist endlich.
     \end{gather*}
   \end{enumerate}
 \end{satz}
+
+% 19.12.
+
+\begin{folger}
+  \begin{gather*}
+    L(1,\chi_{D}) =
+       \begin{cases}
+         \frac{2\pi}{w\sqrt{\abs{d_{K}}}} h_{K}& d_{K}<0\\
+         \frac{2\log \epsilon_{K}}{\sqrt{\abs{d_{K}}}} h_{K}& d_{K}>0
+       \end{cases}
+  \end{gather*}
+\end{folger}
+
+\section{Die Berechnung von \texorpdfstring{$L(1,\chi_{D})$}{L(1,Chi D)}}
+
+\begin{defini}
+  Sei $m\geq 1$ und $\chi$ der Direchlet-Charakter $mod^{*} m$, $\zeta$
+  fixierte primitive $n$.\,Einheitswurzel. z.\,B.
+  \begin{gather*}
+    \zeta = e^{\frac{2\pi i}{m}} \in\C
+  \end{gather*}
+\end{defini}
+
+Die \highl{Gausssche Summe} $G=G(a,\chi)$ ist definiert durch $G(a,\chi) =
+G_{a}(\chi) = \sum_{x\pmod{m}} \chi(x) \zeta^{ax}$ für
+$a\in\nicefrac{\Z}{m\Z}$
+
+\begin{bemerk}
+  Die \highl{eulersche Gammafunktion}
+  \begin{align*}
+    \Gamma(s) &= \int_{0}^{\infty} e^{-x} x^{s-1}\,dx\\
+    &= \int_{\R_{+}^{*}} e^{-x} x^{s} \frac{dx}{x}
+  \end{align*}
+  $\frac{dx}{x}$ ist ein HAAR-Maß, $e^{-x}$ ist ein additiver Charakter auf
+  $\R$ und $x^{s}$ ist multiplikativer Charakter auf $\R^{*}$.
+
+  $m=p$ $G(a,\chi) = \int_{\F_{p}} \chi(x) \zeta^{ax}\,dx$
+
+  $s\Gamma(s) = \Gamma(s+1)$
+
+  $\Gamma(n+1) = n!$, $\Gamma(\frac{1}{2}) = \sqrt{\pi}$
+
+  $\Gamma(s)\Gamma(1-s) = \frac{\pi s}{\sin\pi s}$
+\end{bemerk}
+
+\begin{fakt}
+  Sei $\chi+\chi_{0}$ Direchlet-Charakter $modulo^{*} m$, dann gilt für $s>1$:
+  \begin{gather*}
+    L(s,\chi) = \frac{1}{m}\sum_{a=0}^{m-1} G(a,\chi) \sum_{n=1}^{\infty}
+       \frac{\zeta^{-an}}{n^{s}}
+  \end{gather*}
+
+  \begin{proof}
+    Da $s>1$ im Bereich der absoluten konvergenz, daher können wir fröhlich
+    umordnen.
+    \begin{align*}
+      \sum_{a=0}^{m-1} G(a,\chi) \zeta^{-an} &= \sum_{a=0}^{m-1}
+         \sum_{x\pmod{m}} \chi(x) \zeta^{a(x-n)}\\
+      & = \sum_{x\pmod{m}} \chi(x) \sum_{a=0}^{m-1} \zeta^{a(x-n)}
+         = \sum_{x\pmod{m}} \chi(x) \frac{\zeta^{m(x-n)}-1}{\zeta^{x-n}-1} =
+         \\
+      &= \begin{cases}
+           0& n \not\equiv x\pmod{m}\\
+           m& n\equiv x\pmod{m}
+         \end{cases}
+    \end{align*}
+
+    Also ist das gleich $m\chi(n)$.
+  \end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Man kann $a=0$ weglassen wegen $G(0,\chi) = \sum_{x\pmod{m}} \chi(x)=0$ für
+  $\chi\ne\chi_{0}$
+\end{bemerk}
+
+\begin{fakt}
+  Sei $0<\theta < 2\pi$, dann konvergiert
+  \begin{gather*}
+    \sum_{n=1}^{\infty} \frac{e^{in\theta}}{n^{s}}
+  \end{gather*}
+  für alle $s>0$ und sogar gleichmäßig für $s\geq\delta>0$. Insbesonere ist
+  das stetige Funktion auf $(0,\infty)$.
+
+  \begin{proof}
+    Abelsche Summation
+    \begin{gather*}
+      \abs[\Big]{\sum_{n=M}^{N} e^{in\theta}} = \abs[\Big]{\sum_{n=0}^{N-M}
+         e^{in\theta}} = \frac{\abs{e^{i(N-M+1)\theta}-1}}{\abs{e^{i\theta}-1}}
+         \leq \frac{2}{\abs{e^{i\theta}-1}}
+    \end{gather*}
+
+    Weiter wie bei $L(s,\chi)$.
+  \end{proof}
+\end{fakt}
+
+\begin{folger}
+  \begin{gather*}
+    L(1,\chi) = \frac{1}{m} \sum_{a=1}^{m-1} G(a,\chi) \sum_{n=1}^{\infty}
+       \frac{\zeta^{-an}}{n}
+  \end{gather*}
+\end{folger}
+
+\begin{bemerk}
+  Man hat einen Homomorphismus $\C\colon\C^{*}\colon z\mapsto e^{z} = \sum
+  \frac{1}{n} 2^{n}$. Sie ist surjektiv, aber nicht injektiv, und $e^{z} =1$
+  \gdw $z=2\pi im$ mit $m\in\Z$. Insbesondere ist $e^{2\pi i}=1$. Also hat
+  jedes $z\in\C^{*}$ unendlich viel Logarithmen $0\ne z=re^{i\pi}$ mit
+  $r=\abs{z}>0$ und $0\leq \phi<2\pi$.
+  \begin{gather*}
+    \log z = \log\abs{z} + i\phi + 2\pi im
+  \end{gather*}
+  mit $m\in\Z$.
+
+  Schlitze $\C$ entlang der negativen reellen Achse auf. Betrachte
+  $\C\setminus (-\infty,0] \ni z = re^{i\phi}, r>0, -\pi<\phi<\pi$. Wir
+  definieren $\log z =\log \abs{z} + i\phi$. $\log \C\setminus (-\infty,0])
+  \rightarrow \C$ ist stetig und holomorph (\highl{Hauptzweig des Logarithmus})
+
+  Monodromie: \todo{Bild: Kreis mit, Pfeil auf Kreis von + nach - (oben) und einen
+  von - nach + (unten), Beschriftung der negativen x-Achse: Sprung um $2\pi i$}.
+\end{bemerk}
+
+Betrachten $f(z) = \sum_{n=1}^{\infty} \frac{z^{n}}{n}$ für $\abs{z}<1$. $f$
+ist stetig (sogar holomorph) und es gilt
+\begin{gather*}
+  -\log (1-z) = f(z)
+\end{gather*}
+$\log$ ist der Hauptzweig
+
+\begin{proof}
+  Jedenfalls gilt $e^{f(z)} = \frac{1}{1-z}$, denn (wir können ableiten, weil
+  absolutkonvergent)
+  \begin{align*}
+    ( (1-z)e^{f(z)})' &= -e^{f(z)} +(1-z) f'(z) e^{f(z)}\\
+    & = -e^{f(z)} + (1-z) \frac{1}{1-z} e^{f(z)} = 0
+  \end{align*}
+  $\Rightarrow$ $(1-z) e^{f(z)}$ ist konstant, $z=0$ zeigt es.
+\end{proof}
+
+$f(z)$ ist reell für reelles $z$, also reelles $\abs{z}<1$ durchläuft $1-z$
+die Kreisscheibe \todo{Bild mit Einheitskreis um (1,0)}, dort ist
+$-\frac{\pi}{2} < \phi <\frac{\pi}{2}$.
+
+\begin{folger}
+  \begin{gather*}
+    \sum_{n=1}^{\infty} \frac{e^{in\theta}}{n} = -\log (1-e^{i\theta})
+  \end{gather*}
+
+  \begin{proof}
+    Satz von Abel.
+  \end{proof}
+\end{folger}
+
+\begin{lemma}
+  Sei $0<\theta<2\pi$, dann gilt:
+  \begin{gather*}
+    \sum_{n=1}^{\infty} \frac{e^{in\theta}}{n} = -\log (2\sin\frac{\theta}{2})
+       + i(\frac{\pi}{2}-\frac{\theta}{2})
+  \end{gather*}
+
+  \begin{proof}
+    \begin{align*}
+      1-e^{i\theta} & = e^{\frac{i\theta}{2}} (e^{-\frac{i\theta}{2}}) -
+         e^{-\frac{i\theta}{2}}\\
+      & = -2 i \sin\frac{\theta}{2} e^{\frac{i\theta}{2}}\\
+      & = 2\sin(\frac{\theta}{2}) e^{i(-\frac{\pi}{2}+\frac{\theta}{2})}
+    \end{align*}
+    Dabei gilt $0<\frac{\theta}{2}<\pi$, also $\sin\frac{\theta}{2}>0$.
+    $-\frac{\pi}{2}<\frac{\theta}{2}-\frac{\pi}{2} <\frac{\pi}{2}$.
+    \begin{gather*}
+      \log (1-e^{i\theta}) = \log (2\sin\frac{\theta}{2}) + i
+         (\frac{\theta}{2} - \frac{\pi}{2})
+    \end{gather*}
+    (Hauptzweig)
+    \begin{gather*}
+      -\log (1-e^{i\theta}) = -\log(2\sin\frac{\theta}{2})
+       + i(\frac{\pi}{2}-\frac{\theta}{2})
+    \end{gather*}
+  \end{proof}
+\end{lemma}
+
+\begin{folger}
+  \begin{gather*}
+    \sum_{n=1}^{\infty} \frac{\zeta^{-an}}{n} = -\log (2\sin\frac{\pi a}{m})
+       + \pi i(\frac{1}{2}-\frac{a}{m})
+  \end{gather*}
+  für alle $0<a<m$
+
+  \begin{proof}
+    \begin{gather*}
+      \sum \frac{\zeta^{an}}{n} = -\log (2\sin\frac{\pi a}{m}) +
+         i(\frac{\pi}{2} - \frac{\pi a}{m})\\
+      \zeta^{a} = e^{2\pi i\frac{a}{m}}
+    \end{gather*}
+    also $\theta=\frac{2\pi a}{m}$. Dabei ist $0<a<m$ zu nehmen!
+
+    Komplexe Konjunktion gibt
+    \begin{gather*}
+      \sum_{n=1}^{\infty} \frac{\zeta^{-an}}{n} = -\log (2\sin\frac{\pi a}{m})
+         +\pi i(\frac{1}{2}-\frac{a}{m})
+    \end{gather*}
+  \end{proof}
+\end{folger}
+
+\begin{fakt}
+  \begin{gather*}
+    L(1,\chi) = \frac{1}{m} \sum_{a=1}^{m-1} G(a,\chi) (-\log (2\sin\frac{\pi
+       a}{m}) + \pi i(\frac{1}{2} -\frac{a}{m}))
+  \end{gather*}
+\end{fakt}
+
 \clearpage
 \pdfbookmark[0]{Index}{index}
 \printindex
