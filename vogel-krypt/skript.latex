@@ -64,6 +64,7 @@
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{nicefrac}
+\usepackage{gauss}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -693,30 +694,49 @@ ist.
 
 Dies gibt Anlass zu folgender Verallgemeinerung.
 
-\subsection{Tauschchiffren (affine Chiffren)}
-\begin{description}
- \item[Algorithmus] $x\in X\colon x\mapsto a\cdot x+b \pmod{n}$
- \item[Schlüssel:] $(a,b), a, b\in X$ mit der Forderung, dass die Zuordnung
-  bijektiv ist!
+\subsection{Tauschchiffren}
+\label{sec:tausch}
 
-  Dazu muss gelten: $a$ und $n$ sind teilerfremd!
+Bei den sogenannten \highl{Tauschchiffren} werden die Buchstaben erst durch
+Zahlen kodiert, mit denen dann gerechnet wird. Jedes Zeichen~$x\in
+\{0,\dotsc,n-1\}$ wird durch die affinlineare Abbildung $x\mapsto x\cdot
+a+b\pmod{n}$ in das Geheimzeichen überführt. Der Schlüssel ist dabei das Paar
+$(a,b)\in \{0,\dotsc,n-1\}^{2}$.
 
-  (Beispiel: $n=26, a=13, b=0$ $E(2) = 13\cdot 2+0 \pmod{26} = 0 = 13 \cdot 0
-  +0 \pmod{26} = E(0)$)
-\end{description}
+Damit die Entschlüsselung möglich ist, muss die Abbildung bijektiv sein. Dazu
+müssen $a$ und $n$ teilerfremd sein. Es gibt also $\phi(n)$\footnote{Eulersche
+$\phi$-Funktion; siehe \autoref{sec:restklassen}} Möglichkeiten $a$ zu wählen
+und insgesamt $\phi(n)\cdot n$ Schlüssel $(a,b)$.
 
-Es gibt also $\phi(n)$ Möglichkeiten $a$ zu wählen und insgesamt $\phi(n)\cdot
-n$ Schlüssel $(a,b)$.
+Ein kurzes Gegenbeispiel, um das Problem zu verdeutlichen: Wählt man $n=26,
+a=13$ und $b=0$, so wird das Zeichen~2 als $E(2) = 2\cdot 13+0 \pmod{26} = 0$
+als auch das Zeichen~0 als $E(0) = 0 \cdot 13 +0 \pmod{26}$ verschlüsselt.
+Eine Entschlüsselung des Zeichens~0 ist also nicht möglich.
 
-\texttt{text} = $19~04~23~19 \mapsto 04~07~24~04$ = \texttt{EHYE}, mit
-$x\mapsto 5x+13$
+\begin{bsp}
+  Der Klartext "`text"' wird mit dem Schlüssel~$(5,13)$ auf den Geheimtext
+  "`EHYE"' abgebildet.
+  \begin{center}
+    \begin{tabular}{c|cc|c}
+      Buchstabe& Codierung~$x$& $x\cdot 5+13$& Decodierung\\
+      \hline
+      t& 19& 4& E\\
+      e& 4& 7& H\\
+      x& 23& 24& Y\\
+      t& 19& 4& E
+    \end{tabular}
+  \end{center}
+\end{bsp}
 
-Nachteile:
+Die Nachteile der Tauschchiffren sind:
 \begin{itemize}
  \item Verschlüsselung ist gekackt, wenn \textit{zwei} Buchstaben übersetzt
-  sind.
- \item Häufigkeitsverteilung der natürlichen Sprache.
+  sind und
+ \item Häufigkeitsverteilung der natürlichen Sprache bleibt erhalten.
 \end{itemize}
+
+Die \highl{Tauschchiffren} werden in einer allgemeineren Form nochmal im
+\autoref{sec:afflin} besprochen.
 
 \section{Homophone Substitutionen}
 
@@ -1542,6 +1562,7 @@ Dabei gilt: $A^{-1}= (\det A)^{-1} B$, wobei $(b_{ij})=(-1)^{i+j}\cdot
 \det A_{ij}$.
 
 \section{Affinlineare Blockchiffren}
+\label{sec:afflin}
 
 Die Zeichen des Klartexts werden durch Elemente aus $\Z_{k}$ codiert und der
 Klartext wird in Blöcke der Länge~$n$ eingeteilt, die einzeln nach demselben
@@ -3426,15 +3447,68 @@ bekannten Sprache zu untersuchen ohne seine Syntax und Semantik zu betrachten.
   $w_{3} = v_{3}\cdot K = 9~18$\\
   $c=YOIJS$
 
- \item $K^{-1}$ kann man mit dem erweiterten euklidischen Algorithmus
-  bestimmen.
+ \item Die inverse Matrix zu $K$ kann man entweder mit der Formel aus
+  \autoref{sec:restklassen} oder durch simultane Umformung einer
+  Einheitsmatrix bei der Umformung von $K$ in eine Einheitsmatrix bestimmen.
+
+  \begin{minipage}{.45\linewidth}
+    \begin{align*}
+      \begin{gmatrix}[p]
+        7& 3\\ 5& 8
+      \end{gmatrix} &
+         \begin{gmatrix}[p]
+           1& 0\\ 0&1
+           \rowops
+           \mult{0}{\cdot 15}
+         \end{gmatrix}\\
+      \begin{gmatrix}[p]
+        1& 19\\ 5& 8
+      \end{gmatrix} &
+         \begin{gmatrix}[p]
+           15& 0\\ 0&1
+           \rowops
+           \add[21]{0}{1}
+         \end{gmatrix}\\
+      \begin{gmatrix}[p]
+        1& 19\\ 0& 17
+      \end{gmatrix} &
+         \begin{gmatrix}[p]
+           15& 0\\ 3&1
+           \rowops
+           \mult{1}{\cdot 23}
+         \end{gmatrix}\\
+      \begin{gmatrix}[p]
+        1& 19\\ 0& 1
+      \end{gmatrix} &
+         \begin{gmatrix}[p]
+           15& 0\\ 17& 23
+           \rowops
+           \add[7]{1}{0}
+         \end{gmatrix}\\
+      \begin{gmatrix}[p]
+        1& 0\\ 0& 1
+      \end{gmatrix} &
+         \begin{gmatrix}[p]
+           4& 5\\ 17& 23
+         \end{gmatrix}
+    \end{align*}
+  \end{minipage}%
+  \begin{minipage}{.55\linewidth}
+    Mit etwas Glück fällt auf, dass 7 eine Einheit von $\Z_{26}$ ist und man so
+    leicht in der oberen linken Ecke eine 1 erzeigen kann. Das Inverse zu 7 ist
+    15, daher wird die erste Zeile mit 15 durchmultipliziert.
+
+    Dann ist es leicht in der unteren Zeile aus dem linken Element eine 0 zu
+    machen: $0 = 21\cdot 1+5\pmod{26}$.
+
+    17 ist wieder eine Einheit, so dass eine 1 durch Multiplikation mit 23
+    erzeugt werden kann: $23\cdot17\pmod{26} = 1$.
+
+    Aus der 19 lässt sich jetzt wiederrum sehr leicht eine 0 erzeugen:
+    $0=1\cdot7+19\pmod{26}$.
+  \end{minipage}
+
   \begin{gather*}
-    K^{-1} = \begin{pmatrix}4& 5\\17& 23\end{pmatrix}\\
-    b_{ij} = \frac{1}{\det K} (-1)^{i+j} K_{ji}\\
-    b_{11} = 7\cdot8\pmod{26} = 56\pmod{26} = 4\\
-    b_{12} = -7\cdot 3\pmod{26} = -21\pmod{26} = 5\\
-    b_{21} = -7\cdot5\pmod{26} = -35\pmod{26} = 17\\
-    b_{22} = 7\cdot7\pmod{26} = 49\pmod{26} = 23\\
     \det K = 7\cdot8 - 3\cdot5 \pmod{26} = 41\pmod{26} = 15 \\
     \det(K^{-1}) = 7
   \end{gather*}
@@ -3464,23 +3538,26 @@ AFFE = 0~5~5~4
 \end{gather*}
 
 \subsection*{Aufgabe 3}
-Bijektivität unabhängig von $b$
-\begin{gather*}
-  ax_{1} + b \equiv_{26} ax_{2}+ b \quad\Leftrightarrow\quad
-     ax_{1} \equiv_{26} ax_{2}
-\end{gather*}
-falls $\ggT(26, a) = 1$, dann $x_{1}\equiv_{26} x_{2}$.
-falls $\ggT(26, a) = g$, dann $x_{1}\equiv_{\frac{26}{g}} x_{2}$.
+Diese Aufgabe war eigentlich nur ein Test, ob man in der Vorlesung aufgepasst
+hat, weil die Antwort bereits in \autoref{sec:tausch} gegeben wurde.
 
+Ob die Abbildung bijektiv ist oder nicht, hängt nicht von $b$ ab.
 \begin{gather*}
-  ax\equiv
+  ax_{1} + b \equiv_{k} ax_{2}+ b \quad\Leftrightarrow\quad
+     ax_{1} \equiv_{k} ax_{2}
 \end{gather*}
 
-Wenn $a$ teilerfremd zu 26, dann sind alle $\phi$ bijektiv. Wenn alle $a$
-nicht teilerfremd zu 26, dann gibt es keine bijektiven Abbildungen.
-\todo{bessere Erklärung}
+Haben $k$ und $a$ einen gemeinsamen Teiler~$\ggT(k,a) > 0$, so ist die
+Entschlüsselung der Null beispielsweise nicht mehr eindeutig, denn $E(0) =
+0\cdot a = 0$ und
+\begin{gather*}
+  E\Bigl(\frac{k}{\ggT(k,a)}\Bigr) = \frac{k}{\ggT(k,a)} \cdot a \pmod{k}
+     = k\cdot \underbrace{\frac{a}{\ggT(k,a)}}_{\in\Z_{k}} \pmod{k}
+     = 0
+\end{gather*}
 
-$\exists l\in\Z\colon a(x_{1}-x_{2}) = k\cdot 26$
+Also muss $a$ zu $k$ teilerfremd sein, damit alle $\Phi_{a,b}$ bijektiv sind.
+\help{Warum ist das hinreichend?}
 
 \section{Blatt 3}
 
