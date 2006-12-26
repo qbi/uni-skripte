@@ -677,31 +677,38 @@ krypographisch auf Grund der \highl{Häufigkeitsverteilung} auch bei
 
 \subsection{Verschiebechiffre (Caesar)}
 
-\begin{description}
- \item[Algorithmus:] $x\in X, x \mapsto x+1 \pmod{n}$
- \item[Schlüssel:] $i\in\{0,1,2,\dotsc,25\} = X$
- \item[Nachricht:] $m=m_{1}m_{2}\dotso m_{k}$
- \item[Geheimtext:] $c= (m_{1}+i \pmod{n}) (m_{2}+i \pmod{n}) \dotso (m_{k}+i
-  \pmod{n}) = c_{1} c_{2} \dotso c_{k}$
- \item[Entschlüsselung:] $y\in X\colon y \mapsto y-1 \pmod{n}$ und es gilt: $m=
-  (c_{1}-i \pmod{n}) (c_{2}-i \pmod{n}) \dotso (c_{k}-i \pmod{n}) = m_{1}
-  m_{2}\dotso m_{k}$
-\end{description}
+Die \highl{Verschiebechiffren} --~auch \highl{Caesar-Chiffre} genannt~-- sind
+die einfachste Form der monoalphabetischen Substitution. Jeder Buchstabe wird
+durch seinen $i$.~Nachfolger ersetzt, wobei man wieder bei A beginnt, wenn man
+Z überschreitet.
+
+Anschaulich kann man sich eine Verschlüsselungsvorschrift so vorstellen, dass
+unter die Buchstaben~A bis~Z die Buchstaben beginnend mit dem $i$.~Buchstaben
+bis~Z und weiter von A bis zum $(i-1)$.~Buchstaben stehen. Jeder Buchstabe des
+Klartextes wird durch den Buchstaben, der unter ihm in der zweiten Zeile
+steht, ersetzt.
+
+Mathematisch ausgedrück, kodiert man die Buchstaben~A bis~Z mit den Zahlen~0
+bis~25 und ordnet jedem Buchstaben den durch die Abbildung $x\mapsto
+x+i\pmod{26}$ beschriebenen Buchstaben zu.
+
+Der Schlüssel für die Verschlüsselung ist dabei $i\in\{0,1,\dotsc,25\}$, die
+Anzahl der Positionen, um die der Buchstabe verschoben wird.
 
 Das Verfahren hat den Nachteil, das nur wenige ($n$) Schlüssel verfügbar sind
 und das die Verschlüsselung gebrochen ist, wenn \textit{ein} Buchstabe übersetzt
 ist.
 
-Dies gibt Anlass zu folgender Verallgemeinerung.
-
 \subsection{Tauschchiffren}
 \label{sec:tausch}
 
-Bei den sogenannten \highl{Tauschchiffren} werden die Buchstaben erst durch
+\highl{Tauschchiffren} sind eine Verallgemeinerung der Verschiebechiffren. Die
+Buchstaben werden ebenfalls durch
 Zahlen kodiert, mit denen dann gerechnet wird. Jedes Zeichen~$x\in
 \{0,\dotsc,n-1\}$ wird durch die affinlineare Abbildung $x\mapsto x\cdot
 a+b\pmod{n}$ in das Geheimzeichen überführt. Der Schlüssel ist dabei das Paar
 $(a,b)\in \{0,\dotsc,n-1\}^{2}$.
+Bei den Verschiebechiffren ist $b=0$.
 
 Damit die Entschlüsselung möglich ist, muss die Abbildung bijektiv sein. Dazu
 müssen $a$ und $n$ teilerfremd sein. Es gibt also $\phi(n)$\footnote{Eulersche
@@ -2295,7 +2302,131 @@ und $R_{3}'=R_{2}'$ und damit $D(R_{2}') = (\tilde{A}', \tilde{B}')$.
 Die linke Hälfte von $f_{k_{3}}(R_{3})\oplus f_{k_{3}}(R_{3}') =
 S_{1}(\tilde{A})\oplus S_{1}(\tilde{A}')$ und sind in der Situation wie oben.
 
-\todo{Hier fehlt die Vorlesung vom 27.11.}
+% 27.11.
+
+\begin{gather*}
+  S_{2} = \begin{pmatrix}
+            4& 0& 6& 5& 7& 1& 3& 2\\
+            5& 3& 0& 7& 6& 2& 1& 4
+          \end{pmatrix}
+     \qquad
+     B^{*} = \begin{pmatrix}1& 0& 1& 1\end{pmatrix}
+\end{gather*}
+
+\subsection{Zusammenfassung: Differentielle Kryptoanalyse für "`DES"' mit
+  drei Runden}
+
+\begin{align*}
+  L_{0}^{*} &= L_{0}\oplus L_{0}'\\
+  L_{3}^{*}& = L_{3}\oplus L_{3}' = L_{0} \oplus f_{K_{3}}(R_{2}) \oplus
+     f_{K_{3}}(R_{2}')\\
+  L_{3}^{*} \oplus L_{0}^{*} & = f_{K_{3}}(R_{3})\oplus f_{K_{3}}(R_{3}')&
+     \text{da,~} R_{3}=R_{2}, R_{3}'=R_{2}'
+\end{align*}
+
+Mit $R_{2}$ kennen wir $D(R_{2}) = (\tilde{A}, \tilde{B})$ und $D(R_{2}') =
+(\tilde{A}', \tilde{B}')$.
+
+linke Hälfte: $S_{1}(\tilde{A}\oplus K_{3}^{L}) \oplus S_{1}(\tilde{A}'\oplus
+K_{3}^{L})$\\
+rechte Hälfte: $S_{2}(\tilde{B}\oplus K_{3}^{R})\oplus S_{2}(\tilde{B}'\oplus
+K_{3}^{R})$
+
+$R_{0}=R_{0}'$
+
+Beispiel:
+\begin{align*}
+  (L_{0}, R_{0})& = (000\,111, 011\,011)\\
+  (L_{0}', R_{0}')& = (101\,110, 011\,011)\\
+  (L_{3}, R_{3})& = (100\,101, 000\,011)\\
+  (L_{3}', R_{3}')& = (011\,000, 100\,100)
+\end{align*}
+
+Ziel: Bestimme den Schlüssel~$K$ (bzw. Einschränkung der Möglichkeiten)
+
+\begin{align*}
+  R_{2}& = R_{3} = (000\,011)& D(R_{2})& =(0000, 0011) = (\tilde{A},\tilde{B})\\
+  R_{2}'& = R_{3}' = (100\,100)& D(R_{2}')& =(1010, 1000) =
+     (\tilde{A}',\tilde{B}')
+\end{align*}
+
+Eingabedifferenz in $S$-Box $S_{1} = \tilde{A}\oplus\tilde{A}' = (1010)$\\
+Ausgabedifferenz von $S_{1}$: linke Hälfte von $L_{3}^{*}\oplus L_{0}^{*}$
+
+linke Hälfte von $L_{3}^{*}\oplus L_{0}^{*}$
+\begin{gather*}
+  L_{3}^{*} = (100\,101)\oplus (011\,000) = (111\,101)\\
+  L_{0}^{*} = (000\,111)\oplus (101\,110) = (101\,001)\\
+  L_{3}^{*} \oplus L_{0}^{*} = (010\,100)
+\end{gather*}
+
+Die Ausgabedifferenz von $S_{1}$ ist $(010)$. kam in der Tabelle oben \todo{link
+finden} zweimal vor. $A\in \{(0011), (1001)\}$
+
+$K_{3}^{L} = A\oplus \tilde{A} = \{(0011), (1001)\}$ zwei Möglichkeiten.
+
+Eingabedifferenz der $S$-Box $S_{2}$:
+\begin{gather*}
+  \tilde{B}\oplus \tilde{B}' = (0011)\oplus (1000) = (1011)
+\end{gather*}
+Ausgabedifferenz der $S$-Box $S_{2}$: rechte Hälfte von $L_{3}^{*}\oplus
+L_{0}^{*}$: $(100)$.
+
+liefert die Schlüssel $K_{3}^{R}\in\{(1111),(0100)\}$ zwei Möglichkeiten
+$\rightarrow$ vier Möglichkeiten für $K_{3}$ und damit acht Möglichkeiten für
+$K$ statt 512.
+
+\begin{gather*}
+  \begin{array}{c|c|c|c|cl}
+    \tilde{B}& \tilde{B}'& S_{2}(\tilde{B})& S_{2}(\tilde{B}')&
+    S_{2}(\tilde{B})\oplus S_{2}(\tilde{B}')\\
+    \hline
+    (0000)& (1011)& (100)& (111)& (011)\\
+    (0001)& (1010)& (000)& (000)& (000)\\
+    (0010)& (1001)& (110)& (011)& (101)\\
+    (0011)& (1000)& (101)& (101)& (000)\\
+    (0100)& (1111)& (111)& (100)& (011)\\
+    (0101)& (1110)& (001)& (001)& (000)\\
+    (0110)& (1101)& (011)& (010)& (001)\\
+    (0111)& (1100)& (010)& (110)& (100)& (*)
+  \end{array}\\
+  (*)\quad B=\{(0111), (1100)\}\qquad K_{3}^{R}= B\oplus \tilde{B} = \{(0100),
+     (1111)\}
+\end{gather*}
+
+Brauchen ein zweites Klartextpaar: z.\,B. $(L_{0}, R_{0}) = (010\,111,
+011\,011)$ und $(L_{0}', R_{0}') = (101\,110, 011\,011)$ mit $(L_{3}, R_{3}) =
+(001\,010, 001\,011)$ und $(L_{3}', R_{3}') = (011\,000, 100\,100)$.
+
+1.\,Aufgabe: Bestimme $K_{3}^{L}$ und $K_{3}^{R}$. 2.\,Aufgabe: Bestimme $K$.
+
+Angenommen $K_{3} = (x_{1} x_{2} x_{3} x_{4} x_{5} x_{6} x_{7} x_{8})$.
+Dann hat $K$ die Gestalt $K=(x_{p} x_{1} x_{2} x_{3} x_{4} x_{5} x_{6} x_{7})$.
+\begin{align*}
+  L_{3} = L_{2}\oplus f_{k_{3}}(R_{2})& = R_{1}\oplus f_{k_{3}}(R_{2})\\
+  & L_{0}\oplus f_{k_{1}}(R_{0})
+\end{align*}
+
+\subsection{Differentielle Analyse des DES mit vier Runden}
+
+Ansatz: "`Eigenschaft 2"': Es gibt einige Differenzen~$D$, so dass es
+"`viele"' Eingabepaare mit der Differenz~$D$ gibt, derart dass die
+Ausgabedifferenzen übereinstimmen.
+
+Beispiel: $S$-Box $S_{1}$ liefert für $D=A^{*} = (0011)$ in 6~von 8~Fällen die
+Ausgabedifferenz $(011)$. $S_{1}(A)\oplus S_{1}(A')$. Das heißt: Für $A^{*} =
+(0011)$ erwarten wir mit einer Wahrscheinlichkeit von $\frac{3}{4}$ die
+Ausgabedifferenz $(011)$.
+
+$S$-Box $S_{2}$ liefert für
+$D=B^{*}=(1100)$ in 4~von 8~Fällen die Ausgabedifferenz $(010)$.
+Das heißt: Für $B^{*}=(1100)$ erwarten wir mit einer Wahrscheinlichkeit von
+$\frac{1}{2}$ die Ausgabedifferenz $(010)$.
+
+Idee: Für Paare von Klartextblöcken $(L_{0}, R_{0})$ wird $(L_{0}', R_{0}')$
+mit $L_{0}\oplus L_{0}' = (0011)$ und $R_{0}\oplus R_{0}' = (1100)$ erwarten
+wir (beim richtigen Schlüssel) mit Wahrscheinlichkeit $\frac{3}{4}-\frac{1}{2}
+= \frac{3}{8}$ die Ausgabedifferenz $(011\,010)$.
 
 % 29.11.
 
@@ -3542,21 +3673,23 @@ Diese Aufgabe war eigentlich nur ein Test, ob man in der Vorlesung aufgepasst
 hat, weil die Antwort bereits in \autoref{sec:tausch} gegeben wurde.
 
 Ob die Abbildung bijektiv ist oder nicht, hängt nicht von $b$ ab.
+Es hängt allein von $a$ ab, ob zwei Zeichen~$x_{1},x_{2}$ durch das gleiche
+Zeichen ($E(x_{1}) = E(x_{2})$) verschlüsselt werden.
 \begin{gather*}
   ax_{1} + b \equiv_{k} ax_{2}+ b \quad\Leftrightarrow\quad
      ax_{1} \equiv_{k} ax_{2}
 \end{gather*}
 
-Haben $k$ und $a$ einen gemeinsamen Teiler~$\ggT(k,a) > 0$, so ist die
+Haben $k$ und $a$ einen gemeinsamen Teiler~$\ggT(k,a)\ne1$, so ist die
 Entschlüsselung der Null beispielsweise nicht mehr eindeutig, denn $E(0) =
 0\cdot a = 0$ und
 \begin{gather*}
   E\Bigl(\frac{k}{\ggT(k,a)}\Bigr) = \frac{k}{\ggT(k,a)} \cdot a \pmod{k}
-     = k\cdot \underbrace{\frac{a}{\ggT(k,a)}}_{\in\Z_{k}} \pmod{k}
+     = k\cdot \underbrace{\frac{a}{\ggT(k,a)}}_{\in\Z_{k}, > 1} \pmod{k}
      = 0
 \end{gather*}
 
-Also muss $a$ zu $k$ teilerfremd sein, damit alle $\Phi_{a,b}$ bijektiv sind.
+Also muss $a$ teilerfremd zu $k$ sein, damit alle $\Phi_{a,b}$ bijektiv sind.
 \help{Warum ist das hinreichend?}
 
 \section{Blatt 3}
