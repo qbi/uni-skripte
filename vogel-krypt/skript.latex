@@ -82,9 +82,12 @@
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{satz}{Satz}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
+
+\newtheorem{dogma}{Dogma}[chapter]
 
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
@@ -98,6 +101,7 @@
 \newcommand*{\bemerkautorefname}{Bemerkung}
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\satzautorefname}{Satz}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -108,6 +112,8 @@
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
 \newcommand*{\F}{\mathbb{F}}      % endliche Ringe
+\newcommand*{\FP}{\mathrm{FP}}    % Funktionen, die in Polynomialzeit
+                                  % berechnet werden können
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -2313,8 +2319,7 @@ S_{1}(\tilde{A})\oplus S_{1}(\tilde{A}')$ und sind in der Situation wie oben.
      B^{*} = \begin{pmatrix}1& 0& 1& 1\end{pmatrix}
 \end{gather*}
 
-\subsection{Zusammenfassung: Differentielle Kryptoanalyse für "`DES"' mit
-  drei Runden}
+\subsection{Zusfa.: Differentielle Kryptoanalyse für DES mit drei Runden}
 
 \begin{align*}
   L_{0}^{*} &= L_{0}\oplus L_{0}'\\
@@ -3387,6 +3392,220 @@ Jeder Verschlüsselungsschritt besitzt einen Umkehrschritt
 
 Bei AES ist auch der Hintergrund bekannt, wärend bei DES dies nicht war.
 (Diff-Kryptoanalyse war IBM seit 1970 bekannt)
+
+\chapter{Public-key Kryptosysteme}
+
+\section{Tausch geheimer Schlüssel}
+
+\todo{Hier fehlt die Vorlesung vom 8.1.}
+
+% 10.1.
+
+\section{Mathematischer Hintergrund: Einwegfunktion, diskreter Logarithmus,
+  primitive Wurzeln}
+
+\subsection{Modulare Exponensation mit fester Basis und festem Modul}
+
+$f_{a,n}\colon\Z_{n} \mapsto \Z_{n}$, $f_{a,n}(m) := a^{m} \mod n$
+
+\begin{satz}\label{satz:1}
+  $f_{a,n}\in\FP$
+
+  \begin{proof}
+    rekursive Prozedur
+    \begin{verbatim}
+    function (a,m,n)
+    begin
+        if m = 0
+        then return 1
+        else
+        begin
+            if m gerade
+            then return (function(a, m/z, n) ** 2) mod n
+            else return (function(a, m-1, n) * a) mod n
+        end
+    end
+    \end{verbatim}
+
+    Dieser Algorithmus erfordert zwischen $\log_{2}m$ und $2\cdot\log_{2}m$
+    Durchläufe, also $O(\log_{2}m) = O(\abs{m})$. Das heißt man benötigt
+    $O(\abs{m})$ vielen Multiplikationen, d.\,h. dies ist ein
+    Polynomialzeitalgorithmus.
+  \end{proof}
+\end{satz}
+
+Ansatz: Die inverse "`Funktion"' $f^{-1}_{a,n}$ bezeichnen wir als
+\highl{diskreter Logarithmus}. Gegeben ist $a$, $n$ und ein Wert $x$, Aufgabe
+ist: Bestimmt $m$, so dass $a^{m}\mod n = x$, falls ein solches $m$ existiert.
+
+Jedoch exstiert die inverse Funktion im allgemeinen Fall nicht, da $f_{a,n}$
+nicht eineindeutig ist.
+\begin{bsp}[Diskreter Logarithmus]
+  $f_{5,21}(m) = 16$. Es gibt zwei Lösungen für $m$, nämlich $m_{1}=4$:
+  $5^{4} = 625 = 16 \mod 21$ und $m_{2} = 10$: $5^{10} = 9\,765\,625 = 16\mod 21$
+\end{bsp}
+
+\begin{bemerk}
+  Wann ist $f_{a,n}$ eineindeutig bzw. wann existiert der diskrete Logarithmus?
+\end{bemerk}
+
+\begin{dogma}
+  Wir glauben, die Funktion $f_{a,n}$ ist nicht $\FP$-invertierbar.
+
+  Könnten wir beweisen, dass $f_{a,n}$ nicht $\FP$-invertierbar ist, dann
+  könnten wir zeigen, dass es eine echte Einwegfunktion gibt und dann wären
+  nach der letzten Vorlesung $\mathrm{P}=\mathrm{NP}$.
+
+  Also ist $f_{a,n}$ ein Kadidat für eine Einwegfunktion.
+\end{dogma}
+
+\begin{bemerk}
+  Wenn $f$ eine Einwegfunktion ist, dann kann auch der \textit{legitimierte}
+  Empfänger Bob aus dem Kryptogramm $c=f(m)$ die Botschaft $m$ nicht in
+  Polynomialzeit zurückrechnen.
+\end{bemerk}
+
+\subsection{Falltür-Einwegfunktionen}
+
+\begin{defini}
+  (nach Deffie/Helman) Eine Zahlenfunktion~$f\colon X\rightarrow Y$ heißt
+  \highl{Falltür-Einwegfunktion} (engl. trapp door one way function) \gdwdef
+  \begin{enumerate}
+   \item Die Funktion ist in Polynomialzeit berechenbar und $f$ ist
+    "`ehrlich"' (Das Ergebnis der Umkehrfunktion ist in Polynomialzeit
+    aufschreibbar); $f\in\FP$
+   \item $f$ ist mit der Falltürinformation; $\exists g\in\FP \exists
+    \text{Falltürinformation~} t \forall y\in W_{f}\colon f(g(y,T)) = y$
+    (d.\,h. $f$ ist in Polynomialzeit umkehrbar)
+   \item $f$ ist ohne die Falltürinformation nicht $\FP$-invertierbar
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  Eine solche Falltür-Einwegfunktion ist keine Einwegfunktion, denn es gibt
+  einen Polynomialzeitalgorithmus, der die $\FP$-Invertierung ermöglicht.
+\end{bemerk}
+
+\subsection{Modulare Exponentation mit festem Exponenten und festem Modul}
+
+$g_{n,m}\colon \Z_{n} \mapsto \Z_{n}$ mit $g_{n,m}(a) := a^{m} \mod n$.
+(vergleiche mit der Definition von $f_{a,n}$)
+
+\begin{satz}
+  $g_{n,m}\in\FP$
+
+  \begin{proof}
+    Der rekursive Algorithmus aus \autoref{satz:1}.
+  \end{proof}
+\end{satz}
+
+Ansatz: Die inverse Funktion $g_{n,m}^{-1}$ bezeichnen wir als
+\highl{$m$.\,Wurzel}. Gegeben ist $n,m,y$, bestimmte $a$ mit $a^{m}\mod n =
+y$, falls ein solches $a$ existiert.
+
+\begin{bsp}
+  4.\,Wurzel von $16\mod 21$, $g_{21,4}(a) = 16$: $a_{1} =5, a_{2}=2$.
+\end{bsp}
+Problem Wurzel nicht eindeutig.
+
+Sind das alle 4.\,Wurzeln? Gibt es Zahlen $y$, die keine 4.\,Wurzeln hat?
+
+Im Gegensatz zu $f_{a,n}$ lässt sich $g_{n,m}$ in Polynomialzeit invertieren,
+vorrausgesetzt die Faktorisierung von $n$ steht als Falltürinformation zur
+Verfügung. Dazu ein Exkurs in die Zahlentheorie.
+
+\subsubsection{Exkurs in die Zahlentheorie}
+
+Ansatzpunk:
+\begin{gather*}
+  \Z_{n}^{*} := \{ i\colon 1\leq i < n, \ggT(i,n)=1\}
+\end{gather*}
+ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
+
+\begin{satz}
+  (von Euler) Es gilt für alle $x$ mit $1\leq x < n$ und $\ggT(x,n) = 1$ gilt
+  folgenden Kongruenz:
+  \begin{gather*}
+    x^{\phi(n)} \equiv 1\pmod{n}
+  \end{gather*}
+  (Beliebiges Element hoch Ordnung der Gruppe ergibt das Einselement)
+
+  Spezialfall ist der kleine Satz von Fermat: Für alle Primzahlen~$p$ und alle
+  $x$ mit $1\leq x < p$ gilt:
+  \begin{gather*}
+    x^{p-1} \equiv 1\pmod{p}
+  \end{gather*}
+\end{satz}
+
+Vorraussetzung für alles: $n$ ist das Produkt zwei verschiedener
+Primzahlen~$p$ und $q$ ($p\ne q$): $n=pq$.
+
+Die Eulersche $\phi$-Funktion ist multiplikativ, d.\,h. $\phi(n) = \phi(p\cdot
+q) = \phi(p)\cdot\phi(q) = (p-1)\cdot (q-1)$
+
+\begin{defini}
+  Eine Zahl~$a$ ($1\leq a< n$) heißt \highl{primive Wurzel} von $n$ \gdwdef
+  \begin{enumerate}
+   \item $a$ und $n$ sind Teilerfremd ($\ggT(a,n)=1$) und
+   \item für alle $d<\phi(n)$ gilt $a^{d}\not\equiv 1\pmod{n}$ (d.\,h. die
+    Ordnung von $d$, der kleinste Exponent, dass $d^{ord}\equiv1\pmod{n}$, ist
+    $\phi(n)$)
+  \end{enumerate}
+\end{defini}
+
+\begin{bsp}
+  Für $\Z_{5}^{*} = \{1,2,3,4\}$ ($n=5$) sind 2 und 3 primitive Wurzeln,
+  4 ist keine primitive Wurzel, da $4^{2} \equiv 1\pmod{5}$. Für $\Z_{11}^{*}
+  = \{ 1,2,\dotsc,10\}$ sind 2, 8, 7 und 6 die primitiven Wurzeln.
+
+  \begin{gather*}
+    \begin{array}[t]{*{4}{c}}
+      a& a^{2}& a^{3}& a^{4}\\
+      \hline
+      2& 4& 3& 1\\
+      3& 4& 2& 1\\
+      4& 1& 4& 1
+    \end{array} \quad
+       \begin{array}[t]{*{10}{c}}
+         a& a^{2}& a^{3}& a^{4}& a^{5}& a^{6}& a^{7}& a^{8}& a^{9}& a^{10}\\
+         \hline
+         2& 4& 8& 5& 10& 9& 7& 3& 6& 1\\
+         3& 9& 5& 4& 1& 3& 9& 5& 4& 1\\
+         4& 5& 9& 3& 1& 4& 5& 9& 3& 1\\
+         5& 3& 4& 9& 1& 5& 3& 4& 9& 1\\
+         6& 3& 7& 9& 10& 5& 8& 4& 2& 1\\
+         7& 5& 2& 3& 10& 4& 6& 9& 8& 1\\
+         8& 9& 6& 4& 10& 3& 2& 5& 7& 1\\
+         9& 4& 3& 5& 1& 9& 4& 3& 5& 1\\
+         10& 1& 10& 1& 10& 1& 10& 1& 10& 1
+       \end{array}
+  \end{gather*}
+\end{bsp}
+
+\begin{satz}
+  (von Gauss)
+  \begin{enumerate}
+   \item $n$ hat eine primitive Wurzel \gdw $n=1,2$ oder $4$ oder $n = p^{k}$
+    oder $n=2\cdot p^{k}$ für ungerade Primzahl~$p$.
+
+   \item Falls $n$ primitve Wurzeln besitzt, dann $\phi(\phi(n))$ Stück.
+  \end{enumerate}
+\end{satz}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item 8 und 12 sind die kleinsten Zahlen, die keine primitven Wurzeln haben
+   \item $n=5$ hat $\phi(\phi(5)) =\phi(4) = 2$ primitve Wurzeln.
+  \end{enumerate}
+\end{bemerk}
+
+Damit können wir den \highl{diskreten Logarithmus} $f_{a,n}^{-1}$ exakt als
+Funktion definieren, falls $a$ eine primitive Wurzel von $n$ ist.
+\begin{gather*}
+  f_{a,n}^{-1}(x) := \log_{a} x \mod n
+\end{gather*}
+Dabei ist der Wert $\log_{a}x$ eindeutig bestimmt, als diejenige Zahl~$m$ mit
+$a^{m} \log n = x$.
 
 \clearpage
 \appendix
