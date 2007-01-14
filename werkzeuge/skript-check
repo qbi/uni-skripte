@@ -134,7 +134,7 @@ sub usepackage
     $zeile =~ /\\usepackage(\[.*\])*{([\w\-,]*)}/;
     ++$paket_gefunden{$_} foreach ( split(',', $2) );
 }
-neue_funktions_regel(qr/\\usepackage/, 0, \&usepackage, undef);
+neue_funktions_regel(qr/\\usepackage/, qr/^$/, \&usepackage, undef);
 
 my ($makeindex_gefunden, $index_gefunden);
 neue_suchregel(qr/\\makeindex/, \$makeindex_gefunden);
@@ -143,7 +143,7 @@ neue_suchregel(qr/\\index/, \$index_gefunden);
 # Die Variante mit * erfordert ein % am Ende der Zeile. Damit können sich nicht
 # ungewollt Leerzeichen in die Ausgabe einschleichen und die Definitionen
 # erfordern etwas mehr Sorgfalt.
-neue_funktions_regel(qr/\\(re)?new(command|environment)\s*\{/, 0, \&schimpfen,
+neue_funktions_regel(qr/\\(re)?new(command|environment)\s*\{/, qr/^$/, \&schimpfen,
                       '\(re)new(command|environment) nur mit * verwenden');
 
 # Die Klassen aus Koma-Skript sind an die deutschen Verhältnisse des
@@ -171,7 +171,7 @@ sub thmstyle
     $zeile =~ /theoremstyle{(\w*)}/;
     $theoremstyle = $1;
 }
-neue_funktions_regel(qr/\\theoremstyle/, 0, \&thmstyle, undef);
+neue_funktions_regel(qr/\\theoremstyle/, qr/^$/, \&thmstyle, undef);
 
 our @umgebungen_gefunden;
 sub environment
@@ -187,7 +187,7 @@ sub environment
         print "Problem in $.\n";
     }
 }
-neue_funktions_regel(qr/\\newenvironment/, 0, \&environment, undef);
+neue_funktions_regel(qr/\\newenvironment/, qr/^$/, \&environment, undef);
 
 our @theoreme_gefunden;
 sub theorem
@@ -204,7 +204,7 @@ sub theorem
         push(@theoreme_gefunden, $thm);
     }
 }
-neue_funktions_regel(qr/\\newtheorem[^*]/, 0, \&theorem, undef);
+neue_funktions_regel(qr/\\newtheorem[^*]/, qr/^$/, \&theorem, undef);
 
 our %autorefnames_gefunden;
 sub autorefname
@@ -213,7 +213,7 @@ sub autorefname
     $zeile =~ /\\newcommand\*?\{\\(\w*)autorefname\}/;
     $autorefnames_gefunden{$1} = 1;
 }
-neue_funktions_regel(qr/\\newcommand.*autorefname/, 0, \&autorefname, undef);
+neue_funktions_regel(qr/\\newcommand.*autorefname/, qr/^$/, \&autorefname, undef);
 
 our @befehle_gefunden;
 sub newcommand
@@ -231,7 +231,7 @@ sub newcommand
         print "Problem in Zeile $.\n";
     }
 }
-neue_funktions_regel(qr/\\newcommand/, 0, \&newcommand, undef);
+neue_funktions_regel(qr/\\newcommand/, qr/^$/, \&newcommand, undef);
 
 our @mathops_gefunden;
 sub mathop
@@ -240,7 +240,7 @@ sub mathop
     $zeile =~ /\\DeclareMathOperator\*?{\\(\w*)}/;
     push(@mathops_gefunden, $1);
 }
-neue_funktions_regel(qr/\\DeclareMathOperator/, 0, \&mathop, undef);
+neue_funktions_regel(qr/\\DeclareMathOperator/, qr/^$/, \&mathop, undef);
 
 our $ntheorem_optionen;
 sub ntheorem
@@ -249,7 +249,7 @@ sub ntheorem
     $zeile =~ /usepackage\[([\w\d,]*)\]{ntheorem}/;
     $ntheorem_optionen = $1;
 }
-neue_funktions_regel(qr/\\usepackage.*\{ntheorem\}/, 0, \&ntheorem, undef);
+neue_funktions_regel(qr/\\usepackage.*\{ntheorem\}/, qr/^$/, \&ntheorem, undef);
 
 # Wenn das Theoremendezeichen festgelegt wird, dann muss auch bei ntheorem
 # angegeben werden, dass diese verwendet wird.
@@ -258,7 +258,7 @@ sub thmsym
     schimpfen('\\usepackage{ntheorem} fehlt die Option thmmarks')
       unless (defined($ntheorem_optionen) and $ntheorem_optionen =~ /thmmarks/);
 }
-neue_funktions_regel(qr/\\theoremsymbol/, 0, \&thmsym, undef);
+neue_funktions_regel(qr/\\theoremsymbol/, qr/^$/, \&thmsym, undef);
 
 # Wenn hyperref verwendet wird, muss die Option breaklinks angegeben werden,
 # damit hyperref für PS-Dokumenten einen speziellen Algorithmus zum umbrechen
@@ -324,7 +324,7 @@ alle_regeln_vergessen();
 # (Neu-)Definitionen von Befehlen sollen in der Präampel stehen, weil
 # später die Befehle übersehen werden können und dadurch schwer erkennbare
 # Effekte hervortreten können.
-neue_funktions_regel(qr/\\(re)?newcommand/, 0, \&monieren,
+neue_funktions_regel(qr/\\(re)?newcommand/, qr/^$/, \&monieren,
      'Nach \begin{document} soll kein \(re)newcommand mehr verwendet werden');
 
 if ($paket_gefunden{index} or $paket_gefunden{makeidx})
@@ -343,25 +343,25 @@ if ($paket_gefunden{index} or $paket_gefunden{makeidx})
 # Siehe Vorlage.
 # Ausdrücke der Form "$f:A \rightarrow"
 neue_funktions_regel(qr/\$\\?\w+$ltxspc:$ltxspc\\?\w$ltxspc\\(mapsto|rightarrow)/,
-                     0, \&monieren, 'das soll ein \colon und kein : sein');
+                     qr/^$/, \&monieren, 'das soll ein \colon und kein : sein');
 # Ausdrücke der Form "\{ x\in\Omega:"
 neue_funktions_regel(qr/\\\{\\?\w+$ltxspc(\\in$ltxspc\\?\w+$ltxspc)?:/,
-                     0, \&monieren, 'das soll ein \colon und kein : sein');
+                     qr/^$/, \&monieren, 'das soll ein \colon und kein : sein');
 
 # Es gibt für einige Negationen spezielle Befehle, welche besser angepasst sind
 # und damit besser aussehen.
-neue_funktions_regel(qr/\\not(=|\\(in|cong|exists|mid))/, 0, \&monieren,
+neue_funktions_regel(qr/\\not(=|\\(in|cong|exists|mid))/, qr/^$/, \&monieren,
                      'Statt \not\XY besser den Spezialbefehl verwenden');
 
 # LaTeX kann bei \includegraphics selbst die Endung herausfinden. Mit Endung
 # geht die Flexibilität mit rubber verlohren.
-neue_funktions_regel(qr/\\includegraphics\[[^]]*\]\{\w*\.\D*\}/, 0, \&monieren,
+neue_funktions_regel(qr/\\includegraphics\[[^]]*\]\{\w*\.\D*\}/, qr/^$/, \&monieren,
                      'Bei \includegraphics keine Dateiendung angeben.');
 
 # Zwischen Abkürzungen muss ein halbes Leerzeichen stehen.
 # <news:Xns987A80E64D0A7nililandnililandabcd@nililand.de>
 # http://www.dante.de/dante/DTK/dtk96_4/Text/dtk96_4_neubauer_feinheiten.pdf
-neue_funktions_regel(qr/[[:alpha:]]\.(\s|~|\\([:;]|q?quad))*[[:alpha:]]\./, 0, \&monieren,
+neue_funktions_regel(qr/[[:alpha:]]\.(\s|~|\\([:;]|q?quad))*[[:alpha:]]\./, qr/^$/, \&monieren,
                      'Zwischen Abkürzungen steht ein Spatium \,');
 
 # Nach abgekürzten Teilen einer Sinneinheit muss ein Spatium stehen.
@@ -379,12 +379,12 @@ neue_funktions_regel(qr/\\%/, qr/\\,\s*\\%/, \&monieren,
                      'Vor dem Prozentzeichen muss ein Spatium stehen.');
 
 # Vor etc. und usw. kommt kein Komma, da man vor 'und' kein Komma schreibt.
-neue_funktions_regel(qr/,${ltxspc}(etc|usw)/, 0, \&monieren,
+neue_funktions_regel(qr/,${ltxspc}(etc|usw)/, qr/^$/, \&monieren,
                       'Vor etc. und usw. kommt kein Komma');
 
 # \autoref bietet mehr Raum, wo man draufklicken kann, und es merkt sich die
 # Art der Umgebung (Satz, Bemerkung, ...) auf die man sich bezieht -- flexibler.
-neue_funktions_regel(qr/(Satz|Lemma|Beispiel)$ltxspc\\ref/, 0, \&monieren,
+neue_funktions_regel(qr/(Satz|Lemma|Beispiel)$ltxspc\\ref/, qr/^$/, \&monieren,
                   'Für Referenzen besser hyperref und \autoref einsetzen');
 
 # Alle unsere Skripte sollen ein Inhaltsverzeichnis haben
@@ -393,7 +393,7 @@ neue_existiert_regel(qr/\\tableofcontents/, \&schimpfen,
 
 # Mit dieser Regel soll nur sichergestellt werden, dass wir die richtigen
 # Dokumente einlesen
-neue_funktions_regel(qr/\\begin{document}/, 0, \&monieren,
+neue_funktions_regel(qr/\\begin{document}/, qr/^$/, \&monieren,
                       'Ein zweites \begin{document} gefunden');
 
 # Es muss irgendwo im Dokument die aktuelle Versionsnummer und das Datum
@@ -407,14 +407,14 @@ neue_existiert_regel(qr/\\SVNLastChangedRevision/, \&schimpfen,
 # Es sollen nicht die Umschreibungen für Umlaute verwendet werden, weil diese
 # die Arbeit mit Programmen wie sed erschweren. Noch schlimmer wird es bei
 # Dokumenten mit allen Formen: Tex \"a, ngerman "a und diekt ä
-neue_funktions_regel(qr/(?<!\\)\\(3|ss|"[aou])/, 0, \&schimpfen,
+neue_funktions_regel(qr/(?<!\\)\\(3|ss|"[aou])/, qr/^$/, \&schimpfen,
           'Umlaute direkt eingeben, nicht die TeX-Umschreibung verwenden.');
-neue_funktions_regel(qr/"[aous]/, 0, \&schimpfen,
+neue_funktions_regel(qr/"[aous]/, qr/^$/, \&schimpfen,
               'Umlaute direkt eingeben, nicht die Umschreibung verwenden.');
 
 # Bei equation kann es Probleme geben. Da gather äquivalent ist, muss diese
 # Verwendet werden <news:d9bfko$fdp$1@news.BelWue.DE>
-neue_funktions_regel(qr/\\begin{equation\*?}/, 0, \&schimpfen,
+neue_funktions_regel(qr/\\begin{equation\*?}/, qr/^$/, \&schimpfen,
           'Die Umgebung equation nicht verwenden. Stattdessen gather.');
 
 # Im Dokument muss irgendwo die Adresse der Webseite und die E-Mailadresse der
@@ -427,7 +427,7 @@ neue_existiert_regel(qr/\\texttt\{<?skripte\@listserv.uni-jena.de>?\}/,
                      \&schimpfen,
              'Die E-Mailadresse der Mailingliste steht nirgendwo im Dokument');
 
-neue_funktions_regel(qr/\\ref[^*]/, 0, \&monieren, 'Da hyperref geladen, '.
+neue_funktions_regel(qr/\\ref[^*]/, qr/^$/, \&monieren, 'Da hyperref geladen, '.
                      'sollte auch mit \autoref gearbeitet werden')
   if ($paket_gefunden{hyperref});
 
