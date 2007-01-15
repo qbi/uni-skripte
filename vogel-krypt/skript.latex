@@ -65,6 +65,7 @@
 \usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{nicefrac}
 \usepackage{gauss}
+\usepackage{fancyvrb}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -83,11 +84,13 @@
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{satz}{Satz}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
 
 \newtheorem{dogma}{Dogma}[chapter]
+\newtheorem{fakt}{Fakt}[chapter]
 
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
@@ -102,6 +105,8 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\satzautorefname}{Satz}
+\newcommand*{\lemmaautorefname}{Lemma}
+\newcommand*{\faktautorefname}{Fakt}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -141,6 +146,7 @@
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
 \newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\floor}[2][]{#1\lfloor#2#1\rfloor}
 
 % Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
 % im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
@@ -197,9 +203,6 @@
     \fi
   }%
 }
-\def\@palette@rlap#1#2{%
-  \rlap{$#1#2$}%
-}
 \makeatother
 
 \makeindex
@@ -216,6 +219,7 @@
 
 \DeclareMathOperator{\sgn}{sgn}          % Signum/Vorzeichen
 \DeclareMathOperator{\ggT}{ggT}          % größter gemeinsamer Teiler
+\DeclareMathOperator{\card}{card}        % Kardinalität
 
 \begin{document}
 
@@ -3606,6 +3610,218 @@ Funktion definieren, falls $a$ eine primitive Wurzel von $n$ ist.
 \end{gather*}
 Dabei ist der Wert $\log_{a}x$ eindeutig bestimmt, als diejenige Zahl~$m$ mit
 $a^{m} \log n = x$.
+
+% 15.1.
+
+\begin{lemma}\label{lem:1}
+  Es ist bekannt, dass der erweiterte Euklidische Algorithmus korrekt ist, und
+  es gilt $\ggT\in\FP$.
+
+  \begin{proof}
+    Es gibt worst-case-Abschätzungen, die zeigen, dass die Anzahl der
+    Schleifendurchläufe am Größten für zwei aufeinander folgende
+    Fibonacci-Zahlen $f_{k-1}$ und $f_{k}$ ist. Dann werden höchstens
+    \begin{gather*}
+      \floor{\log_{\frac{1}{2}(1+\sqrt{5})} (\sqrt{5}N) }-2
+    \end{gather*}
+    Schleifendurchläufe benötigt. Satz vin Lemé, 1985. Dabei ist $N> f_{k},
+    f_{k-1}$
+  \end{proof}
+\end{lemma}
+
+\begin{lemma}\label{lem:2}
+  Der erweiterte Euklidische Algorithmus bestimmt in Polynomialzeit zwei
+  Zahlen $c$ und $d$ mit $c\cdot \phi(n) + d\cdot m=1$.
+
+  \begin{proof}
+    o.\,B.\,d.\,A. sei $\phi(n)>m$.
+    \begin{Verbatim}[gobble=4]
+    Eingabe: b[0] := phi(n);    b[1] := m;
+    begin
+        x[0] := 1; y[0] := 0;
+        x[1] := 0; y[1] := 1;
+        i := 1;
+        while not teilt(b[i], b[i-1]) do
+        begin
+            q[i] := ceil(b[i-1] / b[i]);
+            b[i+1] := b[i-1] - q[i] * b[i];
+            x[i+1] := x[i-1] - q[i] * x[i];
+            y[i+1] := y[i-1] - q[i] * y[i];
+            i := i + 1;
+        end
+    end
+    Ausgabe: b[i], c := x[i], d := y[i];
+    \end{Verbatim}
+
+    Per Induktion können wir zeigen: $\forall i\geq0\colon b_{0}\cdot x_{i} +
+    b_{1}\cdot y_{i} = b_{i}$.
+
+    Anfang: Dies ist klar für $i=0$ und $i=1$.\\
+    Schritt: Dies gilt für $i-1$ und $i$ und wir zeigen esfür $i+1$.
+    \begin{align*}
+      b_{0} x_{i+1} + b_{1} y_{i+1} &= b_{0} (x_{i-1} - q_{i} x_{i}) + b_{1}
+         (y_{i-1}-q_{i}y_{i})\\
+      &= (b_{0}x_{i-1} + b_{1} y_{i-1}) - q_{i} (b_{0} x_{i} + b_{1}y_{i})\\
+      &= b_{i-1} - q_{i}b_{i} = b_{i+1}
+    \end{align*}
+
+    Wir haben damit $1=c\cdot \phi(n) +d\cdot m$ und d.\,h. $d\cdot
+    m\equiv1\mod \phi(n)$. (d.\,h. $d$ ist das Inverse von $m$ in
+    $\Z_{\phi(n)}^{*}$)
+  \end{proof}
+\end{lemma}
+
+\begin{bsp}
+  $b_{0} := 29, b_{1}:=13$
+  \begin{gather*}
+    \begin{array}{c|ccc}
+      i& b_{i}& x_{i}& y_{i}\\
+      \hline
+      0& 29& 1& 0\\
+      1& 13& 0& 1\\
+      2& 3& 1& -2\\
+      3& 1& -4& 9
+    \end{array}
+  \end{gather*}
+  und es gilt: $(-4)\cdot 29 + 9\cdot13 = -116 + 117 = 1$
+\end{bsp}
+
+\begin{lemma}[Binomischer Satz]\label{lem:3}
+  \begin{gather*}
+    (r+s)^{t} = \sum_{k=0}^{t} \binom{t}{k} r^{t-k} s^{k}
+  \end{gather*}
+\end{lemma}
+
+\begin{lemma}\label{lem:4}
+  Für alle Primzahlen $p$ und $q$, die voneinander verschieden sind, und alle
+  $x>0$ und $u>0$ gilt:
+  \begin{gather*}
+    x^{u}\equiv x\mod p\quad\text{und}\quad x^{u}\equiv x\mod q \Rightarrow
+       x^{u}\equiv x\mod (p\cdot q)
+  \end{gather*}
+
+  \begin{proof}
+    $x^{u}\equiv x\mod p$ bedeutet $x^{u}-x$ ist durch $p$ teilbar und
+    entsprechend $x^{u}-x$ ist durch $q$ teilbar. Also ist $x^{u}-x$ durch
+    $p\cdot q$ teilbar.
+  \end{proof}
+\end{lemma}
+\begin{satz}
+  Es gibt einen Polynomialzeitalgorithmus, der bei Eingabe von $n$, $m$ und
+  $x$ ($\in\N$) mit der Eigenschaft, dass $\ggT(m,\phi(n)) = 1$, und der
+  Falltürinformation $n=p\cdot q$ (für Primzahlen $p,q$), eine Zahl $a$
+  bestimmt mit $a^{m}\mod n = x$.
+
+  \begin{proof}
+    Der Algorithmus besteht aus zwei Teilschritten:
+    \begin{enumerate}[1.\,{Teil}]
+     \item Bestimme ein $d$ mit $m\cdot d\equiv1\mod \phi(n)$ mit Hilfe des
+      erweiterten Euklidischen Algorithmus':
+      \begin{Verbatim}[gobble=6]
+      b[0] := phi(n);    b[1] := m
+      \end{Verbatim}
+      und wie üblich
+      \begin{align*}
+        b_{0} &:= q_{1}b_{1} + b_{2} & \text{mit~} 0\leq b_{2}<b_{1}\\
+        b_{1} &:= q_{2}b_{2} + b_{3}& \text{mit~} 0\leq b_{3}<b_{2}\\
+        \dotso\\
+        b_{k-1} &:= q_{k}b_{k} + b_{k-1}& \text{mit~} 0\leq b_{k-1}<b_{k}
+      \end{align*}
+      solange bis entweder $b_{k+1} = 1$ (oder $b_{k+1}=0$).
+
+      Ausgabe: Falls $b_{k+1}=1$, dann ist $b_{k+1} = \ggT(b_{0},b_{1})$ (und
+      falls $b_{k+1}=0$, dann ist $b_{k} = \ggT(b_{0},b_{1})$)
+
+      Die zwei Lemmata zuvor. \autoref{lem:1} und \autoref{lem:2}
+
+      Wir haben damit $1=c\cdot \phi(n) +d\cdot m$ und d.\,h. $d\cdot
+      m\equiv1\mod \phi(n)$. (d.\,h. $d$ ist das Inverse von $m$ in
+      $\Z_{\phi(n)}^{*}$)
+
+     \item Berechne $x^{d}\mod n =: a$ in Polynomialzeit (schnelles
+      Exponentiatieren. irgendein Satz vorher)
+
+      Behauptung: Es gilt $a^{m}\mod n=x$. Dazu nehmen wir an, dass
+      $x=y^{m}\mod n$ für irgendein $y$ und zeigen: $y=a$.
+
+      \autoref{lem:3} können wir wie folgt anwenden: wir haben $a=x\mod n$ und
+      da $x = y^{m}\mod n$ gilt $x=y^{m}-s\cdot n$ folgt
+      \begin{gather*}
+        a = (y^{m}-s\cdot n)^{d} \mod n = y^{m\cdot d}\mod n
+      \end{gather*}
+      da in allen bis auf den ersten Summanden das $n$ als Faktor auftritt.
+
+      Da $m\cdot d\equiv1\mod \phi(n)$ gilt ein ein $t$, so dass gilt $m\cdot
+      d=t\cdot\phi (n)+1$. Also gilt:
+      \begin{gather}\label{eq:2}
+        a\equiv y^{t\cdot\phi(n)+1}\mod n
+      \end{gather}
+
+      \begin{enumerate}[1.\,{Fall}]
+       \item $y\not\equiv\mod p$. Dann gilt $y^{p-1}\equiv 1\mod p$ (Kleiner
+        Fermat), d.\,h. es gilt $y^{p-1} = r\cdot p+1$ für ein passendes $r$.
+
+        Also gilt:
+        \begin{align*}
+          a&= y^{t\cdot\phi(n)+1} = y^{t\cdot(p-1)\cdot(q-1)}\cdot y =
+             (y^{p-1})^{t\cdot(q-1)}\cdot y\\
+          &\equiv y^{t\cdot(q-1)}\cdot y\equiv y\mod p
+        \end{align*}
+
+       \item $y\equiv0\mod p$. trivialer Weise
+      \end{enumerate}
+
+      Also gilt für alle $y$
+      \begin{gather*}
+        a\equiv y\mod p
+      \end{gather*}
+      Genauso gilt $a\equiv y\mod p$. Also haben wir nach \autoref{lem:4}
+      $a\equiv y\mod n$.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\begin{dogma}
+  Wir glauben, dass die Falltürinformation $n=p\cdot q$, d.\,h. Faktorisieren,
+  nicht $\FP$-invertierbar ist. Das heißt, $g_{n,m}$ ist ein Kandidat für eine
+  Falltür-Einwegfunktion.
+\end{dogma}
+
+Wir haben jetzt zwei Funktionen, von denen wir annehmen, dass sie nicht
+invertierbar sind: der diskrete Logarithmus und die Faktorisierung von Zahlen.
+Die Public-Key-Verfahren beruhen auf diesen Funktionen: RSA beruht auf der
+Faktorisierung, El Gamal auf dem Logarithmus.
+
+\begin{bemerk}
+  Der erweiterte Euklidische Algorithmus erwartet als Eingabe zum einen $n$
+  (ist gegeben) und zum anderen $\phi(n)$ (das ist einfach zu berechnen, falls
+  die Faktorisierung $n=p\cdot q$ bekannt ist).
+\end{bemerk}
+
+\begin{fakt}
+  Die Berechnung von $\phi(n)$ ist genauso schwer wie die Faktorisierung von
+  $n$.
+
+  \begin{proof}
+    \begin{description}
+     \item["`$\Rightarrow$"'] falls $n=p\cdot q$ bekannt ist, dann ist
+      $\phi(n)$ leicht berechenbar. $\phi(n) = \phi(p\cdot q) =
+      \phi(p)\cdot\phi(q) = (p-1)\cdot(q-1)$.
+
+     \item["`$\Leftarrow$"'] falls $\phi(n)$ bekann ist (und $n$ das Produkt
+      zweier Primzahlen ist), dann sind $p$ und $q$ leicht berechenbar.
+
+      Wir erinnern uns: $\phi(n) := \card \{m\colon 0\leq m\leq n, \ggT(n,m)
+      =1\}$ und $\phi(n) = n\cdot \prod_{p\mid n} (1-\frac{1}{p})$ (Dies setzt
+      die Zerlegung von $n$ in Primfaktoren vorraus.)
+
+      Gegeben sei eine natürliche Zahl $n$, für die gilt $n=p\cdot q$ für
+      unbekannt Primfaktoren $p$ und $q$ mit $p\ne q$, und der Wert der
+      Eulerschen $\phi$-Funktion $\phi(n)$. Die Aufgabe besteht darin:
+      Bestimmt mit Hilfe dieser Größen die Primfaktoren $p$ und $q$.
+    \end{description}
+  \end{proof}
+\end{fakt}
 
 \clearpage
 \appendix
