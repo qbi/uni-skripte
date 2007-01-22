@@ -222,6 +222,8 @@
 \DeclareMathOperator{\ggT}{ggT}          % größter gemeinsamer Teiler
 \DeclareMathOperator{\kgV}{kgV}          % kleinstes gemeinsames Vielfaches
 \DeclareMathOperator{\card}{card}        % Kardinalität
+\DeclareMathOperator{\op}{op}            % eine beliebige, unbestimmte
+                                         % Operation
 
 \begin{document}
 
@@ -3399,24 +3401,140 @@ Jeder Verschlüsselungsschritt besitzt einen Umkehrschritt
 Bei AES ist auch der Hintergrund bekannt, wärend bei DES dies nicht war.
 (Diff-Kryptoanalyse war IBM seit 1970 bekannt)
 
+% 8.1.2007
+
 \chapter{Public-key Kryptosysteme}
 
-\section{Tausch geheimer Schlüssel}
+\textit{klassisch:} symmetrische Verfahren, d.\,h. Sender und Empfänger
+verfügen über zueinander passende Schlüssel (quasi-gleiche Schlüssel), die
+bedeide geheim gehalten werden müssen.
 
-\todo{Hier fehlt die Vorlesung vom 8.1.}
+\textit{neu:} asymmetrische Verfahren, d.\,h. es gibt ein Paar von Schlüsseln
+für den Empfänger. Der Schlüssel zum Verschlüsseln ist öffentlich, deshalb
+kennt ihn auch der Sender. Der Schlüssel zum Entschlüsseln ist geheim,
+privater Schlüssel für den Empfänger.
+
+Entscheident dabei ist, dass die Kenntnis des öffentlichen Schlüssels keine
+Rückschlüsse auf den privaten Schlüssel erlaubt.
+
+\section{Das Problem des Tauschens geheimer Schlüssel}
+
+Alice (Sender) und Bob (Empfänger) kommunizieren über einen unsicheren Kanal
+und wollen daher ihre Nachrichten verschlüsseln. Dabei stehen sie vor dem
+Problem, dass sie ein Paar geheim zuhaltender Schlüssel über diesen Kanal
+austauschen müssen. (\textit{engl. secret key agreement problem})
+
+1976 stellten Diffie und Hellmann in "`New directions in
+cryptography"'\cite{diffihellman} ein Verfahren für dieses augenscheinlich
+unlösbare Problem vor.
+
+\subsection{Das Protokoll von Diffie und Hellmann}
+
+\begin{table}
+  \centering
+  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
+    \hline
+    1.& \multicolumn{3}{c|}{\parbox{.6\linewidth}{beide einigen sich
+       auf eine große Primzahl~$p$ und eine primitive Wurzel~$g$; $g$ und $p$
+       sind öffentlich}}\\
+    2.& wählt zufällig eine große Zahl~$a$, berechnet
+       $\alpha=g^{a}\pmod{p}$; $a$ ist privat && wählt zufällig
+       eine große Zahl~$b$,  berechnet $\beta=g^{b}\pmod{p}$; $b$ ist privat\\
+    3.& & $\xleftarrow{\beta} \xrightarrow{\alpha}$ &\\
+    4.& $K_{A}=\beta^{a}\pmod{p}$& & $K_{B}=\alpha^{b}\pmod{p}$\\
+    \hline
+  \end{tabularx}
+  \caption{Austausch eines geheimen Schlüssels in der Öffentlichkeit nach
+    Diffie und Hellmann}
+\end{table}
+
+Alice und Bob verabreden eine große Primzahl~$p$ und eine primitive
+Wurzel~$g$, die beide öffentlich bekannt seien können. Danach wählt jeder für
+sich eine zufällige, große Zahl~$a$ bzw. $b$ und berechnet
+$\alpha=g^{a}\pmod{p}$~(Alice) bzw. $\beta=g^{b}\pmod{p}$~(Bob). Diese beiden
+Ergebnisse tauschen dann beide wieder aus, wobei die Zahlen öffentlich
+zugänglich seien können. Jeder berechnet dann für sich das gemeinsame
+Geheimnis~$K$ durch $K_{A}=\beta^{a}\pmod{p}$~(Alice) bzw.
+$K_{B}=\alpha^{b}\pmod{p}$~(Bob).
+\begin{gather*}
+  K_{A} \equiv \beta^{a}\pmod{p} \equiv (g^{b})^{a}\pmod{p}\equiv
+     (g^{a})^{b}\pmod{p} = \alpha^{b}\pmod{p} = K_{B}
+\end{gather*}
+
+\subsection{Das Protokoll von Rivest und Sherman}
+
+\begin{table}
+  \centering
+  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
+    \hline
+    1.& wählt zufällig 2 große Zahlen~$x,y$, berechnet $x\op y$; $x$ privat,
+       $y,x\op y$ öffentlich
+       &&\\
+    2.& & $\xrightarrow{y,x\op y}$& \\
+    3.& & & wählt zufällig eine große Zahl~$z$, berechnet $y\op z$; $z$
+       privat, $y\op z$ öffentlich\\
+    4.& & $\xleftarrow{y\op z}$& \\
+    5.& berechnet $K_{A}=x\op(y\op z)$& & berechnet $K_{B}=(x\op y)\op z$
+  \end{tabularx}
+  \caption{Austausch eines geheimen Schlüssels in der Öffentlichkeit nach
+    Rivest und Shermann}
+\end{table}
+
+Alice wählt zufällig zwei große Zahlen~$x$ und $y$ und berechnet $x\op y$,
+wobei $\op$ eine zweistellige und assoziative Operation ist, die stark "`nicht
+invertierbar"' ist, d.\,h. die Kenntnis von $x\op y$ und $y$ erlaubt keine
+Rückschlüsse auf~$x$. Die Zahl~$x$ bleibt privat und die Zahlen~$y$ und
+$x\op y$ übermittelt sie an Bob, wobei die Zahlen öffentlich zugänglich seien
+können. Bob wählt sich dann zufällig eine große Zahl~$z$, die privat bleibt,
+und berechnet $y\op z$. Dieses Ergebnis teilt er Alice mit und auch hier kommt
+es nicht auf die Geheimhaltung an. Somit haben beide jetzt das gemeinsame
+Geheimnis $x\op y\op z$
+\begin{gather*}
+  K_{A} = x\op(y\op z) = (x\op y)\op z = K_{B}
+\end{gather*}
+
+\help{Ist bei beiden Verfahren wirklich sichergestellt, dass man aus den
+  öffentlichen Größen keine Rückschlüsse auf das Geheimnis ziehen kann?}
+
+\subsection{Das Konzept der Einwegfunktion}
+\label{sec:rsa-math}
+
+Die Frage ist nun, ob es denn überhaupt eine solche Operation~$\op$ gibt und
+wenn ja, wie sieht diese aus? In der Komplexitätstheorie gibt es das Konzept
+der Einwegfunktion, das Funktionen beschreibt, die einfach zu berechnen, aber
+"`schwer"' zu invertieren sind.
+
+\begin{defini}
+  Eine Funktion $f\colon\N\rightarrow\N$ ist eine \highl{Einwegfunktion}
+  \gdwdef sie die folgenden Eigenschaften besitzt
+  \begin{itemize}
+   \item $f$ ist im worst case in Polynomialzeit zu berechnen und
+   \item für fast alle $y\in W_{f}$ gibt es keinen probalistischen
+    Algorithmus, der im average case ein zugehöriges Urbild~$x$ mit $f(x)=y$
+    in Polynomialzeit berechnet.
+  \end{itemize}
+\end{defini}
+
+Aus der Komplexitätstheorie ist bekannt, dass eine solche Einwegfunktion nur
+dann existiert, wenn $\mathrm{P}\ne \mathrm{NP}$ ist.
 
 % 10.1.
 
-\section{Mathematischer Hintergrund: Einwegfunktion, diskreter Logarithmus,
-  primitive Wurzeln}
-\label{sec:rsa-math}
-
 \subsection{Modulare Exponensation mit fester Basis und festem Modul}
 
-$f_{a,n}\colon\Z_{n} \mapsto \Z_{n}$, $f_{a,n}(m) := a^{m} \mod n$
+$f_{a,n}$ sei im folgende wie folgt definiert:
+\begin{gather*}
+  f_{a,n}\colon\Z_{n} \mapsto \Z_{n}\qquad\text{wobei}\qquad
+     f_{a,n}(m) := a^{m} \mod n
+\end{gather*}
 
 \begin{satz}\label{satz:1}
-  $f_{a,n}\in\FP$
+  Die Zahlenfunktion $f_{a,n}$ (wie sie oben definiert ist) gehört zur
+  Klasse~$\FP$ der in Polynomialzeit berechenbaren Funktionen.
 
   \begin{proof}
     rekursive Prozedur
@@ -4112,6 +4230,7 @@ Es ist sinnvoll diese Optimierung in einem hybriden Verfahren abzuwenden.
 
 Das Protokoll:
 \begin{table}
+  \centering
   \begin{tabularx}{.9\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
     \hline
     Schritt& Alice& Kanal& Bob\\
