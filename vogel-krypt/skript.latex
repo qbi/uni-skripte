@@ -220,6 +220,7 @@
 
 \DeclareMathOperator{\sgn}{sgn}          % Signum/Vorzeichen
 \DeclareMathOperator{\ggT}{ggT}          % größter gemeinsamer Teiler
+\DeclareMathOperator{\kgV}{kgV}          % kleinstes gemeinsames Vielfaches
 \DeclareMathOperator{\card}{card}        % Kardinalität
 
 \begin{document}
@@ -3979,6 +3980,160 @@ dass es Einwegfunktionen gibt.
   Bemerkung: mach mach modulo nach jedem Quadrieren bzw. Multiplizieren, damit
   die Operanten nicht zu groß werden.
 \end{bsp}
+
+% 22.1.
+
+\begin{fakt}
+  Die Sicherheit von RSA beruht auf der Sicherheit des Faktorisierungsproblems
+  FACTORING. Falls FACTORING "`einfach"' ist, dann ist auch RSA "`einfach"'.
+  Es gilt: $RSA\leq_{m}^{p} FACTORING$.
+\end{fakt}
+
+Ein Angriff auf das Faktorisierungsproblem ist die \highl{$(p-1)$-Methode} von
+Polard. Dies funktioniert fpr zusammengesetzte Zahlen~$n$ mit einem
+Primfaktor~$p$, falls $p-1$ kleine Primfaktoren hat. Dann ist es möglich, ein
+Vielfaches von $p-1$ zu bestimmen, ohne $p$ zu kennen. Falls $\nu$ ein solches
+Vielfaches ist, dann gilt $a^{\nu}\equiv1\pmod{p}$ für alle $a$ mit
+$\ggT(a,p)=1$ (der kleine Satz von Fermat).
+
+Hieraus folgt: $p$ ist ein Teiler von $a^{\nu}-1$. Dann gilt: wenn $n$ kein
+Teiler von $a^{\nu}-1$ ist, dass ist $\ggT(n,a^{\nu}-1)$ ein echter Teiler von
+$n$. (d.\,h. $n$ ist faktorisiert!)
+
+Woher kommt dieses $\nu$? Als Kandidat für $\nu$ sind Produkte der Form
+\begin{gather*}
+  \nu = \prod_{\substack{q\text{~ist prim}\\q^{k}\leq S}} q^{k}
+\end{gather*}
+für eine Schranke~$S$.
+
+Falls hier ein $q$ als Teiler von $p-1$ dabei ist, dann ist $\nu$ ein
+Vielfaches von $p-1$, falls nicht, probiere eine größere Schranke~$S'>S$.
+
+Eine Bemerkung zum \highl{quadratischen Sieb}: Für eine zu faktorisierende
+Zahl~$n$ werden Zahlen~$a$ und $b$ so ermittelt, dass gilt:
+\begin{gather*}
+  a^{2}\equiv b^{2}\pmod{m}\qquad\text{und}\qquad a\not\equiv \pm b\pmod{n}
+\end{gather*}
+
+Das heißt $n$ teilt $a^{2}-b^{2}=(a+b)(a-b)$, aber weder $a+b$ noch $a-b$.
+Damit ist der größer gemeinsame Teiler von $a-b$ und $n$ ein nichttrivialer
+Faktor von $n$.
+
+Falls FACTORING "`schwer"' ist, bedeutet dies nicht, dass RSA "`schwer"' ist.
+Insbesondere ist RSA kein Primzahltest, da es auch mit Modulen funktioniert,
+die keine Primzahlen sind!
+
+\begin{defini}
+  Eine \highl{Carmichael-Zahl}~$c$ ist eine zusammengesetzte Zahl, so dass für
+  alle Primfaktoren~$q$ von $c$ gilt:
+  \begin{itemize}
+   \item $q-1$ teilt $c-1$ und
+   \item für alle zu $q$ teilerfremden Zahlen~$n$ gilt $a^{q-1}\equiv
+    1\pmod{q}$. (diese Eigenschaft ist aus der ersten ableitbar \gdw (wegen
+    der ersten Eigenschaft) $a^{c-1}\equiv1\pmod{c}$ \gdw (wegen dem
+    chin.\,Restklassensatz) $a^{c-1}\equiv1\pmod{c}$)
+  \end{itemize}
+\end{defini}
+
+\begin{bsp}
+  $561 = 3\cdot11\cdot17$. Dann gilt
+  \begin{itemize}
+   \item 2, 10 und 16 Teiler von 560
+   \item falls $a$ teilerfremd zu 3, 11 und 17 ist, dann ist $a^{560}\equiv1
+    \pmod{561}$, z.\,B. $14^{560}\equiv1\pmod{561}$, aber z.\,B. gilt
+    $9^{560}\equiv375\pmod{561}$.
+  \end{itemize}
+\end{bsp}
+
+Wir betrachten folgenden Modul~$n=p\cdot c$, wobei $c$ eine Carmichael-Zahl
+mit $c=\prod q_{i}$ ist. (Dann gilt $\phi(n)\ne(p-1)\cdot(c-1)$, da $c$ keine
+Primzahl ist, aber $(p-1)\cdot(c-1)=(q-1)\cdot b_{i}$.) Wir wählen ein $e$ mit
+$\ggT(e,(p-1)(c-1)) =1$ und bestimmen ein $d$ mit $e\cdotd\equiv1
+\pmod{(p-1)(c-1)}$.
+
+Behauptung: $a^{ed}\equiv a\pmod{n}$.
+\begin{enumerate}[{Fall}~1]
+ \item Wir betrachten den Primteiler $p$ von $n$.
+  \begin{enumerate}[{Fall~1}a]
+   \item $p$ ist Teiler von $a$, dann ist $a^{ed}\equiv0\equiv a\pmod{p}$.
+   \item $p$ ist kein Teiler von $a$, dann ist
+    \begin{gather*}
+      a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a\equiv (a^{p-1})^{k(c-1)}\cdot a
+         \equiv1\cdot a\equiv a\pmod{p}
+    \end{gather*}
+  \end{enumerate}
+
+ \item Wir betrachten alle Primteiler $q_{i}$ von $n$.
+  \begin{enumerate}[{Fall~2}a]
+   \item Wenn $q_{i}$ Teiler von $a$ ist, dann ist $a^{ed}\equiv0\equiv
+    a\pmod{q_{i}}$.
+   \item Ist $q_{i}$ kein Teiler von $a$, dann ist
+    \begin{gather*}
+      a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a\equiv a^{k(q_{i}-1)b_{i}}\cdot
+         a\equiv (a^{q_{i}-1})^{k\cdotb_{i}} \cdot a\equiv a\pmod{q_{i}}
+    \end{gather*}
+  \end{enumerate}
+\end{enumerate}
+
+Also gilt nach dem chinesischen Restklassensatz:
+\begin{gather*}
+  a^{ed}\equiv a\pmod{(p\cdot\prod q_{i})}
+\end{gather*}
+
+Das heißt, es gibt Zahlen, die nicht prim sind, für die aber der
+RSA-Algorithmus korrekt ist.
+
+"`Optimieren"' lässt sich der Algorithmus in folgendem Sinne: Es ist nicht
+notwendig, den öffentlichen Schlüssel~$e$ so zu bestimmen, dass
+$\ggT\bigl(e,\phi(n)\bigr)=1$ ist. Für $n=p\cdot q$ genügt es ein $e$ zu
+bestimmen, für das gilt: $\ggT\bigl(e,\kgV(p-1,q-1)\bigr)$. Der Vorteil zeigt
+sich bei der Berechnung des geheimen Schlüssels~$d$, da hierfür das Modul
+kleiner geworden ist: Für $p=11$ und $q=13$ ist $(p-1)(q-1)=120$, aber
+$\kgV(p-1,q-1)=60$.
+
+Der Korrektheitsbeweis hierfür erfolgt analog zum ursprünglichen Beweis von
+RSA und zum Beweis für die Carmichael-Zahlen, denn es gelten die folgenden
+Beziehungen:
+\begin{itemize}
+ \item $\kgV(p-1,q-1) = (p-1)\cdot b$ bzw.
+ \item $\kgV(p-1, q-1) = (q-1)\cdot c$
+\end{itemize}
+
+Zum Beispiel der Fall $\ggT(a,n)=1$
+\begin{gather*}
+  a^{ed} \equiv a^{k\kgV(p-1,q-1)}\cdot a\equiv a^{k(p-1)b}\cdot a\equiv1\cdot
+     a\equiv a\pmod{p}
+\end{gather*}
+
+Es ist sinnvoll diese Optimierung in einem hybriden Verfahren abzuwenden.
+\help{So richtig habe ich nicht verstanden warum.}
+
+\section{Das Verfahren von El Gamal}
+(1985)
+
+Das Protokoll:
+\begin{table}
+  \begin{tabularx}{.9\linewidth}{cc*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& Alice& Kanal& Bob\\
+    \hline
+    1.& \multicolumn{3}{p}{Alice und Bob verabreden eine große Primzahl~$p$
+       und eine primitive Wurzel $q$ von $p$. $p$ und $g$ sind öffentlich}\\
+    2.& & & Bob wählt zufällig ein $b\in\Z_{p-1}^{*}$ und berechnet
+       $\beta=g^{b}\pmod{p}$; $b$ ist privat\\
+    3.& & $\xleftarrow{\beta}$& \\
+    4.& Alice wählt zufällig ein $a\in\Z_{p-1}^{*}$ und berechnet
+       $\alpha=g^{a}\pmod{p}$ und $C=M\cdot b^{a}\pmod{p}$; $a$ und $M$
+       sind privat, $C$ und $\alpha$ sind öffentlich& & \\
+    5.& & $\xrightarrow{C,\alpha}$& \\
+    6.& & & Bob berechnet $x=p-1-b$ und $M=C\cdot\alpha^{x}\pmod{p}$.
+  \end{tabularx}
+  \caption{Ablauf des El Gamal-Verfahrens}
+\end{table}
+
+\begin{satz}
+  Der El Gamal-Algorithmus ist korrekt.
+\end{satz}
 
 \clearpage
 \appendix
