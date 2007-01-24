@@ -2973,8 +2973,10 @@ Element des $\F_{256}$ das \highl{multiplikative Inverse} bestimmen. Dazu muss
 man den \highl{erweiterten euklidischen Algorithmus} auf Polynome anwenden,
 was aber keine Änderungen am Algorithmus selbst erfordert. Man muss nur
 beachten, dass man für die einzelnen Operationen ($+$, $-$, $\cdot$ und $div$)
-die entsprechenden Operationen für den $\F_{256}$ ($\oplus$, $\oplus$, $\odot$
-und entsprechende Division) verwendet.
+die entsprechenden Operationen für den $\F_{256}$ ($\oplus$,
+$\oplus$\footnote{Wenn man sich die Verknüpfungstabellen für $+$, $-$ und
+$\oplus$ aufschreibt, sieht man, dass alle drei Operationen äquivalent sind.},
+$\odot$ und Polynomdivision) verwendet.
 
 Es sei $p(x)\in\F_{256}$ mit $p(x)\ne0$. Da $m(x)$ irreduzibel ist, sind
 $p(x)$ und $m(x)$ teilerfremd zu einander, d.\,h. der größe gemeinsame Teiler
@@ -3050,13 +3052,15 @@ Elemente sind Polynome höchstens dritten Grades.
 \begin{gather*}
   c(x) = c_{3} x^{3} + c_{2} x^{2} + c_{1} x + c_{0}
 \end{gather*}
-dabie sind die Koeffizient~$c_{i}\in\F_{256}$ und erlauben die folgende
+dabei sind die Koeffizient~$c_{i}\in\F_{256}$ und erlauben die folgende
 Darstellung:
 
 \begin{bsp}
-  als Polynom: $c(x) = 01 x^{3} + 03 x^{2} + A1 x + 02$\\
-  Hexadezimal: $[01, 03, A1, 02]$\\
-  Binär: $[0000\,0001, 0000\,0011, 1010\,0001, 0000\,0010]$
+  \begin{enumerate}
+   \item als Polynom: $c(x) = 01 x^{3} + 03 x^{2} + A1 x + 02$
+   \item Binär: $[0000\,0001, 0000\,0011, 1010\,0001, 0000\,0010]$
+   \item Hexadezimal: $[01, 03, A1, 02]$
+  \end{enumerate}
 \end{bsp}
 
 Addition ist komponentenweis mit \texttt{xor} $\oplus$.
@@ -4307,7 +4311,137 @@ Das Protokoll:
 
 \begin{satz}
   Der El Gamal-Algorithmus ist korrekt.
+
+  % 24.1.
+
+  \begin{proof}
+    $p,g$ öffentlich, $\ggT(a,p-1)=1, \alpha=g^{a}\pmod{p},
+    C=M\beta^{a}\pmod{p}$, $\ggT(b,p-1) = 1, \beta=g^{b}\pmod{p}$.
+
+    $x:= p-1-b$,
+    \begin{gather*}
+      C\cdot\alpha^{x}\equiv (M\beta^{a})(g^{a})^{x} \equiv
+         M\cdot (g^{b})^{a} (g^{a})^{p-1-b} \equiv M\cdot g^{ba+a(p-1)-ab}
+         \equiv M\cdot(g^{b-1})^{a}\equiv M\cdot1 \equiv M\pmod{p}
+    \end{gather*}
+
+    Sicherheit: Die Kenntnis von $a$ und $b$ liefert den "`Rest"'. $a$ und $b$
+    sind geheim. $a=\log_{g}\alpha\pmod{p}$ bzw. $b=\log_{g}\beta\pmod{p}$.
+    (Die Wahl von $g$ als Primitive Wurzel sichert, dass $a$ und $b$ eindeutig
+    bestimmt sind.) Dogma: modulare Exponentation mit fester Basis und festem
+    Modul ist eine Einwegfunktion, d.\,h. der diskrete Logarithmus ist nicht
+    $\FP$-berechenbar. Die Größen $a$ und $b$ sind nicht $\FP$-berechenbar,
+    insebsondere kann Bob auch nicht das geheime $a$ von Alice berechnen, aber
+    sie werden auch nicht zur Entschlüsselung benötigt.
+  \end{proof}
 \end{satz}
+
+Für den diskreten Logarithmus braucht man wie für die diskrete Wurzel keine
+Falltürinformation.
+
+\begin{bemerk}
+  Es gibt auch noch andere Public-Key-Verfahren: Das Verfahren von Rabin:
+  Idee: Wähle zwei große Primzahlen~$p$ und $q$ mit $p\equiv 3\pmod{4}$ und
+  $q\equiv3\pmod{4}$, also $\frac{p+1}{4},\frac{q+1}{4}\in\N$; $p,q$ sind
+  geheim, $n=p\cdot q$ ist öffentlich.
+
+  Für eine Nachricht~$M<n$ ist $C=M^{2}\pmod{n}$.
+
+  Sicherheit: Wurzelziehen geht nur, wenn $p$ und $q$ bekannt sind, da
+  diskrete Wurzel nicht $\FP$-berechenbar.
+
+  Problem: Wurzel ist nicht eindeutig.
+\end{bemerk}
+
+\section{Digitale Signaturen}
+
+Das Anliegen besteht in der \highl{Authentifizierung} des Absenders.
+Grundidee: Wir nutzen die Sicherheit der Protokolle der Public-Key-Verfahren
+in modifizierter Form für die Authentifizierung.
+
+\begin{table}
+  \centering
+  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
+    \hline
+    1.& \multicolumn{3}{c}{\parbox{.6\linewidth}{wähle eine große Primzahl $p$
+       und eine primitve Wurzel $g$ von $p$; $p,g$ öffentlich}}\\
+    2.& && wähle $b$; $\beta=g^{b}\pmod{p}$ wie zuvor\linebreak wähle weiter
+       $r\in\Z_{p-1}^{*}$ und $\rho=g^{r}\pmod{p}$ und berechne $s$ gemäß
+       $b\cdot\rho+r\cdot s\equiv M\pmod{p}$ und $sig_{Bob}(M) = (\rho,s)$\\
+    3.& & $\xleftarrow{\beta,M,sig_{Bob}(M)}$& \\
+    4.& Überprüfe $g^{m} = \beta^{s}\cdot\rho\pmod{p}$& & \\
+    \hline
+  \end{tabularx}
+  \caption{Das Protokoll von El~Gamal zur digitalen Signatur}
+\end{table}
+
+$\beta$ und $\rho$ wie gehabt berechnen (square-and-multiply-Algo), $s$ mit
+dem erweiterten euklidischen Algorithmus
+
+Korrektheit:
+\begin{gather*}
+  g^{m} \equiv g^{b\cdot\rho+r\cdot s} \equiv \beta^{\rho}\cdot \rho^{s} \pmod{p}\\
+  g^{m} = g^{b\cdot\rho+r\cdot s + k\cdot p} = g^{b\cdot\rho+r\cdot s} \cdot
+     (g^{p})^{k} = g^{b\cdot\rho+r\cdot s} \cdot 1^{k} = \beta^{\rho}\cdot \rho^{s} \pmod{p}
+\end{gather*}
+
+\begin{table}
+  \centering
+  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
+    \hline
+    1.& wählt $n=p\cdot q$ und $e$ wie gehabt als öffentlichen Schlüssel und
+       $d$ als privaten Schlüssel& & \\
+    2.& & $\xrightarrow{n,e}$& \\
+    3.& signiert die Botschaft $M$ durch $sig_{Alice}(M) = M^{d}\pmod{m}$ & & \\
+    4.& & $\xrightarrow{M,sig_{Alice}(M)}$& überprüft $M=
+       (sig_{Alice}(M))^{e}\pmod{n}$
+  \end{tabularx}
+  \caption{RSA-Protokoll für digitale Signaturen}
+\end{table}
+
+Korrektheit wie gehabt:
+\begin{gather*}
+  sig_{Alice}(M)^{e} \equiv M^{d\cdot e} \equiv M\pmod{n}
+\end{gather*}
+
+\section{Das Shamir-ohne-Schlüssel-Protokoll}
+
+In Anlehnung an den Diffie-Helman-Schlüsseltausch.
+
+\begin{table}
+  \centering
+  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
+    \hline
+    1.& \multicolumn{3}{c}{\parbox{.6\linewidth}{wähle eine große Primzahl;
+       $p$ öffentlich}}\\
+    2.& für eine Nachricht $M$ berechne $x =
+       M^{a}\pmod{p}$; $x$ öffentlich& & \\
+    3.& & $\xrightarrow{x}$& \\
+    4.& & & berechnet $y= x^{b}\pmod{p}$; $y$ öffentlich\\
+    5.& & $\xleftarrow{y}$& \\
+    6.& berechnet $z=y^{a^{-1}}\pmod{p}$; $z$ öffentlich& & \\
+    7.& & $\xrightarrow{z}$& \\
+    8.& & & $M=z^{b-1}\pmod{p}$
+  \end{tabularx}
+  \caption{Das Protokoll Shamir-ohne-Schlüssel}
+\end{table}
+
+Alice hat ihr Geheimnis~$a$, Bob hat sein Geheimnis~$b$, aber es gibt kein
+gemeinsames Geheimnis. Alice berechnet ein Paar $(a,a^{-1})$ mit der
+Eigenschaft $a\cdot a^{-1}\equiv1\pmod{p-1}$ und entsprechend berechnet Bob
+ein Paar~$(b,b^{-1})$ mit der Eigenschaft, dass $b\cdot
+b^{-1}\equiv1\pmod{p-1}$ ist. Dann gilt
+\begin{gather*}
+  z^{b^{-1}} \equiv y^{a^{-1}\cdot b^{-1}}
+     \equiv x^{b\cdot a^{-1}\cdot b^{-1}}
+     \equiv m^{a\cdot b\cdot a^{-1}\cdot b^{-1}} \equiv m
+\end{gather*}
 
 \clearpage
 \appendix
