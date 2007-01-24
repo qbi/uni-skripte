@@ -23,7 +23,7 @@
 % von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
 % wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
 
-\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+\documentclass[german,draft,twoside]{scrreprt}
 
 \usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
                           % oder solche, die man nicht in LaTeX verwenden
@@ -1453,12 +1453,19 @@ $-[a]_{k} := [-a]_{k} = [k-a]_{k}$. Ein Element $[a]_{k}$ heißt
 $[a]_{k} \cdot [b]_{k} = [1]_{k}$. In diesem Fall heißt $[b]_{k}$
 \highl{inverses Element bzgl. Multiplikation} zu $[a]_{k}$.
 
-Die Eulersche $\phi$-Funktion $\phi(k)$ ist die Anzahl der Mengen $a,b\in
-\{0,\dotsc,k-1\}$, für die gilt $\ggT(a,b)=1$. Also gibt es in $\Z_{k}$
-genau $\phi(k)$ Einheiten, da $[a]_{k}$ eine Einheit ist \gdw ein $[b]_{k}$
-mit $[a]_{k}\cdot [b]_{k} = [a\cdot b]_{k} = [1]_{k} = 1+k\Z$ existiert,
-d.\,h. es gibt ein $b$ und ein $l$, so dass $ab= 1+kl$, also $ab-kl=1$. Dies
-gilt \gdw $\ggT(a,b)=1$.
+\begin{lemma}
+  \label{lem:5}
+  Die Eulersche $\phi$-Funktion $\phi(k)$ ist die Anzahl der Mengen $a,b\in
+  \{0,\dotsc,k-1\}$, für die gilt $\ggT(a,b)=1$. Also gibt es in $\Z_{k}$
+  genau $\phi(k)$ Einheiten.
+
+  \begin{proof}
+    $[a]_{k}$ ist eine Einheit in $Z_{k}$ \gdw ein $[b]_{k}$
+    mit $[a]_{k}\cdot [b]_{k} = [a\cdot b]_{k} = [1]_{k} = 1+k\Z$ existiert,
+    d.\,h. es gibt ein $b$ und ein $l$, so dass $ab= 1+kl$, also $ab-kl=1$. Dies
+    gilt \gdw $\ggT(a,b)=1$.
+  \end{proof}
+\end{lemma}
 
 Falls $k=p$ eine Primzahl ist, dann gibt es $\phi(p)=p-1$ Einheiten und
 $\Z_{p}$ ist ein Körper.
@@ -2750,161 +2757,150 @@ Blowfish (1994), Twofish (1998) von Bruce Schneier
   eingesetzt.
 \end{description}
 
-\section{Der Advanced (Data) Encryption Standard -- AES}
+\section{Exkurs über endliche Körper}
 
-1997: macht die US-Standardisierungsbehörte ein \textit{öffentliche}
-Ausschreibung eines Verfahrens als Nachfolgers von DES. Forderungen an das
-Verfahren: öffentlich, lizenzfrei, weltweit verfügbar, schneller als
-Triple-DES. Vorgaben: Blocklänge min. 128 und Schlüssellänge von 128, 192,
-256.
+\subsection{Endliche Körper von Primzahlordnung}
 
-1998: Wurden 15 Verfahren eingereicht. (darunter auch MAGENTA von der
-deutschen Telekom, das schon in der Präsentation gebrochen wurde)
+Wir wissen bereits aus \autoref{sec:restklassen}, dass sich die ganzen Zahlen
+in Äquivalenzklassen modulo~$m$ zerlegen lassen:
+\begin{gather*}
+  \Z_{m} := \Z_{\nicefrac{}{\equiv (m)}}
+     = \{ [0]_{k}, [1]_{k}, \dotsc, [k-1]_{k} \}
+     = \{0,1,\dotsc,m-1\}
+\end{gather*}
+Damit ergibt sich für $m>1$ ein Ring $[\Z_{m}, +,\cdot]$ mit dem Nullelement
+$0 := [0]_{m}$, dem Einselement $1 := [1]_{m}$ und insgesamt $\abs{\Z_{m}}=m$
+Elementen. Ein Element $a\in\Z_{m}$ heißt Einheit \gdwdef es ein inverses
+Element $b$ mit $a\cdot b=1$ gibt. Es gilt: $a$ ist Einheit in $\Z_{m}$ \gdw
+$\ggT(a,m) = 1$ (\autoref{lem:5}).
 
-1999: 5 Kandidaten in der Endrunde: Twofisch (Platz 2, weil $\F_{256}$ und
-nicht $\F_{2}$), RC6, MARS (IBM, David Coppersmith), Serpent (ähnlich DES,
-über 32 Runden, Platz 3), Rijngdael
+$\Z_{m}^{*}$ bezeichnet die \highl{Menge der Einheiten} in $\Z_{m}$, also
+gilt: $\abs{\Z_{m}^{*}} = \phi(m)$ (\autoref{lem:5}). Wenn $m=p$ eine Primzahl
+ist, dann ist $\Z_{p}^{*} = \{1, 2,\dotsc,p-1\}$ (da $\phi(p)=p-1$) und
+$\Z_{p}$ ein endlicher Körper der Ordung~$p$.
 
-2000: Wird Rijndael als Sieger bekannt gegeben.
+\subsection{Polynomringe}
 
-2002: Rijndael wird als AES (FIPS) veröffentlich.
-
-\subsection{Bescheibung des Verfahrens von Rijndael}
-
-iterirte Blockchiffre; keine Feistel-Chiffre; Block- und Schlüssellänge können
-unabhängig voneinander gewählt werden; Rundenzahl ist abhängig von 10, 12 oder
-14; in FIPS: 128 als Blocklänge, 128 als Schlüssellänge und 10 als Rundenzahl
-und eine Abschlussrunde
-
-\todo{Bild vom Schema}
-
-Was passiert in den Runden? Jede Runde (bis auf die letzte) besteht aus drei
-Schichten:
-\begin{enumerate}
- \item ByteSub-Transformation: nicht lineare Transformation als Schutz vor
-  differenzieller und linearer Kryptoanalyse
- \item SchiftRow-Transformation: zwischen Diffusion
- \item MixColumn-Transformation
-\end{enumerate}
-
-\todo{Bild vom Schema der Runde~$i$}
-
-\subsection{Exkurs über endliche Körper}
-
-\subsubsection{Endliche Körper von Primzahlordnung}
-wissen: Zerlegung der ganzen Zahlen in Äquivalenzklassen modulo $m$: $\Z_{m}
-:= \Z_{\nicefrac{}{\equiv (m)}}$; ergibt einen Ring $[\Z_{m}, +,\cdot]$ für
-$m>1$ mit dem Nullelement $0 := [0]_{m}$ und Einselemt $1 := [1]_{m}$. $\Z_{m}
-= \{ [0]_{m}, [1]_{m}, \dotsc, [m-1]_{m}\} = \{0,1,\dotsc,m-1\}$,
-$\abs{\Z_{m}}=m$. Ein Element $a\in\Z_{m}$ heißt \highl{Einheit} \gdwdef es
-gibt ein inverses Element $b$ mit $a\cdot b=1$. Es gilt: $a$ ist Einheit in
-$\Z_{m}$ \gdw $\ggT(a,m) = 1$
-
-$\Z_{m}^{*}:= \{a\in\Z_{m}\colon a~\text{ist Einheit}\}$, $\abs{\Z_{m}^{*}} =
-\phi(m)$ (Eulersche $\phi$-Funktion)
-
-Wenn $m=p$ eine Primzahl ist, dann ist $\Z_{p}^{*} = \{1, 2,\dotsc,p-1\}$
-($\phi(p)=p-1$) und $\Z_{p}$ ein endlicher Körper der Ordung~$p$.
-
-Ziel: Endliche Körper der Ordnung $p^{k}$ ($p$ ist Primzahl);
-Primzahlpotenzordnung.
-
-\subsubsection{Polynomringe}
-
-Es sei $[R, +,\cdot]$ ein (endlicher) Ring, z.\,B. $[\Z_{m}, +,\cdot]$ und
-$x\notin R$ ist ein Symbol, dass nicht im Ring vorkommt. Wir definieren
-Polynome vom Grad~$k$, mit $r_{i}\in R$ für $i=0,\dotsc,k$ und $r_{k}\ne0$
+Es sei $[R, +,\cdot]$ ein (endlicher) Ring, z.\,B. $[\Z_{m}, +,\cdot]$, und
+$x$ ist ein Symbol, das nicht im Ring vorkommt ($x\notin R$). Wir definieren
+\highl{Polynome} vom Grad~$k$, mit $r_{i}\in R$ für $i=0,\dotsc,k$, wobei
+$r_{k}\ne0$ ist, wie folgt:
 \begin{gather*}
   p(x) := r_{k}\cdot x^{k} + r_{k-1}\cdot x^{k-1} + \dotsb+ r_{1} x^{1} + r_{0}
 \end{gather*}
-Bezeichnung $R[x]$ ist die Menge aller Polynome in $x$ über $R$.
+$R[x]$ bezeichnet die \highl{Menge aller Polynome} in $x$ über $R$.
 
-Addition und Multilikation komponentenweise wie üblich.
+Die Addition und Multilikation von zwei Polynomen erfolgt wie üblich
+komponentenweise. Damit bildet die Struktur $[R[x], +, \cdot]$ einen
+(abzählbar unendlichen) \highl{Polynomring}.
 
-$[R[x], +, \cdot]$ ist ein Ring und heißt \highl{Polynomring}. ist abzählbar
-unendlich
+Ein Polynom~$p\in R[x]$ heißt \highl{reduzibel} \gdwdef es zwei
+Polynome~$r,s\in R[x]$ vom Grad größer 0 gibt, so dass man $p$ als Produkt von
+$r$ und $s$ schreiben kann; $p(x) = r(x)\cdot s(x)$.
 
-\subsubsection{$\F_{p^{k}}$ endlicher Körper der Ordnung $p^{k}$}
+Ein Polynom~$p\in R[x]$ heißt \highl{irreduzibel} \gdwdef es nicht reduziebel
+ist, d.\,h. es keine zwei Polynome $r,s\in R[x]$ gibt, so dass $p=r\cdot s$
+ist.
 
-Dazu benötigen wir ein \highl{irreduzibles Polynom} vom Grad~$k$. $m$
-Polynom als Modul
-\begin{gather*}
-  m(x) = a_{k} x^{k} + a_{k-1} x^{k-1} + \dotsb+ a_{1}x^{1} + a_{0}
-\end{gather*}
-$a_{k}\ne0$, z.\,B. $a_{k}=1$
-
-reduzibel = Polynom lässt sich schreiben als Produkt zweier Polynome schreiben
-$m(x) = p(x)\cdot q(x)$ für $p$ und $q$ vom Grad $\geq1$ -- Analogie zu prim
-für Polynome.
-
-Ansatz: $\F_{p^{k}}$ ist eine Menge aller Polynome über $\Z_{p}$ modulo des
-Polynoms $m$. Das heißt: $p(x) = q(x) \cdot m(x) + r(x)$; $r(x)$ Repräsentant
-von $p$ in $\F_{p^{k}}$
+Man kann sich die Bedeutung von irreduzibel wie die von prim für ganze Zahlen
+vorstellen. Eine Zahl heißt prim, wenn sie keine (nicht trivialen) Teiler
+besitzt und analog bezeichnet man ein Polynom als irreduzibel, wenn es sich
+nicht als Produkt (nicht trivialer) Polynome darstellen lässt.
 
 % 13.12.
 
-Wir betrachten zunächst die Gesamtheit $\Z[p]$ aller Polynome mit
-Koeffizienten aus $\Z_{p}$ und betrachten die Reste modulo $m(x)$
-$\Z_{p}[x]_{\nicefrac{}{m(x)}}$ Diese Reste sind Polynome vom Grad $\leq k-1$
-und haben die Form
-\begin{gather}
-  \label{eq:1}
-  p(x) = b_{k-1} x^{k-1} + b_{k-1} x^{k-2} + \dotsb+ b_{1} x + b_{0}
-\end{gather}
-mit Koeffizienten $b_{k-1}, b_{k-2}, \dotsc, b_{1}, b_{0}\in \Z_{p}$. Es gibt
-also $p^{k}$ verschieden Polynome der Form \autoref{eq:1}.
+\subsection{\texorpdfstring{$\F_{p^{k}}$}{Fpk} endlicher Körper der Ordnung
+  \texorpdfstring{$p^{k}$}{pk}}
+
+Analog zur Zerlegung der ganzen Zahlen in Restklassen anhand eines Moduls
+definiert man die Zerlegung der Menge aller Polynome (mit Koeffizienten aus
+$\Z_{p}$; $p$~prim) in Restklassen, wobei man die Faktormenge (Menge der
+Restklassen) mit $\F_{p^{k}}$ identifiziert.
+
+Dazu benötigt man ein irreduzibles Polynom~$m\in\Z_{p}[x]$ vom Grad~$k$, das
+als \highl{Modulpolynom} dient. Zwei Polynome~$s,t\in\Z_{p}[x]$ sind in der
+gleichen Restklasse, wenn sie bei der Division durch $m$ den gleichen
+Rest~$r\in\Z_{p}[x]$ vom Grad kleiner~$k$ lassen:
+\begin{align*}
+  s(x) &= a(x)\cdot m(x) + r(x) &\text{und}&& t(x) &=b(x)\cdot m(x)+r(x)\\
+  [r]_{m} &= \{ r(x) + l(x)\cdot m(x)\colon l\in\Z_{p}[x]\}\\
+  \nicefrac{\Z_{p}[x]}{m(x)} &= \{ [r(x)]_{m(x)}\colon r(x)\in \Z_{p}[x],
+     r\text{~vom Grad $<k$}\}
+\end{align*}
+Das Polynom~$r$ heißt \highl{Repräsentant} von $s$ und $t$ in $\F_{p^{k}}$ und
+hat die Form
 \begin{gather*}
-  \F_{p^{k}} = \Z_{\nicefrac{p(x)}{m(x)}}
+  r(x) = \rho_{k-1} x^{k-1} + \rho_{k-1} x^{k-2} + \dotsb+ \rho_{1} x + \rho_{0}
+\end{gather*}
+mit den Koeffizienten $\rho_{k-1},\rho_{k-2},\dotsc,\rho_{1},\rho_{0}\in
+\Z_{p}$. Es gibt also $p^{k}$ verschieden Polynome dieser Form, also hat die
+Menge $\nicefrac{\Z_{p}[x]}{m(x)}$ die Mächtigkeit $p^{k}$.
+\begin{gather*}
+  \F_{p^{k}} = \nicefrac{\Z_{p}[x]}{m(x)}
 \end{gather*}
 
-Addition $\oplus$ wie üblich und komponentenweise, Multiplikation $\odot$ wie
-üblich mit anschließender Division durch den Modul $m(x)$, wobei der Rest das
-Ergebnis ist.
+Für das Rechnen mit diesen Restklassen gilt: Die Addition~$\oplus$ und die
+Multiplikation~$\odot$ erfolgen wie üblich bei Polynomen, nur dass bei der
+Multiplikation noch eine Division durch den Modul $m(x)$ angeschlossen wird,
+wobei der Rest das Ergebnis ist.
 
-bei AES: $p=2, k=8$, d.\,h. wir betrachen $\F_{2^{8}} = \F_{256}$ mit
-Koeffizienten aus $\Z_{2}$ und dem Modulpolynom
+Die Multiplikation~$\odot$ hängt also von dem Modulpolynom~$m(x)$ ab. Jedoch
+sind die Körper $F_{256}[m(x)]$ und $F_{256}[m'(x)]$ isomorph zu einander.
+\help{Kann das mal bitte jemand bestätigen!}
+
+Bei AES verwendet man $p=2, k=8$, d.\,h. wir betrachen $\F_{2^{8}} = \F_{256}$
+mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
 \begin{gather*}
   m(x) = x^{8} + x^{4} + x^{3} + x +1
 \end{gather*}
-(Das Ding ist irreduzibel).
+\help{Kann man zeigen dann $m(x)$ irreduzibel ist oder ist das genauso
+  schwierig, wie der Primnachweis einer Zahl?}
 
 \begin{bsp}
+  \label{bsp:1}
+  Gegeben sind die beiden Polynome~$p,q\in\F_{2^{8}}$ mit $p(x)= x^{6} + x^{4}
+  + x^{2} + x + 1$ und $q(x)= x^{7}+x+1$ und gesucht ist das
+  Produkt $p\odot q$ gemäß obiger Definition.
+
+  Zuerst die übliche, komponentenweise Multiplikation von Polynomen:
+  \begin{multline*}
+    (x^{6} + x^{4} + x^{2} + x + 1) \odot (x^{7}+x+1)\\
+    \begin{array}{*{12}{r@{\;}}}
+      = x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &+ x^{7}\\
+      &&&&+ x^{7} &&+ x^{5} &&+ x^{3} &+ x^{2} &+ x\\
+      &&&&&+ x^{6} &&+ x^{4} &&+ x^{2} &+ x &+1\\
+      \hline
+      = x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &&+ x^{6} &+ x^{5} &+ x^{4}
+      &+ x^{3} &&&+ 1
+    \end{array}
+  \end{multline*}
+  (Hinweis: Die Koeffizienten $x^{7}, x^{2}$ und $x$ entfallen, da
+  $1+1\pmod{2}\equiv0$ ist.)
+
+  Jetzt muss dieses Polynom noch reduziert werden:
+  \begin{alignat*}{8}
+    &(x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &&+ x^{6} &+ x^{5} &+ x^{4} &+ x^{3} &&+ 1) :
+       (x^{8} + x^{4} + x^{3} + x + 1) = x^{5} + x^{3} = q(x)\\
+    \oplus\,&(x^{13} &&+ x^{9} &+ x^{8} &&+ x^{6} &+x^{5})\\
+    % &---\\
+    &&x^{11} &&&&&&+ x^{4} &+ x^{3} &&+ 1\\
+    &&\oplus\,(x^{11} &&&+ x^{7} &+ x^{6} &&+ x^{4} &+x^{3})\\
+    % &&---\\
+    &&&&&x^{7} &+ x^{6} &&&&&+1\makebox[0pt][l]{= r(x)}
+  \end{alignat*}
+  \todo{das soll schöner aussehen}
+
+  Also ist
   \begin{gather*}
-    (x^{6} + x^{4} + x^{2} + x + 1) \odot (x^{7} + x +1)
+    (x^{6} + x^{4} + x^{2} + x + 1) \odot (x^{7} + x +1) = x^{7} + x^{6} +1
   \end{gather*}
-
-  \begin{enumerate}[1.\,{Schritt}]
-   \item Übliche Multiplikation
-    \begin{align*}
-      (x^{6} + x^{4} + x^{2} + x + 1) \cdot (x^{7} + x +1) =
-         x^{13} + x^{11} + x^{9} + x^{8} + x^{7}\\
-      + x^{7} + x^{5} + x^{3} + x^{2} + x\\
-      + x^{6} + x^{4} + x^{2} + x + 1\\
-      = x^{13} + x^{11} + x^{9} + x^{8} + x^{6} + x^{5} + x^{4} + x^{3} + 1
-    \end{align*}
-    Der Koeffizient $x^{7}$ verschwindet, da $2\pmod{2} \equiv 0$
-
-   \item Division:
-    \begin{gather*}
-      (x^{13} + x^{11} + x^{9} + x^{8} + x^{6} + x^{5} + x^{4} + x^{3} + 1) :
-         (x^{8} + x^{4} + x^{3} + x + 1) = x^{5} + x^{3} = q(x)\\
-      +(x^{13} + x^{9} + x^{8} + x^{6} +x^{5})\\
-      ---\\
-      x^{11} + x^{4} + x^{3} + 1\\
-      -(x^{11} + x^{7} + x^{6} + x^{4} +x^{3})\\
-      ---\\
-      -x^{7} - x^{6} +1 = x^{7} + x^{6} + 1 = r(x)
-    \end{gather*}
-    $p(x) = q(x) \cdot m(x) + r(x)$
-
-    Also
-    \begin{gather*}
-      (x^{6} + x^{4} + x^{2} + x + 1) \odot (x^{7} + x +1) = x^{7} + x^{6} +1
-    \end{gather*}
-  \end{enumerate}
 \end{bsp}
 
-\subsubsection{Darstellung der Elemente aus $\F_{256}$}
+Da es für die Multiplikation nur $256\cdot256$ verschiedene Kombinationen
+gibt, kann man diese auch vorberechnen und in einer $256\times256$-Tabelle
+abspeichern.
+
+\subsection{Darstellung der Elemente aus \texorpdfstring{$\F_{256}$}{F256}}
 
 \begin{enumerate}
  \item Darstellung als Polynom
@@ -2913,105 +2909,89 @@ Koeffizienten aus $\Z_{2}$ und dem Modulpolynom
   \end{gather*}
   mit $b_{7},\dotsc, b_{0} \in \{0,1\}$.
 
- \item Darstellung als Folge von Bits $(b_{7}, b_{6}, \dotsc, b_{0})$ 8~Bit =
-  1~Byte
+ \item Darstellung als eine Folge von Bits $(b_{7}, b_{6}, \dotsc, b_{0})$,
+  wobei $b_{7},\dotsc, b_{0}$ die Koeffizienten aus der Polynomdarstellung
+  sind.
 
-  unser Beispiel:
+  Für die Zahlen in \autoref{bsp:1} lautet die Darstellung
   \begin{gather*}
     (0,1,0,1,0,1,1,1) \odot (1,0,0,0,0,0,1,1) = (1,1,0,0,0,0,0,1)
   \end{gather*}
-  Das $\odot$ hängt von dem $m(x)$ ab. $\F_{256}[m(x)] \cong \F_{256}[m'(x)]$
 
- \item Darstellung als zweistellige Hexadezimalzahl
+ \item Darstellung als zweistellige Hexadezimalzahl der Bitfolgen
 
-  unser Beispiel: $57\odot 83 = C1$
+  In unserem \autoref{bsp:1}: $57\odot 83 = C1$
 
   Das Ergebnis lässt sich aus einer $256\times 256$-Tabelle ablesen.
+  \todo{Versuchen solch eine Tabelle aufzutreiben.}
+\end{enumerate}
 
- \item Multiplikatives Inverses in $\F_{256}$
+\subsection{Der erweiterte euklidische Algorithmus}
 
-  Ansatz: Es sei $p(x)\in \F_{256}$ mit $p(x)\ne0$. Dann sind $p(x)$ und
-  $m(x)$ teilerfremd (weil $m(x)$ irreduzibel), d.\,h. es gibt kein Polynome
-  $g(x)\ne1$ mit der Eigenschaft $p(x)= a(x)\cdot g(x)$ und $m(x) = b(x)\cdot
-  g(x)$. Mit anderen Worten: der größe gemeinsame Teiler von $p(x)$ und $m(x)$
-  ist 1. Also lässt sich 1 mit Hilfe des erweiterten euklidischen Algorithmus
-  darstellen: d.\,h. es gibt Polynome $u(x)$ und $v(x)$ mit der Eigenschaft
-  \begin{gather*}
-    p(x) \cdot u(x) + m(x) v(x) = 1
-  \end{gather*}
-  Hieraus folgt: $p(x)\odot u(x) =1$
+\help{Wozu dient der erw. eukl. Algorithmus? Was unterscheidet ihn vom
+  normalen?}
 
-  Wir brauchen den \highl{erweiterten euklidischen Algorithmus} für Polynome:
-  Für Zahlen hat der die Form:\\
-  Eingabe: $b_{0}, b_{1}$\\
-  \begin{verbatim}
-  begin
-    x[0] := 1; y[0] := 0;
-    x[1] := 0; y[1] := 1;
+\begin{verbatim}
+Eingabe: b[0], b[1];
+begin
+    u[0] := 1; v[0] := 0;
+    u[1] := 0; v[1] := 1;
     i := 1;
     while not teilt(b[i], b[i-1]) do
     begin
-      q[i] := b[i-1] div b[i];
-      b[i+1] := b[i-1] - q[i] b[i];
-      x[i+1] := x[i-1] + q[i] x[i];
-      y[i+1] := y[i-1] + q[i] y[i];
+        q[i] := b[i-1] div b[i];
+        b[i+1] := b[i-1] - q[i] * b[i];
+        u[i+1] := u[i-1] - q[i] * u[i];
+        v[i+1] := v[i-1] - q[i] * v[i];
+        i := i + 1;
     end
-    begin output
-      b := b[i];
-      x := ((-1) ** i) * x[i];
-      y := ((-1) ** i) * y[i];
-    end
-  end
-  \end{verbatim}
-\end{enumerate}
+end
+Ausgabe: ggT := b[i], c := u[i], d := v[i];
+\end{verbatim}
 
 % 18.12.
 
 \begin{bsp}
-  $b_{0}=220, b_{1} = 26$
+  Seien $b_{0}=220$ und $b_{1} = 26$ (ganze Zahlen) gegeben.
   \begin{gather*}
     \begin{array}{c|cccc}
-      i& q_{i} & b_{i+1} & x_{i+1}& y_{i+1}\\
+      i& q_{i} & b_{i+1} & u_{i+1}& v_{i+1}\\
       \hline
-      1& 8& 200-8\cdot 26=12& 1+0\cdot8=1& 0+1\cdot8=0\\
-      2& 2& 26-2\cdot 2=2& 0+1\cdot2=2& 1+2\cdot8 = 17\\
-      3& \multicolumn{4}{l}{2\mid 12 \rightarrow \text{Abbruch}}
+      1& 8& 200-8\cdot 26=12& 1-8\cdot0=1& 0-8\cdot1=-8\\
+      2& 2& 26-2\cdot 12=2& 0-2\cdot1=-2& 1-2\cdot(-8) = 17\\
     \end{array}
   \end{gather*}
-  $b= 2 = \ggT(b_{0}, b_{1}), x= (-1)^{3}\cdot 2 = -2, y=(-1)^{4}\cdot 17 = 17$
-
-  $2= -2\cdot 220 + 17\cdot 26 = -440 + 442$
+  Abbruch im 3.\,Schritt, da $2\mid12$. Der größte gemeinsame Teiler von 220
+  und 26 ist also 2 und es gilt:
+  \begin{gather*}
+    2 = -2\cdot 220 + 17\cdot 26 = -440 + 442
+  \end{gather*}
 \end{bsp}
 
-\subsection{Erweiterter Euklidischer Algorithmus für Polynome}
+Mit Hilfe des erweiterten euklidischen Algorithmus' lässt sich zu einem
+Element des $\F_{256}$ das \highl{multiplikative Inverse} bestimmen. Dazu muss
+man den \highl{erweiterten euklidischen Algorithmus} auf Polynome anwenden,
+was aber keine Änderungen am Algorithmus selbst erfordert. Man muss nur
+beachten, dass man für die einzelnen Operationen ($+$, $-$, $\cdot$ und $div$)
+die entsprechenden Operationen für den $\F_{256}$ ($\oplus$, $\oplus$, $\odot$
+und entsprechende Division) verwendet.
 
-Eingabe: $b_{0}(x):=m(x) = x^{8} + x^{4} + x^{3} +x +1, b_{1}(x)$
-\begin{verbatim}
-begin
-  ux[0] := 1; vx[0] := 0;
-  ux[1] := 0; vx[1] := 1;
-  i := 1;
-  while bx[i] ist kein Teiler von bx[i-1] do
-  begin
-    qx[i] := bx[i-1] div bx[i];
-    bx[i+1] := bx[i-1] - qx[i] * bx[i];
-    ux[i+1] := ux[i-1] + qx[i] * ux[i];
-    vx[i+1] := vx[i-1] + qx[i] * vx[i]
-    i := i + 1;
-  end
-  begin output
-    bx := bx[i];
-    ux := ((-1) ** i) * ux[i];
-    vx := ((-1) ** i) * vx[i];
-  end output
-end
-\end{verbatim}
+Es sei $p(x)\in\F_{256}$ mit $p(x)\ne0$. Da $m(x)$ irreduzibel ist, sind
+$p(x)$ und $m(x)$ teilerfremd zu einander, d.\,h. der größe gemeinsame Teiler
+von $p(x)$ und $m(x)$ ist 1. Also gibt Polynome $u(x)$ und $v(x)$
+mit der Eigenschaft, dass sich 1 als
+\begin{gather*}
+  1 = p(x) u(x) + m(x) v(x)
+\end{gather*}
+darstellen lässt. Daraus folgt: $p(x)\odot u(x) =1$, $u$ ist also das Inverse
+zu~$p$.
 
 \begin{bsp}
-  $b_{1} = x^{7} + x^{6} + x^{3} + x + 1$
+  Gegeben seien $b_{0} = m(x) = x^{8} + x^{4} + x^{3} + x +1$ und
+  $b_{1} = a(x) = x^{7} + x^{6} + x^{3} + x + 1$. (Elemente des $F_{256}$)
 
   \begin{enumerate}[1.\,{Schleifendurchlauf}]
-   \item $(x^{8} + x^{4} + x^{3} + x + 1) : (x^{7} + x^{6} + x^{3} + x +1) =x$\\
+   \item $(x^{8} + x^{4} + x^{3} + x + 1) : (x^{7} + x^{6} + x^{3} + x +1) =x+1$\\
     $\oplus (x^{8} +x^{7} + x^{4} + x^{2} +x)$\\
     ---\\
     $x^{7} + x^{3} + x^{2} + 1$\\
@@ -3019,9 +2999,16 @@ end
     ---\\
     $x^{6} + x^{2} + x$
 
-    $q_{1}(x) = x+1, b_{2}(x) = x^{6} + x^{2} + x, u_{2}(x) = 1+0, v_{2}(x) = 0+(x+1) 1$
+    Es ergibt sich also:
+    \begin{align*}
+      q_{1}(x) &= x + 1\\
+      b_{2}(x) &= b_{0}(x) - q_{1}(x)\cdot b_{1}(x) = x^{8} + x^{4} + x^{3} +
+         x +1 - (x+1)\cdot(x^{7} + x^{6} + x^{3} + x + 1) = x^{6}+x^{2}+x\\
+      u_{2}(x) &= u_{0}(x) - q_{1}(x)\cdot u_{1}(x) = 1 - (x+1)\cdot0 = 1\\
+      v_{2}(x) &= v_{0}(x) - q_{1}(x)\cdot v_{1}(x) = 0 - (x+1)\cdot1 = x+1
+    \end{align*}
 
-   \item $(x^{7} + x^{6} + x^{3} + x + 1) : (x^{6} + x^{2} + x) = x$\\
+   \item $(x^{7} + x^{6} + x^{3} + x + 1) : (x^{6} + x^{2} + x) = x+1$\\
     $\oplus(x^{7} + x^{3} + x^{2})$\\
     ---\\
     $x^{6} + x^{2} + x + 1$\\
@@ -3029,21 +3016,34 @@ end
     ---
     1
 
-    $q_{2}(x) = x+1, b_{3} = 1, u_{3} = 0+ (x+1) \cdot 1, v_{3}(x) = 1 +
-    (x+1)(x+1) = 1 + x^{2} + x + x + 1 = x^{2}$ (da $+ = \oplus$)
+    Die Zwischenergebnisse:
+    \begin{align*}
+      q_{2}(x) &= x+1\\
+      b_{3}(x) &= b_{1}(x) - q_{2}(x)\cdot b_{2}(x)
+         = (x^{7} +x^{6} +x^{3} +x +1) - (x+1)\cdot (x^{6}+x^{2}+x) = 1\\
+      u_{3}(x) &= u_{1}(x) - q_{2}(x)\cdot u_{2}(x)
+         = 0 - (x+1)\cdot 1 = x+1\\
+      v_{3}(x) &= v_{1}(x) - q_{2}(x)\cdot v_{2}(x)
+         = 1 - (x+1)\cdot (x+1) = x^{2}
+    \end{align*}
   \end{enumerate}
-  $b(x) = 1, u(x) = x+1, v(x) = x^{2}$
 
-  $u(x)\cdot m(x) + v(x) \cdot a(x) = (x+1) (x^{8} + x^{4} + x^{3} + x + 1) +
-  x^{2} (x^{7} + x^{6} + x^{3} + x +1) = x^{9} + x^{5} + x^{4} +x^{2} + x +
-  x^{8} + x^{4} + x^{3} + x + 1 + x^{9} + x^{8} + x^{5} + x^{3} + x^{2} = 1$
+  Es gilt also:
+  \begin{gather*}
+    u(x)\cdot m(x) + v(x) \cdot a(x)
+       = (x+1) (x^{8} +x^{4} +x^{3} +x +1) + x^{2} (x^{7} +x^{6} +x^{3} +x +1)
+       = x^{9} +x^{5} +x^{4} +x^{2} +x
+         +x^{8} +x^{4} +x^{3} +x +1
+         +x^{9} +x^{8} +x^{5} +x^{3} +x^{2} = 1
+  \end{gather*}
+  woraus folgt, dass $v(x) a(x) = u(x) m(x) + 1$. Also ist $v(x) \odot a(x) =
+  1$ und somit ist $v$ das multiplikative Inverse zu $a$: $v(x) = a^{-1}(x)$.
 
-  Also gilt: $v(x) a(x) = u(x) m(x) + 1$ also $v(x) \odot a(x) = 1$, $v(x) =
-  a^{-1}(x)$. Oder als Bitfolgen geschrieben: $a(x) = (1100\,1011), a^{-1}(x)
-  = (0000\,0100)$
+  Oder als Bitfolgen geschrieben: $a(x) = (1100\,1011)$ und $a^{-1}(x) =
+  (0000\,0100)$
 \end{bsp}
 
-\section{2.\texorpdfstring{\,}{ }Stufe: Polynome über dem Körper \texorpdfstring{$\F_{256}$}{F256}}
+\subsection{Polynome über dem Körper \texorpdfstring{$\F_{256}$}{F256}}
 
 Wir betrachten den Polynomring $\nicefrac{\F_{256}[x]}{(x^{4}+1)}$. Die
 Elemente sind Polynome höchstens dritten Grades.
@@ -3140,6 +3140,55 @@ benutzt
   c(x) = 03 x^{3}+ 01 x^{2} + 01 x + 02
 \end{gather*}
 mit dem Inversen $c^{-1}(x) = 0B x^{3} + 0D x^{2} + 09 x + 0E$
+
+\section{Der Advanced (Data) Encryption Standard -- AES}
+
+\begin{description}
+ \item[1997:] macht die US-Standardisierungsbehörte ein \textit{öffentliche}
+  Ausschreibung eines Verfahrens als Nachfolgers von DES. Forderungen an das
+  Verfahren: öffentlich, lizenzfrei, weltweit verfügbar, schneller als
+  Triple-DES. Vorgaben: Blocklänge min. 128 und Schlüssellänge von 128, 192,
+  256.
+
+ \item[1998:] Wurden 15 Verfahren eingereicht. (darunter auch MAGENTA von der
+  deutschen Telekom, das schon in der Präsentation gebrochen wurde)
+
+ \item[1999:] 5 Kandidaten in der Endrunde: Twofisch (Platz 2, weil $\F_{256}$ und
+  nicht $\F_{2}$), RC6, MARS (IBM, David Coppersmith), Serpent (ähnlich DES,
+  über 32 Runden, Platz 3), Rijngdael
+
+ \item[2000:] Wird Rijndael als Sieger bekannt gegeben.
+
+ \item[2002:] Rijndael wird als AES (FIPS) veröffentlich.
+\end{description}
+
+\subsection{Bescheibung des Verfahrens von Rijndael}
+
+Das Verfahren von Rijndael ist eine iterirte Blockchiffre, deren Block- und
+Schlüssellänge unabhängig voneinander gewählt werden können. Davon abhängig
+kann die Rundenzahl 10, 12 oder 14~Runden betragen. Das Verfahren ist keine
+Feistel-Chiffre.
+
+\help{Was ist eine iterierte Blockchiffre?}
+\help{Warum ist Rijndael keine Feistel-Chiffre?}
+
+Für AES wurden 128~Bit als Blocklänge, 128~Bit als Schlüssellänge und 10
+Runden plus eine Abschlussrunde festgelegt. Der Schlüssel wird auf 1408~Bit
+erweitert und in die 11 Teilschlüssel zu je 128~Bit zerlegt. Diese werden in
+jeder Runde 
+
+\todo{Bild vom Schema}
+
+Was passiert in den Runden? Jede Runde (bis auf die letzte) besteht aus drei
+Schichten:
+\begin{enumerate}
+ \item ByteSub-Transformation: nicht lineare Transformation als Schutz vor
+  differenzieller und linearer Kryptoanalyse
+ \item SchiftRow-Transformation: zwischen Diffusion
+ \item MixColumn-Transformation
+\end{enumerate}
+
+\todo{Bild vom Schema der Runde~$i$}
 
 % 20.12.
 
@@ -3330,7 +3379,12 @@ Schreibweise in $\nicefrac{\F_{256}[x]}{x^{4}+1}$:
          \end{pmatrix}
     \end{gather*}
 
-    Beschreibung der Abbildung $S_{32}$ \todo{Bild von $S_{32}$}
+    \begin{figure}
+      % \input{aes-s32.pdf_t}
+      \caption{Bild von $S_{32}$}
+      \label{fig:s32}
+    \end{figure}
+    Beschreibung der Abbildung $S_{32}$ \autoref{fig:s32}
 
     \begin{gather*}
       \mathit{xtime}(x_{7}x_{6}\dotso x_{0}) =
