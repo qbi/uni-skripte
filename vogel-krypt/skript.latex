@@ -2770,7 +2770,7 @@ Wir wissen bereits aus \autoref{sec:restklassen}, dass sich die ganzen Zahlen
 in Äquivalenzklassen modulo~$m$ zerlegen lassen:
 \begin{gather*}
   \Z_{m} := \Z_{\nicefrac{}{\equiv (m)}}
-     = \{ [0]_{k}, [1]_{k}, \dotsc, [k-1]_{k} \}
+     = \{ [0]_{m}, [1]_{m}, \dotsc, [m-1]_{m} \}
      = \{0,1,\dotsc,m-1\}
 \end{gather*}
 Damit ergibt sich für $m>1$ ein Ring $[\Z_{m}, +,\cdot]$ mit dem Nullelement
@@ -2827,10 +2827,10 @@ als \highl{Modulpolynom} dient. Zwei Polynome~$s,t\in\Z_{p}[x]$ sind in der
 gleichen Restklasse, wenn sie bei der Division durch $m$ den gleichen
 Rest~$r\in\Z_{p}[x]$ vom Grad kleiner~$k$ lassen:
 \begin{align*}
-  s(x) &= a(x)\cdot m(x) + r(x) &\text{und}&& t(x) &=b(x)\cdot m(x)+r(x)\\
+  s(x) &= a(x)\cdot m(x) + r(x)\qquad\text{und}\qquad t(x) =b(x)\cdot m(x)+r(x)\\
   [r]_{m} &= \{ r(x) + l(x)\cdot m(x)\colon l\in\Z_{p}[x]\}\\
   \nicefrac{\Z_{p}[x]}{m(x)} &= \{ [r(x)]_{m(x)}\colon r(x)\in \Z_{p}[x],
-     r\text{~vom Grad $<k$}\}
+     r\text{~vom Grad $<$ dem Grad von $m$}\}
 \end{align*}
 Das Polynom~$r$ heißt \highl{Repräsentant} von $s$ und $t$ in $\F_{p^{k}}$ und
 hat die Form
@@ -2875,6 +2875,7 @@ mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
       &&&&+ x^{7} &&+ x^{5} &&+ x^{3} &+ x^{2} &+ x\\
       &&&&&+ x^{6} &&+ x^{4} &&+ x^{2} &+ x &+1\\
       \hline
+      \rule{0pt}{2.5ex}    % um etwas weiter von der Linie weg zu kommen
       = x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &&+ x^{6} &+ x^{5} &+ x^{4}
       &+ x^{3} &&&+ 1
     \end{array}
@@ -2901,7 +2902,7 @@ mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
   \end{gather*}
 \end{bsp}
 
-Da es für die Multiplikation nur $256\cdot256$ verschiedene Kombinationen
+Da es für die Multiplikation nur $256^{2}$ verschiedene Kombinationen
 gibt, kann man diese auch vorberechnen und in einer $256\times256$-Tabelle
 abspeichern.
 
@@ -2933,12 +2934,18 @@ abspeichern.
 
 \subsection{Der erweiterte euklidische Algorithmus}
 
-\help{Wozu dient der erw. eukl. Algorithmus? Was unterscheidet ihn vom
-  normalen?}
+Mit dem \highl{erweiterten euklidischen Algorithmus} bestimmt man zusätzlich
+zum größten gemeinsamen Teiler zweier Zahlen~$a$ und $b$ zwei Zahlen~$u$ und
+$v$, die folgende Gleichung erfüllen
+\begin{gather}
+  \label{eq:erw-euk-algo}
+  \ggT(a,b) = u\cdot a+v\cdot b
+\end{gather}
 
 \begin{verbatim}
-Eingabe: b[0], b[1];
+Eingabe: a, b;
 begin
+    b[0] := a; b[1] := b;
     u[0] := 1; v[0] := 0;
     u[1] := 0; v[1] := 1;
     i := 1;
@@ -2951,13 +2958,13 @@ begin
         i := i + 1;
     end
 end
-Ausgabe: ggT := b[i], c := u[i], d := v[i];
+Ausgabe: ggT := b[i], u := u[i], v := v[i];
 \end{verbatim}
 
 % 18.12.
 
 \begin{bsp}
-  Seien $b_{0}=220$ und $b_{1} = 26$ (ganze Zahlen) gegeben.
+  Seien $a=220=b_{0}$ und $b=26=b_{1}$ (ganze Zahlen) gegeben.
   \begin{gather*}
     \begin{array}{c|cccc}
       i& q_{i} & b_{i+1} & u_{i+1}& v_{i+1}\\
@@ -2979,23 +2986,24 @@ man den \highl{erweiterten euklidischen Algorithmus} auf Polynome anwenden,
 was aber keine Änderungen am Algorithmus selbst erfordert. Man muss nur
 beachten, dass man für die einzelnen Operationen ($+$, $-$, $\cdot$ und $div$)
 die entsprechenden Operationen für den $\F_{256}$ ($\oplus$,
-$\oplus$\footnote{Wenn man sich die Verknüpfungstabellen für $+$, $-$ und
-$\oplus$ aufschreibt, sieht man, dass alle drei Operationen äquivalent sind.},
+$\oplus$\footnote{Wenn man sich die Verknüpfungstabellen für $\oplus$, $-$ und
+\texttt{xor} aufschreibt, sieht man, dass alle drei Operationen äquivalent sind.},
 $\odot$ und Polynomdivision) verwendet.
 
 Es sei $p(x)\in\F_{256}$ mit $p(x)\ne0$. Da $m(x)$ irreduzibel ist, sind
 $p(x)$ und $m(x)$ teilerfremd zu einander, d.\,h. der größe gemeinsame Teiler
-von $p(x)$ und $m(x)$ ist 1. Also gibt Polynome $u(x)$ und $v(x)$
+von $p(x)$ und $m(x)$ ist 1. Also liefert der erweiterte euklidische
+Algorithmus nach \autoref{eq:erw-euk-algo} zwei Polynome $u(x)$ und $v(x)$
 mit der Eigenschaft, dass sich 1 als
 \begin{gather*}
   1 = p(x) u(x) + m(x) v(x)
 \end{gather*}
 darstellen lässt. Daraus folgt: $p(x)\odot u(x) =1$, $u$ ist also das Inverse
-zu~$p$.
+zu $p$ bezüglich~$\odot$.
 
 \begin{bsp}
-  Gegeben seien $b_{0} = m(x) = x^{8} + x^{4} + x^{3} + x +1$ und
-  $b_{1} = a(x) = x^{7} + x^{6} + x^{3} + x + 1$. (Elemente des $F_{256}$)
+  Gegeben seien $a(x) = m(x) = x^{8} + x^{4} + x^{3} + x +1 = b_{0}$ und
+  $b(x) = x^{7} + x^{6} + x^{3} + x + 1 = b_{1}$. (Elemente des $F_{256}$)
 
   \begin{enumerate}[1.\,{Schleifendurchlauf}]
    \item $(x^{8} + x^{4} + x^{3} + x + 1) : (x^{7} + x^{6} + x^{3} + x +1) =x+1$\\
@@ -3035,16 +3043,16 @@ zu~$p$.
     \end{align*}
   \end{enumerate}
 
-  Es gilt also:
-  \begin{gather*}
-    u(x)\cdot m(x) + v(x) \cdot a(x)
-       = (x+1) (x^{8} +x^{4} +x^{3} +x +1) + x^{2} (x^{7} +x^{6} +x^{3} +x +1)
-       = x^{9} +x^{5} +x^{4} +x^{2} +x
-         +x^{8} +x^{4} +x^{3} +x +1
-         +x^{9} +x^{8} +x^{5} +x^{3} +x^{2} = 1
-  \end{gather*}
+  Es gilt also nach \autoref{eq:erw-euk-algo}
+  \begin{align*}
+    u(x)\cdot a(x) + v(x) \cdot b(x)
+       &= (x+1) (x^{8} +x^{4} +x^{3} +x +1) + x^{2} (x^{7} +x^{6} +x^{3} +x +1)\\
+       &= x^{9} +x^{5} +x^{4} +x^{2} +x
+          +x^{8} +x^{4} +x^{3} +x +1\\
+         &\qquad +x^{9} +x^{8} +x^{5} +x^{3} +x^{2} = 1
+  \end{align*}
   woraus folgt, dass $v(x) a(x) = u(x) m(x) + 1$. Also ist $v(x) \odot a(x) =
-  1$ und somit ist $v$ das multiplikative Inverse zu $a$: $v(x) = a^{-1}(x)$.
+  1$ und somit ist $v$ das Inverse bzgl. $\odot$ zu $a$: $v(x) = a^{-1}(x)$.
 
   Oder als Bitfolgen geschrieben: $a(x) = (1100\,1011)$ und $a^{-1}(x) =
   (0000\,0100)$
@@ -3057,7 +3065,7 @@ Elemente sind Polynome höchstens dritten Grades.
 \begin{gather*}
   c(x) = c_{3} x^{3} + c_{2} x^{2} + c_{1} x + c_{0}
 \end{gather*}
-dabei sind die Koeffizient~$c_{i}\in\F_{256}$ und erlauben die folgende
+dabei sind die Koeffizienten~$c_{i}\in\F_{256}$ und erlauben die folgende
 Darstellung:
 
 \begin{bsp}
@@ -3068,16 +3076,16 @@ Darstellung:
   \end{enumerate}
 \end{bsp}
 
-Addition ist komponentenweis mit \texttt{xor} $\oplus$.
+Für das Rechnen mit den Elementen aus $\nicefrac{\F_{256}[x]}{(x^{4}+1)}$ gilt
+wieder, dass die Addition $a\oplus b$ komponentenweise mit \texttt{xor} erfolgt
 \begin{gather*}
   a(x)\oplus b(x) = (a_{3}\oplus b_{3}) x^{3} + (a_{2} \oplus b_{2}) x^{2} +
      (a_{1}\oplus b_{1}) x + (a_{0} \oplus b_{0})
 \end{gather*}
-
-Multiplikation: $\otimes$ in zwei Schritten:
-\begin{enumerate}[1.\,{Schritt}]
- \item Polynommultiplikation $c(x) = a(x)\odot b(x) = c_{6} x^{6} + \dotsb+
-  c_{1} x^{1} + c_{0}$, wobei
+und die Multiplikation $a\otimes b$ in zwei Schritten abläuft
+\begin{enumerate}
+ \item zuerst die Polynommultiplikation $c(x) = a(x)\odot b(x) = c_{6} x^{6} + \dotsb+
+  c_{1} x^{1} + c_{0}$, wobei folgendes gilt
   \begin{align*}
     c_{6}& = (a_{3}\odot b_{3})\\
     c_{5}& = (a_{3}\odot b_{2})\oplus (a_{2}\odot b_{3})\\
@@ -3091,14 +3099,19 @@ Multiplikation: $\otimes$ in zwei Schritten:
     c_{0}& = (a_{0}\odot b_{0})
   \end{align*}
 
- \item Faktorisierung modulo $(x^{4}+1)$
-
-  Fakt: $x^{i}\pmod{x^{4}+1} = x^{i\pmod{4}}$
-
-  Für das modulare Produkt gilt:
+ \item Anschließend muss noch eine Faktorisierung modulo $(x^{4}+1)$
+  durchgeführt werden. Entweder führt man die drei Schritte der
+  Polynomdivision $c(x) : (x^{4}+1)$ durch oder man verwendet die Eigenschaft
+  $x^{i}\pmod{x^{4}+1} = x^{i\pmod{4}}$ und erhält so das modulare Produkt
   \begin{align*}
-    d(x) & = a(x)b(x) \pmod{x^{4}+1}\\
-    & = d_{3}x^{3}+d_{2}x^{2}+d_{1}x+d_{0}
+    d(x) &= a(x)\odot b(x) \pmod{x^{4}+1}
+       = c_{6} x^{6} + \dotsb+ c_{1} x^{1} + c_{0} \pmod{x^{4}+1}\\
+    &= c_{6} x^{2} + c_{5} x + c_{4} + c_{3} x^{3} + c_{2} x^{2} + c_{1} x +
+       c_{0}\\
+    &= \underbrace{c_{3}}_{=d_{3}} x^{3}
+       + \underbrace{(c_{6}\oplus c_{2})}_{=d_{2}} x^{2}
+       + \underbrace{(c_{5}\oplus c_{1})}_{=d_{1}} x
+       + \underbrace{(c_{4}\oplus c_{0})}_{=d_{0}}
   \end{align*}
   mit den Koeffizienten
   \begin{align*}
@@ -3107,7 +3120,7 @@ Multiplikation: $\otimes$ in zwei Schritten:
     d_{2}& = (a_{2}\odot b_{0})\oplus (a_{1}\odot b_{1})\oplus
        (a_{0}\odot b_{2}) \oplus (a_{3}\odot b_{3})\\
     d_{1}& = (a_{1}\odot b_{0})\oplus (a_{0}\odot b_{1}) \oplus
-       (a_{3}\odot b_{2})\oplus (a_{2}\oplus b_{3})\\
+       (a_{3}\odot b_{2})\oplus (a_{2}\odot b_{3})\\
     d_{0}& = (a_{0}\odot b_{0})\oplus (a_{3}\odot b_{1})\oplus
        (a_{2}\odot b_{2})\oplus (a_{1}\odot b_{3})
   \end{align*}
@@ -3142,8 +3155,8 @@ Multiplikation: $\otimes$ in zwei Schritten:
   \end{gather*}
 \end{bsp}
 
-Es gilt: $R=\nicefrac{\F_{256}[x]}{(x^{4}+1)}$ ist Ring, der kein Körper ist.
-Das bedeutet, dass nicht jedes Elment $c(x)\in R$ ein Inverses besitzt. AES
+Der Ring $R=\nicefrac{\F_{256}[x]}{(x^{4}+1)}$ ist kein Körper, d.\,h. nicht
+jedes Element $c(x)\in R$ besitzt ein Inverses. AES
 benutzt
 \begin{gather*}
   c(x) = 03 x^{3}+ 01 x^{2} + 01 x + 02
@@ -3152,6 +3165,7 @@ mit dem Inversen $c^{-1}(x) = 0B x^{3} + 0D x^{2} + 09 x + 0E$
 
 \section{Der Advanced (Data) Encryption Standard -- AES}
 
+\subsection{Historischer Abriss}
 \begin{description}
  \item[1997:] macht die US-Standardisierungsbehörte ein \textit{öffentliche}
   Ausschreibung eines Verfahrens als Nachfolgers von DES. Forderungen an das
@@ -3171,44 +3185,46 @@ mit dem Inversen $c^{-1}(x) = 0B x^{3} + 0D x^{2} + 09 x + 0E$
  \item[2002:] Rijndael wird als AES (FIPS) veröffentlich.
 \end{description}
 
+Bei AES ist auch der Hintergrund bekannt, wärend bei DES dies nicht war.
+(Diff-Kryptoanalyse war IBM seit 1970 bekannt) Man kann erklären, warum man
+die $S$-Boxen so gewählt hat und auch zeigen, dass sie korrekt arbeiten.
+
 \subsection{Bescheibung des Verfahrens von Rijndael}
 
 Das Verfahren von Rijndael ist eine iterierte Blockchiffre, deren Block- und
-Schlüssellänge unabhängig voneinander gewählt werden können. Davon abhängig
-kann die Rundenzahl 10, 12 oder 14~Runden betragen. Das Verfahren ist keine
-Feistel-Chiffre.
+Schlüssellänge unabhängig voneinander 128, 192 oder 256~Bit betragen können.
+Davon abhängig kann die Rundenzahl 10, 12 oder 14~Runden betragen. Das
+Verfahren ist keine Feistel-Chiffre.
 
 \help{Was ist eine iterierte Blockchiffre?}
 \help{Warum ist Rijndael keine Feistel-Chiffre?}
 
-Für AES wurden 128~Bit als Blocklänge, 128~Bit als Schlüssellänge und 10
-Runden plus eine Abschlussrunde festgelegt. Der Schlüssel wird auf 1408~Bit
-erweitert und in die 11 Teilschlüssel zu je 128~Bit zerlegt. Diese werden in
-jeder Runde \help{Wie geht es hier weiter?}
-
-\todo{Bild vom Schema}
-
-Was passiert in den Runden? Jede Runde (bis auf die letzte) besteht aus drei
-Schichten:
+Für AES wurden 128~Bit als Blocklänge, 128~Bit als Schlüssellänge und
+10~Runden plus eine Abschlussrunde festgelegt. Der Schlüssel wird auf 1408~Bit
+erweitert und in 11~Teilschlüssel zu je 128~Bit zerlegt. Jede Runde (bis auf
+die Abschlussrunde) besteht aus vier Schichten (\autoref{fig:aes}):
 \begin{enumerate}
- \item ByteSub-Transformation: nicht lineare Transformation als Schutz vor
+ \item \highl{Key-Add} -- Verknüpfung mit dem Rundenschlüssel
+ \item \highl{Byte-Sub} -- nicht lineare Transformation als Schutz vor
   differenzieller und linearer Kryptoanalyse
- \item ShiftRow-Transformation: zwischen Diffusion
- \item MixColumn-Transformation
+ \item \highl{Shift-Row} -- zwischen Diffusion
+ \item \highl{Mix-Column}
 \end{enumerate}
-
-\todo{Bild vom Schema der Runde~$i$}
+In der Abschlussrunde wird statt dem Mix-Column-Schritt nochmal ein
+Key-Add-Schritt mit dem elften Schlüssel gemacht.
 
 % 20.12.
 
-\paragraph{Notationen für AES}
-Es werden Bytes von je 8~Bits verwendet $a=a_{7}a_{6}\dotso a_{0}
-\in\F_{256}$. Für die Eingabeblocklänge 128~Bits ergeben sich Bytefolgen der
-Länge~16.
+\subsection{Notationen für AES}
+
+Es werden Bytes von je 8~Bit verwendet, die somit als Elemente des Körpers
+$\F_{256}$ interprtiert werden können; $a=a_{7}a_{6}\dotso a_{0}\in\F_{256}$.
+Ein Eingabeblock~$s$ von 128~Bit Länge wird in eine Folge von 16~Bytes
+zerlegt.
 \begin{gather*}
   s = a^{(0)}a^{(1)}\dotso a^{(14)}a^{15}
 \end{gather*}
-die als Matrizen geschrieben werden.
+Diese Bytefolge wird auf eine $4\times4$-Matrix in folgender Weise übertragen:
 \begin{gather*}
   s =
      \begin{pmatrix}
@@ -3223,246 +3239,250 @@ die als Matrizen geschrieben werden.
        a^{(2,0)}& \dotso \\
        a^{(3,0)}& a^{(3,1)}& a^{(3,2)}& a^{(3,3)}
      \end{pmatrix}
-     = a^{z,s}
+     = (a^{z,s})_{4\times4}
 \end{gather*}
-mit je 4~Zeilen und 4~Spalten. Weiter wird festgelegt: Die Eingabe in die
-$i$.\,Runde wird mit $s_{i,a}$ bezeichnet
+
+\begin{figure}
+  \centering
+  \todo{Bild vom Schema der Runde~$i$}
+  \caption{Schema für die $i$.\,Runde des AES}
+  \label{fig:aes}
+\end{figure}
+
+Die Eingabe des ersten Schritts (\highl{Key-Add}) in der $i$.\,Runde wird mit
+$s_{i,a}$ bezeichnet und das Ergebnis des ersten Schritts wird als Eingabe des
+zweiten Schritts (\highl{Byte-Sub}) verwendet und mit $s_{i,b}$ bezeichnet
 \begin{gather*}
   s_{i,a} =
      \begin{pmatrix}
        a^{(0,0)}& a^{(0,1)}& a^{(0,2)}& a^{(0,3)}\\
-       \vdots \\
-       a^{(3,0)}& \dotso && a^{(3,3)}
+       \vdots &&& \vdots\\
+       a^{(3,0)}& \hdotsfor{2} & a^{(3,3)}
      \end{pmatrix}
-\end{gather*}
-Das Ergebnis des ersten Schritts (\highl{Byte-Sub}) wird mit $s_{i,b}$
-bezeichnet und ist die Eingabe des zweiten Schritts (\highl{Row-Shift}).
-\begin{gather*}
-  s_{i,b} =
+     \qquad s_{i,b} =
      \begin{pmatrix}
        b^{(0,0)}& b^{(0,1)}& b^{(0,2)}& b^{(0,3)}\\
-       \vdots \\
-       b^{(3,0)}& \dotso && b^{(3,3)}
+       \vdots &&&\vdots \\
+       b^{(3,0)}& \hdotsfor{2} & b^{(3,3)}
      \end{pmatrix}
 \end{gather*}
-Das Ergbnis des zweiten Schritts $s_{i,c}$ ist die Eingabe des dritten
-Schritts (\highl{Column-Mix}). Das Ergebnis des dritten Schrittes ist
-$s_{i,d}$ und die Eingabe für den vierten Schritt (\highl{Schlüsseladdition}).
-Dieses Ergebnis ist $s_{i+1,a}$ und die Eingabe für die $i+1$.\,Runde.
+Das Ergbnis des zweiten Schritts wird als Eingabe des dritten Schritts
+(\highl{Row-Shift}) verwendet und mit $s_{i,c}$ bezeichnet. Das Ergebnis des
+dritten Schritts wird als Eingabe für den vierten Schritt
+(\highl{Column-Mix}) verwendet und mit $s_{i,d}$ bezeichnet. Die
+Ausgabe des vierten Schritts ist gleichzeitig die Ausgabe der $i$.\,Runde und
+somit wieder die Eingabe~$s_{i+1,a}$ für den ersten Schritt in der
+$(i+1)$.\,Runde. siehe \autoref{fig:aes}
 
-Schreibweise in $\nicefrac{\F_{256}[x]}{x^{4}+1}$:
+Für die Elemente des Rings $\nicefrac{\F_{256}[x]}{x^{4}+1}$ verwendent man
+die Polynomdarstellung oder die Hexadezimalschreibweise
 \begin{gather*}
-  a(x) = 02 + 01x + 01x^{2}+03\quad\text{bzw.}\\
+  a(x) = 02 + 01x + 01x^{2}+03\quad\text{bzw.}\quad
   a = [02, 01, 01, 03]
 \end{gather*}
 
-\paragraph{Beschreibung der einzelnen Schritte}
-\begin{enumerate}[1.\,{Schritt}]
- \item Byte-Sub
-  \begin{enumerate}
-   \item mathematischer Hintergrund: Eingabe: $a^{(z,s)}$. Zwei Transformationen:
-    \begin{enumerate}
-     \item Bestimme das multiplikative Inverse $(a^{(z,s)})^{-1}$ in
-      $\F_{256}$. Bemerkung: Falls $a^{(z,s)}= 00$, dann $(a^{(z,s)})^{-1} =
-      00$.
+\subsection{Beschreibung der einzelnen Schritte}
 
-     \item Berechne folgende affine Abbildung
-      \begin{gather*}
-        (a^{(z,s)})^{-1} = \tilde{a}_{7}\tilde{a}_{6}\dotso\tilde{a}_{0}
-      \end{gather*}
-      mit dem Ergebnis $b^{(z,s)} = b_{7}b_{6}\dotso b_{0}$
-      \begin{gather*}
-        \begin{pmatrix}
-          b_{0}\\
-          b_{1}\\
-          b_{2}\\
-          b_{3}\\
-          b_{4}\\
-          b_{5}\\
-          b_{6}\\
-          b_{7}
-        \end{pmatrix} =
-           \begin{pmatrix}
-             1& 0& 0& 0& 1& 1& 1& 1\\
-             1& 1& 0& 0& 0& 1& 1& 1\\
-             1& 1& 1& 0& 0& 0& 1& 1\\
-             1& 1& 1& 1& 0& 0& 0& 1\\
-             1& 1& 1& 1& 1& 0& 0& 0\\
-             0& 1& 1& 1& 1& 1& 0& 0\\
-             0& 0& 1& 1& 1& 1& 1& 0\\
-             0& 0& 0& 1& 1& 1& 1& 1
-           \end{pmatrix} \cdot
-           \begin{pmatrix}
-             \tilde{a}_{0}\\
-             \tilde{a}_{1}\\
-             \tilde{a}_{2}\\
-             \tilde{a}_{3}\\
-             \tilde{a}_{4}\\
-             \tilde{a}_{5}\\
-             \tilde{a}_{6}\\
-             \tilde{a}_{7}
-           \end{pmatrix} +
-           \begin{pmatrix}
-             1\\ 1\\ 0\\ 0\\ 0\\ 1\\ 1
-           \end{pmatrix}
-      \end{gather*}
+\subsubsection{Key-Add}
+Die Verknüpfung mit dem Rundenschlüssel, um die Ausgabe vom Schlüssel abhängig
+zu machen ist nicht weiter spektakulär:
+\begin{gather*}
+  s_{i, b} = s_{i,a} \oplus k_{i}
+\end{gather*}
 
-      Bemerkung: Diese Abbildung kann als Abbildung über dem Polynomring
-      $\nicefrac{\F_{2}[x]}{x^{8}+1}$ verstanden werden.
-      \begin{gather*}
-        \begin{pmatrix}
-          b_{0}& b_{1}& b_{2}& b_{3}& b_{4}& b_{5}& b_{6}& b_{7}
-        \end{pmatrix}
-           =
-           \begin{pmatrix}
-             1& 1& 1& 1& 1& 0& 0& 0
-           \end{pmatrix}
-           \cdot
-           \begin{pmatrix}
-             \tilde{a}_{0}& \tilde{a}_{1}& \tilde{a}_{2}& \tilde{a}_{3}&
-             \tilde{a}_{4}& \tilde{a}_{5}& \tilde{a}_{5}& \tilde{a}_{6}&
-             \tilde{a}_{7}
-           \end{pmatrix}
-           +
-           \begin{pmatrix}
-             1& 1& 0& 0& 0& 1& 1& 0
-           \end{pmatrix}
-      \end{gather*}
-    \end{enumerate}
+\subsubsection{Byte-Sub}
 
-   \item Die Darstellung -- Praktische Umsetzung: Table-lookup\\
-    zusammengefasst ist das Resultat
-    \begin{gather*}
-      b^{(z,s)} = S_{8}(a^{(z,s)})
-    \end{gather*}
-    das in einer Tabelle ($16\times16$) dargestell werden kann. Die
-    niederwertigen Bits $a_{3}, a_{2}, a_{1}$ und $a_{0}$ bestimmen die
-    Spalte der Tabelle und die Bits $a_{7}, a_{6}, a_{5}$ und $a_{4}$
-    bestimmen die Zeile.
+Für jedes Byte $b^{(z,s)}\in\F_{256}$ der Eingabe $s_{i,b} =
+(b^{(z,s)})_{4\times4}$ werden zwei Transformationen ausgeführt:
+\begin{enumerate}
+ \item Bestimme das multiplikative Inverse $(b^{(z,s)})^{-1} =
+  \tilde{b}_{7}\tilde{b}_{6}\dotso\tilde{b}_{0}$ in $\F_{256}$.
+  Falls $b^{(z,s)}= 00$, dann $(b^{(z,s)})^{-1} = 00$.
 
-    Beispiel: $S_{8}(1011\,0101)$, Zeile~11 und Spalte~5. Die Tabelle
-    liefert $D5$, d.\,h. 13 und 5. $S_{8}(1011\,0101) = (1101\,0101)$.
-  \end{enumerate}
- \item Row-Shift
-  \begin{enumerate}
-   \item mathematischer Hintergrund: Rechnen in
-    $\nicefrac{\F_{2^{8}}[x]}{x^{4}+1}$ zeilenweise:
-    \begin{align*}
-      [c^{(0,0)}, c^{(0,1)}, c^{(0,2)}, c^{(0,3)}]
-         &= [b^{(0,0)}, b^{(0,1)}, b^{(0,2)}, b^{(0,3)}]\\
-      [c^{(1,0)}, c^{(1,1)}, c^{(1,2)}, c^{(1,3)}]
-         &= [b^{(1,0)}, b^{(1,1)}, b^{(1,2)}, b^{(1,3)}] \otimes 01x^{3}\\
-      [c^{(2,0)}, c^{(2,1)}, c^{(2,2)}, c^{(2,3)}]
-         &= [b^{(2,0)}, b^{(2,1)}, b^{(2,2)}, b^{(2,3)}] \otimes 01x^{2}\\
-      [c^{(3,0)}, c^{(3,1)}, c^{(3,2)}, c^{(3,3)}]
-         &= [b^{(3,0)}, b^{(3,1)}, b^{(3,2)}, b^{(3,3)}] \otimes 01 x
-    \end{align*}
-
-   \item Die Darstellung
-    \begin{gather*}
-      \begin{pmatrix}
-        c^{(0,0)}& c^{(0,1)}& c^{(0,2)}& c^{(0,3)}\\
-        c^{(1,0)}& c^{(1,1)}& c^{(1,2)}& c^{(1,3)}\\
-        c^{(2,0)}& c^{(2,1)}& c^{(2,2)}& c^{(2,3)}\\
-        c^{(3,0)}& c^{(3,1)}& c^{(3,2)}& c^{(3,3)}
-      \end{pmatrix} =
-         \begin{pmatrix}
-           b^{(0,0)}& b^{(0,1)}& b^{(0,2)}& b^{(0,3)}\\
-           b^{(1,1)}& b^{(1,2)}& b^{(1,3)}& b^{(1,0)}\\
-           b^{(2,2)}& b^{(2,3)}& b^{(2,0)}& b^{(2,1)}\\
-           b^{(3,3)}& b^{(3,0)}& b^{(3,1)}& b^{(3,2)}
-         \end{pmatrix}
-    \end{gather*}
-  \end{enumerate}
-
- \item Column-Mix:
-  \begin{enumerate}
-   \item mathematischer Hintergrund:\\
-    spaltenweise
-    \begin{gather*}
-      \begin{pmatrix}
-        d^{(0,s)} \\ d^{(1,s)}\\ d^{(2,s)}\\ d^{(3,s)}
-      \end{pmatrix} = S_{32}
-         \begin{pmatrix}
-           c^{(0,s)} \\ c^{(1,s)}\\ c^{(2,s)}\\ c^{(3,s)}
-         \end{pmatrix}
-    \end{gather*}
-
-    \begin{figure}
-      % \input{aes-s32.pdf_t}
-      \caption{Bild von $S_{32}$}
-      \label{fig:s32}
-    \end{figure}
-    Beschreibung der Abbildung $S_{32}$ \autoref{fig:s32}
-
-    \begin{gather*}
-      \mathit{xtime}(x_{7}x_{6}\dotso x_{0}) =
-         \begin{cases}
-           x_{6}x_{5}x_{4}x_{3}x_{2}x_{1}x_{0} 0&\colon x_{7}=0\\
-           (x_{6}x_{5}x_{4}x_{3}x_{2}x_{1}x_{0} 0) \oplus (0001\,1011)&
-           \colon x_{7} = 1
-         \end{cases}
-    \end{gather*}
-
-    kompakte Darstellung in $\nicefrac{\F_{2^{8}}[x]}{x^{4}+1}$:
-    \begin{gather*}
-      [d^{(0,s)} d^{(1,s)}, d^{(2,s)}, d^{(3,s)}] =
-         [c^{(0,s)} c^{(1,s)}, c^{(2,s)}, c^{(3,s)}] \otimes [02\:01\:01\:03]
-    \end{gather*}
-    Matrixschreibweise:
-    \begin{align*}
-      \begin{pmatrix}
-        d^{(0,s)}\\ d^{(1,s)},\\ d^{(2,s)},\\ d^{(3,s)}
-      \end{pmatrix} &=
-         \begin{pmatrix}
-           02 (c^{(0,s)}\oplus c^{(1,s)}) \oplus c^{(1,s)} \oplus
-           c^{(2,s)} \oplus c^{(3,s)}\\
-           02 (c^{(1,s)} \oplus c^{(2,s)}) \oplus c^{(0,s)} \oplus
-           c^{(2,s)} \oplus c^{(3,s)}\\
-           02 (c^{(2,s)} \oplus c^{(3,s)}) \oplus c^{(0,s)} \oplus
-           c^{(1,s)} \oplus c^{(3,s)}\\
-           02 (c^{(3,s)} \oplus c^{(0,s)}) \oplus c^{(0,s)} \oplus
-           c^{(1,s)} \oplus c^{(2,s)}
-         \end{pmatrix}\\
-      &= \begin{pmatrix}
-           02& 03& 01& 01\\
-           01& 02& 03& 01\\
-           01& 01& 02& 03\\
-           03& 01& 01& 02
-         \end{pmatrix} \cdot
-         \begin{pmatrix}
-           d^{(0,s)}\\ d^{(1,s)}\\ d^{(2,s)}\\ d^{(3,s)}
-         \end{pmatrix}
-    \end{align*}
-
-   \item Die Darstellung: wieder in einer Tabelle
-  \end{enumerate}
-
- \item Die Schlüsseladdition
+ \item Berechne folgende affine Abbildung mit dem Ergebnis
+  $c^{(z,s)} = c_{7}c_{6}\dotso c_{0}$
   \begin{gather*}
-    S_{i+1, a} = S_{i,d} \oplus k_{i}
+    \begin{pmatrix}
+      c_{0}\\ c_{1}\\ c_{2}\\ c_{3}\\ c_{4}\\ c_{5}\\ c_{6}\\ c_{7}
+    \end{pmatrix} =
+       \begin{pmatrix}
+         1& 0& 0& 0& 1& 1& 1& 1\\
+         1& 1& 0& 0& 0& 1& 1& 1\\
+         1& 1& 1& 0& 0& 0& 1& 1\\
+         1& 1& 1& 1& 0& 0& 0& 1\\
+         1& 1& 1& 1& 1& 0& 0& 0\\
+         0& 1& 1& 1& 1& 1& 0& 0\\
+         0& 0& 1& 1& 1& 1& 1& 0\\
+         0& 0& 0& 1& 1& 1& 1& 1
+       \end{pmatrix} \cdot
+       \begin{pmatrix}
+         \tilde{b}_{0}\\
+         \tilde{b}_{1}\\
+         \tilde{b}_{2}\\
+         \tilde{b}_{3}\\
+         \tilde{b}_{4}\\
+         \tilde{b}_{5}\\
+         \tilde{b}_{6}\\
+         \tilde{b}_{7}
+       \end{pmatrix} +
+       \begin{pmatrix}
+         1\\ 1\\ 0\\ 0\\ 0\\ 1\\ 1
+       \end{pmatrix}
+  \end{gather*}
+
+  Bemerkung: Diese Abbildung kann als Abbildung über dem Polynomring
+  $\nicefrac{\F_{2}[x]}{x^{8}+1}$ verstanden werden.
+  \help{Ich verstehe diese Idee nicht. Woher kommt die Abbildung?}
+  \begin{gather*}
+    \begin{pmatrix}
+      c_{0}\\ c_{1}\\ c_{2}\\ c_{3}\\ c_{4}\\ c_{5}\\ c_{6}\\ c_{7}
+    \end{pmatrix}^{T}
+       =
+       \begin{pmatrix}
+         1& 1& 1& 1& 1& 0& 0& 0
+       \end{pmatrix}
+       \cdot
+       \begin{pmatrix}
+         \tilde{b}_{0}& \tilde{b}_{1}& \tilde{b}_{2}& \tilde{b}_{3}&
+         \tilde{b}_{4}& \tilde{b}_{5}& \tilde{b}_{5}& \tilde{b}_{6}&
+         \tilde{b}_{7}
+       \end{pmatrix}
+       +
+       \begin{pmatrix}
+         1& 1& 0& 0& 0& 1& 1& 0
+       \end{pmatrix}
   \end{gather*}
 \end{enumerate}
 
-\subsubsection{Struktur des Entschlüsselungsalgorithmus}
+Die praktische Umsetzung der Byte-Sub-Transformation erfolgt durch einen
+\highl{Table-lookup}, d.\,h. man berechnet einmal für alle möglichen Eingaben
+die Ergebnisse und speichert sie in einer Tabelle im Programm ab. Das Programm
+schlägt dann nur noch in der Tabelle das Ergebnis nach und berechnet nichts
+mehr.
 
-Jeder Verschlüsselungsschritt besitzt einen Umkehrschritt
+Zusammengefasst ist das Resultat
+\begin{gather*}
+  c^{(z,s)} = S_{8}(b^{(z,s)})
+\end{gather*}
+\help{Woher kommt das $S_8$?}
+das in einer Tabelle ($16\times16$) dargestell werden kann. Die
+\help{Wieso verwendet man nicht eine eindimensionale Tabelle? Das ist doch nur
+  eine Frage der Anordnung.}
+niederwertigen Bits $b_{3}, b_{2}, b_{1}$ und $b_{0}$ bestimmen die
+Spalte der Tabelle und die Bits $b_{7}, b_{6}, b_{5}$ und $b_{4}$
+bestimmen die Zeile.
+
+Beispiel: $S_{8}(1011\,0101)$, Zeile~11 und Spalte~5. Die Tabelle
+liefert $D5$, d.\,h. 13 und 5. $S_{8}(1011\,0101) = (1101\,0101)$.
+
+\subsubsection{Row-Shift}
+Rechnen in $\nicefrac{\F_{256}[x]}{x^{4}+1}$ zeilenweise:
+\begin{align*}
+  [d^{(0,0)}, d^{(0,1)}, d^{(0,2)}, d^{(0,3)}]
+     &= [c^{(0,0)}, c^{(0,1)}, c^{(0,2)}, c^{(0,3)}]\\
+  [d^{(1,0)}, d^{(1,1)}, d^{(1,2)}, d^{(1,3)}]
+     &= [c^{(1,0)}, c^{(1,1)}, c^{(1,2)}, c^{(1,3)}] \otimes 01x^{3}\\
+  [d^{(2,0)}, d^{(2,1)}, d^{(2,2)}, d^{(2,3)}]
+     &= [c^{(2,0)}, c^{(2,1)}, c^{(2,2)}, c^{(2,3)}] \otimes 01x^{2}\\
+  [d^{(3,0)}, d^{(3,1)}, d^{(3,2)}, d^{(3,3)}]
+     &= [c^{(3,0)}, c^{(3,1)}, c^{(3,2)}, c^{(3,3)}] \otimes 01 x
+\end{align*}
+
+Praktisch bedeutet das, dass die Elemente in der $k$.\,Eingabezeile um $k-1$
+Plätze nach links rotiert werden.
+\begin{gather*}
+  \begin{pmatrix}
+    d^{(0,0)}& d^{(0,1)}& d^{(0,2)}& d^{(0,3)}\\
+    d^{(1,0)}& d^{(1,1)}& d^{(1,2)}& d^{(1,3)}\\
+    d^{(2,0)}& d^{(2,1)}& d^{(2,2)}& d^{(2,3)}\\
+    d^{(3,0)}& d^{(3,1)}& d^{(3,2)}& d^{(3,3)}
+  \end{pmatrix} =
+     \begin{pmatrix}
+       c^{(0,0)}& c^{(0,1)}& c^{(0,2)}& c^{(0,3)}\\
+       c^{(1,1)}& c^{(1,2)}& c^{(1,3)}& c^{(1,0)}\\
+       c^{(2,2)}& c^{(2,3)}& c^{(2,0)}& c^{(2,1)}\\
+       c^{(3,3)}& c^{(3,0)}& c^{(3,1)}& c^{(3,2)}
+     \end{pmatrix}
+\end{gather*}
+
+\subsubsection{Column-Mix}
+Spaltenweise wird die Abbildung $S_{32}$ auf die Element
+\begin{gather*}
+  \begin{pmatrix}
+    d^{(0,s)} \\ d^{(1,s)}\\ d^{(2,s)}\\ d^{(3,s)}
+  \end{pmatrix} = S_{32}
+     \begin{pmatrix}
+       c^{(0,s)} \\ c^{(1,s)}\\ c^{(2,s)}\\ c^{(3,s)}
+     \end{pmatrix}
+\end{gather*}
+
+\begin{figure}
+  % \input{aes-s32.pdf_t}
+  \caption{Bild von $S_{32}$}
+  \label{fig:s32}
+\end{figure}
+Beschreibung der Abbildung $S_{32}$ \autoref{fig:s32}
+
+\begin{gather*}
+  \mathit{xtime}(x_{7}x_{6}\dotso x_{0}) =
+     \begin{cases}
+       x_{6}x_{5}x_{4}x_{3}x_{2}x_{1}x_{0} 0&\colon x_{7}=0\\
+       (x_{6}x_{5}x_{4}x_{3}x_{2}x_{1}x_{0} 0) \oplus (0001\,1011)&
+       \colon x_{7} = 1
+     \end{cases}
+\end{gather*}
+
+kompakte Darstellung in $\nicefrac{\F_{2^{8}}[x]}{x^{4}+1}$:
+\begin{gather*}
+  [e^{(0,s)}, e^{(1,s)}, e^{(2,s)}, e^{(3,s)}] =
+     [d^{(0,s)}, d^{(1,s)}, d^{(2,s)}, d^{(3,s)}] \otimes [02\:01\:01\:03]
+\end{gather*}
+Matrixschreibweise:
+\begin{align*}
+  \begin{pmatrix}
+    e^{(0,s)}\\ e^{(1,s)},\\ e^{(2,s)},\\ e^{(3,s)}
+  \end{pmatrix} &=
+     \begin{pmatrix}
+       02 (d^{(0,s)}\oplus d^{(1,s)}) \oplus d^{(1,s)} \oplus
+       d^{(2,s)} \oplus d^{(3,s)}\\
+       02 (d^{(1,s)} \oplus d^{(2,s)}) \oplus d^{(0,s)} \oplus
+       d^{(2,s)} \oplus d^{(3,s)}\\
+       02 (d^{(2,s)} \oplus d^{(3,s)}) \oplus d^{(0,s)} \oplus
+       d^{(1,s)} \oplus d^{(3,s)}\\
+       02 (d^{(3,s)} \oplus d^{(0,s)}) \oplus d^{(0,s)} \oplus
+       d^{(1,s)} \oplus d^{(2,s)}
+     \end{pmatrix}\\
+  &= \begin{pmatrix}
+       02& 03& 01& 01\\
+       01& 02& 03& 01\\
+       01& 01& 02& 03\\
+       03& 01& 01& 02
+     \end{pmatrix} \cdot
+     \begin{pmatrix}
+       d^{(0,s)}\\ d^{(1,s)}\\ d^{(2,s)}\\ d^{(3,s)}
+     \end{pmatrix}
+\end{align*}
+
+Die praktische Umsetzung erfolgt wieder mit Hilfe eines Table-lookups.
+
+\subsection{Struktur des Entschlüsselungsalgorithmus}
+
+Da jeder Verschlüsselungsschritt einen Umkehrschritt besitzt ist die
+Entschlüsselung der Nachricht gesichert:
 \begin{enumerate}
+ \item $(\text{Key-Add})^{-1} = \text{Key-Add}$ ist einfach ein \texttt{xor}
+  mit demselben Schlüssel.
+
  \item $(\text{Byte-Sub})^{-1}$ existiert, da die affine Abbildung eine
-  Umgekehrabbildung besitzt und das Inverse des Inversen des ursprüngliche
+  Umgekehrabbildung besitzt und das Inverse des Inversen das ursprüngliche
   Element im Körper liefert.
 
- \item $(\text{Row-Shift})^{-1}$ existiert ebenfalls. Einfach eine Rechtsverschiebung.
+ \item $(\text{Row-Shift})^{-1}$ ist einfach eine Rotation nach rechts.
 
- \item $(\text{Column-Shift})^{-1}$ existiert, da $a(x) = 02+01x+ 01x^{2} + 03x^{3}$
-  im Ring $\nicefrac{\F_{2^{8}}[x]}{x^{4}+1}$ das inverse Polynom $a^{-1}(x)$
-  hat.
-
- \item $(\text{Key-Add})^{-1}$ existiert auch; $\oplus$ mit demselben Schlüssel.
+ \item $(\text{Column-Shift})^{-1}$ existiert, da $a(x) = 02+01x+ 01x^{2} +
+  03x^{3}$ im Ring $\nicefrac{\F_{256}[x]}{x^{4}+1}$ das inverse Polynom
+  $a^{-1}(x)$ hat.
 \end{enumerate}
-
-Bei AES ist auch der Hintergrund bekannt, wärend bei DES dies nicht war.
-(Diff-Kryptoanalyse war IBM seit 1970 bekannt)
 
 % 8.1.2007
 
