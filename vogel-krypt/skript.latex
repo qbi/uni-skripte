@@ -4529,6 +4529,129 @@ b^{-1}\equiv1\pmod{p-1}$ ist. Dann gilt
      \equiv m^{a\cdot b\cdot a^{-1}\cdot b^{-1}} \equiv m
 \end{gather*}
 
+% 29.1.
+
+\chapter{Kryptographische Hashfunktionen}
+
+\begin{defini}
+  Eine \highl{Hashfunktion} ist eine Abbildung der Form $H\colon\Sigma^{*}
+  \mapsto \Sigma^{n}$ für ein festes $n\in\N$.
+\end{defini}
+
+\begin{bsp}
+  $\Sigma=\{0,1\}$ für den Wert $w=b_{1}b_{2}\dotso b_{k}$ sei $H(w) =
+  b_{1}\oplus b_{2}\oplus \dotsb \oplus b_{k}$; $H(w)=1$ \gdw die Anzahl der
+  Einsen in $w$ ist ungerade. $H\colon\Sigma^{*} \mapsto\sigma^{1}$
+\end{bsp}
+
+Trivialer Weise kann eine Hashfunktion nicht injektiv sein.
+
+In der informatischen Pracis werden Hashfunktionen häufig durch
+Kopressionsfunktionen erzeugt. Ein \highl{Kompressionsfunktion} ist eine
+Abbildung der Form $K\colon\Sigma^{m}\mapsto\Sigma^{n}$ für $m>n$.
+
+Zwei Forderungen:
+\begin{itemize}
+ \item $H$ (und $K$) müssen schnell berechenbar sein
+ \item $H(w) = H(w')$ für $w\ne w'$ sollte nicht zu häufig auftreten! Eine
+  solche Situation nennt man \highl{Kollision}.
+\end{itemize}
+
+Fü kryptographische Hashfunktionen kommt eine weitere Forderung hinzu: Wir
+betrachten folgende Situation bei digitalen Signaturen: Alice schickt neben
+der Nachricht~$m$ ihren Identitätsnachweise $sig_{Alice}(m)$ und also
+insgesamt $(m,sig_{Alice}(m))$.
+
+Problem: Die Signatur ist genauso lang wie die Nachricht! Idee: Den Hashwert
+einer Nachricht zu signieren. Aber der Hashwert $H(m)$ ist leicht zu berechnen.
+Findet ein Angreifer eine Nachricht $m'$ mit $H(m')=H(m)$, dann gilt: $(m',
+sig_{Alice}(H(m))) = (m', sig_{Alice}(H(m')))$ und damit kann sich der
+Angreifer als Alice ausgeben.
+
+Um genau das zu vermeiden, formulieren wir folgende Eigenschaften einer
+kryptographischen \highl{Hashfunktion}~$H$:
+\begin{itemize}
+ \item $H$ ist in Polynomialzeit berechenbar; $H\in\FP$
+ \item $H$ ist eine Einwegfunktion
+ \item $H$ ist (schwach) \highl{Kollitionsresistent}; d.\,h. für gegebenes $m$
+  gibt es keinen Polynomialzeitalgorithmus, der ein $m'\ne m$ mit der
+  Eigenschaft $H(m')=H(m)$ berechnet.
+ \item $H$ ist (stark) Kollitionsresistent; d.\,h. es gibt keinen
+  Polynomialzeitalgorithmus, der überhaupt eine Kollision berechnet.
+\end{itemize}
+
+\begin{bemerk}
+  Ein Invertierungsalgorithmus~$A$ für $H$ liefert für ein gegebenes $m$ ein
+  Element~$m'=A(H(m))$. Da die Anzahl der Urbilder von $H(m)$ im Mittel größer
+  als eins ist, ist die Wahrscheinlichkeit eine Kollision $m'$ zu brechnen im
+  Mittel größer als $\frac{1}{2}$.
+\end{bemerk}
+
+Konsequenz: $H$ ist eine Einwegfunktion, deswegen probabilistische Algorithmen
+zur Erzeugung von Kollisionen.
+
+\section{Das Geburtstagsparadoxon}
+
+\begin{satz}
+  (von Merkle) Aus einer stark kollisionsrestistenten Kompressionsfunktion~$K$
+  der Form $K\colon\Z_{2}^{m} \mapsto \Z_{2}^{n}$ ($m>n$) lässt sich eine
+  stark kollisionsrestistente Hashfunktion~$H\colon\Z_{2}^{m} \mapsto
+  \Sigma_{2}^{n}$ konstruieren.
+  lässt sich
+\end{satz}
+
+Da nicht bewiesen ist, dass es kryptographische Einwegfunktionen gibt,
+verwendet man nur solche Hashfunktionen, deren Kollisionsrestistenz (bisher)
+nicht widerlegt ist. Dazu werden Verschlüsselungsverfahren benutzt, die als
+sicher gelten. Es ergibt sich die Frage nach der Länge~$n$ der Hashwerte.
+
+Der gewünschte Hashwert sei $n$. Dazu benötigt man ein
+Verschlüsselungsverfahren für das die Klartext- und Chiffremenge $\Z_{2}^{n}$
+ist, die Verschlüsselungsfunktion~$E_{k}\colon\Z_{2}^{n}\mapsto\Z_{2}^{n}$ und
+der zugehörige Schlüssel~$k\in\Z_{2}$. Dann lässt sich eine
+Hashfunktion~$H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ wie folgt definieren: Es
+sei $x=x_{1}x_{2}\dotso x_{l}$ ($x$ in Blöcke zerlegt), wobei alle
+$x_{i}\in\Z_{2}^{*}$ ($x_{l}$ bis zur Länge $n$ auffüllen). Ausgangsschlüssel
+$k_{0}\in\Z_{2}^{n}$. Wir berechnen $k_{i}=f(x_{i},k_{i-1})$ für
+$i=1,\dotsc,l$ und $H(x) := k_{l}$. Dabei ist $f\colon\Z_{2}^{n}\times
+\Z_{2}^{n} \mapsto\Z_{2}^{n}$ eine Funktion, die durch die
+Verschlüsselungsfunktion definiert ist: Man unterscheidet vier Typen:
+\begin{itemize}
+ \item $k_{i} = E_{k_{i-1}}(x_{i})\oplus x_{i}$
+ \item $k_{i} = E_{k_{i-1}}(x_{i})\oplus x_{i}\oplus k_{i-1}$
+ \item $k_{i} = E_{k_{i-1}}(x_{i}\oplus k_{i-1})\oplus x_{i}$
+ \item $k_{i} = E_{k_{i-1}}(x_{i}\oplus k_{i-1})\oplus x_{i}\oplus k_{i-1}$
+\end{itemize}
+
+Es bleibt die Frage: "`Wie groß soll $n$ sein?"' Zwei sich widersprechende
+Richtungen: nicht zu groß (eine Hashfunktion soll komprimieren), aber nicht zu
+klein, da sonst zu viele Kollisionen. jetzt: Geburtstagsparadoxon
+
+\begin{satz}[Geburtstagsparadoxon]
+  Ein Merkmal komme in genau $m$ Ausprägungen vor -- $m$ verschiedene
+  Hashwerte. Jede Person hat genau eine Ausprägung des Merkmals. Es sei $k$
+  die Anzahl der Personen. Die Wahrscheinlichkeit dafür, dass zwei Personen
+  dieselbe Merkmalsausprägung haben, ist $\geq\frac{1}{2}$, falls $k\geq
+  \frac{\sqrt{1+8\cdot m\ln2}+1}{2}\approx 1\mathord{,}18\sqrt{m}$.
+
+  Zum Beispiel gilt für $m=365$ $k\geq23$.
+\end{satz}
+
+Für eine Hashfunktion $H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ hat die
+"`Geburtstagsattake"' folgende Konsequenz: Das Erzeugen von etwa
+$2^{\frac{n}{2}}$ Hashwerten, impliziert das die Wahrscheinlichkeit für eine
+Kollision $\geq\frac{1}{2}$ ist. Dies bedeutet für die Praxis, dass $n=64$ ist
+zu kurz und damit zu unsicher, da $2^{32}\approx4\cdot10^{9}$ Hashwerte für
+eine Kollision berechnet werden müssen.
+
+Illustration an einem Beispiel: "`Ein unehrenhaftes Protokoll"' Alice
+erarbeitet zwei Verträge: Der eine begünstigt Bob, der ander benachteiligt ihn
+und erzeugt für jeden Vertrag durch marginale Änderungen (z.\,B.
+hinzufügen/weglassen von Leerzeichen) $2^{32}$~Varianten, berechnet für jede
+Variante den Hashwert und wählt die zwei Fassungen, deren Hashwerte gleich
+sind. Bob signiert den Hashwert und akzeptiert damit auch den für ihn
+nachteiligen Vertrag.
+
 \clearpage
 \appendix
 
