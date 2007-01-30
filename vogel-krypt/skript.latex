@@ -1454,8 +1454,8 @@ $[a]_{k} \cdot [b]_{k} = [1]_{k}$. In diesem Fall heißt $[b]_{k}$
 
 \begin{lemma}
   \label{lem:5}
-  Die Eulersche $\phi$-Funktion $\phi(k)$ ist die Anzahl der Mengen $a,b\in
-  \{0,\dotsc,k-1\}$, für die gilt $\ggT(a,b)=1$. Also gibt es in $\Z_{k}$
+  Die Eulersche $\phi$-Funktion $\phi(k)$ ist die Anzahl der Mengen $\{a,b\}\subset
+  \{1,\dotsc,k-1\}^{2}$, für die gilt $\ggT(a,b)=1$. Also gibt es in $\Z_{k}$
   genau $\phi(k)$ Einheiten.
 
   \begin{proof}
@@ -1466,6 +1466,8 @@ $[a]_{k} \cdot [b]_{k} = [1]_{k}$. In diesem Fall heißt $[b]_{k}$
   \end{proof}
 \end{lemma}
 
+Für das Produkt zweier Zahlen~$p$ und $q$, die zueinander teilerfremd sind,
+ist $\phi(p\cdot q)=(p-1)\cdot(q-1)$ --~$\phi$ ist multiplikativ.
 Falls $k=p$ eine Primzahl ist, dann gibt es $\phi(p)=p-1$ Einheiten und
 $\Z_{p}$ ist ein Körper.
 \begin{gather*}
@@ -2871,13 +2873,12 @@ mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
   Zuerst die übliche, komponentenweise Multiplikation von Polynomen:
   \begin{multline*}
     (x^{6} + x^{4} + x^{2} + x + 1) \odot (x^{7}+x+1)\\
-    \begin{array}{*{12}{r@{\;}}}
-      = x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &+ x^{7}\\
-      &&&&+ x^{7} &&+ x^{5} &&+ x^{3} &+ x^{2} &+ x\\
-      &&&&&+ x^{6} &&+ x^{4} &&+ x^{2} &+ x &+1\\
-      \hline
-      \rule{0pt}{2.5ex}    % um etwas weiter von der Linie weg zu kommen
-      = x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &&+ x^{6} &+ x^{5} &+ x^{4}
+    \begin{array}{*{13}{r@{\;}}}
+      = &x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &+ x^{7}\\
+      +&&&&&+ x^{7} &&+ x^{5} &&+ x^{3} &+ x^{2} &+ x\\
+      +&&&&&&+ x^{6} &&+ x^{4} &&+ x^{2} &+ x &+1\\
+      \cline{2-13}\\[-3mm]
+      = &x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &&+ x^{6} &+ x^{5} &+ x^{4}
       &+ x^{3} &&&+ 1
     \end{array}
   \end{multline*}
@@ -2885,17 +2886,19 @@ mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
   $1+1\pmod{2}\equiv0$ ist.)
 
   Jetzt muss dieses Polynom noch reduziert werden:
-  \begin{alignat*}{8}
-    &(x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &&+ x^{6} &+ x^{5} &+ x^{4} &+ x^{3} &&+ 1) :
-       (x^{8} + x^{4} + x^{3} + x + 1) = x^{5} + x^{3} = q(x)\\
-    \oplus\,&(x^{13} &&+ x^{9} &+ x^{8} &&+ x^{6} &+x^{5})\\
-    % &---\\
-    &&x^{11} &&&&&&+ x^{4} &+ x^{3} &&+ 1\\
-    &&\oplus\,(x^{11} &&&+ x^{7} &+ x^{6} &&+ x^{4} &+x^{3})\\
-    % &&---\\
-    &&&&&x^{7} &+ x^{6} &&&&&+1\makebox[0pt][l]{= r(x)}
-  \end{alignat*}
-  \todo{das soll schöner aussehen}
+  \begin{gather*}
+    \begin{array}{*{11}{r@{\;}}l}
+      &(x^{13} &+ x^{11} &+ x^{9} &+ x^{8} &+ x^{6} &+ x^{5} &+ x^{4} &+ x^{3} &+ 1&)& :
+      (x^{8} + x^{4} + x^{3} + x + 1)
+      = \underbrace{x^{5} + x^{3}}_{=q(x)}\\[-4mm]
+      \oplus\,&(x^{13} &&+ x^{9} &+ x^{8} &+ x^{6} &+x^{5}&&&&)\\
+      \cline{1-11}\\[-3mm]
+      &&x^{11} &&&&&+ x^{4} &+ x^{3} &+ 1\\
+      &&\oplus\,(x^{11} &+ x^{7} &+ x^{6} &&&+ x^{4} &+x^{3}&&)\\
+      \cline{3-11}\\[-3mm]
+      &&&x^{7} &+ x^{6} &&&&&+1&&= r(x)
+    \end{array}
+  \end{gather*}
 
   Also ist
   \begin{gather*}
@@ -2903,7 +2906,7 @@ mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
   \end{gather*}
 \end{bsp}
 
-Da es für die Multiplikation nur $256^{2}$ verschiedene Kombinationen
+Da es für die Multiplikation nur 65\,536 verschiedene Kombinationen
 gibt, kann man diese auch vorberechnen und in einer $256\times256$-Tabelle
 abspeichern.
 
@@ -2958,6 +2961,27 @@ begin
 end
 Ausgabe: ggT := b[i], u := u[i], v := v[i];
 \end{verbatim}
+
+\begin{lemma}\label{lem:6}
+  Die oben gemachte Aussage, dass der erweiterte euklidische Algorithmus zwei
+  Zahlen~$u$ und $v$ bestimmt, die die Gleichung $\ggT(a,b) = u\cdot a+v\cdot
+  b$ erfüllen, ist korrekt.
+
+  \begin{proof}
+    Per Induktion können wir zeigen, dass für alle Schritte~$i$ gilt:
+    $b_{0}\cdot u_{i} + b_{1}\cdot v_{i} = b_{i}$.
+
+    Der Induktionsanfang für $i=1$ ist klar. Also gilt die Aussage
+    für den $(i-1)$. und $i$.\,Schritt. Für den $(i+1)$.\,Schritt
+    folgt dann
+    \begin{align*}
+      b_{0} u_{i+1} + b_{1} v_{i+1} &= b_{0} (u_{i-1} - q_{i} u_{i}) + b_{1}
+         (v_{i-1}-q_{i}v_{i})\\
+      &= (b_{0}u_{i-1} + b_{1} v_{i-1}) - q_{i} (b_{0} u_{i} + b_{1}v_{i})\\
+      &= b_{i-1} - q_{i}b_{i} = b_{i+1}
+    \end{align*}
+  \end{proof}
+\end{lemma}
 
 % 18.12.
 
@@ -3210,8 +3234,8 @@ ist. Jede Runde bis auf die letzte besteht aus vier Schritten
  \item \highl{Key-Add} -- Verknüpfung mit dem Rundenschlüssel
  \item \highl{Byte-Sub} -- nicht lineare Transformation als Schutz vor
   differenzieller und linearer Kryptoanalyse
- \item \highl{Shift-Row} -- zwischen Diffusion
- \item \highl{Mix-Column}
+ \item \highl{Shift-Row} -- Diffusion der Bits innerhalb einer Zeile
+ \item \highl{Mix-Column} -- Diffusion der Bits innerhalb einer Spalte
 \end{enumerate}
 In der letzten Runde wird statt dem Mix-Column-Schritt nochmal ein
 Key-Add-Schritt mit dem $(r+1)$.\,Schlüssel vorgenommen.
@@ -3356,30 +3380,31 @@ mehr.
 
 \begin{table}
   \centering
-  \begin{gather*}
-    \begin{array}{c|*{16}{c}}
-      S_{8}& 0& 1& 2& 3& 4& 5& 6& 7& 8& 9& A& B& C& D& E& F\\
+  \begin{ttfamily}
+    \begin{tabular}{c|*{16}{c}}
+      $S_{8}$& 0& 1& 2& 3& 4& 5& 6& 7& 8& 9& A& B& C& D& E& F\\
       \hline
-      0& \\
-      1& \\
-      2& \\
-      3& \\
-      4& \\
-      5& \\
-      6& \\
-      7& \\
-      8& \\
-      9& \\
-      A& \\
-      B& \\
-      C& \\
-      D& \\
-      E& \\
-      F&
-    \end{array}
-  \end{gather*}
-  \todo{Tabelle ausfüllen; Im Internet suchen}
-  \caption{Die Substitutionsbox $S_{8}$ für den Byte-Sub-Schritt im AES}
+      00& 63& 7C& 77& 7B& F2& 6B& 6F& C5& 30& 01& 67& 2B& FE& D7& AB& 76\\
+      10& CA& 82& C9& 7D& FA& 59& 47& F0& AD& D4& A2& AF& 9C& A4& 72& C0\\
+      20& B7& FD& 93& 26& 36& 3F& F7& CC& 34& A5& E5& F1& 71& D8& 31& 15\\
+      30& 04& C7& 23& C3& 18& 96& 05& 9A& 07& 12& 80& E2& EB& 27& B2& 75\\
+      40& 09& 83& 2C& 1A& 1B& 6E& 5A& A0& 52& 3B& D6& B3& 29& E3& 2F& 84\\
+      50& 53& D1& 00& ED& 20& FC& B1& 5B& 6A& CB& BE& 39& 4A& 4C& 58& CF\\
+      60& D0& EF& AA& FB& 43& 4D& 33& 85& 45& F9& 02& 7F& 50& 3C& 9F& A8\\
+      70& 51& A3& 40& 8F& 92& 9D& 38& F5& BC& B6& DA& 21& 10& FF& F3& D2\\
+      80& CD& 0C& 13& EC& 5F& 97& 44& 17& C4& A7& 7E& 3D& 64& 5D& 19& 73\\
+      90& 60& 81& 4F& DC& 22& 2A& 90& 88& 46& EE& B8& 14& DE& 5E& 0B& DB\\
+      A0& E0& 32& 3A& 0A& 49& 06& 24& 5C& C2& D3& AC& 62& 91& 95& E4& 79\\
+      B0& E7& C8& 37& 6D& 8D& D5& 4E& A9& 6C& 56& F4& EA& 65& 7A& AE& 08\\
+      C0& BA& 78& 25& 2E& 1C& A6& B4& C6& E8& DD& 74& 1F& 4B& BD& 8B& 8A\\
+      D0& 70& 3E& B5& 66& 48& 03& F6& 0E& 61& 35& 57& B9& 86& C1& 1D& 9E\\
+      E0& E1& F8& 98& 11& 69& D9& 8E& 94& 9B& 1E& 87& E9& CE& 55& 28& DF\\
+      F0& 8C& A1& 89& 0D& BF& E6& 42& 68& 41& 99& 2D& 0F& B0& 54& BB& 16
+    \end{tabular}
+  \end{ttfamily}
+  \caption{Die Substitutionsbox $S_{8}$ für den Byte-Sub-Schritt im AES;
+    Quelle: \href{http://en.wikipedia.org/wiki/Rijndael_S-box}{englische
+  Wikipedia}}
   \label{tab:s8-aes}
 \end{table}
 
@@ -3691,7 +3716,8 @@ Im Folgenden sei $f_{a,n}\colon\Z_{n}\mapsto\Z_{n}$ wie folgt definiert:
     end
     \end{Verbatim}
 
-    Dieser Algorithmus erfordert zwischen $\log_{2}m$ und $2\cdot\log_{2}m$
+    Da in mindestens jedem zweiten Schritt der Exponent~$m$ halbiert wird,
+    erfordert dieser Algorithmus zwischen $\log_{2}m$ und $2\cdot\log_{2}m$
     Durchläufe und hat somit eine Laufzeit von $O(\log_{2}m) = O(\abs{m})$. Da
     ist einzelnen Operationen mit $O(1)$ angenommen werden, ist dies ein
     Polynomialzeitalgorithmus.
@@ -3734,7 +3760,8 @@ zeigen, dass $\mathrm{P}\ne\mathrm{NP}$ ist.
   sie die folgenden Bedingungen erfüllt:
   \begin{itemize}
    \item Die Funktion ist in Polynomialzeit berechenbar; $f\in\FP$
-   \item $f$ ist mit der Falltürinformation in Polynomialzeit umkehrbar;
+   \item $f$ ist mit der \highl{Falltürinformation} in Polynomialzeit
+    umkehrbar;
     \begin{gather*}
       \exists g\in\FP~\exists \text{\:Falltürinformation\:}T~
          \forall y\in W_{f}\colon f\bigl(g(y,T)\bigr) = y
@@ -3764,24 +3791,28 @@ $g_{n,m}\colon \Z_{n} \mapsto \Z_{n}$ so definiert
   d.\,h. $g_{n,m}\in\FP$.
 
   \begin{proof}
-    Der rekursive Algorithmus aus \autoref{satz:1}.
+    Der rekursive Algorithmus aus dem Beweis von \autoref{satz:1} kann
+    ebenfalls zur Berechnung der Funktion~$g_{n,m}$ verwendet werden.
   \end{proof}
 \end{satz}
 
-Ansatz: Die inverse Funktion $g_{n,m}^{-1}$ bezeichnen wir als
-\highl{$m$.\,Wurzel}. Gegeben ist $n,m,y$, bestimmte $a$ mit $a^{m}\mod n =
-y$, falls ein solches $a$ existiert.
+\begin{defini}
+  Die inverse Abbildung $g_{n,m}^{-1}\colon\Z_{n} \rightarrow \Z_{n}$
+  bezeichnet man als \highl{$m$.\, Wurzel}. $g^{-1}_{n,m}$ berechnet für
+  ein gegebenes $y$, das $a$, so dass $a^{m}\mod n = y$ gilt, falls ein
+  solches $a$ existiert.
+\end{defini}
 
-\begin{bsp}
-  4.\,Wurzel von $16\mod 21$, $g_{21,4}(a) = 16$: $a_{1} =5, a_{2}=2$.
-\end{bsp}
-Problem Wurzel nicht eindeutig.
+Hier gibt es das gleiche Problem wie beim diskreten Logarithmus, dass
+$g_{n,m}$ nicht eindeutig ist, d.\,h. die $m$.\,Wurzel ist keine Funktion.
+Beispielsweise ist die 4.\,Wurzel von 16 für $n=21$ gleich
+\begin{gather*}
+  g_{21,4}(5) = 5^{4}\mod{21} = 16 = 2^{4}\mod 21 = g_{21,4}(2)
+\end{gather*}
 
-Sind das alle 4.\,Wurzeln? Gibt es Zahlen $y$, die keine 4.\,Wurzeln hat?
-
-Im Gegensatz zu $f_{a,n}$ lässt sich $g_{n,m}$ in Polynomialzeit invertieren,
-vorrausgesetzt die Faktorisierung von $n$ steht als Falltürinformation zur
-Verfügung. Dazu ein Exkurs in die Zahlentheorie.
+Doch im Gegensatz zu $f_{a,n}$ lässt sich $g_{n,m}$ in Polynomialzeit
+invertieren, wenn die Faktorisierung von $n$ als Falltürinformation zur
+Verfügung steht. Dazu ein Exkurs in die Zahlentheorie.
 
 \subsubsection{Exkurs in die Zahlentheorie}
 
@@ -3790,42 +3821,47 @@ Ansatzpunk:
   \Z_{n}^{*} := \{ i\colon 1\leq i < n, \ggT(i,n)=1\}
 \end{gather*}
 ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
+\help{Ist das gleich der Menge der Einheiten in 4.10.1?}
 
 \begin{satz}
-  (von Euler) Es gilt für alle $x$ mit $1\leq x < n$ und $\ggT(x,n) = 1$ gilt
-  folgenden Kongruenz:
+  \label{satz:2}
+  Von Euler stammt die folgende Erkenntnis: Es gilt für alle $x$ mit $1\leq x
+  < n$ und $\ggT(x,n) = 1$ folgende Kongruenz:
   \begin{gather*}
     x^{\phi(n)} \equiv 1\pmod{n}
   \end{gather*}
-  (Beliebiges Element hoch Ordnung der Gruppe ergibt das Einselement)
+  oder mit anders ausgedrückt: ein beliebiges Element einer Gruppe hoch der
+  Ordnung der Gruppe ergibt das Einselement der Gruppe.
 
-  Spezialfall ist der kleine Satz von Fermat: Für alle Primzahlen~$p$ und alle
+  Ein Spezialfall davon ist der kleine Satz von Fermat: Für alle Primzahlen~$p$ und alle
   $x$ mit $1\leq x < p$ gilt:
   \begin{gather*}
     x^{p-1} \equiv 1\pmod{p}
   \end{gather*}
 \end{satz}
 
-Vorraussetzung für alles: $n$ ist das Produkt zwei verschiedener
-Primzahlen~$p$ und $q$ ($p\ne q$): $n=pq$.
-
-Die Eulersche $\phi$-Funktion ist multiplikativ, d.\,h. $\phi(n) = \phi(p\cdot
-q) = \phi(p)\cdot\phi(q) = (p-1)\cdot (q-1)$
-
 \begin{defini}
   Eine Zahl~$a$ ($1\leq a< n$) heißt \highl{primitive Wurzel} von $n$ \gdwdef
-  \begin{enumerate}
+  $a$ die folgenden Eigenschaften erfüllt
+  \begin{itemize}
    \item $a$ und $n$ sind Teilerfremd ($\ggT(a,n)=1$) und
-   \item für alle $d<\phi(n)$ gilt $a^{d}\not\equiv 1\pmod{n}$ (d.\,h. die
-    Ordnung von $d$, der kleinste Exponent, dass $d^{ord}\equiv1\pmod{n}$, ist
-    $\phi(n)$)
-  \end{enumerate}
+   \item der kleineste Exponent~$d$, der $a^{d}\equiv1\pmod{n}$ erfüllt, ist
+    $\phi(n)$ --~$d$ heißt \highl{Ordnung} von $a$~-- oder anders formuliert:
+    für alle $d<\phi(n)$ gilt $a^{d}\not\equiv 1\pmod{n}$
+  \end{itemize}
 \end{defini}
 
 \begin{bsp}
-  Für $\Z_{5}^{*} = \{1,2,3,4\}$ ($n=5$) sind 2 und 3 primitive Wurzeln,
-  4 ist keine primitive Wurzel, da $4^{2} \equiv 1\pmod{5}$. Für $\Z_{11}^{*}
-  = \{ 1,2,\dotsc,10\}$ sind 2, 8, 7 und 6 die primitiven Wurzeln.
+  Für $n=5$ kommen als primitive Wurzeln die Zahlen $\Z_{5}^{*} = \{1,2,3,4\}$
+  in Frage. Davon entfallen 1 (aus offensichtlichen Gründen) und 4, da $4^{2}
+  \equiv 1\pmod{5}$. Es bleiben also 2 und 3 als primitive Wurzeln von 5.
+
+  Für $n=11$ gibt es die Kandidaten $\Z_{11}^{*} = \{ 1,2,\dotsc,10\}$, von
+  denen nur 2, 6, 7 und 8 primitive Wurzeln sind.
+
+  Für $n=6$ sind $\Z_{6}^{*}=\{1,5\}$ mögliche primitive Wurzeln, von denen
+  nur 5 die Bedingung $5^{d}\not\equiv1\pmod{6}$ für alle $d=1<\phi(6)=
+  \phi(3\cdot2) = 1\cdot2$ erfüllt.
 
   \begin{gather*}
     \begin{array}[t]{*{4}{c}}
@@ -3852,114 +3888,53 @@ q) = \phi(p)\cdot\phi(q) = (p-1)\cdot (q-1)$
 \end{bsp}
 
 \begin{satz}
-  (von Gauss)
-  \begin{enumerate}
-   \item $n$ hat eine primitive Wurzel \gdw $n=1,2$ oder $4$ oder $n = p^{k}$
-    oder $n=2\cdot p^{k}$ für ungerade Primzahl~$p$.
+  Carl Friedrich Gauss hat gezeigt, dass
+  \begin{itemize}
+   \item $n$ besitzt primitive Wurzeln \gdw $n$ ist $1, 2$ oder $4$ oder $n$
+    ist einfache oder doppelte Potenz einer Primzahl~$p>2$ ($n = p^{k}$
+    oder $n=2\cdot p^{k}$).
 
-   \item Falls $n$ primitve Wurzeln besitzt, dann $\phi(\phi(n))$ Stück.
-  \end{enumerate}
+   \item Falls $n$ primitve Wurzeln besitzt, dann sind es $\phi(\phi(n))$ Stück.
+  \end{itemize}
 \end{satz}
 
 \begin{bemerk}
-  \begin{enumerate}
+  \begin{itemize}
    \item 8 und 12 sind die kleinsten Zahlen, die keine primitven Wurzeln haben
    \item $n=5$ hat $\phi(\phi(5)) =\phi(4) = 2$ primitve Wurzeln.
-  \end{enumerate}
+  \end{itemize}
 \end{bemerk}
 
-Damit können wir den \highl{diskreten Logarithmus} $f_{a,n}^{-1}$ exakt als
-Funktion definieren, falls $a$ eine primitive Wurzel von $n$ ist.
-\begin{gather*}
-  f_{a,n}^{-1}(x) := \log_{a} x \mod n
-\end{gather*}
-Dabei ist der Wert $\log_{a}x$ eindeutig bestimmt, als diejenige Zahl~$m$ mit
-$a^{m} \log n = x$.
+\begin{lemma}
+  Damit lässt sich der \highl{diskrete Logarithmus} $f_{a,n}^{-1}$ exakt als
+  Funktion definieren, falls $a$ eine primitive Wurzel von $n$ ist.
+  \begin{gather*}
+    f_{a,n}^{-1}(y) := \log_{a} y \mod n
+  \end{gather*}
+  Dabei ist der Wert $\log_{a}x$ eindeutig als diejenige Zahl~$m$ bestimmt, für
+  die $a^{m} \mod n = y$ gilt.
+\end{lemma}
 
 % 15.1.
 
 \begin{lemma}\label{lem:1}
-  Es ist bekannt, dass der erweiterte Euklidische Algorithmus korrekt ist, und
-  es gilt $\ggT\in\FP$.
+  Der \highl{erweiterte euklidische Algorithmus} ist in Polynomialzeit
+  berechenbar; $\ggT\in\FP$.
 
   \begin{proof}
-    Es gibt worst-case-Abschätzungen, die zeigen, dass die Anzahl der
-    Schleifendurchläufe am Größten für zwei aufeinander folgende
-    Fibonacci-Zahlen $f_{k-1}$ und $f_{k}$ ist. Dann werden höchstens
+    Der Satz von Lemé (1985) zeigt, dass die Anzahl der Schleifendurchläufe
+    für zwei aufeinander folgende Fibonacci-Zahlen $f_{k-1}$ und $f_{k}$ am
+    Größten ist. Dann werden höchstens
     \begin{gather*}
       \floor{\log_{\frac{1}{2}(1+\sqrt{5})} (\sqrt{5}N) }-2
     \end{gather*}
-    Schleifendurchläufe benötigt. Satz von Lemé, 1985. Dabei ist $N> f_{k},
-    f_{k-1}$
+    Schleifendurchläufe benötigt, wobei $N > f_{k}$ ist.
   \end{proof}
-\end{lemma}
-
-\begin{lemma}\label{lem:2}
-  Der erweiterte Euklidische Algorithmus bestimmt in Polynomialzeit zwei
-  Zahlen $c$ und $d$ mit $c\cdot \phi(n) + d\cdot m=1$.
-
-  \begin{proof}
-    o.\,B.\,d.\,A. sei $\phi(n)>m$.
-    \begin{Verbatim}[gobble=4]
-    Eingabe: b[0] := phi(n);    b[1] := m;
-    begin
-        x[0] := 1; y[0] := 0;
-        x[1] := 0; y[1] := 1;
-        i := 1;
-        while not teilt(b[i], b[i-1]) do
-        begin
-            q[i] := ceil(b[i-1] / b[i]);
-            b[i+1] := b[i-1] - q[i] * b[i];
-            x[i+1] := x[i-1] - q[i] * x[i];
-            y[i+1] := y[i-1] - q[i] * y[i];
-            i := i + 1;
-        end
-    end
-    Ausgabe: b[i], c := x[i], d := y[i];
-    \end{Verbatim}
-
-    Per Induktion können wir zeigen: $\forall i\geq0\colon b_{0}\cdot x_{i} +
-    b_{1}\cdot y_{i} = b_{i}$.
-
-    Anfang: Dies ist klar für $i=0$ und $i=1$.\\
-    Schritt: Dies gilt für $i-1$ und $i$ und wir zeigen esfür $i+1$.
-    \begin{align*}
-      b_{0} x_{i+1} + b_{1} y_{i+1} &= b_{0} (x_{i-1} - q_{i} x_{i}) + b_{1}
-         (y_{i-1}-q_{i}y_{i})\\
-      &= (b_{0}x_{i-1} + b_{1} y_{i-1}) - q_{i} (b_{0} x_{i} + b_{1}y_{i})\\
-      &= b_{i-1} - q_{i}b_{i} = b_{i+1}
-    \end{align*}
-
-    Wir haben damit $1=c\cdot \phi(n) +d\cdot m$ und d.\,h. $d\cdot
-    m\equiv1\mod \phi(n)$. (d.\,h. $d$ ist das Inverse von $m$ in
-    $\Z_{\phi(n)}^{*}$)
-  \end{proof}
-\end{lemma}
-
-\begin{bsp}
-  $b_{0} := 29, b_{1}:=13$
-  \begin{gather*}
-    \begin{array}{c|ccc}
-      i& b_{i}& x_{i}& y_{i}\\
-      \hline
-      0& 29& 1& 0\\
-      1& 13& 0& 1\\
-      2& 3& 1& -2\\
-      3& 1& -4& 9
-    \end{array}
-  \end{gather*}
-  und es gilt: $(-4)\cdot 29 + 9\cdot13 = -116 + 117 = 1$
-\end{bsp}
-
-\begin{lemma}[Binomischer Satz]\label{lem:3}
-  \begin{gather*}
-    (r+s)^{t} = \sum_{k=0}^{t} \binom{t}{k} r^{t-k} s^{k}
-  \end{gather*}
 \end{lemma}
 
 \begin{lemma}\label{lem:4}
-  Für alle Primzahlen $p$ und $q$, die voneinander verschieden sind, und alle
-  $x>0$ und $u>0$ gilt:
+  Seien $x,u>0$. Für alle Primzahlen~$p$ und $q$, die voneinander verschieden
+  sind, gilt:
   \begin{gather*}
     x^{u}\equiv x\mod p\quad\text{und}\quad x^{u}\equiv x\mod q \Rightarrow
        x^{u}\equiv x\mod (p\cdot q)
@@ -3967,88 +3942,78 @@ $a^{m} \log n = x$.
 
   \begin{proof}
     $x^{u}\equiv x\mod p$ bedeutet $x^{u}-x$ ist durch $p$ teilbar und
-    entsprechend $x^{u}-x$ ist durch $q$ teilbar. Also ist $x^{u}-x$ durch
-    $p\cdot q$ teilbar.
+    entsprechend $x^{u}-x$ ist durch $q$ teilbar. Da $p$ und $q$ teilerfremd
+    sind, ist $x^{u}-x$ durch $p\cdot q$ teilbar.
   \end{proof}
 \end{lemma}
+
 \begin{satz}
-  Es gibt einen Polynomialzeitalgorithmus, der bei Eingabe von $n$, $m$ und
-  $x$ ($\in\N$) mit der Eigenschaft, dass $\ggT(m,\phi(n)) = 1$, und der
-  Falltürinformation $n=p\cdot q$ (für Primzahlen $p,q$), eine Zahl $a$
-  bestimmt mit $a^{m}\mod n = x$.
+  Es gibt einen Polynomialzeitalgorithmus, der bei Eingabe von drei
+  natürlichen Zahlen $n$, $m$ und $x$ mit der Eigenschaft, dass
+  $\ggT(m,\phi(n)) = 1$, und $n$ das Produkt von zwei Primzahlen~$p$ und $q$
+  ist, eine Zahl $a$ mit der Eigenschaft $a^{m}\mod n = x$ bestimmt. Die
+  Eigenschaft $n=p\cdot q$ stellt die Falltürinformation dar.
 
   \begin{proof}
     Der Algorithmus besteht aus zwei Teilschritten:
     \begin{enumerate}[1.\,{Teil}]
-     \item Bestimme ein $d$ mit $m\cdot d\equiv1\mod \phi(n)$ mit Hilfe des
-      erweiterten Euklidischen Algorithmus':
-      \begin{Verbatim}[gobble=6]
-      b[0] := phi(n);    b[1] := m
-      \end{Verbatim}
-      und wie üblich
-      \begin{align*}
-        b_{0} &:= q_{1}b_{1} + b_{2} & \text{mit~} 0\leq b_{2}<b_{1}\\
-        b_{1} &:= q_{2}b_{2} + b_{3}& \text{mit~} 0\leq b_{3}<b_{2}\\
-        \dotso\\
-        b_{k-1} &:= q_{k}b_{k} + b_{k-1}& \text{mit~} 0\leq b_{k-1}<b_{k}
-      \end{align*}
-      solange bis entweder $b_{k+1} = 1$ (oder $b_{k+1}=0$).
+     \item Da $m$ und $\phi(n)$ teilerfremd zueinander sind, bestimmt der
+      erweiterte euklidische Algorithmus in Polynomialzeit (\autoref{lem:1})
+      zwei Zahlen~$u$ und $v$ (\autoref{lem:6}), so dass $1 = \ggT(\phi(n),m)
+      = u\cdot\phi(n) + v\cdot m$.
 
-      Ausgabe: Falls $b_{k+1}=1$, dann ist $b_{k+1} = \ggT(b_{0},b_{1})$ (und
-      falls $b_{k+1}=0$, dann ist $b_{k} = \ggT(b_{0},b_{1})$)
-
-      Die zwei Lemmata zuvor. \autoref{lem:1} und \autoref{lem:2}
-
-      Wir haben damit $1=c\cdot \phi(n) +d\cdot m$ und d.\,h. $d\cdot
-      m\equiv1\mod \phi(n)$. (d.\,h. $d$ ist das Inverse von $m$ in
-      $\Z_{\phi(n)}^{*}$)
-
-     \item Berechne $x^{d}\mod n =: a$ in Polynomialzeit (schnelles
-      Exponentiatieren. irgendein Satz vorher)
-
-      Behauptung: Es gilt $a^{m}\mod n=x$. Dazu nehmen wir an, dass
-      $x=y^{m}\mod n$ für irgendein $y$ und zeigen: $y=a$.
-
-      \autoref{lem:3} können wir wie folgt anwenden: wir haben $a=x\mod n$ und
-      da $x = y^{m}\mod n$ gilt $x=y^{m}-s\cdot n$ folgt
-      \begin{gather*}
-        a = (y^{m}-s\cdot n)^{d} \mod n = y^{m\cdot d}\mod n
-      \end{gather*}
-      da in allen bis auf den ersten Summanden das $n$ als Faktor auftritt.
-
-      Da $m\cdot d\equiv1\mod \phi(n)$ gilt ein ein $t$, so dass gilt $m\cdot
-      d=t\cdot\phi (n)+1$. Also gilt:
-      \begin{gather}\label{eq:2}
-        a\equiv y^{t\cdot\phi(n)+1}\mod n
-      \end{gather}
-
-      \begin{enumerate}[1.\,{Fall}]
-       \item $y\not\equiv\mod p$. Dann gilt $y^{p-1}\equiv 1\mod p$ (Kleiner
-        Fermat), d.\,h. es gilt $y^{p-1} = r\cdot p+1$ für ein passendes $r$.
-
-        Also gilt:
-        \begin{align*}
-          a&= y^{t\cdot\phi(n)+1} = y^{t\cdot(p-1)\cdot(q-1)}\cdot y =
-             (y^{p-1})^{t\cdot(q-1)}\cdot y\\
-          &\equiv y^{t\cdot(q-1)}\cdot y\equiv y\mod p
-        \end{align*}
-
-       \item $y\equiv0\mod p$. trivialer Weise
-      \end{enumerate}
-
-      Also gilt für alle $y$
-      \begin{gather*}
-        a\equiv y\mod p
-      \end{gather*}
-      Genauso gilt $a\equiv y\mod p$. Also haben wir nach \autoref{lem:4}
-      $a\equiv y\mod n$.
+     \item $a:= f_{x,n}(v) = g_{n,v}(x) = x^{v}\mod n$ lässt sich nach
+      \autoref{satz:1} bzw. \autoref{satz:2} in Polynomialzeit bestimmen.
     \end{enumerate}
+
+    Die Behauptung ist nun, dass $a^{m}\pmod{n}\equiv x$ gilt. Dazu machen wir
+    die Annahme, dass $x\equiv y^{m}\pmod{n}$ für irgendein $y$ ist und zeigen
+    $y=a$.
+    \help{Wieso kann man annehmen, dass $x$ so aussieht?}
+
+    Aus der Annahme $x\equiv y^{m}\pmod{n}$ folgt $x=y^{m}-s\cdot n$ (für geeignetes
+    $s$) und mit $a\equiv x^{v}\pmod{n}$ ergibt sich
+    \begin{align*}
+      a &\equiv (y^{m}-sn)^{v} \pmod{n}\\
+      \intertext{Mithilfe des binomischens Satz' lässt sich das Dingsbums
+        umschreiben zu}
+      \intertext{\help{Wie heißt das doch gleich, das kleine, schwarze, das Dings?}}
+      &\equiv \sum_{k=0}^{v} \binom{v}{k} (y^{m})^{v-k} (-sn)^{k} \pmod{n}\\
+      &\equiv y^{m\cdot v} + \sum_{k=1}^{v} \binom{v}{k} y^{m(v-k)} (-s)^{k}
+         n^{k} \pmod{n}\\
+      \intertext{Da innerhalb des Summenzeichens Vielfache von $n$ auftreten,
+        entfällt dieser Teil}
+      &\equiv y^{m\cdot v}\pmod{n}\\
+      \intertext{Da $u$ und $v$ so bestimmt sind, dass $u\cdot\phi(n)+v\cdot
+        m=1$ gilt, ergibt sich}
+      &\equiv y^{u\cdot\phi(n)+1}\pmod{n}
+    \end{align*}
+    \help{Wieso können wir einfach aus $1-u\cdot\phi(n)$ das + machen?}
+
+    \help{Wieso braucht man hier eine Fallunterscheidung?}
+    \begin{enumerate}[1.\,{Fall}]
+     \item Für $y\equiv0\pmod{p}$ gilt die Kongruenz trivialer Weise.
+
+     \item Ist $y\not\equiv0\pmod{p}$, dann gilt nach \autoref{satz:2}
+      $y^{p-1}\equiv 1\pmod{p}$ (Kleiner Fermat), d.\,h. es gilt
+      $y^{p-1} = r\cdot p+1$ für ein passendes $r$. Also gilt für die
+      Kongruenz:
+      \begin{align*}
+        a&= y^{t\cdot\phi(n)+1} = y^{t\cdot(p-1)\cdot(q-1)}\cdot y =
+           (y^{p-1})^{t\cdot(q-1)}\cdot y\\
+        &\equiv 1^{t\cdot(q-1)}\cdot y\equiv y\mod p
+      \end{align*}
+    \end{enumerate}
+    Für alle $y$ ist also $\equiv y\pmod{p}$.
+
+    Genauso kann man $a\equiv y\pmod{q}$ zeigen. Nach \autoref{lem:4} gilt
+    also $a\equiv y\pmod{n}$.
   \end{proof}
 \end{satz}
 
 \begin{dogma}
-  Wir glauben, dass die Falltürinformation $n=p\cdot q$, d.\,h. Faktorisieren,
-  nicht $\FP$-invertierbar ist. Das heißt, $g_{n,m}$ ist ein Kandidat für eine
+  Wir glauben, dass die Falltürinformation $n=p\cdot q$, d.\,h. \highl{Faktorisieren},
+  nicht $\FP$-""invertierbar ist. Das heißt, $g_{n,m}$ ist ein Kandidat für eine
   Falltür-Einwegfunktion.
 \end{dogma}
 
