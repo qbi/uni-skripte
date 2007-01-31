@@ -117,6 +117,7 @@
 
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\R}{\mathbb{R}}      % reellen Zahlen
 \newcommand*{\F}{\mathbb{F}}      % endliche Ringe
 \newcommand*{\FP}{\mathrm{FP}}    % Funktionen, die in Polynomialzeit
                                   % berechnet werden können
@@ -224,6 +225,26 @@
 \DeclareMathOperator{\card}{card}        % Kardinalität
 
 \begin{document}
+
+\begin{center}
+  \textbf{\huge Deine Stimme für Kryptologie~2!}\\[2cm]
+
+  \begin{minipage}{.7\linewidth}
+    Am 12.\,Februar soll es in Vorbereitung auf die beiden Prüfungstermine
+    nochmal eine zusätzliche Stunde geben, in der Fragen zum Stoff gestellt
+    werden können. Treffpunkt ist der Raum von Herrn Vogel um 10~Uhr.
+
+    Es gibt dann auch eine Abstimmung, ob es eine Fortsetzung der Vorlesung im
+    nächsten Semester geben soll. Mögliche Themen wären
+    \begin{itemize}
+     \item Verschlüsselungen auf elliptischen Kurven oder Gittern
+     \item Die Themen Hashfunktionen und Zero-Knowledge nochmal ausführlich;
+      Wie funktioniert MD5, was wurde daran gebrochen?
+     \item Kryptographisch sichere Zufallszahlen
+     \item Quantenkryptographie
+    \end{itemize}
+  \end{minipage}
+\end{center}
 
 \title{Kryptologie -- von einer Geheimwissenschaft zu einer Wissenschaft
   von den Geheimnissen}
@@ -4438,6 +4459,24 @@ Korrektheit:
      (g^{p})^{k} = g^{b\cdot\rho+r\cdot s} \cdot 1^{k} = \beta^{\rho}\cdot \rho^{s} \pmod{p}
 \end{gather*}
 
+Ergänzung vom 31.1.:
+\textbf{Achtung:} Irgendwo muss hier $b\rho+rs=m\pmod{p-1}$ stehen und nicht
+$\pmod{p}$.
+
+\begin{enumerate}[1.\,{Schritt}]
+ \item Da $r$ teilerfrem zu $p-1$ ist, gibt es ein Inverses $s'$ mit $r\cdot
+  s'=1\pmod{p-1}$ (mit erweiterten euklidischen Algorithmus). Dann bestimme
+  $s$ mit $r\cdot s\equiv m-b\rho\pmod{p-1}$
+ \item Verifikation
+  \begin{gather*}
+    g^{m} \equiv g^{b\rho+rs + l(p-1)} \equiv g^{b\rho} g^{rs}
+       (\underbrace{g^{p-1}}_{=1})^{l}
+       \pmod{p-1} \equiv g^{b\rho} g^{rs} = \beta^{\rho} \rho^{s}
+  \end{gather*}
+\end{enumerate}
+
+Ende der Ergänzung.
+
 \begin{table}
   \centering
   \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
@@ -4616,6 +4655,109 @@ hinzufügen/weglassen von Leerzeichen) $2^{32}$~Varianten, berechnet für jede
 Variante den Hashwert und wählt die zwei Fassungen, deren Hashwerte gleich
 sind. Bob signiert den Hashwert und akzeptiert damit auch den für ihn
 nachteiligen Vertrag.
+
+% 31.1.
+
+\begin{proof}[für die Geburtstagsattake]
+  $m$ verschiedene Merkmalsausprägungen werden durch $\{1,2,\dotsc,m\}$
+  beschrieben. $k$ Personen bedeutet: wir betrachten den
+  Wahrscheinlichkeitsraum $\{1,2,\dotsc,m\}^{k}$ unter Gleichverteilung. Ein
+  Elementarereignis $(g_{1},g_{2},\dotsc, g_{k})\in\{1,2,\dotsc,m\}^{k}$
+  trifft zu \gdw für alle $i=1,\dotsc,k$ gilt: Person $i$ besitzt das Merkmal
+  $g_{i}$.
+
+  Die Wahrscheinlichkeit pro Elementarereignis ist
+  \begin{gather*}
+    \frac{1}{m^{k}}
+  \end{gather*}
+
+  Wir nehmen uns die duale Aufgabe her: Wie groß ist die Wahrscheinlichkeit,
+  dass alle $g_{i}$ paarweise verschieden sind.
+  \begin{gather*}
+    q = \frac{\card \{(g_{1},\dotsc, g_{k})\colon \text{alle $g_{i}$ sind
+       verschieden}\}}{m^{k}} = \frac{\prod_{i=0}^{k-1} (m-i)}{m^{k}} =
+      \prod_{i=0}^{k-1} (1-\frac{i}{m})
+  \end{gather*}
+  Es gilt für alle reellen $x\in\R\colon e^{x}\geq1+x$.
+  \begin{gather*}
+    q\leq \prod_{i=0}^{k-1} e^{-\frac{i}{m}} = e^{-\sum_{i=0}^{k-1}\frac{i}{m}}
+       = e^{-\frac{k(k-1)}{2m}}\\
+    e^{-\frac{k(k-1)}{2m}} \leq \frac{1}{2} \gdw -\frac{k(k-1)}{2m} \leq \ln2
+       \gdw k\geq \frac{1+\sqrt{1+8m\ln2}}{2}
+  \end{gather*}
+\end{proof}
+
+Konsequenz: Bei einer Hashfunktion $H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ ist
+die Wahrscheinlichkeit für eine Kollision $>\frac{1}{2}$, wenn
+$2^{\frac{n}{2}}$ Hashwerte erzeugt werden. Für die Praxis: Hashfunktionen mit
+mehr als $n\geq128$. Bei Signaturen: $n\geq160$.
+
+In der Praxis haben sich zur Berechnung von Hashfunktionen (neben der
+Erzeugung mit Hilfe der Verschlüsselung) spezielle Algorithmen etabliert:
+\begin{description}
+ \item[MD4] Erfinder Ron Rivest
+ \item[MD5] Weiterentwicklung von MD4
+ \item[SHA-1] von NSA
+\end{description}
+
+Fazit: Alice will Bob eine Nachricht senden und eine Signatur anfügen;
+$(m,sig_{Alice}(m))$. Bob verifiziert mit dem öffentlichen Schlüssel von Alice
+die Signatur; $ver_{Alice}(sig_{Alice}(H(M))) = H(m)$.
+
+Oskar (der Angreifer) ist erfolgreich, wenn
+\begin{itemize}
+ \item er zu $m$ ein $m'$ mit $H(m)=H(m')$ erzeugen kann oder
+ \item $sig_{Alice}$ berechnen kann.
+\end{itemize}
+Aber:
+\begin{itemize}
+ \item aus der Kenntnis von $ver_{Alice}$ kann er nicht auf die $sig_{Alice}$
+  schließen, da $ver_{Alice}$ eine Einwegfunktion ist.
+ \item Wenn $H$ kollisionsrestistent ist, dann lässt sich $m'$ nicht erzeugen.
+\end{itemize}
+
+\chapter{Zero-knowledge-Protokolle}
+Gibt es eine Möglichkeit, dass Alice Bob klar macht, dass sie Alice ist, ohne
+ihr Geheimnis an Bob zu verraten? Stcihwort aus der Komplexitätstheorie:
+Arthur-Merlin-Game.
+
+Ein Problem in der Komplexitätstheorie ist noch offen in Bezug auf
+Man-in-the-middle-attack: \highl{Identifizierungsnachweis} von Alice gegenüber
+Bob. Alice überzeugt Bob davon ein persönliches Geheimnis zu kennen, dass nur
+Alice kennen kann, ohne dies Bob zu verraten.
+
+Mit Hilfe des Graphisomorphieproblem: Gegeben seien zwei einfache
+Graphen~$G_{1}=(V_{1},E_{2})$ und $G_{2}=(V_{2},E_{2})$. Die Frage ist: Ist
+$G_{1}\cong G_{2}$ ($G_{1}$ isomorph zu $G_{2}$). $ISO =
+\{(G_{1},G_{2})\colon G_{1}\cong G_{2}\}$. Klar: $ISO\in NP$, offen: $ISO\in
+P$ und $ISO$ $NP$-vollständig.
+
+Für das Protokoll:
+\begin{enumerate}
+ \item Merlin wählt einen großen Graphen~$G_{0}$ und eine Permutation~$\pi$
+  und berechnet $G_{1}=\pi(G_{0})$, d.\,h. $G_{0}\cong G_{1}$. Die
+  Permutation~$\pi$ stellt das persönliche Geheimnis von Merlin dar. $G_{0}$
+  und $G_{1}$ ist öffentlich.
+ \item Aufgabe: Arthur davon überzeugen, dass $G_{0}\cong G_{1}$.
+\end{enumerate}
+
+\begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+  \hline
+  Schritt& \multicolumn{1}{c|}{Merlin}& Kanal& \multicolumn{1}{c|}{Arthur}\\
+  \hline
+  1.& wählt zufällig ein Permutation $\rho$ und ein Bit $a\in\{0,1\}$ und
+     berechnet $H=\rho(G_{1})$& & \\
+  2.& & $\xrightarrow{H}$ &\\
+  3.& & & wählt zufällig ein Bit~$b$ und verlangt eine Isomorphie zwischen $H$
+     und $G_{b}$\\
+  4.& & $\xleftarrow{b}$& \\
+  5.& Merlin berechnet den Isomorphismus~$\sigma$ mit $\sigma(G_{b})=H$
+     1.\,Fall: $b=a$, dann ist $\sigma=\rho$, 2.\,Fall $a=1, b=0$, dann ist
+     $\sigma=\pi\cdot\rho$, 3.\,Fall $a=0, b=1$, dann ist
+     $\sigma=\pi^{-1}\cdot\rho$& & \\
+  6.& & $\xrightarrow{\sigma}$& \\
+  7.& & Arthur verifiziert, dass $\sigma(G_{b}) = H$
+\end{tabularx}
 
 \clearpage
 \appendix
