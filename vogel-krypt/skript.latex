@@ -3023,6 +3023,24 @@ Ausgabe: ggT := b[i], u := u[i], v := v[i];
   \end{gather*}
 \end{bsp}
 
+\begin{bsp}
+  \label{bsp:2}
+  Seien $a=2668=b_{0}$ und $b=157=b_{1}$ gegeben.
+  \begin{gather*}
+    \begin{array}{c|cccc}
+      i& q_{i} & b_{i+1} & u_{i+1}& v_{i+1}\\
+      \hline
+      1& 16& 2668-17\cdot 157=156& 1-16\cdot0=1& 0-16\cdot1=-16\\
+      2& 1& 157-1\cdot 156=1& 0-1\cdot1=-1& 1-1\cdot(-16) = 17\\
+    \end{array}
+  \end{gather*}
+  Abbruch im 3.\,Schritt, da $1\mid156$. 2668 und 157 sind also teilerfremd
+  und es gilt:
+  \begin{gather*}
+    1 = -1\cdot 2668 + 17\cdot 157 = -2668 + 2669
+  \end{gather*}
+\end{bsp}
+
 Mit Hilfe des erweiterten euklidischen Algorithmus' lässt sich zu einem
 Element des $\F_{256}$ das \highl{multiplikative Inverse} bestimmen. Dazu muss
 man den \highl{erweiterten euklidischen Algorithmus} auf Polynome anwenden,
@@ -4111,9 +4129,9 @@ basiert.
 
 \section{Das RSA-Verfahren}
 
-1978: Ron Rivest, Adi Shamir, Leonard Adleman; Führer der Truppe war Rivest.
-wollten zeigen, das Deffie und Helman nicht recht hatten mit ihrem Ansatz,
-dass es Einwegfunktionen gibt.
+Das \highl{RSA-Verfahren} wurde 1978 von Ron Rivest, Adi Shamir, Leonard
+Adleman entwickelt. Das eigentliche Ziel ihrer Arbeit war den Ansatz von
+Diffie und Helman, dass es Einwegfunktionen gibt, zu wiederlegen.
 
 \begin{table}
   \centering
@@ -4121,106 +4139,118 @@ dass es Einwegfunktionen gibt.
     \hline
     Schritt& Alice& Kanal& Bob\\
     \hline
-    1.& & & "`Wähle"' zwei große Primzahlen $p$ und $q$, bestimme $n=p\cdot q$\\
-    2.& & & "`Wähle"' eine große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
-    3.& & & Berechne das eindeutig bestimmte Inverse $e$ in $\Z_{\phi(n)}^{*}$;
-       $d\cdot e\equiv1\pmod{\phi(n)}$\\
-    4.& & $\xleftarrow{n,e}$& Veröffentliche $n$ und $e$\\
-    5.& Chiffriere die Botschaft~$M\leq n-1$ durch $C=M^{e}\pmod{n}$& & \\
-    6.& Sende verschlüsselte Botschaft& $\xrightarrow{C}$& \\
-    7.& & & Dechiffriere $C^{d}\pmod{n} = M$\\
+    1.& & & Wähle große Primzahlen $p,q$, bestimme $n=p\cdot q$\\
+    2.& & & Wähle große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
+    3.& & & Berechne das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
+    4.& & $\xleftarrow{n,e}$& \\
+    5.& Chiffriere die Botschaft~$m\leq n-1$ durch $c=m^{e}\pmod{n}$& & \\
+    6.& & $\xrightarrow{c}$& \\
+    7.& & & Dechiffriere $m=c^{d}\pmod{n}$\\
     \hline
   \end{tabularx}
-  \caption{Das RSA-Verfahren (Alice schickt eine verschlüsselte Nachricht an Bob.)}
+  \caption{Das RSA-Verfahren}
+  \label{tab:rsa}
 \end{table}
 
-öffentlich sind $n,e$ und $C$, geheim bleiben $p,q, \phi(n), d$ und $M$
+Damit Bob verschlüsselte Nachrichten empfangen kann, muss er zwei große
+Primzahlen~$p$ und $q$ und eine große Zahl~$d$ wählen, wobei
+$d\in\Z_{\phi(n)}^{*}$ die Bedingung $\ggT(d, (p-1)(q-1))=1$ erfüllt. Danach
+berechnet er das eindeutig bestimmte Inverse~$e$ in $\Z_{\phi(n)}^{*}$ von $d$
+(mit Hilfe des erweiterten euklidische Algorithmus). Das Paar~$(n,e)$ ist der
+öffentliche Schlüssel, $d$ ist der geheime Schlüssel von Bob. Die anderen
+Größen werden im Folgenden nicht mehr benötigt.
 
-\begin{satz}
-  Der RSA-Algorithmus ist korrekt.
+Wenn Alice ihm eine Botschaft~$m$ zukommen lassen will, wobei $m\leq n-1$ ist,
+muss sie diese als $c=m^{e}\pmod{n}$ verschlüsseln und das Kryptogramm~$c$ an
+Bob senden. Bob kann daraus die Botschaft mit $m=c^{d}\pmod{n}$ berechnen.
+\autoref{tab:rsa}
 
-  \begin{proof}
-    ist bereits im \autoref{sec:rsa-math}.
-
-    (zur Übung selber nachrechnen)
-  \end{proof}
-\end{satz}
+Das dieser Algorithmus korrekt ist, wurde bereits in \autoref{satz:2} gezeigt.
 
 \begin{bemerk}
-  \begin{enumerate}
+  \begin{itemize}
    \item RSA ist etwa 100 mal langsamer als AES. Daher verwendet man
-    \highl{Hybridverfahren}: Schlüsseltausch (des Schlüssels für die
-    Blockverschlüsselung) gemäß RSA, Verschlüsselung mit AES
+    \highl{Hybridverfahren}: Die Daten werden mit AES (oder einem anderen
+    symmetrischen Blockalgorithmus) verschlüsselt und nur der Schlüssel dafür
+    wird über RSA ausgetauscht.
 
-   \item "`Wähle"' große Primzahlen: $p$ und $q$ sollten in der Größenordnung
+   \item Die Primzahlen $p$ und $q$ sollten in der Größenordnung
     von $10^{100}$ liegen, damit man $n$ nicht leicht faktorisieren kann. Es
     gibt unterschiedliche, probabilistische Verfahren, um eine Zahl auf prim
-    zu testen; z.\,B. von Solovay und Strassen: ca.\,170 Zahlen testen oder
-    von Rabin und Miller: ca.\,100 Zahlen testen
+    zu testen; z.\,B. von Solovay und Strassen --~ca.\,170 Zahlen testen~--
+    oder von Rabin und Miller --~ca.\,100 Zahlen testen.
 
-   \item "`Wähle"' große Zahl $d$, damit sie nicht durch probieren
+   \item Die Zahl $d$ sollte möglichst groß sein, damit sie nicht durch probieren
     gefunden werden kann.
 
    \item $e$ ist mit dem erweiterten euklidischen Algorithmus in
     Polynomialzeit berechenbar.
 
-   \item $C$ und $M$ sind ebenfalls in Polynomialzeit berechenbar.
-    (sqare-and-multiply-Algorithmus)
+   \item $c$ und $m$ sind nach \autoref{satz:1} ebenfalls in Polynomialzeit berechenbar.
 
    \item $p$ und $q$ mit $p\cdot q>10^{200}$ sollten um einige Dezimalstellen
-    differieren, damit man nicht durch $\sqrt{pq}$ diese schon fast erhält.
+    differieren, damit man nicht durch $\sqrt{pq}$ diese schon fast errät.
 
    \item $p-1$ und $q-1$ sollten große Primfaktoren besitzen und $p-1$ und
-    $q-1$ sollten möglichst teilerfremd sein ($\ggT(p-1, q-1)$ möglichst klein).
+    $q-1$ sollten möglichst teilerfremd sein, d.\,h. $\ggT(p-1, q-1)$ sollte
+    möglichst klein sein.
 
-   \item Ein direkter Angriff würde bedeuten, da $C=M^{e}\pmod{n}$ ist, aus
-    $C$ die $e$.\,Wurzel modulo~$n$ zu berechen. Dogma: Dies ist ohne
+   \item Ein direkter Angriff würde bedeuten, da $c=m^{e}\pmod{n}$ ist, aus
+    $c$ die $e$.\,Wurzel modulo~$n$ zu berechen. Dogma: Dies ist ohne
     Falltürinformation praktisch nicht möglich.
+    \help{Ist das wirklich ein neues Dogma oder eine Folgerung aus einem der
+      anderen?}
 
-   \item Nachrichten in Blöcke passender Länge zerlegen; passende Blocklänge
-    ist ??? \help{Hat jemand kappiert, wie man die Blocklänge wählt?}
-  \end{enumerate}
+   \item Die Nachricht muss in Blöcke passender Länge zerlegt werden.
+  \end{itemize}
 \end{bemerk}
 
 \begin{bsp}
-  $p=47, q=59$. Dann ist $n=pq = 2773$, $\phi(n) = (p-1)(q-1) = 46\cdot58 =
-  2668$.
+  Bob wählt die zwei Primzahlen $p=47$ und $q=59$. Dann sind $n=pq = 2773$ und
+  $\phi(n) = (p-1)(q-1) = 46\cdot58 = 2668$. Als seinen geheimen Schlüssel
+  $d\in\Z_{\phi(n)}^{*}$ wählt er $d=157$. Laut \autoref{bsp:2} ist das
+  Inverse davon $e=17$. Als Blocklänge ergibt sich so 2, da bei 26~Buchstaben
+  die Kodierung für "`\texttt{zz}"' $2626\leq2773$ ist.
 
-  $d\in\Z_{\phi(n)}^{*}$, $d=157$.
-
-  Berechne $e$ mit erweiterten euklidischen Algorithmus: $e=17$
-
-  Als Blocklänge ergibt sich 2, da $(\abs{\mathrm{Buchstaben}}+
-  \abs{\mathrm{Satzzeichen}})^{2}\leq n-1$ ($26^{3}>n-1$).
-
-  Nachricht: "`\texttt{ITS ALL GREEK TO ME}"' wird codiert zu
-  \texttt{0920 1900 0112 1200 0718 0505 1100 2015 0013 0500} (Leerzeichen ist 00)
-
-  $e = 17 = 10001_{2}$. Der erste Block $M_{1}^{2} = 920$ wird verschlüsselt zu
+  Alice möchte Bob die Nachricht "`\texttt{dieser satz ist geheim}"' schicken.
+  Diese kodiert sie durch ihre Position im Alphabet, wobei die Leerzeichen mit
+  00 kodiert werden.
   \begin{gather*}
-    920^{17}\pmod{2773} = (((920^{2})^{2})^{2})^{2}\cdot920 \pmod{2773} = 948
+    0409~0519~0518~0019~0120~2600~0919~2000~0705~0805~0913
   \end{gather*}
 
-  Insgesamt ergibt sich als Geheimtext \texttt{0948 2342 1084 1444 2663 2390
-  0778 0774 0219 1655}.
-
-  Dechiffrierung: $948^{157}\pmod{2773}$; da $d=157= 10011101_{2}$ ergibt sich
+  Man kann die Berechnung auch auf Quadrierungen und Multiplikationen
+  zurückführen, wenn man $e$ als $e=17=2\cdot2\cdot2\cdot2+1$ schreibt. Der
+  erste Block $m_{1}^{2} = 920$ wird dann als
   \begin{gather*}
-    948^{157}\pmod{2773} = ((((((948^{2})^{2})^{2}\cdot948)^{2}\cdot948)^{2}
-       \cdot948)^{2})^{2}\cdot948\pmod{2773} = 920
+    409^{17}\mod 2773
+       = \bigl(\bigl((409^{2})^{2}\bigr)^{2}\bigr)^{2}\cdot490 \mod 2773
+       = 2510
+  \end{gather*}
+  verschlüsselt. Damit die Operanten nicht zu groß werden, kann man nach jedem
+  Quadrieren bzw. Multiplizieren modulo 2773 rechnen. Insgesamt ergibt sich
+  als Geheimtext
+  \begin{gather*}
+    2510~1493~1787~1436~0505~0499~2244~0317~1692~0542~0180
   \end{gather*}
 
-  Bemerkung: mach mach modulo nach jedem Quadrieren bzw. Multiplizieren, damit
-  die Operanten nicht zu groß werden.
+  Die Entschlüsselung erfolgt analog mit $d=157$ für den letzten Block wie
+  folgt
+  \begin{gather*}
+    180^{157}\mod 2773 =
+       \biggl(\Bigl(\Bigl(\bigl(\bigl((180^{2})^{2}\bigr)^{2}
+       \cdot180\bigr)^{2}\cdot180\Bigr)^{2} \cdot180\Bigr)^{2}\biggr)^{2}
+       \cdot180 \mod 2773 = 913
+  \end{gather*}
 \end{bsp}
 
 % 22.1.
 
-\begin{fakt}
-  Die Sicherheit von RSA beruht auf der Sicherheit des Faktorisierungsproblems
-  FACTORING. Falls FACTORING "`einfach"' ist, dann ist auch RSA "`einfach"'.
-  Es gilt: $RSA\leq_{m}^{p} FACTORING$.
-\end{fakt}
+\begin{bemerk}
+  Die Sicherheit von RSA beruht auf der Sicherheit des
+  Faktorisierungsproblems. Falls dieses "`einfach"' ist, dann ist auch RSA
+  "`einfach"'. Es gilt: $RSA\leq_{m}^{p} Faktorisierung$.
+\end{bemerk}
 
 Ein Angriff auf das Faktorisierungsproblem ist die \highl{$(p-1)$-Methode} von
 Polard. Dies funktioniert fpr zusammengesetzte Zahlen~$n$ mit einem
