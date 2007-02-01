@@ -3818,7 +3818,7 @@ zeigen, dass $\mathrm{P}\ne\mathrm{NP}$ ist.
 \end{bemerk}
 
 \subsection{Modulare Exponentation mit festem Exponenten und festem Modul}
-
+\label{sec:mwurzel}
 Analog zur Definition von $f_{a,n}$ im \autoref{sec:diskrlog} sei im Folgenden
 $g_{n,m}\colon \Z_{n} \mapsto \Z_{n}$ so definiert
 \begin{gather*}
@@ -3851,7 +3851,8 @@ Beispielsweise ist die 4.\,Wurzel von 16 für $n=21$ gleich
 
 Doch im Gegensatz zu $f_{a,n}$ lässt sich $g_{n,m}$ in Polynomialzeit
 invertieren, wenn die Faktorisierung von $n$ als Falltürinformation zur
-Verfügung steht. Dazu ein Exkurs in die Zahlentheorie.
+Verfügung steht. (Dies wird später in \autoref{satz:2} gezeigt.) Dazu ein
+Exkurs in die Zahlentheorie.
 
 \subsubsection{Exkurs in die Zahlentheorie}
 
@@ -3863,6 +3864,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
 \help{Ist das gleich der Menge der Einheiten in 4.10.1?}
 
 \begin{satz}
+  \label{satz:3}
   Von Euler stammt die folgende Erkenntnis: Es gilt für alle $x$ mit $1\leq x
   < n$ und $\ggT(x,n) = 1$ folgende Kongruenz:
   \begin{gather*}
@@ -3989,9 +3991,11 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
   \label{satz:2}
   Es gibt einen Polynomialzeitalgorithmus, der bei Eingabe von drei
   natürlichen Zahlen~$n$, $m$ und $y$, wobei $\ggT(m,\phi(n)) = 1$ und $n$ das
-  Produkt von zwei bekannten Primzahlen~$p$ und $q$ ist, eine Zahl $a$ mit der
-  Eigenschaft $g_{n,m}(a) = a^{m}\mod n = y$ bestimmt. Die Eigenschaft
-  $n=p\cdot q$ ist die \highl{Falltürinformation}.
+  Produkt zwei bekannter Primzahlen~$p$ und $q$ ist, eine Zahl $a$ mit der
+  Eigenschaft $g_{n,m}(a) = a^{m}\mod n = y$ bestimmt, d.\,h. der Algorithmus
+  berechnet die $m$.\,Wurzel $a=g_{n,m}^{-1}(y)$. Die Eigenschaft, dass sich
+  $n$ in zwei Primzahlen~$p$ und $q$ zerlegen lässt, ist die
+  \highl{Falltürinformation}.
 
   \begin{proof}
     Der Algorithmus besteht aus zwei Teilschritten:
@@ -4001,14 +4005,14 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
       zwei Zahlen~$u$ und $v$ (\autoref{lem:6}), so dass $1 = \ggT(\phi(n),m)
       = u\cdot\phi(n) + v\cdot m$.
 
-     \item Damit lässt sich $a$ nach \autoref{satz:1} in Polynomialzeit als
+     \item Mit dem Inversen $v$ von $m$ in $\Z_{\phi(n)}$ lässt sich $a$ nach
+      \autoref{satz:1} in Polynomialzeit durch
       $a:= f_{y,n}(v) = y^{v}\pmod{n}$ bestimmen.
     \end{enumerate}
 
     Die Behauptung ist nun, dass $y\equiv a^{m}\pmod{n}$ gilt. Dazu machen wir
     die Annahme, dass $y\equiv x^{m}\pmod{n}$ für irgendein $x$ ist und zeigen
     $x=a$.
-    \help{Wieso kann man annehmen, dass $y$ so aussieht?}
 
     Aus der Annahme $y\equiv x^{m}\pmod{n}$ folgt $y=x^{m}-s\cdot n$ (für geeignetes
     $s$) und mit $a\equiv y^{v}\pmod{n}$ ergibt sich
@@ -4029,18 +4033,20 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
     \end{align*}
     \help{Wieso können wir einfach aus $1-u\cdot\phi(n)$ das + machen?}
 
-    \help{Wieso braucht man hier eine Fallunterscheidung?}
     \begin{enumerate}[1.\,{Fall}]
      \item Für $x\equiv0\pmod{p}$ gilt die Kongruenz trivialer Weise.
+      \begin{gather*}
+        a\equiv 0^{u\cdot\phi(n)+1} \equiv 0 \equiv x\pmod{p}
+      \end{gather*}
 
-     \item Ist $x\not\equiv0\pmod{p}$, dann gilt nach \autoref{satz:2}
-      $x^{p-1}\equiv 1\pmod{p}$ (Kleiner Fermat), d.\,h. es gilt
-      $x^{p-1} = r\cdot p+1$ für ein passendes $r$. Also gilt für die
-      Kongruenz:
+     \item Mit $x\not\equiv0\pmod{p}$ sind die Bedingungen für den kleinen
+      Satz von Fermat (\autoref{satz:3}) erfüllt und es gilt $x^{p-1}\equiv
+      1\pmod{p}$, d.\,h. $x^{p-1} = r\cdot p+1$ für ein passendes $r$. Also
+      ergibt sich für die Kongruenz:
       \begin{align*}
-        a&= x^{u\cdot\phi(n)+1} = x^{u\cdot(p-1)\cdot(q-1)}\cdot x =
+        a&\equiv x^{u\cdot\phi(n)+1} = x^{u\cdot(p-1)\cdot(q-1)}\cdot x =
            (x^{p-1})^{u\cdot(q-1)}\cdot x
-        \equiv 1^{t\cdot(q-1)}\cdot x\equiv x\mod p
+        \equiv 1^{u\cdot(q-1)}\cdot x\equiv x\mod p
       \end{align*}
     \end{enumerate}
     Für alle $x$ ist also $a\equiv x\pmod{p}$.
@@ -4132,6 +4138,7 @@ basiert.
 Das \highl{RSA-Verfahren} wurde 1978 von Ron Rivest, Adi Shamir, Leonard
 Adleman entwickelt. Das eigentliche Ziel ihrer Arbeit war den Ansatz von
 Diffie und Helman, dass es Einwegfunktionen gibt, zu wiederlegen.
+Dies gelang ihnen nicht, jedoch entwickelten sie dabei das RSA-Verfahren.
 
 \begin{table}
   \centering
@@ -4154,7 +4161,8 @@ Diffie und Helman, dass es Einwegfunktionen gibt, zu wiederlegen.
 
 Damit Bob verschlüsselte Nachrichten empfangen kann, muss er zwei große
 Primzahlen~$p$ und $q$ und eine große Zahl~$d$ wählen, wobei
-$d\in\Z_{\phi(n)}^{*}$ die Bedingung $\ggT(d, (p-1)(q-1))=1$ erfüllt. Danach
+$d$ eine Einheit im Ring $\Z_{\phi(n)}^{*}$ ist, diese also die Bedingung
+$\ggT(d, (p-1)(q-1))=1$ erfüllt. Danach
 berechnet er das eindeutig bestimmte Inverse~$e$ in $\Z_{\phi(n)}^{*}$ von $d$
 (mit Hilfe des erweiterten euklidische Algorithmus). Das Paar~$(n,e)$ ist der
 öffentliche Schlüssel, $d$ ist der geheime Schlüssel von Bob. Die anderen
@@ -4164,8 +4172,12 @@ Wenn Alice ihm eine Botschaft~$m$ zukommen lassen will, wobei $m\leq n-1$ ist,
 muss sie diese als $c=m^{e}\pmod{n}$ verschlüsseln und das Kryptogramm~$c$ an
 Bob senden. Bob kann daraus die Botschaft mit $m=c^{d}\pmod{n}$ berechnen.
 \autoref{tab:rsa}
+Diese beiden Berechnungen sind nach \autoref{satz:1} in Polynomialzeit
+durchführbar.
 
-Das dieser Algorithmus korrekt ist, wurde bereits in \autoref{satz:2} gezeigt.
+Der Verschlüsselungsschritt entspricht der Berechnung der Funktion
+$g_{n,e}(m)=c$ aus \autoref{sec:mwurzel} und der Entschlüsselungsschritt ist
+der Algorithmus aus dem Beweis von \autoref{satz:2}, wobei $m=f_{c,n}(d)$ ist.
 
 \begin{bemerk}
   \begin{itemize}
@@ -4250,48 +4262,74 @@ Das dieser Algorithmus korrekt ist, wurde bereits in \autoref{satz:2} gezeigt.
   Die Sicherheit von RSA beruht auf der Sicherheit des
   Faktorisierungsproblems. Falls dieses "`einfach"' ist, dann ist auch RSA
   "`einfach"'. Es gilt: $RSA\leq_{m}^{p} Faktorisierung$.
+  Aber die umgekehrte Relation gilt nicht. Insbesondere muss RSA nicht
+  "`schwer"' sein, wenn das Faktorisierungsproblems "`schwer"' ist.
 \end{bemerk}
 
+\subsection{Angriffe auf RSA}
+
 Ein Angriff auf das Faktorisierungsproblem ist die \highl{$(p-1)$-Methode} von
-Polard. Dies funktioniert fpr zusammengesetzte Zahlen~$n$ mit einem
-Primfaktor~$p$, falls $p-1$ kleine Primfaktoren hat. Dann ist es möglich, ein
-Vielfaches von $p-1$ zu bestimmen, ohne $p$ zu kennen. Falls $\nu$ ein solches
-Vielfaches ist, dann gilt $a^{\nu}\equiv1\pmod{p}$ für alle $a$ mit
-$\ggT(a,p)=1$ (der kleine Satz von Fermat).
+Polard. Die Idee ist, dass man den Primfaktor $p$ von $n=p\cdot q$ durch
+$p=\ggT(n,k\cdot p)$ ermitteln kann, sofern $n$ kein Teiler von $k\cdot p$ ist.
 
-Hieraus folgt: $p$ ist ein Teiler von $a^{\nu}-1$. Dann gilt: wenn $n$ kein
-Teiler von $a^{\nu}-1$ ist, dass ist $\ggT(n,a^{\nu}-1)$ ein echter Teiler von
-$n$. (d.\,h. $n$ ist faktorisiert!)
+Sei $\nu$ ein Vielfaches von $p-1$ und $a$ eine beliebige Zahl, die
+teilerfremd zu $n$ ist. Damit ist $a$ auch teilerfremd zu $p$ und nach dem
+kleinen Satz von Fermat (\autoref{satz:3}) gilt dann, dass $a^{\nu}\equiv
+(a^{p-1})^{l}\equiv1\pmod{p}$ ist. Also ist $a^{\nu}-1$ ein Vielfaches von
+$p$.
 
-Woher kommt dieses $\nu$? Als Kandidat für $\nu$ sind Produkte der Form
+Als Kandidat für $\nu$ kommen Produkte von Primzahlpotenzen, die durch eine
+Schranke~$S$ nach oben begrenzt sind, in Frage.
 \begin{gather*}
   \nu = \prod_{\substack{q\text{~ist prim}\\q^{k}\leq S}} q^{k}
 \end{gather*}
-für eine Schranke~$S$.
+Falls hier ein $q$ Teiler von $p-1$ dabei ist, dann ist $\nu$ ein Vielfaches
+von $p-1$. Falls $\ggT(n,a^{\nu}-1)=1$ ist, muss man die Schranke vergrößern.
 
-Falls hier ein $q$ als Teiler von $p-1$ dabei ist, dann ist $\nu$ ein
-Vielfaches von $p-1$, falls nicht, probiere eine größere Schranke~$S'>S$.
+Daher sollen $p$ und $q$ im RSA-Verfahren so gewählt werden, dass die
+Primfaktoren von $p-1$ und $q-1$ möglichst groß sind.
 
-Eine Bemerkung zum \highl{quadratischen Sieb}: Für eine zu faktorisierende
-Zahl~$n$ werden Zahlen~$a$ und $b$ so ermittelt, dass gilt:
+\begin{bsp}
+  Die zu faktorisierende Zahl sei $n=1\,878\,551$. Die kleinste Zahl, die
+  teilerfremd zu $n$ ist, ist $a=2$.
+
+  Der erste Ansatz sei $S_{1}=5$. Damit ist $\nu_{1} = 2^{2} \cdot 3 \cdot 5 =
+  60$ das Produkt aller größten Potenzen von Primzahlen, die kleiner sind als
+  $S_{1}$. Als $a^{\nu}-1\mod n$ ergibt sich so $1\,862\,178$. Leider sind die
+  beiden Zahlen teilerfremd.
+
+  Also ein neuer Versuch mit $B_{2}=13$. Damit ist $\nu_{2} = 2^{3} \cdot
+  3^{2} \cdot 5\cdot7\cdot11\cdot13 = 360\,360$. Damit ergibt sich
+  $a^{\nu}-1\mod n=1\,637\,610$. Der größte gemeinsame Teiler hiervon und $n$
+  ist 17.
+
+  Da $n$ das Produkt zweier Primzahlen ist, ist somit die Faktorisierung von
+  $n$ gebrochen. Die beiden Primfaktoren sind 17 und $110\,503$.
+\end{bsp}
+
+Eine andere Möglichkeit, die Faktorisierung einer Zahl~$n$ zu bestimmen, ist
+das \highl{quadratische Sieb}. Dafür werden Zahlen~$a$ und $b$ so ermittelt,
+dass gilt:
 \begin{gather*}
-  a^{2}\equiv b^{2}\pmod{m}\qquad\text{und}\qquad a\not\equiv \pm b\pmod{n}
+  a^{2}\equiv b^{2}\pmod{n}\qquad\text{und}\qquad a\not\equiv \pm b\pmod{n}
 \end{gather*}
-
 Das heißt $n$ teilt $a^{2}-b^{2}=(a+b)(a-b)$, aber weder $a+b$ noch $a-b$.
-Damit ist der größer gemeinsame Teiler von $a-b$ und $n$ ein nichttrivialer
+Damit ist der größer gemeinsame Teiler von $a^{2}-b^{2}$ und $n$ ein nichttrivialer
 Faktor von $n$.
 
-Falls FACTORING "`schwer"' ist, bedeutet dies nicht, dass RSA "`schwer"' ist.
-Insbesondere ist RSA kein Primzahltest, da es auch mit Modulen funktioniert,
-die keine Primzahlen sind!
+\subsection{Abwandlungen von RSA}
+
+RSA kann nicht als Primzahltest verwendet werden, da es auch mit Modulen
+funktioniert, die nicht das Produkt zweier Primzahlen sind!
 
 \begin{defini}
-  Eine \highl{Carmichael-Zahl}~$c$ ist eine zusammengesetzte Zahl, so dass für
-  alle Primfaktoren~$q$ von $c$ gilt:
+  Eine \highl{Carmichael-Zahl}~$c$ ist das Produkt von Primzahlen, so dass für
+  alle Primfaktoren~$q$ von $c$ gilt: $q-1$ teilt $c-1$.
+
+
   \begin{itemize}
    \item $q-1$ teilt $c-1$ und
-   \item für alle zu $q$ teilerfremden Zahlen~$n$ gilt $a^{q-1}\equiv
+   \item für alle zu $q$ teilerfremden Zahlen~$a$ gilt $a^{q-1}\equiv
     1\pmod{q}$. (diese Eigenschaft ist aus der ersten ableitbar \gdw (wegen
     der ersten Eigenschaft) $a^{c-1}\equiv1\pmod{c}$ \gdw (wegen dem
     chin.\,Restklassensatz) $a^{c-1}\equiv1\pmod{c}$)
@@ -4299,76 +4337,99 @@ die keine Primzahlen sind!
 \end{defini}
 
 \begin{bsp}
-  $561 = 3\cdot11\cdot17$. Dann gilt
-  \begin{itemize}
-   \item 2, 10 und 16 Teiler von 560
-   \item falls $a$ teilerfremd zu 3, 11 und 17 ist, dann ist $a^{560}\equiv1
-    \pmod{561}$, z.\,B. $14^{560}\equiv1\pmod{561}$, aber z.\,B. gilt
-    $9^{560}\equiv375\pmod{561}$.
-  \end{itemize}
+  $561 = 3\cdot11\cdot17$ ist eine Carmichael-Zahl, denn 2, 10 und 16 sind
+  Teiler von 560. Falls also eine Zahl~$a$ teilerfremd zu 3, 11 und 17 ist,
+  dann ist $a^{560}\equiv1 \pmod{561}$, z.\,B. $14^{560}\equiv1\pmod{561}$,
+  aber z.\,B. gilt $9^{560}\equiv375\pmod{561}$.
 \end{bsp}
 
-Wir betrachten folgenden Modul~$n=p\cdot c$, wobei $c$ eine Carmichael-Zahl
-mit $c=\prod q_{i}$ ist. (Dann gilt $\phi(n)\ne(p-1)\cdot(c-1)$, da $c$ keine
-Primzahl ist, aber $(p-1)\cdot(c-1)=(q-1)\cdot b_{i}$.) Wir wählen ein $e$ mit
-$\ggT(e,(p-1)(c-1)) =1$ und bestimmen ein $d$ mit $e\cdot d\equiv1
-\pmod{(p-1)(c-1)}$.
+\begin{lemma}
+  Das RSA-Verfahren funktioniert auch mit Modulen~$n$, die nicht das Produkt
+  zweier Primzahlen~$p$ und $q$ sind.
 
-Behauptung: $a^{ed}\equiv a\pmod{n}$.
-\begin{enumerate}[{Fall}~1]
- \item Wir betrachten den Primteiler $p$ von $n$.
-  \begin{enumerate}[{Fall~1}a]
-   \item $p$ ist Teiler von $a$, dann ist $a^{ed}\equiv0\equiv a\pmod{p}$.
-   \item $p$ ist kein Teiler von $a$, dann ist
+  \begin{proof}
+    Wir betrachten folgenden Modul~$n=p\cdot c$, wobei $c=\prod q_{i}$ eine
+    Carmichael-Zahl ist. In dem Fall gilt nicht, dass $\phi(n)=(p-1)\cdot
+    (c-1)$ ist. Verwendet man jedoch diese Annahme weiter und wählt ein $d$
+    mit $\ggT(d,(p-1)(c-1))=1$ und bestimmt dazu ein $e$ mit $e\cdot d\equiv1
+    \pmod{(p-1)(c-1)}$, so gilt dennoch $a^{ed}\equiv a\pmod{n}$.
+
+    \begin{enumerate}[{Fall}~1:]
+     \item Wir betrachten den Primteiler $p$ von $n$.
+      \begin{enumerate}[{Fall~1\,}a:]
+       \item Ist $p$ ein Teiler von $a$, dann ist $a^{ed}\equiv0\equiv a\pmod{p}$.
+       \item Ist $p$ kein Teiler von $a$, dann sind $p$ und $a$ teilerfremd zu
+        einander, da $p$ prim ist. Es ist also zulässig den kleinen Satz von
+        Fermat (\autoref{satz:3}) anzuwenden. Aus $e\cdot d\equiv
+        1\pmod{(p-1)(c-1)}$ folgt $e\cdot d = k(p-1)(c-1)+1$ für geeignetes
+        $k$ und es ergibt sich
+        \begin{gather*}
+          a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a\equiv (a^{p-1})^{k(c-1)}\cdot a
+             \equiv 1\cdot a\equiv a\pmod{p}
+        \end{gather*}
+      \end{enumerate}
+
+     \item Wir betrachten nun alle Primteiler $q_{i}$ von $n$.
+      \begin{enumerate}[{Fall~2\,}a:]
+       \item Wenn $q_{i}$ ein Teiler von $a$ ist, dann ist $a^{ed}\equiv0\equiv
+        a\pmod{q_{i}}$.
+       \item Ist $q_{i}$ kein Teiler von $a$, so darf wieder der kleine Satz
+        von Fermat angewendet werden. Da $c$ eine Carmichael-Zahl ist, lässt
+        sich $c-1$ auch als $l_{i}\cdot(q_{i}-1)$ schreiben und es gilt
+        \begin{gather*}
+          a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a
+             \equiv a^{k(p-1) l_{i}(q_{i}-1)}\cdot a
+             \equiv (a^{q_{i}-1})^{k\cdot l_{i}\cdot(p-1)} \cdot a
+             \equiv a\pmod{q_{i}}
+        \end{gather*}
+      \end{enumerate}
+    \end{enumerate}
+
+    Es gilt also $a^{ed}\equiv a\pmod{p}$ und $a^{ed}\equiv a\pmod{q_{i}}$ für
+    alle $q_{i}$. Nach dem chinesischen Restklassensatz folgt daraus
+    $a^{ed}\equiv a\pmod{n}$.
+  \end{proof}
+\end{lemma}
+
+"`Optimieren"' lässt sich der RSA-Algorithmus noch im folgendem Sinne:
+\begin{lemma}
+  Es ist für das RSA-Verfahren nicht notwendig, den privaten Schlüssel~$d$ so zu
+  bestimmen, dass dieser teilerfremd zu $\phi(n)$ ist. Es ist ausreichend, wenn
+  dieser teilerfremd zu $\kgV(p-1,q-1)$ ist. Der Vorteil zeigt sich bei der
+  Berechnung des öffentlichen Schlüssels~$e$, da hierfür das Modul kleiner
+  geworden ist. Für $p=11$ und $q=13$ beispielsweise ist $(p-1)(q-1)=120$, aber
+  $\kgV(p-1,q-1)=60$.
+
+  \help{Der Vorteil erschließt sich mir noch nicht. Wenn ich $d$ und $e$ aus
+    dem Ring $\Z_{\kgV(p-1,q-1)}$ wähle, verschenke ich doch mögliche
+    Schlüsselpaare und der Gewinn ist im Vergleich zum späteren Aufwand bei
+    der Ver-/Entschlüsselung zu vernachlässigen.}
+
+  \begin{proof}
+    Der Beweis erfolgt analog zum Beweis von \autoref{satz:2}, nur das zu
+    beachten ist, dass $d$ und $e$ Einheiten des $\Z_{\kgV(p-1,q-1)}$ sind.
+    Bis zu der Kongruenz
     \begin{gather*}
-      a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a\equiv (a^{p-1})^{k(c-1)}\cdot a
-         \equiv1\cdot a\equiv a\pmod{p}
+      a\equiv x^{u\cdot\phi(n)+1}\pmod{n}
     \end{gather*}
-  \end{enumerate}
+    verläuft die Rechnung genauso. Für die Fallunterscheidung muss der Fall
+    $x\not\equiv0\pmod{p}$ an die veränderte Situation angepasst werden:
 
- \item Wir betrachten alle Primteiler $q_{i}$ von $n$.
-  \begin{enumerate}[{Fall~2}a]
-   \item Wenn $q_{i}$ Teiler von $a$ ist, dann ist $a^{ed}\equiv0\equiv
-    a\pmod{q_{i}}$.
-   \item Ist $q_{i}$ kein Teiler von $a$, dann ist
-    \begin{gather*}
-      a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a\equiv a^{k(q_{i}-1)b_{i}}\cdot
-         a\equiv (a^{q_{i}-1})^{k\cdot b_{i}} \cdot a\equiv a\pmod{q_{i}}
-    \end{gather*}
-  \end{enumerate}
-\end{enumerate}
+    Nach dem kleinen Satz von Fermat (\autoref{satz:3}) gilt $x^{p-1} = r\cdot
+    p+1$ (für passendes $r$) und das kleinste gemeinsame Vielfache lässt sich
+    schreiben als $\kgV(p-1,q-1) = b\cdot (p-1)$ Also
+    ergibt sich für die Kongruenz $a\equiv x\pmod{p}$ für alle $x$.
+    \begin{align*}
+      a&\equiv x^{u\cdot\kgV(p-1,q-1)+1} = x^{u\cdot b\cdot(p-1)}\cdot x =
+         (x^{p-1})^{u\cdot b}\cdot x \equiv 1^{u\cdot b}\cdot x\equiv x\mod p
+    \end{align*}
 
-Also gilt nach dem chinesischen Restklassensatz:
-\begin{gather*}
-  a^{ed}\equiv a\pmod{(p\cdot\prod q_{i})}
-\end{gather*}
+    Analog kann man wiederum zeigen, dass $a\equiv x\pmod{q}$ gilt, und nach
+    \autoref{lem:4} folgt daraus $a\equiv x\pmod{n}$.
+  \end{proof}
+\end{lemma}
 
-Das heißt, es gibt Zahlen, die nicht prim sind, für die aber der
-RSA-Algorithmus korrekt ist.
-
-"`Optimieren"' lässt sich der Algorithmus in folgendem Sinne: Es ist nicht
-notwendig, den öffentlichen Schlüssel~$e$ so zu bestimmen, dass
-$\ggT\bigl(e,\phi(n)\bigr)=1$ ist. Für $n=p\cdot q$ genügt es ein $e$ zu
-bestimmen, für das gilt: $\ggT\bigl(e,\kgV(p-1,q-1)\bigr)$. Der Vorteil zeigt
-sich bei der Berechnung des geheimen Schlüssels~$d$, da hierfür das Modul
-kleiner geworden ist: Für $p=11$ und $q=13$ ist $(p-1)(q-1)=120$, aber
-$\kgV(p-1,q-1)=60$.
-
-Der Korrektheitsbeweis hierfür erfolgt analog zum ursprünglichen Beweis von
-RSA und zum Beweis für die Carmichael-Zahlen, denn es gelten die folgenden
-Beziehungen:
-\begin{itemize}
- \item $\kgV(p-1,q-1) = (p-1)\cdot b$ bzw.
- \item $\kgV(p-1, q-1) = (q-1)\cdot c$
-\end{itemize}
-
-Zum Beispiel der Fall $\ggT(a,n)=1$
-\begin{gather*}
-  a^{ed} \equiv a^{k\kgV(p-1,q-1)}\cdot a\equiv a^{k(p-1)b}\cdot a\equiv1\cdot
-     a\equiv a\pmod{p}
-\end{gather*}
-
-Es ist sinnvoll diese Optimierung in einem hybriden Verfahren abzuwenden.
+Es ist sinnvoll diese Optimierung in einem hybriden Verfahren anzuwenden.
 \help{So richtig habe ich nicht verstanden warum.}
 
 \section{Das Verfahren von El Gamal}
