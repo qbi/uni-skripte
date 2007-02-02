@@ -2663,7 +2663,6 @@ Gemeinschaftsarbeit von James Massey und Xueija Lai von der ETH~Zürich und der
 Ascom Systec~AG entwickelt. Die Ascom Systec~AG hält zum gegenwärtigen
 Zeitpunkt noch einige Patente für IDEA. Denoch wird der Algorithmus im
 PGP-""Verfahren eingesetzt.
-\help{Stimmt es, dass IDEA in PGP verwendet wird?}
 
 IDEA arbeitet mit der Blocklänge von 64~Bit, einer Schlüssellänge von 128~Bit
 und 8~Runden zuzüglich einer Abschlussrunde. Durch den riesigen Schlüsselraum
@@ -2882,8 +2881,8 @@ mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
 \begin{gather*}
   m(x) = x^{8} + x^{4} + x^{3} + x +1
 \end{gather*}
-\help{Kann man zeigen dann $m(x)$ irreduzibel ist oder ist das genauso
-  schwierig, wie der Primnachweis einer Zahl?}
+\help{Kann man zeigen, dass $m(x)$ irreduzibel ist oder ist das genauso
+  schwierig wie der Primnachweis einer Zahl?}
 
 \begin{bsp}
   \label{bsp:1}
@@ -3740,7 +3739,8 @@ Im Folgenden sei $f_{a,n}\colon\Z_{n}\mapsto\Z_{n}$ wie folgt definiert:
   Klasse~$\FP$ der in Polynomialzeit berechenbaren Funktionen.
 
   \begin{proof}
-    Folgende rekursive Prozedur berechnet $f_{a,n}(m)$:
+    Folgende rekursive Prozedur berechnet $f_{a,n}(m)$. Diese nennt man
+    \highl{square-and-multiply-Algorithmus}.
     \begin{Verbatim}[gobble=4]
     function (a,m,n)
     begin
@@ -3830,7 +3830,7 @@ $g_{n,m}\colon \Z_{n} \mapsto \Z_{n}$ so definiert
   d.\,h. $g_{n,m}\in\FP$.
 
   \begin{proof}
-    Der rekursive Algorithmus aus dem Beweis von \autoref{satz:1} kann
+    Der square-and-multiply-Algorithmus aus dem Beweis von \autoref{satz:1} kann
     ebenfalls zur Berechnung der Funktion~$g_{n,m}$ verwendet werden.
   \end{proof}
 \end{satz}
@@ -4007,7 +4007,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
       = u\cdot\phi(n) + v\cdot m$.
 
      \item Mit dem Inversen $v$ von $m$ in $\Z_{\phi(n)}$ lässt sich $a$ nach
-      \autoref{satz:1} in Polynomialzeit durch
+      \autoref{satz:1} mit dem square-and-multiply-Algorithmus in Polynomialzeit durch
       $a:= f_{y,n}(v) = y^{v}\pmod{n}$ bestimmen.
     \end{enumerate}
 
@@ -4215,10 +4215,8 @@ Das RSA-Verfahren ist also so konstruiert, dass
     möglichst klein sein.
 
    \item Ein direkter Angriff würde bedeuten, da $c=m^{e}\pmod{n}$ ist, aus
-    $c$ die $e$.\,Wurzel modulo~$n$ zu berechen. Dogma: Dies ist ohne
-    Falltürinformation praktisch nicht möglich.
-    \help{Ist das wirklich ein neues Dogma oder eine Folgerung aus einem der
-      anderen?}
+    $c$ die $e$.\,Wurzel modulo~$n$ zu berechen. Dies ist nach \autoref{bem:2}
+    praktisch nicht machbar.
 
    \item Die Nachricht muss in Blöcke passender Länge zerlegt werden.
   \end{itemize}
@@ -4574,51 +4572,54 @@ Das Anliegen besteht in der \highl{Authentifizierung} des Absenders.
 Grundidee: Wir nutzen die Sicherheit der Protokolle der Public-Key-Verfahren
 in modifizierter Form für die Authentifizierung.
 
+\subsection{Elgamal}
+
 \begin{table}
   \centering
-  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+  \begin{tabularx}{.9\linewidth}{|c|>{\raggedright}p{.2\linewidth}|c|>{\raggedright\arraybackslash}X|}
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& \multicolumn{3}{c}{\parbox{.6\linewidth}{wähle eine große Primzahl $p$
-       und eine primitve Wurzel $g$ von $p$; $p,g$ öffentlich}}\\
-    2.& && wähle $b$; $\beta=g^{b}\pmod{p}$ wie zuvor\linebreak wähle weiter
-       $r\in\Z_{p-1}^{*}$ und $\rho=g^{r}\pmod{p}$ und berechne $s$ gemäß
-       $b\cdot\rho+r\cdot s\equiv M\pmod{p}$ und $sig_{Bob}(M) = (\rho,s)$\\
-    3.& & $\xleftarrow{\beta,M,sig_{Bob}(M)}$& \\
-    4.& Überprüfe $g^{m} = \beta^{s}\cdot\rho\pmod{p}$& & \\
+    1.& && wählt große Primzahl~$n$ und dazu eine primitive Wurzel~$g$\\
+    2.& && wählt zufällig $b\in\Z_{n-1}^{*}$ und berechnet
+       $\beta\equiv g^{b}\pmod{n}$\\
+    3.& && wählt zufällig $r\in\Z_{n-1}^{*}$ und berechnet $\rho=g^{r}\pmod{n}$\\
+    4.& && bestimmt $s'\cdot r\equiv1\pod{n-1}$ und berechnet $s\equiv
+       s'(m-b\cdot\rho)\pod{n-1}$; $sig_{Bob}(m) = (\rho,s)$\\
+    5.& & $\xleftarrow{(n,g,\beta),m,(\rho,s)}$& \\
+    6.& Prüft $g^{m} = \beta^{\rho}\cdot\rho^{s}\pod{n}$& & \\
     \hline
   \end{tabularx}
-  \caption{Das Protokoll von Elgamal zur digitalen Signatur}
+  \caption{Das Verfahren von Elgamal zur digitalen Signatur}
+  \label{tab:sigelgamal}
 \end{table}
 
-$\beta$ und $\rho$ wie gehabt berechnen (square-and-multiply-Algo), $s$ mit
-dem erweiterten euklidischen Algorithmus
+Damit Bob an Alice eine Nachricht~$m$ mit Echtheitsnachweis senden kann, muss
+er zusätzlich zum Elgamal-Verschlüsselungsverfahren (\autoref{tab:elgamal})
+mit dem öffentlichen Schlüssel~$(n,g,\beta)$ sich eine Zahl~$r\in\Z_{p-1}^{*}$
+wählen und dafür $\rho=g^{r}\pmod{n}$ bestimmen. Da $r\in\Z_{p-1}^{*}$, d.\,h.
+insbesondere ist $r$ teilerfremd zu $p-1$, existiert ein $s'$ mit $r\cdot
+s'\equiv1\pmod{n-1}$. Damit bestimmt er dann $s\equiv s'(m-b\cdot\rho)
+\pmod{n-1}$. Das Paar~$(\rho,s)$ bildet die Signatur der Nachricht~$m$. Alice
+kann diese durch die Kongruenz $g^{m} \equiv\beta^{s}\cdot\rho\pmod{n}$
+überprüfen. \autoref{tab:sigelgamal}
 
-Korrektheit:
+Wegen $r\cdot s\equiv r\cdot s'(m-b\cdot\rho) \equiv m-b\cdot\rho\pmod{n-1}$
+gilt $b\cdot\rho + r\cdot s\pmod{n-1}$ und damit $m= b\cdot\rho + r\cdot s +
+k\cdot(n-1)$ für geeignetes $k$ und mit Hilfe des kleinen Satz von Fermat
+(\autoref{satz:3}) ergibt sich
 \begin{gather*}
-  g^{m} \equiv g^{b\cdot\rho+r\cdot s} \equiv \beta^{\rho}\cdot \rho^{s} \pmod{p}\\
-  g^{m} = g^{b\cdot\rho+r\cdot s + k\cdot p} = g^{b\cdot\rho+r\cdot s} \cdot
-     (g^{p})^{k} = g^{b\cdot\rho+r\cdot s} \cdot 1^{k} = \beta^{\rho}\cdot \rho^{s} \pmod{p}
+  g^{m} = g^{b\cdot\rho+r\cdot s + k\cdot (n-1)}
+     = g^{b\cdot\rho+r\cdot s} \cdot (g^{n-1})^{k}
+     \equiv g^{b\cdot\rho+r\cdot s} \cdot 1^{k}
+     = \beta^{\rho}\cdot \rho^{s} \pmod{p}
+\end{gather*}
+Dies entspricht der Kongruenz, die Alice zur Verifikation prüft:
+\begin{gather*}
+  g^{m} \equiv g^{b\cdot\rho+r\cdot s} = \beta^{\rho}\cdot \rho^{s} \pmod{p}
 \end{gather*}
 
-Ergänzung vom 31.1.:
-\textbf{Achtung:} Irgendwo muss hier $b\rho+rs=m\pmod{p-1}$ stehen und nicht
-$\pmod{p}$.
-
-\begin{enumerate}[1.\,{Schritt}]
- \item Da $r$ teilerfrem zu $p-1$ ist, gibt es ein Inverses $s'$ mit $r\cdot
-  s'=1\pmod{p-1}$ (mit erweiterten euklidischen Algorithmus). Dann bestimme
-  $s$ mit $r\cdot s\equiv m-b\rho\pmod{p-1}$
- \item Verifikation
-  \begin{gather*}
-    g^{m} \equiv g^{b\rho+rs + l(p-1)} \equiv g^{b\rho} g^{rs}
-       (\underbrace{g^{p-1}}_{=1})^{l}
-       \pmod{p-1} \equiv g^{b\rho} g^{rs} = \beta^{\rho} \rho^{s}
-  \end{gather*}
-\end{enumerate}
-
-Ende der Ergänzung.
+\subsection{RSA}
 
 \begin{table}
   \centering
@@ -4626,19 +4627,28 @@ Ende der Ergänzung.
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& wählt $n=p\cdot q$ und $e$ wie gehabt als öffentlichen Schlüssel und
-       $d$ als privaten Schlüssel& & \\
-    2.& & $\xrightarrow{n,e}$& \\
-    3.& signiert die Botschaft $M$ durch $sig_{Alice}(M) = M^{d}\pmod{m}$ & & \\
-    4.& & $\xrightarrow{M,sig_{Alice}(M)}$& überprüft $M=
-       (sig_{Alice}(M))^{e}\pmod{n}$
+    1.& & & Wählt große Primzahlen $p,q$, bestimme $n=p\cdot q$\\
+    2.& & & Wählt große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
+    3.& & & Berechnet das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
+    4.& & & Erstellt $sig_{Bob}(m) \equiv m^{d}\pmod{n}$
+    5.& & $\xleftarrow{(n,e),m,sig_{Bob}(m)}$& \\
+    6.& & & Prüft $m\equiv(sig_{Bob}(m))^{e}\pmod{n}$\\
+    \hline
   \end{tabularx}
-  \caption{RSA-Protokoll für digitale Signaturen}
+  \caption{RSA-Verfahren für digitale Signaturen}
 \end{table}
 
-Korrektheit wie gehabt:
+Die Erstellung einer Signatur mit Hilfe des RSA-Verfahrens \autoref{tab:rsa}
+ist recht simpel. Wenn Bob eine Nachricht signieren will, tut sie dies,
+indem sie die Nachricht mit seinem geheimen Schlüssel~$d$ verschlüsselt:
+$sig_{Bob}(m) = m^{d}\pmod{n}$. Alice kann die Signatur dann prüfen, indem sie
+mit dem öffentlichen Schlüssel~$e$ von Bob die Kongruenz
+$m\equiv(sig_{Bob}(m))^{e}\pmod{n}$ berechnet.
+
+Der Beweis für die Korrektheit erfolgt analog zum Beweis für die Korrektheit
+von RSA mit
 \begin{gather*}
-  sig_{Alice}(M)^{e} \equiv M^{d\cdot e} \equiv M\pmod{n}
+  sig_{Bob}(m)^{e} \equiv m^{d\cdot e} \equiv M\pmod{n}
 \end{gather*}
 
 \section{Das Shamir-ohne-Schlüssel-Protokoll}
