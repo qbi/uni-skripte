@@ -3603,7 +3603,7 @@ Entschlüsselung der Nachricht gesichert:
 
 % 8.1.2007
 
-\chapter{Public-Key Kryptosysteme}
+\chapter{Public-Key-Kryptosysteme}
 
 \textit{klassisch:} symmetrische Verfahren, d.\,h. Sender und Empfänger
 verfügen über zueinander passende Schlüssel (quasi-gleiche Schlüssel), die
@@ -3881,6 +3881,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
 \end{satz}
 
 \begin{defini}
+  \label{def:1}
   Eine Zahl~$a$ ($1\leq a< n$) heißt \highl{primitive Wurzel} von $n$ \gdwdef
   $a$ die folgenden Eigenschaften erfüllt
   \begin{itemize}
@@ -3993,8 +3994,8 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
   natürlichen Zahlen~$n$, $m$ und $y$, wobei $\ggT(m,\phi(n)) = 1$ und $n$ das
   Produkt zwei bekannter Primzahlen~$p$ und $q$ ist, eine Zahl $a$ mit der
   Eigenschaft $g_{n,m}(a) = a^{m}\mod n = y$ bestimmt, d.\,h. der Algorithmus
-  berechnet die $m$.\,Wurzel $a=g_{n,m}^{-1}(y)$. Die Eigenschaft, dass sich
-  $n$ in zwei Primzahlen~$p$ und $q$ zerlegen lässt, ist die
+  berechnet die $m$.\,Wurzel $a=g_{n,m}^{-1}(y)$. Die Faktorisierung von $n$
+  in $p\cdot q$ ist die
   \highl{Falltürinformation}.
 
   \begin{proof}
@@ -4063,6 +4064,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
 \end{dogma}
 
 \begin{bemerk}
+  \label{bem:2}
   Der Algorithmus für \autoref{satz:2} verwendet im ersten Schritt $n$ und
   $\phi(n)$. Ist die Primfaktorzerlegung für $n$ (die Falltürinformation)
   nicht gegeben, so ist die Berechnung von $\phi(n)$ genauso schwer wie die
@@ -4128,7 +4130,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
 Wir haben jetzt zwei Funktionen, von denen wir annehmen, dass sie nicht
 $\FP$-invertierbar sind: der diskrete Logarithmus und die Faktorisierung von
 Zahlen. Die Public-Key-Verfahren beruhen auf diesen Funktionen, wobei RSA auf
-der Faktorisierung von Zahlen und El Gamal auf dem diskreten Logarithmus
+der Faktorisierung von Zahlen und Elgamal auf dem diskreten Logarithmus
 basiert.
 
 % 17.1.
@@ -4150,9 +4152,9 @@ Dies gelang ihnen nicht, jedoch entwickelten sie dabei das RSA-Verfahren.
     2.& & & Wähle große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
     3.& & & Berechne das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
     4.& & $\xleftarrow{n,e}$& \\
-    5.& Chiffriere die Botschaft~$m\leq n-1$ durch $c=m^{e}\pmod{n}$& & \\
+    5.& Chiffriere die Botschaft~$m\leq n-1$ durch $c\equiv m^{e}\pmod{n}$& & \\
     6.& & $\xrightarrow{c}$& \\
-    7.& & & Dechiffriere $m=c^{d}\pmod{n}$\\
+    7.& & & Dechiffriere $m\equiv c^{d}\pmod{n}$\\
     \hline
   \end{tabularx}
   \caption{Das RSA-Verfahren}
@@ -4178,6 +4180,11 @@ durchführbar.
 Der Verschlüsselungsschritt entspricht der Berechnung der Funktion
 $g_{n,e}(m)=c$ aus \autoref{sec:mwurzel} und der Entschlüsselungsschritt ist
 der Algorithmus aus dem Beweis von \autoref{satz:2}, wobei $m=f_{c,n}(d)$ ist.
+Das RSA-Verfahren ist also so konstruiert, dass
+\begin{gather*}
+  m \equiv c^{d} \equiv (m^{e})^{d} \equiv m^{ed} \equiv m^{k\cdot\phi(n)+1}
+     \equiv m^{1} \pmod{n}
+\end{gather*}
 
 \begin{bemerk}
   \begin{itemize}
@@ -4259,8 +4266,21 @@ der Algorithmus aus dem Beweis von \autoref{satz:2}, wobei $m=f_{c,n}(d)$ ist.
 % 22.1.
 
 \begin{bemerk}
-  Die Sicherheit von RSA beruht auf der Sicherheit des
-  Faktorisierungsproblems. Falls dieses "`einfach"' ist, dann ist auch RSA
+  Die Sicherheit von RSA beruht auf zwei Säulen:
+  \begin{itemize}
+   \item Die Nachricht~$m$ lässt sich als die $e$.\,Wurzel aus $c$ berechnen.
+    Die Berechnung der $e$.\,Wurzel ist aber ohne die Kenntnis der
+    Faktorisierung von $n$ nicht in Polynomialzeit durchführbar.
+    \autoref{bem:2}
+
+   \item Die Nachricht~$m$ liese sich auch durch den normalen
+    Entschlüsselungsalgorithmus mit $d$ bestimmen. Die Berechnung von $d$ aus
+    den öffentlichen Größen ist aber nur mit Kenntnis von $\phi(n)$ möglich,
+    was wiederum nur bestimmt werden kann, wenn die Faktorisierung von $n$
+    bekannt ist. \autoref{lem:7}
+  \end{itemize}
+
+  Falls die Faktorisierung von $n$ "`einfach"' ist, dann ist auch RSA
   "`einfach"'. Es gilt: $RSA\leq_{m}^{p} Faktorisierung$.
   Aber die umgekehrte Relation gilt nicht. Insbesondere muss RSA nicht
   "`schwer"' sein, wenn das Faktorisierungsproblems "`schwer"' ist.
@@ -4432,75 +4452,121 @@ funktioniert, die nicht das Produkt zweier Primzahlen sind!
 Es ist sinnvoll diese Optimierung in einem hybriden Verfahren anzuwenden.
 \help{So richtig habe ich nicht verstanden warum.}
 
-\section{Das Verfahren von El Gamal}
-(1985)
+\section{Das Verfahren von Elgamal}
+Das \highl{Elgamal-Verfahren} wurde 1985 von Taher Elgamal entwickelt und
+beruht auf der Annahme, dass der diskrete Logarithmus (\autoref{sec:diskrlog})
+eine Einwegfunktion ist. Da man für den diskreten Logarithmus keine
+Falltürinformation wie für die $m$.\,Wurzel benötigt, beruht die Sicherheit
+von Elgamal im Wesentlichen auf dem Dogma, dass der diskrete Logarithmus
+praktisch nicht berechenbar ist.
 
-Das Protokoll:
 \begin{table}
   \centering
   \begin{tabularx}{.9\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
     \hline
     Schritt& Alice& Kanal& Bob\\
     \hline
-    1.& \multicolumn{3}{c|}{\rule{0pt}{5ex}\parbox{.6\linewidth}{Alice und Bob
-       verabreden eine große Primzahl~$p$ und eine primitive Wurzel $g$ von
-       $p$. $p$ und $g$ sind öffentlich}}\\
-    2.& & & Bob wählt zufällig ein $b\in\Z_{p-1}^{*}$ und berechnet
-       $\beta=g^{b}\pmod{p}$; $b$ ist privat\\
-    3.& & $\xleftarrow{\beta}$& \\
-    4.& Alice wählt zufällig ein $a\in\Z_{p-1}^{*}$ und berechnet
-       $\alpha=g^{a}\pmod{p}$ und $C=M\cdot b^{a}\pmod{p}$; $a$ und $M$
-       sind privat, $C$ und $\alpha$ sind öffentlich& & \\
-    5.& & $\xrightarrow{C,\alpha}$& \\
-    6.& & & Bob berechnet $x=p-1-b$ und $M=C\cdot\alpha^{x}\pmod{p}$\\
+    1.& && wählt große Primzahl~$n$ und dazu eine primitive Wurzel~$g$\\
+    2.& && wählt zufällig $b\in\Z_{n-1}^{*}$ und berechnet
+       $\beta\equiv g^{b}\pmod{n}$\\
+    3.& & $\xleftarrow{(n,g,\beta)}$& \\
+    4.& wählt zufällig $a\in\Z_{n-1}^{*}$ und berechnet
+       $\alpha\equiv g^{a}\pmod{n}$&&\\
+    5.& $c\equiv m\cdot \beta^{a}\pmod{n}$&& \\
+    5.& & $\xrightarrow{c,\alpha}$& \\
+    6.& & & $m\equiv c\cdot\alpha^{n-1-b}\pmod{n}$\\
     \hline
   \end{tabularx}
-  \caption{Ablauf des El Gamal-Verfahrens}
+  \caption{Ablauf des Elgamal-Verfahrens}
+  \label{tab:elgamal}
 \end{table}
 
+Damit Alice an Bob eine verschlüsselte Nachricht senden kann, muss dieser sich
+eine große Primzahl~$n$, dazu eine primitve Wurzel~$g$ (d.\,h. $n$ und $g$
+sind teilerfremd und für alle $d<n-1$ gilt $g^{d}\not\equiv1\pmod{n}$;
+\autoref{def:1}) und eine Zahl~$b\in\Z_{n-1}^{*}$. Aus dieser berechnet er
+dann $\beta\equiv g^{b}\pmod{n}$. Das Tupel~$(n,g,\beta)$ bildet den öffentlichen
+Schlüssel von Bob, die Zahl $b$ ist sein geheimer Schlüssel.
+
+Wenn Alice nun Bob eine verschlüsselte Nachricht~$m\leq n-1$ schicken will,
+muss sie sich ebenfalls eine Zahl~$a\in\Z_{n-1}^{*}$ wählen und damit
+$\alpha\equiv g^{a}\pmod{n}$ berechnen. Ihre Nachricht~$m$ verschlüsselt sie
+durch $c\equiv m\cdot\beta^{a}\pmod{n}$ und sendet Bob das Tupel~$(\alpha,c)$.
+Die Zahl~$a$ muss geheim bleiben. Beim Empfang kann Bob die Nachricht durch
+$m\equiv c\cdot \alpha^{n-1-b}\pmod{n}$ entschlüsseln. \autoref{tab:elgamal}
+
+\help{Wenn man eine "`richtige"' Nachricht hat, die man erst in Blöcke~$m_{i}$
+  zerlegen muss, kann dann Alice einfach die Blöcke mit dem gleichen $a$
+  verschlüsseln? $c_{i}=m_{i}\cdot\beta^{a}$ Das würde das ganze Verfahren
+  wesentlich beschleunigen, da man $\beta^{a}$ nur einmal berechnen muss.
+  Ebenso wäre die Entschlüsselung dann auch einfach.}
+
 \begin{satz}
-  Der El Gamal-Algorithmus ist korrekt.
+  Der Elgamal-Algorithmus ist korrekt.
 
   % 24.1.
 
   \begin{proof}
-    $p,g$ öffentlich, $\ggT(a,p-1)=1, \alpha=g^{a}\pmod{p},
-    C=M\beta^{a}\pmod{p}$, $\ggT(b,p-1) = 1, \beta=g^{b}\pmod{p}$.
-
-    $x:= p-1-b$,
+    Es sind sowohl Alice bei der Verschlüsselung als auch Bob bei der
+    Entschlüsselung alle Größen bekannt, die benötigt werden. Außerdem gilt
+    die folgenden Kongruenz:
     \begin{gather*}
-      C\cdot\alpha^{x}\equiv (M\beta^{a})(g^{a})^{x} \equiv
-         M\cdot (g^{b})^{a} (g^{a})^{p-1-b} \equiv M\cdot g^{ba+a(p-1)-ab}
-         \equiv M\cdot(g^{b-1})^{a}\equiv M\cdot1 \equiv M\pmod{p}
+      m\equiv c\cdot\alpha^{n-1-b}
+         \equiv m\cdot \beta^{a}\cdot (g^{a})^{n-1-b}
+         \equiv m\cdot g^{ab} \cdot (g^{p-1})^{a} \cdot g^{-ab}
+         \equiv m\cdot g^{ab-ab} \cdot 1^{a} \pmod{n}
     \end{gather*}
-
-    Sicherheit: Die Kenntnis von $a$ und $b$ liefert den "`Rest"'. $a$ und $b$
-    sind geheim. $a=\log_{g}\alpha\pmod{p}$ bzw. $b=\log_{g}\beta\pmod{p}$.
-    (Die Wahl von $g$ als Primitive Wurzel sichert, dass $a$ und $b$ eindeutig
-    bestimmt sind.) Dogma: modulare Exponentation mit fester Basis und festem
-    Modul ist eine Einwegfunktion, d.\,h. der diskrete Logarithmus ist nicht
-    $\FP$-berechenbar. Die Größen $a$ und $b$ sind nicht $\FP$-berechenbar,
-    insebsondere kann Bob auch nicht das geheime $a$ von Alice berechnen, aber
-    sie werden auch nicht zur Entschlüsselung benötigt.
   \end{proof}
 \end{satz}
 
-Für den diskreten Logarithmus braucht man wie für die diskrete Wurzel keine
-Falltürinformation.
-
 \begin{bemerk}
-  Es gibt auch noch andere Public-Key-Verfahren: Das Verfahren von Rabin:
-  Idee: Wähle zwei große Primzahlen~$p$ und $q$ mit $p\equiv 3\pmod{4}$ und
-  $q\equiv3\pmod{4}$, also $\frac{p+1}{4},\frac{q+1}{4}\in\N$; $p,q$ sind
-  geheim, $n=p\cdot q$ ist öffentlich.
+  Es gibt zwei Möglichkeiten, an die Botschaft~$m$ zu gelangen.
+  \begin{itemize}
+   \item Entweder man kennt $\beta^{a}$ und bestimmt dazu das Inverse~$\gamma$ im
+    $\Z_{n}$, womit man $m\equiv c\cdot\gamma\pmod{n}$ bestimmen kann. Dafür muss man
+    aber $a$ kennen, wofür man den diskreten Logarithmus
+    $a=\log_{g}\alpha\pmod{n}$ bestimmen müsste. Dieser ist aber nicht
+    $\FP$-berechenbar. \autoref{sec:diskrlog}
 
-  Für eine Nachricht~$M<n$ ist $C=M^{2}\pmod{n}$.
+   \item Oder man kennt~$b$ und kann damit die normale Entschlüsselung
+    vornehmen. An die Kenntnis von $b$ gelangt man aber nur, wenn man den
+    diskreten Logarithmus $b=\log_{g}\beta\pmod{p}$ bestimmen kann, was wiederum
+    nicht in Polynomialzeit machbar ist.
+  \end{itemize}
 
-  Sicherheit: Wurzelziehen geht nur, wenn $p$ und $q$ bekannt sind, da
-  diskrete Wurzel nicht $\FP$-berechenbar.
-
-  Problem: Wurzel ist nicht eindeutig.
+  \help{Daraus folgt aber nur, dass $Elgamal \leq_{m}^{p} diskr.~Log$, aber gilt
+    auch die umgekehrte Relation?}
 \end{bemerk}
+
+\section{Weitere Public-Key-Verfahren}
+Es soll hier nur kurz die Idee des \highl{Rabin-Verfahrens} beschrieben
+werden: Wähle zwei große Primzahlen~$p$ und $q$ mit $p\equiv 3\pmod{4}$ und
+$q\equiv3\pmod{4}$, also $\frac{p+1}{4},\frac{q+1}{4}\in\N$; $p,q$ sind
+geheim, $n=p\cdot q$ ist öffentlich.
+
+Eine Nachricht~$m<n$ wird mit $c=m^{2}\pmod{n}$ verschlüsselt. Für die
+Entschlüsselung werden mit dem erweiterten euklidischen Algorithmus die
+Zahlen~$u$ und $v$ so bestimmt, dass $u\cdot p+v\cdot q=1$. Dann werden mit
+den Hilfsgrößen~$m_{p}$ und $m_{q}$ die vier Quadratwurzeln~$r_{i}$
+bestimmt.
+\begin{gather*}
+  m_{p} = c^{\frac{p+1}{4}}\pmod{n} \mspace{54mu}
+     m_{q} = c^{\frac{q+1}{4}}\pmod{n}\\
+  \begin{aligned}
+    r_{1} &=u\cdot p\cdot m_{q} + v\cdot q\cdot m_{p}\pmod{n}\\
+    r_{2} &=n-r_{1}\\
+    r_{3} &=u\cdot p\cdot m_{q} - v\cdot q\cdot m_{p}\pmod{n}\\
+    r_{4} &=n-r_{3}
+  \end{aligned}
+\end{gather*}
+
+Das Problem dabei ist, dass die Quadratwurzel nicht eindeutig ist. Man muss
+sich also noch darüber verständigen, welche der vier möglichen Wurzeln der
+gemeinte Klartext ist.
+
+Die Sicherheit des Verfahrens beruht darauf, dass Wurzelziehen nur möglich
+ist, wenn $p$ und $q$ bekannt sind, da die $m$.\,Wurzel nicht
+$\FP$-berechenbar.
 
 \section{Digitale Signaturen}
 
@@ -4523,7 +4589,7 @@ in modifizierter Form für die Authentifizierung.
     4.& Überprüfe $g^{m} = \beta^{s}\cdot\rho\pmod{p}$& & \\
     \hline
   \end{tabularx}
-  \caption{Das Protokoll von El~Gamal zur digitalen Signatur}
+  \caption{Das Protokoll von Elgamal zur digitalen Signatur}
 \end{table}
 
 $\beta$ und $\rho$ wie gehabt berechnen (square-and-multiply-Algo), $s$ mit
