@@ -242,6 +242,7 @@
       Wie funktioniert MD5, was wurde daran gebrochen?
      \item Kryptographisch sichere Zufallszahlen
      \item Quantenkryptographie
+     \item Steganographie
     \end{itemize}
   \end{minipage}
 \end{center}
@@ -1215,7 +1216,7 @@ Verschiedene Ansätze der Verschlüsselung:
  \item \highl{Blocktransposition}: Klartext wird in Blöcker einer festen
   Länge~$k$ eingeteilt. Diese Blöcke werden derselben Permutation~$\pi$
   unterworfen. Beispiel: $a_{i_{1}}a_{i_{2}}\dotso a_{i_{k-1}}a_{i_{k}} =
-  a_{i_{\pi(1)}} a_{i_{\pi(2)}}\dotso a_{i_{\pi(k-1)}}a_{\pi(i_{k})}$.
+  a_{i_{\pi(1)}} a_{i_{\pi(2)}}\dotso a_{i_{\pi(k-1)}}a_{i_{\pi(i_{k})}}$.
 
   Analyse:
   \begin{enumerate}[1.\,{Schritt}]
@@ -2662,7 +2663,7 @@ Beginn der neunziger Jahre des letzten Jahrhunderts in einer
 Gemeinschaftsarbeit von James Massey und Xueija Lai von der ETH~Zürich und der
 Ascom Systec~AG entwickelt. Die Ascom Systec~AG hält zum gegenwärtigen
 Zeitpunkt noch einige Patente für IDEA. Denoch wird der Algorithmus im
-PGP-""Verfahren eingesetzt.
+PGP"=Verfahren eingesetzt.
 
 IDEA arbeitet mit der Blocklänge von 64~Bit, einer Schlüssellänge von 128~Bit
 und 8~Runden zuzüglich einer Abschlussrunde. Durch den riesigen Schlüsselraum
@@ -2671,7 +2672,7 @@ wird ein Brute-Force-Angriff gegenüber DES wesentlich erschwert.
 \begin{figure}[ht]
   \centering
   \input{idea.pdf_t}
-  \caption{Blockschema für den Ablauf der $i$. Runde der IDEA-""Verschlüsselung}
+  \caption{Blockschema für den Ablauf der $i$. Runde der IDEA"=Verschlüsselung}
   \label{fig:idea}
 \end{figure}
 
@@ -2679,7 +2680,7 @@ Der Ablauf jeder Runde ist in \autoref{fig:idea} dargestellt. Jeder
 Klartextblock wird in vier Teilblöcke zu je 16~Bit zerlegt, die durch
 Verknüpfung mit 6~Rundenschlüsseln bzw. den Ergebnissen der Verknüpfungen in
 vier Teilblöcke von 16~Bit transformiert werden. Als Verknüpfung werden die
-drei Operationen Exklusives-""Oder~($\oplus$), Addition modulo~$2^{16}$~
+drei Operationen Exklusives"=Oder~($\oplus$), Addition modulo~$2^{16}$~
 ($\boxplus$) und Multiplikation modulo $2^{16}+1$~($\odot$) eingesetzt.
 
 % \begin{enumerate}
@@ -2722,7 +2723,7 @@ Runden sicher gegen lineare und differentielle Kryptoanalyse.\cite{idea-save}
 
 In den 1990ern wurden von Ronald Rivest von der RSA Data Security eine Reihe
 von Verschlüsselungsverfahren entwickelt, die als
-\highl[RC-Familie]{RC-""Familie} (Ron's Code oder Rivest's Cipher)
+\highl[RC-Familie]{RC"=Familie} (Ron's Code oder Rivest's Cipher)
 zusammengefasst werden.\cite[Abs.\,3.6.2--4]{rsafaq}
 
 \highl{RC2} bezeichnet eine Feistelchiffre, die mit 18~Runden und einer
@@ -2743,7 +2744,7 @@ Es gibt drei Operationen: Schlüsselerweiterung, Ver- und Entschlüsselung. Bei
 der Schlüsselerweiterung wird in Abhängigkeit von der Rundenanzahl eine
 Tabelle für die Ver"~/""Entschlüsselung erzeugt. Die Ver"~/""Entschlüsselung
 arbeitet mit Addition, exklusiven Oder und Bitrotation. Durch einen extrem
-einfachen Aufbau ist der RC5-""Algorithmus leicht zu implementieren und zu
+einfachen Aufbau ist der RC5"=Algorithmus leicht zu implementieren und zu
 verifizieren.
 \begin{align*}
   x_{1}' &= rot(x_{1} \oplus x_{2}, x_{2}) \boxplus K_{1} &
@@ -3604,24 +3605,35 @@ Entschlüsselung der Nachricht gesichert:
 
 \chapter{Public-Key-Kryptosysteme}
 
-\textit{klassisch:} symmetrische Verfahren, d.\,h. Sender und Empfänger
-verfügen über zueinander passende Schlüssel (quasi-gleiche Schlüssel), die
-beide geheim gehalten werden müssen.
+Die bisher behandelten Verschlüsselungsverfahren basierten alle darauf, dass
+Alice und Bob über den gleichen Schlüssel (genauer: zwei quasi"=gleiche
+Schlüssel) verfügen. Dieser Schlüssel musste von beiden geheim gehalten
+werden, was auch zu dem Problem führte, dass beide vorher auf einem sicheren
+Weg den geheimen Schlüssel verabreden mussten.
 
-\textit{neu:} asymmetrische Verfahren, d.\,h. es gibt ein Paar von Schlüsseln
-für den Empfänger. Der Schlüssel zum Verschlüsseln ist öffentlich, deshalb
-kennt ihn auch der Sender. Der Schlüssel zum Entschlüsseln ist geheim,
-privater Schlüssel für den Empfänger.
+Dies ist oft nicht praktikabel, denn Schlüssel sollten auch nicht mehrfach
+verwendet werden und vor jeder Kommunikation ein persönliches Treffen
+abzuhalten ist aufwendig.
 
-Entscheidend dabei ist, dass die Kenntnis des öffentlichen Schlüssels keine
-Rückschlüsse auf den privaten Schlüssel erlaubt.
+Bei der \highl{asymmetrischen Verschlüsselung} besitzt Bob, der Empfänger, ein
+Paar von Schlüsseln. Der \highl{öffentliche Schlüssel} ist für alle Leute
+zugängig und wird zum Verschlüsseln von Nachrichten, deren Empfänger Bob ist,
+verwendet. Der \highl{private Schlüssel} wird von Bob \textit{geheim}
+gehalten, denn damit kann er Nachrichten, die mit seinem öffentlichen
+Schlüssel verschlüsselt wurden, entschlüsseln.
+
+Der entscheidente Unterschied zu den symmetrischen Verschlüsselungsverfahren
+ist der, dass die Kenntnis des öffentlichen Schlüssels keine Rückschlüsse auf
+den privaten Schlüssel erlaubt. Eine Nachricht, die also mit einem
+öffentlichen Schlüssel chiffriert wurde, kann nur mit dem dazu passenden
+geheimen Schlüssel dechiffriert werden.
 
 \section{Das Problem des Tauschens geheimer Schlüssel}
 
-Alice (Sender) und Bob (Empfänger) kommunizieren über einen unsicheren Kanal
-und wollen daher ihre Nachrichten verschlüsseln. Dabei stehen sie vor dem
-Problem, dass sie ein Paar geheim zuhaltender Schlüssel über diesen Kanal
-austauschen müssen. (\textit{engl. secret key agreement problem})
+Alice und Bob kommunizieren über einen unsicheren Kanal und wollen daher ihre
+Nachrichten verschlüsseln. Dabei stehen sie vor dem Problem, dass sie ein Paar
+geheim zuhaltender Schlüssel über diesen Kanal austauschen müssen.
+(\textit{engl. secret key agreement problem})
 
 1976 stellten Diffie und Hellmann in "`New directions in
 cryptography"'\cite{diffihellman} ein Verfahren für dieses augenscheinlich
@@ -3635,32 +3647,41 @@ unlösbare Problem vor.
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& \multicolumn{3}{c|}{\parbox{.6\linewidth}{beide einigen sich
+    1.& \multicolumn{3}{c|}{\rule{0mm}{6mm}\parbox{.6\linewidth}{\centering Beide einigen sich
        auf eine große Primzahl~$p$ und eine primitive Wurzel~$g$; $g$ und $p$
-       sind öffentlich}}\\
-    2.& wählt zufällig eine große Zahl~$a$, berechnet
-       $\alpha=g^{a}\pmod{p}$; $a$ ist privat && wählt zufällig
+       sind öffentlich}}\\[2mm]
+    2.& Wählt zufällig eine große Zahl~$a$, berechnet
+       $\alpha=g^{a}\pmod{p}$; $a$ ist privat && Wählt zufällig
        eine große Zahl~$b$,  berechnet $\beta=g^{b}\pmod{p}$; $b$ ist privat\\
     3.& & $\xleftarrow{\beta} \xrightarrow{\alpha}$ &\\
-    4.& $K_{A}=\beta^{a}\pmod{p}$& & $K_{B}=\alpha^{b}\pmod{p}$\\
+    4.& $K=\beta^{a}\pmod{p}$& & $K=\alpha^{b}\pmod{p}$\\
     \hline
   \end{tabularx}
   \caption{Austausch eines geheimen Schlüssels in der Öffentlichkeit nach
     Diffie und Hellmann}
+  \label{tab:difhel-schl-tau}
 \end{table}
 
 Alice und Bob verabreden eine große Primzahl~$p$ und eine primitive
 Wurzel~$g$, die beide öffentlich bekannt seien können. Danach wählt jeder für
-sich eine zufällige, große Zahl~$a$ bzw. $b$ und berechnet
-$\alpha=g^{a}\pmod{p}$~(Alice) bzw. $\beta=g^{b}\pmod{p}$~(Bob). Diese beiden
+sich eine zufällige, große Zahl~$a$ bzw. $b$. Alice berechnet daraus
+$\alpha=g^{a}\pmod{p}$ und Bob berechnet $\beta=g^{b}\pmod{p}$. Diese beiden
 Ergebnisse tauschen dann beide wieder aus, wobei die Zahlen öffentlich
 zugänglich seien können. Jeder berechnet dann für sich das gemeinsame
-Geheimnis~$K$ durch $K_{A}=\beta^{a}\pmod{p}$~(Alice) bzw.
-$K_{B}=\alpha^{b}\pmod{p}$~(Bob).
+Geheimnis~$k$ durch (Alice:) $k_{A}=\beta^{a}\pmod{p}$ bzw. (Bob:)
+$k_{B}=\alpha^{b}\pmod{p}$. \autoref{tab:difhel-schl-tau}
 \begin{gather*}
-  K_{A} \equiv \beta^{a}\pmod{p} \equiv (g^{b})^{a}\pmod{p}\equiv
-     (g^{a})^{b}\pmod{p} = \alpha^{b}\pmod{p} = K_{B}
+  k_{A} \equiv \beta^{a} \equiv (g^{b})^{a}\equiv
+     (g^{a})^{b} = \alpha^{b} = k_{B}\pmod{p}
 \end{gather*}
+
+Aus den öffentlichen Größen $\alpha,\beta,p$ und $g$ kann man nicht das
+Geheimnis $k$ ermitteln, weil man dafür eine der beiden geheimen Zahlen~$a$
+oder $b$ benötigt, um $\alpha^{b}$ bzw. $\beta^{a}$ berechnen zu können.
+Könnte man eine der Zahlen~$a$ oder $b$ ermitteln, so wäre dies ein Weg, den
+diskreten Logarithmus $a=\log_{g}\alpha\pmod{p}$ bzw.
+$b=\log_{g}\beta\pmod{p}$ zu berechnen, was nach \autoref{sec:diskrlog} (in
+Polynomialzeit) nicht möglich ist.
 
 \subsection{Das Protokoll von Rivest und Sherman}
 
@@ -3670,34 +3691,41 @@ $K_{B}=\alpha^{b}\pmod{p}$~(Bob).
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& wählt zufällig 2 große Zahlen~$x,y$, berechnet $x\circ y$; $x$ privat,
+    1.& Wählt zufällig 2 große Zahlen~$x,y$, berechnet $x\circ y$; $x$ privat,
        $y,x\circ y$ öffentlich
        &&\\
     2.& & $\xrightarrow{y,x\circ y}$& \\
-    3.& & & wählt zufällig eine große Zahl~$z$, berechnet $y\circ z$; $z$
+    3.& & & Wählt zufällig eine große Zahl~$z$, berechnet $y\circ z$; $z$
        privat, $y\circ z$ öffentlich\\
     4.& & $\xleftarrow{y\circ z}$& \\
-    5.& berechnet $K_{A}=x\circ(y\circ z)$& & berechnet $K_{B}=(x\circ y)\circ z$
+    5.& Berechnet $K_{A}=x\circ(y\circ z)$& & Berechnet $K_{B}=(x\circ y)\circ z$\\
+    \hline
   \end{tabularx}
   \caption{Austausch eines geheimen Schlüssels in der Öffentlichkeit nach
     Rivest und Shermann}
+  \label{tab:rivsher-schl-tau}
 \end{table}
 
-Alice wählt zufällig zwei große Zahlen~$x$ und $y$ und berechnet $x\circ y$,
+Alice wählt zufällig zwei große Zahlen~$x$ und $y$ und berechnet daraus $x\circ y$,
 wobei $\circ$ eine zweistellige und assoziative Operation ist, die stark "`nicht
-invertierbar"' ist, d.\,h. die Kenntnis von $x\circ y$ und $y$ erlaubt keine
-Rückschlüsse auf~$x$. Die Zahl~$x$ bleibt privat und die Zahlen~$y$ und
+invertierbar"' ist, d.\,h. die Kenntnis von $x\circ y$ und eines Operanten~$x$
+oder $y$ erlaubt (in Polynomialzeit) keine Rückschlüsse auf den anderen
+Operanten. Die Zahl~$x$ bleibt privat und die Zahlen~$y$ und
 $x\circ y$ übermittelt sie an Bob, wobei die Zahlen öffentlich zugänglich seien
 können. Bob wählt sich dann zufällig eine große Zahl~$z$, die privat bleibt,
 und berechnet $y\circ z$. Dieses Ergebnis teilt er Alice mit und auch hier kommt
 es nicht auf die Geheimhaltung an. Somit haben beide jetzt das gemeinsame
-Geheimnis $x\circ y\circ z$
+Geheimnis $k=x\circ y\circ z$. \autoref{tab:rivsher-schl-tau}
 \begin{gather*}
-  K_{A} = x\circ(y\circ z) = (x\circ y)\circ z = K_{B}
+  k_{A} = x\circ(y\circ z) = (x\circ y)\circ z = k_{B}
 \end{gather*}
 
-\help{Ist bei beiden Verfahren wirklich sichergestellt, dass man aus den
-  öffentlichen Größen keine Rückschlüsse auf das Geheimnis ziehen kann?}
+Damit Eve (der Angreifer) an das Geheimnis $k$ gelangt, muss sie entweder an
+die Zahl $x$ oder $z$ gelangen. Da aber eine der Forderungen an die
+Operation~$\circ$ ist, dass man mit der Kenntnis von $x\circ y$ und $y$ nicht
+auf $x$ schließen kann, ist es für Eve nicht möglich, $x$ aus $x\circ y$ bzw.
+$z$ aus $y\circ z$ zu berechnen. Würde Eve also an das Geheimnis kommen, würde $\circ$ nicht die
+gestellten Anforderungen erfüllen.
 
 \section{Das Konzept der Einwegfunktion}
 \label{sec:rsa-math}
@@ -3739,8 +3767,8 @@ Im Folgenden sei $f_{a,n}\colon\Z_{n}\mapsto\Z_{n}$ wie folgt definiert:
   Klasse~$\FP$ der in Polynomialzeit berechenbaren Funktionen.
 
   \begin{proof}
-    Folgende rekursive Prozedur berechnet $f_{a,n}(m)$. Diese nennt man
-    \highl{square-and-multiply-Algorithmus}.
+    Folgende rekursive Prozedur, \highl{square-and-multiply-Algorithmus}
+    genannt, berechnet $f_{a,n}(m)$.
     \begin{Verbatim}[gobble=4]
     function (a,m,n)
     begin
@@ -4029,15 +4057,14 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
         entfällt dieser Teil}
       &\equiv x^{m\cdot v}\pmod{n}\\
       \intertext{Da $u$ und $v$ so bestimmt sind, dass $u\cdot\phi(n)+v\cdot
-        m=1$ gilt, ergibt sich}
-      &\equiv x^{u\cdot\phi(n)+1}\pmod{n}
+        m=1$ gilt, ergibt sich mit $\tilde{u}=-u$}
+      &\equiv x^{\tilde{u}\cdot\phi(n)+1}\pmod{n}
     \end{align*}
-    \help{Wieso können wir einfach aus $1-u\cdot\phi(n)$ das + machen?}
 
     \begin{enumerate}[1.\,{Fall}]
      \item Für $x\equiv0\pmod{p}$ gilt die Kongruenz trivialer Weise.
       \begin{gather*}
-        a\equiv 0^{u\cdot\phi(n)+1} \equiv 0 \equiv x\pmod{p}
+        a\equiv 0^{\tilde{u}\cdot\phi(n)+1} \equiv 0 \equiv x\pmod{p}
       \end{gather*}
 
      \item Mit $x\not\equiv0\pmod{p}$ sind die Bedingungen für den kleinen
@@ -4045,9 +4072,9 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
       1\pmod{p}$, d.\,h. $x^{p-1} = r\cdot p+1$ für ein passendes $r$. Also
       ergibt sich für die Kongruenz:
       \begin{align*}
-        a&\equiv x^{u\cdot\phi(n)+1} = x^{u\cdot(p-1)\cdot(q-1)}\cdot x =
-           (x^{p-1})^{u\cdot(q-1)}\cdot x
-        \equiv 1^{u\cdot(q-1)}\cdot x\equiv x\mod p
+        a&\equiv x^{\tilde{u}\cdot\phi(n)+1} = x^{\tilde{u}\cdot(p-1)\cdot(q-1)}\cdot x =
+           (x^{p-1})^{\tilde{u}\cdot(q-1)}\cdot x
+        \equiv 1^{\tilde{u}\cdot(q-1)}\cdot x\equiv x\mod p
       \end{align*}
     \end{enumerate}
     Für alle $x$ ist also $a\equiv x\pmod{p}$.
@@ -4060,7 +4087,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
 \begin{dogma}
   Wir glauben, dass die \highl{Faktorisierung} (Zerlegung in Primfaktoren)
   einer Zahl nicht in Polynomialzeit berechenbar ist. Die Falltürinformation
-  $p\cdot q=n$ ist also nicht $\FP$-""invertierbar.
+  $p\cdot q=n$ ist also nicht $\FP$"=invertierbar.
 \end{dogma}
 
 \begin{bemerk}
@@ -4073,7 +4100,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
   Polynomialzeit berechenbar.
 
   Damit ist die Funktion $g_{n,m}$ ein Kandidat für eine
-  Falltür-""Einwegfunktion.
+  Falltür"=Einwegfunktion.
 \end{bemerk}
 
 \begin{lemma}
@@ -4128,7 +4155,7 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
 \end{bsp}
 
 Wir haben jetzt zwei Funktionen, von denen wir annehmen, dass sie nicht
-$\FP$-invertierbar sind: der diskrete Logarithmus und die Faktorisierung von
+$\FP$"=invertierbar sind: der diskrete Logarithmus und die Faktorisierung von
 Zahlen. Die Public-Key-Verfahren beruhen auf diesen Funktionen, wobei RSA auf
 der Faktorisierung von Zahlen und Elgamal auf dem diskreten Logarithmus
 basiert.
@@ -4148,13 +4175,13 @@ Dies gelang ihnen nicht, jedoch entwickelten sie dabei das RSA-Verfahren.
     \hline
     Schritt& Alice& Kanal& Bob\\
     \hline
-    1.& & & Wähle große Primzahlen $p,q$, bestimme $n=p\cdot q$\\
-    2.& & & Wähle große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
-    3.& & & Berechne das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
+    1.& & & Wählt große Primzahlen $p,q$, bestimmt $n=p\cdot q$\\
+    2.& & & Wählt große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
+    3.& & & Berechnt das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
     4.& & $\xleftarrow{n,e}$& \\
-    5.& Chiffriere die Botschaft~$m\leq n-1$ durch $c\equiv m^{e}\pmod{n}$& & \\
+    5.& Chiffriert die Botschaft~$m\leq n-1$ durch $c\equiv m^{e}\pmod{n}$& & \\
     6.& & $\xrightarrow{c}$& \\
-    7.& & & Dechiffriere $m\equiv c^{d}\pmod{n}$\\
+    7.& & & Dechiffriert $m\equiv c^{d}\pod{n}$\\
     \hline
   \end{tabularx}
   \caption{Das RSA-Verfahren}
@@ -4396,7 +4423,7 @@ funktioniert, die nicht das Produkt zweier Primzahlen sind!
         sich $c-1$ auch als $l_{i}\cdot(q_{i}-1)$ schreiben und es gilt
         \begin{gather*}
           a^{ed}\equiv a^{k(p-1)(c-1)}\cdot a
-             \equiv a^{k(p-1) l_{i}(q_{i}-1)}\cdot a
+             % \equiv a^{k(p-1) l_{i}(q_{i}-1)}\cdot a
              \equiv (a^{q_{i}-1})^{k\cdot l_{i}\cdot(p-1)} \cdot a
              \equiv a\pmod{q_{i}}
         \end{gather*}
@@ -4464,12 +4491,12 @@ praktisch nicht berechenbar ist.
     \hline
     Schritt& Alice& Kanal& Bob\\
     \hline
-    1.& && wählt große Primzahl~$n$ und dazu eine primitive Wurzel~$g$\\
-    2.& && wählt zufällig $b\in\Z_{n-1}^{*}$ und berechnet
-       $\beta\equiv g^{b}\pmod{n}$\\
+    1.& && Wählt große Primzahl~$n$ und dazu eine primitive Wurzel~$g$\\
+    2.& && Wählt zufällig $b\in\Z_{n-1}^{*}$ und berechnet
+       $\beta\equiv g^{b}\pod{n}$\\
     3.& & $\xleftarrow{(n,g,\beta)}$& \\
-    4.& wählt zufällig $a\in\Z_{n-1}^{*}$ und berechnet
-       $\alpha\equiv g^{a}\pmod{n}$&&\\
+    4.& Wählt zufällig $a\in\Z_{n-1}^{*}$ und berechnet
+       $\alpha\equiv g^{a}\pod{n}$&&\\
     5.& $c\equiv m\cdot \beta^{a}\pmod{n}$&& \\
     5.& & $\xrightarrow{c,\alpha}$& \\
     6.& & & $m\equiv c\cdot\alpha^{n-1-b}\pmod{n}$\\
@@ -4580,11 +4607,11 @@ in modifizierter Form für die Authentifizierung.
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& && wählt große Primzahl~$n$ und dazu eine primitive Wurzel~$g$\\
-    2.& && wählt zufällig $b\in\Z_{n-1}^{*}$ und berechnet
+    1.& && Wählt große Primzahl~$n$ und dazu eine primitive Wurzel~$g$\\
+    2.& && Wählt zufällig $b\in\Z_{n-1}^{*}$ und berechnet
        $\beta\equiv g^{b}\pmod{n}$\\
-    3.& && wählt zufällig $r\in\Z_{n-1}^{*}$ und berechnet $\rho=g^{r}\pmod{n}$\\
-    4.& && bestimmt $s'\cdot r\equiv1\pod{n-1}$ und berechnet $s\equiv
+    3.& && Wählt zufällig $r\in\Z_{n-1}^{*}$ und berechnet $\rho=g^{r}\pmod{n}$\\
+    4.& && Bestimmt $s'\cdot r\equiv1\pod{n-1}$ und berechnet $s\equiv
        s'(m-b\cdot\rho)\pod{n-1}$; $sig_{Bob}(m) = (\rho,s)$\\
     5.& & $\xleftarrow{(n,g,\beta),m,(\rho,s)}$& \\
     6.& Prüft $g^{m} = \beta^{\rho}\cdot\rho^{s}\pod{n}$& & \\
@@ -4627,20 +4654,20 @@ Dies entspricht der Kongruenz, die Alice zur Verifikation prüft:
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& & & Wählt große Primzahlen $p,q$, bestimme $n=p\cdot q$\\
+    1.& & & Wählt große Primzahlen $p,q$, bestimmt $n=p\cdot q$\\
     2.& & & Wählt große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
     3.& & & Berechnet das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
-    4.& & & Erstellt $sig_{Bob}(m) \equiv m^{d}\pmod{n}$
+    4.& & & Erstellt $sig_{Bob}(m) \equiv m^{d}\pod{n}$\\
     5.& & $\xleftarrow{(n,e),m,sig_{Bob}(m)}$& \\
-    6.& & & Prüft $m\equiv(sig_{Bob}(m))^{e}\pmod{n}$\\
+    6.& Prüft $m\equiv(sig_{Bob}(m))^{e}\pmod{n}$ &&\\
     \hline
   \end{tabularx}
   \caption{RSA-Verfahren für digitale Signaturen}
 \end{table}
 
 Die Erstellung einer Signatur mit Hilfe des RSA-Verfahrens \autoref{tab:rsa}
-ist recht simpel. Wenn Bob eine Nachricht signieren will, tut sie dies,
-indem sie die Nachricht mit seinem geheimen Schlüssel~$d$ verschlüsselt:
+ist recht simpel. Wenn Bob eine Nachricht signieren will, tut er dies,
+indem er die Nachricht mit seinem geheimen Schlüssel~$d$ verschlüsselt:
 $sig_{Bob}(m) = m^{d}\pmod{n}$. Alice kann die Signatur dann prüfen, indem sie
 mit dem öffentlichen Schlüssel~$e$ von Bob die Kongruenz
 $m\equiv(sig_{Bob}(m))^{e}\pmod{n}$ berechnet.
@@ -4648,12 +4675,10 @@ $m\equiv(sig_{Bob}(m))^{e}\pmod{n}$ berechnet.
 Der Beweis für die Korrektheit erfolgt analog zum Beweis für die Korrektheit
 von RSA mit
 \begin{gather*}
-  sig_{Bob}(m)^{e} \equiv m^{d\cdot e} \equiv M\pmod{n}
+  sig_{Bob}(m)^{e} \equiv m^{d\cdot e} \equiv m\pmod{n}
 \end{gather*}
 
 \section{Das Shamir-ohne-Schlüssel-Protokoll}
-
-In Anlehnung an den Diffie-Helman-Schlüsseltausch.
 
 \begin{table}
   \centering
@@ -4661,30 +4686,47 @@ In Anlehnung an den Diffie-Helman-Schlüsseltausch.
     \hline
     Schritt& \multicolumn{1}{c|}{Alice}& Kanal& \multicolumn{1}{c|}{Bob}\\
     \hline
-    1.& \multicolumn{3}{c}{\parbox{.6\linewidth}{wähle eine große Primzahl;
-       $p$ öffentlich}}\\
-    2.& für eine Nachricht $M$ berechne $x =
-       M^{a}\pmod{p}$; $x$ öffentlich& & \\
-    3.& & $\xrightarrow{x}$& \\
-    4.& & & berechnet $y= x^{b}\pmod{p}$; $y$ öffentlich\\
-    5.& & $\xleftarrow{y}$& \\
-    6.& berechnet $z=y^{a^{-1}}\pmod{p}$; $z$ öffentlich& & \\
-    7.& & $\xrightarrow{z}$& \\
-    8.& & & $M=z^{b-1}\pmod{p}$
+    1.& Wählt große Primzahl~$p$ &&\\
+    2.& & $\xrightarrow{p}$ &\\
+    3.& Wählt Einheit~$a$ in $\Z_{p}^{*}$ && Wählt Einheit~$b$ in $\Z_{p}^{*}$\\
+    4.& Berechnet $x = m^{a}\pod{p}$ für eine Nachricht~$m$ &&\\
+    5.& & $\xrightarrow{p}$& \\
+    6.& & & $y= x^{b}\pmod{p}$\\
+    7.& & $\xleftarrow{y}$& \\
+    8.& $z=y^{a^{-1}}\pmod{p}$& & \\
+    9.& & $\xrightarrow{z}$& \\
+    10.& & & $m=z^{b^{-1}}\pmod{p}$\\
+    \hline
   \end{tabularx}
   \caption{Das Protokoll Shamir-ohne-Schlüssel}
 \end{table}
 
-Alice hat ihr Geheimnis~$a$, Bob hat sein Geheimnis~$b$, aber es gibt kein
-gemeinsames Geheimnis. Alice berechnet ein Paar $(a,a^{-1})$ mit der
-Eigenschaft $a\cdot a^{-1}\equiv1\pmod{p-1}$ und entsprechend berechnet Bob
-ein Paar~$(b,b^{-1})$ mit der Eigenschaft, dass $b\cdot
-b^{-1}\equiv1\pmod{p-1}$ ist. Dann gilt
-\begin{gather*}
-  z^{b^{-1}} \equiv y^{a^{-1}\cdot b^{-1}}
+Analog zum Diffie"=Helman"=Schlüsseltausch (\autoref{tab:difhel-schl-tau})
+funktioniert das Shamir-""ohne"=Schlüssel"=Protokoll ohne ein gemeinsames
+Geheimnis von Alice und Bob. Jeder hat ein Geheimnis für sich, aber es gibt
+kein gemeinsames Geheimnis.
+
+Einer von beiden bestimmt eine große Primzahl~$p$, die er dem anderen
+mitteilt. Daraufhin wählt jeder sein Geheimnis, als eine Einheit im Ring
+$\Z_{p-1}^{*}$. Alice berechnet ein Paar $(a,a^{-1})$ mit der Eigenschaft
+$a\cdot a^{-1}\equiv1\pmod{p-1}$ und entsprechend berechnet Bob ein
+Paar~$(b,b^{-1})$ mit der Eigenschaft, dass $b\cdot b^{-1}\equiv1\pmod{p-1}$
+ist.
+
+Alice verschlüsselt die Nachricht~$m$ mit ihrem Geheimnis~$a$ durch $x\equiv
+m^{a}\pmod{p}$. Dieses $x$ sendet sie an Bob der die Nachricht ein zweites Mal
+durch $y\equiv x^{b}\pmod{p}$ verschlüsselt. Dieses $y$ übergibt er wieder an
+Alice, die dann ihr "`Schloss"'~$a$ durch $z\equiv y^{a^{-1}}\pmod{p}$ wieder
+entfernt. Daraufhin kann Bob sein "`Schloss"'~$b$ entfernen und erhält die
+Nachricht $m\equiv z^{b^{-1}}\pmod{p}$. Es gilt also
+\begin{align*}
+  m &\equiv z^{b^{-1}} \equiv y^{a^{-1}\cdot b^{-1}}
      \equiv x^{b\cdot a^{-1}\cdot b^{-1}}
-     \equiv m^{a\cdot b\cdot a^{-1}\cdot b^{-1}} \equiv m
-\end{gather*}
+     \equiv m^{a\cdot b\cdot a^{-1}\cdot b^{-1}}\pmod{p}\\
+  &\equiv (m^{b\cdot b^{-1}})^{l_{a}(p-1)+1}
+     \equiv 1^{l_{a}}\cdot m^{l_{b}(p-1)+1}
+     \equiv 1^{l_{b}}\cdot m \pmod{p}
+\end{align*}
 
 % 29.1.
 
