@@ -119,6 +119,7 @@
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
 \newcommand*{\R}{\mathbb{R}}      % reellen Zahlen
 \newcommand*{\F}{\mathbb{F}}      % endliche Ringe
+\newcommand*{\NP}{\mathrm{NP}}    % Klasse der nichtpolynomiellen Probleme
 \newcommand*{\FP}{\mathrm{FP}}    % Funktionen, die in Polynomialzeit
                                   % berechnet werden können
 
@@ -1179,9 +1180,10 @@ gewählten Positionen die gleichen Buchstaben zu finden
 Da man den Koinzidenzindex~$I(c)$ für den verschlüsselten Text mit der
 \autoref{eq:koinzi} bestimmen kann, kann man so einen Schätzwert für die
 Periodenlänge~$d$ der Verschlüsselung aus \autoref{eq:koinzi_poly} ableiten.
-\begin{gather*}
+\begin{gather}
+  \label{eq:fried-d}
   d = \frac{l(I_{d}-I_{z})}{I_{d} - lI_{z} +(l-1)I(c)}
-\end{gather*}
+\end{gather}
 
 Diese Schätzung kann man mit den Ergebnissen aus einem Kasiski-Test oder einem
 Brute-Force-Angriff vergleichen, um die Möglichkeiten für die wahre
@@ -3750,7 +3752,7 @@ der Einwegfunktion, das Funktionen beschreibt, die einfach zu berechnen, aber
 \begin{bemerk}
   \label{bem:1}
   Aus der Komplexitätstheorie ist bekannt, dass eine solche Einwegfunktion nur
-  dann existiert, wenn $\mathrm{P}\ne \mathrm{NP}$ ist.
+  dann existiert, wenn $\mathrm{P}\ne \NP$ ist.
 \end{bemerk}
 
 % 10.1.
@@ -3811,7 +3813,7 @@ $m_{1}=4$ und $m_{2}=10$ gleich.
 
 Könnten wir beweisen, dass $f_{a,n}$ nicht $\FP$-invertierbar ist, dann wäre
 damit eine echte Einwegfunktion gefunden und man könnte nach \autoref{bem:1}
-zeigen, dass $\mathrm{P}\ne\mathrm{NP}$ ist.
+zeigen, dass $\mathrm{P}\ne\NP$ ist.
 
 \begin{bemerk}
   Wenn $f$ eine Einwegfunktion ist, dann kann auch der \textit{legitimierte}
@@ -4738,44 +4740,62 @@ Nachricht $m\equiv z^{b^{-1}}\pmod{p}$. Es gilt also
 \end{defini}
 
 \begin{bsp}
-  $\Sigma=\{0,1\}$ für den Wert $w=b_{1}b_{2}\dotso b_{k}$ sei $H(w) =
-  b_{1}\oplus b_{2}\oplus \dotsb \oplus b_{k}$; $H(w)=1$ \gdw die Anzahl der
-  Einsen in $w$ ist ungerade. $H\colon\Sigma^{*} \mapsto\sigma^{1}$
+  Die \highl{Parität} ist eine Hashfunktion. Für $\Sigma=\{0,1\}$ ist die
+  Parität für einen Wert $w=w_{1}w_{2}\dotso w_{k}\in\Sigma^{k}$ genau dann 1,
+  wenn die Anzahl der Einsen in $w$ ungerade ist.
+  \begin{gather*}
+    H\colon\Sigma^{*} \mapsto\Sigma^{1},\quad
+       H(w) = w_{1}\oplus w_{2}\oplus \dotsb \oplus w_{k}
+  \end{gather*}
+
+  Genauso ist die \highl{Quersumme} eine Hashfunktion. Für
+  $\Sigma=\{0,1,\dotsc,9\}$ ist die Quersumme von $w\in\Sigma^{k}$
+  \begin{gather*}
+    H(w) = \sum_{i=1}^{k} w_{i}
+  \end{gather*}
 \end{bsp}
 
-Trivialer Weise kann eine Hashfunktion nicht injektiv sein.
+Wie leicht ersichtlich ist, kann eine Hashfunktion nicht injektiv sein, da sie
+immer von einer mächtigeren Menge in eine schmächtigere Menge abbildet.
 
-In der informatischen Pracis werden Hashfunktionen häufig durch
+In der informatischen Praxis werden Hashfunktionen häufig durch
 Kopressionsfunktionen erzeugt. Ein \highl{Kompressionsfunktion} ist eine
 Abbildung der Form $K\colon\Sigma^{m}\mapsto\Sigma^{n}$ für $m>n$.
-
-Zwei Forderungen:
+Es werden zwei Forderungen an die Funktion gestellt:
 \begin{itemize}
  \item $H$ (und $K$) müssen schnell berechenbar sein
  \item $H(w) = H(w')$ für $w\ne w'$ sollte nicht zu häufig auftreten! Eine
   solche Situation nennt man \highl{Kollision}.
 \end{itemize}
 
-Fü kryptographische Hashfunktionen kommt eine weitere Forderung hinzu: Wir
-betrachten folgende Situation bei digitalen Signaturen: Alice schickt neben
-der Nachricht~$m$ ihren Identitätsnachweise $sig_{Alice}(m)$ und also
-insgesamt $(m,sig_{Alice}(m))$.
+Die beiden Beispiele erfüllen die erste Forderung auf alle Fälle. Jedoch gibt
+es bei der Parität sehr viele Kollisionen, bei der Quersumme sind es weniger,
+aber sie treten immer noch häufig auf.
 
-Problem: Die Signatur ist genauso lang wie die Nachricht! Idee: Den Hashwert
-einer Nachricht zu signieren. Aber der Hashwert $H(m)$ ist leicht zu berechnen.
-Findet ein Angreifer eine Nachricht $m'$ mit $H(m')=H(m)$, dann gilt: $(m',
-sig_{Alice}(H(m))) = (m', sig_{Alice}(H(m')))$ und damit kann sich der
-Angreifer als Alice ausgeben.
+Für kryptographische Hashfunktionen sind diese Forderungen jedoch nicht
+ausreichend, denn es besteht folgende Angriffsmöglichkeit: Wenn Alice neben
+der Nachricht~$m$ ihren Identitätsnachweis $sig_{Alice}(m)$, also insgesamt
+$(m,sig_{Alice}(m))$, schickt, ist die Signatur genauso lang wie die
+Nachricht, die zu übertragenden Daten verdoppeln sich also. Daher verwendet
+man den Hashwert einer Nachricht für eine \highl{digitale Signatur}.
 
-Um genau das zu vermeiden, formulieren wir folgende Eigenschaften einer
-kryptographischen \highl{Hashfunktion}~$H$:
+Aber nach der obigen Forderung ist der Hashwert~$H(m)$ leicht zu berechnen.
+Mallory, der Angreifer, kann also leicht eine Nachricht~$m'$ mit $H(m')=H(m)$
+finden und sich dann als Alice ausgeben, denn er besitzt für seine
+Nachricht~$m'$ eine gütige Signatur von Alice
+\begin{gather*}
+  (m', sig_{Alice}(H(m))) = (m', sig_{Alice}(H(m')))
+\end{gather*}
+
+Um genau das zu vermeiden, formulieren wir folgende Eigenschaften für eine
+\highl{kryptographische Hashfunktion}~$H$:
 \begin{itemize}
  \item $H$ ist in Polynomialzeit berechenbar; $H\in\FP$
  \item $H$ ist eine Einwegfunktion
- \item $H$ ist (schwach) \highl{Kollitionsresistent}; d.\,h. für gegebenes $m$
+ \item $H$ ist (schwach) \highl{kollitionsresistent}; d.\,h. für gegebenes $m$
   gibt es keinen Polynomialzeitalgorithmus, der ein $m'\ne m$ mit der
   Eigenschaft $H(m')=H(m)$ berechnet.
- \item $H$ ist (stark) Kollitionsresistent; d.\,h. es gibt keinen
+ \item $H$ ist (stark) kollitionsresistent; d.\,h. es gibt keinen
   Polynomialzeitalgorithmus, der überhaupt eine Kollision berechnet.
 \end{itemize}
 
@@ -4789,61 +4809,113 @@ kryptographischen \highl{Hashfunktion}~$H$:
 Konsequenz: $H$ ist eine Einwegfunktion, deswegen probabilistische Algorithmen
 zur Erzeugung von Kollisionen.
 
-\section{Das Geburtstagsparadoxon}
-
 \begin{satz}
-  (von Merkle) Aus einer stark kollisionsrestistenten Kompressionsfunktion~$K$
+  Aus einer stark kollisionsrestistenten Kompressionsfunktion~$K$
   der Form $K\colon\Z_{2}^{m} \mapsto \Z_{2}^{n}$ ($m>n$) lässt sich eine
   stark kollisionsrestistente Hashfunktion~$H\colon\Z_{2}^{m} \mapsto
-  \Sigma_{2}^{n}$ konstruieren.
-  lässt sich
+  \Sigma_{2}^{n}$ konstruieren. (von Merkle)
 \end{satz}
 
 Da nicht bewiesen ist, dass es kryptographische Einwegfunktionen gibt,
 verwendet man nur solche Hashfunktionen, deren Kollisionsrestistenz (bisher)
-nicht widerlegt ist. Dazu werden Verschlüsselungsverfahren benutzt, die als
-sicher gelten. Es ergibt sich die Frage nach der Länge~$n$ der Hashwerte.
+nicht widerlegt ist. Gute Kandidaten dafür sind Verschlüsselungsverfahren, die
+als sicher gelten.
 
-Der gewünschte Hashwert sei $n$. Dazu benötigt man ein
-Verschlüsselungsverfahren für das die Klartext- und Chiffremenge $\Z_{2}^{n}$
-ist, die Verschlüsselungsfunktion~$E_{k}\colon\Z_{2}^{n}\mapsto\Z_{2}^{n}$ und
-der zugehörige Schlüssel~$k\in\Z_{2}$. Dann lässt sich eine
-Hashfunktion~$H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ wie folgt definieren: Es
-sei $x=x_{1}x_{2}\dotso x_{l}$ ($x$ in Blöcke zerlegt), wobei alle
-$x_{i}\in\Z_{2}^{*}$ ($x_{l}$ bis zur Länge $n$ auffüllen). Ausgangsschlüssel
-$k_{0}\in\Z_{2}^{n}$. Wir berechnen $k_{i}=f(x_{i},k_{i-1})$ für
-$i=1,\dotsc,l$ und $H(x) := k_{l}$. Dabei ist $f\colon\Z_{2}^{n}\times
-\Z_{2}^{n} \mapsto\Z_{2}^{n}$ eine Funktion, die durch die
-Verschlüsselungsfunktion definiert ist: Man unterscheidet vier Typen:
-\begin{itemize}
- \item $k_{i} = E_{k_{i-1}}(x_{i})\oplus x_{i}$
- \item $k_{i} = E_{k_{i-1}}(x_{i})\oplus x_{i}\oplus k_{i-1}$
- \item $k_{i} = E_{k_{i-1}}(x_{i}\oplus k_{i-1})\oplus x_{i}$
- \item $k_{i} = E_{k_{i-1}}(x_{i}\oplus k_{i-1})\oplus x_{i}\oplus k_{i-1}$
-\end{itemize}
+Konkret wird ein Verschlüsselungsverfahren gebraucht, für das die Klartext-
+und Geheimtextmenge~$\Z_{2}^{n}$ ist und die Verschlüsselungsfunktion~$E_{k}$
+immer wieder auf diese Menge abbildet, wobei der zugehörige Schlüssel~$k\in
+\Z_{2}^{n}$ ebenfalls aus der Menge stammt. Damit lässt sich eine
+\highl{Hashfunktion}~$H\colon\Z_{2}^{*}\mapsto\Z_{2}^{n}$ wie folgt
+konstruieren:
 
-Es bleibt die Frage: "`Wie groß soll $n$ sein?"' Zwei sich widersprechende
-Richtungen: nicht zu groß (eine Hashfunktion soll komprimieren), aber nicht zu
-klein, da sonst zu viele Kollisionen. jetzt: Geburtstagsparadoxon
+Es sei $x=x_{1}x_{2}\dotso x_{l} \in\Z_{2}^{*}$ eine Nachricht, die in Blöcke
+der Länge~$n$ zerlegt wird, d.\,h. $x_{i}\in\Z_{2}^{n}$, --~der letzte Block
+wird einfach bis zur Länge $n$ aufgefüllt.
 
-\begin{satz}[Geburtstagsparadoxon]
-  Ein Merkmal komme in genau $m$ Ausprägungen vor -- $m$ verschiedene
-  Hashwerte. Jede Person hat genau eine Ausprägung des Merkmals. Es sei $k$
-  die Anzahl der Personen. Die Wahrscheinlichkeit dafür, dass zwei Personen
-  dieselbe Merkmalsausprägung haben, ist $\geq\frac{1}{2}$, falls $k\geq
-  \frac{\sqrt{1+8\cdot m\ln2}+1}{2}\approx 1\mathord{,}18\sqrt{m}$.
+Der Hashwert einer Nachricht~$H(x)$ ist der Wert~$k_{l}$ nach der
+$l$.\,Iteration der Vorschrift $k_{i}=f(x_{i},k_{i-1})$ für $i=1,\dotsc,l$.
+Die Funktion $f\colon\Z_{2}^{n}\times\Z_{2}^{n}\mapsto\Z_{2}^{n}$ wird durch
+die Verschlüsselungsfunktion auf folgende Weise definiert, wobei man vier
+verschieden Typen unterscheidet:
+\begin{gather*}
+  f(x,k) =
+     \begin{cases}
+       E_{k}(x)\oplus x\\
+       E_{k}(x)\oplus x\oplus k\\
+       E_{k}(x\oplus k)\oplus x\\
+       E_{k}(x\oplus k)\oplus x\oplus k
+     \end{cases}
+\end{gather*}
 
-  Zum Beispiel gilt für $m=365$ $k\geq23$.
+Es bleibt die Frage: "`Wie groß soll $n$ sein?"' Es gibt zwei sich
+widersprechende Bestrebungen: $n$ sollte nicht zu groß (eine Hashfunktion soll
+komprimieren), aber auch nicht zu klein sein, da es sonst zu viele Kollisionen
+gibt.
+
+Aus der Stochastik ist das Geburtstagsparadoxon mit dem verblüffenden Resultat
+bekannt, dass sich unter 23~Personen mit der Wahrscheinlichkeit von
+$\frac{1}{2}$ mindestens zwei Personen befinden, die am gleichen Tag
+Geburtstag haben. Dessen Grundlage soll jetzt zur Klärung der Frage genutzt
+werden.
+
+\begin{satz}
+  Sei $H\colon\Sigma^{k}\mapsto\Sigma^{n}$ eine Hashfunktion, die für jede
+  Nachricht genau einen Hashwert erzeugt, wobei es $k$ verschiedene
+  Nachrichten und $n$ verschiedene Hashwerte gibt.
+
+  Die Wahrscheinlichkeit dafür, dass zwei Nachrichten~$m$ und $m'$ den gleichen
+  Hash\-wert~$H(m) = H(m')$ haben, ist $\geq\frac{1}{2}$, falls
+  \begin{gather*}
+    k\geq \frac{\sqrt{1+8\cdot n\cdot\ln2}+1}{2}
+       \approx 1\mathord{,}18\sqrt{n}
+  \end{gather*}
+
+  % 31.1.
+
+  \begin{proof}
+    Ein Elementarereignis $(g_{1},g_{2},\dotsc,g_{k})\in (\Sigma^{n})^{k}$ ist
+    die Zuordnung von $k$~Hashwerten auf $k$~Nachrichten, d.\,h. Nachricht~$i$
+    bekommt den Hashwerk~$g_{i}$ zugeordnet. Da die Zuordnung der Hashwerte
+    gleichverteilt ist, ergibt sich die Wahrscheinlichkeit für ein
+    Elementarereignis als $\bigl(\frac{1}{n}\bigr)^{k} = \frac{1}{n^{k}}$.
+
+    Die Wahrscheinlichkeit~$p$, dass es zwei (oder mehr) Nachrichten~$i,j$
+    gibt, die den gleichen Hashwert~$g_{i} = g_{j}$ haben, entspricht der
+    Wahrscheinlichkeit~$q=1-p$ der dualen Aufgabe, dass alle $g_{i}$ paarweise
+    verschieden sind.
+    \begin{gather*}
+      q = \frac{\card \{(g_{1},\dotsc, g_{k})\colon \text{alle $g_{i}$ sind
+         verschieden}\}}{n^{k}}
+         = \frac{1}{n^{k}} \prod_{i=0}^{k-1} n-i
+         = \prod_{i=0}^{k-1} 1-\frac{i}{n}
+    \end{gather*}
+    Die Faktoren $1-\frac{i}{n}$ lassen sich nach oben abschätzen durch
+    $e^{-\frac{i}{n}}$, denn $1+x\leq e^{x}$ für alle $x\in\R$.
+    \begin{gather*}
+      q\leq \prod_{i=0}^{k-1} e^{-\frac{i}{n}}
+         = e^{-\frac{1}{n}\sum\limits_{i=0}^{k-1}i}
+         = e^{-\frac{k(k-1)}{2n}}
+    \end{gather*}
+    Für $p\geq\frac{1}{2}$ bzw. $q\leq\frac{1}{2}$ ergibt sich also
+    \begin{align*}
+      e^{-\frac{k(k-1)}{2n}} \leq \frac{1}{2} \quad
+         &\gdw\quad -\frac{k(k-1)}{2n} \leq -\ln2\\
+         &\gdw\quad k^{2} - k - 2n\ln2 \geq 0\\
+         &\gdw\quad k\geq \frac{1}{2} + \sqrt{\frac{1}{4}+2n\ln2}
+    \end{align*}
+  \end{proof}
 \end{satz}
 
 Für eine Hashfunktion $H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ hat die
-"`Geburtstagsattake"' folgende Konsequenz: Das Erzeugen von etwa
-$2^{\frac{n}{2}}$ Hashwerten, impliziert das die Wahrscheinlichkeit für eine
-Kollision $\geq\frac{1}{2}$ ist. Dies bedeutet für die Praxis, dass $n=64$ ist
-zu kurz und damit zu unsicher, da $2^{32}\approx4\cdot10^{9}$ Hashwerte für
-eine Kollision berechnet werden müssen.
+"`Geburtstagsattake"' folgende Konsequenz: Es genügen $\sqrt{2^{n}}$
+Hashwerten, um mit einer Wahrscheinlichkeit $\geq\frac{1}{2}$ eine Kollision
+zu erzeugen. In der Praxis bedeutet dies, dass $n=64$ zu kurz und damit zu
+unsicher ist, da nur $2^{32}\approx4\cdot10^{9}$ Hashwerte für eine Kollision
+berechnet werden müssen. Daher werden in der Regel Hashfunktionen mit
+$n\geq128$ in der Praxis verwendet, bei digitalen Signaturen gilt sogar
+$n>168$.
 
-Illustration an einem Beispiel: "`Ein unehrenhaftes Protokoll"' Alice
+Illustration an einem Beispiel "`Ein unehrenhafter Vertrag"': Alice
 erarbeitet zwei Verträge: Der eine begünstigt Bob, der ander benachteiligt ihn
 und erzeugt für jeden Vertrag durch marginale Änderungen (z.\,B.
 hinzufügen/weglassen von Leerzeichen) $2^{32}$~Varianten, berechnet für jede
@@ -4851,108 +4923,97 @@ Variante den Hashwert und wählt die zwei Fassungen, deren Hashwerte gleich
 sind. Bob signiert den Hashwert und akzeptiert damit auch den für ihn
 nachteiligen Vertrag.
 
-% 31.1.
-
-\begin{proof}[für die Geburtstagsattake]
-  $m$ verschiedene Merkmalsausprägungen werden durch $\{1,2,\dotsc,m\}$
-  beschrieben. $k$ Personen bedeutet: wir betrachten den
-  Wahrscheinlichkeitsraum $\{1,2,\dotsc,m\}^{k}$ unter Gleichverteilung. Ein
-  Elementarereignis $(g_{1},g_{2},\dotsc, g_{k})\in\{1,2,\dotsc,m\}^{k}$
-  trifft zu \gdw für alle $i=1,\dotsc,k$ gilt: Person $i$ besitzt das Merkmal
-  $g_{i}$.
-
-  Die Wahrscheinlichkeit pro Elementarereignis ist
-  \begin{gather*}
-    \frac{1}{m^{k}}
-  \end{gather*}
-
-  Wir nehmen uns die duale Aufgabe her: Wie groß ist die Wahrscheinlichkeit,
-  dass alle $g_{i}$ paarweise verschieden sind.
-  \begin{gather*}
-    q = \frac{\card \{(g_{1},\dotsc, g_{k})\colon \text{alle $g_{i}$ sind
-       verschieden}\}}{m^{k}} = \frac{\prod_{i=0}^{k-1} (m-i)}{m^{k}} =
-      \prod_{i=0}^{k-1} (1-\frac{i}{m})
-  \end{gather*}
-  Es gilt für alle reellen $x\in\R\colon e^{x}\geq1+x$.
-  \begin{gather*}
-    q\leq \prod_{i=0}^{k-1} e^{-\frac{i}{m}} = e^{-\sum_{i=0}^{k-1}\frac{i}{m}}
-       = e^{-\frac{k(k-1)}{2m}}\\
-    e^{-\frac{k(k-1)}{2m}} \leq \frac{1}{2} \gdw -\frac{k(k-1)}{2m} \leq \ln2
-       \gdw k\geq \frac{1+\sqrt{1+8m\ln2}}{2}
-  \end{gather*}
-\end{proof}
-
-Konsequenz: Bei einer Hashfunktion $H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ ist
-die Wahrscheinlichkeit für eine Kollision $>\frac{1}{2}$, wenn
-$2^{\frac{n}{2}}$ Hashwerte erzeugt werden. Für die Praxis: Hashfunktionen mit
-mehr als $n\geq128$. Bei Signaturen: $n\geq160$.
-
 In der Praxis haben sich zur Berechnung von Hashfunktionen (neben der
-Erzeugung mit Hilfe der Verschlüsselung) spezielle Algorithmen etabliert:
+Erzeugung mit Hilfe von Verschlüsselungsfunktionen) spezielle Algorithmen etabliert:
 \begin{description}
- \item[MD4] Erfinder Ron Rivest
+ \item[MD4] Erfunden von Ron Rivest
  \item[MD5] Weiterentwicklung von MD4
  \item[SHA-1] von NSA
 \end{description}
 
-Fazit: Alice will Bob eine Nachricht senden und eine Signatur anfügen;
-$(m,sig_{Alice}(m))$. Bob verifiziert mit dem öffentlichen Schlüssel von Alice
-die Signatur; $ver_{Alice}(sig_{Alice}(H(M))) = H(m)$.
-
-Oskar (der Angreifer) ist erfolgreich, wenn
-\begin{itemize}
- \item er zu $m$ ein $m'$ mit $H(m)=H(m')$ erzeugen kann oder
- \item $sig_{Alice}$ berechnen kann.
-\end{itemize}
-Aber:
-\begin{itemize}
- \item aus der Kenntnis von $ver_{Alice}$ kann er nicht auf die $sig_{Alice}$
-  schließen, da $ver_{Alice}$ eine Einwegfunktion ist.
- \item Wenn $H$ kollisionsrestistent ist, dann lässt sich $m'$ nicht erzeugen.
-\end{itemize}
+Für die \highl{digitale Signatur} ergibt sich also folgendes Fazit: Alice
+sendet Bob eine Nachricht und fügt ihre Signatur an: $(m,sig_{Alice}(m))$. Bob
+verifiziert mit dem öffentlichen Schlüssel von Alice die Signatur:
+$ver_{Alice}(sig_{Alice}(H(M))) = H(m)$. Mallory wäre dabei nur erfolgreich,
+wenn er
+\begin{enumerate}
+ \item \label{enu:1} für seine Nachricht~$m'$ die Signatur von Alice
+  $sig_{Alice}$ berechnen könnte oder
+ \item \label{enu:2} zur Nachricht~$m$ eine weitere Nachricht~$m'$ mit
+  $H(m)=H(m')$ erzeugen könnte.
+\end{enumerate}
+Aber \autoref{enu:1} ist ihm nicht möglich, weil er aus der Kenntnis von
+$ver_{Alice}$ nicht auf $sig_{Alice}$ schließen kann, da $ver_{Alice}$ eine
+Einwegfunktion ist, und \autoref{enu:2} ist für ihn nicht möglich, da $H$
+kollisionsrestistent ist.
 
 \chapter{Zero-knowledge-Protokolle}
-Gibt es eine Möglichkeit, dass Alice Bob klar macht, dass sie Alice ist, ohne
-ihr Geheimnis an Bob zu verraten? Stcihwort aus der Komplexitätstheorie:
-Arthur-Merlin-Game.
 
-Ein Problem in der Komplexitätstheorie ist noch offen in Bezug auf
-Man-in-the-middle-attack: \highl{Identifizierungsnachweis} von Alice gegenüber
-Bob. Alice überzeugt Bob davon ein persönliches Geheimnis zu kennen, dass nur
-Alice kennen kann, ohne dies Bob zu verraten.
+\highl{Zero-knowledge-Protokolle} haben das Anliegen, seinem Gegenüber zu
+zeigen, dass man im Besitz eines Geheimnisses ist, ohne dieses Geheimnis
+preiszugeben. Damit ist es Alice möglich, Bob einen
+\highl{Identifizierungsnachweis} zu liefern, ohne diesen zu verraten und ihn
+so vor Eve und Mallory zu schützen.
 
-Mit Hilfe des Graphisomorphieproblem: Gegeben seien zwei einfache
-Graphen~$G_{1}=(V_{1},E_{2})$ und $G_{2}=(V_{2},E_{2})$. Die Frage ist: Ist
-$G_{1}\cong G_{2}$ ($G_{1}$ isomorph zu $G_{2}$). $ISO =
-\{(G_{1},G_{2})\colon G_{1}\cong G_{2}\}$. Klar: $ISO\in NP$, offen: $ISO\in
-P$ und $ISO$ $NP$-vollständig.
+In der Komplexitätstheorie ist das sogenannte
+\href{http://theory.cs.uchicago.edu/merlin/}{Arthur-Merlin-Game} bekannt.
+Dabei versucht der übermächtige Zauberer Merlin den König Arthur von der
+Richtigkeit seines Beweises zu überzeugen. Da aber König Arthur nicht gut
+rechnen kann wie Merlin\footnote{Arthur ist irgendwas polynomielles und Merlin
+ist etwas nicht polynomiells \help{Was jemand noch was?}}, prüft er nur Teile
+des Beweises und akzeptiert, wenn er darin keinen Fehler findet.
 
-Für das Protokoll:
-\begin{enumerate}
- \item Merlin wählt einen großen Graphen~$G_{0}$ und eine Permutation~$\pi$
-  und berechnet $G_{1}=\pi(G_{0})$, d.\,h. $G_{0}\cong G_{1}$. Die
-  Permutation~$\pi$ stellt das persönliche Geheimnis von Merlin dar. $G_{0}$
-  und $G_{1}$ ist öffentlich.
- \item Aufgabe: Arthur davon überzeugen, dass $G_{0}\cong G_{1}$.
-\end{enumerate}
+An diese Idee angelehnt versucht Alice durch die Kenntnis der Lösung für ein
+schwer zu lösendes Problem (ein Problem in $\NP$) Bob davon zu überzeugen,
+dass sie die Lösung kennt. Ein mögliches Problem ist das
+\highl{Graphisomorphieproblem}: Gegeben seien zwei einfache
+Graphen~$G_{1}=(V_{1},E_{2})$ und $G_{2}=(V_{2},E_{2})$. Die Frage ist, ob die
+Graphen zueinander \highl{isomorph} ($G_{1}\cong G_{2}$) sind, d.\,h.
+existiert eine Umbenennung/Permutation~$\pi$ der Kanten in $G_{1}$, so dass
+$G_{2}=\pi(G_{1})$. Für das Graphisomorphieproblem ist bekannt, dass es in
+$\NP$ liegt, jedoch ist noch offen, ob es in $\mathrm{P}$ liegt oder ob es
+$\NP$-vollständig ist.
 
-\begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
-  \hline
-  Schritt& \multicolumn{1}{c|}{Merlin}& Kanal& \multicolumn{1}{c|}{Arthur}\\
-  \hline
-  1.& wählt zufällig ein Permutation $\rho$ und ein Bit $a\in\{0,1\}$ und
-     berechnet $H=\rho(G_{1})$& & \\
-  2.& & $\xrightarrow{H}$ &\\
-  3.& & & wählt zufällig ein Bit~$b$ und verlangt eine Isomorphie zwischen $H$
-     und $G_{b}$\\
-  4.& & $\xleftarrow{b}$& \\
-  5.& Merlin berechnet den Isomorphismus~$\sigma$ mit $\sigma(G_{b})=H$
-     1.\,Fall: $b=a$, dann ist $\sigma=\rho$, 2.\,Fall $a=1, b=0$, dann ist
-     $\sigma=\pi\cdot\rho$, 3.\,Fall $a=0, b=1$, dann ist
-     $\sigma=\pi^{-1}\cdot\rho$& & \\
-  6.& & $\xrightarrow{\sigma}$& \\
-  7.& & Arthur verifiziert, dass $\sigma(G_{b}) = H$
-\end{tabularx}
+\begin{table}
+  \centering
+  \begin{tabularx}{.85\linewidth}{*{2}{|c|>{\raggedright\arraybackslash}X}|}
+    \hline
+    Schritt& \multicolumn{1}{c|}{Merlin}& Kanal& \multicolumn{1}{c|}{Arthur}\\
+    \hline
+    1.& Wählt Permutation~$\rho$, $a\in\Z_{2}$ und
+       berechnet $H=\rho(G_{a})$& & \\
+    2.& & $\xrightarrow{H}$ &\\
+    3.& & & Wählt $b\in\Z_{2}$ und verlangt $\sigma$, so dass $\sigma(H)=G_{b}$\\
+    4.& & $\xleftarrow{b}$& \\
+    5.& Berechnet $\sigma=\rho$, falls $a=b$; $\sigma=\pi\circ\rho$, falls
+       $a=1,b=0$; $\sigma=\pi^{-1}\circ\rho$, falls $a=0, b=1$ &&\\
+    6.& & $\xrightarrow{\sigma}$& \\
+    7.& && Verifiziert $\sigma(G_{b}) = H$\\
+    \hline
+  \end{tabularx}
+  \caption{Zero-Knowledge-Protokoll auf Basis des Graphisomorphieproblems}
+  \label{tab:zero-know}
+\end{table}
+
+Damit Merlin sich später einmal identifizieren kann, wählt er einen
+Graphen~$G_{0}$ und eine Permutation~$\pi$ und berechnet dazu einen isomorphen
+Graphen~$G_{1}$. Die Permutation stellt das persönliche Geheimnis von Merlin
+dar, $G_{0}$ und $G_{1}$ sind öffentlich.
+
+Wenn Arthur von Merlin eine Identifikation verlangt, wählt sich Merlin einer
+weiter Permutation~$\rho$ und ein Bit~$a\in\Z_{2}$ und berechnet den
+Graphen~$H=\rho(G_{a})$. Diesen sendet er an Arthur, der seinerseit ein
+Bit~$b$ wählt und von Merlin einen Isomorphismus~$\sigma$ verlangt, so dass
+$H=\sigma(G_{b})$ ist. Es können nun drei Fälle auftreten:
+\begin{itemize}
+ \item $a=b$: Dann gilt $H=\rho(G_{a})=\rho(G_{b})$, also ist $\sigma=\rho$.
+ \item $a=1$ und $b=0$: Dann gilt $H=\rho(G_{1})=\rho\bigl(\pi(G_{0})\bigr)$,
+  also ist $\sigma=\pi\circ\rho$.
+ \item $a=0$ und $b=1$: Dann gilt $H=\rho(G_{0})
+  =\rho\bigl(\pi^{-1}(G_{1})\bigr)$, also ist $\sigma=\pi^{-1}\circ\rho$.
+\end{itemize}
+Dieses $\sigma$ sendet Merlin an Arthur, der daraufhin $\sigma(G_{b}) = H$
+prüfen kann. \autoref{tab:zero-know}
 
 \clearpage
 \appendix
@@ -4997,7 +5058,7 @@ Für das Protokoll:
   Pseudorandom Permutations and Pseudorandom Functions."' SIAM J.
   Comput., vol. 17, 1988, pp. 373-386
  \bibitem{matsui1} M.\,Matsui: "`Linear cryptanalysis method for DES
-  cipher"', Advances in Cryptology---EUROCRYPT '93 Proceedings,
+  cipher"', Advances in Cryp\-to\-lo\-gy""---EUROCRYPT '93 Proceedings,
   Springer-Verlag, 1994, pp.386--397
 \end{thebibliography}
 
@@ -5105,31 +5166,57 @@ Bestimmen Sie den Klartext.
 \section{Blatt 1}
 \subsection*{Aufgabe 1}
 \begin{enumerate}[a)]
- \item Kasiski-Test (Wiederholung von Zeichenketten länger als 2), Beispiele:
-  \begin{tabular}{l|l}
-    KFEIUERX & $50 = 2\cdot 5\cdot 5$\\
-    TIB & $138 = 2\cdot3\cdot23$\\
-    IZO
-       LAH
-       GYR
-  \end{tabular}
+ \item Für den Kasiski-Test muss man Wiederholungen von Zeichenketten finden,
+  die länger sind als 2 Zeichen, Beispiele:
+  \begin{center}
+    \begin{tabular}{l|cl}
+      Zeichenkette & Auftreten & Abstand\\
+      \hline
+      \texttt{KFEIUERX} & 172, 222 & $50 = 2\cdot 5^{2}$\\
+      \texttt{YMEF} & 28, 288& $260 = 2^{2}\cdot 5\cdot13$\\
+      \texttt{GYFN} & 14, 279& $265 = 5\cdot53$\\
+      \texttt{JSWL} & 56, 101& $45 = 3^{2}\cdot5$\\
+      \texttt{GRY} & 207, 212& 5\\
+      \texttt{TIB} & 126, 264& $138 = 2\cdot3\cdot23$
+    \end{tabular}
+  \end{center}
 
- \item Friedman-Test: $I(c) = 0,0483$ und $d\approx3\mathord{,}93$.
+ \item Für den Friedman"=Test muss die Anzahl~$l_{i}$ des Auftretens der
+  einzelnen Buchstaben gezählt werden, was wesentlich einfacher mit einem
+  Programm geht. Daraus kann man mit \autoref{eq:koinzi} den Koinzidenzindex
+  für den Text bestimmen --~$I(c)\approx0\mathord{,}0483$~-- woraus sich mit
+  \autoref{eq:fried-d} eine Periodenlänge von $d\approx3\mathord{,}93$ ergibt.
 
- \item Wir entscheiden uns für $d=5$.
+ \item Da vor allem 5 als Faktor in den längeren Wiederholungen beim
+  Kasiski"=Test auftritt und $d\approx3\mathord{,}93$ aus dem Friedman"=Test
+  näher an 5 als an 2 liegt, ist eine erste Schätzung für die
+  Periodenlänge~$d=5$.
+
+  \texttt{TIB} scheint eine zufällige Wiederholung zu sein, die nicht auf eine
+  gleiche Verschlüsselung von gleichen Zeichenketten zurückzuführen ist.
 \end{enumerate}
 
 \subsection*{Aufgabe 2}
-Schlüsselwort "`bauer"'.
-
-Es bleibt: suchen 5 Caesar-Chiffren
-1. Spalte: B für E, d.\,h. B für A (Verschiebung 1)\\
-2. Spalte: A für E, d.\,h. A für A (Verschiebung 0)\\
-3. Spalte: U für E, d.\,h. U für A (Verschiebung 3)\\
-4. Spalte: E für E, d.\,h. E für A (Verschiebung 4)\\
-5. Spalte: R für E, d.\,h. R für A (Verschiebung 13)\\
-
-\todo{Ich bin mir nicht mehr sicher, ob das so richtig war. Bitte gegenprüfen.}
+Für die Bestimmung des Schlüsselworts muss für jeden Textteil (jede Spalte)
+die Häufigkeitsverteilung der Buchstaben ermittelt werden. Dies geht am
+Leichtesten mit einem Programm. Im 1., 2., 4. und 5. Textteil ist die
+Zuordnung des Buchstabens~\texttt{e} eindeutig. Hier treten die Buchstaben
+\texttt{F}, \texttt{E}, \texttt{I} resp. \texttt{V} am Häufigsten auf. In der
+dritten Spalte gibt es zwei Möglichkeiten: \texttt{H} oder \texttt{Y}, beide
+treten achtmal auf. Jedoch liefert nur die Zuordnung von \texttt{H} auf
+\texttt{e} einen sinnvollen Text. Das Schlüsselwort ist also \texttt{BAUER}.
+\begin{center}
+  \begin{tabular}{cccc}
+    Spalte& häuf.\,Buchst.& Verschiebung& Verschl.\,v.\,\texttt{a}\\
+    \hline
+    1.& \texttt{F}& 1& \texttt{B}\\
+    2.& \texttt{E}& 0& \texttt{A}\\
+    3a& \texttt{H}& 3& \texttt{D}\\
+    3b& \texttt{Y}& 20& \texttt{U}\\
+    4.& \texttt{I}& 4& \texttt{E}\\
+    5.& \texttt{V}& 17& \texttt{R}
+  \end{tabular}
+\end{center}
 
 \subsection*{Aufgabe 3}
 Es mag ueberraschen, dass man von einem vorgelegten monoalphabetisch
@@ -5142,17 +5229,38 @@ bekannten Sprache zu untersuchen ohne seine Syntax und Semantik zu betrachten.
 \subsection*{Aufgabe 1}
 
 \begin{enumerate}
- \item
-  $m=WASSER$\\
-  $22~0, 18~18, 4~17$\\
-  $w_{1} = v_{1}\cdot K = 24~14$\\
-  $w_{2} = v_{2}\cdot K = 8~16$\\
-  $w_{3} = v_{3}\cdot K = 9~18$\\
-  $c=YOIJS$
+ \item Die Verschlüsselungsmatrix~$K$ arbeitet mit Blöcken der Länge~2. Also
+  muss der Klartext \texttt{wasser} erst einmal kodiert werden
+  ($\mathtt{a}\rightarrow0$) und dann in Blöcke geteilt werden. Es ergeben
+  sich also die drei Blöcke
+  \begin{gather*}
+    v_{1} = \begin{pmatrix}22& 0\end{pmatrix}\qquad
+    v_{2} = \begin{pmatrix}18& 18\end{pmatrix}\qquad
+    v_{3} = \begin{pmatrix}4& 17\end{pmatrix}
+  \end{gather*}
+  Diese werden durch $w = v\cdot K$ verschlüsselt und wieder als Text kodiert
+  ($0\rightarrow\mathtt{A}$): \texttt{YOIJS}. Man beachte, dass die Einträge
+  in den Matrizen/Vektoren Elemente aus $\Z_{26}$ sind.
+  \begin{gather*}
+    w = \begin{pmatrix}v_{1}\\v_{2}\\v_{3}\end{pmatrix}\cdot K
+       = \begin{pmatrix}22& 0\\18& 18\\4& 17\end{pmatrix}\cdot
+       \begin{pmatrix} 7 & 3\\ 5 & 8 \end{pmatrix}
+       = \begin{pmatrix}24& 14\\8& 16\\9& 18\end{pmatrix}
+  \end{gather*}
 
  \item Die inverse Matrix zu $K$ kann man entweder mit der Formel aus
   \autoref{sec:restklassen} oder durch simultane Umformung einer
   Einheitsmatrix bei der Umformung von $K$ in eine Einheitsmatrix bestimmen.
+  Mit dieser Matrix~$K^{-1}$ kann man dann den Geheimtext auf die gleiche
+  Weise entschlüsseln, wie man den Klartext verschlüsselt hat: $v_{i} =
+  w_{i}\cdot K^{-1}$. Nach der Kodierung durch Buchstaben
+  ($0\rightarrow\mathtt{a}$) ergibt sich dann auch wieder der Klartext
+  \texttt{wasser}.
+  \begin{gather*}
+    v = \begin{pmatrix}24& 14\\8& 16\\9& 18\end{pmatrix}\cdot
+       \begin{pmatrix}4& 5\\ 17& 23\end{pmatrix}
+       = \begin{pmatrix}22& 0\\18& 18\\4& 17\end{pmatrix}
+  \end{gather*}
 
   \begin{minipage}{.45\linewidth}
     \begin{align*}
@@ -5210,33 +5318,30 @@ bekannten Sprache zu untersuchen ohne seine Syntax und Semantik zu betrachten.
     Aus der 19 lässt sich jetzt wiederrum sehr leicht eine 0 erzeugen:
     $0=1\cdot7+19\pmod{26}$.
   \end{minipage}
-
-  \begin{gather*}
-    \det K = 7\cdot8 - 3\cdot5 \pmod{26} = 41\pmod{26} = 15 \\
-    \det(K^{-1}) = 7
-  \end{gather*}
 \end{enumerate}
 
 \subsection*{Aufgabe 2}
-hund = 7~20~13~3\\
-AFFE = 0~5~5~4
-
+Die Kodierung der Nachricht \texttt{hund} ist $v\in\Z_{26}^{2\times2}$ und die
+des Geheimtexts \texttt{AFFE} ist $w\in\Z_{26}^{2\times2}$, wobei \texttt{a}
+im Klartext bzw. \texttt{A} im Geheimtext durch 0 kodiert wird.
 \begin{gather*}
-  M \cdot \begin{pmatrix}7& 13\\20 & 3\end{pmatrix} =
+  v = \begin{pmatrix}7& 20\\13& 3\end{pmatrix}\qquad
+     w = \begin{pmatrix}0& 5\\5& 4\end{pmatrix}
+\end{gather*}
+Es ist jetzt nach einer Matrix~$M$ gesucht, die $w=v\cdot M$ erfüllt, d.\,h.
+$M=v^{-1}\cdot w$. Mit dem Verfahren aus Aufgabe~1 ergibt sich $v^{-1}$ in
+4~Schritten (1: $v_{1}=15\cdot v_{1}$, 2: $v_{2} =13\cdot v_{1}+v_{2}$, 3:
+$v_{2}=9\cdot v_{2}$, 4: $v_{1}=12\cdot v_{2}+v_{1}$).
+\begin{gather*}
+  M = v^{-1}\cdot w =
      \begin{pmatrix}
-       0& 5\\
-       20& 3
-     \end{pmatrix}\\
-  M =
-     \begin{pmatrix}
-       15& 13\\4& 9
+       15& 4\\13& 9
      \end{pmatrix} \cdot
      \begin{pmatrix}
-       0& 5\\
-       20& 3
+       0& 5\\5& 4
      \end{pmatrix} =
      \begin{pmatrix}
-       20& 19\\13& 23
+       20& 13\\19& 23
      \end{pmatrix}
 \end{gather*}
 
@@ -5248,7 +5353,7 @@ Ob die Abbildung bijektiv ist oder nicht, hängt nicht von $b$ ab.
 Es hängt allein von $a$ ab, ob zwei Zeichen~$x_{1},x_{2}$ durch das gleiche
 Zeichen ($E(x_{1}) = E(x_{2})$) verschlüsselt werden.
 \begin{gather*}
-  ax_{1} + b \equiv_{k} ax_{2}+ b \quad\Leftrightarrow\quad
+  ax_{1} + b \equiv_{k} ax_{2}+ b \qquad\gdw\qquad
      ax_{1} \equiv_{k} ax_{2}
 \end{gather*}
 
@@ -5256,17 +5361,80 @@ Haben $k$ und $a$ einen gemeinsamen Teiler~$\ggT(k,a)\ne1$, so ist die
 Entschlüsselung der Null beispielsweise nicht mehr eindeutig, denn $E(0) =
 0\cdot a = 0$ und
 \begin{gather*}
-  E\Bigl(\frac{k}{\ggT(k,a)}\Bigr) = \frac{k}{\ggT(k,a)} \cdot a \pmod{k}
-     = k\cdot \underbrace{\frac{a}{\ggT(k,a)}}_{\in\Z_{k}, > 1} \pmod{k}
-     = 0
+  E\Bigl(\frac{k}{\ggT(k,a)}\Bigr) \equiv \frac{k}{\ggT(k,a)} \cdot a
+     \equiv k\cdot \underbrace{\frac{a}{\ggT(k,a)}}_{\in\Z_{k}, > 1}
+     \equiv 0 \pmod{k}
 \end{gather*}
 
 Also muss $a$ teilerfremd zu $k$ sein, damit alle $\Phi_{a,b}$ bijektiv sind.
-\help{Warum ist das hinreichend?}
+
+\help{Warum ist das hinreichend?}: Der Versuch einer Erklärung:
+Es gilt $ax_{1}\equiv_{k} ax_{2}$ \gdw $a(x_{1}-x_{2}) = l\cdot k$. Da $a$
+teilerfremd zu $k$, muss $l$ ein Vielfaches von $a$ sein, also $l=\lambda a$.
+\help{Stimmt das? Ich will darauf hinaus, dass $a$ die linke Seite teilt, also
+  auch die rechte teilen muss, aber es teilt nicht $k$.}
+Es gilt demnach $a(x_{1}-x_{2}) = \lambda ak$ \gdw $x_{1}-x_{2} = \lambda k$.
+Da $x_{1},x_{2}\in\Z_{k}$, ist $-k < x_{1}-x_{2} < k$. Das einzige $\lambda$,
+das die Gleichung erfüllt, ist $\lambda=0$. Also ist $x_{1}-x_{2}=0$ und damit
+gilt die Kongruenz, wenn $a$ und $k$ teilerfremd sind, nur für gleiche $x$.
+Für unterschiedliche $x$ ergeben sich unterschiedliche Verschlüsselungen, die
+$\Phi_{a,b}$ ist also bijektiv.
 
 \section{Blatt 3}
 
-\subsection*{Aufgab 3}
+\subsection*{Aufgabe 1}
+\begin{enumerate}[a)]
+ \item Für den Kasiski-Test muss man Wiederholungen von Zeichenketten finden,
+  die länger sind als 2 Zeichen, Beispiele:
+  \begin{center}
+    \begin{tabular}{l|cl}
+      Zeichenkette & Auftreten & Abstand\\
+      \hline
+      \texttt{TDMHZGNMWK} & 92, 182 & $90 = 2\cdot 3^{2}\cdot5$\\
+      \texttt{BXMFF} & 87, 147& $60 = 2^{2}\cdot 3\cdot5$\\
+      \texttt{ZHUM} & 256, 296& $40 = 2^{3}\cdot5$\\
+      \texttt{VIQM} & 71, 336& $265 = 5\cdot53$\\
+      \texttt{KAH} & 8, 136& $128 = 2^{7}$\\
+      \texttt{JTD} & 26, 76& $50=2\cdot5^{2}$
+    \end{tabular}
+  \end{center}
+
+ \item Für den Friedman"=Test muss die Anzahl~$l_{i}$ des Auftretens der
+  einzelnen Buchstaben gezählt werden, was wesentlich einfacher mit einem
+  Programm geht. Daraus kann man mit \autoref{eq:koinzi} den Koinzidenzindex
+  für den Text bestimmen --~$I(c)\approx0\mathord{,}0412$~-- woraus sich mit
+  \autoref{eq:fried-d} eine Periodenlänge von $d\approx13\mathord{,}38$ ergibt.
+
+ \item Da vor allem 2 und 5 als Faktoren in den längeren Wiederholungen beim
+  Kasiski"=Test auftritt und $d\approx13\mathord{,}38$ aus dem Friedman"=Test
+  auf 10 deuten, ist eine erste Schätzung für die Periodenlänge~$d=10$.
+\help{Stimmt das $d=13,38$?}
+
+  \texttt{KAH} scheint eine zufällige Wiederholung zu sein, die nicht auf eine
+  gleiche Verschlüsselung von gleichen Zeichenketten zurückzuführen ist.
+\end{enumerate}
+
+\subsection*{Aufgabe 2}
+Mit der Periodenlänge $d=10$ ergeben sich vier mögliche Schlüsselwörter
+\texttt{HNZIORADIO}, \texttt{RNZIORADIO}, \texttt{HNZIORAHIO} und
+\texttt{RNZIORAHIO}, die alle keinen sinnvollen Klartext liefern.
+
+Also korrigieren wir die Schätzung auf $d=5$. Damit ergibt sich das
+Schlüsselwort \texttt{RADIO}, womit sich auch ein sinnvoller deutscher
+Klartext ergibt.
+\begin{center}
+  \begin{tabular}{cccc}
+    Spalte& häuf.\,Buchst.& Verschiebung& Verschl.\,v.\,\texttt{a}\\
+    \hline
+    1.& \texttt{V}& 17& \texttt{R}\\
+    2.& \texttt{E}& 0& \texttt{A}\\
+    3.& \texttt{H}& 4& \texttt{D}\\
+    4.& \texttt{M}& 8& \texttt{I}\\
+    5.& \texttt{S}& 14& \texttt{O}
+  \end{tabular}
+\end{center}
+
+\subsection*{Aufgabe 3}
 Den hoechsten Organisationsstand erfuhr die Kryptologie in Venedig, wo sie in
 Form einer staatlichen Buerotaetigkeit ausgeuebt wurde. Es gab
 Schluesselsekretaere die ihr Buero im Dogenpalast hatten und fuer ihre
