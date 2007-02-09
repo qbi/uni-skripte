@@ -335,23 +335,28 @@ Kupferleitungen, Glasfasern oder drahtlose Verbindungen. Dabei kann es zu
 verschiedenen Beeinträchtigungen kommen:
 \begin{itemize}
  \item zufällige Störungen -- der Boote stürzt in eine Felsspalte
- \item systematische (physikalisch bedingte) Störungen --
- \item passive Beeinträchtigungen -- Abhören von Telefongesprächen,
-  Auslesen von Speichermedien
- \item aktive Beeinträchtigungen -- fälschen von Nachrichten und Daten
+ \item systematische (physikalisch bedingte) Störungen -- im Wald werden alle
+  Boten gefangen genommen
+ \item passive Beeinträchtigungen -- wärend der König die Botschaft seinem
+  schreiber diktiert, hört der Spion hinterm Vorhang alles mit; Abhören von
+  Telefongesprächen, Auslesen von Speichermedien
+ \item aktive Beeinträchtigungen -- wärend der Bote sein Nickerchen macht,
+  tauscht ein Spion die Botschaft aus; fälschen von Nachrichten und Daten
 \end{itemize}
-Mit den ersten beiden Punkten beschäftigt sich die \highl{Kodierungstheorie}. Die
+Mit den ersten beiden Punkten, also wie sichert man Nachrichten gegen
+Störeinflüsse, beschäftigt sich die \highl{Kodierungstheorie}. Die
 passiven und aktiven Beeinträchtigungen sind Gegenstand der Kryptologie.
 
 Aus diesen Beeinträchtigungen ergeben sich Anforderungen an kryptologische
 Verfahren:
 \begin{itemize}
- \item \highl{Geheimhaltung} -- Lesen der Nachricht für Unbefugte möglichst
-  schwierig zu machen
- \item \highl{Authentifizierung} -- Identitätsnachweis des Senders; Empfänger
-  weiß, dass die Nachricht nicht von einem Unbefugten stammt
+ \item \highl{Geheimhaltung}/\highl{Vertraulichkeit} -- Lesen der Nachricht
+  für Unbefugte möglichst schwierig gestalten
+ \item \highl{Authentifizierung} -- Empfänger kann die \highl{Identität} des
+  Senders prüfen; \highl{Authentisierung} -- Sender weist seine Identität
+  nach; Empfänger weiß, dass die Nachricht nicht von einem Dritten stammt
  \item \highl{Integrität} -- Nachricht wurde während der Übertragung nicht
-  verändert
+  verändert (Austauschen, Weglassen oder Hinzufügen von Teilen)
  \item \highl{Verbindlichkeit} -- Sender kann nicht leugnen, dass die Nachricht
   von ihm stammt
 \end{itemize}
@@ -377,8 +382,18 @@ Kryptologie wird dieser mit \highl{Bob} bezeichnet~--, der durch Anwendung
 eines \highl[Entschlüsselungsverfahren]{Entschlüsselungsverfahrens}%
 \footnote{Entschlüsselungsverfahren: auch als \highl{Dechiffrierung} oder
   \highl{decryption} bezeichnet} wieder die Nachricht rekonstruieren kann.
+
+Wärend der Übertragung könnte ein \highl[Angreifer!passiver]{passiver
+Angreifer} --~in der Kryptologie wird dieser mit \highl{Eve}\footnote{Eve: vom
+englischen Wort \textit{eavesdropper} für Horcher} bezeichnet~-- aus dem
+Geheimtext die Nachricht oder Teile davon rekonstruieren und aus diesem Wissen
+Vorteile ziehen. Oder ein \highl[Angreifer!aktiver]{aktiver Angreifer} --~in
+der Kryptologie wird dieser mit \highl{Mallory}\footnote{Mallory: vom
+englischen Wort \textit{malicious} für bösartig} bezeichnet~-- könnte den
+Geheimtext so verändern, dass der Klartext eine andere Bedeutung bekommt.
+
 Die Übertragung des Geheimtexts und die damit verbundenen Probleme wie
-Fehlererkennung und -korrektur sind nicht Gegenstand der Kryptologie. Mit
+Fehlererkennung und -korrektur sind nicht Gegenstand der Kryptologie -- mit
 dieser Thematik beschäftigt sich die Codierungstheorie.
 
 \begin{defini}[Kryptosystem]
@@ -390,7 +405,7 @@ dieser Thematik beschäftigt sich die Codierungstheorie.
     eine \highl{Nachricht}~$m\in\mathcal{M}$.
 
    \item dem \highl{Geheimtextraum}~$\mathcal{C}$ ($\subseteq\Gamma^{\ast}$),
-    der Menge aller der verschlüsselten Botschaften~$c\in\mathcal{C}$,
+    der Menge aller Kryptogramme~$c\in\mathcal{C}$,
 
    \item dem \highl{Schlüsselraum} $\mathcal{K}$, wobei jeder
     \highl{Schlüssel} $k\in\mathcal{K}$ ein Paar $k=(k_{e}, k_{d})$ ist, von
@@ -405,14 +420,6 @@ dieser Thematik beschäftigt sich die Codierungstheorie.
    \item einem \highl{Entschlüsselungsalgorithmus} $D\colon \mathcal{C}\times
     \mathcal{K}\rightarrow\mathcal{M}$ mit $D(c, k_{d}) = m$.
   \end{itemize}
-\end{defini}
-
-\begin{defini}
-  Ein Kryptosystem $\mathcal{S}$ heißt \highl{symmetrisch}, falls $k_{e}=
-  k_{d}$ (bzw. $k_{d}$ sich "`leicht"' (polynomiell) aus $k_{e}$ berechnen lässt).
-
-  Ein Kryptosystem $\mathcal{S}$ heißt \highl{asymmetrisch}, falls die
-  Kenntnis von $k_{e}$ praktisch nichts über $k_{d}$ aussagt.
 \end{defini}
 
 Aus diesen Festlegungen ergeben sich folgende Konsequenzen für die
@@ -456,34 +463,39 @@ sichere Verbindung übertragen.
 \begin{bsp}[praktische Kryptographie]
   Der
   \href{http://de.wikipedia.org/wiki/Freimaurer-Alphabet}{\highl{Freimaurercode}}
-  (zweite Zeile) arbeitet ohne Schlüssel. Jeder Buchstabe des Alphabets wird durch
+  (zweite Zeile in \autoref{fig:1}) arbeitet ohne Schlüssel. Jeder Buchstabe des Alphabets wird durch
   ein bestimmtes Geheimzeichen ersetzt. Damit ist der Freimaurercode kein
   Kryptosystem, da das Kerkhoff'sche Pinzip verletzt ist: Die Sicherheit
   des Kryptosystems hängt von der Geheimhaltung des Algorithmus' ab.
-  \begin{center}\ttfamily\large
+  \begin{figure}[ht]
+    \centering\ttfamily\large
     dieser satz ist geheim\\
     \fmc{dieser~satz~ist~geheim}\\
     UZVJVI JRKQ ZJK XVYVZD\\
     TFZZGR EDFY ABX IFFHXY
-  \end{center}
+    \caption{Verschlüsselung der ersten Zeile mit dem Freimaurercode
+      (2.\,Zeile), dem Caesarcode (3.\,Zeile) und einem One-Time-Pad (4.\,Zeile)}
+    \label{fig:1}
+  \end{figure}
 
-  Beim \highl{Caesarcode} (dritte Zeile) wird jeder Buchstabe des Alphabets für sich
-  durch den Buchstaben, der $x$ Positionen weiter hinten steht.
-  $x\in\{1,2,\dotsc,25\} = \mathcal{K}$ ist der Schlüsel dieses
-  Kryptosystems -- im obigen Beispiel ist $x=17$. Jedoch ist diese Art der
+  Beim \highl{Caesarcode} (dritte Zeile in \autoref{fig:1}) wird jeder
+  Buchstabe des Alphabets für sich durch den Buchstaben, der $k$ Positionen
+  weiter hinten steht, ersetzt.
+  $k\in\{1,2,\dotsc,25\} = \mathcal{K}$ ist der Schlüsel dieses
+  Kryptosystems -- im obigen Beispiel ist $k=17$. Jedoch ist diese Art der
   Verschlüsselung nicht sicher. Dazu später mehr.
 
-  Beim \highl{One-Time-Pad} (vierte Zeile) ist ähnlich dem Caesarcode, jedoch
+  Der \highl{One-Time-Pad} (vierte Zeile in \autoref{fig:1}) ist ähnlich dem Caesarcode, jedoch
   wird hierbei (unabhängig und gleichverteilt) für jedes einzelne Zeichen der
-  Nachricht eine Position $x\in\{0,1,\dotsc,25\}$ gewählt, um die dieses
+  Nachricht eine Zahl $k\in\{0,1,\dotsc,25\}$ gewählt, um die das Zeichen
   verschoben wird. Der Schlüssel für eine Nachricht $m=(m_{1},m_{2},\dotsc,
-  m_{n})$ ist also ein Tupel $c=(x_{1},x_{2},\dotsc, x_{n})$ der Länge~$n$.
+  m_{n})$ ist also ein Tupel $k=(k_{1},k_{2},\dotsc, k_{n})$ der Länge~$n$.
   Dieses Kryptosystem schützt sich nicht nur durch den großen Schlüsselraum
   $26^{n}$, sondern auch dadurch, dass jeder beliebige Text mit dem geeigneten
   Schlüssel erzeugt werden kann.
 \end{bsp}
 
-Zur Einstufung einer \highl{Kryptoanalyse} trifft man die folgende qualitative
+Zur Einstufung einer \highl{Kryptoanalyse} trifft man die folgenden qualitativen
 Unterscheidungen:
 \begin{itemize}
   \item \highl{vollständiges Aufbrechen}\footnote{engl. total break} heißt, dass der Schlüssel $k_{d}$
@@ -492,11 +504,12 @@ Unterscheidungen:
 
  \item \highl[Deduktion!global]{globale Deduktion}\footnote{engl. global
    deduction} bedeutet, dass ohne
-  Kenntniss von $k_{d}$ eine zu $D(\_, k_{d})$ äquivalente Übersetzung
-  gefunden wird.
+  Kenntniss von $k_{d}$ eine zu $D(c, k_{d})$ äquivalente Übersetzung~$\tilde{D}$
+  gefunden wird, so dass man jede Nachricht~$m=D(c, k_{d})$ durch
+  $m=\tilde{D}(c)$ rekonstruieren kann.
 
- \item Als \highl[Deduktion!lokal]{lokale Deduktion}\footnote{engl. instance or
-   local deduction} bezeichnet man das Finden
+ \item \highl[Deduktion!lokal]{lokale Deduktion}\footnote{engl. instance or
+   local deduction} bezeichnet das Finden
   eines Klartextes für einen einzelnen Chiffretext.
 \item \highl{Informationsdeduktion}\footnote{information deduction} bedeutet,
   dass einige Informationen über den Schlüssel oder den Klartext gewonnen werden
@@ -506,38 +519,32 @@ Unterscheidungen:
 Ebenso gibt es eine Unterscheidung der verschiedenen Arten eines
 \highl[Angriff]{Angriffs} auf ein Kryptosystem:
 \begin{description}
- \item[Cyphertext-Only-Attack:] Der Kryptoanalytiker verfügt über eine
-  gewisse Menge von Geheimtexten.
+ \item[Cyphertext-Only-Angriff:]\index{Angriff!Cyphertext-Only-} Der
+  Kryptoanalytiker verfügt über eine gewisse Menge von Geheimtexten.
 
- \item[Known-Plaintext-Attack:] Für einen gewissen Chiffretext ist der
-  Klartext bekannt.
+ \item[Known-Plaintext-Angriff:]\index{Angriff!Known-Plaintext-}
+  Für einen gewissen Chiffretext ist der Klartext bekannt.
 
- \item[Chosen-Plaintext-Attack:] Für einen beliebigen Klartext ist es
-  möglich, sich den zugehörigen Chiffretext zu besorgen. (Typisch für
-  Public-Key-Verfahren)
+ \item[Chosen-Plaintext-Angriff:]\index{Angriff!Chosen-Plaintext-}
+  Für einen beliebigen Klartext ist es möglich, sich den zugehörigen
+  Chiffretext zu besorgen. (Typisch für Public-Key-Verfahren)
 
-  \item[Adaptive-chosen-plaintext-Attack] Spezialfall der obigen
-  Attacke. Hier wählt der Kryptoanalytiker einen Klartext basierend
+  \item[Adaptive-Chosen-Plaintext-Angriff:] Spezialfall des obigen
+  Angriffszenarios. Hier wählt der Kryptoanalytiker einen Klartext basierend
   auf dem Ergebnis der vorigen Verschlüsselung.
 
-  \item[Chosen-Ciphertext-Attack] Verschiedene Chiffrate können
+  \item[Chosen-Ciphertext-Angriff:] Verschiedene Chiffrate können
   entschlüsselt werden und es besteht Zugriff zum entschlüsselten Text.
 
-  \item[Chosen-Key-Attack] Man hat Wissen über die Beziehungen
+  \item[Chosen-Key-Angriff:] Man hat Wissen über die Beziehungen
   verschiedener Schlüssel untereinander (i.\,d.\,R. nicht praktisch
   relevant)
 
- \item[Rubber-Hose-Cryptanalysis] Angriff durch Gewalt/Erpressung/Entführung
+ \item[Rubber-Hose-Cryptanalysis:] Angriff durch Gewalt/Erpressung/Entführung
 
- \item[Brute-Force-Attack:] Alle möglichen Schlüssel austesten. Dieses
+ \item[Brute-Force-Angriff:] Alle möglichen Schlüssel austesten. Dieses
   Verfahren sollte das effektivste sein.
 \end{description}
-
-Ebenso wie Sender und Empfänger durch spezielle Namen in der Krypologie
-gekennzeichnet werden, verwendet man auch für einen \highl{Angreifer} einen
-speziellen Namen: \highl{Eve} heißt der Angreifer, der jedwede KOmmunikation
-mitlesen kann und mit \highl{Mallory} bezeichnet man den Angreifer, der auch
-Daten verändern kann.
 
 Abhängig von der \highl{Sicherheit} des Ver-/Entschlüsselungsverfahrens kann
 man Kryptosysteme in die Kategorien "`uneingeschränkt sicher"' (z.\,B.
@@ -545,36 +552,70 @@ One-Time-Pad), "`praktisch sicher"' (in praktikabler Zeit keine Lösung; die
 Tageszeitung von Morgen erst nächste Woche entschlüsseln) und "`unsicher"'
 (z.\,B. Caesarcode) einteilen.
 
-Derzeit ist das One-Time-Pad das einzige bekannte, uneingeschränkt sichere
+Derzeit ist das \highl{One-Time-Pad} das einzige bekannte, uneingeschränkt sichere
 Kryptoverfahren. In der Praxis findet es hauptsächlich im militärischen Bereich
 und in hochsicheren Umgebungen Anwendung.
 
-Alle weiteren Kryptosysteme sind mit einer Ciphertext-Only-Attacke angreifbar.
+Alle weiteren Kryptosysteme sind mit einem
+\highl[Angriff!Ciphertext-Only-]{Ciphertext-Only-Angriff} verwundbar.
 Man probiert einfach jeden möglichen Schlüssel und prüft, ob der resultierende
-Klartext eine Bedeutung hat. Eine derartige Attacke nennt man \highl{Brute
-Force}, da diese nur mit roher Gewalt (Durchtesten aller Kombinationen)
+Klartext eine Bedeutung hat. Einen derartigen Angriff nennt man
+\highl[Angriff!Brute-Force-]{Brute-Force-Angriff}, da diese nur mit roher
+Gewalt (Durchtesten aller Kombinationen)
 funktioniert.
 
+\todo{Wo soll das hin? Besseren Platz oder eine Umformulierung finden.}
+\highl{leicht} wird im gesamten Skript für "`in Polynomialzeit"' gebraucht.
+Analog dazu bedeutet \highl{schwer}, dass ein Problem "`nicht in
+Polynomialzeit"' gelöst werden kann.
+
 \subsection{Beispiel einer praktischen Kryptoanalyse}
-Bedeuten "`viele"' Schlüssel "`hohe"' Sicherheit? \textit{Ansatz}:
-Anstelle der Verschiebung der Buchstaben (beim Caesarcode) betrachten wir
-eine Permutation der Buchstaben. -- Diese Zuordnung nennt man
-\highl{monoalphabetisch}: Jedem Buchstaben des Klartexts wird ein
-Zeichen des Chiffretexts zugeordnet.
+\label{sec:ka-bsp}
+In der Regel kann man nicht von der Größe des Schlüsselraums eines
+Kryptosystems auf die Sicherheit des Systems schließen. Folgendes Beispiel
+soll dies verdeutlichen.
 
-Die Klartextbuchstaben: a b c d \dots x y z\\
-Permutation (der Schlüssel): V J C E \dots A H D
+Ein Kryptosystem, das jedem Buchstaben des Klartexts ein Zeichen des
+Chiffretexts zuordnet, nennt man \highl{monoalphabetisch}, d.\,h. der
+Schlüssel ist eine Permutation der Chiffretextbuchstaben. Es gibt also $26!=
+403\,291\,461\,126\,605\,635\,584\,000\,000$ Schlüssel.
+\begin{center}
+  \begin{tabular}{l|*{4}{>{\ttfamily}c}c*{3}{>{\ttfamily}c}}
+    Klartextbuchstabe& a& b& c& d& \dots & x& y& z\\
+    Schlüssel& V& J& C& E& \dots & A& H& D
+  \end{tabular}
+\end{center}
 
-Wieviele Schlüssel gibt es? $26! = 403\,291\,461\,126\,605\,635\,584\,000\,000$
+Trotz dieses großen Schlüsselraums ist es recht einfach die Verschlüsselung
+durch eine \highl{Häufigkeitsanalyse} zu brechen. Aus der Größe des
+Schlüsselraums kann man also keine unmittelbaren Rückschlüsse auf die
+Sicherheit des Kryptosystems ziehen.
 
-Trotz dieses großen Schlüsselraums ist es möglich die Verschlüsselung zu
-brechen.
+\pagebreak[2]
+\begin{figure}[t]
+  \centering
+  \begin{Verbatim}[gobble=2]
+  CJ UAFFC CHZ WAZZ CHZCZ CJCN, LCT JDUOZ NAZGC SAUTC LHC JACDVC
+  PZYCTLTOJJCZ QPT WPCUNC GCFTAGCZ UAFFC, LCJJCZ VTACRFC AXCT ZPZ QP
+  CZLC GHZGCZ, JO LAJJ CT QPT ATXCHF HWWCT PZFAPGNHDUCT IATL. LA LADUFC
+  LCT UCTT LATAZ, HUZ APJ LCW RPFFCT QP JDUARRCZ, AXCT LCT CJCN WCTVFC,
+  LAJJ VCHZ GPFCT IHZL ICUFC, NHCR ROTF PZL WADUFC JHDU APR LCZ ICG
+  ZADU XTCWCZ: LOTF, WCHZFC CT, VOCZZFC CT SA JFALFWPJHVAZF ICTLCZ.
+  \end{Verbatim}
+  \caption{Ein Beispiel eines Geheimtexts, der sich leicht mit
+    Häufigkeitsanalyse brechen lässt.}
+  \label{fig:2}
+\end{figure}
 
-\highl{Häufigkeitsanalyse:}
 \begin{enumerate}[1.\,{Schritt:}]
- \item Buchstaben zählen:
-  \texttt{C}: 62-mal, \texttt{Z}: 31-mal, \texttt{T}: 29-mal, \texttt{A}:
-  27-mal, \texttt{F}: 22-mal, \texttt{L}: 20-mal, \texttt{J}: 19-mal, \dots
+ \item Die Buchstaben im Geheimtext zählen. Für den Text in \autoref{fig:2}
+  ergibt sich:
+  \begin{center}
+    \begin{tabular}{l*{7}{>{\ttfamily}c}c}
+      Buchstabe:& C& Z& T& A& F& L& J& \dots \\
+      Häufigkeit:& 62& 31& 29& 27& 22& 20& 19& \dots
+    \end{tabular}
+  \end{center}
 
   \begin{table}
     \centering
@@ -593,16 +634,21 @@ brechen.
       \caption{Häufigkeitsverteilung der Buchstaben der deutschen
         Sprache. Die Buchstaben ä, ö, ü wurden wie ae, oe, ue gezählt.
         \textit{Quelle:
-        \href{http://de.wikipedia.org/wiki/Buchstabenh\%C3\%A4ufigkeit}%
-             {Wikipedia}}}}
+          \href{http://de.wikipedia.org/wiki/Buchstabenh\%C3\%A4ufigkeit}%
+               {Wikipedia}}}}
     \label{tab:buchswsk}
   \end{table}
 
- \item Häufige Buchstaben ersetzen: \texttt{C} entspricht
-  \texttt{e}.
+ \item Für natürliche Sprachen wie Deutsch ergibt sich in großen Texten eine
+  signifikaten Verteilung der Buchstaben (\autoref{tab:buchswsk}). Anhand der
+  bekannten Verteilung der Buchstaben in der Sprache und der
+  Häufigkeitsanalyse aus dem 1.\,Schritt, kann man die Klartextbuchstaben für
+  einige Geheimtextzeichen bestimmen. So steht z.\,B. in einem deutschen Text das
+  am häufigsten auftretende Zeichen für das E. Für den Text in
+  \autoref{fig:2} ist also \texttt{e} durch \texttt{C} verschlüsselt.
 
-  Da die Zeichenfolge \texttt{ZZ} vorkommt, ist eine weiterer Ansatz,
-  dass das \texttt{Z} dem \texttt{n} entspricht
+  Da die Zeichenfolge \texttt{ZZ} vorkommt, ist ein weiterer Ansatz,
+  dass das \texttt{Z} dem \texttt{n} entspricht.
 
   Aus den Teilen \texttt{CHZ} (\texttt{eHn}) und \texttt{CHZCZ}
   (\texttt{eHnen}) kann man schließen, dass das \texttt{H} dem \texttt{i}
@@ -626,125 +672,117 @@ brechen.
 
    \item \texttt{dAJJ} ist \texttt{dass}; \texttt{A} ist \texttt{a}
 
-   \item \texttt{UAFFe} ist \texttt{haFFe}, also \texttt{hatte};
-    \texttt{F} ist \texttt{t}
+   \item \texttt{haFFe} ist \texttt{hatte}; \texttt{F} ist \texttt{t}
 
-   \item Erster Teilsatz: "`es hatte ein Wann einen eseN,"'; Aus dem
+   \item Erster Teilsatz: "`\texttt{es hatte ein Wann einen eseN,}"'; Aus dem
     Kontext folgt: \texttt{W} entspricht \texttt{m} und \texttt{N} ist
-    \texttt{e}.
+    \texttt{l}.
 
-   \item weiter: "`der sDhOn LauGe Sahre die saeDVe"'; \texttt{D}
+   \item weiter: "`der sDhOn lauGe Sahre die saeDVe"'; \texttt{D}
     entspricht \texttt{c}, \texttt{O} ist \texttt{o}, \texttt{G} ist
     \texttt{g} und \texttt{S} ist \texttt{j} und \texttt{V} ist \texttt{k}.
   \end{itemize}
 \end{enumerate}
 
+\begin{figure}[t]
+  \centering
+  \begin{Verbatim}[gobble=2]
+  es hatte ein mann einen esel, der schon lange jahre die saecke
+  unverdrossen zur muehle getragen hatte, dessen kraefte aber nun zu
+  ende gingen, so dass er zur arbeit immer untauglicher ward. da dachte
+  der herr daran, ihn aus dem futter zu schaffen, aber der esel merkte,
+  dass kein guter wind wehte, lief fort und machte sich auf den weg
+  nach bremen: dort, meinte er, koennte er ja stadtmusikant werden.
+  \end{Verbatim}
+  \caption{Entschlüsselung des Textes aus \autoref{fig:2}}
+  \label{fig:3}
+\end{figure}
+
 % 23. Okt. 2006
 
-\section{Klassische symmetrische Verfahren}
+\section{Einteilung der Verschlüsselungsverfahren}
 
-symbolisch: Zwei identische (daher symmetrisch) Schlüssel -- einer beim
-Empfänger, einer beim Sender --, die beide eine Schatzkiste öffnen.
+Man kann die Verschlüsselungsverfahren anhand verschiedener Merkmale
+unterteilen. So unterscheidet man anhand der Schlüssel~$k_{e}$ und $k_{d}$
+zwischen symmetrischer und asymmetrischer Verschlüsselung. Ein Kryptosystem,
+bei dem für die Entschlüsselung der gleiche (oder ein in Polynomialzeit
+konstruierbarer) Schlüssel wie für die Verschlüsselung verwendet wird,
+bezeichnet man als \highl{symmetrisch}. Unterscheidet sich der Schlüssel für
+die Entschlüsselung von dem für die Verschlüsselung, bezeichnet man das
+Verfahren als \highl{asymmetrisch}.
 
-2 Unterscheidungsmerkmale:
-\begin{enumerate}
- \item \highl{Substitution} vs. \highl{Translation}
-  \begin{description}
-   \item[Substitution]
-    \begin{itemize}
-     \item jeder Buchstabe wird durch ein Geheimtextalphabet
-      verschlüsselt.
-     \item jeder Buchstabe an seinem Platz
-    \end{itemize}
+Weiterhin unterscheidet man die Verfahren anhand der Einheiten auf denen sie
+opperieren. Ein Verfahren, das jedes Zeichen des Eingabetexts einzeln
+verarbeitet, bezeichnet man als \highl{Stromchiffre}. Ein Verfahren, das
+hingegen mehrere Zeichen in einem Schritt verschlüsselt, das also mit Blöcken
+von Zeichen arbeiten, bezeichnet man als \highl{Blockchiffre}. Eine
+Stromchiffre ist so gesehen eine Blockchiffre mit der Blocklänge~1.
 
-   \item[Translation]
-    \begin{itemize}
-     \item jeder Buchstabe seine Gestalt
-     \item die Buchstaben ändern ihre Position
-    \end{itemize}
-  \end{description}
+Ein drittes Unterscheidungsmerkmal ist die Art der Verschlüsselung. Die zwei
+Grundverfahren sind die Substitution und die Transposition. Wird jede Einheit
+durch einen bestimmten Wert (u.\,U. aus einem anderen Alphabet) ersetzt, ist
+dies eine \highl{Substitution}. Bei einer \highl{Transposition} hingegen wird
+der Geheimtext durch Vertauschung der Einheiten im Klartext erzeugt. Die
+Transposition ist also eine Permutation der Einheiten des Klartexts, wobei
+keine neuen Symbole hinzukommen, insbesondere bleibt die Häufigkeitsverteilung
+der Einheiten gleich.
 
-  heute: Verallgemeinerung durch Kombination beider "`Urformen"'.
+Heutige Verfahren verwenden eine Kombination aus beiden Grundverfahren.
 
- \item \highl{Stromchiffre} vs. \highl{Blockchiffre}
-  \begin{description}
-   \item[Stromchiffren]
-    \begin{itemize}
-     \item jeder Buchstabe wird einzeln für sich verschlüsselt
-
-     \item häufig wird für eine Nachricht $m=m_{1}m_{2}\dotso m_{n}$ und
-      einen Anfangsschlüssel $k$ ein "`Strom von Schlüsseln"'
-      $k_{1},k_{2},\dotsc, k_{n}$ erzeugt.
-    \end{itemize}
-
-   \item[Blockchiffren]
-    \begin{itemize}
-     \item Aufteilung des Klartextes in (längere) Blöcke, die
-      verschlüsselt werden
-    \end{itemize}
-  \end{description}
-\end{enumerate}
-
-\chapter{Substitionen}
-
-Substitutionen werden unterschieden als:
-\begin{enumerate}
- \item \highl{monoalphabetisch}: jeder Buchstabe des Klartextalphabets
-  wird stets durch denselben Buchstaben des Geheimtextalphabets ersetzt
-
- \item \highl{polyalphabetisch} sonst
-\end{enumerate}
+\chapter{Substitionsverfahren}
 
 \section{Monoalphabetische Substitutionen}
 
-O.\,B.\,d.\,A. entspricht das Klartextalphabet $\Sigma$ dem Geheimtextalphabet $\Gamma$.
-Wir legen uns weiter auf das Beispielalphabet $\{a,b,c,\dotsc,x,y,z\}$ fest
-und schreiben es in der Form $X=\{0,1,2,\dotsc,\linebreak[1] 23,24,25\}$. Dann gilt:
-$\abs{X} = 26$. Für $\abs{X}=n$ denken wir uns $X=\{0,1,2,\dotsc, n-2,\linebreak[1] n-1\}$.
+Bei einer \highl{monoalphabetischen Verschlüsselung} wird jeder Buchstabe des
+Klartextalphabets~$\Sigma$ immer durch denselben Buchstaben des
+Geheimtextalphabets~$\Gamma$ ersetzt. O.\,B.\,d.\,A. sei $\Sigma =\Gamma
+=\{a,b,c,\dotsc,x,y,z\}$ bzw. sei es das Alphabet in der Form
+$X=\{0,1,2,\dotsc, 23, 24, 25\}$ gegeben. Dann gilt: $\abs{X} = 26$. Für
+Alphabete mit $n$ Zeichen, sei die Darstellung $X=\{0,1,2,\dotsc, n-2, n-1\}$.
 
-\subsection{Verschlüsselungsverfahren}
-
-Eine \highl{Verschlüssung} in diesem Rahmen ist eine Permution $\pi\colon X
-\mapstoto X$ (Schlüssel). Aus einer Nachricht $m=m_{1}m_{2}\dotso m_{k}$ wird
-der Geheimtext $c=\pi(m_{1})\pi(m_{2})\dotso \pi(m_{k})$. Es gibt hier $n!$
-verschiedene Schlüssel, aber wir wissen bereits, dass dieses Verfahren
-krypographisch auf Grund der \highl{Häufigkeitsverteilung} auch bei
-\highl{Ciphertext-Only-Attakten} unsicher ist.
+Die Verschlüsselung ist also eine Permutation $\pi\colon X\mapstoto X$ des
+Alphabets, die gleichzeitig der Schlüssel ist. Aus einer Nachricht
+$m=m_{1}m_{2}\dotso m_{k}$ wird so der Geheimtext $c=\pi(m_{1})\pi(m_{2})
+\dotso\pi(m_{k})$. Es gibt hier $n!$~verschiedene Schlüssel, aber wir wissen
+bereits aus \autoref{sec:ka-bsp}, dass dieses Verfahren krypographisch auf
+Grund der Häufigkeitsverteilung der Buchstaben auch bei
+\highl[Angriff!Ciphertext-Only-]{Ciphertext-Only-Angriffen} unsicher ist.
 
 \subsection{Verschiebechiffre (Caesar)}
 
-Die \highl{Verschiebechiffren} --~auch \highl{Caesar-Chiffre} genannt~-- sind
+Die \highl{Verschiebechiffre} --~auch \highl{Caesar-Chiffre} genannt~-- ist
 die einfachste Form der monoalphabetischen Substitution. Jeder Buchstabe wird
-durch seinen $i$.~Nachfolger ersetzt, wobei man wieder bei A beginnt, wenn man
+durch seinen $k$.\,Nachfolger ersetzt, wobei man wieder bei A beginnt, wenn man
 Z überschreitet.
 
 Anschaulich kann man sich eine Verschlüsselungsvorschrift so vorstellen, dass
-unter die Buchstaben~A bis~Z die Buchstaben beginnend mit dem $i$.~Buchstaben
-bis~Z und weiter von A bis zum $(i-1)$.~Buchstaben stehen. Jeder Buchstabe des
+unter den Buchstaben~A bis~Z die Buchstaben beginnend mit dem $k$.\,Buchstaben
+bis~Z und weiter von A bis zum $(k-1)$.\,Buchstaben stehen. Jeder Buchstabe des
 Klartextes wird durch den Buchstaben, der unter ihm in der zweiten Zeile
 steht, ersetzt.
 
 Mathematisch ausgedrück, kodiert man die Buchstaben~A bis~Z mit den Zahlen~0
 bis~25 und ordnet jedem Buchstaben den durch die Abbildung $x\mapsto
-x+i\pmod{26}$ beschriebenen Buchstaben zu.
+x+k\pmod{26}$ beschriebenen Buchstaben zu.
 
-Der Schlüssel für die Verschlüsselung ist dabei $i\in\{0,1,\dotsc,25\}$, die
-Anzahl der Positionen, um die der Buchstabe verschoben wird.
+Der Schlüssel für die Verschlüsselung ist dabei $k\in\{0,1,\dotsc,25\}$, die
+Anzahl der Positionen, um die die Buchstaben verschoben werden.
 
-Das Verfahren hat den Nachteil, das nur wenige ($n$) Schlüssel verfügbar sind
-und das die Verschlüsselung gebrochen ist, wenn \textit{ein} Buchstabe übersetzt
-ist.
+Das Verfahren hat jedoch den Nachteil, das nur wenige ($n$) Schlüssel
+verfügbar sind und das die Verschlüsselung gebrochen ist, sobal \textit{ein}
+Buchstabe übersetzt ist. Dies lässt sich wie in \autoref{sec:ka-bsp} gesehen,
+sehr leicht mit der Häufigkeitsanalyse der Buchstaben bewerkstelligen.
 
 \subsection{Tauschchiffren}
 \label{sec:tausch}
 
 \highl{Tauschchiffren} sind eine Verallgemeinerung der Verschiebechiffren. Die
 Buchstaben werden ebenfalls durch
-Zahlen kodiert, mit denen dann gerechnet wird. Jedes Zeichen~$x\in
-\{0,\dotsc,n-1\}$ wird durch die affinlineare Abbildung $x\mapsto x\cdot
-a+b\pmod{n}$ in das Geheimzeichen überführt. Der Schlüssel ist dabei das Paar
+Zahlen kodiert, mit denen dann gerechnet wird. Jedes Zeichen $x\in
+\{0,\dotsc,n-1\}$ wird durch die \highl[affinlinear]{affinlineare} Abbildung
+$x\mapsto a\cdot x+b\pmod{n}$ in das Geheimzeichen überführt. Der Schlüssel ist dabei das Paar
 $(a,b)\in \{0,\dotsc,n-1\}^{2}$.
-Bei den Verschiebechiffren ist $b=0$.
+Bei den Verschiebechiffren ist $a=1$.
 
 Damit die Entschlüsselung möglich ist, muss die Abbildung bijektiv sein. Dazu
 müssen $a$ und $n$ teilerfremd sein. Es gibt also $\phi(n)$\footnote{Eulersche
@@ -752,7 +790,7 @@ $\phi$-Funktion; siehe \autoref{sec:restklassen}} Möglichkeiten $a$ zu wählen
 und insgesamt $\phi(n)\cdot n$ Schlüssel $(a,b)$.
 
 Ein kurzes Gegenbeispiel, um das Problem zu verdeutlichen: Wählt man $n=26,
-a=13$ und $b=0$, so wird das Zeichen~2 als $E(2) = 2\cdot 13+0 \pmod{26} = 0$
+a=13$ und $b=0$, so wird das Zeichen~2 als $E(2) = 13\cdot 2+0 \pmod{26} = 0$
 als auch das Zeichen~0 als $E(0) = 0 \cdot 13 +0 \pmod{26}$ verschlüsselt.
 Eine Entschlüsselung des Zeichens~0 ist also nicht möglich.
 
@@ -761,7 +799,7 @@ Eine Entschlüsselung des Zeichens~0 ist also nicht möglich.
   "`EHYE"' abgebildet.
   \begin{center}
     \begin{tabular}{c|cc|c}
-      Buchstabe& Codierung~$x$& $x\cdot 5+13$& Decodierung\\
+      Buchstabe& Codierung~$x$& $5\cdot x+13$& Decodierung\\
       \hline
       t& 19& 4& E\\
       e& 4& 7& H\\
@@ -773,9 +811,9 @@ Eine Entschlüsselung des Zeichens~0 ist also nicht möglich.
 
 Die Nachteile der Tauschchiffren sind:
 \begin{itemize}
+ \item Häufigkeitsverteilung der natürlichen Sprache bleibt erhalten und
  \item Verschlüsselung ist gekackt, wenn \textit{zwei} Buchstaben übersetzt
-  sind und
- \item Häufigkeitsverteilung der natürlichen Sprache bleibt erhalten.
+  sind
 \end{itemize}
 
 Die \highl{Tauschchiffren} werden in einer allgemeineren Form nochmal im
@@ -787,7 +825,7 @@ Die \highl{Tauschchiffren} werden in einer allgemeineren Form nochmal im
 monoalphabetischen Verschlüsselung, die durch die Häufigkeitsverteilung
 der Buchstaben bei natürlichen Sprachen gegeben ist, aufzuheben.
 
-Dazu führt man ein \textit{neues} und \textit{größeres} Geheimtextalphabet $Y$
+Dazu führt man ein neues und \textit{größeres} Geheimtextalphabet $Y$
 und eine Abbildung $f\colon X\mapsto \mathfrak{P}(Y)$ ein, wobei verschiedene
 Buchstaben disjunkten Teilmengen entsprechen. Für eine Nachricht
 $m=m_{1}m_{2}\dotso m_{k}$ ist der Geheimtext $c=c_{1}c_{2}\dotso c_{k}$,
@@ -820,12 +858,6 @@ alle $x$ annähernd gleich ist!
 Der Effekt des Ganzen ist, dass im Geheimtext alle Buchstaben des
 Geheimtextalphabets~$Y$ etwa gleichwahrscheinlich auftreten!
 
-\begin{bemerk}
-  Es gibt ein homophones Verschlüsselungsverfahren mit folgender Eigenschaft:
-  Für jeden Geheimtext~$c$ gibt es mindestens zwei verschiedene Schlüssel, die
-  $c$ in zwei verschiedene, sinnvolle Klartexte überführen.
-\end{bemerk}
-
 \begin{table}
   \centering
   \begin{tabular}{c|*{6}{c}}
@@ -844,33 +876,41 @@ Geheimtextalphabets~$Y$ etwa gleichwahrscheinlich auftreten!
   \label{tab:1}
 \end{table}
 
-Wie funktioniert dies? Das Klartextalphabet sei $X$ (mit $\abs{X}=n$) und
-$Y$ (mit $\abs{Y}=n^{2}$) das Geheimtextalphabet. Der Schlüsselraum wird
-beschrieben durch eine $n\times n$-Matrix. Die Zeilen und Spalten werden mit
-den Buchstaben aus $X$ indiziert und die Eintragungen sind die (zufällig
-angeordneten) Buchstaben von $Y$. Siehe \autoref{tab:1}. Wir definieren zwei
-Abbildungen:
-\begin{align*}
-  f_{1}(x_{j}) &= \{ y\in Y\colon y \text{~steht in der $j$. Zeile} \}\\
-  f_{2}(x_{i}) &= \{ y\in Y\colon y \text{~steht in der $i$. Spalte} \}
-\end{align*}
+\begin{lemma}
+  Es gibt ein homophones Verschlüsselungsverfahren, bei dem es für jeden
+  Geheimtext~$c$ mindestens zwei verschiedene Schlüssel gibt, die
+  $c$ in zwei verschiedene, sinnvolle Klartexte überführen.
 
-Es sei $m=m_{1}m_{2}\dotso m_{k}$ der zu verschlüsselnde Klartext und
-$l'=l_{1}'l_{2}'\dotso l_{k}'$ ein weiterer sinnvoller Klartext gleicher Länge.
+  \begin{proof}
+    Das Klartextalphabet sei $X$ (mit $\abs{X}=n$) und
+    $Y$ (mit $\abs{Y}=n^{2}$) das Geheimtextalphabet. Der Schlüsselraum wird
+    beschrieben durch eine $n\times n$-Matrix. Die Zeilen und Spalten werden mit
+    den Buchstaben aus $X$ indiziert und die Eintragungen sind die (zufällig
+    angeordneten) Buchstaben von $Y$. Siehe \autoref{tab:1}. Wir definieren zwei
+    Abbildungen:
+    \begin{align*}
+      f_{1}(x_{j}) &= \{ y\in Y\colon y \text{~steht in der $j$. Zeile} \}\\
+      f_{2}(x_{i}) &= \{ y\in Y\colon y \text{~steht in der $i$. Spalte} \}
+    \end{align*}
 
-Als Verschlüsselung für $m_{i}$ verwenden wir den Eintrag in der Matrix, der
-im Schnittpunkt von $m_{i}=x_{r}$ und $l_{i}=x_{s}$ ($r$-ter Zeile und $s$-ter
-Spalte) liegt.
-\begin{gather*}
-  m_{i}\mapsto c_{i}\in f_{1}(m_{i}) \cap f_{2}(l_{i})
-\end{gather*}
+    Es sei $m=m_{1}m_{2}\dotso m_{k}$ der zu verschlüsselnde Klartext und
+    $l'=l_{1}'l_{2}'\dotso l_{k}'$ ein weiterer sinnvoller Klartext gleicher Länge.
 
-Ein \highl{Brute-force-Angriff} bleibt bei solch einer Verschlüsselung
-prinzipell wirkungslos, weil jeder Geheimtext in zwei verschiedene,
-\textit{sinnvolle} Klartexte übersetzt werden kann!
+    Als Verschlüsselung für $m_{i}$ verwenden wir den Eintrag in der Matrix, der
+    im Schnittpunkt von $m_{i}=x_{r}$ und $l_{i}=x_{s}$ ($r$-ter Zeile und $s$-ter
+    Spalte) liegt.
+    \begin{gather*}
+      m_{i}\mapsto c_{i}\in f_{1}(m_{i}) \cap f_{2}(l_{i})
+    \end{gather*}
+  \end{proof}
+\end{lemma}
+
+Ein \highl[Angriff!Brute-Force-]{Brute-force-Angriff} bleibt bei solch einer
+Verschlüsselung prinzipell wirkungslos, weil jeder Geheimtext in zwei
+verschiedene, \textit{sinnvolle} Klartexte übersetzt werden kann!
 
 Jedoch bleibt weiterhin der Nachteil bestehen, dass für alle $x\in X$ ist
-$\abs{f(x)}$ gleich groß ist. Damit die Forderung, dass $\frac{p(x)}%
+$\abs{f(x)}$ gleich groß ist. Damit ist die Forderung, dass $\frac{p(x)}%
 {\abs{f(x)}}$ für alle $x$ annähernd gleich ist, verletzt. Aber die Idee ist,
 dass der Angreifer nicht sagen kann, welcher der beiden konkurrierenden
 Klartexte der richtige ist.
@@ -878,6 +918,7 @@ Klartexte der richtige ist.
 % 25. 10. 2006
 
 \begin{bsp}
+  \label{bsp:3}
   Das Klartextalphabet $X$ sei das deutsche Alphabet und wir wählen als
   Geheimtextalphabet $Y=\{00, 01, \dotsc, 10,11,\dotsc,99\}$
   ($\abs{Y}=100$). Die Zuordnung $f\colon X\rightarrow
@@ -907,18 +948,18 @@ Damit haben wir bereits eine Anomalie gefunden. Wärend die Buchstaben
 \textit{ch} nicht so. Die einzelnen Buchstaben sind recht selten (siehe
 \autoref{tab:buchswsk}), das Digramm jedoch tritt sehr häufig auf.
 
-Ausgangspunkt: Verschlüsselung von \glq{}c\grq{}. Es $\abs{f(c)} =k$
-(z.\,B. $k=3$) Dann müssen (etwa) folgende Relationen erfüllt sein:
+Ausgangspunkt: Verschlüsselung von \glq{}c\grq{}. Es sei $\abs{f(\mathtt{c})} =k$
+(z.\,B. $k=3$ in \autoref{bsp:3}) Dann müssen (etwa) folgende Relationen erfüllt sein:
 $\abs{f(\mathtt{e})}\approx 6k, \abs{f(\mathtt{n})} \approx 3k,
 \abs{f(\mathrm{i})} \approx 2\mathord{,}5k, \abs{f(\mathrm{r})} \approx
-2\mathord{,}5k$
+2\mathord{,}5k$.
 
 "`en"' wird auf $6k\cdot 3k = 18k^{2}$ verschiedene Weisen verschlüsselt.
 "`ch"' wird auf $k\cdot 1\mathord{,}5k = 1\mathord{,}5k^{2}$ verschiedene Weisen verschlüsselt.
 
 Ein Digramm, dass "`en"' verschlüsselt, tritt mit einer Häufigkeit von
 $\frac{4\,\%}{18}\approx 0\mathord{,}25\,\%$ auf. Für "`ch"' ist die Häufigkeit
-$\frac{2\mathord{,}5\,\%}{1\mathord{,}5\,\%}\approx 1\mathord{,}6\,\%$.
+$\frac{2\mathord{,}5\,\%}{1\mathord{,}5}\approx 1\mathord{,}6\,\%$.
 
 Dies ist ein Ansatz zunächst die Verschlüsselung für \textit{c} und
 \textit{h} zu knacken. Vorraussetzung für einen solchen Angriff ist aber
@@ -927,14 +968,14 @@ ein wirklich langer Geheimtext!
 \section{Polyalphabetische Verschlüssung}
 
 Polyalphabetische Verschlüssung hat ebenfalls das Ziel, die Häufigkeit
-der Buchstaben zu verwischen. Ein prominentes Beispiel ist
+der Buchstaben zu verwischen. Ein prominentes Beispiel ist die
 \highl{Vigenère-Chiffre} von dem franz. Diplomat Blaise Vigenère (16.\,Jh.),
 die erst im 19.\,Jahrhundert gebrochen wurde.
 
 \begin{table}
   \centering
   \begin{minipage}{13.5cm}
-    \ttfamily\footnotesize
+    \ttfamily\footnotesize\raggedright
     ~~~%
     \setcounter{cnt}{1}%
     \whiledo{\thecnt < 27}{%
@@ -963,72 +1004,71 @@ die erst im 19.\,Jahrhundert gebrochen wurde.
 \end{table}
 
 Die Idee der Vigenère-Chiffre ist, dass jeder Buchstabe mit einer anderen
-Caesar-Chiffre verschlüsselt wird, aber nicht zufällig, sondern strukturiert.
-Mit Hilfe eines Schlüsselworts.
+Caesar-Chiffre verschlüsselt wird, aber nicht zufällig, sondern strukturiert
+mit Hilfe eines Schlüsselworts.
 
 \begin{bsp}
-  Als Schlüsselwort nehmen wir "`ALLGAEU"' und als Klartext "`emmentaler"'.
-
-  \texttt{emmentaler}\\
-  \texttt{ALLGAEUALLGAEU}\\
-  \texttt{EXXKNXULPC}
-
-  Verschlüsselung ist einfach.
+  Der zu verschlüsselnde Klartext sei \texttt{emmentaler} und das Schlüsselwort
+  "`ALLGAEU"'.
+  \begin{center}
+    \begin{tabular}{l*{14}{c}}
+      Klartext:& e& m& m& e& n& t& a& l& e& r& &&& \\
+      Schlüsselwort:& A& L& L& G& A& E& U& A& L& L& G& A& E& U\\
+      Geheimtext:& E& X& X& K& N& X& U& L& P& C& &&&
+    \end{tabular}
+  \end{center}
 \end{bsp}
 
-\begin{bemerk}
-  Wir sehen folgendes in dem Beispiel: "`e"' wird zu "`E"', "`K"' und
-  "`P"'. Umgekehrt entsteht "`X"' aus "`m"' und "`t"'.
+Die Verschlüsselung ist nicht wesentlich aufwendiger als die Caesar-Chiffre,
+aber es stellt sich eine neue Situation ein: "`e"' wird zu "`E"', "`K"' und
+"`P"' und Umgekehrt entsteht "`X"' aus "`m"' und "`t"'. Dadurch werden die
+unterschiedlichen Häufigkeiten der Klartextbuchstaben im Geheimtext
+ausgeglichen.
 
-  Das ist eine neue Situation.
-\end{bemerk}
+Die \highl{polyalphabetische Verschlüsselung} lässt sich allgemein auf
+folgenden Weise beschreiben: Es gibt ein Klartextalphabet~$X$,
+$d$~Geheimtextalphabete $Y_{0}, Y_{1}, \dotsc, Y_{d-1}$, $d$~bijektive
+Abbildungen $f_{i}\colon X \mapstoto Y_{i}$ ($i=0,\dotsc,d-1$) und eine
+surjektive Abbildung $h\colon\N\mapsto \{0,1,\dotsc,d-1\}$. Der Schlüssel
+bilden dabei $h, f_{0}, f_{1}, \dotsc, f_{d-1}$.
 
-\subsection{Formale Beschreibung}
+Ein Klartext $m=m_{1}m_{2}\dotso m_{t}$ ($m_{j}\in X$) der Länge~$t$ wird in
+einen Geheimtext $c=c_{1}c_{2}\dotso c_{t}$ durch $c_{j} = f_{h(j)}(m_{j})$
+für $1\leq j\leq t$ überführt.
 
-zunächst allgemein: ein Klartextalphabet $X$ mit $\abs{X}=n$ (z.\,B.
-$n=26$) und $d$ Geheimtextalphabete $Y_{0}, Y_{1}, \dotsc, Y_{d-1}$. Dazu
-$d$ bijektive Abbildungen $f_{i}\colon X \mapstoto Y_{i}$
-($i=0,\dotsc,d-1$) und eine surjektive Abbildung $h\colon\N\mapsto
-\{0,1,\dotsc,d-1\}$ ($h(x)=x\pmod{d}$).
+Bei der \highl{Vigenère-Chiffre} sind die Alphabete identisch;
+$X=Y_{0}=\dotsb= Y_{d} =\{0,1,\dotsc,25\}$. Das Schlüsselwort
+$k=k_{0}k_{1}\dotso k_{d}$ der Länge~$d$ beschreibt die einzelnen
+Verschlüsselungsfunktionen durch eine Verschiebechiffre $f_{i}(a) = a+
+k_{i}\mod{n}$ (für $a\in X$). Als Funktion~$h$ wird einfach $h(x) = x\mod{d}$
+(für $x\in\N$) verwendet.
 
-Klartext: $m=m_{1}m_{2}\dotso m_{t}$ ($m_{j}\in X$)\\
-Geheimtext: $c= f_{h(1)}(m_{1}) f_{h(2)}(m_{2}) \dotso f_{h(t)}(m_{t}) =
-c_{1} c_{2}\dotso c_{t}$\\
-Schlüssel: ist bestimmt durch $h$ und $f_{0}, f_{1}, \dotsc, f_{d-1}$. Es
-wird der "`Schlüsselstrom"' $f_{h(1)}, f_{h(2)}, \dotsc, f_{h(t)}$
-erzeugt. Daher \highl{Stromchiffre}.
-
-jetzt für Vigenère: $X=\{0,1,\dotsc,n-1\}$ und $n=26$
-$Y_{0}=Y_{1}=\dotsb= Y_{d} = X$. Dabei ist $d$ die Länge des
-Schlüsselworts. $h(x) = x\pmod{d}$ (für jede Position $x\in\N$).
-$f_{i}(a) = a+ j_{i}\pmod{n}$ (für $a\in X$) für festes $j_{i}\in X$.
-Der Schlüssel ist dabei $j_{0},j_{1},j_{2},\dotsc$.
-
-Effekt: Unterschiedliche Buchstabenhäufigkeiten werden ausgeglichen!
-
-Und weil's so schön war, noch ein
 \begin{bsp}
-  Statt dem Alphabet $\{a, b, c, \dotsc, x,y,z\}$ verwenden wir
-  $X=\{0,1,\dotsc,25\}$. Als Schlüsselwort nehmen wir "`KRYPTO"' ($d=6$
-  mit sechs verschiedenen Buchstaben) als $10,17,24,15,19,14 =
-  j_{0},j_{1}, j_{2}, j_{3}, j_{4}, j_{5}$. Klartext:
-  "`kommemorgennicht"' = $10,14,12,12,04,12,14,17,06,04,13,13,08,02,07,19$
-
-  Wir machen uns eine Tabelle.
-  \begin{tabular}{l*{6}{|c}|}
-    Schlüsselwort & 10 & 17 & 24 & 15 & 19 & 14\\
-    \hline
-    1.\,Zeile     & 10 & 14 & 12 & 12 & 04 & 12\\
-                  & 20 & 05 & 10 & 01 & 23 & 00\\
-    \hline\hline
-    3.\, Zeile    & 14 & 17 & 06 & 04 & 13 & 13\\
-                  & 24 & 08 & 04 & 19 & 06 & 01\\
-    \hline\hline
-    5.\,Zeile     & 08 & 02 & 07 & 19\\
-                  & 18 & 19 & 05 & 08
-  \end{tabular}
-
-  Geheimtext: UFKBXAYIETGBSTFI
+  Das Alphabet sei $X=\{0,1,\dotsc,25\}$ und das Schlüsselwort sei "`KRYPTO"'
+  ($d=6$), wobei dies als $10,17,24,15,19,14 = k_{0},k_{1}, k_{2}, k_{3},
+  k_{4}, k_{5}$ dargestellt wird. Für den Klartext \texttt{kommemorgennicht}
+  ergibt sich der Geheimtext \texttt{UFKBXAYIETGBSTFI}.
+  \begin{center}
+    \begin{tabular}{l*{6}{|c}}
+      Schlüsselwort & K & R& Y& P& T& O\\
+      Kodierung~$k_{j}$ & 10 & 17 & 24 & 15 & 19 & 14\\
+      \hline
+      Klartext & k & o & m & m & e & m\\
+      Kodierung~$x$ & 10 & 14 & 12 & 12 & 04 & 12\\
+      $x + k_{j}\mod 26$ & 20 & 05 & 10 & 01 & 23 & 00\\
+      Geheimtext & U & F & K & B & X & A\\
+      \hline\hline
+      Klartext & o & r & g & e & n & n\\
+      Kodierung~$x$ & 14 & 17 & 06 & 04 & 13 & 13\\
+      $x + k_{j}\mod26$ & 24 & 08 & 04 & 19 & 06 & 01\\
+      Geheimtext & Y & I & E & T & G & B\\
+      \hline\hline
+      Klartext & i & c & h & t &&\\
+      Kodierung~$x$ & 08 & 02 & 07 & 19 &&\\
+      $x + k_{j}\mod26$ & 18 & 19 & 05 & 08 &&\\
+      Geheimtext & S & T & F & I &&
+    \end{tabular}
+  \end{center}
 \end{bsp}
 
 % 2006-10-30
@@ -1047,15 +1087,17 @@ Teiltexten die gleiche Häufigkeitsverteilung der Buchstaben wie bei einem
 richtigen Text ein. Innerhalb der Spalten findet man also eine
 Buchstabenhäuigkeit wie bei einem natürlichen Text.
 
-Die einzelnen Teiltexte sind also monoalphabetisch verschlüsselt. Man kann
+Die einzelnen Teiltexte sind monoalphabetisch verschlüsselt. Man kann
 also im ersten Schritt die Schlüssellänge bestimmen und im zweiten Schritt die
-monoalphabetischen Teiltexte mit Hilfe der Häufigkeitsanalyse entschlüsseln.
+monoalphabetischen Teiltexte mit Hilfe der \highl{Häufigkeitsanalyse} entschlüsseln.
 
 \subsubsection{Brute-force-Angriff auf polyalphabetische Verschlüsselung}
+\index{Angriff!Brute-Force-}
 
-Aus Erfahrung weiß man, wenn ein Geheimtext, der durch polyalphabetische
+Aus Erfahrung weiß man, dass die Häufigkeitsverteilung der Buchstaben im
+Klartext nivelliert ist, wenn ein Geheimtext, der durch polyalphabetische
 Verschlüsselung entstanden ist, mit einem Schlüssel der falschen Länge
-entschlüsselt wird, ist die Häufigkeitsverteilung nivelliert. Man kann also
+entschlüsselt wird. Man kann also
 systematisch $d=1,2,3,\dotsc$ durchprobieren bis man für den entschlüsselten
 Text eine natürliche Verteilung der Buchstaben gefunden hat.
 
@@ -1065,7 +1107,7 @@ Dies funktioniert nur für kleine $d$!
 
 Charles Babbage entdeckte 1854 die Möglichkeit, die Länge des
 Schlüsselworts für einen polyalphabetisch verschlüsselten Text zu
-bestimmen. Es wurde aber nach Kasiski benannt, der sie das erste Mal
+bestimmen. Der Algorithmus wurde aber nach Kasiski benannt, der ihn das erste Mal
 veröffentlichte.
 
 Wenn man die polyalphabetische Verschlüsselung betrachtet, fällt auf, dass
@@ -1090,7 +1132,7 @@ Geheimtext) eine (oder ein paar) Vermutungen über die Schlüssellänge finden.
 \subsubsection{Friedman-Test}\index{Friedman-Test}
 
 Von William Friedman (1891--1969) stammt die Idee, die Periodenlänge mit Hilfe
-statistischen Methoden zu bestimmen. Die entscheidende statistische
+statistischer Methoden zu bestimmen. Die entscheidende statistische
 Größe ist der Koinzidenzindex~$I(t)$ für einen Text~$t$.
 
 Für ein Alphabet $A=\{a_{1},\dotsc, a_{n}\}$ mit $\abs{A}=n$ und einen
@@ -1189,25 +1231,29 @@ Diese Schätzung kann man mit den Ergebnissen aus einem Kasiski-Test oder einem
 Brute-Force-Angriff vergleichen, um die Möglichkeiten für die wahre
 Periodenlänge genauer einzuschränken.
 
-\subsection{Möglichkeiten der Verteidigung gegen die Analyse}
+\subsection{Möglichkeiten der Verteidigung gegen die Angriffe}
 
-Ausgangspunk: Die oben formulierten Tests funktionieren nur für kleine
-Periodenlängen ($d\ll l$)! Deshalb: 1) Betrachten von großen Periodenlängen,
-technische Realisierung in der \highl{ENIGMA} -- 1920 deutsches Patent mit
-drei Rotoren: Periodenlänge $26^{3}$, Einsatz im Krieg mit fünf Rotoren:
-Periodenlänge $26^{5}$.
+Ausgangspunkt für eine Verteidigung ist der Umstand, dass die oben formulierten
+Tests nur für kleine Periodenlängen ($d\ll l$) funktionieren!
+\begin{itemize}
+ \item Eine Abwehrstrategie wäre also die Periodenlänge zu vergößern.
+  Praktisch wurde dies bei der \highl{ENIGMA} umgesetzt. Im deutschen Patent
+  wurde 1920 mit drei Rotoren gearbeitet, die eine Periodenlänge von $26^{3}$
+  ergaben. Im späteren Einsatz im Krieg wurde eine Maschine mit fünf Rotoren,
+  die eine Periodenlänge von $26^{5}$ hatte, gearbeitet.
 
-2.\,Ansatz: nicht periodische Verschlüsselung: a) mit einem
-"`Schlüsselroman"', d.\,h. aus einem vorher gewählten Buch wird ein Text
-ausgewählt -- Schlüssel ist dann (Seite, Zeile, Buchstabe). Aber dann
-funktioniert wieder die Häufigkeitsanalyse, weil der Roman wieder die
-Charakteristik einer natürlichen Sprache hat. (in diese Kategorie fällt auch
-das anhängen des Klartextes an das Schlüsselwort.)
+ \item Ein anderer Weg wäre, gar keine Wiederholung zu verwenden, sprich das
+  Schlüsselwort so lang wie den Text wählen. Dies kann eine Textstelle aus
+  einem vorher gewählten Buch sein -- Schlüssel ist dann (Seite, Zeile,
+  Buchstabe). Aber dann funktioniert wieder die Häufigkeitsanalyse, weil der
+  Roman die Charakteristik einer natürlichen Sprache hat. (In diese Kategorie
+  fällt auch das anhängen des Klartextes an das Schlüsselwort.)
 
-b) mit Zufallstexten, führt wieder zu \highl{One-Time-Pad} und damit zum
-absolut sicheren Code -- aber unpraktikabel.
+  Also müsste man für den "`Schlüsselroman"' einen Zufallstext wählen, was zu
+  dem absolut sicherem, aber unpraktikablen \highl{One-Time-Pad} führt.
+\end{itemize}
 
-\chapter{Transpositionen}
+\chapter{Transpositionsverfahren}
 
 Klartextbuchstaben bleiben Klartextbuchstaben, ändern aber ihr Position. Die
 Häufigkeitsanalyse von Buchstaben als Angriff ist wirkungslos, da der Text nur
@@ -1673,8 +1719,8 @@ und es gilt $P_{\sigma}^{-1} = P_{\sigma^{-1}}$.
 \subsection{Kryptoanalyse affinlinearer Blockchiffren}
 
 Sind $n+1$ Klartextblöcke~$m_{0},\dotsc,m_{n}$ und die dazugehörigen
-Geheimtextblöcke~$c_{0},\dotsc, c_{n}$ bekannt --~eine
-\highl{known-plaintext-attack}~--, kann man folgende zwei Matrizen definieren:
+Geheimtextblöcke~$c_{0},\dotsc, c_{n}$ bekannt --~ein
+\highl[Angriff!Known-Plaintext-]{Known-Plaintext-Angriff}~--, kann man folgende zwei Matrizen definieren:
 \begin{align*}
   M &=
      \begin{pmatrix}
@@ -1836,7 +1882,7 @@ Substitutionen und Transpositionen verschlüsselt. Einen einzelnen Durchlauf
 von Substitution und Transposition bezeichnet man als \highl{Runde}. Die
 einzelnen Schlüssel für jede Runde werden dabei aus einem (Haupt"~)""Schlüssel
 erzeugt.
-\todo{Erklären, was die S-Box (Substitution) und die P-Box (Translation; von
+\todo{Erklären, was die S-Box (Substitution) und die P-Box (Transposition; von
   Permutation) ist.}
 \todo{to produce a function with large amounts of what Claude Shannon
   described as ``confusion and diffusion.'' Bit shuffling creates the diffusion
@@ -1916,7 +1962,7 @@ eine symmetrische Verschlüsselung.
 Die Sicherheit der gesamten Verschlüsselung beruht auf der Eigenschaft, dass
 die Substitution, genauer die Funktion~$f_{K_{i}}$, eine nichtlineare
 Transformation ist. Wäre $f_{K_{i}}$ eine lineare Transformation, so wäre auch
-die Verkettung von Substitution und Translation\footnote{$\begin{pmatrix}R&L
+die Verkettung von Substitution und Transposition\footnote{$\begin{pmatrix}R&L
 \end{pmatrix} = \begin{pmatrix}L& R\end{pmatrix}\cdot
 (\begin{smallmatrix}0& 1\\1& 0\end{smallmatrix})$} in jeder Runde eine lineare
 Transformation. Man könnte also den gesamten Verschlüsselungsvorgang mit einer
@@ -2077,7 +2123,7 @@ Abwandlungen zur Erhöhung der Sicherheit von DES:
   Erhöhung der Sicherheit, da es einfach nur die Rundenzahl erhöht.
 
  \item $c = DES_{k_{1}}\bigl( DES_{k_{2}}^{-1}( DES_{k_{1}}(m) ) \bigr)$ mit
-  chosen-plain-text-Angriff ist dies auch leicht knackbar.
+  Chosen-Plaintext-Angriff ist dies auch leicht knackbar.
 
  \item $c= DES_{k_{3}}\bigl( DES_{k_{2}}^{-1}( DES_{k_{1}}(m) ) \bigr)$
   wird als \highl{Triple-DES} (\highl{3DES}) bezeichnet.
@@ -2181,7 +2227,7 @@ Wo ergeben sich jetzt Angriffspunkte?
 Methode von Bahim und Shamir aus dem Jahr 1990. Methode speziell für DES
 entwickeln, funktioniert aber auch bei ähnlichen Verfahren.
 
-\highl{Chosen-Plaintext-Attack}: Der Angreifer kennt den Algorithmus, das Verfahren
+\highl[Angriff!Chosen-Plaintext-]{Chosen-Plaintext-Angriff}: Der Angreifer kennt den Algorithmus, das Verfahren
 zur Erzeugung der Rundenschlüssel, die Diffusion und die $S$-Boxen. Er kennt
 nicht den Schlüssel~$k=(\kappa_{1}\dotso\kappa_{9})$
 
@@ -2630,6 +2676,7 @@ ergeben.
 Konsequenz: DES wird bei Mehrfachverschlüsselung sicherer.
 
 \subsubsection{"`Meet-in-the-Middle"'-Angriff}
+\index{Angriff!Meet-in-the-Middle}
 
 Doppelte Verschlüsselung bewirkt eine Vergrößerung des Schlüsselraums auf
 $2^{112}$~Schlüssel. Der folgende Angriff beschränkt das Durchprobieren auf
@@ -4907,7 +4954,7 @@ werden.
 \end{satz}
 
 Für eine Hashfunktion $H\colon\Z_{2}^{*} \mapsto \Z_{2}^{n}$ hat die
-"`Geburtstagsattake"' folgende Konsequenz: Es genügen $\sqrt{2^{n}}$
+"`Geburtstagsangriff"' folgende Konsequenz: Es genügen $\sqrt{2^{n}}$
 Hashwerten, um mit einer Wahrscheinlichkeit $\geq\frac{1}{2}$ eine Kollision
 zu erzeugen. In der Praxis bedeutet dies, dass $n=64$ zu kurz und damit zu
 unsicher ist, da nur $2^{32}\approx4\cdot10^{9}$ Hashwerte für eine Kollision
