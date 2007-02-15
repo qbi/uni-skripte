@@ -1232,61 +1232,91 @@ Tests nur für kleine Periodenlängen ($d\ll l$) funktionieren!
 
 \chapter{Transpositionsverfahren}
 
-Klartextbuchstaben bleiben Klartextbuchstaben, ändern aber ihr Position. Die
-Häufigkeitsanalyse von Buchstaben als Angriff ist wirkungslos, da der Text nur
-permutiert wurde. (Aber Digramme sind ein Versuch wert!)
+Bei einer \highl{Transpostionschiffre} werden die Buchstaben des Klartexts auf
+gezielte Art und Weise untereinander vertauscht, so dass der Text
+verschlüsselt wird. Das Klartextalphabet ist also gleich dem
+Geheimtextalphabet ($\Sigma=\Gamma$) und insbesondere bleibt die
+Häufigkeitsverteilung der Buchstaben gleich, so dass ein Angriff über eine
+\highl{Häufigkeitsanalyse} wirkungslos bleibt.
 
-Verschiedene Ansätze der Verschlüsselung:
+Es gibt zwei verschiedene Ansätze der Verschlüsselung:
 \begin{itemize}
- \item \highl{Blocktransposition}: Klartext wird in Blöcker einer festen
-  Länge~$k$ eingeteilt. Diese Blöcke werden derselben Permutation~$\pi$
-  unterworfen. Beispiel: $a_{i_{1}}a_{i_{2}}\dotso a_{i_{k-1}}a_{i_{k}} =
-  a_{i_{\pi(1)}} a_{i_{\pi(2)}}\dotso a_{i_{\pi(k-1)}}a_{i_{\pi(i_{k})}}$.
+ \item Bei der \highl{Blocktransposition} wird der Klartext~$m$ in Blöcke
+  einer festen Länge~$k$ eingeteilt und jeder Block~$m_{i}$ wird derselben
+  Permutation~$\pi$ unterworfen, wodurch sich der Geheimtextblock~$c_{i}$
+  ergibt.
+  \begin{gather*}
+    c_{i_{1}}c_{i_{2}}\dotso c_{i_{k-1}}c_{i_{k}} =
+       m_{i_{\pi(1)}} m_{i_{\pi(2)}}\dotso m_{i_{\pi(k-1)}}m_{i_{\pi(i_{k})}}
+  \end{gather*}
 
-  Analyse:
-  \begin{enumerate}[1.\,{Schritt}]
-   \item Rate/Bestimme die Blocklänge~$k$
-   \item Erzeuge durch geegnete Permutationen bekannte Anagramme. Teste an
-    anderen Blöcken.
-  \end{enumerate}
-  Dies funktioniert sehr gut.
+  Als Angriff auf einen durch Blocktransposition verschlüsselten Text erweist
+  sich der folgenden, etwas plumpe Ansatz als sehr gut: Rate die Blocklänge
+  (ein Teiler der Geheimtextlänge) und errate innerhalb von Blöcken eine
+  Permutation, so dass sich bekannte Anagramme ergeben.
 
- \item \highl{Spaltentransposition}:
-  \begin{enumerate}
-   \item Klartext wird zeilenweise in ein Rechteck der Breite~$k$ eingelesen
-    (Höhe hängt von der Länge~$l$ des Klartexts ab)
-   \item permutiere die $k$~Spalten (wie oben)
-   \item Lies den Geheimtext spaltenweise aus (Im Unterschied zur
-    Blocktransposition, wo der Geheimtext zeilenweise ausgelesen wird.)
-  \end{enumerate}
+ \item Die \highl{Spaltentransposition} ist eine erweiterte
+  Blocktransposition. Der Klartext wird wieder in Blöcke einer festen
+  Länge~$k$ zerlegt und diese werden jeder für sich einer Permutation~$\pi$
+  unterworfen. Danach wird der Geheimtext gebildet, indem man erst alle ersten
+  Buchstaben aller Blöcke, dann die zweiten usw. aufschreibt.
+
+  Anschaulich kann man sich den Ablauf so vorstellen, dass der Text
+  zeilenweise in eine Tabelle fester Breite eingetragen. Dann werden die
+  kompletten Spalten vertauscht und der Text wird anschließend spaltenweise
+  ausgelesen.
+
+  Verwendet man als Permutation~$\pi$ der Spalten die Identität, so erhält man
+  \highl{Gartenzaunchiffre}: Die Zeichen werden zeilenweise eingetragen und
+  spaltenweise wieder ausgelesen.
+
+  Als Angriffmöglichkeit ist wieder das Erraten der Blocklänge und
+  anschließendes Suchen nach Anagrammen in jedem Block eine gute Variante.
 \end{itemize}
 
-\begin{bemerk}
-  Wenn für die Spaltentransposition die Identität als Permutation verwendet
-  wird, hat man die \highl{Gartenzaunchiffre}.
-\end{bemerk}
+\begin{figure}[ht]
+  \begin{center}
+    \begin{tabular}{*{6}{>{\ttfamily}c}}
+      \multicolumn{1}{c}{1.} & \multicolumn{1}{c}{2.} & \multicolumn{1}{c}{3.}
+         & \multicolumn{1}{c}{4.} & \multicolumn{1}{c}{5.} &
+         \multicolumn{1}{c}{6.}\\\\
+      k&r&y&p&t&o\\
+      l&o&g&i&e&u\\
+      n&d&d&a&t&e\\
+      n&s&i&c&h&e\\
+      r&h&e&i&t&a
+    \end{tabular}
+    \quad $\rightarrow$ \quad
+    \begin{tabular}{*{6}{>{\ttfamily}c}}
+      \multicolumn{1}{c}{1.} & \multicolumn{1}{c}{2.} & \multicolumn{1}{c}{3.}
+         & \multicolumn{1}{c}{4.} & \multicolumn{1}{c}{5.} &
+         \multicolumn{1}{c}{6.}\\
+      \multicolumn{1}{c}{$\pi(2)$} & \multicolumn{1}{c}{$\pi(4)$} &
+         \multicolumn{1}{c}{$\pi(5)$} & \multicolumn{1}{c}{$\pi(6)$} &
+         \multicolumn{1}{c}{$\pi(1)$} & \multicolumn{1}{c}{$\pi(3)$}\\
+      r&p&t&o&k&y\\
+      o&i&e&u&l&g\\
+      d&a&t&e&n&d\\
+      s&c&h&e&n&i\\
+      h&i&t&a&r&e
+    \end{tabular}
+  \end{center}
+  \caption{Veranschaulichung der Spaltentransposition}
+  \label{fig:sp-trans}
+\end{figure}
 
 \begin{bsp}
-  Klartext:
-  \begin{verbatim}
-  krypto  rptoky
-  logieu  oieulg
-  nddate  datend
-  nsiche  scheni
-  rheita  hitare
-  \end{verbatim}
-  Das letzte \textit{a} ist Füllmaterial, $k=6, \pi = (1, 5, 3, 6, 4, 2)$
-
-  Text für Blockchiffre: "`rodsh\,piaci\,tetht\,oueea\,ygdie"'
+  Der Klartext lautet \texttt{kryptologie\,und\,datensicherheit}. Die
+  Blöckgröße~$k$ soll 6 sein und die Permutation $\pi = (1, 5, 3, 6, 4, 2)$.
+  Wenn man den Text jetzt in ein Gitter einträgt, bleibt die letzte Zelle
+  links unten leer. Diese füllt man einfach mit einem vorher vereinbarten
+  Zeichen, bei uns \texttt{a}. siehe \autoref{fig:sp-trans}. Wenn man dann den
+  Text spaltenweise von oben nach unten ausliest, ergibt sich der Geheimtext
+  \texttt{rodsh\,piaci\,tetht\,oueea\,ygdie}.
 \end{bsp}
 
-Analyse:
-\begin{enumerate}[1.\,{Schritt}]
- \item Schätze die Spaltenzahl~$k$, Teiler der Gesamtlänge~$l$
- \item Bestimmung benachbarter Spalten (suche nach Anagrammen)
-\end{enumerate}
-
 \begin{bsp}
+  \help{Hat jemand den Text dazu?}
   Die erste Zeile für $k=11$ enthält zu viele Konsonanten und die letzte Zeile
   zu viele Vokale für einen deutschen Text.
 
