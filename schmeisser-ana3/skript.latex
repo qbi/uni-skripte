@@ -3045,6 +3045,7 @@ Differentialgleichung}:
 \end{bemerk}
 
 \begin{satz}[Cauchyproblem für die homogene Wärmeleitungsgleichung]
+  \label{satz:921-4}
   Es sei $u_{0}\in C(\R^{n})$ beschränkt. Es sei $u(x,t) = \int_{\R^{n}}
   \Phi(x-y, t) u_{0}(y)\,dy$ mit $x\in \R^{n}, t>0$. Dann gilt
   \begin{gather}
@@ -3123,27 +3124,160 @@ Differentialgleichung}:
   Die Lösung von \todo{richtige Gleichung finden} ist i.\,A. nicht
   eindeutig. Beispielsweise ist $u(x,t)=\sum \frac{g^{n}(t)}{(2n)!}
   x^{2n}$ mit $g(t)=\begin{cases}e^{-\frac{1}{t^{k}}}&t>0\\
-		      0&t=0\end{cases}$ für alle $x$:\todo{weitermachen}  
+		      0&t=0\end{cases}$ mit $k>1$ für alle $x$:
+  \begin{align*}
+    u_{t} -u_{xx}&= 0\\
+    u(x,0) &= 0
+  \end{align*}
+  Aus der Zusatzbedingung $u(x,t)\leq M e^{\lambda\abs{x}^{2}}$ für
+  alle $x,t$ folgt die Eindeutigkeit der Lösung.
 \end{bemerk}
 
-\todo{hier fehlt die Vorlesung vom 13. 12.}
+\begin{satz}[Cauchyproblem für die inhomogene Wärmeleitungsgleichung]
+  \label{satz:921-7}
+  Sei $f\in C(\R^{n}\times[0,\infty))]$ und beschränkt. Weiter sei:
+  \begin{align*}
+    u(x,t) &\colon= \int_{0}^{t} \int_{\R^{n}} \Phi(x-y,t-s) f(y,s)
+       dyds\\
+    &= \int_{0}^{t} \frac{1}{(4\pi(t-s))^{\nicefrac{n}{2}}}
+       \int_{\R^{n}} e^{-\frac{\abs{x-y}^{2}}{4(t-s)}} f(y,s)dyds
+  \end{align*}
+  Dann gilt:
+  \begin{enumerate}
+   \item $u\in C^{\infty}(\R^{n}\times(0,\infty))$
+   \item $u_{t} -\Delta u= f(x,t)$ auf $\R^{n}\times(0,\infty)$
+   \item $\lim_{(x,t)\rightarrow (x^{0},0), x\in\R^{n}, t>0} u(x,t)=0$
+  \end{enumerate}
+
+  \begin{proof}
+    Wir wenden \emph{Duhamels Prinzip} an. Für $0<s<t$ ist $v(x,t,s) =
+    \int_{\R^{n}} \Phi(x-y, t-s)f(y,s)dy$ Lösung des
+    Anfangswertproblems. Für festes $s$ ist $v_{t} -\Delta v=0$ und
+    für $t=s$ ist $v(x,s,s)=f(x,s)$. Dann ist $u(x,t)=\int_{0}^{t}
+    v(x,t,s) ds$ eine Lösung von $u_{t}-\Delta
+    u=f(x,t)$. Wir zeigen dies für $f\in C^{2}(\R^{n}\times(0,\infty))$
+    und $\supp f$ kompakt. Der Beweis wird dabei nicht allgemein
+    geführt, sondern wir machen einige Einschränkungen.
+
+    Es gilt:
+    \begin{gather*}
+      u(x,t)= \int_{0}^{t} \int_{\R^{n}} \Phi(y,s) f(x-y,t-s) dyds
+    \end{gather*}
+    durch Differentiation erhalten wir:
+    \begin{align*}
+      u_{t}(x,t) &= \int_{0}^{n} \int_{\R^{n}} \Phi(y,s)
+	 \frac{\partial}{\partial t} (f(x-y), t-s) dyds\\
+      &\qquad + \int_{\R^{n}} \Phi (y,t) f(x-y,0)dy\\
+      \Rightarrow u_{t}-\Delta u &= \int_{0}^{t} \int_{\R^{n}}
+	 \Phi(y,s) (\frac{\partial}{\partial t}-\Delta_{x})
+	 (f(x-y,t-s)) dyds\\
+      &\qquad +\int_{\R^{n}} \Phi(y,t) f(x-y,0)dy\\
+      &= \int_{0}^{t} \int_{\R^{n}} \Phi(y,s)
+	 (-\frac{\partial}{\partial s} -\Delta_{y}) f(x-y, t-s) dyds\\
+      &\qquad + \int_{\R^{n}} \Phi (y,t) f(x-y,0)dy\\
+      &= \underbrace{\int_{\epsilon}^{t} \int_{\R^{n}} \Phi(y,s)
+	 (-\frac{\partial}{\partial s}-\Delta_{y}) f(x-y,t-s)
+	 dyds}_{=\colon A_{\epsilon}}\\
+      &\quad+\underbrace{\int_{0}^{\epsilon} \int_{\R^{n}} \Phi(y,s)
+	 (-\frac{\partial}{\partial s} -\Delta_{y} dyds)}_{=\colon
+	 B_{\epsilon}} + \underbrace{\int_{\R^{n}} \Phi(y,t) f(x-y,0)
+	 dy}_{=\colon C_{0}}\\
+      &= A_{\epsilon} + B_{\epsilon} + C_{0}
+    \end{align*}
+    Es gilt $\lim_{\epsilon\rightarrow 0} B_{\epsilon}=0$ und
+    $\lim_{\epsilon\rightarrow 0} A_{\epsilon} = f(x,t)-C_{0}$.
+    \begin{align*}
+      \abs{B_{\epsilon}} &= \int_{0}^{\epsilon} \int_{\R^{n}}
+	 \Phi(y,s) dsdy \sup_{y,s}\abs[\big]{\frac{\partial
+	 f}{\partial s} +\Delta f(y,s)}\\
+      &\leq \epsilon \sup_{y,s}\abs[\big]{\frac{\partial f}{\partial
+	 s} +\Delta f(y,s)}\xrightarrow{\epsilon\rightarrow 0} 0\\
+      A_{\epsilon} &= -\int_{0}^{t} \int_{\R^{n}} \Delta_{y} \Phi(y,s)
+	 f(x-y, t-s)dyds + \int_{\epsilon}^{t} \int_{\R^{n}}
+	 \frac{\partial}{\partial s} \Phi(y,s) f(x-y, t-s)dyds\\
+      &\quad + \int_{\R^{n}} \Phi(y,\epsilon) f(x-y, t-\epsilon)dy -
+	 \underbrace{\int_{\R^{n}} \Phi(y,t) f(x-y, 0)dy}_{=C_{0}}\\
+      \Rightarrow A_{\epsilon} &= \int_{\epsilon}^{t} \int_{\R^{n}}
+	 \underbrace{\abs[\big]{\frac{\partial}{\partial s} -\Delta}
+	   \Phi(y,s)}_{=0} f(x-y,t-s)dyds - C_{0} +\int_{\R^{n}}
+	 \Phi(y,\epsilon) f(x-y, t-s) dy\\
+      \Rightarrow A_{\epsilon} &= -C_{0} +\int_{\R^{n}}
+	 \Phi(x-y,\epsilon) f(y,t-\epsilon)dy\\
+      &= -C_{0} + \int_{\R^{n}} \Phi(x-y,\epsilon)
+	 (f(y,t-\epsilon)-f(y,t))dy + \underbrace{\int_{\R^{n}}
+	 \Phi(x-y,\epsilon)
+	 f(y,t)dy}_{\xrightarrow{\epsilon\rightarrow 0} f(y,t)}\\
+      &\int_{\R^{n}}\abs{\Phi(x-y,\epsilon)}
+	 \abs{\underbrace{f(y,t-\epsilon)-f(y,t)}_{\leq\delta}}dy \leq \delta\\
+      \abs{u(x,t)} &\leq \int_{0}^{t} \underbrace{\int_{\R^{n}}
+	 \Phi(x-y, t-s)dy}_{=1} ds \sup_{y,s}\abs{f(y,s)}\\
+      &\leq t\sup_{y,s}\abs{f(y,s)} \xrightarrow{t\rightarrow 0} 0
+    \end{align*}
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Betrachten das Cauchyproblem $u_{t}-\Delta u=f, u(x,0)u_{0}$.
+  Ansatz: $u=v+w$ mit:
+  \begin{align*}
+    v_{t} - \Delta v = 0 & w_{t}-\Delta w =f\\
+    \underbrace{v(x,0)=u_{0}(x)}_{\Rightarrow \text{
+       \autoref{satz:921-4}}} & \underbrace{w(x,0)=0}_{\Rightarrow
+       \text{ \autoref{satz:921-7}}}
+  \end{align*}
+\end{bemerk}
+
+\subsection{Die eindimensionale Wellengleichung}
+
+Gegeben sei das Cauchyproblem mit $c>0, x\in\R^{n}, t>0$ und
+vorgegebenem $f, u_{0}, u_{1}$:
+\begin{align*}
+  u_{tt} -c^{2}\Delta u &= f(x,t)&&\\
+  u(x,0) &= u_{0}(x) & u_{t}(x,0) &= u_{1}(x)
+\end{align*}
+Gesucht ist $u(x,t)$.
+
+\begin{satz}[Allgemeine Lösung der homogenen Wellengleichung, Formel
+  von d'Alembert]
+  \label{satz:921-1}
+  Es sei $I\subset\R$ ein Intervall, $u\colon\R\times I\rightarrow \C,
+  u\in C^{2}(\R\times I)$. $u$ ist genau dann eine Lösung von $u_{tt}-
+  c^{2}u_{xx}=0$, wenn gilt:
+  \begin{gather*}
+    u(x,t)= \phi(x-ct)+\psi(x+ct) \qquad \phi, \psi\in C^{2}(\R)
+       \text{ beliebig}
+  \end{gather*}
+  \begin{proof}
+    Wir machen eine Koordinatentransformation.
+    \begin{align*}
+      \xi &= x-ct \sim x = \nicefrac{1}{2}(\xi+\tau)\\
+      \tau &= x+ct \sim t=\nicefrac{1}{2c}(\tau-\xi)\\
+      &\Rightarrow u(x,t) = u(\nicefrac{1}{2}(\xi+\tau),
+	 \nicefrac{1}{2c}(\tau-\xi)=v(\xi,\tau)\\
+      &\Rightarrow u_{x}=v_{\xi}+v_{\tau}\Rightarrow u_{xx}=
+	 v_{\xi\xi}+ v_{\xi\tau}+ v_{\tau\xi}+ v_{\tau\tau}\\
+      &\Rightarrow u_{t}=v_{\xi}(-c)+v_{\tau}(c)\Rightarrow u_{tt}=
+	 v_{\xi\xi}c^{2}+ v_{\xi\tau}(-c^{2})+ v_{\tau\xi}(-c^{2})+
+	 v_{\tau\tau}c^{2}\\
+      &\Rightarrow u_{tt}=c^{2}u_{xx}\Leftrightarrow v_{\xi\tau}=0\\
+      &\Leftrightarrow v_{\xi}=\tilde{\phi}(\xi)\Leftrightarrow v(\xi,
+	 t)=\phi(\xi)+\psi(\tau)\\
+      &\Leftrightarrow u(x,t)=\phi(x-ct)+\psi(x+ct)
+    \end{align*}
+    \todo{Beweis
+    fertigstellen}
+  \end{proof}
+\end{satz}
 
 % 14.12.05
-
-\begin{satz}
-  \begin{gather*}
-    u_{tt}-c^{2}u_{xx}=0\qquad (x\in\R, t>0)\\
-    \gdw u(x,t) = \phi(x-ct) + \psi(x+ct)
-  \end{gather*}
-\end{satz}
 
 \begin{bemerk}
   \todo{Bild mit zwei Glockenkurven, linke ist $\phi(x)$, rechte um $ct$
     verschoben}
 \end{bemerk}
 
-\begin{satz}\label{satz:1}
-  $f\in C(\R\times [0,\infty)), u_{0}, u_{1}\in C(\R)$
+\begin{satz}\label{satz:921-7}
+  Sei $f\in C(\R\times [0,\infty)), u_{0}, u_{1}\in C(\R)$
 
   Das Cauchyproblem
   \begin{gather*}
@@ -3159,7 +3293,7 @@ Differentialgleichung}:
       w_{tt}-c^{2}w_{xx} = 0 & w(x,0) = w_{t}(x,0) = 0
     \end{align*}
 
-    Nach \autoref{satz:1} ist
+    Nach \autoref{satz:921-1} ist
     \begin{gather*}
       w(x,t) = \phi(x-ct) + \psi(x+ct)\qquad(\phi,\psi\in C^{2}(\R))\\
       \intertext{mit $w(x,0)=0$ ergibt sich}
@@ -3198,22 +3332,23 @@ Differentialgleichung}:
   \begin{align*}
     v(x,t) &= \phi(x-ct) + \psi(x+ct)\\
     v(x,0) &= \phi(x)+\psi(x) = u_{0}\taglabel{eq:26}\\
-    v_{t}(x,0) &= c\phi'(x)+c\psi'(x) = u_{1}(x)\\
+    v_{t}(x,0) &= -c\phi'(x)+c\psi'(x) = u_{1}(x)\\
     \intertext{$\Longrightarrow$}
     c\phi'(x) + c\psi'(x) &= cu_{0}'(x)\\
     -c\phi'(x)+c\psi'(x) &= u_{1}(x)\\
     \intertext{$\Longrightarrow$}
-    2c\psi'(x) &= cu_{0}(x) + u_{1}(x)\\
+    2c\psi'(x) &= cu_{0}'(x) + u_{1}(x)\\
     \intertext{$\Longrightarrow$}
     \psi(x) &= \frac{1}{2} u_{0}(x) + \frac{1}{2c}
        \int_{0}^{x}u_{1}(y)\,dy + a\\
     \intertext{$\Longrightarrow$ mit \autoref{eq:26}}
-    \phi(x) &= u_{0}(x) - \psi(x) = \frac{1}{2c} \int_{0}^{x} u_{1}(y)\,dy
-       -a\\
+    \phi(x) &= u_{0}(x) - \psi(x) = \frac{1}{2} u_{0}(x) -\frac{1}{2c}
+       \int_{0}^{x} u_{1}(y)\,dy  -a\\
     \intertext{$\Longrightarrow$}
     v(x,t) &= \frac{1}{2} u_{0}(x-ct) - \frac{1}{2c}\int_{0}^{x-ct}
        u_{1}(y)\,dy + \frac{1}{2} u_{0}(x+ct) + \frac{1}{2c}
-       \int_{0}^{x+ct} u_{1}(y)\,dy = \frac{1}{2}\big(u_{0}(x-ct)+
+       \int_{0}^{x+ct} u_{1}(y)\,dy\\
+    &= \frac{1}{2}\big(u_{0}(x-ct)+
        u_{0}(x+ct)\big)+\frac{1}{2c}\int_{x-ct}^{x+ct} u_{1}(y)\,dy
   \end{align*}
 \end{bemerk}
@@ -3254,7 +3389,7 @@ Differentialgleichung}:
   \end{gather*}
   die eindeutig bestimmte Lösung des Cauchy-Problems
   \begin{gather*}
-    u_{tt} - c^{2}u_{xx} = f\\
+    u_{tt} - c^{2}u_{xx} = f(x,t)\\
     u(x,0) = u_{t}(x,0) = 0
   \end{gather*}
 
@@ -3284,12 +3419,13 @@ Differentialgleichung}:
     von $t$ ist.
     \begin{align*}
       u_{t} &= \frac{1}{2c} \int_{0}^{z} f(x+c(t-s),s) c - f(x-c(t-s),s)
-         (-c)\,ds\Big|_{z=t} + \underbrace{\int_{x-c(t-z)}^{x+c(t-z)}
+         (-c)\,ds\Big|_{z=t} + \underbrace{\int_{x-c(t-s)}^{x+c(t-s)}
          f(y,z)\,dy\Big|_{z=t}}_{=0}\\
       u_{tt} &= \frac{1}{2} \int_{0}^{z} f_{x}(x+c(t-s),s)c +
-         f_{x}(x-c(t-s), s) (-c)\,ds \Big|_{z=t} + \frac{1}{2c}
-         \Big[f(x+c(t-s), s) c + f(x-c(t-s),s) c\Big]_{s=t}\\
-      &= c^{2} u_{xx} + f(x,t)
+         f_{x}(x-c(t-s), s) (-c)\,ds \Big|_{z=t}\\
+      \quad+ \frac{1}{2c} \Big[f(x+c(t-s), s) c + f(x-c(t-s),s)
+	 c\Big]_{s=t}\\
+      &= c^{2} u_{xx} + f(x,t)\Rightarrow f(x,t)=u_{tt}-c^{2}u_{xx}
     \end{align*}
     $\Rightarrow$ Wellengleichung erfüllt.
 
@@ -3352,7 +3488,7 @@ $u(x,t) = \tilde{u}(x,ct)$
 
 ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
 
-\begin{satz}
+\begin{satz}\label{satz:923-1}
   Folgende Voraussetzungen seien erfüllt: $u_{0}\in C^{3}(\R^{3}),
   u_{1}\in C^{2}(\R^{3})$. Dann ist
   \begin{gather*}
@@ -3410,14 +3546,14 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
          u_{0}}{\partial x_{j}}(x+ty)\cdot y_{j}\,dS
     \end{gather}
     für $t=0$ ergibt sich
-    \begin{gather*}
+    \begin{align*}
       \int_{\abs{y}=1} \sum_{j=1}^{3} \frac{\partial u_{0}}{\partial
-         x_{j}}(x)\cdot y_{j}\,dS = \sum_{j=1}^{3} \frac{\partial
-         u_{0}}{\partial x_{j}}\,dS = \sum_{j=1}^{3} \frac{\partial
-         u_{0}}{\partial x_{j}}(x) \int_{\abs{y}=1}
-         \sprod{\vec{e_{j}}}{\vec{n}} =^{nach Gauß} \int_{\abs{y}\leq1}
-         \Div \vec{e_{j}}\,dy = 0
-    \end{gather*}
+         x_{j}}(x)\cdot y_{j}\,dS &= \sum_{j=1}^{3} \frac{\partial
+         u_{0}}{\partial x_{j}}\int_{\abs{y}=1} y_{j}\,dS\\
+      &= \sum_{j=1}^{3} \frac{\partial u_{0}}{\partial x_{j}}(x)
+	 \int_{\abs{y}=1} \vec{e_{j}}}{\vec{n}\,dS =^{\text{nach
+	 Gauß}} \int_{\abs{y}\leq1} \Div \vec{e_{j}}\,dy = 0
+    \end{align*}
 
     Es bleibt also $u(x,0) = u_{0}(x)$.
 
@@ -3425,10 +3561,10 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
       u_{t}(x,t) &= \frac{1}{4\pi} \int_{\abs{y}=1} u_{1}(x+ty)\,dS +
          \underbrace{t\cdot\frac{1}{4\pi} \frac{\partial}{\partial t} \Big(
          \int_{\abs{y}=1} u_{1}(x+ty)\,dS\Big)
-         }_{\xrightarrow{t\rightarrow0}0 \text{~nach \autoref{eq:27}}} +
-         \underbrace{\frac{\partial}{\partial
-         t} \Big(\frac{1}{4\pi} \int_{\abs{y}=1} u_{0}(x+ty)\,dS \Big)
          }_{\xrightarrow{t\rightarrow0}0 \text{~nach \autoref{eq:27}}}\\
+      &\quad+ \underbrace{\frac{\partial}{\partial t}
+	 \Big(\frac{1}{4\pi} \int_{\abs{y}=1} u_{0}(x+ty)\,dS
+	 \Big)}_{\xrightarrow{t\rightarrow0}0 \text{~nach \autoref{eq:27}}}\\
       &\quad +\underbrace{\frac{\partial}{\partial t} \Big(t\frac{1}{4\pi}
          \frac{\partial}{\partial t} \int_{\abs{y}=1}
          u_{0}(x+ty)\,dS\Big) }_{= \underbrace{\frac{1}{4\pi} \frac{\partial}{\partial
@@ -3450,20 +3586,17 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
     homogene Wellengleichung.
 
     Es gilt:
-    \begin{gather*}
-      v_{t} = Mu_{1}(x,t) + t\frac{\partial}{\partial t} Mu_{1}(x,t),
-         v_{tt} = 2 \frac{\partial}{\partial t} Mu_{1}(x,t) +
-         t\frac{\partial^{2}}{\partial t^{2}} Mu_{1}(x,t)
-    \end{gather*}
-    Es gilt:
-    \begin{gather*}
-      \frac{\partial}{\partial t} Mu_{1}(x,t) = \frac{1}{4\pi}
-         \frac{\partial}{\partial t} \int_{\abs{y}=1} u_{1}(x+ty)\,dS
-         =^{\text{\autoref{eq:27}}} \frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t}
-         \frac{\partial u_{1}}{\partial \vec{n}}dS
-    \end{gather*}
+    \begin{align*}
+      v_{t} &= Mu_{1}(x,t) + t\frac{\partial}{\partial t} Mu_{1}(x,t)\\
+      v_{tt} &= 2 \frac{\partial}{\partial t} Mu_{1}(x,t) +
+         t\frac{\partial^{2}}{\partial t^{2}} Mu_{1}(x,t)\\
+      \frac{\partial}{\partial t} Mu_{1}(x,t) &= \frac{1}{4\pi}
+	 \frac{\partial}{\partial t} \int_{\abs{y}=1} u_{1}(x+ty)\,dS
+	 =^{\text{\autoref{eq:27}}} \frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t}
+	 \frac{\partial u_{1}}{\partial \vec{n}}dS
+    \end{align*}
 
-    Wiederholung der Green'schen Sätze \autoref{satz:823-6}
+    Wiederholung der Green'schen Sätze (\autoref{satz:823-6})
     \begin{gather*}
       \int_{B} u\Delta v\,dy = \int_{\partial B} u\cdot\frac{\partial
          v}{\partial \vec{n}}\,dS - \int_{B}\nabla u\cdot\nabla v\,dy
@@ -3474,16 +3607,20 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
          \vec{n}}dS
     \end{gather*}
 
-    \begin{gather}\label{eq:28}
-      \frac{\partial}{\partial t} Mu_{1}(x,t) = \frac{1}{4\pi t^{2}}
+    \begin{align*}\label{eq:28}
+      \frac{\partial}{\partial t} (Mu_{1})(x,t) &= \frac{1}{4\pi}
+	 \frac{\partial}{\partial t} \bigg(\int_{\abs{y}=1}
+	 u_{1}(x+ty)dS\bigg\bigg)\\
+      &= \frac{1}{4\pi t^{2}} \int_{\abs{x-y}=t} \frac{\partial
+	 u_{1}}{\partial \vec{n}} dS = \frac{1}{4\pi t^{2}}
          \int_{\abs{x-y}\leq t} \Delta u_{1}\,dy
-    \end{gather}
+    \end{align*}
 
     und weil es schon schön war, das ganze nochmal
     \begin{gather*}
-      \frac{\partial^{2}}{\partial t^{2}} Mu_{1}(x,t) = -\frac{1}{2\pi
+      \frac{\partial^{2}}{\partial t^{2}} (Mu_{1})(x,t) = -\frac{1}{2\pi
          t^{3}} \int_{\abs{x-y}\leq t} \Delta u_{1}(y)\,dy +
-         \frac{1}{4\pi t^{2}} \frac{\partial}{\partial t} \underbrace{\Big(
+         \frac{1}{4\pi t^{2}} \underbrace{\frac{\partial}{\partial t} \Big(
          \int_{0}^{t} \int_{\abs{x-y}=\rho} \Delta u_{1}(y)\,dS\,d\rho
          \Big)}_{= \int_{\abs{x-y}=t} \Delta u_{1}(y)\,dS }
     \end{gather*}
@@ -3498,14 +3635,14 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
       v_{tt} = \frac{1}{4\pi t}\int_{\abs{x-y}= t} \Delta u_{1}(y)\,dS
     \end{gather*}
 
-    bleibt noch zu zeigen, dass $v_{tt}=\Delta v$.
-    Andererseits ist
-    \begin{gather*}
-      \Delta v(x,t) = \frac{t}{4\pi} \Delta\Big(\int_{\abs{y}=1}
+    bleibt noch zu zeigen, dass $v_{tt}=\Delta v$. Andererseits ist
+    \begin{align*}
+      \Delta v(x,t) &= \frac{t}{4\pi} \Delta\Big(\int_{\abs{y}=1}
          u_{1}(x+ty)\,dS \Big) = \frac{t}{4\pi} \int_{\abs{y}=1} (\Delta
-         u_{1})(x+ty)\,dS = \frac{1}{4\pi t} \int_{\abs{x-y}=t} \Delta
-         u_{1}(y)\,dS
-    \end{gather*}
+         u_{1})(x+ty)\,dS\\
+      &= \frac{1}{4\pi t} \int_{\abs{x-y}=t} \Delta u_{1}(y)\,dS\\
+      &\Rightarrow \Delta v=v_{tt}
+    \end{align*}
 
     $v$ und $w$ unterscheiden sich nur darin, dass in $v$ $u_{1}$
     verwendet wird und in $w$ $u_{0}$. Die ganze Rechnung lässt sich also
@@ -3542,7 +3679,77 @@ ohne Beweis: Das Cauchy-Problem hat höchstens eine Lösung!
   \help{Stimmt das?}
 \end{bemerk}
 
-% Hier fehlt die Vorlesung von 4.1.06
+
+\begin{bemerk}[Inhomogene Wellengleichung]
+  Vergleiche hierzu für $n=1$ den \autoref{satz:922-7} und die
+  Wärmeleitungsgleichung aus \autoref{satz:921-6}. Wir wenden wieder
+  Duhamels Prinzip an:
+  \begin{align*}
+    u_{tt} -\Delta u &= f(x,t) & (x\in\R^{n}, t>0)\\
+    u(x,0) &= u_{t}(x,0)=0 & (x\in\R^{n})
+  \end{align*}
+  Für $n=1$ gilt nach \autoref{satz:922-7}:
+  \begin{gather*}
+    u(x,t) = \int_{0}^{t} \bigg(\underbrace{\frac{1}{2}
+       \int_{x-(t-s)}^{x+(t-s)} f(y,s)dy}_{=v(x,t,s)}\bigg\bigg) ds
+  \end{gather*}
+  mit $v_{tt}-\Delta v=0$, wobei $\Delta v=v_{xx}$, da $n=1$, auf
+  $\R\times[s,\infty)]$ für alle $t>s\Leftrightarrow t-s>0$.
+  \begin{gather*}
+    v(x,s,s)=0\qquad v_{t}(x,s,s)=f(x,s)
+  \end{gather*}
+
+  Für $n=3$ machen wir den Ansatz:
+  \begin{gather*}
+    u(x,t)=\int_{0}^{t} v(x,t,s)ds
+  \end{gather*}
+  wobei $v(x,t,s)=\frac{1}{4\pi(t-s)} \int_{\abs{x-y}=t-s} f(y,s)dS$.
+  Nach \autoref{satz:923-1} ist $v_{tt}-\Delta v=0$ auf $\R^{3}\times
+  (s,\infty)$ und $v(x,s,s)=0, v_{t(x,s,s)=f(x,s)}$. Dann gilt
+  \begin{align*}
+    u(x,0) &= 0\\
+    u_{t}(x,t) &= \underbrace{v(x,t,t)}_{=0}+ \int_{0}^{t}
+       v_{t}(x,t,s,) ds\Rightarrow u_{t}(x,0)=0\\
+    u_{tt} &= v_{t}(x,t,t)+\int_{0}^{t} v_{tt}(x,t,s)ds\\
+    &= f(x,t) + \int_{0}^{t} v_{tt}(x,t,s)ds\taglabel{eq:923-1}\\
+    -\Delta u &= -\int_{0}^{t} \Delta v(x,t,s)ds\\
+    &= -\int_{0}^{t} v_{tt} (x,t,s)ds\taglabel{eq:923-2}
+  \end{align*}
+  Aus \autoref{eq:923-1} und \autoref{eq:923-2} folgt, $u_{tt}-\Delta
+  u= f(x,t)$. Es ist:
+  \begin{gather*}
+    u(x,t) =\int_{0}^{t} \bigg(\frac{1}{4\pi} \int_{\abs{x-y}=t-s}
+       \frac{f(y,s)}{t-s} dS(y)\bigg\bigg) ds
+  \end{gather*}
+  Wir substituieren: $t-s=r\Leftrightarrow s=t-r, ds=-dr$. Die neuen
+  Grenzen sind nun $t\rightarrow 0$. Damit kann man auch das Integral
+  rumdrehen: $\int_{0}^{t}=-\int_{t}^{0}$ und das $-$ hebt sich mit
+  dem $-$ von $-dr$ weg.
+  \begin{align*}
+    u(x,t) &= \frac{1}{4\pi} \int_{0}^{t} \bigg(\int_{\abs{x-y}=r}
+       \frac{f(y,t-\abs{x-y})}{\abs{x-y}} dy\\
+    \Rightarrow u(x,t) &= \frac{1}{4\pi} \int_{\abs{x-y}\leq r}
+       \frac{f(y,t-\abs{x-y})}{\abs{x-y}} dy\taglabel{eq:923-3}
+  \end{align*}
+  Man bezeichnet \autoref{eq:923-3} auch als \emph{retardiertes
+  Potential}.
+\end{bemerk}
+
+\begin{satz}
+  Sei $f\in C^{2}(\R^{3}\times[0,\infty)). Dann ist ]$u(x,t)$ aus
+  \autoref{eq:923-3} die eindeutig bestimmte Lösung des Cauchyproblems
+  $$u_{tt}-\Delta u=f(x,t)$ mit $x\in\R^{3}, t>0$ und $u(x,0)=
+  u_{t}(x,0)=0$.
+\end{satz}
+
+\begin{bemerk}
+  \todo{Bild vom Abhängigkeitsgebiet}
+  nur Wert von $f(y,s)$ auf dem Kegelmantel werden zur Berechnung von
+  $u(x,t)$ benötigt.
+\end{bemerk}
+
+\subsection{Die zweidimensionale Wellengleichung}
+\todo{Hier fehlt die Vorlesung von 4.1.06}
 
 % 10.1.06
 
