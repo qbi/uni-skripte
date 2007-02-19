@@ -546,7 +546,7 @@ funktioniert.
 Analog dazu bedeutet \highl{schwer}, dass ein Problem "`nicht in
 Polynomialzeit"' gelöst werden kann.
 
-\subsection{Beispiel einer praktischen Kryptoanalyse}
+\section{Beispiel einer praktischen Kryptoanalyse}
 \label{sec:ka-bsp}
 In der Regel kann man nicht von der Größe des Schlüsselraums eines
 Kryptosystems auf die Sicherheit des Systems schließen. Folgendes Beispiel
@@ -2241,6 +2241,7 @@ umfasst.\cite[S.\,258]{menezes}
 % 20.11.
 
 \subsection{Ein Beispiel einer vereinfachten DES-Verschlüsselung}
+\label{sec:des-bsp}
 
 Zur Vereinfachung des ganzen, sei die Blocklänge $n=12$ (statt 64) und der
 (Haupt"~)""Schlüssel~$k$ habe die Länge 9 (statt 64). Damit sind die beiden
@@ -2322,212 +2323,198 @@ Binärzahl interpretiert die Spalte (000 die erste, 111 die achte).
   Das Ergebnis der 4.\,Runde lautet also $(101\,011\:011\,110)$.
 \end{bsp}
 
-\subsection{Differentielle Kryptoanalyse}
+\subsection{Differentielle Kryptoanalyse des DES mit einer Runde}
 
 Die \highl[Kryptoanalyse!differentielle]{differentielle Kryptoanalyse} wurde
 1990 von Bahim und Shamir speziell für den DES entwickelt, funktioniert aber
 auch bei ähnlichen Verfahren. Diese Methode des Angriffs war IBM beim Entwurf
-des DES bereits bekann und so wurden entsprechende Gegenmaßnahmen ergriffen.
+des DES bereits bekannt und so wurden entsprechende Gegenmaßnahmen ergriffen.
 
 Um mit einer differentiellen Kryptoanalyse den
 Schlüssel~$k=(\kappa_{1}\dotso\kappa_{r})$ erlangen zu können, muss sich der
 Angreifer zu jedem beliebigen Klartext den Geheimtext beschaffen können
 (\highl[Angriff!Chosen-Plaintext-]{Chosen-Plaintext-Angriff}). Außerdem muss
-er die Kenntnis über den vollständigen Algorithmus haben.
-
-Die Idee ist es, die Differenzen (modulo 2) verschiedener Klartextblöcke im
-Vergleich zu ihren Geheimtextblöcken zu analysieren.
-
-Zwei Blöcke
-\begin{gather*}
-  (L_{0}, R_{0}), (L_{0}', R_{0}') \mapsto (L_{0}\oplus L_{0}', R_{0}\oplus
-     R_{0}')\\
-  (L_{r}, R_{r}), (L_{r}', R_{r}') \mapsto (L_{r}\oplus L_{r}', R_{r}\oplus
-     R_{r}')
-\end{gather*}
-
-Warum ist ein solcher Ansatz erfolgsversprechend?
+er die Kenntnis über alle Teile des Algorithmus' haben. Die differentielle
+Kryptoanalyse stützt sich auf zwei Punkte:
 \begin{itemize}
- \item Differenzen ändern sich nicht, wenn zu zwei Blöcken ein und derselbe
-  Block (Rundenschlüssel) addiert wird.
+ \item Da der Diffusionsschritt unabhängig vom Rundenschlüssel~$k_{i}$ ist,
+  kann man also das Ergebnis der Diffusion für einen beliebigen Klartext
+  berechnen.
 
- \item Eigenschaften der $S$-Boxen: Es gibt für einige
-  Differenzen~$D\in\Z_{2}^{4}$, so dass für viele Eingabepaare mit dieser
-  Differenz~$D$ die Ausgabepaare wieder die Differenz haben.
+  Danach kommt die Addition des Rundenschlüssel. Dabei gilt aber,
+  dass die Differenz~$a\oplus b$ zwischen zwei Blöcken~$a$ und $b$
+  sich nicht ändert, wenn zu jedem Block derselbe Wert (Rundenschlüssel)
+  addiert wird: $a\oplus b = (a\oplus k_{i}) \oplus (b\oplus k_{i})$.
+
+  Für zwei Klartexte kann man also aus der Kenntnis über die Ergebnisse der
+  Diffusion auf die Differenz der Ergebnisse der Schlüsseladdition schließen.
+
+ \item Dieses Wissen über die Eingabe in die $S$-Box und die Ausgabe der
+  $S$-Box, den Geheimtext (wobei man wieder die Berechnung der $P$-Box
+  rückgängig machen kann), kann man ausnutzen, um die Menge der möglichen
+  Eingabewerte in die $S$-Box einzugrenzen. Damit kann man dann die Menge der
+  möglichen Schlüssel eingrenzen bzw. mit mehreren Klartext-Geheimtext-Paaren
+  den Schlüssel bestimmen.
 \end{itemize}
 
-\begin{bemerk}
-  Man muss bei der Konstruktion der $S$-Boxen darauf achten, diese Eigenschaft
-  zu vermeiden oder zu mindern.
-\end{bemerk}
+Für zwei Eingabeblöcke $a,\tilde{a}\in\Z_{2}^{m}$ und einen $S$-Box
+$S\colon\Z_{2}^{m}\rightarrow\Z_{2}^{n}$ des Konfusionsschritts heißt $a^{*} =
+a\oplus \tilde{a}\in\Z_{2}^{m}$ \highl{Eingabedifferenz} (Input"=Differenz)
+und $S_{1}(a)\oplus S_{1}(\tilde{a})\in\Z_{2}^{n}$ \highl{Ausgabedifferenz}
+(Output"=Differenz). Beim DES ist $m=6$ und $n=4$, in dem Beispiel in
+\autoref{sec:des-bsp} ist $m=4$ und $n=3$.
 
-nun konkret am oberen Beispiel: Für zwei Eingabeblöcke $A$ und $A'$ für
-$S_{1}$ heißt $A\oplus A'$ \highl{Eingabedifferenz} (Input"=Differenz) und
-$S_{1}(A)\oplus S_{1}(A')$ \highl{Ausgabedifferenz} (Output"=Differenz).
-
-Es sei $A^{*}\in\Z_{2}^{4}$ beliebig. Für alle Paare $(A, A')\in
-\Z_{2}^{4}\times \Z_{2}^{4}$ mit der Eigenschaft $A\oplus A'=A^{*}$ können wir
-die Ausgabedifferenzen bestimmen. $S_{1}(A)\oplus S_{1}(A')$ und deren
-Verteilung in einer Tabelle festhalten.
-
-Beachte dabei folgendes: Für $A^{*}\ne(0000)$ gibt es genau \textit{acht}
-Belegungen $\{A,A'\}$ mit $A\oplus A'=A^{*}$, nämlich $\{A, A\oplus A^{*}\}$.
-
-% 22.11.
-
-\subsection{Differentielle Kryptoanalyse}
-
-Sei $A, A'\in\Z_{2}^{4}$ als Eingabe für $S_{1}$, $A\oplus A'$ ist die
-Input-Differenz, $S_{1}(A)\oplus S_{1}(A')$ ist die Output-Differenz.
-Für jeder Differenz $A^{*}\in\Z_{2}^{4}$ ($A^{*}\ne(0000)$) gibt es acht
-Mengen $\{A,A'\} = \{A, A\oplus A^{*}\}$ mit dieser Differenz $A^{*}$
+Für ein festes $a^{*}\ne0\in\Z_{2}^{m}$ gibt es genau $2^{m-1}$
+Mengen\footnote{Man hat $2^{m}$ Möglichkeiten für die Wahl von $a$.
+$\tilde{a}$ ist dann fest $\tilde{a}=a\oplus a^{*}$. Da die Menge ungeordnet
+ist, entfällt die Hälte der Möglichkeiten.} der Form $\{a,\tilde{a}\}$, für
+die $a\oplus \tilde{a}=a^{*}$ ist. Theoretisch sind $2^{n}$ verschiede
+Ausgabedifferenzen $S(a)\oplus S(\tilde{a})\in\Z_{2}^{n}$ möglich, jedoch sind
+für einige Eingabedifferenzen (insgesamt gibt es $2^{m}-1$) die Ergebnisse
+einiger $S$-Boxen nicht gleichverteilt.
 
 \begin{bsp}
+  \label{bsp:4}
+  Die $S$-Box sei die $S_{1}$ aus \autoref{sec:des-bsp} und die
+  Eingabedifferenz sei $a^{*}=(0011)$. Es ergeben sich damit folgende Mengen
+  $\{a,\tilde{a}\}$ mit ihren Ausgabedifferenzen. Die Ausgabedifferenz $(011)$
+  tritt dabei in 6 von 8~Fällen auf.
   \begin{gather*}
-    S_{1} =
-       \begin{pmatrix}
-         5& 2& 1& 6& 3& 4& 7& 0\\
-         1& 4& 6& 2& 0& 7& 5& 3
-       \end{pmatrix}
-       \qquad A^{*}=(0011)\\
-    \begin{array}{cc|c}
-      A & A'& S_{1}(A)\oplus S_{1}(A')\\
+    \begin{array}{c*{4}{|c}}
+      a & \tilde{a}& S_{1}(a)& S_{1}(\tilde{a})& S_{1}(a)\oplus
+      S_{1}(\tilde{a})\\
       \hline
-      (0000)& (0011)& (101)\oplus(110) = (011)\\
-      (0001)& (0010)& (010)\oplus(001) = (011)\\
-      (0100)& (0111)& (011)\oplus(000) = (011)\\
-      (0101)& (0110)& (100)\oplus(111) = (011)\\
+      (0000)& (0011)& (101)& (110)& (011)\\
+      (0001)& (0010)& (010)& (001)& (011)\\
+      (0100)& (0111)& (011)& (000)& (011)\\
+      (0101)& (0110)& (100)& (111)& (011)\\
       \hline
-      (1000)& (1011)& (001)\oplus(010) = (011)\\
-      (1001)& (1010)& (100)\oplus(110) = (010)\\
-      (1100)& (1111)& (000)\oplus(011) = (011)\\
-      (1101)& (1110)& (111)\oplus(101) = (010)
+      (1000)& (1011)& (001)& (010)& (011)\\
+      (1001)& (1010)& (100)& (110)& (010)\\
+      (1100)& (1111)& (000)& (011)& (011)\\
+      (1101)& (1110)& (111)& (101)& (010)
     \end{array}
   \end{gather*}
 \end{bsp}
-Theoretisch sind acht verschiedene Ergebnisse möglich, aber einige treten
-häufiger auf als andere. Es gibt 15 derartige Tabellen für $S_{1}$ und
-$S_{2}$ (insgesamt 30).
 
-unser Ansatz zunächst: Was passiert bei der Verschlüsselung zweier
-Klartextblöcke $(L_{i-1}, R_{i-1})_{12 \text{ Bit}}$ und $(L_{i-1}',
-R_{i-1}')_{12 \text{ Bit}}$ in Runde~$i$?
-\begin{enumerate}[1.\,{Schritt}]
- \item Diffusion (oder Expansion) $D(R_{i-1})_{8 \text{ Bit}}$
- \item $(D(R_{i-1})\oplus k_{i})_{8 \text{ Bit}} = (A_{4 \text{ Bit}}, B_{4 \text{Bit}})$
- \item $(S_{1}(A)_{3 \text{ Bit}}, S_{2}(B)_{3 \text{ Bit}})_{6 \text{
-  Bit}} = f_{k_{i}}(R_{i-1})_{6 \text{ Bit}}$
-\end{enumerate}
+% 22.11.
 
-genauso für den zweiten Klartextblock $(L_{i-1}', R_{i-1}')$, aber genauer:
-\begin{gather*}
-  R_{i-1}'\\
-  \downarrow\\
-  D(R_{i-1}') = (\tilde{A}', \tilde{B}') \qquad k_{i} =
-     ((k_{i}^{L})_{4 \text{ Bit}}, (k_{i}^{R})_{4 \text{ Bit}})\\
-  D(R_{i-1}')\oplus k_{i} = (\tilde{A}'\oplus k_{i}^{L}, \tilde{B}'\oplus
-     k_{i}^{R}) = (A', B')\\
-  \downarrow\\
-  (S_{1}(A'), S_{2}(B')) = f_{k_{i}}(R_{i-1}')
-\end{gather*}
-
-Es gilt:
-\begin{gather*}
-  A\oplus A' = (\tilde{A} \oplus k_{i}^{L}) \oplus (\tilde{A}'\oplus
-     k_{i}^{L}) = \tilde{A}\oplus \tilde{A}'\\
-  B\oplus B' = (\tilde{B} \oplus k_{i}^{L}) \oplus (\tilde{B}'\oplus
-     k_{i}^{L}) = \tilde{B}\oplus \tilde{B}'
-\end{gather*}
-aber die Output-Differenz $S_{1}(A)+S_{1}(A')$ hängt vom Schlüssel~$k_{i}^{L}$
-ab. Wenn $S_{1}$ nicht linear ist, dann gilt i.\,A. nicht.
-\begin{gather*}
-  S_{1}(A)\oplus S_{1}(A') = S_{1}(A\oplus A')
-\end{gather*}
-Annahme: Wir kennen $\tilde{A}, \tilde{A}'$ und $S_{1}(A), S_{1}(A')$.
-
-Es gilt:
+Die Eingabe der $i$.\,Runde sei der Block $(L_{i-1}, R_{i-1})$, wobei für
+$f_{k_{i}}$ nur $R_{i-1}$ relevant ist. Der Ablauf ist nun wie folgt:
 \begin{enumerate}
- \item $A$ und $A'$ haben die Input-Differenz $A\oplus A' = A^{*} =
-  \tilde{A}\oplus \tilde{A}'$
- \item $A$ und $A'$ haben die Output-Differenz $C^{*}=S_{1}(A)\oplus S_{1}(A')$
+ \item Diffusion: $d = D(R_{i-1})$
+ \item Schlüsselverknüpfung: $a = d\oplus k_{i}$
+ \item Konfusionsschrit: Zerlegung von $a$ in Blöcke~$a^{\ell}$ der Länge~$m$
+  und Transformation dieser in der jeweiligen $S$-Box $S_{\ell}$.
+ \item (Permutationsschritt:) Dieser muss nicht betrachtet werden, da man
+  diesen Schritt ausgehend vom Geheimtext einfach rückgängig machen kann.
 \end{enumerate}
 
-Weiterhin gilt: $\{A, A'\}$ kommt in der Tabelle für $A^{*}$ vor und man
-erkennt alle Möglichkeiten für $\{A,A'\}$ die Output-Differenz $C^{*}$ zu
-bilden. Da $\tilde{A}$ und $C^{*}$ bekannt sind und $A=\tilde{A}\oplus
-k_{i}^{L}$ ergben sich auf diese Weise Einschränkungen für die Wahl von
-$k_{i}^{L}$.
+Teilt man bereits das Ergebnis der Diffusion $D(R_{i-1})$ in Blöcke~$d^{\ell}$
+und den Rundenschlüssel~$k_{i}$ in Blöcke~$k_{i}^{\ell}$ entsprechend der
+$S$-Box, in die das Ergebnis der Schlüsselverknüpfung $D(R_{i-1})\oplus k_{i}$
+gelangt, so kann man das Ergebnis der Rundenfunktion wie folgt darstellen:
+\begin{align*}
+  f_{k_{i}}(R_{i-1})
+     &= \begin{pmatrix}
+           S_{1}(a^{1})& S_{2}(a^{2}) & \dotso& S_{\ell}(a^{\ell})& \dotso
+        \end{pmatrix}\\
+     &= \begin{pmatrix}
+           S_{1}(d^{1}\oplus k_{i}^{1})& S_{2}(d^{2}\oplus k_{i}^{2}) &
+           \dotso& S_{\ell}(d^{\ell}\oplus k_{i}^{\ell})& \dotso
+        \end{pmatrix}
+\end{align*}
+
+Für zwei verschiedene Eingaben $R_{i-1}$ und $\tilde{R}_{i-1}$ in der
+$i$.\,Runde ist die Eingabedifferenz der $\ell$.\,$S$-Box
+\begin{gather}
+  \label{eq:eing-diff}
+  a^{\ell} \oplus \tilde{a}^{\ell}
+     = (d^{\ell} \oplus k_{i}^{\ell}) \oplus (\tilde{d}^{\ell}\oplus
+       k_{i}^{\ell})
+     = d^{\ell} \oplus \tilde{d}^{\ell}
+\end{gather}
+Man kann also aus der Ausgabe des Diffusionsschritts (1.\,Schritt)
+Rückschlüsse auf die Eingabe des Konfusionsschrits (3.\,Schritt) ziehen. Die
+Ausgabedifferenz der $\ell$.\,$S$-Box ist
+\begin{gather*}
+  S_{\ell}(a^{\ell}) \oplus S_{\ell}(\tilde{a}^{\ell})
+     = S_{\ell}(d^{\ell}\oplus k_{i}^{\ell}) \oplus
+       S_{\ell}(\tilde{d}^{\ell}\oplus k_{i}^{\ell})
+\end{gather*}
+
+Sind die Ausgaben des Diffusionsschritts~$d^{\ell}$ und $\tilde{d}^{\ell}$ und
+die Ausgabedifferenz des Konfusionsschrits~$S_{\ell}(a^{\ell})\oplus
+S_{\ell}(\tilde{a}^{\ell})$ bekannt, so kann man mit Hilfe dieser Größen über
+die bekannte Verteilung der Eingabe- und Ausgabedifferenzen für die $S$-Box
+$S_{\ell}$ die Menge der möglichen Eingaben $\{a^{\ell},\tilde{a}^{\ell}\}$ in
+die $S$-Box bestimmen. Über die Beziehung $a^{\ell} = d^{\ell}\oplus
+k_{i}^{\ell}$ ergibt sich so eine Einschränkung für den
+Teilrundenschlüssel~$k_{i}^{\ell}$.
 
 \begin{bsp}
-  Illustration am oberen Beispiel: $\tilde{A}=(0100), \tilde{A}'=(0110),
-  C^{*}=S_{1}(A)\oplus S_{1}(A')=(010), \tilde{A}\oplus \tilde{A}' = (0011) =
-  A^{*}$
+  Das Beispiel bezieht sich auf den vereinfachten DES aus
+  \autoref{sec:des-bsp}. Es soll nur um die Betrachtung der $S$-Box $S_{1}$
+  ($\ell=1$) gehen. Die Ausgaben des Diffusionsschritts seien $d^{1}=(0101)$
+  und $\tilde{d}^{1}=(0110)$. Die Ausgabedifferenz der $S$-Box sei $(010)$.
 
-  Tabelle: $A\in\{(1001), (1010), (1101), (1110)\}$ nun gilt weiter $k_{i}^{L}
-  = A\oplus \tilde{A} \in\{ (1101), (1110), (1001), (1010)\}$
+  Die Eingabedifferenz der $S$-Box ist nach \autoref{eq:eing-diff}
+  $d^{1}\oplus \tilde{d}^{1} = (0011)$. Laut der Aufstellung in
+  \autoref{bsp:4} sind als Eingabe $a^{1}$ in die $S$-Box die Werte
+  $\{(1001), (1010), (1101),\linebreak[0] (1110)\}$ möglich.
+
+  Daraus ergeben sich durch die Beziehung $k_{i}^{1} = d^{1}\oplus a^{1}$ als
+  mögliche Teilrundenschlüssel $\{(1100), (1111), (1000), (1001)\}$.
 \end{bsp}
 
-Das war jetzt für einen Klartextblock, mit einem weitern Klartextblock kann
-man eine weitere Schlüsselmenge finden. Der tatsächliche Schlüssel liegt im
-Durchschnitt beider Teilmengen.
+Mit mehreren Klartextblöcken kann man so verschiedene Schlüsselmengen
+ermitteln. Der tatsächliche Schlüssel liegt im Durchschnitt aller
+Schlüsselmengen.
 
-Dies Ganze so oft bis der (Runden"~)""Schlüssel eindeutig bestimmt ist.
+\subsection{Differentielle Kryptoanalyse des DES mit drei Runden}
 
-\subsubsection{Differentielle Kryptoanalyse für ein System mit drei Runden}
-
-Der obige Ansatz ist ausreichend für eine Analyse von drei Runden.
-Ausgangspunk: zwei Klartextblöcke wie eben $(L_{0}, R_{0}), (L_{0}', R_{0}')$
-und die zugehörigen Geheimtextblöcke $(L_{3}, R_{3}), (L_{3}', R_{3}')$. Es
-gilt:
-\begin{align*}
-  L_{3} &= L_{2}\oplus f_{k_{3}}(R_{2}) = R_{1}\oplus f_{k_{3}}(R_{2}) =
-     L_{0}\oplus f_{k_{1}}(R_{0})\oplus f_{k_{3}}(R_{2})\\
-  L_{3}' &= L_{0}'\oplus f_{k_{1}}(R_{0}')\oplus f_{k_{3}}(R_{2}')
-\end{align*}
-Wir wählen die Klartextblöcke, so dass $R_{0}=R_{0}'$ gilt.
-Setzen die Output-Differenz $L_{3}^{*} := L_{3}\oplus L_{3}'$.
+Diese Überlegungen für eine Runde, lassen sich auch auf ein System mit drei
+Runden erweitern. $(L_{0}, R_{0})$ und $(\tilde{L}_{0}, R_{0})$ seien die
+Eingabe, wobei der rechte Teil bei beiden gleich ist, und $(L_{3}, R_{3}),
+(\tilde{L}_{3}, \tilde{R}_{3})$ die zugehörigen Geheimtextblöcke. $L_{3}$
+bestimmt sich laut Feistel-Netzwerk (\autoref{eq:feistel} und
+\autoref{eq:feistel-last}) als
 \begin{gather*}
-  L_{3}^{*} = \underbrace{L_{0}\oplus L_{0}'}_{=L_{0}^{*}} \oplus
-     f_{k_{3}}(R_{2}) \oplus f_{k_{3}}(R_{2}')\\
-  L_{3}^{*}\oplus L_{0}^{*} = f_{k_{3}}(R_{2}')\oplus f_{k_{3}}(R_{2}') =
-     f_{k_{3}}(R_{3})\oplus f_{k_{3}}(R_{3}'), da R_{2}=R_{3} und R_{2}'=R_{3}'
+  L_{3} = L_{2}\oplus f_{k_{3}}(R_{2}) = R_{1}\oplus f_{k_{3}}(R_{2}) =
+     L_{0}\oplus f_{k_{1}}(R_{0})\oplus f_{k_{3}}(R_{2})
 \end{gather*}
-Wir kennen also $R_{3}=R_{2}$ und damit $D(R_{2}) = (\tilde{A}, \tilde{B})$
-und $R_{3}'=R_{2}'$ und damit $D(R_{2}') = (\tilde{A}', \tilde{B}')$.
+Analog gilt $\tilde{L}_{3} = L_{0}\oplus f_{k_{1}}(R_{0})\oplus
+f_{k_{3}}(\tilde{R}_{2})$. Die Ausgabedifferenz der dritten Runde ist also
+\begin{gather*}
+  L_{3}^{*} = L_{3} \oplus \tilde{L}_{3} = L_{0}\oplus \tilde{L}_{0}\oplus
+     f_{k_{3}}(R_{2})\oplus f_{k_{3}}(\tilde{R}_{2})
+\end{gather*}
 
-Die linke Hälfte von $f_{k_{3}}(R_{3})\oplus f_{k_{3}}(R_{3}') =
-S_{1}(\tilde{A})\oplus S_{1}(\tilde{A}')$ und sind in der Situation wie oben.
+Die Eingabedifferenz $L_{0}^{*} = L_{0}\oplus\tilde{L}_{0}$ ist bekannt. Da
+die Permutation (4.\,Schritt) eine lineare Abbildung ($g(a)+g(b)=g(a+b)$) ist,
+erhält man die Ausgabedifferenz des Konfusionsschritts
+\begin{gather*}
+  L_{3}^{*}\oplus L_{0}^{*} = f_{k_{3}}(R_{2}) \oplus f_{k_{3}}(\tilde{R}_{2})
+     = P\bigl(S(a_{3})\bigr) \oplus P\bigl(S(\tilde{a}_{3})\bigr)
+     = P\bigl(S(a_{3}\oplus\tilde{a}_{3})\bigr)
+\end{gather*}
+
+Da $R_{3}=R_{2}$ (\autoref{eq:feistel-last}) ist, kann man für
+$f_{k_{3}}(R_{2})$ die Diffusion $D(R_{2})$ bestimmen. Damit hat wieder wieder
+die Situation wie im Fall mit einer Runde erreicht: Man kennt die Ausgabe des
+Diffusionsschritts für $f_{k_{3}}(R_{2})$ und $f_{k_{3}}(\tilde{R}_{2})$ und
+man kennt die Ausgabedifferenz des Konfusionsschritts $S(a)\oplus
+S(\tilde{a})$. Man ist also in der Lage, den Schlüssel für die 3.\,Runde zu
+bestimmen. Mit diesem Schlüssel kann man dann $f_{k_{3}}(R_{2})$ und damit
+$L_{2} = L_{3}\oplus f_{k_{3}}(R_{2})$ bestimmen.
+
+Für den Schlüssel der zweiten Runde kann man direkt die Ausgabedifferenz des
+Konfusionsschritts bestimmen, denn $R_{2} = L_{1}\oplus f_{k_{2}}(R_{1}) =
+R_{0}\oplus f_{k_{2}}(R_{1})$. Die Diffusion $D(R_{1}) = D(L_{2})$ lässte sich
+wieder berechnen und damit besteht wieder eine Situation wie im Fall mit einer
+Runde. Danach verbleibt nur noch eine Runde.
 
 % 27.11.
-
-\begin{gather*}
-  S_{2} = \begin{pmatrix}
-            4& 0& 6& 5& 7& 1& 3& 2\\
-            5& 3& 0& 7& 6& 2& 1& 4
-          \end{pmatrix}
-     \qquad
-     B^{*} = \begin{pmatrix}1& 0& 1& 1\end{pmatrix}
-\end{gather*}
-
-\subsection{Differentielle Kryptoanalyse für DES mit drei Runden}
-
-\begin{align*}
-  L_{0}^{*} &= L_{0}\oplus L_{0}'\\
-  L_{3}^{*}& = L_{3}\oplus L_{3}' = L_{0} \oplus f_{K_{3}}(R_{2}) \oplus
-     f_{K_{3}}(R_{2}')\\
-  L_{3}^{*} \oplus L_{0}^{*} & = f_{K_{3}}(R_{3})\oplus f_{K_{3}}(R_{3}')&
-     \text{da,~} R_{3}=R_{2}, R_{3}'=R_{2}'
-\end{align*}
-
-Mit $R_{2}$ kennen wir $D(R_{2}) = (\tilde{A}, \tilde{B})$ und $D(R_{2}') =
-(\tilde{A}', \tilde{B}')$.
-
-linke Hälfte: $S_{1}(\tilde{A}\oplus K_{3}^{L}) \oplus S_{1}(\tilde{A}'\oplus
-K_{3}^{L})$\\
-rechte Hälfte: $S_{2}(\tilde{B}\oplus K_{3}^{R})\oplus S_{2}(\tilde{B}'\oplus
-K_{3}^{R})$
-
-$R_{0}=R_{0}'$
 
 Beispiel:
 \begin{align*}
@@ -2559,6 +2546,15 @@ Die Ausgabedifferenz von $S_{1}$ ist $(010)$. kam in der Tabelle oben \todo{link
 finden} zweimal vor. $A\in \{(0011), (1001)\}$
 
 $K_{3}^{L} = A\oplus \tilde{A} = \{(0011), (1001)\}$ zwei Möglichkeiten.
+
+\begin{gather*}
+  S_{2} = \begin{pmatrix}
+            4& 0& 6& 5& 7& 1& 3& 2\\
+            5& 3& 0& 7& 6& 2& 1& 4
+          \end{pmatrix}
+     \qquad
+     B^{*} = \begin{pmatrix}1& 0& 1& 1\end{pmatrix}
+\end{gather*}
 
 Eingabedifferenz der $S$-Box $S_{2}$:
 \begin{gather*}
@@ -2683,7 +2679,7 @@ acht Bit.
 
 \begin{enumerate}
  \item Die Größe des Schlüsselraums ist $2^{56}$ (es genügt aber
-  $2^{55}$~Schlüssel zu testen), mit erschöpfender Suche war 1977 war defakto
+  $2^{55}$~Schlüssel zu testen), mit erschöpfender Suche war dies 1977 defakto
   nicht möglich.
 
   1997: setzt die RSA-Data-Security US\,\$~10\,000 für die Dechiffrierung
