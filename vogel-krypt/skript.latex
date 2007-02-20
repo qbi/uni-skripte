@@ -271,7 +271,7 @@
     \texttt{<joerg@alea.gnuu.de>}} (2006/07)
    \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
     \texttt{<jens@kubieziel.de>}} (2006)
-   \item Michael Preiss (2006)
+   \item Michael Preiss (2006/07)
    \item Christine List (2007)
   \end{itemize}
 \end{itshape}
@@ -1556,7 +1556,10 @@ $[a]_{k} \cdot [b]_{k} = [1]_{k}$. In diesem Fall heißt $[b]_{k}$
     mit $[a]_{k}\cdot [b]_{k} = [a\cdot b]_{k} = [1]_{k} = 1+k\Z$ existiert,
     d.\,h. es gibt ein $b$ und ein $l$, so dass $ab= 1+kl$, also $ab-kl=1$. Dies
     gilt \gdw $\ggT(a,b)=1$.
-    \help{Wieso gilt $ab-kl=1$ \gdw $\ggT(a,b)=1$?}
+    \help{Wieso gilt $ab-kl=1$ \gdw $\ggT(a,b)=1$? Ist $\ggT(a,b)$ ein
+      Schreibfehler und soll $\ggT(a,k)$ sein? Dann käme die Beziehung aus dem
+      erweiterten euklidischen Algorithmus, der aber an dieser Stelle noch
+      nicht bekannt ist.}
   \end{proof}
 \end{lemma}
 
@@ -1683,7 +1686,7 @@ Eine Matrix $A$ besitzt eine zu ihr \highl{inverse Matrix}~$A^{-1}$, d.\,h. es g
 $\det A$ eine Einheit des Rings $[R,+,\cdot]$ ist.
 
 Dabei gilt: $A^{-1}= (\det A)^{-1} B$, wobei $(b_{ij})=(-1)^{i+j}\cdot
-\det A_{ij}$.
+\det A_{ji}$.
 
 \section{Affinlineare Blockchiffren}
 \label{sec:afflin}
@@ -2162,7 +2165,7 @@ werden.
 Aber es lässt sich zeigen, dass die beiden Eigenschaften einer Verschlüsselung
 nach Claude Shannon erfüllt sind: Die Änderung der Eingabe in eine $S$-Box
 in einem Bit ändert die Ausgabe in mindestens zwei Bit --~\highl{Diffusion}~--
-und jedes Ausgabebit hängt nach fünf Runden von allen Eingabebits ab
+und jedes Ausgabebit hängt nach fünf Runden von allen Schlüssel- und Klartextbits ab
 --~\highl{Konfusion}.
 
 $DES_{k}\colon\Z_{2}^{64}\rightarrow\Z_{2}^{64}$ sei die gesamte
@@ -2879,6 +2882,7 @@ Blowfish (1994), Twofish (1998) von Bruce Schneier
 \end{description}
 
 \section{Exkurs über endliche Körper}
+\label{sec:endl-koerper}
 
 \subsection{Endliche Körper von Primzahlordnung}
 
@@ -2966,16 +2970,17 @@ Multiplikation noch eine Division durch den Modul $m(x)$ angeschlossen wird,
 wobei der Rest das Ergebnis ist.
 
 Die Multiplikation~$\odot$ hängt also von dem Modulpolynom~$m(x)$ ab. Jedoch
-sind die Körper $F_{256}[m(x)]$ und $F_{256}[m'(x)]$ isomorph zu einander.
-\help{Kann das mal bitte jemand bestätigen!}
+sind die Körper $F_{p^{k}}[m(x)]$ und $F_{p^{k}}[m'(x)]$ isomorph zu einander.
+Es ist also völlig egal, welches Modulpolynom man wählt, die grundlegende
+mathematische Struktur bleibt die gleiche. Daher kann man auch allgemein vom
+$F_{p^{k}}$ sprechen und muss nicht sagen, mit welchem Modulpolynom man
+konkret arbeitet.
 
 Bei AES verwendet man $p=2, k=8$, d.\,h. wir betrachen $\F_{2^{8}} = \F_{256}$
 mit Koeffizienten aus $\Z_{2}$, und das Modulpolynom
 \begin{gather*}
   m(x) = x^{8} + x^{4} + x^{3} + x +1
 \end{gather*}
-\help{Kann man zeigen, dass $m(x)$ irreduzibel ist oder ist das genauso
-  schwierig wie der Primnachweis einer Zahl?}
 
 \begin{bsp}
   \label{bsp:1}
@@ -3341,7 +3346,7 @@ mit dem Inversen $c^{-1}(x) = 0B x^{3} + 0D x^{2} + 09 x + 0E$
 
 Durch die Forderung, dass AES öffentlich seien soll, ist der mathematische
 Hintergrund für AES bekannt, wärend z.\,B. der Grund für die Wahl der
-$S$-Boxen bei DES unbekannt ist. --~IBM kannt bereits seit den 1970ern die
+$S$-Boxen bei DES unbekannt ist. --~IBM kannte bereits seit den 1970ern die
 differentielle Kryptoanalyse.~-- Damit ist auch für jederman nachprüfbar, dass
 AES korrekt arbeitet.
 
@@ -3350,10 +3355,9 @@ AES korrekt arbeitet.
 Das Verfahren von Rijndael ist eine iterierte Blockchiffre, deren Block- und
 Schlüssellänge unabhängig voneinander 128, 192 oder 256~Bit betragen können.
 Davon abhängig ergibt sich die Rundenzahl als 10, 12 oder 14~Runden. Das
-Verfahren ist keine Feistel-Chiffre.
-
-\help{Was ist eine iterierte Blockchiffre?}
-\help{Warum ist Rijndael keine Feistel-Chiffre?}
+Verfahren ist keine Feistel-Chiffre, weil es eine ganz andere Struktur hat.
+Die Ein- und Ausgabe jeder Runde wird nicht nur in zwei, sondern min.\,16~Blöcke
+geteilt, die alle auf die gleiche Weise transformiert werden.
 
 Für AES wurden 128~Bit als Blocklänge festgelegt, woraus sich 10~Runden für
 einen 128~Bit Schlüssel, 12~Runden bei einem 192~Bit Schlüssel und 14~Runden
@@ -3376,13 +3380,10 @@ Key-Add-Schritt mit dem $(r+1)$.\,Schlüssel vorgenommen.
 \subsection{Notationen für AES}
 
 Es werden Bytes von je 8~Bit verwendet, die somit als Elemente des Körpers
-$\F_{256}$ interprtiert werden können; $a=a_{7}a_{6}\dotso a_{0}\in\F_{256}$.
+$\F_{256}$ interpretiert werden können; $a=a_{7}a_{6}\dotso a_{0}\in\F_{256}$.
 Ein Eingabeblock~$S$ von 128~Bit Länge wird in eine Folge von 16~Bytes
-zerlegt.
-\begin{gather*}
-  S = a^{(0)}a^{(1)}\dotso a^{(14)}a^{(15)}
-\end{gather*}
-Diese Bytefolge wird auf eine $4\times4$-Matrix spaltenweise übertragen:
+zerlegt $S = a^{(0)}a^{(1)}\dotso a^{(14)}a^{(15)}$, die auf eine
+$4\times4$-Matrix spaltenweise übertragen werden:
 \begin{gather*}
   S =
      \begin{pmatrix}
@@ -3440,11 +3441,13 @@ die Polynomdarstellung oder die Hexadezimalschreibweise
 
 \subsection{Beschreibung der einzelnen Schritte}
 
-\help{Warum macht man das alles so kompliziert? Warum muss man das alles
-  mathematisch begründen? Man könnte doch die Abbildungen der S-Boxen zufällig
-  festlegen. Was hilft es, ständig den Körper/Ring ($\F_{256}$,
-  $\nicefrac{\F_{256}[x]}{x^{4}+1}$ $\nicefrac{\F_{2}[x]}{x^{8}+1}$) zu
-  wechseln? Warum wechselt man immer zwischen den Körpern/Ringen?}
+Die Grundlagen aus \autoref{sec:endl-koerper} können jetzt dazu verwendet
+werden, die Arbeitsweise des AES auf mathematisch fundierten Regeln
+aufzubauen, um z.\,B. die Invertierbarkeit aller Operationen für den
+Entschlüsselungsalgorithmus zu sichern.
+\help{Kann man vielleicht auch auf diesem mathematischen Wege einige
+  Eigenschaften, z.\,B. Konfusion und Diffusion oder Sicherheit gegen
+  differenzielle und lineare Kryptoanalyse nachweisen?}
 
 \subsubsection{Key-Add}
 Die Verknüpfung mit dem Rundenschlüssel, um die Ausgabe vom Schlüssel abhängig
@@ -3462,10 +3465,16 @@ Für jedes Byte $b^{(z,s)}\in\F_{256}$ ($z,s\in\{0,\dotsc,3\}$) der Eingabe $S_{i
   \tilde{b}_{7}\tilde{b}_{6}\dotso\tilde{b}_{0}$ zu $b^{(z,s)}$ in $\F_{256}$.
   Falls $b^{(z,s)}= 00$, dann ist $\tilde{b}^{(z,s)} = 00$.
 
- \item Die Elementen des Körpers $F_{256}$ können auch als Elemente des
-  Polynomrings $\nicefrac{\F_{2}[x]}{x^{8}+1}$ verstanden werden, d.\,h.
-  \help{ist $\nicefrac{\F_{2}[x]}{x^{8}+1}$ isomorph zu $F_{256}$?}
-  $\tilde{b}^{(z,s)}\in\nicefrac{\F_{2}[x]}{x^{8}+1}$. Darauf wendet man folgende
+ \item Bestimmte Operationen lassen sich mit gewissen Darstellungen einer
+  Struktur besser (einfacher) beschreiben als mit anderen Darstellungen. Daher
+  ist es manchmal günstig die Darstellung zu wechseln. Der Polynomring
+  $\nicefrac{\F_{2}[x]}{x^{8}+1}$ ist isomorph zu $F_{256}$, d.\,h. beide
+  beschreiben die gleiche Struktur. Man kann also die Elemente des Körpers
+  $F_{256}$ auch als Elemente des Polynomrings $\nicefrac{\F_{2}[x]}{x^{8}+1}$
+  auffassen, d.\,h. $\tilde{b}^{(z,s)}\in\nicefrac{\F_{2}[x]}{x^{8}+1}$, und
+  mit diesen weiterrechnen.
+
+  Auf das Inverse $\tilde{b}^{(z.s)}$ wendet man folgende
   Abbildung an:
   \begin{gather*}
     c^{(z,s)} = [1,1,1,1,0,0,0,1] \otimes \tilde{b}^{(z,s)} + [0,1,1,0,0,0,1,1]
@@ -3548,6 +3557,7 @@ Bits $b_{7}, b_{6}, b_{5}$ und $b_{4}$ die Zeile. \autoref{tab:s8-aes}
 Beispiel: $S_{8}(1011\,0101)$, Zeile~11 und Spalte~5. \autoref{tab:s8-aes}
 liefert $D5$. $S_{8}(1011\,0101) = (1101\,0101)$.
 
+\todo{Das ist falsch. Es fehlt die Abbildung im Polynomring. Ändern/Umtexten!}
 Zusammengefasst gesprochen, wird im Byte-Sub-Schritt mit einer Abbildung, der
 $S$-Box, für jedes Byte (jeden 8-Bit-Block) der Eingabe ein Byte bestimmt,
 dass dem inversen Element des Eingabebytes entspricht, wenn man beide als
@@ -3632,7 +3642,7 @@ Die Matrixschreibweise für die Operation $\otimes$ (\autoref{sec:f256x}) ergibt
      \end{pmatrix}
 \end{align}
 
-Die praktische Umsetzung in mit einer lookup-table ist nicht möglich, da für
+Die praktische Umsetzung mit einer lookup-table ist nicht möglich, da für
 die $2^{32}$ möglichen Eingabewerte je 32~Bit Speicherplatz benötigt werden,
 was 127\,Gigabit entspricht, was sich praktisch nur schwer umsetzen lässt.
 
@@ -3656,7 +3666,7 @@ was 127\,Gigabit entspricht, was sich praktisch nur schwer umsetzen lässt.
 
 Aber durch eine geschickte Umordnung der Operanten, wie es in
 \autoref{eq:aes-s32} geschehen ist, kann man eine sehr symmetrische Struktur
-\autoref{fig:s32} erreichen. Die Funktion $xtime\colon\F_{256}\rightarrow
+(\autoref{fig:s32}) erreichen. Die Funktion $xtime\colon\F_{256}\rightarrow
 \F_{256}$ (\autoref{eq:xtime}) berechnet dabei für ein $p\in\F_{256}$ das
 Produkt
 \begin{align*}
@@ -4139,9 +4149,8 @@ ist eine multiplikative Gruppe der Ordnung $\phi(n)$.
     $s$) und mit $a\equiv y^{v}\pmod{n}$ ergibt sich
     \begin{align*}
       a &\equiv (x^{m}-sn)^{v} \pmod{n}\\
-      \intertext{Mithilfe des binomischen Satz' lässt sich das Dingsbums
+      \intertext{Mithilfe des binomischen Satz' lässt sich der Klammerausdruck
         umschreiben zu}
-      \intertext{\help{Wie heißt das doch gleich, das kleine, schwarze, das Dings?}}
       &\equiv \sum_{k=0}^{v} \binom{v}{k} (x^{m})^{v-k} (-sn)^{k} \pmod{n}\\
       &\equiv x^{m\cdot v} + \sum_{k=1}^{v} \binom{v}{k} x^{m(v-k)} (-s)^{k}
          n^{k} \pmod{n}\\
@@ -4269,7 +4278,7 @@ Dies gelang ihnen nicht, jedoch entwickelten sie dabei das RSA-Verfahren.
     \hline
     1.& & & Wählt große Primzahlen $p,q$, bestimmt $n=p\cdot q$\\
     2.& & & Wählt große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
-    3.& & & Berechnt das Inverse~$e$ in $\Z_{\phi(n)}^{*}$\\
+    3.& & & Berechnt das Inverse~$e$ in $\Z_{\phi(n)}$\\
     4.& & $\xleftarrow{n,e}$& \\
     5.& Chiffriert die Botschaft~$m\leq n-1$ durch $c\equiv m^{e}\pmod{n}$& & \\
     6.& & $\xrightarrow{c}$& \\
@@ -4282,9 +4291,9 @@ Dies gelang ihnen nicht, jedoch entwickelten sie dabei das RSA-Verfahren.
 
 Damit Bob verschlüsselte Nachrichten empfangen kann, muss er zwei große
 Primzahlen~$p$ und $q$ und eine große Zahl~$d$ wählen, wobei
-$d$ eine Einheit im Ring $\Z_{\phi(n)}^{*}$ ist, diese also die Bedingung
+$d$ eine Einheit im Ring $\Z_{\phi(n)}$ ist, diese also die Bedingung
 $\ggT(d, (p-1)(q-1))=1$ erfüllt. Danach
-berechnet er das eindeutig bestimmte Inverse~$e$ in $\Z_{\phi(n)}^{*}$ von $d$
+berechnet er das eindeutig bestimmte Inverse~$e$ in $\Z_{\phi(n)}$ von $d$
 (mit Hilfe des erweiterten euklidische Algorithmus). Das Paar~$(n,e)$ ist der
 öffentliche Schlüssel, $d$ ist der geheime Schlüssel von Bob. Die anderen
 Größen werden im Folgenden nicht mehr benötigt.
@@ -4331,7 +4340,7 @@ Das RSA-Verfahren ist also so konstruiert, dass
 
    \item $p-1$ und $q-1$ sollten große Primfaktoren besitzen und $p-1$ und
     $q-1$ sollten möglichst teilerfremd sein, d.\,h. $\ggT(p-1, q-1)$ sollte
-    möglichst klein sein.
+    möglichst klein sein. siehe \autoref{sec:rsa-angriffe}
 
    \item Ein direkter Angriff würde bedeuten, da $c=m^{e}\pmod{n}$ ist, aus
     $c$ die $e$.\,Wurzel modulo~$n$ zu berechen. Dies ist nach \autoref{bem:2}
@@ -4404,8 +4413,9 @@ Das RSA-Verfahren ist also so konstruiert, dass
 \end{bemerk}
 
 \subsection{Angriffe auf RSA}
+\label{sec:rsa-angriffe}
 
-Ein Angriff auf das Faktorisierungsproblem ist die \highl{$(p-1)$-Methode} von
+Ein Angriff auf das \highl[Faktorisierung]{Faktorisierungsproblem} ist die \highl{$(p-1)$-Methode} von
 Polard. Die Idee ist, dass man den Primfaktor $p$ von $n=p\cdot q$ durch
 $p=\ggT(n,k\cdot p)$ ermitteln kann, sofern $n$ kein Teiler von $k\cdot p$ ist.
 
@@ -4432,19 +4442,19 @@ Primfaktoren von $p-1$ und $q-1$ möglichst groß sind.
 
   Der erste Ansatz sei $S_{1}=5$. Damit ist $\nu_{1} = 2^{2} \cdot 3 \cdot 5 =
   60$ das Produkt aller größten Potenzen von Primzahlen, die kleiner sind als
-  $S_{1}$. Als $a^{\nu}-1\mod n$ ergibt sich so $1\,862\,178$. Leider sind die
+  $S_{1}$. Als $a^{\nu_{1}}-1\mod n$ ergibt sich so $1\,862\,178$. Leider sind die
   beiden Zahlen teilerfremd.
 
-  Also ein neuer Versuch mit $B_{2}=13$. Damit ist $\nu_{2} = 2^{3} \cdot
+  Also ein neuer Versuch mit $S_{2}=13$. Damit ist $\nu_{2} = 2^{3} \cdot
   3^{2} \cdot 5\cdot7\cdot11\cdot13 = 360\,360$. Damit ergibt sich
-  $a^{\nu}-1\mod n=1\,637\,610$. Der größte gemeinsame Teiler hiervon und $n$
+  $a^{\nu_{2}}-1\mod n=1\,637\,610$. Der größte gemeinsame Teiler hiervon und $n$
   ist 17.
 
   Da $n$ das Produkt zweier Primzahlen ist, ist somit die Faktorisierung von
   $n$ gebrochen. Die beiden Primfaktoren sind 17 und $110\,503$.
 \end{bsp}
 
-Eine andere Möglichkeit, die Faktorisierung einer Zahl~$n$ zu bestimmen, ist
+Eine andere Möglichkeit, die \highl{Faktorisierung} einer Zahl~$n$ zu bestimmen, ist
 das \highl[quadratisches Sieb]{quadratische Sieb}. Dafür werden Zahlen~$a$ und $b$ so ermittelt,
 dass gilt:
 \begin{gather*}
@@ -4690,6 +4700,8 @@ $\FP$-berechenbar.
 Das Anliegen besteht in der \highl{Authentifizierung} des Absenders.
 Grundidee: Wir nutzen die Sicherheit der Protokolle der Public-Key-Verfahren
 in modifizierter Form für die Authentifizierung.
+\todo{Von http://www.superrafi.com/src/digSig/node2.html noch ein bischen Text
+  klauen.}
 
 \subsection{Elgamal}
 
@@ -5050,7 +5062,7 @@ In der Komplexitätstheorie ist das sogenannte
 Dabei versucht der übermächtige Zauberer Merlin den König Arthur von der
 Richtigkeit seines Beweises zu überzeugen. Da aber König Arthur nicht gut
 rechnen kann wie Merlin\footnote{Arthur ist irgendwas polynomielles und Merlin
-ist etwas nicht polynomiells \help{Was jemand noch was?}}, prüft er nur Teile
+ist etwas nicht polynomiells \help{Weiß jemand noch was?}}, prüft er nur Teile
 des Beweises und akzeptiert, wenn er darin keinen Fehler findet.
 
 An diese Idee angelehnt versucht Alice durch die Kenntnis der Lösung für ein
