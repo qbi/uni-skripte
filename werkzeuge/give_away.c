@@ -43,13 +43,6 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    if (geteuid() == getuid())
-    {
-        fprintf(stderr, "Set the suid bit for the program, "
-                "it's useless without.\n");
-        return EXIT_FAILURE;
-    }
-
     const size_t MEM_SIZE = getpagesize();
     const uid_t SRC_OWNER = getuid(), TARGET_OWNER = geteuid();
 
@@ -63,6 +56,18 @@ int main(int argc, char* argv[])
             continue;
         }
 
+        struct stat in_stat;
+        if (stat(in_file, &in_stat) == -1)
+        {
+            perror("stat");
+            continue;
+        }
+
+        if (in_stat.st_uid == TARGET_OWNER)
+          /* There's nothing to do, because the target owner still owns
+           * the file. */
+          continue;
+
         if (seteuid(SRC_OWNER) == -1)
         {
             perror("seteuid src_owner");
@@ -74,14 +79,6 @@ int main(int argc, char* argv[])
         {
             fprintf(stderr, "Opening file \"%s\" failed: %s\n", in_file,
                     strerror(errno));
-            continue;
-        }
-
-        struct stat in_stat;
-        if (stat(in_file, &in_stat) == -1)
-        {
-            perror("stat");
-            close(in_fd);
             continue;
         }
 
