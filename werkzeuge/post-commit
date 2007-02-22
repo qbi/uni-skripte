@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >/tmp/joergs.$$.post 2>&1
+exec >/tmp/joergs-"$2".$$.post 2>&1
 set -x
 
 set -e -u
@@ -40,13 +40,11 @@ set -e -u
 WEB=/home/stud/md01/joergs/.www/skripte
 REPOS="$1"
 REV="$2"
+give_away=/home/stud/md01/joergs/give_away
+skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
 
 # Damit svnlook log und commit-email.pl die Ausgabe nicht verstümmeln
 export LANG=de_DE.UTF-8
-
-# find "$REPOS/db/" "$REPOS/locks" -mindepth 1 -not -name fs-type -not -perm -666 -exec chmod go+rw {} \;
-#chmod go+w "$REPOS/db/current" "$REPOS/locks/"*
-#chmod go+w "$REPOS/db/revs/$REV" "$REPOS/db/revprops/$REV"
 
 update_skript()
 {
@@ -63,16 +61,18 @@ update_skript()
       sh $tmp "$skript" "$WEB" > "$log" 2>&1
     rm $tmp
 
+    $give_away "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tar.gz
+
     mail -a "Reply-To: skripte@listserv.uni-jena.de" \
       -s "[$skript] r$REV build" skripte-commit@listserv.uni-jena.de \
       -- -f $(id -nu)@minet.uni-jena.de < $log
 }
 
-skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
-
 /usr/lib/subversion/hook-scripts/commit-email.pl "$REPOS" "$REV" \
   -r skripte@listserv.uni-jena.de -s "[$skript]" -h minet.uni-jena.de \
   skripte-commit@listserv.uni-jena.de
+
+$give_away "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
 
 case "$skript" in
   web)
@@ -80,11 +80,15 @@ case "$skript" in
     svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
     svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
     svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
+
+    $give_away $WEB/"$skript".Changelog $WEB/"$skript".Author \
+        $WEB/"$skript".Date
     ;;
   *-*)
     # create Changelog
     rm -f $WEB/"$skript".Changelog
     svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+    $give_away $WEB/"$skript".Changelog
 
     update_skript "$skript" &
     ;;
@@ -98,9 +102,10 @@ svnlook changed "$REPOS" --revision "$REV" | while read action file; do
           [AU]*)
             case "$file" in
               */) mkdir "$WEB/$file";;
-              *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}";;
+              *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}"
+                $give_away "$WEB/${file#web/}"
+                ;;
             esac
-            chmod go+w "$WEB/$file"
             ;;
           D*)
             case "$file" in
