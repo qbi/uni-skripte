@@ -1,33 +1,32 @@
 <!-- $Id$ -->
-<?php
-include('header.php');
-	
-echo "<p>Das Projekt
-\"Vorlesungsskripte der Fakultät für Mathematik und Informatik\" ist eine Plattform 
-von Studierenden für Studierende, um Skripte zu sammeln, zu erstellen, zu 
+<?php include('header.php'); ?>
+
+<p>Das Projekt
+&bdquo;Vorlesungsskripte der Fakultät für Mathematik und Informatik&ldquo; ist eine Plattform
+von Studierenden für Studierende, um Skripte zu sammeln, zu erstellen, zu
 bearbeiten und natürlich zu verwenden.</p>
 
-<p>Mittlerweile sind schon ein paar Skripte vorhanden. 
+<p>Mittlerweile sind schon ein paar Skripte vorhanden.
 Einige sind nur zu Teilen, andere sind vollständig aber
 dafür sind noch Probleme beim Übersetzen. Aber das alles soll auch nur
 ein Anfang sein. Wir hoffen, dass sich weitere Studenten finden, die
 Skripte verbessern, sei es in Bezug auf den Inhalt, Vollständigkeit oder
-den Latex-Satz. Leider sind vereinzelt auch noch Fehler versteckt, sowohl
+den LaTeX-Satz. Leider sind vereinzelt auch noch Fehler versteckt, sowohl
 inhaltliche als auch orthographische.<p>
 
-<p>Zum Schreiben der Skripte verwenden wir 
+<p>Zum Schreiben der Skripte verwenden wir
 <a href='http://www.latex-project.org/'>LaTeX</a>. Hinweise zur Form und
 eine Vorlage zum Schreiben neuer Skripte findet man unter
 <a href='form.php'>Dokumentation</a>.</p>
 
-<p>Es gestaltet sich schwierig, 
+<p>Es gestaltet sich schwierig,
 &Auml;nderungen von verschiedenen Benutzern von Hand einzupflegen. Für diese
-Aufgabe hat man sogenannte 
+Aufgabe hat man sogenannte
 <a href='http://de.wikipedia.org/wiki/Versionsverwaltung'>Versions-Managment-Programme</a>
 entwickelt, die sich
 darum kümmern, dass Änderungen zweier Benutzer nicht im Konflikt
 zueinander stehen oder dass alle Benutzer auch die Änderungen der anderen
-Benutzer erhalten. Wir verwenden 
+Benutzer erhalten. Wir verwenden
 <a href='http://subversion.tigris.org/'>Subversion</a>.</p>
 
 <p>Diese Programme schützen natürlich nicht vor Sabotage oder davor neue
@@ -39,18 +38,65 @@ haben, die Skripte absichtlich zu schädigen. Aber denoch eine kleine
 Drohung: Es kann jeder jederzeit nachvollziehen, wer welche Änderungen
 gemacht hat (svn diff oder svn log).</p>
 
-<p>Wie man Subversion verwendet, wird in der 
+<p>Wie man Subversion verwendet, wird in der
 <a href='svn.php'>Dokumentation</a> erläutert. Dort gibt es auch
 eine Erklärung für
 <a href='windows.php'>Windows</a>.</p>
 
-<p>Für alle diejenigen, die nicht aktiv an den Skripten mitarbeiten
-möchten, gibt es unter
-<a href='pdf.php'>Download</a> täglich aktuelle PDF-Versionen.</p>
+<h2>Die Frage nach dem &bdquo;Warum&ldquo;</h2>
 
+<p>Ich (Jörg aka joergs) bekomme immer wiedermal die Frage gestellt, warum ich
+denn meine Mitschrift in LaTeX anfertige und sie dann im Internet
+veröffentliche. Ich will kurz mal einige Gründe nennen:
+<ul>
+  <li>
+    Meine Handschrift ist nicht die Schönste und der Wiedererkennungswert
+    sinkt stellenweise auf null. Da ist eine elektronische Fassung wesentlich
+    besser. Auch für die Archivierung oder die Suche darin &ndash;&nbsp;wer
+    kann schon Google in seinem Hefter suchen lassen?
+  </li>
+  <li>
+    In meiner (handschriftlichen) Mitschrift zur Analysis&nbsp;2 hatte ich
+    einen Fehler, den ich erst in der Prüfung erkennen durfte. Daher hatte ich
+    die Hoffnung, dass durch die Veröffentlichung andere Leute solche Fehler
+    sehen und mich darauf aufmerksam machen.
+  </li>
+  <li>
+    <p>In meiner Analysis&nbsp;1-Vorlesung arbeitete der Dozent mit
+    vorgefertigten Folien, die er in einem Affentempo über den Projektor zog.
+    Es war ein echter Kampf, da am Ende der Stunde alles abgeschrieben zu
+    haben. In der Vorlesung selbst habe ich von seinen Erläuterungen nichts
+    verstanden, weil ich nur mit Abschreiben beschäftigt war. So ergeht/erging
+    es mir auch in anderen Vorlesungen.</p>
 
+    <p>Mein Wunsch war immer, eine kooperative Anfertigung einer Mitschrift,
+    so dass sich drei Leute die Mühe machen müssen und alles mitschreiben
+    und alle anderen hören zu und versuchen zu verstehen. Dann tippen die drei
+    Mitschreiber ihre Aufzeichnungen ab und die Zuhörer machen Ergänzungen und
+    Verbesserungen.</p>
 
+    <p>Zum Teil funktioniert das auch. Oft schreibe ich die Vorlesung mit und
+    Andere hören zu. Vielleicht klappt es irgendwann auch mal mit dem zweiten
+    Schritt noch.</p>
+  </li>
+  <li>
+    Dann finde ich, dass sehr viele Informationen in Vorlesungen gegeben
+    werden, die in dieser Form oder in dieser Zusammenstellung nicht im
+    Internet zu finden sind. Das Netz lebt davon, dass es Informationen
+    bekommt. Daher finde ich es auch immer schade, wenn Dozenten ein Skript zu
+    ihrer Vorlesung haben, dieses aber nicht veröffentlichen. Das sind alles
+    verlohrene Informationen, weil keiner (außerhalb der Vorlesung) davon
+    etwas mitbekommt oder die Informationen nutzen könnte.
+  </li>
+  <li>
+    Und natürlich das ultimative Argument &bdquo;Weil ich es kann&ldquo;. Gut,
+    ich konnte es nicht, als ich angefangen habe, aber durch die Arbeit an den
+    Skripten bin ich so schnell mit LaTeX vertraut geworden, dass ich diesen
+    Weg jedem empfehlen kann. Spätestens bei der Abschlussarbeit wird Euch
+    LaTeX einholen und da ist es besser vorher schonmal auf Tuchfühlung
+    gegangen zu sein als dann erst damit anzufangen. Probiert es! Dieses
+    Projekt eignet sich hervorragend, um in LaTeX einzusteigen.
+  </li>
+</ul>
 
-";
-include('footer.php');
-?>
+<?php include('footer.php'); ?>
