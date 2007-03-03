@@ -62,7 +62,7 @@
                          % auf "LastChangedRevision LastChangedDate"
                          % gesetzt werden
 
-\usepackage{index}
+\usepackage{makeidx}
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
 
@@ -121,14 +121,24 @@
 \newcommand*{\help}[1]{\textcolor{green}{help: #1}}
 \newcommand*{\todo}[1]{\textcolor{blue}{todo: #1}}
 
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
 % Prof. Hecker schwankt in der Vorlesung ständig zwischen Zeit und Time
 % bzw. Work und Arbeit. Diese zwei Befehle sollen helfen, die Begriffe
 % einheitlich im Skript zu verwenden und ggf. alle Stellen leicht
 % änderbar machen
 \newcommand*{\Time}{TIME\xspace}
 \newcommand*{\Work}{WORK\xspace}
+\newcommand*{\Space}{SPACE\xspace}
 \newcommand*{\Z}{\mathbb{Z}}
 \newcommand*{\N}{\mathbb{N}}
+\newcommand*{\NP}{\mathrm{NP}}    % Klasse der nichtpolynomiellen Probleme
 
 \makeindex
 
@@ -177,7 +187,7 @@
   haben, vielmals danken:
   \begin{itemize}
    \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
-    \texttt{<joerg@alea.gnuu.de>}} (2004/05)
+    \texttt{<joerg@alea.gnuu.de>}} (2004, 2005, 2007)
    \item Fred Thiele (2005)
    \item Christian Raschka (2005)
   \end{itemize}
@@ -209,35 +219,38 @@
 \end{thebibliography}
 
 \chapter{Einleitung}
-Die Paradigmen (\emph{Entwurfsmuster}) für serielle Algorithmen werden nach den
-Kriterien Speicher- und Zeitkomplexität, sowie ihrer einfachen Formulierbarkeit
-bestimmt. Bezüglich dieser Kriterien sollen serielle Algorithmen "`gut"' sein.
-Die von Neumann-Architektur ist ein allgemein anerkanntes Modell im Seriellen.
-Als konkretes Modell wird die Random access machine (RAM) betrachtet unter der
-Annahme, dass Basisoperationen in $O(1)$-Zeit bewältigt werden.\\
+Die Paradigmen (Entwurfsmuster) für serielle Algorithmen werden durch die
+Kriterien Speicher- (\Space) und Zeitkomplexität (\Time), sowie ihrer
+einfachen Formulierbarkeit (Beschreibungskomplexität) bestimmt. Ein serieller
+Algorithmus soll bezüglich dieser Kriterien "`gut"' sein.
 
-Für parallele Algorithmen hingegen gibt es eine Vielzahl von Modellen. Im
-Parallelen ergeben sich wesentlich mehr Abhängigkeiten vom konkreten Rechner.
+Für die Bewertung serieller Algorithmen ist ein allgemein anerkanntes Modell
+die von-Neumann-Architektur. Sie beschreibt das Modell der \highl{Random
+access machine} (\highl{RAM}), bei dem die Basisoperationen in $O(1)$-\Time
+bewältigt werden.
+
+Für parallele Algorithmen hingegen gibt es verschiedene Modelle, die
+wesentlich abhängiger vom konkreten Rechner sind. Einige Kriterien sind
 \begin{itemize}
  \item Geringe Anzahl leistungsfähiger Prozessoren
  \item Hohe Anzahl "`einfacher"' Prozessoren
  \item Verteilte Systeme (nicht Gegenstand der Vorlesung, siehe Rechnerarchitektur)
 \end{itemize}
 
-\begin{table}
-  \centering
-  \begin{tabular}{lcl}
-    Faktoren: & CC & Computational Concurrency \\
-    & PA & Processor Allocation \\
-    & SCH & Scheduling \\
-    & C & Communication \\
-    & S & Syncronization
-  \end{tabular}
-  \caption{Faktoren}
-  \label{tab:parallele_faktoren}
-\end{table}
+Faktoren:
+\help{Für was? Wozu sind die da?}
+\begin{description}
+ \item[Computational Concurrency] möglicher Parallelisierungsgrad des Problems
+ \item[Processor Allocation] Zuordnung der einzelnen Aufgaben an die
+  Prozessoren
+ \item[Scheduling] Ausführungsreihenfolge der einzelnen Aufgaben, wann kommt
+  welcher Prozessor zum Zug
+ \item[Communication] Kommunikation der Prozessoren untereinander bei der
+  Arbeit
+ \item[Synchronization] eine allgemeine Uhr oder aufeinander abgestimmte Uhren
+\end{description}
 
-\section{Algorithmenvorlesung}
+% \section{Algorithmenvorlesung}
 Wir haben also eine Vorlesung, die sich mit den Entwurfsprinzipien für
 parallele Algorithmen beschäftigt. Als allgemeine Prinzipien gelte für ein
 Modell:
@@ -247,83 +260,163 @@ Modell:
  \item Implementierbarkeit
 \end{itemize}
 
-\begin{defini}[Speed Up]
-  $T^*(n)$ - Serielle Komplexität\\
-  $T_p(n)$ - Zeit für parallelen Algorithmus mit $p$ Prozessoren\\
-  \[
-  S_{p}(n):=\frac{T^{\ast}(n)}{T_{p}(n)}
-  \]\\
-  (Beschleunigung gegenüber einem seriellen Algorithmus)
-\end{defini}
+\section{Modelle für parallele Algorithmen}
 
-\begin{satz}
-  \[S_{p}(n)\le p \qquad (T^*(n) \le p T_p(n))\]
+\subsection{DAG -- Modell eines gerichteten, kreisfreien Graphen}
 
-  \begin{proof}
-    Die Simulation der Rechnungen der $p$ Prozessoren schrittweise nacheinander
-    ergibt einen neuen seriellen Algorithmus, der nicht schneller als
-    $T^*(n)$ sein kann.
-  \end{proof}
+Mit Hilfe eines gerichteten, kreisfreien Graphen~$DAG=(E,V)$ (directed acyclic
+graph; \highl{DAG}) beschreibt man eine Berechnung, indem man jedem inneren
+Knoten~$v\in V$ einen Berechnungsschritt zuweist und über die Kanten~$e\in E$
+die Abhängigkeiten der Operanten der Berechnungsschritte untereinander
+modelliert. Eine Kante~$e$ von $v_{1}$ nach $v_{2}$ besagt, dass die Ausgabe
+von $v_{1}$ als Eingabe von $v_{2}$ verwendet wird. Einen Knoten mit Indegree
+null bezeichnet man als Eingabeknoten der Berechnung, einen Knoten mit
+Outdegree null als einen Ausgabeknoten. Alle anderen Knoten bezeichnet man als
+innere Knoten.
 
-\end{satz}
-
-\begin{bemerk}
-  Wenn $S_{p}(n)\approx p$, dann
-  \begin{gather*}
-    S_{p}(n) = \frac{T^{\ast}(n)}{T_{p}(n)}=p\\
-    \Rightarrow T^{\ast}(n) = p\,T_{p}(n)\\
-    \Rightarrow T^{p}(n) = \frac{T^{\ast}(n)}{p}
-  \end{gather*}
-\end{bemerk}
-
-Folgerung: Mit polynomial vielen Prozessoren kann man ein NP-schweres
-Problem \emph{nicht} parallel in Polynomialzeit lösen!
-
-\begin{defini}[Effizienz]
-  \begin{gather*}
-    E_{p}(n):= \frac{T_{1}(n)}{p\,T_{p}(n)}
-  \end{gather*}
-\end{defini}
-
-\section{DAG (directed acyclic graph)}
-
-Für unsere Bedürfnisse ist das Modell des gerichteten, kreisfreien Graphen zu
-allgemein. Hier ein Beispiel für die serielle und parallele Summation einer
-Folge von Zahlen:\\
-
-\begin{center}
+\begin{figure}
+  \centering
   \input{figures/dag_parallel.pdf_t}
-\end{center}
+  \caption{Zwei mögliche DAGs zur Berechnung der Summe von $n$~Zahlen}
+  \todo{entweder am linken Graphen noch den Ablaufplan ergänzen oder die
+    Prozessoren am rechten wegnehmen.}
+  \label{fig:dag}
+\end{figure}
+
+In \autoref{fig:dag} sind zwei verschidene Graphen für die parallele
+Berechnung der Summe von $n$~Zahlen dargestellt, wobei eine der beiden
+Darstellungen keine Parallelität aufweist.
 
 \begin{defini}
-  Gegeben seien $p$ Prozessoren. Jedem inneren Knoten $i$ des DAG ordnen wir ein
-  Paar $(j_i,t_i) : 1 \le j_i \le p$ mit $t_i$ - Zeitpunkt zu:
+  Gegeben seien $p$~Prozessoren und ein gerichter, kreisfreier
+  Graph~$DAG=(E,V)$, der eine Berechnung beschreibt. Jedem inneren
+  Knoten~$v\in V$ ordnet man ein Paar $(j_v,t_v)$ zu, wobei $t_v$ einen
+  Zeitpunkt bestimmt, an dem der Prozessor~$j_{v}$ ($1 \le j_v \le p$) diesen
+  Knoten berechnet. Zudem gelten folgende Bedingungen:
   \begin{enumerate}
-   \item wenn $t_i=t_k$ für $i \ne k$, so gilt: $j_i \ne j_k$
-   \item wenn $(i,k)$ eine gerichtete Kante ist, so ist $t_k \ge t_i +1$
+   \item ein Prozessor kann zu einem Zeitpunkt nur an einem Knoten aktiv sein;
+    wenn $t_u=t_v$ für $u,v\in V$ und $u\ne v$, so gilt: $j_u\ne j_v$
+   \item der Prozessor kann für einen Knoten $v$ erst dann aktiv werden, wenn
+    die Prozessoren der Vorgängerknoten fertig sind; wenn $(u,v)\in V^{2}$
+    eine gerichtete Kante (von $u$ nach $v$) ist, so ist $t_v \ge t_u +1$.
   \end{enumerate}
+
+  Eine solche Zuordnung bezeichnet man als \highl{Ablaufplan} oder
+  \highl{Schedule}.
 \end{defini}
 
-\section{Netzwerkmodell}
+Man erkennt an dem DAG leicht, welche Berechnungen voneinander abhängen und
+welche unabhängig voneinander sind, also parallel zueinander ausgeführt werden
+können. Jedoch wird nicht auf die Speicherung der Daten und die Kommunikation
+der Prozessoren untereinander eingegangen, weswegen das Modell des
+gerichteten, kreisfreien Graphen für unsere Bedürfnisse zu allgemein ist.
 
-Für unsere Bedürfnisse ist das Netzwerkmodell zu speziell. Betrachten wir als
-Beispiel das Modell eines Feldrechners:
+\subsection{Netzwerkmodell}
 
-\begin{center}
-  \input{figures/network_modell.pdf_t}
-\end{center}
+Das \highl{Netzwerkmodell} beschreibt durch einem ungerichteten Graphen eine
+Menge von Prozessoren ($=$ Knoten) und deren Vernetzung ($=$ Kanten)
+untereinander. Die Prozessoren verfügen über einen \textit{lokalen} Speicher
+und tauschen ihre Daten mit den Operationen \highl{receive} und \highl{send}
+aus.
 
-%% in der pdf Grafik sind noch vier Zahlen doppelt,
-%% die entfernt werden müssen (siehe pdf)
-\begin{center}
-  \input{figures/netmodell_input.pdf_t}
-\end{center}
+Mögliche Arten der Vernetzung, sogenannte Topologien, sind:
+\begin{itemize}
+  \begin{figure}
+    \centering
+    \input{figures/netmodell_input.pdf_t}
+    \caption{Sortierung der Zahlen 2, 1, 5, 0 und 3 in einem linearen Feld von
+    Prozessoren}
+    \todo{Der Schriftgrad könnte eins kleiner sein.}
+    \label{fig:lin-feld}
+  \end{figure}
 
-\section{Synchrones Shared Memory Modell}
+ \item ein linearen Feld mit $p$~Prozessoren, in dem jeder innere Knoten genau
+  zwei Nachbarn hat. Dabei können noch der erste und der letzte Knoten
+  miteinander verbunden werden, so dass ein Ring entsteht.
+  \autoref{fig:lin-feld}
 
-\begin{center}
+ \item ein zweidimensionales Gitter, in dem jeder innere Knoten genau vier
+  Nachbarn hat.
+
+  \begin{figure}
+    \centering
+    \input{figures/network_modell.pdf_t}
+    \caption{Ein zweidimensionales Gitter und ein Hypercube für $d=4$ und
+      $d=2$ mit der Kennzeichnung der Nachbarschaften}
+    \todo{Das Bild trennen in zwei Grafiken. Das Gitter hat nicht direkt etwas
+      mit dem Hypercube zu tun.}
+    \label{fig:hypercube}
+  \end{figure}
+
+ \item oder ein $d$-dimensionaler Würfel (Hypercube) mit $2^{d}$~Prozessoren,
+  in dem die Nachbarschaftsverhältnisse über binäre Zahlen beschrieben werden:
+  Zwei Prozessoren sind benachbart, wenn sich die Binärdarstellungen ihre
+  Prozessornummern nur in genau einer Stelle unterscheiden.
+\end{itemize}
+
+Für unsere Bedürfnisse ist das Netzwerkmodell zu speziell, da für jede
+Problemstelle die jeweilige Topologie betrachtet werden muss.
+
+\subsection{Synchrones Shared-Memory-Modell}
+
+\begin{figure}
+  \centering
   \input{figures/parall_modell.pdf_t}
-\end{center}
+  \caption{Modell der parallel random access machine}
+  \label{fig:pram}
+\end{figure}
+
+Eine direkte Erweiterung der random access machine ist die parallel random
+access machine (\highl{PRAM}), bei der mehrere RAMs über einen unbegrenzt
+großen, gemeinsamen Speicher (\highl{globaler Speicher} oder \highl{shared
+memory}) verfügen, den sie in einer Zeiteinheit lesen und verändern können.
+Untereinander sind die Prozessoren nicht verbunden, so dass jegliche
+Kommunikation über den globalen Speicher erfolgen muss. Die Prozessoren
+arbeiten mit einem gemeinsamen Zeitsignal (\highl{synchron}), d.\,h. jede
+Anweisung wird von allen Prozessoren zum gleichen Zeitpunkt ausgeführt.
+\autoref{fig:pram}
+
+\todo{einarbeiten: PRAM berücksichtigt Zuordnung der Aufgaben an die
+  Prozessoren und Kommunikation der Prozessoren untereinander.}
+
+Der Zugriff auf den globalen Speicher erfolgt mit den Operationen
+\highl{globalRead}$(A,x)$ zum Lesen der globalen Speicherzelle~$A$ in die
+lokale Speicherzelle~$x$ und \highl{globalWrite}$(x,A)$ zum Schreiben der
+lokalen Speicherzelle~$x$ in die globale Speicherzelle~$A$. Zur Vereinfachung
+der Schreibweise verwenden wir große Buchstaben für globale Speicherzellen und
+kleine Buchstaben für lokale Speicherzellen, so dass man für einen globalRead
+$x:=A$ und für einen globalWrite $A:=x$ schreiben kann.
+
+Beim simultanen Zugriff auf den globalen Speicher kann es zu Konflikten
+kommen, wenn mehrere Prozessoren auf die gleiche Speicherzelle zugreifen.
+Man unterscheidet die verschiedenen PRAMs anhand der Art, welche Zugriffe sie
+zulassen:
+\begin{itemize}
+ \item \highl{EREW} (exclusive read and exclusive write): eine
+  Speicherzelle kann zu einem Zeitpunkt nur von einem Prozessor gelesen oder
+  beschrieben werden.
+
+ \item \highl{CREW} (concurrent read and exclusive write): eine
+  Speicherzelle kann zu einem Zeilpunkt von beliebig vielen Prozessoren
+  gelesen, aber nur von einem Prozessor beschrieben werden.
+
+ \item \highl[CRCW!common]{common CRCW} (concurrent read and concurrent
+  write): eine Speicherzelle kann zu einem Zeitpunkt von beliebig vielen
+  Prozessoren gelesen und beschrieben werden. Beim Schreibzugriff müssen alle
+  Prozessoren den gleichen Wert schreiben.
+
+ \item \highl[CRCW!arbitrary]{arbitrary CRCW}: eine Speicherzelle kann zu
+  einem Zeitpunkt von beliebig vielen Prozessoren gelesen und beschrieben
+  werden. Wenn die Prozessoren unterschiedliche Werte schreiben, kann der
+  tatsächlich geschriebene Wert einer der Werte oder die
+  Summe/""Minumim/""Maximum der Werte sein.
+
+ \item \highl[CRCW!priority]{priority CRCW}: eine Speicherzelle kann zu einem
+  Zeitpunkt von beliebig vielen Prozessoren gelesen und beschrieben werden.
+  Welcher Wert in die Speicherzelle tatsächlich geschrieben wird, hängt von
+  einer vorgegebenen Priorisierung der Prozessoren ab; z.\,B. könnte der Wert
+  des Prozessors mit der kleinsten Prozessornummer geschrieben werden.
+\end{itemize}
 
 \begin{bsp}[Matrixmultiplikation $y = Ax$]
   Annahme: \begin{enumerate}
@@ -346,7 +439,7 @@ Beispiel das Modell eines Feldrechners:
   den Zeilen $1$ bis $r$, $P_2$ mit den Zeilen $r+1$ bis $2r$ usw.
 
   \begin{algorithm}[htb]
-    \caption{hier muss nen Name hin}
+    \caption{\todo{hier muss nen Name hin}}
     \begin{algorithmic}
       \REQUIRE $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
       Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
@@ -388,11 +481,7 @@ Beispiel das Modell eines Feldrechners:
   \end{algorithm}
 \end{bsp}
 
-Wir verwenden in dieser Vorlesung das Modell eines Syncronen Rechners mit Shared Memory und Abstraktion Random Access ($O(1)$.)
-
 \begin{bsp}[Summenbeispiel]
-
-
   \begin{algorithm}[htb]
     \caption{Programm für Prozessor $i$}
     \begin{algorithmic}[1]
@@ -439,36 +528,141 @@ Wir verwenden in dieser Vorlesung das Modell eines Syncronen Rechners mit Shared
   \input{figures/sum_bsp.pdf_t}
 \end{bsp}
 
-Allokation ist technisch aufwendig, ohne dass neue Ideen gefragt sind. Deshalb werden wir uns darauf konzentrieren, die Operationen zu beschreiben, die gleichzeitig möglich sind und die Allokation über das \emph{Theorem von Brent} zu behandeln.
+Allokation ist technisch aufwendig, ohne dass neue Ideen gefragt sind. Deshalb
+werden wir uns darauf konzentrieren, die Operationen zu beschreiben, die
+gleichzeitig möglich sind und die Allokation über das \emph{Theorem von Brent}
+zu behandeln.
 
 \chapter{Die Güte von parallelen Algorithmen und das Theorem von Brent}
 
-\underline{seriell:} \underline{TIME}, SPACE, Einfachheit des Programmes \\
-\underline{parallel:} Zahl der Prozessoren
+Für serielle Algorithmen ist entscheident, wie viele Rechenschritte (\Time)
+und wie viel Speicherplatz (\Space) sie zur Berechnung benötigen. Für
+parallele Algorithmen ist zusätzlich sie Anzahl der zur Verfügung stehenden
+Prozessoren entscheident.
+\todo{besser formulieren}
 
-\begin{defini}[Kosten]
-  \[
-  C(n) := T(n) * P(n)
-  \]
+\begin{defini}
+  Für ein Problem~$\mathcal{P}$ bezeichnet $T^{*}(n)$ die beste
+  komplexitätstheoretische Abschätzung für die Rechenzeit einen seriellen
+  Algorithus, der das Problem~$\mathcal{P}$ löst.
+\end{defini}
+
+Da für parallele Algorithmen mehrere Rechenschritte in einer Zeiteinheit
+ausgeführt werden --~$p$ Schritte bei $p$ Prozessoren in einer Zeiteinheit~--
+trifft man eine Unterscheidung bezüglich dieser beiden Größen:
+\begin{defini}
+  Die \highl{Rechenzeit}~$T_{p}(n)$ (\highl{\Time}) eines parallelen
+  Algorithmus' mit $p$~Prozessoren ist die Mindestanzahl an Zeiteinheiten, die
+  der Algorithmus zur Lösung des Problems benötigt.
+
+  Der \highl{Arbeitsaufwand}~$W_{p}(n)$ (\highl{\Work}) eines parallelen
+  Algorithmus' mit $p$~Prozessoren ist die kleinste Anzahl der insgesamt
+  ausgeführten Einzeloperationen (aller Prozessoren zusammen).
+\end{defini}
+
+\begin{defini}[Speed-Up]
+  Für ein Problem~$\mathcal{P}$ definiert man als ein Maß für die Verbesserung
+  (\highl{Speed-up}) eines parallelen Algorithus' gegenüber dem besten
+  seriellen Algorithmus
+  \begin{gather*}
+    S_{p}(n):=\frac{T^{\ast}(n)}{T_{p}(n)}
+  \end{gather*}
 \end{defini}
 
 \begin{satz}
-  Kosten können nicht unter der seriellen Komplexität liegen.
+  \label{satz:2}
+  Der \highl{Speed-up} eines parallelen Algorithmus' kann nie größer sein als
+  die Anzahl der Prozessoren oder anders gesagt, die $p$-fache Zeit eines
+  parallelen Algorithmus' kann nie kleiner sein als die Zeit des seriellen
+  Algorithmus'.
+  \begin{align*}
+    S_{p}(n)&\le p & T^*(n) &\le p T_p(n)
+  \end{align*}
+
+  \begin{proof}
+    Simuliert man die Berechnungen der $p$~Prozessoren schrittweise
+    nacheinander auf einer Einprozessormaschine, ergibt dies einen neuen
+    seriellen Algorithmus mit $p\cdot T_{p}(n)$ Schritten. Dies kann aber
+    nicht weniger als $T^*(n)$ sein, da $T^{*}(n)$ bereits das serielle
+    Optimum ist.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Wenn der Speed-up $S_{p}(n)$ das Maximum~$p$ erreicht, braucht ein
+  paralleler Algorithmus den $p$.\,Teil der Rechenzeit des seriellen
+  Algorithmus'. Insbesondere kann man mit einem parallelen Algorithmus und
+  polynomial vielen Prozessoren kein $\NP$-schweres Problem in Polynomialzeit
+  lösen!
+  \begin{gather*}
+    S_{p}(n) = \frac{T^{\ast}(n)}{T_{p}(n)}=p
+       \quad\Rightarrow\quad T_{p}(n) = \frac{T^{\ast}(n)}{p}
+  \end{gather*}
+\end{bemerk}
+
+\begin{defini}[Effizienz]
+  Die \highl{Effizienz} eines parallelen Algorithmus' beschreibt das
+  Verhältnis des Speed-ups bei $p$~Prozessoren gegenüber dem Speed-up mit
+  einem Prozessor bezogen auf die Anzahl der eingesetzten Prozessoren.
+  \begin{gather*}
+    E_{p}(n):= \frac{S_{p}(n)}{S_{1}(n)}\cdot\frac{1}{p}
+       = \frac{T_{1}(n)}{p\cdot T_{p}(n)} \leq 1
+  \end{gather*}
+\end{defini}
+
+Mit Hilfe der Effizienz kann man erkennen, ob ein Einsatz von mehr Prozessoren
+sinnvoll ist oder nicht. Der Speed-up mag zwar weiterhin steigen, aber die
+Kosten für die Prozessoren übersteigen den Gewinn.
+
+
+\begin{defini}
+  Als die \highl{Kosten}~$C(n)$ eines parallelen Algorithmus' bezeichnet man
+  das Produkt aus Anzahl der eingesetzten Prozessoren und der benötigten
+  Rechenzeit.
+
+  \begin{align*}
+    T_{p}(n) &:= \min_{\substack{\text{Ablaufpläne mit}\\\text{$p$ Prozessoren}}}
+       \max_{i\in\N} t_{i}
+    & C(n) &:= p\cdot T_{p}(n)
+  \end{align*}
+\end{defini}
+
+\begin{satz}
+  Die Kosten~$C(n)$ eines parallelen Algorithmus' können nicht unter der
+  seriellen Komplexität liegen.
+  \begin{gather*}
+    T^{*}(n) \leq C(n)
+  \end{gather*}
+
+  \begin{proof}
+    Nach \autoref{satz:2} ist
+    \begin{gather*}
+      S_{p}(n) = \frac{T^{*}(n)}{T_{p}(n)} \leq p
+    \end{gather*}
+    also ist $T^{*}(n) \leq p\cdot T_{p}(n) = C(n)$.
+  \end{proof}
 \end{satz}
 
 \begin{defini}
-  Ein paralleler Algorithmus ist \emph{optimal}, wenn seine Kosten der seriellen Komplexität entsprechen.
+  Ein paralleler Algorithmus heißt \highl{optimal}, wenn seine Kosten der
+  seriellen Komplexität entsprechen: $T^{*}(n) = C(n)$.
 \end{defini}
 
-\begin{bsp}[Summe]
-  bei $n$ Prozessoren: $C(n)= \log n * n \qquad$ (nicht optimal) \\
-  bei $\frac{n}{\log n}$ Prozessoren: $C(n) = O(n)= O(n\frac{\log n}{n}) \qquad$ (optimal)\\
-  bei 1 Prozessor: $C(n) = O(n) \qquad$ (optimal) \\
-  $\to$ Definition ist unzureichend
+\begin{bsp}
+  \help{geht es hier um einen bestimmen Summenalgorithmus? Ja, dann Link finden.}
+  Für die Berechnung der Summe von $n$~Zahlen sind die Kosten für einen
+  Algorithmus bei bei~$n$ Prozessoren: $C(n)= \log(n)\cdot n$ -- der
+  Algorithmus ist also nicht optimal. Hingegen ist der Algorithmus bei
+  $\frac{n}{\log n}$~Prozessoren und einem Prozessor optimal, da die Kosten
+  bei $\frac{n}{\log n}$~Prozessoren $C(n) = O(n\frac{\log n}{n}) = O(n)$ und
+  bei einem Prozessor $C(n) = O(n)$
 \end{bsp}
 
+Die Definition ist also unzureichend.
+
 \begin{defini}
-  Ein paralleler Algorithmus heisst WT-optimal (streng optimal), wenn er optimal ist und wenn es keinen schnelleren optimalen Algorithmus gibt.
+  Ein paralleler Algorithmus heisst \highl{WT-optimal} (oder \highl{streng optimal}), wenn er
+  optimal ist und wenn es keinen schnelleren optimalen Algorithmus gibt.
 \end{defini}
 
 \begin{bemerk}
@@ -476,10 +670,6 @@ Allokation ist technisch aufwendig, ohne dass neue Ideen gefragt sind. Deshalb w
   \underline{Modelle:} syncrones shared Memory Modell (PRAM)\\
   (EREW, CREW, CRCW(priority, common, arbitrary))
 \end{bemerk}
-
-\begin{defini}
-  WORK eines Algorithmus ist nach Definition die gesamte Anzahl der auszuführenden Einzeloperationen.
-\end{defini}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Restbestände vom letzten Jahr
@@ -583,10 +773,6 @@ Allokation ist technisch aufwendig, ohne dass neue Ideen gefragt sind. Deshalb w
 % n)}=O(n\log n)$
 %
 % Serielles Optimum $T^{*}=O(n) C(N)\ge T^{*}(n)$
-%
-% \begin{defini}
-%   Ein Algorithmus heißt optimal, wenn $C(n)=T^{*}(n)$
-% \end{defini}
 %
 % Es existiert ein Variante dieses Algorithmus, die $O(\log n)$ Zeit braucht
 % und die Kosten $C(n)=O(n)$ hat.
@@ -737,7 +923,9 @@ zusammengefasst werden, die gleichzeitig augeführbar sind. \\
 % \end{defini}
 
 \begin{satz}[Satz von Brent]
-  Sei $W_i(n)$ die Anzahl der Operationen des Algorithmus in der TimeUnit $i$. Simuliere jeden dieser Schritte in $\left\lceil \frac{W_i(n)}{p} \right\rceil$ parallelen Schritten mit $p$ Prozessoren. \\
+  Sei $W_i(n)$ die Anzahl der Operationen des Algorithmus in der
+  $i$.\,Zeiteinheit. Simuliere jeden dieser Schritte in $\left\lceil
+  \frac{W_i(n)}{p} \right\rceil$ parallelen Schritten mit $p$ Prozessoren. \\
 
   \underline{Wenn} das erfolgreich, gilt:
   \[
@@ -748,10 +936,11 @@ zusammengefasst werden, die gleichzeitig augeführbar sind. \\
 \end{satz}
 
 \chapter{Die sieben Paradigmen beim Entwurf paralleler Algorithmen}
+
 \begin{enumerate}
  \item Summenparadigma
  \item Pointer-Jumping
- \item Teile und Hersche
+ \item Teile und Herrsche
  \item Zerlegungsstrategie (Paritioning)
  \item Accelerated Cascading
  \item Pipelining
@@ -1561,7 +1750,7 @@ end.
   3-Färben geht in $O(\log n)$ \Time optimal.
 \end{satz}
 
-\chapter{Listen, Bäume} % 3. Kapitel
+\chapter{Listen und Bäume}
 \section{List-Ranking}
 verkettete Liste $L$ , Nachfolgerarray $S$ $i\rightarrow S(i)$, $S(i)=0$
 Ende der Liste bei Knoten $i$
