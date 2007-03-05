@@ -63,6 +63,7 @@
 \usepackage{makeidx}
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{nicefrac}
 
 \theoremstyle{break}
 \theorembodyfont{\normalfont}
@@ -923,54 +924,108 @@ zusammengefasst werden, die gleichzeitig augeführbar sind. \\
 
 \chapter{Die sieben Paradigmen beim Entwurf paralleler Algorithmen}
 
-\begin{enumerate}
- \item Summenparadigma
- \item Pointer-Jumping
- \item Teile und Herrsche
- \item Zerlegungsstrategie (Paritioning)
- \item Accelerated Cascading
- \item Pipelining
- \item Aufbrechen von Symmetrien
-\end{enumerate}
-
 \section{Präfixsummen}
 
-\begin{algorithm}
-  \caption{Präfixsumme}
-  \Input{Feld $A$ der Länge $n=2^r$}
-  \Output{Feld $S$ der Länge $n$ mit $S[k]=\sum_{j=1}^{k} A[j]$ - Präfixsummen}
+Gegeben sei eine Folge~$(x_{i})_{i\in\N}$ von $n$~Zahlen. Als
+\highl{Präfixsumme}~$S$ des $k$.\,Gliedes bezeichnet man die Summe aller
+Glieder bis zum $k$.\,Glied. Die Präfixsumme des $n$.\,Gliedes ist die Summe
+aller Folgenglieder.
+\begin{gather*}
+  s_{k} = x_{1} + x_{2} + \dotsb+ x_{k-1} + x_{k}
+     = \sum_{j=1}^{k} x_{j}
+\end{gather*}
 
-  \Forpar{j := 1 \KwTo  n}{B[0, j] := A[j]}
+\begin{algorithm}
+  \Input{Feld $A$ der Länge $n=2^r$}
+  \Output{Feld $S$ der Länge $n$ mit $s_{k}=\sum_{j=1}^{k} a_{j}$ - Präfixsummen}
+
+  \Forpar{j := 1 \KwTo  n}{$b_{0,j} := a_{j}$}
   \For{h := 1 \KwTo log(n)}{
-    \Forpar{j := 1 \KwTo n / 2**h}%
-           {B[h, j] := B[h-1, 2*j-1]+B[h-q, 2*j]}
+    \Forpar{j := 1 \KwTo $n\cdot 2^{-h}$}%
+           {$b_{h, j} := b_{h-1, 2\cdot j-1}+b_{h-q, 2\cdot j}$}
   }
   \For{h := log(n) \KwTo 1}{
-    \Forpar{j := 1 \KwTo n / 2**h}{
-      \uIf{j gerade}{C[h,j] := C[h+1, j/2]}
-      \uElseIf{j=1}{C[h,1] := B[h,1]}
-      \Else{C[h,j] := C[h+1, (j-1)/2] + B[h,j]}
+    \Forpar{j := 1 \KwTo $n \cdot 2^{-h}$}{
+      \uIf{j gerade}{$c_{h,j} := c_{h+1, \nicefrac{j}{2}}$}
+      \uElseIf{j=1}{$c_{h,1} := b_{h,1}$}
+      \Else{$c_{h,j} := c_{h+1, \nicefrac{j-1}{2}} + b_{h,j}$}
     }
   }
   \Forpar{j := 1 \KwTo n}{
-    \uIf{j gerade}{S[j] := C[1, j/2]}
-    \uElseIf{j=1}{S[1] := B[0,1]}
-    \Else{S[j] := C[1, (j-1)/2] + B[0,j]}
+    \uIf{j gerade}{$s_{j} := c_{1, \nicefrac{j}{2}}$}
+    \uElseIf{j=1}{$s_{1} := b_{0,1}$}
+    \Else{$s_{j} := c_{1, \nicefrac{j-1}{2}} + b_{0,j}$}
   }
+  \caption{Präfixsumme}
+  \label{alg:praefix}
 \end{algorithm}
 
-\begin{bsp}[n=8]
-  \begin{align*}
-    B(3,1) &= a_1+\ldots + a_8 = C(3,1) \\
-    C(2,1) &= B(2,1) = a_1+ \ldots + a_4 \\
-    C(2,2) &= C(3,1) = a_1+ \ldots + a_8 \\
-    C(1,1) &= B(1,1) = a_1+ a_2 \\
-    C(1,2) &= C(2,1) = a_1+ \ldots + a_4 \\
-    C(1,3) &= C(2,1) + B(1,3) = a_1+ \ldots + a_6 \\
-    C(1,4) &= a_1+ \ldots + a_8 \\
-    C(0,\ldots) &\dots C(0,3)= C(1,1) + B(0,3) = a_1+ \ldots + a_3
-  \end{align*}
-\end{bsp}
+\begin{figure}
+  \centering
+  \input{figures/praefix.pdf_t}
+  \caption{Die zwei Schritte des Präfixsummenalgorithmus': links die
+    Berechnung der Teilsummen und rechts die Berechnung der Präfixsummen}
+  \label{fig:praefix}
+\end{figure}
+
+Der Algorithmus zur Berechnung aller Präfixsummen einer Folge
+(\autoref{alg:praefix}) läuft in zwei Schritten ab (\autoref{fig:praefix}):
+\begin{enumerate}
+ \item Zuerst wird von den Blattknoten aus ein Baum erzeugt, so dass in desses
+  inneren Knoten jeweils die Summe ihrer Söhne steht, wobei die Blattknoten
+  die Glieder der Folge sind. Im Wurzelknoten steht dann die Summe aller
+  Folgenglieder.
+
+  Es sei $h$ die Blattebene im Baum, wobei die Blätter die Höhe~0 haben und
+  die Wurzel die Höhe~$\log n$ hat, und $j$ die Position (beginnend bei eins)
+  des Knotens in der Blattebene von links gesehen ist.
+  \begin{gather*}
+    B_{h,j} = B_{h-1, 2j-1} + B_{h-q, 2j}
+  \end{gather*}
+
+ \item Danach wird vom Wurzelknoten aus für alle Teilbäume die Präfixsumme
+  des am weitesten rechts stehenden Blattknotens bestimmt (und im Wurzelknoten
+  des Teilbaums gespeichert). Dabei sind drei Fälle zu unterscheiden:
+  \begin{itemize}
+   \item Der Teilbaum ist rechter Sohn, d.\,h. $j$ ist gerade: Dann ist der
+    äußere rechte Blattknoten des Teilbaums derselbe Knoten, der auch im
+    Vaterbaum rechts außen steht. Also wird der Eintrag des Vaters übernommen.
+    \begin{gather*}
+      C_{h,j} = C_{h+1, \frac{j}{2}}
+    \end{gather*}
+
+   \item Der Teilbaum ist linker Sohn und steht ganz links, d.\,h. $j=1$: Dann
+    ist die Präfixsumme des äußeren rechten Knotens die Summe aller
+    Blattknoten.
+    \begin{gather*}
+      C_{h,j} = B_{h,j}
+    \end{gather*}
+
+   \item Der Teilbaum ist linker Sohn und steht nicht ganz links, d.\,h. $j>1$
+    und ungerade: Dann ist die Präfixsumme des äußeren rechten Blattknotens
+    gleich der Summe aller Blattknoten des Teilbaums plus der Präfixsumme des
+    Blattknotens, der links vom am weitesten links stehenden Blattknoten in
+    diesem Teilbaum steht. Diese Präfixsumme steht bereits im linken
+    Onkelknoten.
+    \begin{gather*}
+      C_{h,j} = B_{h, j} + C_{h+1, \frac{j-1}{2}}
+    \end{gather*}
+  \end{itemize}
+\end{enumerate}
+
+Der Algorithmus lässt sich für beliebige zweistellige, assoziative
+Operationen~$\star$ verwenden.
+\begin{gather*}
+  s_{k} = x_{1} \star x_{2} \star\dotsb\star x_{k-1} \star x_{k}
+\end{gather*}
+
+Beide Schritte benötigen jeweils $O(\log n)$~\Time und $O(n)$~\Work. Der
+Algorithmus braucht also insgesamt $O(\log n)$~\Time und $O(n)$~\Work und ist
+daher optimal. Da ein serieller Algorithmus für die Berechnung der
+$n$.\,Präfixsumme mindestens einmal alle Folgenglieder betrachten muss,
+benötigt er $O(n)$~\Time. Der parallele Präfixsummenalgorithmus ist also auch
+streng optimal.
+
 \section{Pointer Jumping}
 
 % TODO: Mehr Text schreiben!
