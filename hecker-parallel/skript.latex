@@ -126,7 +126,10 @@
 \newcommand*{\Space}{SPACE\xspace}
 \newcommand*{\Z}{\mathbb{Z}}
 \newcommand*{\N}{\mathbb{N}}
+\newcommand*{\R}{\mathbb{R}}
 \newcommand*{\NP}{\mathrm{NP}}    % Klasse der nichtpolynomiellen Probleme
+
+\DeclareMathOperator{\card}{card}     % Kardinalität
 
 \makeindex
 
@@ -1147,50 +1150,6 @@ Gewicht~$w_{i}=1$ und für den Wurzelknoten~$r$ das Gewicht~$w_{r}=0$ wählt.
 %Ende Vorlesung vom 19.04.05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Beispiel: Convex Hull genauer Upper convex hull
-% % Grafik: Conv hull
-%
-% Ann.: Brücke kann in $O(\log n)$ \Time seriell bestimmt werden.
-%
-% \subsection{Analyse}
-% \begin{align*}
-%   T(n) &\le T(n/2)+c\,\log n &=O(\log^{2} n)\\
-%   W(n) &\le 2W(n/2)+c\,\log n &=O(n\log n)
-% \end{align*}
-% $\rightarrow$ Algorithmus ist optimal
-%
-% \begin{bemerk}
-%   zu $O(\log n)$ seriell
-% \end{bemerk}
-%
-% \begin{equation*}
-%   \begin{vmatrix}
-%     1 &p_{x} &p_{y}\\
-%     1 &v_{x} &v_{y}\\
-%     1 &v'_{x} &v'_{y}
-%   \end{vmatrix}\leadsto
-%   \begin{cases}
-%     > 0 &\Rightarrow\text{left turn}\\
-%     < 0 &\Rightarrow\text{right turn}
-%   \end{cases}
-% \end{equation*}
-%
-% Vergleich der $y$-Werte gibt die Unterscheidung
-%
-% \begin{defini}
-%   1. Supporting
-%   2. Concave
-%   3. Convex
-% \end{defini}
-%
-% \begin{tabular}{lccc}
-%   konkav& supp& konvex\\
-%   \hline
-%   konkav\\
-%   supp\\
-%   konvex
-% \end{tabular}
-
 \section{Teile und Herrsche}
 
 \todo{Den Abschnitt überarbeiten. Ich habe keine Ahnung, worum sich diese
@@ -1203,18 +1162,36 @@ als das ursprüngliche Problem sind. Diese Probleme werden unabhängig
 voneinander gelöst und aus deren Lösung die Lösung des Gesamtproblems
 konstruiert.
 
-Die Zerlegung und die Zusammenführung sollten dabei einfach sein, die Lösung
-der Teilprobleme kann kompliziert sein. Durch die Teilung in
+Die Zerlegung und die Zusammenführung sollten dabei "`einfach"' sein, die Lösung
+der Teilprobleme kann "`kompliziert"' sein. Durch die Teilung in
 \textit{unabhängige} Teilprobleme bietet sich eine Verteilung auf mehrere
 Prozessoren direkt an.
 
-Erläuterung des Paradigmas anhand des Problems der \highl{konvexen Hülle}
-einer Punktmenge.
+Zur Erläuterung des Paradigmas soll das Problem der Bestimmung der konvexen
+Hülle einer Punktmenge im $\R^{2}$ aus der algorithmischen Geometrie dienen:
+Die \highl{konvexe Hülle} einer Punktmenge~$S\subset\R^{2}$ ist das kleinste
+Polygon, dass alle Punkte der Menge und die Strecke zwischen
+ihnen\footnote{Man nennt eine Menge~$M$ \highl{konvex}, wenn für alle
+Punkte~$x_{1}$ und $x_{2}$ aus $M$ auch die Strecke zwischen $x_{1}$ und
+$x_{2}$ zu $M$ gehört: $\forall x_{1},x_{2}\in M, \forall\lambda\in[0,1]\colon
+(\lambda x_{1}+ (1-\lambda)x_{2})\in M$} umfasst.
 
-Die konvexe Hülle ist das kleinste Polygon das alle Punkte aus $S$.
+Das Problem lässt sich im seriellen in $O(n\log n)$~\Time lösen, wobei
+$\Omega(n\log n)$ die untere Schranke für die Laufzeit ist, da man aus der
+konvexen Hülle, die Sortierung der Punkte herleiten kann und dafür ist
+$\Omega(n\log n)$ bekanntlich die untere Schranke.
+
+O.\,B.\,d.\,A. seien die $x$- und die $y$-Koordinaten der Punkte von $S$
+paarweise verschieden. Die Punktmenge~$S$ sei aufsteigend nach der
+$x$-Koordinate geordnet. Der Punkt mit der kleinsten und der mit der größten
+$x$-Koordinate gehören zu konvexen Hülle und teilen sie in eine obere und eine
+untere konvexe Hülle. Wir betrachten nur die Konstruktion der oberen konvexen
+Hülle~$UCH$ (engl. upper convex hull), die der unteren konvexen Hülle~$LCH$
+verläuft analog.
 
 \begin{algorithm}
   \caption{Bestimmen der oberen konvexen Hülle einer Punktmenge~$S$ -- $UCH(S)$}
+  \label{alg:conv-hull}
   \KwIn{Punktmenge $S\subset \mathbb{R}^2$, nach $x$ sortiert}
   \KwOut{Obere konvexe Hülle von $S$}
 
@@ -1227,58 +1204,80 @@ Die konvexe Hülle ist das kleinste Polygon das alle Punkte aus $S$.
   }
 \end{algorithm}
 
-\subsubsection*{Frage:} Modell, Rechenzeit, \Work ?
-
-%Todo: Bild "ConvexHull3" einfügen
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Ende Vorlesung vom 22.04.05           %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Gesucht ist die Tangente in $O(\log n)$ \Time
-
-\[
-T(n) = T(\frac{n}{2}+\text{ const }\log n=O(\log^2n)
-\]
-\[
-W(n) = 2 W(\frac{n}{2}+\text{ const } n=O(n\log n)
-\]
-
-\subsubsection*{Ziel:} optimaler Algorithmus auf der CREW in $O(\log^2n)$ \Time (nicht streng optimal)
-
+Der Algorithmus (\autoref{alg:conv-hull}) verläuft in zwei Phasen:
 \begin{itemize}
- \item [1. Fall, Tangente:] \todo{Bild einfügen}
-  $(p,v,v'')$ - Linksdrehung \\
-  $(p,v,v')$ - Linksdrehung \\
-  \begin{bemerk}
-    \[
-    \text{Linksdrehung} \Leftrightarrow
-    \begin{vmatrix}
-      1 & p_x & p_y  \\
-      1 & v_x & v_y \\
-      1 & v''_x & v''_y
-    \end{vmatrix}
-    \]
-  \end{bemerk}
- \item[2. Fall Reflex:] \todo{Bild einfügen}
-  \[
-  \neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}=\emptyset
-  \]
- \item[3. Fall Konkav:] \todo{Bild einfügen}
-  \[
-  \neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}\ne\emptyset
-  \]
+ \item in der Top-Down-Phase zerlegt man die Menge~$S$ solange in zwei
+  gleichgroße Teilmengen $S_{1} = \{p_{1}, \dotsc, p_{\frac{n}{2}}\}$ und
+  $S_{2}=\{p_{\frac{n}{2}+1}, p_{n}\}$ bis die Konstruktion der oberen konvexen
+  Hülle trivial ist. Das Bestimmen von $UCH(S_{2})$ wird dabei an einen
+  anderen Prozessor abgegeben.
+
+  \help{Könnte man nicht auch die Menge in $\frac{n}{4}$ Teilmengen zerlegen
+    und davon mit $\frac{n}{4}$ Prozessoren in $O(1)$~\Time und $O(1)$~\Work
+    die konvexen Hüllen bestimmen?}
+
+ \item in der Bottom-Up-Phase wird für je zwei oberen konvexen Hüllen die
+  gemeinsame obere konvexe Hülle bestimmt, indem man die gemeinsame obere
+  Tangente an beide Hüllen findet und sie so verbindet.
+  \todo{Davon ein Bild malen}
 \end{itemize}
 
-\todo{Bild Tabelle Konkav Konvex einfügen }\\
+Der Rekursionsbaum hat also die Tiefe $O(\log n)$. Damit der Algorithmus
+streng optimal ist, d.\,h. $O(\log n)$~\Time und $O(n\log n)$~\Work, darf
+jeder Rekursionsschritt nur $O(1)$~\Time und $O(n)$~\Work benötigen. Die
+Bestimmung der Tangente muss also in $O(1)$~\Time erfolgen.
 
-Einziges Problem ist der Fall konkav-konkav, da bei diesem die zu suchende Fläche nicht kleiner wird.
+% Den folgenden Algorithmus entspricht nicht dem, der in der Vorlesung kam. Den
+% aus der Vorlesung habe ich nicht verstanden und dieser hier ist auch noch
+% schneller. Der in der Vorlesung war in $O((\log n)^{2})$
+% Quelle:
+% http://www.informatixx.de/privat/files/informatik/pdf/Parallele_Algorithmen_Komplett.pdf
 
-\todo{Bild (mit Geraden u,l und Punkt p) einfügen} \\
+Zur Vereinfachung der Schreibung sei $U:=UCH(S_{1})$ und $V:=UCH(S_{2})$. Der
+Punkt~$\tilde{v}_{u}\in V$ sei der Berührungspunkt der Hülle, so dass die
+Gerade durch $u$ und $\tilde{v}_{u}$ eine Tangente an $V$ ist. Alle Punkte von
+$V$ liegen dann unterhalb der Geraden~$\overline{u\tilde{v}_{u}}$.
+\help{Sollte man das noch erklären oder ist das offensichtlich? Wegen der
+  Konvexität der Menge.}
 
-\begin{itemize}
- \item[1. Fall] $p$ liegt rechts von $l$
- \item[2. Fall] $p$ liegt links von $l$
-\end{itemize}
+Um für einen Punkt~$u\in U$ die relative Lage des Punkts~$\tilde{v}_{u}\in V$
+zu $v_{i}\in V$ zu bestimmen, verbindet man die beiden Punkte durch eine
+Gerade~$\overline{uv_{i}}$ und bestimmt, ob der Vorgänger~$v_{i-1}\in V$ und
+der Nachfolger~$v_{i+1}\in V$ von $v$ nicht auf der gleichen Seite der
+Gerade~$\overline{uv_{i}}$ liegen. Ist dies der Fall, so liegt der
+Punkt~$\tilde{v}_{u}$ oberhalb von $v_{l}$. Sind also die Punkte $v_{i-1},
+\help{Ist das offensichtlich oder sollte man das mit der Lage nochmal erklären?}
+v_{i}, v_{i+1}$ mit wachsender $y$-Koordinate, so ist $j>i$ für
+$v_{j}=\tilde{v}_{u}$. Andernfalls ist $j\leq i$ für $v_{j}=\tilde{v}_{u}$.
+Diese Entscheidung lässt sich in $O(1)$~\Time treffen.
+
+Zerlegt man $V$ in $d_{V} = \sqrt{\card V}$~gleichgroße
+Segmente~$V^{1},\dotsc, V^{d_{V}}$, so kann man für den Punkt~$u$ in
+$O(1)$~\Time mit $d_{V}$~Prozessoren ein Segment bestimmen, in dem der
+Punkt~$\tilde{v}_{u}$ liegt. Jeder Prozessor~$P_{k}$ bestimmt für die beiden
+Endpunkte von $V^{k}$, ob $\tilde{v}_{u}$ zwischen ihnen liegt --~also rechts
+vom linken und links vom rechten Punkt aus. Das geht in $O(1)$~\Time. Da das
+Intervall $d_{V}$~Punkte enthält, kann man mit den $d_{V}$~Prozessoren in
+$O(1)$~\Time darin den Punkt~$\tilde{v}_{u}$ finden, für den beide Nachbarn
+unterhalb der Geraden~$\overline{u\tilde{v}_{u}}$ liegen. Aufwand wiederum
+$O(1)$~\Time.
+
+Zerlegt man ebenfalls $U$ in $d_{U}=\sqrt{\card U}$~gleichgroße
+Segmente~$U^{1},\dotsc, U^{d_{U}}$ und führt mit $d_{U}$~Prozessoren die
+Bestimmung der Tangenten von den Endpunkten der $U^{j}$ aus, so bekommt man in
+$O(1)$~\Time über die gleiche Beziehung wie oben für $\tilde{v}_{u}$ ein
+Segment~$\hat{U}$, in dem der Berührungspunkt~$\hat{u}\in U$ der gemeinsamen
+Tangente an $U$ liegt. Dafür werden insgesamt $d_{U}\cdot d_{V} =\sqrt{U}
+\cdot\sqrt{V}\leq\sqrt{\frac{n}{2}}\cdot\sqrt{\frac{n}{2}} =
+O(n)$~Prozessoren eingesetzt.
+
+Da in dem Segment $\hat{U}$, das $\hat{u}$ enthält, $d_{U}$ Punkte liegen, kann
+man mit $d_{V}$~Prozessoren für jeden Punkt~$u_{i}\in U^{k}$ in $O(1)$~\Time
+den Berührungspunkt~$\tilde{v}_{u_{i}}$ an $V$ bestimmen. Die gemeinsame
+Tangente zeichnet sich dadaruch aus, dass die Nachbarpunkte~$u_{i-1}$ und
+$u_{i+1}$ unterhalb der Geraden~$\overline{u_{i}\tilde{v}_{u_{i}}}$ liegen.
+
+\todo{Bild malen, das versteht sonst keiner}
 
 \section{Partitioning (Zerlegunsstrategie)}
 
