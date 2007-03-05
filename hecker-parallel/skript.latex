@@ -29,9 +29,7 @@
                           % soll -- l2tabu-Checker in LaTeX
 \usepackage{ifthen}
 
-% Algorithmen:
-\usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage[algochapter,linesnumbered]{algorithm2e}
 \usepackage[final]{graphicx}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -90,6 +88,7 @@
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\folgerautorefname}{Folgerung}
 \newcommand*{\vereinautorefname}{Vereinbarung}
+\newcommand*{\algocflineautorefname}{Algorithmus}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -104,19 +103,9 @@
 \def\@thmcountersep{/}
 \makeatother
 
-\renewcommand*{\algorithmicrequire}{\textbf{INPUT:}}
-\renewcommand*{\algorithmicensure}{\textbf{OUTPUT:}}
-\renewcommand*{\algorithmiccomment}[1]{\textit{// #1}}
-
-% Das sollte einen Fehler bringen, wenn eine for in einer forpar
-% geschachtelt ist. Die innere for sollte dann auch ein pardo haben
-\newcommand*{\FORPAR}[2][default]%
-           {\begingroup\renewcommand*{\algorithmicdo}{\textbf{pardo}}%
-            \FOR[#1]{#2}}
-\newcommand*{\ENDFORPAR}{\ENDFOR\endgroup}
-
-\floatname{algorithm}{Algorithmus}
-\renewcommand*{\listalgorithmname}{Algorithmenliste}
+\SetKwInOut{Input}{INPUT}
+\SetKwInOut{Output}{OUTPUT}
+\SetKwFor{Forpar}{for}{pardo}{endfor}
 
 \newcommand*{\help}[1]{\textcolor{green}{help: #1}}
 \newcommand*{\todo}[1]{\textcolor{blue}{todo: #1}}
@@ -438,19 +427,16 @@ zulassen:
   Dabei übernimmt jeder Prozessor $P_i$ genau $r$ Zeilen, d.\,h. $P_1$ rechnet mit
   den Zeilen $1$ bis $r$, $P_2$ mit den Zeilen $r+1$ bis $2r$ usw.
 
-  \begin{algorithm}[htb]
+  \begin{algorithm}
     \caption{\todo{hier muss nen Name hin}}
-    \begin{algorithmic}
-      \REQUIRE $A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
-      Prozessoren ($r:=\frac{n}{p}\in\Z$)\\
+    \Input{$A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
+      Prozessoren ($r:=\frac{n}{p}\in\Z$)}
+    \Output{\todo{Was ist die Ausgabe?}}
 
-      %\BEGIN
-      \STATE globalread( $x , z$ ) \COMMENT{Alle Prozessoren lesen diesen Vektor}\\
-      \STATE globalread( $A((i-1) r + 1 : ir , 1:n ), B$)\\
-      \STATE Berechne $w = B z$\\
-      \STATE globalwrite( $w , y((i-1)r+1:ir)$)\\
-      %\END
-    \end{algorithmic}
+    globalread( $x , z$ )\; \tcc*{Alle Prozessoren lesen diesen Vektor}
+    globalread( $A((i-1) r + 1 : ir , 1:n ), B$)\;
+    Berechne $w = B z$\;
+    globalwrite( $w , y((i-1)r+1:ir)$)\;
   \end{algorithm}
 
   \begin{bemerk}
@@ -468,61 +454,61 @@ zulassen:
   Zur Vereinfachung werden wir folgende Kurzschreibweise verwenden. Dies ist sinnvoll,
   da die Ein- und Ausgabe nur jeweils $O(1)$ Schritte dauert, und deshalb ignoriert
   werden kann.
-  \begin{algorithm}[htb]
+  \begin{algorithm}
     \caption{Vereinfachung}
-    \begin{algorithmic}
-      \STATE globalRead($B,x$)
-      \STATE globalRead($C,y$)
-      \STATE $z := x + y$
-      \STATE globalWrite($z,A$) \\
-      \COMMENT{wird ersetzt durch:}
-      \STATE $A := B + C$
-    \end{algorithmic}
+    globalRead($B,x$)\;
+    globalRead($C,y$)\;
+    $z := x + y$\;
+    globalWrite($z,A$)\;
+    \tcc{wird ersetzt durch:}\;
+    $A := B + C$\;
   \end{algorithm}
 \end{bsp}
 
 \begin{bsp}[Summenbeispiel]
-  \begin{algorithm}[htb]
-    \caption{Programm für Prozessor $i$}
-    \begin{algorithmic}[1]
-      \STATE $B(i) := A(i)$
-      \FOR{$h := 1$ to $\log n$}
-      \IF{$i < \frac{n}{2^h}$}
-      \STATE $B(i) := B(2i-1) + B(2i)$
-      \ENDIF
-      \IF{$i = 1$}
-      \STATE $S := B(1)$
-      \ENDIF
-      \ENDFOR
-    \end{algorithmic}
-  \end{algorithm}
+  \todo{Algorithmus umstellen}
+  % \begin{algorithm}[htb]
+  %   \caption{Programm für Prozessor $i$}
+  %   \begin{algorithmic}[1]
+  %     \STATE $B(i) := A(i)$
+  %     \FOR{$h := 1$ to $\log n$}
+  %     \IF{$i < \frac{n}{2^h}$}
+  %     \STATE $B(i) := B(2i-1) + B(2i)$
+  %     \ENDIF
+  %     \IF{$i = 1$}
+  %     \STATE $S := B(1)$
+  %     \ENDIF
+  %     \ENDFOR
+  %   \end{algorithmic}
+  % \end{algorithm}
   \input{figures/add_tree.pdf_t}
   Ein Problem tritt auf, bei einer geringen Anzahl Prozessoren (im Verhältnis zur Anzahl der Eingabedaten). D.h. man benötigt eine sinnvolle Allokation der Prozessoren.
 
-  \begin{algorithm}[htb]
-    \caption{Allokation}
-    \begin{algorithmic}[1]
-      %Ein Rechner habe $p=2^q \leq n = 2^k$ Prozessoren.
-      \REQUIRE Sei $l := \frac{n}{p} = 2^{k-q}$ und $A$ das Inputarray, dann wäre ein Programm für Prozessor s:
-      \FOR{$j := 1$ to $l$}
-      \STATE $B(l*(s-1)+j) := A(l(s-1)+j)$
-      \ENDFOR
-      \FOR{$h := 1$ to $\log n$}
-      \IF{$(k-h-q) \geq 0$}
-      \FOR{$j := 2^{k-h-q} * (s-1)+1$ to $2^{k-h-q} *s$}
-      \STATE $B(j) := B(2j-1) + B(2j)$
-      \ENDFOR
-      \ELSE
-      \IF{$s \leq 2^{k-h}$}
-      \STATE $B(s) := B(2s - 1) + B(2s)$
-      \ENDIF
-      \ENDIF
-      \ENDFOR
-      \IF{$s=1$}
-      \STATE $S := B(1)$
-      \ENDIF
-    \end{algorithmic}
-  \end{algorithm}
+  \todo{Algorithmus umstellen}
+  % \begin{algorithm}[htb]
+  %   \caption{Allokation}
+  %   \begin{algorithmic}[1]
+  %     %Ein Rechner habe $p=2^q \leq n = 2^k$ Prozessoren.
+  %     \REQUIRE Sei $l := \frac{n}{p} = 2^{k-q}$ und $A$ das Inputarray, dann wäre ein Programm für Prozessor s:
+  %     \FOR{$j := 1$ to $l$}
+  %     \STATE $B(l*(s-1)+j) := A(l(s-1)+j)$
+  %     \ENDFOR
+  %     \FOR{$h := 1$ to $\log n$}
+  %     \IF{$(k-h-q) \geq 0$}
+  %     \FOR{$j := 2^{k-h-q} * (s-1)+1$ to $2^{k-h-q} *s$}
+  %     \STATE $B(j) := B(2j-1) + B(2j)$
+  %     \ENDFOR
+  %     \ELSE
+  %     \IF{$s \leq 2^{k-h}$}
+  %     \STATE $B(s) := B(2s - 1) + B(2s)$
+  %     \ENDIF
+  %     \ENDIF
+  %     \ENDFOR
+  %     \IF{$s=1$}
+  %     \STATE $S := B(1)$
+  %     \ENDIF
+  %   \end{algorithmic}
+  % \end{algorithm}
 
   Für $n=8$ und $p=4$ würde das folgendermaßen aussehen:\\
   \input{figures/sum_bsp.pdf_t}
@@ -817,23 +803,23 @@ zusammengefasst werden, die gleichzeitig augeführbar sind. \\
 \underline{WT-Darstellung:} Algorithmus ist Folge solcher TimeUnits
 
 \begin{bsp}
-
-  \begin{algorithm}[htb]
-    \caption{Summenalgorithmus}
-    \begin{algorithmic}[1]
-      \REQUIRE $n=2^{k}$-Zahlen in Array $A$
-      \ENSURE Summe $S$
-      \FORPAR{$i \le i \le n$}
-      \STATE $B(i) := A(i)$
-      \ENDFORPAR
-      \FOR{$h=1$ to $\log n$}
-      \FORPAR{$1 \le i \le \frac{n}{2^h}$}
-      \STATE $B(i) := B(2\,i-1)+B(2\,i)$
-      \ENDFORPAR
-      \ENDFOR
-      \STATE $S := B(1)$
-    \end{algorithmic}
-  \end{algorithm}
+  \todo{Algorithmus umstellen}
+  % \begin{algorithm}[htb]
+  %   \caption{Summenalgorithmus}
+  %   \begin{algorithmic}[1]
+  %     \REQUIRE $n=2^{k}$-Zahlen in Array $A$
+  %     \ENSURE Summe $S$
+  %     \FORPAR{$i \le i \le n$}
+  %     \STATE $B(i) := A(i)$
+  %     \ENDFORPAR
+  %     \FOR{$h=1$ to $\log n$}
+  %     \FORPAR{$1 \le i \le \frac{n}{2^h}$}
+  %     \STATE $B(i) := B(2\,i-1)+B(2\,i)$
+  %     \ENDFORPAR
+  %     \ENDFOR
+  %     \STATE $S := B(1)$
+  %   \end{algorithmic}
+  % \end{algorithm}
   $\to$ WT = $O(\log n)$
 \end{bsp}
 
@@ -949,31 +935,28 @@ zusammengefasst werden, die gleichzeitig augeführbar sind. \\
 
 \section{Präfixsummen}
 
-\begin{algorithm}[htb]
-  \caption{Päfixsummen}
-  \begin{algorithmic}[1]
-    \REQUIRE Array $A, n=2^k$
-    \ENSURE Array $C(0,j), 1\leq j \leq n$ - Präfixsummen
-    \FOR{$1 <= j <= n$ \textbf{par}}
-    \STATE $B(0,j) := A(j)$
-    \ENDFOR
-    \FOR{$h := 1$ to $\log n$}
-    \FOR{$1 <= j <= \frac{n}{2^h}$ \textbf{par}}
-    \STATE $B(h,j) := B(h-1, 2j-1) + B(h-q, 2j)$
-    \ENDFOR
-    \ENDFOR
-    \FOR{$h := \log n$ to $0$}
-    \FOR{$1 <= j <= \frac{n}{2^h}$ \textbf{par}}
-    \IF{j gerade}
-    \STATE $C(h,j) := C(h+1, \frac{j}{2})$
-    \ELSIF{$j=1$}
-    \STATE $C(h,1) := B(h,1)$
-    \ELSE
-    \STATE $C(h,j) := C(h+1, \frac{j-1}{2} + B(h,j)$
-    \ENDIF
-    \ENDFOR
-    \ENDFOR
-  \end{algorithmic}
+\begin{algorithm}
+  \caption{Präfixsumme}
+  \Input{Feld $A$ der Länge $n=2^r$}
+  \Output{Feld $S$ der Länge $n$ mit $S[k]=\sum_{j=1}^{k} A[j]$ - Präfixsummen}
+
+  \Forpar{j := 1 \KwTo  n}{B[0, j] := A[j]}
+  \For{h := 1 \KwTo log(n)}{
+    \Forpar{j := 1 \KwTo n / 2**h}%
+           {B[h, j] := B[h-1, 2*j-1]+B[h-q, 2*j]}
+  }
+  \For{h := log(n) \KwTo 1}{
+    \Forpar{j := 1 \KwTo n / 2**h}{
+      \uIf{j gerade}{C[h,j] := C[h+1, j/2]}
+      \uElseIf{j=1}{C[h,1] := B[h,1]}
+      \Else{C[h,j] := C[h+1, (j-1)/2] + B[h,j]}
+    }
+  }
+  \Forpar{j := 1 \KwTo n}{
+    \uIf{j gerade}{S[j] := C[1, j/2]}
+    \uElseIf{j=1}{S[1] := B[0,1]}
+    \Else{S[j] := C[1, (j-1)/2] + B[0,j]}
+  }
 \end{algorithm}
 
 \begin{bsp}[n=8]
@@ -998,19 +981,20 @@ eines Disjoint Set Forests.
   \input{figures/ptr_jumping.pdf_t}
 \end{center}
 
-\begin{algorithm}[htb]
-  \caption{Pointerjumping}
-  \begin{algorithmic}[1]
-    \REQUIRE Forrest $(i, p(i)) : 1 \leq i \leq n$
-    \ENSURE $\forall$ Knoten $i$ : ROOT $(S(i)$
-    \FOR{$1 \le i \le n$ \textbf{par}}
-    \STATE $S(i) := p(i)$
-    \WHILE{$S(i) \ne S(S(i))$}
-    \STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
-    \ENDWHILE
-    \ENDFOR
-  \end{algorithmic}
-\end{algorithm}
+\todo{Algorithmus umstellen}
+% \begin{algorithm}[htb]
+%   \caption{Pointerjumping}
+%   \begin{algorithmic}[1]
+%     \REQUIRE Forrest $(i, p(i)) : 1 \leq i \leq n$
+%     \ENSURE $\forall$ Knoten $i$ : ROOT $(S(i)$
+%     \FOR{$1 \le i \le n$ \textbf{par}}
+%     \STATE $S(i) := p(i)$
+%     \WHILE{$S(i) \ne S(S(i))$}
+%     \STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
+%     \ENDWHILE
+%     \ENDFOR
+%   \end{algorithmic}
+% \end{algorithm}
 
 \begin{bemerk}
   Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Operationen.
@@ -1022,21 +1006,22 @@ eines Disjoint Set Forests.
   \input{figures/ptr_jumping_weight.pdf_t}
 \end{center}
 
-\begin{algorithm}[htb]
-  \caption{Pointer Jumping mit Knotengewichten}
-  \begin{algorithmic}[1]
-    \REQUIRE Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$
-    \ENSURE $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel\\
-    (Seriell in $O(n)$ \Time)\\
-    \FORPAR{$1 \le i \le n$}
-    \STATE $S(i) := p(i)$
-    \WHILE{$S(i) \ne S(S(i))$}
-    \STATE $W(i) := W(i) + W(S(i))$
-    \STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
-    \ENDWHILE
-    \ENDFORPAR
-  \end{algorithmic}
-\end{algorithm}
+\todo{Algorithmus umstellen}
+% \begin{algorithm}[htb]
+%   \caption{Pointer Jumping mit Knotengewichten}
+%   \begin{algorithmic}[1]
+%     \REQUIRE Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$
+%     \ENSURE $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel\\
+%     (Seriell in $O(n)$ \Time)\\
+%     \FORPAR{$1 \le i \le n$}
+%     \STATE $S(i) := p(i)$
+%     \WHILE{$S(i) \ne S(S(i))$}
+%     \STATE $W(i) := W(i) + W(S(i))$
+%     \STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
+%     \ENDWHILE
+%     \ENDFORPAR
+%   \end{algorithmic}
+% \end{algorithm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Ende Vorlesung vom 19.04.05
@@ -1227,26 +1212,27 @@ Dabei müssen die Teilergebnisse zu einer Gesamtlösung zusammengefügt werden.
   %  \item[Strategie:] Partitioning
   % \end{description}
 
-  \begin{algorithm}[htb]
-    \caption{Mischen}
-    \begin{algorithmic}[1]
-      \REQUIRE $A^{n}, B^{m}$ sortiert
-      \ENSURE Zerlegung: $k(m) (= \frac{m}{\log m})$ Paare $(A_i,B_i):\quad
-      |B_i| = \log m, \sum |A_i| = n$\\
-      Alle Elemente $A_i$ bzw. $B_i$ sind größer oder gleich aller Elemente von $A_{i-1}$ bzw.
-      $B_{i-1}\quad (1\leq i \leq k-1)$
+  \todo{Algorithmus umstellen}
+  % \begin{algorithm}[htb]
+  %   \caption{Mischen}
+  %   \begin{algorithmic}[1]
+  %     \REQUIRE $A^{n}, B^{m}$ sortiert
+  %     \ENSURE Zerlegung: $k(m) (= \frac{m}{\log m})$ Paare $(A_i,B_i):\quad
+  %     |B_i| = \log m, \sum |A_i| = n$\\
+  %     Alle Elemente $A_i$ bzw. $B_i$ sind größer oder gleich aller Elemente von $A_{i-1}$ bzw.
+  %     $B_{i-1}\quad (1\leq i \leq k-1)$
 
-      \STATE $j(0) := 0$
-      \STATE $j(k(m)) := j(\frac{m}{\log n}) := n$
-      \FOR{$1 \le i \le k(m)-1$ \textbf{par}}
-      \STATE $j(i) :=$ Rang$(b_{i \log m} : A)$
-      \ENDFOR
-      \FOR{$0 \le i \le k(m)-1$ \textbf{par}}
-      \STATE $B_i := (b_{i \log (m+1)},\ldots,b_{(i+1) \log m)}$
-      \STATE $A_i := (a_{j(i)+1},\ldots,a_{j(i+1)})$
-      \ENDFOR
-    \end{algorithmic}
-  \end{algorithm}
+  %     \STATE $j(0) := 0$
+  %     \STATE $j(k(m)) := j(\frac{m}{\log n}) := n$
+  %     \FOR{$1 \le i \le k(m)-1$ \textbf{par}}
+  %     \STATE $j(i) :=$ Rang$(b_{i \log m} : A)$
+  %     \ENDFOR
+  %     \FOR{$0 \le i \le k(m)-1$ \textbf{par}}
+  %     \STATE $B_i := (b_{i \log (m+1)},\ldots,b_{(i+1) \log m)}$
+  %     \STATE $A_i := (a_{j(i)+1},\ldots,a_{j(i+1)})$
+  %     \ENDFOR
+  %   \end{algorithmic}
+  % \end{algorithm}
 
   \begin{satz}
     Der Algo. benötigt $O(\log n)$ \Time und $O(n+m)$ \Work
@@ -1337,19 +1323,20 @@ Andere Möglichkeit:
 
 \todo{Bild ConvexHull2 einfügen}
 
-\begin{algorithm}[htb]
-  \caption{UCH(S)}
-  \begin{algorithmic}[1]
-    \REQUIRE $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage
-    \ENSURE UCH
-    \IF{$n \le 4$}
-    \STATE Bestimme UCH
-    \STATE exit()
-    \ENDIF
-    \STATE sei $S_1 = (p_1, \ldots , p_{\frac{n}{2}}), S_2 = (p_{\frac{n}{2} + 1}, \ldots , p_n)$
-    \STATE berechne die gemeinsame obere Tangente und bilde die konvexe Hülle
-  \end{algorithmic}
-\end{algorithm}
+\todo{Algorithmus umstellen}
+% \begin{algorithm}[htb]
+%   \caption{UCH(S)}
+%   \begin{algorithmic}[1]
+%     \REQUIRE $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage
+%     \ENSURE UCH
+%     \IF{$n \le 4$}
+%     \STATE Bestimme UCH
+%     \STATE exit()
+%     \ENDIF
+%     \STATE sei $S_1 = (p_1, \ldots , p_{\frac{n}{2}}), S_2 = (p_{\frac{n}{2} + 1}, \ldots , p_n)$
+%     \STATE berechne die gemeinsame obere Tangente und bilde die konvexe Hülle
+%   \end{algorithmic}
+% \end{algorithm}
 
 \subsubsection*{Frage:} Modell, Rechenzeit, \Work ?
 
