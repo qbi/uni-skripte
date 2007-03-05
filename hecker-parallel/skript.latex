@@ -924,7 +924,9 @@ zusammengefasst werden, die gleichzeitig augeführbar sind. \\
 
 \chapter{Die sieben Paradigmen beim Entwurf paralleler Algorithmen}
 
-\section{Präfixsummen}
+\section{Binärbaumparadigma}
+
+\todo{Allgemeine Idee des Binärbaumparadigmas beschreiben}
 
 Gegeben sei eine Folge~$(x_{i})_{i\in\N}$ von $n$~Zahlen. Als
 \highl{Präfixsumme}~$S$ des $k$.\,Gliedes bezeichnet man die Summe aller
@@ -937,7 +939,7 @@ aller Folgenglieder.
 
 \begin{algorithm}
   \Input{Feld $A$ der Länge $n=2^r$}
-  \Output{Feld $S$ der Länge $n$ mit $s_{k}=\sum_{j=1}^{k} a_{j}$ - Präfixsummen}
+  \Output{Feld $S$ der Länge $n$ mit $s_{k}=\sum_{j=1}^{k} a_{j}$ -- Präfixsummen}
 
   \Forpar{j := 1 \KwTo  n}{$b_{0,j} := a_{j}$}
   \For{h := 1 \KwTo log(n)}{
@@ -1026,87 +1028,127 @@ $n$.\,Präfixsumme mindestens einmal alle Folgenglieder betrachten muss,
 benötigt er $O(n)$~\Time. Der parallele Präfixsummenalgorithmus ist also auch
 streng optimal.
 
+Wenn die Zahlen in Form einer verketteten Liste gegeben sind, kann dieser
+Algorithmus nicht verwendet werden, da die Zuordnung von $n$.\,Element auf
+$n$.\,Prozessor, wie sie für den Aufbau des Baums notwendig ist, nicht in
+$O(1)$ durchgeführt werden kann. Dazu später mehr unter dem Thema
+Parallel Prefix im \autoref{sec:par-pref}.
+
 \section{Pointer Jumping}
 
-% TODO: Mehr Text schreiben!
+Um die Idee des \highl[Pointer jumping]{Pointer jumpings} (oder \highl{path
+doubling}) zu verdeutlichen, soll in einem Wald (Disjoint Set Forest) zu jedem
+Knoten der Wurzelknoten des Baums, in dem der Knoten hängt, bestimmt werden.
 
-Für das Pointer Jumping Paradigma (Pfadverdopplung) betrachten wir einen Teil
-eines Disjoint Set Forests.
-\begin{center}
+\begin{figure}
+  \centering
+  \todo{Bild aus Beispiel 2.9 übernehmen}
+  % \input{figures/wald.pdf_t}
+  \caption{Ein Wald mit drei wurzelgerichteten Bäumen}
+  \label{fig:wald}
+\end{figure}
+
+Ein \highl{Wald} ist eine Menge von paarweise disjunkten Bäumen, die durch
+ihre Wurzel gekennzeichnet sind. Im Speziellen geht es um wurzelgerichtete
+Bäume, d.\,h. jeder Knoten des Baums, außer der Wurzel~$r$, hat genau einen
+Vorgängerknoten und der Baum ist in der Form gegeben, dass jeder Knoten auf
+seien Vorgängerknoten verweist. Der Vorgängerknoten des Wurzelknoten ist er
+selbst. \autoref{fig:wald}
+
+\begin{algorithm}
+  \caption{Pointer jumping}
+  \label{alg:ptr-jmp}
+  \dontprintsemicolon
+  \Input{$n$-dimensionales Feld~$F$, wobei $f_{i}=j$, wenn $j$ der Vater
+    von $i$ ist}
+  \Output{$n$-dim.\,Feld~$S$, wobei $s_{i}=j$, wenn $j$ die Wurzel des
+    Baums ist, in dem $i$ steht}
+
+  \Forpar{i := 1 \KwTo n}%
+         {$s_{i} := f_{i}$\;
+          \While{$s_{i}\ne s_{s_{i}}$}%
+                {$s_{i} := s_{s_{i}}$}
+         }
+\end{algorithm}
+
+Der Wald ist als ein $n$-dimensionales Feld~$F$ gegeben, in dem der
+$i$.\,Eintrag~$f_{i}$ den Vorgängerknoten des $i$.\,Knotens beinhaltet. Jedem
+Knoten wird ein Prozessor zugewiesen, der den Wurzelknoten dadurch findet,
+dass er in jedem Schritt den Vorgängerknoten seines Vorgängerknotens
+ermittelt. \autoref{alg:ptr-jmp}
+
+\begin{figure}
+  \centering
   \input{figures/ptr_jumping.pdf_t}
-\end{center}
+  \caption{Veranschaulichung des Pointer jumpings}
+  \label{fig:ptr-jump}
+\end{figure}
 
-\todo{Algorithmus umstellen}
-% \begin{algorithm}[htb]
-%   \caption{Pointerjumping}
-%   \begin{algorithmic}[1]
-%     \REQUIRE Forrest $(i, p(i)) : 1 \leq i \leq n$
-%     \ENSURE $\forall$ Knoten $i$ : ROOT $(S(i)$
-%     \FOR{$1 \le i \le n$ \textbf{par}}
-%     \STATE $S(i) := p(i)$
-%     \WHILE{$S(i) \ne S(S(i))$}
-%     \STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
-%     \ENDWHILE
-%     \ENDFOR
-%   \end{algorithmic}
-% \end{algorithm}
+Nach dem \textit{ersten} Schritt zeigen alle Knoten auf den Vorgänger
+(2.\,Generation) ihres direkten Vorgängers. Im zweiten Schritt greifen die
+Prozessoren auf diese Ergebnisse zu, so dass sie nicht den Vorgänger der
+3.\,Generation bestimmen, wenn sie den Vorgänger des Vorgängers der
+2.\,Generation bestimmen, sondern den der 4.\,Generation. Nach dem
+\textit{zweiten} Schritt verweisen also alle Knoten auf den Vorgänger der
+4.\,Generation. \autoref{fig:ptr-jump} Im \textit{dritten} Schritt ist dann
+der Vorgänger des Vorgängers (der 4.\,Generation) der Vorgänger der
+8.\,Generation. So springt der Zeiger durch den Baum und bewegt sich nicht von
+Knoten zu Knoten.
 
-\begin{bemerk}
-  Algorithmus liefert in $O(\log n)$-TIME $\forall i$ die Wurzel in $O(h*n)$ Operationen.
-\end{bemerk}
+$h$ sei die maximale Höhe eines Baums im Wald. Auf einer CREW-PRAM liefert der
+Algorithmus in $O(\log h)$~\Time und $O(n\cdot\log h)$~\Work die Wurzel zu
+jeden Knoten. Da sich das Problem im Seriellen in $\theta(n)$ lösen lässt, ist
+der Algorithmus ist nicht optimal.
 
-\subsection{Parallel-Präfix}
+\subsection{Parallel Prefix}
+\label{sec:par-pref}
 
-\begin{center}
-  \input{figures/ptr_jumping_weight.pdf_t}
-\end{center}
+Entartet man den Wald zu einem Baum, der auch keine Verzweigungen hat, kann
+man damit die \highl[Präfixsumme]{Präfixsummen} für Zahlen, die in einer
+verketteten Liste gegeben sind, berechnen. Dieses Problem bezeichnet man als
+\highl{Parallel Prefix}. Die Zahlen sind in einer weiteren Liste~$W$ gegeben,
+die allen Knoten im Wald~$F$ ein Gewicht zuordnet: $w_{i}$ ist das Gewicht am
+Knoten~$i$. Der Wald selbst beschreibt die Ordnung der Zahlen, wobei der
+Wurzelknoten die erste Zahl und der Blattknoten die letzte Zahl ist.
 
-\todo{Algorithmus umstellen}
-% \begin{algorithm}[htb]
-%   \caption{Pointer Jumping mit Knotengewichten}
-%   \begin{algorithmic}[1]
-%     \REQUIRE Forest $(i, p(i)), \forall i : W(i) =$ Gewicht, für $r$ = ROOT: $W(r)=0$
-%     \ENSURE $\forall i:$ Summe der Gewichte auf dem Weg von $i$ zur Wurzel\\
-%     (Seriell in $O(n)$ \Time)\\
-%     \FORPAR{$1 \le i \le n$}
-%     \STATE $S(i) := p(i)$
-%     \WHILE{$S(i) \ne S(S(i))$}
-%     \STATE $W(i) := W(i) + W(S(i))$
-%     \STATE $S(i) := S(S(i))$ \COMMENT{Pointer Jumping}
-%     \ENDWHILE
-%     \ENDFORPAR
-%   \end{algorithmic}
-% \end{algorithm}
+\begin{algorithm}
+  \caption{Pointer Jumping mit Knotengewichten}
+  \label{alg:par-pref}
+  \dontprintsemicolon
+  \Input{zwei $n$-dim.\,Felder~$F,W$, wobei $w_i$ das Gewicht am Knoten~$i$
+    ist und $f_{i}=j$, wenn $j$ der Vater von $i$ ist}
+  \Output{$n$-dim.\,Feld~$P$, wobei $p_{i}$ die Summe der Gewichte auf dem
+    Pfad von Knoten~$i$ zur Wurzel ist}
+
+  \Forpar{i := 1 \KwTo n}%
+         {$s_{i} := f_{i}$ \tcc*{$S$ ist die Liste der Vorgängerknoten}
+          $p_{i} := w_{i}$\;
+          \While{$s_{i}\ne s_{s_{i}}$}%
+                {$p_{i} := p_{i} + p_{s_{i}}$\;
+                  $s_{i} := s_{s_{i}}$}
+         }
+\end{algorithm}
+
+Jeder Prozessor übernimmt wieder einen Knoten und springt auf die oben
+beschriebene Weise durch den Baum (die Liste). Dabei berechnet er jeweils die
+Summe der Gewichte von ihm bis zu seinem Vorgängerknoten, auf den er gerade
+springt/verweist.
+
+Mit Parallel Prefix kann man also in $O(\log n)$~\Time und $O(n\log n)$~\Work
+sie Präfixsummen einer verketteten Liste berechnen.
+
+In einem nicht entarteten Wald kann mit diesem Algorithmus für jeden Knoten
+die Entfernung zu seinem Wurzelknoten bestimmen, wenn man für die Knoten das
+Gewicht~$w_{i}=1$ und für den Wurzelknoten~$r$ das Gewicht~$w_{r}=0$ wählt.
+
+% \begin{center}
+%   \input{figures/ptr_jumping_weight.pdf_t}
+% \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Ende Vorlesung vom 19.04.05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Beispiel: Liste: $v\in V$ (Knotenmenge), $I\subseteq V$
-% % Knotenliste
-%
-% Beispiel:
-% % Baum
-%
-% Anfang: W(8)=W(13)=0, W(rest)=1
-% 1. It.: W(1,2,3,4,5,9,10,11)=2 W(6,7,12)=1, W(8,13)=0
-% 2. It.: W(1)=W(1)+W(6)=3, W(9)=4, W(2,10)=3, W(6,7,12)=1, W(3,4,5,11)=2
-%
-% Modell? CREW; Analyse: h-max. Höhe im Forest, \Time $O(\log h)$ \Work
-% $O(n\log h)$ $\rightarrow$ Algorithmus ist nicht optimal
-%
-% \begin{defini}
-%   Die Aufgabe \emph{Parallel Prefix} :$\Leftrightarrow$ Spezialfall der
-%   lin. Liste
-% \end{defini}
-%
-% \begin{satz}
-%   Parallel Prefix funktioniert in $O(\log n)$ \Time mit $O(n\log n)$ \Work
-%
-%   Spezialfall: $W(root)=0, \forall i\ne root: W(i)=1$ liefert der Algorithmus für jeden
-%   Knoten den Abstand zum Ende der Liste.
-% \end{satz}
-%
 % \section{Teile und Herrsche/Divide and Conquer}
 %
 % Teile -- trivial, Herrsche -- schwer
@@ -1671,7 +1713,7 @@ Alternativ:
 
 Zusammenwirken von Acc. casc. und sequential subset
 
-\subsection{Aufbrechen von Symmetrien}
+\section{Aufbrechen von Symmetrien}
 
 % Bild: greichteter Kreis
 
