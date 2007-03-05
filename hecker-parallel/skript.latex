@@ -1149,25 +1149,10 @@ Gewicht~$w_{i}=1$ und für den Wurzelknoten~$r$ das Gewicht~$w_{r}=0$ wählt.
 %Ende Vorlesung vom 19.04.05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section{Teile und Herrsche/Divide and Conquer}
-%
-% Teile -- trivial, Herrsche -- schwer
-%
 % Beispiel: Convex Hull genauer Upper convex hull
 % % Grafik: Conv hull
 %
 % Ann.: Brücke kann in $O(\log n)$ \Time seriell bestimmt werden.
-% Algo:
-% begin
-% \begin{Verbatim}
-% if |S|\le 4 then OUTPUT von UCH (Brute force)
-% S$_{1}$ = \{$p_{1}, \ldots, p_{\frac{n}{2}}\}$
-% S$_{2}$ = \{$p_{n/2+1},\ldots,p_{n}\}$
-% Berechne UCH($S_{1}$), UCH($S_{2}$) parallel
-% Bestimme die Brücke, bearbeite zum OUTPUT (verbinde die beiden höchsten
-% Punkte von $UCH(S_{1})$ und $UCH(S_{2})$)
-% \end{Verbatim}
-% end.
 %
 % \subsection{Analyse}
 % \begin{align*}
@@ -1207,6 +1192,95 @@ Gewicht~$w_{i}=1$ und für den Wurzelknoten~$r$ das Gewicht~$w_{r}=0$ wählt.
 %   supp\\
 %   konvex
 % \end{tabular}
+
+\section{Teile und Herrsche}
+
+\todo{Den Abschnitt überarbeiten. Ich habe keine Ahnung, worum sich diese
+  ganze Sache mit den Punkten dreht.}
+
+Die Strategie \highl{Teile und Herrsche} (engl. \highl{Divide and Conquer})
+ist bereits von den seriellen Algorithmen bekannt. Ein Problem wird in
+Teilprobleme zerlegt, die untereinander möglichst gleich groß, aber kleiner
+als das ursprüngliche Problem sind. Diese Probleme werden unabhängig
+voneinander gelöst und aus deren Lösung die Lösung des Gesamtproblems
+konstruiert.
+
+Die Zerlegung und die Zusammenführung sollten dabei einfach sein, die Lösung
+der Teilprobleme kann kompliziert sein. Durch die Teilung in
+\textit{unabhängige} Teilprobleme bietet sich eine Verteilung auf mehrere
+Prozessoren direkt an.
+
+Erläuterung des Paradigmas anhand des Problems der \highl{konvexen Hülle}
+einer Punktmenge.
+
+Die konvexe Hülle ist das kleinste Polygon das alle Punkte aus $S$.
+
+\begin{algorithm}
+  \caption{Bestimmen der oberen konvexen Hülle einer Punktmenge~$S$ -- $UCH(S)$}
+  \Input{Punktmenge $S\subset \mathbb{R}^2$, nach $x$ sortiert}
+  \Output{Obere konvexe Hülle von $S$}
+
+  \uIf{$n \leq 4$}{bestimme $UCH(S)$ durch einfaches Durchsuchen aller Tupel}
+  \Else{teile $S$ in $S_1 = \{p_1, \ldots , p_{\frac{n}{2}}\}$ und
+    $S_2 = \{p_{\frac{n}{2} + 1}, \ldots , p_n\}$\;
+    bestimme $UCH(S_{1})$ und $UCH(S_{2})$ rekursiv und parallel\;
+    bestimme die obere Tangente von $UCH(S_{1})$ und $UCH(S_{2})$ und
+      konstruiere $UCH(S)$ durch Verbinden der beiden höchsten Punkte
+  }
+\end{algorithm}
+
+\subsubsection*{Frage:} Modell, Rechenzeit, \Work ?
+
+%Todo: Bild "ConvexHull3" einfügen
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ende Vorlesung vom 22.04.05           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Gesucht ist die Tangente in $O(\log n)$ \Time
+
+\[
+T(n) = T(\frac{n}{2}+\text{ const }\log n=O(\log^2n)
+\]
+\[
+W(n) = 2 W(\frac{n}{2}+\text{ const } n=O(n\log n)
+\]
+
+\subsubsection*{Ziel:} optimaler Algorithmus auf der CREW in $O(\log^2n)$ \Time (nicht streng optimal)
+
+\begin{itemize}
+ \item [1. Fall, Tangente:] \todo{Bild einfügen}
+  $(p,v,v'')$ - Linksdrehung \\
+  $(p,v,v')$ - Linksdrehung \\
+  \begin{bemerk}
+    \[
+    \text{Linksdrehung} \Leftrightarrow
+    \begin{vmatrix}
+      1 & p_x & p_y  \\
+      1 & v_x & v_y \\
+      1 & v''_x & v''_y
+    \end{vmatrix}
+    \]
+  \end{bemerk}
+ \item[2. Fall Reflex:] \todo{Bild einfügen}
+  \[
+  \neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}=\emptyset
+  \]
+ \item[3. Fall Konkav:] \todo{Bild einfügen}
+  \[
+  \neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}\ne\emptyset
+  \]
+\end{itemize}
+
+\todo{Bild Tabelle Konkav Konvex einfügen }\\
+
+Einziges Problem ist der Fall konkav-konkav, da bei diesem die zu suchende Fläche nicht kleiner wird.
+
+\todo{Bild (mit Geraden u,l und Punkt p) einfügen} \\
+
+\begin{itemize}
+ \item[1. Fall] $p$ liegt rechts von $l$
+ \item[2. Fall] $p$ liegt links von $l$
+\end{itemize}
 
 \section{Partitioning (Zerlegunsstrategie)}
 
@@ -1411,84 +1485,6 @@ Dabei müssen die Teilergebnisse zu einer Gesamtlösung zusammengefügt werden.
 
 \end{bsp}
 
-\section{Teile und Herrsche (Divide and Conquer)}
-Convex Hull:
-\todo{Bild ConvexHull1 einfügen}
-
-Komplexe Datenstrukturen für "`merge"' (Diss. Goodrich)\\
-Andere Möglichkeit:
-
-\todo{Bild ConvexHull2 einfügen}
-
-\todo{Algorithmus umstellen}
-% \begin{algorithm}[htb]
-%   \caption{UCH(S)}
-%   \begin{algorithmic}[1]
-%     \REQUIRE $S \leq \mathbb{R}^2$, nach $x$ sortiert, allgemeine Lage
-%     \ENSURE UCH
-%     \IF{$n \le 4$}
-%     \STATE Bestimme UCH
-%     \STATE exit()
-%     \ENDIF
-%     \STATE sei $S_1 = (p_1, \ldots , p_{\frac{n}{2}}), S_2 = (p_{\frac{n}{2} + 1}, \ldots , p_n)$
-%     \STATE berechne die gemeinsame obere Tangente und bilde die konvexe Hülle
-%   \end{algorithmic}
-% \end{algorithm}
-
-\subsubsection*{Frage:} Modell, Rechenzeit, \Work ?
-
-%Todo: Bild "ConvexHull3" einfügen
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Ende Vorlesung vom 22.04.05           %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Gesucht ist die Tangente in $O(\log n)$ \Time
-
-\[
-T(n) = T(\frac{n}{2}+\text{ const }\log n=O(\log^2n)
-\]
-\[
-W(n) = 2 W(\frac{n}{2}+\text{ const } n=O(n\log n)
-\]
-
-\subsubsection*{Ziel:} optimaler Algorithmus auf der CREW in $O(\log^2n)$ \Time (nicht streng optimal)
-
-\begin{itemize}
- \item [1. Fall, Tangente:] \todo{Bild einfügen}
-  $(p,v,v'')$ - Linksdrehung \\
-  $(p,v,v')$ - Linksdrehung \\
-  \begin{bemerk}
-    \[
-    \text{Linksdrehung} \Leftrightarrow
-    \begin{vmatrix}
-      1 & p_x & p_y  \\
-      1 & v_x & v_y \\
-      1 & v''_x & v''_y
-    \end{vmatrix}
-    \]
-  \end{bemerk}
- \item[2. Fall Reflex:] \todo{Bild einfügen}
-  \[
-  \neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}=\emptyset
-  \]
- \item[3. Fall Konkav:] \todo{Bild einfügen}
-  \[
-  \neg \text{ 1. Fall } \and \overline{v''v'} \cap \overline{vp}\ne\emptyset
-  \]
-\end{itemize}
-
-\todo{Bild Tabelle Konkav Konvex einfügen }\\
-
-Einziges Problem ist der Fall konkav-konkav, da bei diesem die zu suchende Fläche nicht kleiner wird.
-
-\todo{Bild (mit Geraden u,l und Punkt p) einfügen} \\
-
-\begin{itemize}
- \item[1. Fall] $p$ liegt rechts von $l$
- \item[2. Fall] $p$ liegt links von $l$
-\end{itemize}
-
------------------------------------------
 \section{Pipelining}
 
 2-3-Bäume (ähnlich Top-Down-2-3-4-Bäumen, ausbalancierter Suchbaum mit Knoten aus zwei oder drei Elementen)\\
