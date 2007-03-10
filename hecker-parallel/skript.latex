@@ -118,6 +118,7 @@
 }
 
 % Damit die Paare immer vollstädig sind:
+\newcommand*{\lrangle}[2][]{#1\langle#2#1\rangle}
 \newcommand*{\ceil}[2][]{#1\lceil#2#1\rceil}
 \newcommand*{\floor}[2][]{#1\lfloor#2#1\rfloor}
 
@@ -125,13 +126,15 @@
 % bzw. Work und Arbeit. Diese zwei Befehle sollen helfen, die Begriffe
 % einheitlich im Skript zu verwenden und ggf. alle Stellen leicht
 % änderbar machen
-\newcommand*{\Time}{TIME\xspace}
-\newcommand*{\Work}{WORK\xspace}
-\newcommand*{\Space}{SPACE\xspace}
+\newcommand*{\Time}{\text{TIME}\xspace}
+\newcommand*{\Work}{\text{WORK}\xspace}
+\newcommand*{\Space}{\text{SPACE}\xspace}
 \newcommand*{\Z}{\mathbb{Z}}
 \newcommand*{\N}{\mathbb{N}}
 \newcommand*{\R}{\mathbb{R}}
 \newcommand*{\NP}{\mathrm{NP}}    % Klasse der nichtpolynomiellen Probleme
+\newcommand*{\NC}{\mathrm{NC}}    % Klasse der polylogarithmischen PRAM-Probleme
+\newcommand*{\PP}{\mathrm{P}}     % Klasse der polynomiellen RAM-Probleme
 
 \DeclareMathOperator{\card}{card}     % Kardinalität
 
@@ -605,7 +608,7 @@ Prozessorallokation berücksichtigt wird.
 Die Allokation ist technisch aufwendig, ohne dass neue Ideen gefragt sind.
 Deshalb werden wir uns darauf konzentrieren, die Operationen zu beschreiben,
 die gleichzeitig möglich sind (obere Stufe) und die Allokation über das
-Theorem von Brent zu behandeln.
+Theorem von Brent (\autoref{satz:brent}) zu behandeln.
 
 \chapter{Die Güte von parallelen Algorithmen und das Theorem von Brent}
 
@@ -781,6 +784,7 @@ dem Arbeitsaufwand~$W(n)$ eines Algorithmus'.
 \end{bemerk}
 
 \begin{satz}[Satz von Brent]
+  \label{satz:brent}
   Ein paralleler Algorithmus, der mit $p$~Prozessoren eine \Time von
   $T_{p}(n)$ und einen \Work von $W(n)$ hat, kann auf $p'<p$~Prozessoren in
   $T_{p'}(n) = T_{p}(n)+\floor[\Big]{\frac{W(n)}{p'}}$ ausgeführt werden.
@@ -2482,89 +2486,225 @@ $\Rightarrow O(\log n\log\log n) \Time, O(n)$ \Work
 
 \chapter{Parallelisierbarkeit}
 
-Theorem von Brent liefert $O(\frac{W(n)}{p}+T(n))$ \Time. Jedoch macht es
-in vielen Fällen keinen Sinn, mehr als $\alpha(n)$ Prozessoren zu
-wählen, da dies keine Verbesserung bringt. Um z.\,B. ein Element in 100
-Zahlen zu suchen, machen mehr als 100 Prozessoren keinen Sinn.
+Laut dem Satz von Brent (\autoref{satz:brent}) kann jeder parallele
+Algorithmus in $O\bigl(\frac{W(n)}{p}+T(n)\bigr)$~\Time realisiert werden.
+Jedoch ist es in vielen Fällen nicht sinnvoll, mehr als
+$\alpha(n)$~Prozessoren zu verwenden, da dies keine Verbesserung bringt. Um
+z.\,B. ein Element in 100~Zahlen zu suchen, ist der Einsatz von mehr als
+100~Prozessoren nicht sinvoll.
 
-Was bedeutet parallelisierbarkeit:
-\begin{enumerate}[1.\,{Ansatz}]
- \item mehr Prozessoren liefern bessere Zeiten
- \item Das Problem ist schneller lösbar
-\end{enumerate}
-
-\begin{defini}
-  Ein Problem $L$ ist in $NC$ (Nick's class -- benannt nach seinem
-  Erfinder), wenn die charakteristische Funktion von $L$ in $O( (\log
-  n)^{k} )$ \Time mit $O(n^{k})$ Prozessoren für festes $k$ berechnet
-  werden kann.
-\end{defini}
-
-\begin{gather}
-  L\subseteq\sum\limits^{\ast}; w\in\Sigma^{\ast}, w\in L?
-     \chi_{L}(w) = \begin{cases} 0& w\in L\\ 1& w\notin L\end{cases}
-\end{gather}
-
-"`polylogarithmische Zeit"' mit polynomial vielen Prozessoren.
+Man kann die Laufzeitverbesserung auf zwei Wegen angehen. Wenn mehr
+Prozessoren eine bessere Zeit liefern, so ist natürlich die Erhöhung der
+Prozessoranzahl das Mittel der Wahl. Der andere Weg ist einen anderen
+Algorithmus zu finden, der das Problem schneller löst.
 
 \begin{defini}
-  $L$ hochgradig parallelisierbar $:\Leftrightarrow$ $L\in NC$ ist.
-  (Vorr. generell: $L\in P$) (wenn nicht in NC, so exist kein schneller
-  paralleler Algo.)
-\end{defini}
+  Die Menge~\highl{$\NC$}\footnote{$\NC$: Nick's class, nach seinem Erfinder
+  Nick Pipenger benannt} ist die Klasse der Sprachen, die sich in
+  polylogarithmischer\footnote{\highl{polylogarithmisch}: $O\bigl( (\log
+  n)^{k}\bigr)$ für ein festes $k$} Zeit mit
+  polynomiell\footnote{\highl{polynomiell}: $O(n^{k})$ für ein festen $k$}
+  vielen Prozessoren auf einer PRAM entscheiden\footnote{Eine
+  Sprach~$L\subset\Sigma^{*}$ heißt genau dann \highl{entscheidbar}, wenn sich
+  ihre \highl{charakteristische Funktion}~$\chi_{L}$\footnotemark{} berechnen lässt} lassen.
+  \footnotetext{$\chi_{L}(w)=1$, wenn $w\in L$, sonst $\chi_{L}(w)=0$}
+  \begin{multline*}
+    \NC = \{ L\subset \Sigma^{*} \colon \forall w\in\Sigma^{n} \text{~ist
+       $\chi_{L}(w)$ in $O\bigl( (\log n)^{k}\bigr)$~\Time}\\
+      \text{mit $O(n^{k})$~Prozessoren (für festes $k$) auf einer PRAM
+        berechenbar}\}
+  \end{multline*}
 
-\section{Gibt es Probleme in \texorpdfstring{$P$}{P}, die nicht in
-\texorpdfstring{$NC$}{NC} sind?}
+  Eine Sprache~$L$ heißt genau dann \highl{hochgradig parallelisierbar} oder
+  \highl{$\NC$-berechenbar}, wenn $L\in\NC$.
+\end{defini}
 
 \begin{defini}
-  $L\subseteq \Sigma^{\ast}$
-
-  $L$ ist $P$-vollständige $:\Leftrightarrow$ $\forall L_{1}\subseteq
-  \Sigma^{\ast}, L_{1}\in P: L_{1}\leq_{NC} L$
-
-  $L_{1}\leq_{NC} L :\Leftrightarrow \exists f: \Sigma^{\ast}\rightarrow
-  \Sigma^{\ast}, f\in NC: \forall w\in \Sigma^{\ast}: w\in
-  L_{1}\Leftrightarrow f(w) \in L$
+  Seien $L_{1}$ und $L_{2}$ zwei Sprachen. $L_{1}$ heißt
+  \highl{$\NC$-reduzierbar} auf $L_{2}$ (Schreibweise: $L_{1}\preceq_{\NC}L_{2}$),
+  wenn es eine hochgradig parallelisierbare Funktion~$f\colon
+  \Sigma^{*}\rightarrow \Sigma^{*}$ gibt, so dass für alle $w\in\Sigma^{*}$
+  gilt: $w\in L_{1}$ dann und nur dann, wenn $f(w)\in L_{2}$
 \end{defini}
 
-NC\ldots Klasse der in polylogarithmischer Zeit und polylogarithmisch vielen
-Prozessen
+\begin{defini}
+  Eine Sprache~$L$ heißt genau dann \highl{$\PP$-vollständig}, wenn $L$ in
+  polynomieller Zeit auf einer deterministischen Turingmaschine berechenbar
+  ist ($L\in\PP$) und alle Sprachen~$L'\in\PP$ $\NC$-reduzierbar auf $L$ sind:
+  $L'\preceq_{\NC}L$.
+\end{defini}
 
-\begin{bemerk}
-  $NC \subseteq P$
+\begin{satz}
+  Alle Probleme, die sich in polylogarithmischer Zeit mit polynomiell vielen
+  Prozessoren auf einer PRAM berechnen lassen, können in polynomieller Zeit
+  auf einer deterministischen Turingmaschine berechnet werden:
+  $\NC\subset\PP$.
 
   \begin{proof}
     über serielle Modellierung der Rechnung
+    \todo{machen}
   \end{proof}
-\end{bemerk}
+\end{satz}
 
-\section{Maximum Flow-f}
-Graph $G=(V,E)$
+\section{\texorpdfstring{$\PP$}{P}-vollständige Probleme}
 
-% Grafik: parallel
+\subsection{Maximaler Fluss in einem Netzwerk}
 
-\begin{enumerate}
- \item Kapazität $c(e)$ eines Knotens $e$
-  0$\leq f(e) \leq$ c(e) (f: Fluß durch e)
-  Fluß f: E$\rightarrow \N$
- \item $f^{-}(v) :=\sum_{u}f(u,v)
-  (Abfluss), f^{+}(w) :=\sum_{u}f(v,w) (Zufluss); \forall v\in
-  V\setminus\{s,t\}: f^{+}(v)=f^{-}(v)$
-\end{enumerate}
+Ein \highl{Netzwerk}~$N=(V,E,s,t,c)$ ein gerichteter Graph, dessen
+Kanten~$e\in E$ eine Kapazität~$c(e)\in\N_{0}$ zugeordnet ist. Der
+Knoten~$s\in V$ wird als Startknoten und der Knoten~$t\in V$ als Zielknoten
+bezeichnet.
+
+Der \highl{Fluss}~$f\colon E\rightarrow\N$ über eine Kante~$e$ ist durch ihre
+Kapazität beschränkt: $0\leq f(e)\leq c(e)$. Als \highl{Zufluss}~$f^{+}(v)$
+eines Knotens~$v\in V$ bezeichnet man die Summe über den Fluss aller
+eingehenden Kanten und als \highl{Abfluss}~$f^{-}(v)$ die Summe über den Fluss
+aller ausgehenden Kanten. Für alle Knoten außer dem Start- und dem Zielknoten
+soll der Zufluss gleich dem Abfluss sein.
+\begin{align*}
+  f^{+}(v) &:= \sum_{e\in E\colon e=(*,v)} f(e) &
+     f^{-}(v) &:= \sum_{e\in E\colon e=(v,*)} f(e)
+\end{align*}
+
+Als den Wert~$\mathrm{val}(f_{N})$ eines Flusses~$f$ durch ein Netzwerk
+bezeichnet man die Summe $\mathrm{val}(f) = f^{+}(s)-f^{-}(s) = f^{-}(t) -
+f^{+}(t)$.
 
 \begin{defini}
-  Ein Fluß f ist maximal, wenn val(f) := $f^{-}(t)-f^{+}(t)
-  (=f^{+}(s)-f^{-}(s)) \geq val(f') \forall$ zulässigen $f'$ ist (d.\,h.
-  für $f,f'$ gelten (1) (2) % obige Aufz"ahlung
+  Das Problem "`\highl{maximaler Fluss}"' ist die Frage nach dem
+  größtmöglichen Fluss~$\tilde{f}$ durch ein Netzwerk, so dass für alle
+  anderen möglichen Flüsse~$f$ gilt: $\mathrm{val}(\tilde{f})\geq
+  \mathrm{val}(f)$.
 \end{defini}
 
-\subsection{Lineare Programmierung:}
-\begin{gather}
-  \sum_{i=1}^{n}c_{i}x_{i} \rightarrow \max\\
-  A\overrightarrow{x} \leq b, x_{i}\geq0, 1 \leq i \leq n
-\end{gather}
+\todo{Es gab eine Grafik dazu. Einarbeiten.}
+\help{Warum ist das jetzt in $\PP\setminus\NC$? Eventuelle könnte man es als
+  lin.\,Op. schreiben, d.\,h. $maxFlusss\preceq_\NC linOp$}
+
+\subsection{Lineare Optimierungsprobleme}
+
+\begin{defini}
+  Als ein \highl{lineares Optimierungsproblem} bezeichnet man die Aufgabe, zu
+  einer gegebenen Matrix~$A\in\R^{n\times m}$ und zwei Vektoren $b\in\R^{m},
+  c\in\R^{n}$ einen Vektor $x\in\R^{n}$ zu finden, so dass $c^{T}x$ maximal
+  ist, wobei $0\leq x$ und $Ax\leq b$ gilt.
+  \begin{gather*}
+    \max\{ c^{T}x \colon Ax\leq b, 0 \leq x\}
+  \end{gather*}
+\end{defini}
+
+\help{Warum ist das jetzt in $\PP\setminus\NC$?}
+
+\subsection{Das circuit value problem}
+
+\begin{defini}
+  Als einen \highl{Schaltkreis}~$c=\lrangle{g_{1},\ldots,g_{n}}$ (engl.
+  \highl{circuit}) bezeichnet man eine Menge von
+  \highl[Gatter]{Gattern}~$g_{1},\dotsc, g_{n}$, die entweder ein
+  Eingabegatter mit den möglichen Werten $\{0,1\}$ sind oder eine boolsche
+  Verknüpfung von einem oder zwei anderen Gattern realisieren, d.\,h. für
+  $1\leq j,k<i\leq n$ ist $g_{i} = \neg g_{j}$ oder $g_{i} = g_{j}\vee g_{k}$
+  oder $g_{i}=g_{j}\wedge g_{k}$.
+\end{defini}
+
+\begin{defini}
+  Als \highl{circuit value problem} (\highl{$CVP$}) bezeichnet man das
+  Entscheidungsproblem, ob für einen gegebenen
+  Schaltkreis~$c=\lrangle{g_{1},\dotsc,g_{n}}$ der Wert des letzten
+  Gatters~$g_{n}=1$ ist.
+  \begin{gather*}
+    CPV(c) = \begin{cases}
+               0& g_{n}=0\\
+               1& g_{n}=1
+             \end{cases}
+  \end{gather*}
+\end{defini}
+
+Um zu zeigen, dass das circuit value problem $\PP$-vollständig ist, muss man
+für jede beliebige Sprachen~$L\in\PP$ zeigen, dass sie sich auf $CVP$
+reduzieren lässt ($L\preceq_{NC}CVP$) und dass $CVP\in\PP$ liegt. Analog zum
+Beweis des Satz' von Cook über die $\NP$-Vollständigkeit des
+Erfüllbarkeitsproblems der Aussagenlogik~$SAT$ zeigen wir die
+$\NC$-Reduzierbarkeit und, dass $CVP\in\PP$ liegt, ist leicht einzusehen, da
+man den Ausgabewert des letzten Gatters einfach bestimmen kann, indem man alle
+Gatterausgaben bestimmt, also lässt sich $g_{n}=1$ in $O(n)$ entscheiden.
+
+Da $L\in\PP$ liegt, gibt es eine Turingmaschine~$M$, die nach polynomiell
+vielen Schritten eine Eingabe~$w$ genau dann akzeptiert, wenn $w\in L$, indem
+sie eine $1\in\Gamma$ in die erste Zelle schreibt. Die
+\highl{Turingmaschine}~$M$ ist ein Sextupel $(Q,\Sigma,\Gamma,\delta,
+q_{1},q_{s})$ mit dem Arbeitsalphabet~$\Gamma$, dem
+Eingabealphabet~$\Sigma\subset\Gamma$, der Zustandsmenge~$Q$, wobei $q_{1}\in
+Q$ der Startzustand ist, und der Zustandsüberführungsfunktion~$\delta\colon
+Q\times\Gamma\rightarrow Q\times\Gamma\times\{L,R\}$.
+
+Damit $L\preceq_{NC}CVP$ gilt, muss man einen $\NC$-berechenbaren Algorithmus
+angeben, der für eine Turingmaschine~$M$ einen Schaltkreis~$c$ konstruiert,
+der genau dann durchschaltet ($g_{n}=1$), wenn $M$ die Eingabe akzeptiert.
+
+% jedes Wort~$w\in\Sigma^{*}$ einen
+% Schaltkreis~$c=\lrangle{g_{1},\dotsc, g_{n}}$ konstruiert, so dass
+% $CVP(c)=\chi_{L}(w)$ bzw. $g_{n}=1$ genau dann, wenn die Turingmaschine~$M$
+% die Eingabe~$w$ akzeptiert.
+
+% Der Algorithmus erzeugt für jeden Arbeitstakt~$t\in\{0,\dotsc,T(n)\}$ der
+% Turingmaschine polynomiell viele Gatter. Die Ausgabe des gesamten Schaltkreis'
+% kann also in polynomieller Zeit bestimmt werden.
+
+Einige Hilfsfunktionen für die Konstruktion der Gatter:
+\begin{align*}
+  H(i,t) &=
+     \begin{cases}
+       1& \text{der Lese-Schreib-Kopf steht zum Zeitpunkt~$t$ auf Zelle~$i$}\\
+       0& \text{sonst}
+     \end{cases}\\
+  C(i,j,t) &=
+     \begin{cases}
+       1& \text{das Zeichen~$a_{j}\in\Gamma$ steht zum Zeitpunkt~$t$ in
+       Zelle~$i$}\\
+       0& \text{sonst}
+     \end{cases}\\
+  S(k,t) &=
+     \begin{cases}
+       1& \text{$M$ befindet sich zum Zeitpunkt~$t$ im Zustand~$q_{k}$}\\
+       0& \text{sonst}
+     \end{cases}
+\end{align*}
+
+Modellierung der Startkonfiguration ($t=0$) ist
+\begin{align*}
+  H(i,0) &= \begin{cases}1&i=1\\0&i>1\end{cases}\\
+  C(i,j,0) &= \begin{cases}
+                1&\text{Zelle~$i$ enthält Zeichen~$a_{j}$}\\
+                0&\text{sonst}
+              \end{cases}\\
+  S(k,0) &= \begin{cases}1&k=1\\0&k>1\end{cases}
+\end{align*}
+Das letzte Gatter sei $g_{n} = C(1,1,T(n))$, d.\,h. $g_{n}$ ist genau dann
+eins, wenn die Turingmaschine nach $T(n)$~Schritten eine Eins in die erste
+Zelle geschrieben hat.
+
+\todo{Das ganze muss nochmal überarbeitet werden. Herr Hecker hat dazu auch
+  eine Kopie des Beweises aus dem Ja'Ja ausgeteilt. Es sollte noch erklärt
+  werden, dass die Gatter für $H$ in $O(1)$~\Time mit $O(T^{2}(n))$~\Work, die
+  Gatter für $C$ in $O(1)$~\Time mit $O(T^{2}(n))$~\Work und die Gatter für
+  $S$ in $O(\log n)$~\Time mit $O(T^{2}(n))$~\Work erzeugt werden können. Die
+  Erzeugung des Schaltkreises geht also in polylogarithmischer Zeit mit
+  polynomiell vielen Prozessen $\rightarrow$ der Algorithmus ist
+  $\NC$-berechenbar.
+  \url{http://www.informatixx.de/privat/files/informatik/pdf/Parallele_Algorithmen_Komplett.pdf}
+  Seite~58}
+
+In $T(n)$~Schritten kann die Turingmaschine auf höchstens $T(n)$~Zellen des
+Arbeitsbands zugreifen: $i\in\{1,\dotsc,T(n)\}$. Für die Zeit~$t$ gilt:
+$t\in\{0,\dotsc,T(n)\}$.
+
+Mittels $\delta$ beschreiben wir $t\rightarrow t+1$
 
 \subsection{DFS (geordnete Tiefensuche)}
+
+\todo{Der Abschnitt muss auch nochmal überarbeitet werden.}
+
 INPUT: beginnend bei $a$ %garfik dfs
 OUTPUT:
 \begin{tabular}{l|l}
@@ -2586,124 +2726,60 @@ relevante Entscheidungsproblem: -- wenn das Ursprungsproblem lösbar ist,
 dann auch das relevante Entscheidungsproblem. Wenn das relevante
 Entscheidungsproblem unlösbar ist, so erstrecht das Ursprungsproblem.
 
-\begin{defini}
-  \begin{gather}
-    L_{1} \leq_{NC} L_{2} :\Leftrightarrow \exists f_{L_{1}}
-       NC-\text{brechenbar}: \forall w\in \Sigma^\ast: w\in L_{1}
-       \Leftrightarrow f(w)\in L_{2}
-  \end{gather}
-\end{defini}
-
-\begin{defini}
-  \begin{gather}
-    L,L'\subseteq \Sigma^{\ast}, L P(arallelisierbar)-vollständig
-       :\Leftrightarrow L\in P \wedge \forall L'\in P: L'\leq_{NC} L
-  \end{gather}
-\end{defini}
-
-\begin{satz}[Hauptsatz über die Reduktion]
-  Seien $L_{1}, L_{2}\in \Sigma^{\ast}: L_{1}\leq_{NC} L_{2}$
-
-  So gilt: $L_{2}\in NC \Rightarrow L_{1}\in NC$
-
-  \begin{proof}
-    Gelte: $L_{2}\in NC$
-    Beh.: $L_{1}\in NC$ Seien $u_{i}\in \Sigma^{\ast} input für L_{1}:
-    u_{1}\in L_{1}?$
-
-    Algo:
-    \begin{enumerate}
-     \item Berechne f($u_{1})$
-     \item Prüfe: f($u_{1})\in L_{2}$? (in NC)
-     \item wegen f($u_{1}) \in L_{2} \Leftrightarrow u_{1}\in L_{1}$ ist
-      die Antwort von 2. gleich der Antwort $u_{1}\in L_{1}$ (in NC
-      erhalten)
-    \end{enumerate}
-    $\Rightarrow$ $L_{1}\in NC$
-  \end{proof}
-\end{satz}
-
-\begin{satz}[Satz über Transitivität]
-  \begin{gather}
-    L_{1} \leq_{NC} L_{2}\wedge L_{2} \leq_{NC} L_{3} \Rightarrow
-       L_{1}\leq_{NC} L_{3}
-  \end{gather}
-\end{satz}
-
-\begin{bemerk}
-  Zwei Methoden zum Nachweise der P-Vollständigkeit:
-  \begin{enumerate}
-   \item direkte Methode
-   \item Indirekte Methode mit Hauptsatz
-  \end{enumerate}
-\end{bemerk}
-
-CVP (circuit value problem)
-$\forall L'\in P: L'\leq_{NC} CVP$
-
-% 6.7.
-
-\begin{defini}
-  Ein Schaltkreis (engl. Circuit) $C=<g_{1},\ldots,g_{n}>$
-  :$\Leftrightarrow$ $\forall i\in \{1,\ldots,n\}: g_{i} sind INPUT (\in
-  \{0,1\}) oder g_{i}=g_{j}\vee g_{k}, g_{i}=g_{j}\wedge g_{k},
-  g_{i}=\neg g_{j}: j,k < i$
-\end{defini}
-
-\begin{defini}
-  CVP-Problem: INPUT: Circuit C. QUESTION: $g_{n}=1$?
-\end{defini}
-
-Theorem von Cook: (Beweis von irgendeinem Satz)
-z.\,z. $\forall L\in P: L \leq_{NC} CVP$
-Weg: Allgemeines Beweisrezept
-
-$L\in P \Rightarrow \exists TM\in\mathcal{TM} (\text{Turing-Maschine})$
-$\Sigma=\{a_{1},\ldots,a_{m}\}, Q=\{q_{1},\ldots,q_{s}\}, T(n)-$Rechenzeit
-
-$L\leq_{NP} CVP$, d.\,h. es existiert eine Funktion f, die L auf CVP
-reduziert, f=$f_{L}() \Rightarrow m,s$ sind konstant, T(n) ist fest
-gegeben. L bel., aber fest!
-
-Ziel: Angabe eines NC-Algorithmus, der ein $f$ berechnet: Jedes Beispiel
-(engl. Instance) $I$ zu $L$ wird mit $f$ in ein Beispiel $I_{CVP}$ zu
-$CVP$ überführt: $I_{L}\in L \Leftrightarrow f_{L}(I_{L})=I_{CVP}\in CVP$.
-
-Wir entwerfen einen Schaltkreis, der die Arbeit der Turning-Maschine
-nachbildet und genau dann durchschaltet, wenn die Turing-Maschine die
-Sprache erkennt.
-
-Simulation:
-\begin{enumerate}
- \item H(i,t): steht der Lese-Schreibkopfes zum Zeitpunkt $t\in
-  \{1,\ldots,T(n)\}$ auf dem Band an der Stelle $i$?
- \item C(i,j,t): steht das Zeichen $a_{j}$ an der Position $i$ zum
-  Zeitpunkt $t$ auf dem Band?
- \item S(k,t): befindet sich die Turing-Maschine zum Zeitpunkt $t$ im
-  Zustand $q_{k}$?
-\end{enumerate}
-
-Start:
-\begin{align*}
-  H(i,0) &= \begin{cases}1&i=1\\0&i>1\end{cases}\\
-  S(k,0) &= \begin{cases}1&k=1\\0&k>1\end{cases}\\
-  C(i,j,0) &= \begin{cases}1&\text{Zelle} i = a_{j}\\0&\text{sonst}\end{cases}
-\end{align*}
-
-Mittels $\delta$ beschreiben wir $t\rightarrow t+1$
-
 % 9.7.
 
-Mit dem letzten Satz haben wir gezeigt, dass NOR-CVP schwer entscheibar ist.
+Mit dem letzten Satz haben wir gezeigt, dass CVP schwer entscheibar ist.
 Diese Aussagen wollen wir jetzt nutzen, um zu zeigen, dass auch DFS
 schwer ist.
 
-Wir zeigen, dass NOR-CVP leichter ist als DFS. Jedoch ist DFS kein
+Um zu zeigen, dass $DFS$ $\PP$-vollständig ist, verwendet man den folgenden
+\autoref{satz:hauptsatz} und zeigt, dass $CVP\preceq_{NC}DFS$ und
+$DFS\in\PP$. Da $CVP\in\PP$ folgt aus \autoref{satz:hauptsatz}, dass
+$DFS\notin\NC$ ist.
+
+\begin{satz}[Hauptsatz über die Reduktion]
+  \label{satz:hauptsatz}
+  Seien $L_{1}, L_{2}\in \Sigma^{\ast}$ zwei Sprachen und $L_{1}$ sei
+  $\NC$-reduzierbar auf $L_{2}$. Dann ist $L_{1}\in\NC$, wenn $L_{2}\in\NC$
+  ist: $L_{1}\preceq_{NC} L_{2}\wedge L_{2}\in\NC \Rightarrow L_{1}\in\NC$.
+
+  \begin{proof}
+    Da $L_{1}$ $\NC$-reduzierbar auf $L_{2}$ ist, existiert eine
+    Funktion~$f\in\NC$, die jede Eingabe~$w\in\Sigma^{*}$ für $\chi_{L_{1}}$
+    in eine Eingabe für $\chi_{L_{2}}$ transformiert, wobei $w\in L_{1}
+    \Leftrightarrow f(w)\in L_{2}$. Da $L_{2}$ $\NC$-berechenbar ist, lässt
+    sich die charakteristische Funktion~$\chi_{L_{2}}$ in polylogarithmischer
+    Zeit mit polynomiell vielen Prozessoren auf einer PRAM berechnen.
+
+    Die charakteristische Funktion von $L_{1}$ lässt sich also mit Hilfe der
+    Funktion~$f$ und der charakteristischen Funktion~$\chi_{L_{2}}$ in
+    polylogarithmischer Zeit mit polynomiell vielen Prozessoren auf einer PRAM
+    berechnen. $L_{1}$ ist also $\in\NP$.
+    \begin{gather*}
+      \chi_{L_{1}}(u) = \chi_{L_{2}}\bigl( f(u) \bigr)
+    \end{gather*}
+  \end{proof}
+\end{satz}
+
+Wir zeigen, dass CVP leichter ist als DFS. Jedoch ist DFS kein
 Entscheidungspoblem, was eine direkte Abbildung der INPUT-Mengen
 aufeinander nicht möglich macht. Daher konstruieren wir ein
 Entscheidungsproblem, das leichter ist als DFS, an dem wir aber zeigen
-können, dass es schwerer ist als NOR-CVP. Damit wäre dann auch gezeigt,
-dass DFS schwerer ist, als NOR-CVP und damit auch schwer entscheidbar ist.
+können, dass es schwerer ist als CVP. Damit wäre dann auch gezeigt,
+dass DFS schwerer ist, als CVP und damit auch schwer entscheidbar ist.
+
+Dafür brauchen wir noch folgenden Satz:
+\begin{satz}[Satz über Transitivität]
+  Die Relation $\preceq_{\NC}$ ist transitiv, d.\,h. wenn
+  $L_{1}\preceq_{NC}L_{2}$ und $L_{2}\preceq_{NC}L_{3}$, so ist auch
+  $L_{1}\preceq_{NC}L_{3}$.
+
+  \begin{proof}
+    \todo{machen} Sollte einfach sein. $L_{1}\preceq_{NC}L_{2}$ $\Rightarrow$
+    $\exists f\in\NC$, $L_{2}\preceq_{NC}L_{3}$ $\Rightarrow$ $\exists
+    g\in\NC$, dann ist $f\circ g\in\NC$.
+  \end{proof}
+\end{satz}
 
 DFS:
 INPUT: gerichteter Graph, Kantenmarkierung (genormt), Startknoten,
@@ -2712,7 +2788,7 @@ OUTPUT: DFS-Liste
 
 zu konstruieren mit NC-Zuordnung.
 
-Jedem INPUT von NOR-CVP: $I_{CVP} \rightarrow f(I_{CVP})=I_{DFS}(v,w):$
+Jedem INPUT von CVP: $I_{CVP} \rightarrow f(I_{CVP})=I_{DFS}(v,w):$
 Wert($I_{CVP})=1 \Leftrightarrow$ das relevante Entscheidungsproblem von
 $I_{DVS}$ wahr ist (=1 ist) (d.\,h. $u$ wird vor $v$ besucht.
 
