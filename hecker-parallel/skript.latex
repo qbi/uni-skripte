@@ -90,6 +90,7 @@
 \newcommand*{\folgerautorefname}{Folgerung}
 \newcommand*{\vereinautorefname}{Vereinbarung}
 \newcommand*{\algocflineautorefname}{Algorithmus}
+\newcommand*{\AlgoLineautorefname}{Zeile}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -118,6 +119,7 @@
 }
 
 % Damit die Paare immer vollstädig sind:
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
 \newcommand*{\lrangle}[2][]{#1\langle#2#1\rangle}
 \newcommand*{\ceil}[2][]{#1\lceil#2#1\rceil}
 \newcommand*{\floor}[2][]{#1\lfloor#2#1\rfloor}
@@ -747,7 +749,7 @@ die Summe davon:
 Ein erster Ansatz für ein Gütekriterium eines Algorithmus wäre:
 \begin{defini}
   Ein paralleler Algorithmus heißt \textit{optimal}, wenn seine Kosten der
-  seriellen Komplexität entsprechen: $T^{*}(n) = C_p(n)$.
+  seriellen Komplexität entsprechen: $C_p(n) = T^{*}(n)$.
 \end{defini}
 
 Bewerten wir mit dieser Maßgabe die Summation von $n$~Zahlen, so zeigt sich:
@@ -766,6 +768,9 @@ Bewerten wir mit dieser Maßgabe die Summation von $n$~Zahlen, so zeigt sich:
   $\frac{n}{\log n}$~Prozessoren), ist der Algorithmus \textit{optimal}, da die
   Kosten $C_{\frac{n}{\log n}}(n) = O(\frac{n}{\log n}) \cdot \bigl(O(\log n) + O(\log
   \frac{n}{\log n})\bigr) = O(n)$ betragen.
+  \label{alg:sum-optimal}
+  \todo{Diesen Algorithmus mal in ein eigenes Beispie packen, damit man ihn
+    besser referenzieren kann.}
 \end{itemize}
 
 Die Definition ist also unzureichend. Eine bessere Definition ergibt sich mit
@@ -2093,208 +2098,294 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 \end{folger}
 
 \chapter{Suchen, Mischen, Sortieren} % Kapitel 4
-\section{Suchen/Search}
+\section{Suchen in einer sortierten Menge nach Kruskel}
 
-Vorraussetzung:
-\begin{description}
- \item[INPUT] $x_{1}<x_{2}<\ldots<x_{n}$, zu suchendes Element $s$
- \item[OUTPUT] $i: x_{i}\leq<x_{i+1}$
-\end{description}
-
-Kruskal 1984:
+\todo{In diesem Abschnitt fehlen sehr viele Bilder, die das Vorgehen
+  wesentlich anschaulicher machen würden. Einarbeiten.}
 
 \begin{lemma}
-  Mit $k$ Schritten lässt sich eine sortierte Liste von $n=(p+1)^{k}-1$
-  ($p$-Anzahl der Proz.) Elementen durchsuchen.
+  \label{lem:1}
+  Mit $k$~Schritten lässt sich ein Element in einem sortierten Feld mit
+  $n$~Elementen finden, wenn $n=(p+1)^{k}-1$ ist und $p$~Prozessoren
+  eingesetzt werden.
 
   \begin{proof}
-    Sei $k=1$.
+    Der Beweis erfolgt induktiv.
+    \begin{description}
+     \item[$k=1$:] Dann ist $n=(p+1)^{1}-1=p$. Ein Feld von $n$~Elementen mit
+      $p=n$~Prozessoren zu durchsuchen geht in einem Schritt.
 
-    Dann ist $n=(p+1)^{1}-1=p$. Damit sagt des Lemma, dass man mit
-    $p$~Prozessoren $n$~Elemente in einem Schritt durchsuchen. -- trivial.
+     \item[$k-1\rightarrow k$:] Verteilt man die $p$~Prozessoren gleichmäßig
+      auf die $n$~Elemente, so dass sich $p+1$~Abschnitte der
+      Länge~$\frac{n+1}{p+1}$\footnote{Ergebnis der Kombinatorik} ergeben, und
+      ordnet dem $j$.\,Prozessor ($j=1,\dotsc,p$) den $j$.\,Abschnitt zu, kann
+      jeder Prozessor das letzte Element~$j\frac{n+1}{p+1}$ in seinem
+      Abschnitt untersuchen.
+      \begin{enumerate}[1.\,{Fall:}]
+       \item Das Element ist das gesuchte $\rightarrow$ fertig.
+       \item Wenn das Element nicht gefunden wird, hat man aber einen
+	Abschnitt bestimmt, in dem sich das Element befinden muss. Da in dem
+        Abschnitt bereits ein Element untersucht wurde, verbleiben noch
+        $\frac{n+1}{p+1}-1$~Elemente.
+        \begin{gather*}
+          \frac{n+1}{p+1}-1 = \frac{(p+1)^{k}-1 +1 -p-1}{p+1}
+             = (p+1)^{k-1} -1
+        \end{gather*}
 
-    $k-1 \rightarrow k$:
-
-    $j(p+1)^{k-1} (j=1,\ldots,p)$ -- Plätze für die Prozessoren
-
-    \begin{enumerate}[1.\,{Fall:}]
-     \item $s$ gefunden -- fertig
-     \item $s$ ist in einem der Abschnitte, die wir nach dem Entfernen
-      der roten Elemente (Elemente, die im ersten Schritt von den
-      Prozessoren durchsucht wurden) erhalten. Die Anzahl der
-      verbleibenden Elemente ist somit
-      \begin{gather}
-        \frac{n-p}{p+1}=\frac{(p+1)^{k}-1-p}{p+1}
-           =(p+1)^{k-1}-\frac{p+1}{p+1} =(p-1)^{k-1}-1
-      \end{gather}
-      Dieser Abschnitt lässt sich nach Induktionsvorraussetzung in
-      $k-1$~Schritten durchsuchen.
-
-      Also lässt sich ein Feld in $1+k-1=k$~Schritten durchsuchen.
-    \end{enumerate}
+        In diesem Abschnitt lässt sich nach Induktionsvorraussetzung in
+        $k-1$~Schritten das Element finden. Also lässt sich das Feld in
+        $1+(k-1)=k$~Schritten durchsuchen.
+      \end{enumerate}
+    \end{description}
   \end{proof}
 \end{lemma}
 
 \begin{satz}[Satz von Kruskel (1984)]
-  $T_{s}(n,p)$ sei die Anzahl der Schritte, die notwendig und hinreichend
-  sind, um mit $p$ Prozessoren eine Liste von $n$ Elementen zu durchsuchen.
-
-  Für $n=(p+1)^{k}-1$ gilt:
-  \begin{gather}
-    T_{s}(n,p)= \lceil\frac{\log(n+1)}{\log(p+1)}\rceil
-  \end{gather}
+  \label{satz:kruskal}
+  Um eine Folge von $n$~Elementen mit $p$~Prozessoren zu durchsuchen, sind
+  $T_{p}(n)$~Schritte notwendig und hinreichend.
+  \begin{gather*}
+    T_{p}(n) = \Theta\bigg(\frac{\log(n+1)}{\log(p+1)}\bigg)
+  \end{gather*}
 
   \begin{proof}
-    hinreichend:
-    \begin{align}
-      (p+1)^{k}-1\geq n &\Leftrightarrow (p+1)^{k}\geq n+1\\
-      &\Leftrightarrow \log(p+1)^{k}\geq \log(n+1)\\
-      &\Leftrightarrow k\log(p+1)\geq \log(n+1)\\
-      &\Leftrightarrow k\geq \frac{\log(n+1)}{\log(p+1)}
-    \end{align}
+    \begin{description}
+     \item[hinreichend:] Nach \autoref{lem:1} kann man bei einer geschickten
+      Platzierung der Prozessoren ein Feld von $(p+1)^{k}-1$ Elementen mit
+      $k$~Schritten durchsuchen. Für die Zeit~$T_{p}(n)$ (Anzahl der
+      Schritte~$k$) gilt also $T_{p}(n) =
+      O\bigl(\frac{\log(n+1)}{\log(p+1)}\bigr)$.
+      \begin{align*}
+        n &\leq (p+1)^{k}-1 &
+        % \Leftrightarrow& n+1 &&\leq (p+1)^{k}\\
+        &\Leftrightarrow& \log(n+1) &\leq k\log(p+1)\\
+        &&&\Leftrightarrow& \frac{\log(n+1)}{\log(p+1)} &\leq k\\
+        &&&\Leftrightarrow& k &=\ceil[\bigg]{\frac{\log(n+1)}{\log(p+1)}}
+      \end{align*}
 
-    notwendig: Wenn wir die Prozessoren beliebig positionieren
-    $\Rightarrow$ Es bleibt min eine Abschnitt nicht untersuchter
-    Elemente, der Länge $> \frac{n-p}{p+1}$ übrig.
+     \item[notwendig:] Wenn man die Prozessoren beliebig positioniert, bleibt
+      nach dem ersten Suchschritt mindestens ein Abschnitt mit mehr als
+      $\frac{n+1}{p+1}-1$ nicht untersuchten Elementen übrig. Positioniert man
+      in diesem die Elemente wieder beliebig, so bleicht mindestens ein
+      Abschnitt, der größer ist als
+      \begin{gather*}
+        \frac{\overbrace{\frac{n+1}{p+1}-1}^{\text{Elem. aus 1.\,Schritt}}+1}%
+             {\underbrace{p+1}_{\text{Anz. der Abschnitte}}} - 1
+           = \frac{n+1}{(p+1)^{2}}-1
+      \end{gather*}
 
-    \begin{align}
-      \frac{n-p}{p+1} = \frac{n}{p+1}-\frac{p+1}{p+1}+\frac1{p+1} =
-         \frac{n+1}{p+1}-1
-    \end{align}
-    \begin{align}
-      \frac{übrig-Zahl der durchsuchten}{Abschnitte}
-         \frac{\frac{n++1}-1-p}{p+1} = \frac{n+1}{(p+1)^{2}}-1
-    \end{align}
-
-    Mit Induktion kann man zeigen, dass nach $k$~Schritten
-    $\frac{n+1}{(p+1)^{k}}-1$ Elemente als Rest bleiben.
-
-    Ziel:
-    \begin{gather}
-      \frac{n+1}{(p+1)^{k}} - 1 \leq 0
-    \end{gather}
+      Induktiv kann man also zeigen, dass nach $k$~Schritten mehr als
+      $\frac{n+1}{(p+1)^{k}}-1$~Elemente nicht untersucht wurden. Damit keine
+      nicht untersuchten Elemente mehr verbleiben, das Feld also komplett
+      durchsucht ist, sind mindestens $\frac{\log(n+1)}{\log(p+1)}$~Schritte
+      notwendig. Die Laufzeit ist also
+      $T_{p}(n) = \Omega\bigl(\frac{\log(n+1)}{\log(p+1)}\bigr)$
+      \begin{align*}
+        \frac{n+1}{(p+1)^{k}} - 1 &\leq 0
+           &&\Leftrightarrow& n+1 &\leq (p+1)^{k}
+        &&\Leftrightarrow& \frac{\log(n+1)}{\log(p+1)} &\leq k
+      \end{align*}
+    \end{description}
   \end{proof}
 \end{satz}
 
-\subsection{Konsequenzen des Satzes}
+\begin{algorithm}
+  \dontprintsemicolon
+  \caption{Parallele Suche in einer sortierten Folge nach \highl{Kruskel}}
+  \KwIn{Ein aufsteigend sortiertes Feld $A$ von $n$~Zahlen und ein gesuchtes
+    Element~$x$}
+  \KwOut{Index~$i$, so dass $A[i]\leq x<A[i+1]$}
+  $beg := 1$\;
+  $end := n$\;
+  \For{$k := 1$ \KwTo log(n)}{
+    \Forpar{$j := 1$ \KwTo p}{
+      $len := ende - beg +1$
+      $pos := beg + j\cdot\frac{len+1}{p+1}$\;
+      \uIf{$A[pos] < x$}{
+        \If{$j=p$}{$beg := pos + 1$\;}
+      }
+      \uElseIf{$x < A[pos]$}{
+        \uIf{$j=1$}{$end := pos -1$\;}
+        \Else{$A[beg + (j-1) \frac{len+1}{p+1}] < x$}{
+          $beg := (j-1) \frac{len+1}{p+1} + 1$\;
+          $end := pos - 1$\;
+        }
+      }
+      \Else(\tcc*[f]{$A[pos] =x$}){\KwRet{$j$}\;}
+    }
+  }
+\end{algorithm}
+
+\subsection{Mischen}
+
+Als Konsequenz aus \autoref{satz:kruskal} ergibt sich:
+\begin{satz}
+  Für das Bestimmen des Rangs einer sortierten Folge~$Y$ mit $m$~Gliedern
+  bezüglich einer sortierten Folge~$X$ mit wesentlich mehr Gliedern ($n\gg m =
+  \Theta(n^{s})$ für $0<s<1$) --~$Rang(Y:X)$~-- benötigt man $O(1)$~\Time und
+  $O(n)$~\Work.
+
+  \begin{proof}
+    Für jedes Element von $Y$ wird der Kruskel-Algorithmus mit
+    $p=\floor[\big]{\frac{n}{m}}$~Prozessoren durchgeführt.
+    Dies geht in $O(1)$~\Time.
+    \begin{gather*}
+      O\biggl(\frac{\log(n+1)}{\log(p+1)}\biggr)
+         = O\biggl(\frac{\log(n+1)}{\log(\floor{\frac{n}{m}}+1)}\biggr)
+         = O\biggl(\frac{\log(n+1)}{\log(\floor{n\cdot n^{-s}}+1)}\biggr)
+         = O(1)
+    \end{gather*}
+
+    Verwendet man $n = m\cdot\frac{n}{m}$~Prozessoren, kann man für die
+    $m$~Elemente von $Y$ in $m\cdot O(1)=O(1)$~\Time mit $W(n) = m\cdot
+    O\bigl(\frac{n}{m}\bigr) = O(n)$~\Work den Rang bezüglich $X$ bestimmen.
+  \end{proof}
+\end{satz}
+
+\begin{algorithm}
+  \dontprintsemicolon
+  \caption{Rangbestimmung einer Folge bezüglich einer wesentlich größere Folge}
+  \KwIn{$A^{n}$ und $B^{m}$, wobei $\sqrt{m}$ ganzzahlig}
+  \KwOut{$Rang(B:A)$}
+  \If(\tcc*[f]{$B$ zu kurz}){$m<4$}{trivial mit Kruskal, da $p=n$\nllabel{line:step1}\;
+    \KwRet{}\;
+  }
+  $J[\sqrt{m}+1] := 0$\;
+  \Forpar{$i := 1$ \KwTo $\sqrt{m}$}{
+    $J[i] := Rang(B[i\cdot\sqrt{m}]:A)$ mit $\sqrt{n}$ Prozessoren
+      \nllabel{line:step2}\;
+    $B_{i} := B[i\cdot\sqrt{m} +1,\dotsc,(i+1)\cdot\sqrt{m}-1]$\;
+    $A_{i} := A[J[i]+1,\dotsc,J[i+1]]$\;
+    \uIf{$J[i] = J[i+1]$}{$Rang(B_{i}:A_{i})=(0,0,\ldots)$\;}
+    \Else{
+      berechne mit diesem Algorithmus $R=Rang(B_{i}:A_{i})$ rekursiv
+        \nllabel{line:step3}\;
+      \KwRet{$\forall k\colon i\cdot\sqrt{m} < k < (i+1)\cdot\sqrt{m}$ ist
+        $Rang(B[k]:A) := J[i] + R[k-i\cdot\sqrt{m}+1]$}\;
+    }
+  }
+\end{algorithm}
+
+\begin{satz}
+  \label{satz:3}
+  Für zwei sortierte Folgen~$A$ mit $n$~Gliedern und $B$ mit $m$~Gliedern,
+  wobei $m\leq n$ ist, geht $Rang(B:A)$ in $O(\log\log m)$~\Time mit
+  $O((n+m)\log\log m)$~\Work.
+
+  \begin{proof}
+    Die (worst case) Laufzeit für den gesamten Algorithmus sei $T(n,m)$.
+
+    Der erste Schritt (\autoref{line:step1}) geht in $O(1)$~\Time mit
+    $O(n)$~\Work, also $T(n, 3) = O(1)$.
+
+    Der zweite Schritt (\autoref{line:step2}) zur Bestimmung von
+    $Rang(B[i\cdot\sqrt{m}]:A)$ verwendet $\sqrt{n}$~Prozessoren und benötigt
+    nach \autoref{satz:kruskal} $O\bigl(\frac{\log(n+1)}{\log(p+1)}\bigr) =
+    O(1)$~\Time und $O(\sqrt{m}\cdot\sqrt{n}) = O(n+m)$~\Work.
+    \begin{gather*}
+      \frac{\log(p\cdot p+1)}{\log(p+1)}
+         \leq \frac{\log(p\cdot(p+1))}{\log(p+1)}
+         \leq \frac{\log(p+1) + \log(p+1)}{\log(p+1)}\\
+      \sqrt{m}\cdot\sqrt{n} \leq \bigl(\sqrt{\max\{n,m\}}\bigr)^{2}
+         \leq \max\{n,m\} + \min\{n,m\} = n+m
+    \end{gather*}
+
+    Der zweite Schritt zerlegt $A$ in Teile~$A_{i}$ ($i=1,\dotsc,\sqrt{m}$)
+    der Länge $n_{i} := \abs{A_{i}}$. In diese Teile können unabhängig
+    voneinander jeweils die entsprechenden Teile von $B$ einsortiert werden,
+    da die Elemente aus einem $B_{i}$ nicht in einem $A_{k}$ ($k\ne i$) liegen
+    können --~die Pfeile überschneiden sich nicht.
+
+    Die Zeit für den dritten Schritt (\autoref{line:step3})
+    $Rang(B_{i}:A_{i})$ ist also $T(n_{i},\sqrt{m})$~\Time. Da diese alle
+    parallel ausgeführt werden, ist
+    \begin{gather*}
+      T(n,m) \leq  O(1) + \max_{i} T(n_{i}, \sqrt{m}) = O(\log\log m)
+    \end{gather*}
+    da man nach $k$~rekursiven Rufen die Menge auf $m^{2^{-k}}$~Elemente
+    reduziert hat. Zum Schluss hat man eine konstante Anzahl an Elementen
+    ($c\leq3$), die in $T_{p}(n,3) = O(1)$ eingegliedert werden. Also gilt:
+    \begin{gather*}
+      m^{(\frac{1}{2})^{k}} = m^{2^{-k}} \leq c
+         \Leftrightarrow \log\log m - \log\log c \leq k
+    \end{gather*}
+
+    Der Aufwand ergibt sich aus der Arbeit im zweiten Schritt und der Anzahl
+    der rekursiven Aufrufe: $O\bigl((n+m)\log\log m\bigr)$~\Work.
+  \end{proof}
+\end{satz}
+
+\begin{folger}
+  Zwei sortierte Folgen~$A$ und $B$ mit je $n$~Elementen können in $O(\log\log
+  n)$~\Time mit $O(n\log\log n)$ \Work gemischt werden.
+\end{folger}
+
+Leider ist das Ergebnis noch nicht WT-optimal, da das Mischen im seriellen
+Fall in $T^{*}(n,m)=O(n+m)$~\Time geht. Zur Vereinfachung sei im Folgenden
+immer $n=m$.
+
+Mit dem in \autoref{alg:sum-optimal} auf Seite~\pageref{alg:sum-optimal}
+angewandten Verfahren, können wir auch hier zu einem optimalen Algorithmus
+kommen:
 \begin{enumerate}
- \item $X$ sei sortierte Folge von $n$ paarweise verschiedenen Elementen,
-  $Y$ sei bel. Folge von $m$~Elementen, $m<<n (m=\Theta(n^{s}), 0<s<1)$
+ \item Verkleinere das Problem mit einem optimalen, aber langsamen Algorithmus,
+  bis durch die Anwendung des nicht optimalen, aber schnellen Algorithmus'
+  sich der \Work nicht erhöht.
+ \item Wende auf das verkleinerte Problem aus dem ersten Schritt den nicht
+  optimalen, aber schnellen Algorithmus an.
+\end{enumerate}
 
-  Ranke Y in X! - Kruskal für jeden Element. Wieviele Prozessoren?
-  $p=\lfloor\frac{n}{m}\rfloor$
-  Einzelnes Element: Zeit $O(\frac{\log(n+1)}{\log(p+1)}) =
-  O(\frac{\log(n+1)}{\log n^{1-s}})=O(\frac1{1-s}\frac{\log(n+1)}{\log
-  n})=O(1)$
+\begin{enumerate}
+ \item Zerlege $A$ und $B$ in $\frac{n}{\log\log n}$~Abschnitte der Länge
+  $\log\log n$: Die Abschnitte seien $A_{i}$ und $B_{i}$.
+ \item Erzeuge aus den Elementen an den Abschnittsgrenzen zwei neue
+  Folgen~$A'$ und $B'$.
+ \item Bestimme $Rang(A':B')$ und $Rang(B':A')$ -- damit hat man bestimmt, in
+  welchen Abschnitt der anderen Folge die jeweiligen Grenzelemente müssen. Zum
+  Beispiel ergibt sich, dass $B'[j]$ zwischen $A'[k]$ und $A'[k+1]$ kommt.
+  $A'[k]$ und $A'[k+1]$ ist der Abschnitt $A_{k}$
+ \item Man kennt also zu jedem Grenzelement von $A$ einen Abschnitt $B_{j}$
+  der Länge $\log\log n$, in den man das Element liegen muss. Innerhalb dessen
+  kann man die genaue Position seriell mit binärer Suche bestimmen. Ebenso
+  kann man in die umgekehrte Richtung für die Grenzelemente von $B$ ihre
+  genaue Position bestimmen.
+ \item Damit hat man $A$ und $B$ in $2\cdot\frac{n}{\log\log n}$~Abschnitte
+  der Größe $\leq\log\log n$ zerlegt und kennt jeweils den korrespondierenden
+  Abschnitt in der anderen Folge. Diese Abschnitte kann man jetzt paarweise
+  und unabhängig ineinander ordnen.
+\end{enumerate}
 
-  parallel für alle Elemente aus Y: $O(1)$ \Time \Work? $O(\frac{n}{m})$
-  \Work (Anzahl der Proz*Rechenzeit) für eine Element. Bei m Stück
-  $m \cdot O(\frac{n}{m}) = O(n)$ \Work
+\begin{figure}
+  \centering
+  \input{figures/merge.pdf_t}
+  \caption{\todo{ausfüllen}}
+  \label{fig:merge}
+  \todo{noch die Bilder für die anderen Schritte zeichnen}
+\end{figure}
+Bilder zum Vorgehen: \autoref{fig:merge}
 
-  \begin{satz}
-    Sei Y eine beliebige Folge mit m Elementen, X: $x_{1}<\ldots<x_{n}$,
-    sei m=O($n^{s}$): 0<s<1
+Zeit- und Aufwandsanalyse:\\
+\begin{tabular}{l|c|c|l}
+  Schritt& \Time& \Work& Bemerk.\\
+  \hline
+  1.+2.& $O(1)$& $O(1)$&\\[2mm]
+  3.& $O\bigl(\log\log\frac{n}{\log\log n}\bigr) = O(\log\log n)$&
+     $O\bigl(\frac{n}{\log\log n} \cdot\log\log\frac{n}{\log\log n}\bigr) =
+     O(n)$& \autoref{satz:3}\\[2mm]
+  4.& $O(\log\log\log n)=O(\log\log n)$&
+     $\frac{n}{\log\log n}\cdot O(\log\log\log n)=O(n)$& \\[2mm]
+  5.& $O(1)$& $\frac{n}{\log\log n}\cdot O(\log\log n)=O(n)$& \autoref{satz:3}
+\end{tabular}
 
-    Dann kann Y in X in O(1) \Time mit O(n) \Work eingeordnet werden.
-  \end{satz}
-
-  Merge-Algo:
-  INPUT: $A^{n}, B^{m} (\sqrt{m}$ ganzzahlig)
-  OUTPUT: Rang(B:A)
-  begin
-  \begin{Verbatim}[gobble=2]
-  if m < 4 -- so B zu kurz $\Rightarrow$ p=n -- exit mO(1)
-  Ranke $b_{\sqrt{m}}, b_{2\sqrt{m}},b_{3\sqrt{m}},\ldots,b_{\sqrt{m}\sqrt{m}}$ parallel mit Kruskal in A
-  Sei Rang(b_{i\sqrt{m}}:A) =: j(i), j(0) := 0
-  $B_{i}:=(b_{i\sqrt{m}+1},b_{i\sqrt{m}+2},\ldots,b_{(i+1)\sqrt{m}-1}$
-  $A_{i}:=(a_{j(i)+1},\ldots,a_{j(i+1)})$
-  wenn j(i)=j(i+1), so Rang($B_{i}:A_{i})=(0,0,\ldots)$ sonst berechne
-  Rang($B_{i}:A_{i})$ rekursiv
-
-  Sei i < k $\leq$ m bel. Index, der nicht vielfaches von \sqrt{m} ist.
-  Sei i=floor(k/sqrt(m)). Si sei Rang($b_{k}:A) :=j(i)+Rang(b_{k}:A_{i})$
-  \end{Verbatim}
-  end.
-
-  Einschub:
-  Die Klasse P der in polynomeller Zeit lösbaren Algorithmen zerfällt
-  für parallele Ansätze in drei Klassen:
-  \begin{enumerate}
+\begin{bemerk}
+  Die Klasse $\PP$ der in polynomeller Zeit lösbaren Algorithmen zerfällt für
+  parallele Ansätze in drei Klassen:
+  \begin{itemize}
    \item $O(1)$, z.\,B. Eulertour-Technik
    \item $O(\log n)$, vielzahl der Probleme
    \item $O(\log\log n)$, z.\,B. Merge
-  \end{enumerate}
-
-  \begin{satz}
-    Merge geht optimal in $O(\log\log n)$
-  \end{satz}
-
-  % Grafik: kruskal-merge
-
-  \begin{satz}
-    Der $Rang(B^{m}:A^{n})$ kann in $O(\log\log n)$ \Time mit
-    $O((n+m)\log\log m)$ \Work berechnet werden.
-
-    \begin{proof}
-      T(n,m) =: \Time (worst case)
-      1.Schritt im Algo: if (m<4) Ranke B in A mit Kruskal mit p=n Proz.
-      $\Rightarrow$ O(1) \Time, O(n) \Work
-      2. schritt: (=Pfeile $\sqrt{m}$\,Stück)
-      $ p:= \sqrt{n}; Kruskal O(\frac{\log(n+1)}{\log(\sqrt{n}+1)})=O(1)$
-      \Work: $\sqrt{m}$ Pfeile parallel $\Rightarrow$ Gesamt O(1) \Time
-      \Work = $O(\sqrt{m}\cdot \sqrt{n}) = O(n+m) =$ \Work im Schritt~2
-      (mit O(1) \Time)
-      \begin{enumerate}[1.\,{Fall}]
-       \item $(m\leq) 2\sqrt{m}\cdot\sqrt{n} \leq 2\sqrt{n}\sqrt{n}$
-        = n+n = O(2n) = O(n) = O(n+m)
-       \item n $\leq$ m
-        analog $2\sqrt{m}\sqrt{n} = O(n+m)$
-      \end{enumerate}
-
-      $|A_{i}| =: n_{i} (0\leq i \leq \sqrt{m}-1);$ Zeit für grün
-      $(=B_{i}:A_{i}) = T(n_{i}, \sqrt{m})$
-
-      $\Rightarrow T(n,m) \leq \max_{i} T(n_{i}, \sqrt{m}), T(n,3) = O(1)$
-
-      oBdA jetzt: n=m
-
-      \begin{folger}
-        $A^{n}, B^{m}$ sortiert können in $O(\log\log n)$ \Time mit
-        $O(n\log\log n)$ \Work gemischt werden.
-      \end{folger}
-
-      Ziel: optimal
-
-      % Grafik: 11.6./1
-      A' := ($p_{1},p_{2},p_{3},\ldots)$
-      B' := ($q_{1},q_{2},q_{3},\ldots)$
-      $|B'|=\frac{n}{\log\log n}$
-      $|A'|=\frac{n}{\log\log n}$
-
-
-      Merge(A',B') in $O(\log\log n)$ \Time mit $O(n)$ \Work
-      ($O(n) = O(n\log\log n/\log\log n)$)
-
-      % Grafik: 11.6./2
-
-      Aufgabe: Rang(A':B) - seriell für jedes $p_{i}$ in $O(\log\log n)$
-      \Time (Parallel für alle $p_{i}$, \Work: O(n) gesamt)
-
-      analog Rang(B':A)
-
-      $\Rightarrow$ % Grafik 11.6./3
-
-      Wenn auch unten jeweils $\log \log n$ Elemente-- so paarweise mischen
-      und kleben -- $O(\log \log n)$ \Time, $O(n)$ \Work
-
-      Wenn nicht:
-      zwichen $q_{i}$ und $q_{i+1}$ sind jeweils $\log\log n$ Element. Die
-      Pfeil müssen zwischen $p_{i}$ und $p_{i+1}$, was auch nur
-      $\log\log n$ Elemente insgesamt sind. Also für jedes $q_{i}\leq
-      \log\log n$ Elemente. Diese dann abschnittsweise mischen+kleben
-    \end{proof}
-  \end{satz}
-\end{enumerate}
+  \end{itemize}
+\end{bemerk}
 
 \section{SORT}
 
