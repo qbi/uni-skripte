@@ -1045,6 +1045,7 @@ Gewicht~$w_{i}=1$ und für den Wurzelknoten~$r$ das Gewicht~$w_{r}=0$ wählt.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Teile und Herrsche}
+\label{sec:teile-herrsch}
 
 \todo{Den Abschnitt überarbeiten. Ich habe keine Ahnung, worum sich diese
   ganze Sache mit den Punkten dreht.}
@@ -1056,8 +1057,8 @@ als das ursprüngliche Problem sind. Diese Probleme werden unabhängig
 voneinander gelöst und aus deren Lösung die Lösung des Gesamtproblems
 konstruiert.
 
-Die Zerlegung und die Zusammenführung sollten dabei "`einfach"' sein, die Lösung
-der Teilprobleme kann "`kompliziert"' sein. Durch die Teilung in
+Die Zerlegung in Teilprobleme sollte dabei "`einfach"' sein, das Zusammenfügen
+der Gesamtlösung kann "`kompliziert"' sein. Durch die Teilung in
 \textit{unabhängige} Teilprobleme bietet sich eine Verteilung auf mehrere
 Prozessoren direkt an.
 
@@ -1173,10 +1174,16 @@ $u_{i+1}$ unterhalb der Geraden~$\overline{u_{i}\tilde{v}_{u_{i}}}$ liegen.
 
 \todo{Bild malen, das versteht sonst keiner}
 
-\section{Partitioning (Zerlegunsstrategie)}
+\section{Partitioning}
 
-Meistens ist das Problem als ganzes sehr kompliziert. Deshalb versucht man, dieses in Teilprobleme zu zerlegen.
-Dabei müssen die Teilergebnisse zu einer Gesamtlösung zusammengefügt werden.
+\highl{Partitioning} oder auch Zerlegunsstrategie genannt, ähnelt
+dem Teile-und-Herrsche-Ansatz (\autoref{sec:teile-herrsch}). Das Problem wird
+in kleinere Teilprobleme zerlegt, diese werden gelöst und zu einer
+Gesamtlösung wieder zusammengesetzt.
+
+Meistens ist das Problem als ganzes sehr kompliziert. Deshalb versucht man,
+dieses in Teilprobleme zu zerlegen. Dabei müssen die Teilergebnisse zu einer
+Gesamtlösung zusammengefügt werden.
 
 \begin{bsp}
   Merge (INPUT: 2 sortierte Folgen beide Länge $n$, OUTPUT: eine sortierte Folge $C$)
@@ -2245,6 +2252,7 @@ Als Konsequenz aus \autoref{satz:kruskal} ergibt sich:
 \begin{algorithm}
   \dontprintsemicolon
   \caption{Rangbestimmung einer Folge bezüglich einer wesentlich größere Folge}
+  \label{alg:rang}
   \KwIn{$A^{n}$ und $B^{m}$, wobei $\sqrt{m}$ ganzzahlig}
   \KwOut{$Rang(B:A)$}
   \If(\tcc*[f]{$B$ zu kurz}){$m<4$}{trivial mit Kruskal, da $p=n$\nllabel{line:step1}\;
@@ -2275,10 +2283,10 @@ Als Konsequenz aus \autoref{satz:kruskal} ergibt sich:
   \begin{proof}
     Die (worst case) Laufzeit für den gesamten Algorithmus sei $T(n,m)$.
 
-    Der erste Schritt (\autoref{line:step1}) geht in $O(1)$~\Time mit
-    $O(n)$~\Work, also $T(n, 3) = O(1)$.
+    Der erste Schritt (\autoref{line:step1} in \autoref{alg:rang}) geht in
+    $O(1)$~\Time mit $O(n)$~\Work, also ist $T(n, 3) = O(1)$.
 
-    Der zweite Schritt (\autoref{line:step2}) zur Bestimmung von
+    Der zweite Schritt (\autoref{line:step2} in \autoref{alg:rang}) zur Bestimmung von
     $Rang(B[i\cdot\sqrt{m}]:A)$ verwendet $\sqrt{n}$~Prozessoren und benötigt
     nach \autoref{satz:kruskal} $O\bigl(\frac{\log(n+1)}{\log(p+1)}\bigr) =
     O(1)$~\Time und $O(\sqrt{m}\cdot\sqrt{n}) = O(n+m)$~\Work.
@@ -2296,8 +2304,8 @@ Als Konsequenz aus \autoref{satz:kruskal} ergibt sich:
     da die Elemente aus einem $B_{i}$ nicht in einem $A_{k}$ ($k\ne i$) liegen
     können --~die Pfeile überschneiden sich nicht.
 
-    Die Zeit für den dritten Schritt (\autoref{line:step3})
-    $Rang(B_{i}:A_{i})$ ist also $T(n_{i},\sqrt{m})$~\Time. Da diese alle
+    Die Zeit für den dritten Schritt $Rang(B_{i}:A_{i})$ (\autoref{line:step3}
+    in \autoref{alg:rang}) ist $T(n_{i},\sqrt{m})$~\Time, da diese alle
     parallel ausgeführt werden, ist
     \begin{gather*}
       T(n,m) \leq  O(1) + \max_{i} T(n_{i}, \sqrt{m}) = O(\log\log m)
