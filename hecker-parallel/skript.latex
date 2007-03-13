@@ -1175,215 +1175,172 @@ $u_{i+1}$ unterhalb der Geraden~$\overline{u_{i}\tilde{v}_{u_{i}}}$ liegen.
 \todo{Bild malen, das versteht sonst keiner}
 
 \section{Partitioning}
+\label{sec:partitioning}
 
-\highl{Partitioning} oder auch Zerlegunsstrategie genannt, ähnelt
-dem Teile-und-Herrsche-Ansatz (\autoref{sec:teile-herrsch}). Das Problem wird
-in kleinere Teilprobleme zerlegt, diese werden gelöst und zu einer
-Gesamtlösung wieder zusammengesetzt.
+\highl{Partitioning} oder auch \highl{Zerlegunsstrategie} genannt, ähnelt
+dem Teile-und-Herrsche-Ansatz (\autoref{sec:teile-herrsch}). Ein Problem wird
+in unabhängige Teilprobleme zerlegt, diese werden einzeln gelöst und aus deren
+Teillösugen die Gesamtlösung konstruiert. Der Unterschied zum
+Teile-und-Herrsche-Ansatz ist, dass beim Partitioning die Zerlegung in
+Teilprobleme kompliziert, aber der Aufbau der Gesamtlösung einfach ist.
 
-Meistens ist das Problem als ganzes sehr kompliziert. Deshalb versucht man,
-dieses in Teilprobleme zu zerlegen. Dabei müssen die Teilergebnisse zu einer
-Gesamtlösung zusammengefügt werden.
+\begin{defini}
+  Eine Folge~$A=(a_{1},\dotsc, a_{n})$ heißt genau dann \highl{sortiert}, wenn
+  für alle Folgeglieder größer oder gleich ihren Vorgängern sind: $\forall
+  i\in\{1,\dotsc,n\} \forall j\in\{1,\dotsc,i\}\colon a_{j}\leq a_{i}$.
+\end{defini}
+
+\begin{defini}
+  Als den \highl{Rang} eines Elements~$x$ bezüglich einer
+  Menge~$A=\{a_{1},\dotsc, a_{n}\}$ bezeichnet man die Anzahl der Elemente aus
+  $A$, die kleiner oder gleich $x$ sind.
+  \begin{gather*}
+    Rang(x:A) := \card\{ a\colon a\in A \wedge x\leq a\}
+  \end{gather*}
+
+  Als den \highl{Rang} einer Folge~$B=(b_{1},\dotsc, b_{n})$ bezüglich einer
+  Menge~$A=\{a_{1},\dotsc, a_{m}\}$ bezeichnet man die Folge der Ränge der
+  Elemente von $B$
+  \begin{gather*}
+    Rang(B:A) := (Rang(b_{1}:A), Rang(b_{2}:A),\dotsc,Rang(b_{n-1}:A), Rang(b_{n}:A))
+  \end{gather*}
+\end{defini}
 
 \begin{bsp}
-  Merge (INPUT: 2 sortierte Folgen beide Länge $n$, OUTPUT: eine sortierte Folge $C$)
-
-  Herrsche ist einfach, teile trivial.
-
-  $A=(a_1,\ldots,a_n)$, $B=(b_1,\ldots,b_n)$\\
-  \[
-  a_i, b_i \in S, \quad (S,\subseteq) \quad \text{(Halbordnungsrelation)}
-  \]
-
-  (reflexiv, antisymmetrisch, transitiv und total) \\
-
-  \begin{defini}
-    Sei $X = (x_1,\ldots,x_t) \quad x_i \in S,\quad  i=1 \ldots t$
-    \[
-    \text{Rang } (x: X) = \bigl|\left\{ y\, |\, y \leq x,\, y \in \left\{ x_1, \ldots, x_t\right\}\right\}\bigr|
-    \]
-  \end{defini}
-  \begin{bsp}
-    Rang $(4, (5,7,23,25))=0$
-  \end{bsp}
-
-  \[
-  \text{Rang } (Y : X) := (r_1, \ldots, r_s) : r_\sigma = \text{Rang } (y_\sigma : X), \quad \sigma = 1,\ldots,s
-  \]
-
-  \subsubsection*{Elementarer Algorithmus}
-  Mische $(A,B)$
-  \underline{Ziel:} Bestimmung des Ranges für alle $x \in A \cup B$, also
-  Rang $(x: A \cup B)$, damit kennen wir den Platz von $x$ in $C$
-
-  \[
-  \text{Rang } (x: A \cup B) = \text{Rang }(x:A) + \text{Rang }(x:B) \qquad (\forall x \in A \cup B)
-  \]
-
-  \underline{es genügt:} Rang $(B:A)$ und Rang $(A:B)$
-
-  \todo{Bild Merge einfügen}
-
-  \subsubsection*{Binäre Suche:} $O(\log n)$ pro Element
-  $\to$ parallel: $=(\log n)$ auf CREW\\
-
-  $\to$ WORK $O(n\log n)$
-
-  \todo{Bild Merge 2 einfügen}
-
-  $\underbrace{\text{Mische } (B_i,A_i)}_{\text{"`Setzen der Pfeile"'}}$ untereinander und "`klebe"'.\\
-
-  \underline{Programm:} für Partition ($\log m$ und $\frac{m}{\log n}$ sind ganze Zahlen)\\
-
-  % Sei $Y\subseteq S$.
-  % \begin{equation*}
-  %   Rang(Y:X) := (Rang(y_{1}:S),\ldots,Rang(y_{s}:S))
-  % \end{equation*}
-  %
-  % $Y=\{y_{1},\ldots,y_{s}\}$ (genauer: $Y=(y_{1},\ldots,y_{s})$)
-  %
-  % $A,B \rightarrow C^{n+m}$: $C$ sortiert
-  %
-  % Annahme (o.B.d.A.): Ele. von $A \cup B$ seien paarw. verschieden.
-  %
-  % Beisp.: A=(3,5,7), B=(2,4,6)
-  % Rang(2:A) = 0
-  % Rang(2:B)=1
-  % Rang(2:A$\cup$B)=1=Rang(2:A)+Rang(2:B)
-  %
-  % Allg.: Rang(x:A$\cup$B)=Rang(x:A)+Rang(x:B)
-  %
-  % wenn Rang(x:A$\cup$B)=i $\Rightarrow$ x=$c_{i}$
-  % (Sei $x\in A \cup B$)
-  %
-  % \begin{folger}
-  %   Wenn für allle $x\in A \cup B$ der $Rang(x:A \cup B)$ bekannt ist, ist die
-  %   gesuchte sortierte Menge $C$ bekannt.
-  % \end{folger}
-  %
-  % \begin{bemerk}
-  %   Dazu reicht es aus Rang(A:B) und Rang(B:A) zu berechnen.
-  % \end{bemerk}
-  %
-  % \begin{folger}
-  %   Es reicht, den Algo. für die Bestimmung dein rang(B:A) anzugeben.
-  %
-  %   \underline{genauer:} Die \Time-\Work-Komplexität hierfür ist identisch
-  %   mit der für MERGE.
-  % \end{folger}
-  %
-  % Algo.: $\forall b\in B$ suche über bin. Suchen $Rang(b:A^{n})$ (pardo)
-  % $O(\log n) \Time, O(n \log n)$ \Work $\rightarrow$ nicht optimal, da MERGE im
-  % seriellen nur O(n) benötigt.
-
-  % \begin{description}
-  %  \item[Ziel:] Das gleiche optimal erreichen.
-  %  \item[Strategie:] Partitioning
-  % \end{description}
-
-  \todo{Algorithmus umstellen}
-  % \begin{algorithm}[htb]
-  %   \caption{Mischen}
-  %   \begin{algorithmic}[1]
-  %     \REQUIRE $A^{n}, B^{m}$ sortiert
-  %     \ENSURE Zerlegung: $k(m) (= \frac{m}{\log m})$ Paare $(A_i,B_i):\quad
-  %     |B_i| = \log m, \sum |A_i| = n$\\
-  %     Alle Elemente $A_i$ bzw. $B_i$ sind größer oder gleich aller Elemente von $A_{i-1}$ bzw.
-  %     $B_{i-1}\quad (1\leq i \leq k-1)$
-
-  %     \STATE $j(0) := 0$
-  %     \STATE $j(k(m)) := j(\frac{m}{\log n}) := n$
-  %     \FOR{$1 \le i \le k(m)-1$ \textbf{par}}
-  %     \STATE $j(i) :=$ Rang$(b_{i \log m} : A)$
-  %     \ENDFOR
-  %     \FOR{$0 \le i \le k(m)-1$ \textbf{par}}
-  %     \STATE $B_i := (b_{i \log (m+1)},\ldots,b_{(i+1) \log m)}$
-  %     \STATE $A_i := (a_{j(i)+1},\ldots,a_{j(i+1)})$
-  %     \ENDFOR
-  %   \end{algorithmic}
-  % \end{algorithm}
-
-  \begin{satz}
-    Der Algo. benötigt $O(\log n)$ \Time und $O(n+m)$ \Work
-
-    \begin{proof}
-      Rechenzeit klar
-
-      %     Sei $m,n>4, m<n \Rightarrow \frac{m}{\log m} < \frac{n}{\log n}
-      %     (\lim_{n\rightarrow\infty}\frac{n}{\log n}=\infty$
-      %     \begin{align}
-      %       m<m+n &\Rightarrow \frac{m}{\log m}<\frac{m+n}{\log (m+n)}\\
-      %       &\Rightarrow \frac{m\log(m+n)}{\log m}<m+n
-      %     \end{align}
-      %     \Work: $O(\underbrace{\frac{m}{\log m}}_{=k(m)}\cdot\log m)
-      %       \leq O(\frac{m\log (m+n)}{\log m}) < O(m+n)$
-
-      Schritt 2:
-      \[
-      O(\log n \frac{m}{\log m}
-      \]
-      \[
-      a < b \to \log a < \log b
-      \]
-      \[
-      \lim \frac{z}{\log z} \to 0 \Rightarrow \frac{m}{\log m} < \frac{n+m}{\log (n+m)}
-      \Rightarrow \frac{m \log (n+m)}{\log m} < n+m
-      \]
-      \[
-      \frac{m \log n}{\log m} < \frac{m \log (n+m)}{\log m} < n+m
-      \]
-      \[
-      \Rightarrow \Work \text{ ist linear } (O(m+n))
-      \]
-    \end{proof}
-  \end{satz}
-
-  \begin{satz}
-    $A^n$ (sortiert) und $B^n$ (sortiert) lassen sich in $O (\log n)$ Zeit optimal mischen.
-    \begin{proof}
-      \begin{description}
-       \item [1. Fall:] Nicht nur die $B_I$ sondern auch $A_i$ haben $O(\log n)$ Elemente:\\
-        Serielles Mischen für alle Paare liefert das Resultat in $O(\log n)$ \Time mit
-        $O(n)$ \Work.
-       \item [2. Fall:]
-
-        \todo{Bild MergeTrick einfügen}
-
-        Dann das analoge Vorgehen mit Vertauschung der Rollen für zu lange $A_i$! Rest wie im Fall 1.
-      \end{description}
-      $\Rightarrow$ Optimaler paralleler Algorithmus, der aber nicht streng optimal ist.
-    \end{proof}
-  \end{satz}
-
-  % \begin{bemerk}
-  %   Der Algorithmus arbeitet korrekt im folgenden Sinn: wenn die Mengen
-  %   $(A_{i}, B_{i})$ untereinander gemischt werden, so erhält man das
-  %   sortierte $C$ durch aneinanderheften der einzelnen Ergebnisse.
-  %
-  %   Mische $B_{0}$ mit $A_{0}$ $\rightarrow$ $C_{0}$\\
-  %   Mische $B_{1}$ mit $A_{1}$ $\rightarrow$ $C_{1}$\\
-  %   Mische $B_{2}$ mit $A_{2}$ $\rightarrow$ $C_{2}$\\
-  %   $\vdots$
-  %
-  %   $C:C_{0}C_{1}C_{2}C_{3}\ldots$
-  % \end{bemerk}
-  %
-  % Wie teuer? trivial: \Work$=O(n+m)$ (mit seriellen mischen jeweils),
-  % \Time? |$B_{i}$|=$\log m$ Sei $m=n\log n$
-  % Fall |$A_{i}$|=$\log n$ $\Rightarrow$ $O(\log n)$ \Time
-  %
-  % sei nicht erfüllt $A_{i}=O(\log n)$ für $i$
-  %
-  % jetzt: $A_{i}$ in B einmischen
-  %
-  % % Skizze Algokorrektur
-  %
-  % $O(\log n)$ \Time, $O(n)$ \Work jetzt kann $A_{i}$ mit $B_{i}$ in
-  % $O(\log n)$ \Time mit $O(n)$ \Work gemischt werden!
-
+  \begin{align*}
+    Rang(4 : \{7,25,23,5\}) &=0 & Rang(12: \{5,7,23,25\}) &=2\\
+    Rang(4: \emptyset) &= 0
+       & Rang(12: \{1,3,2\}) &= 3\\
+    Rang((4,12) : \{5,7,23,25\}) &= (0,2) &
+       Rang((12,4):\{7,23,3,25,1,2,5\}\bigr) &= (5,3)
+  \end{align*}
 \end{bsp}
 
-\section{Pipelining}
+\begin{defini}
+  Bei dem Problem \highl{Merge} geht es darum, zwei sortierte Folgen~$A$ und
+  $B$ der Länge~$n$ bzw. $m$ zu einer sortierten Folge~$C$ der Länge~$n+m$ zu
+  vereinen.
+\end{defini}
+
+\begin{bemerk}
+  Im Folgenden seien zur Vereinfachung die Elemente aus $A$ und $B$ paarweise
+  verschieden.
+\end{bemerk}
+
+\begin{satz}
+  Seien $A$ und $B$ zwei Folgen mit $n$ bzw. $m$~Elementen. Die
+  Folge~$C=(c_{1},\dotsc, c_{n+m})$ mit $c_{i} = x\in A\cup B$ genau dann,
+  wenn $i=Rang(x:A\cup B)$, ist die gemischte, sortierte Folge von $A$ und $B$.
+  \begin{proof}
+    trivial
+  \end{proof}
+\end{satz}
+
+Um also zwei Folgen~$A$ und $B$ zu einer sortierten Folge~$C$ zu
+vereinen, muss man für alle $x\in A\cup B$ den Rang von $x$ in $A\cup B$
+bestimmen. Dabei gilt die folgenden Beziehung:
+\begin{gather*}
+  Rang(x: A\cup B) = Rang(x:A) + Rang(x:B)
+\end{gather*}
+
+Sind $A$ und $B$ bereits sortiert, so ist der Rang von $a\in A$ bezüglich $A$
+bzw. der Rang von $b\in B$ bezüglich $B$ die Postition in der Folge. Bestimmt
+man dann noch $Rang(A:B)$ und $Rang(B:A)$, so ist die sortierte, gemischte
+Folge von $A$ und $B$ leicht zu bestimmen.
+
+\begin{bemerk}
+  Im Folgenden seien $A$ und $B$ immer sortiert.
+\end{bemerk}
+
+Da beide Aufgaben ($Rang(A:B)$ und $Rang(B:A)$) symetrisch sind, genügt es den
+Vorgang $Rang(A:B)$ zu analysieren: Da die Folge~$B$ sortiert ist, kann man
+für ein Element~$x\in A$ mit binärer Suche in $O(\log m)$~\Time mit einem
+Prozessor $Rang(x:B)$ bestimmen.
+
+Da alle Operationen parallel auf einer CREW-PRAM ausgeführt werden können,
+ergibt sich also $O(\log(m+n))$~\Time und $O((m+n)\log(m+n))$~\Work für den
+gesamten Algorithmus. Da das Mischen im seriellen in Linearzeit
+$T^{*}(n)=\Theta(n)$~\Time geht, ist der Algorithmus nicht optimal.
+
+Die Strategie, um den Algorithmus optimal zu gestalten, ist
+\highl{Partitioning}.
+\begin{enumerate}
+ \item Zerlegung (Partitioning) von $A$ und $B$ in $\frac{m}{\log m}$~Blöcke
+  der Länge~$\log m$.
+ \item Mischen der Blöcke mit einem sequentiellen Algorithmus (binäre Suche),
+  der in Linearzeit läuft. Das Mischen der Blöcke geschieht parallel.
+ \item Aneinanderhängen der gemischten Blöcke zur Folge~$C$.
+\end{enumerate}
+
+\begin{algorithm}
+  \dontprintsemicolon
+  \caption{Partitioning}
+  \label{alg:mischen}
+  \KwIn{Zwei sortierte Folgen $A$ und $B$ mit $n$ bzw. $m$ Gliedern.}
+  \KwOut{Menge von Paaren von Teilfolgen $(A_{i},B_{i})$, wobei $A_{i}\subset
+    A$ mit $\sum \card A_{i} = n$ und $B_{i}\subset B$ mit $\card B_{i}=\log
+    m$ und alle Elemente aus $A_i$ bzw. $B_i$ sind größer oder gleich aller
+    Elemente von $A_{i-1}$ bzw. $B_{i-1}$ ($1\leq i \leq k-1$)}
+  \todo{den Output-Spaß kürzer formulieren}\\
+
+  $k:= \frac{m}{\log m}$\;
+  $j[0] := 0$\;
+  $j[k] := n$\;
+  \Forpar{$i:= 1$ \KwTo $k-1$}{
+    $j(i) := Rang(B[i\cdot \log m] : A)$\tcc*{mit binärer Suche}
+  }
+  \Forpar{$i:= 0$ \KwTo $k-1$}{
+    $B_i := \bigl[B[i\cdot \log (m+1)],\dotsc,B[(i+1)\cdot \log m]\bigr]$\;
+    $A_i := \bigl[A[j[i]+1],\dotsc,A[j[i+1]]\bigr]$\;
+  }
+\end{algorithm}
+
+\begin{satz}
+  Der \autoref{alg:mischen} benötigt $O(\log n)$~\Time und $O(n+m)$~\Work.
+
+  \begin{proof}
+    Für den ersten Schritt benötigt der Algorithmus $O(1)$~\Time und
+    $O(1)$~\Work.
+
+    Da die Blöcke in $B$ alle die Länge~$\log m$ haben und in Blöcke der
+    Länge~$\logn n$ eingegliedert werden, ist der Aufwand für den zweiten
+    Schritt $O(\frac{m}{\log m}\cdot\log n)=O(n)$~\Work. Die Rechenzeit ist
+    $O(\log n)$~\Time.
+
+    Da $\lim_{z\rightarrow\infty}\frac{z}{\log z} = \infty$ ist, gilt für
+    $m<m+n$
+    \begin{gather*}
+      \frac{m}{\log m} < \frac{m+n}{\log(m+n)} \quad\Rightarrow\quad
+         \frac{m}{\log m} \log n < \frac{m}{\log m} \log(m+n) < m+n = c\cdot n
+    \end{gather*}
+
+    Der dritte Schritt geht in $O(1)$~\Time mit $O(n+m)$~\Work.
+  \end{proof}
+\end{satz}
+
+Damit ist aber erst eine Vorstufe der Folge~$C$ erstellt. Die Paare
+$(A_{i},B_{i})$ müssen noch ineinander gemischt werden und diese Ergebnisse
+dann aneinander "`geklebt"' werden. Dabei ist zu beachten, dass für einige
+Paare die $A_{i}$ größer als $\log n$ seien können. Das Mischen, genauer
+$Rang(B_{i}:A_{i})$, würde also länger als $\log n$~\Time in Anspruch nehmen.
+Man zerlegt $A_{i}$ nochmal in Abschnitte der Länge $\log n$ und bestimmt für
+diese Abschnitte den $Rang$. Da sich aber die Pfeile nicht überschneiden
+können, müssen die $\log n$-Abschnitte von $A_{i}$ zwischen $B_{i}$
+eingegliedert werden. Damit hatt man dann wieder Paare, deren Länge $\leq\log
+n$ ist.
+
+\todo{Ich finde, man könnte mal erklären/beweisen, dass sich die Pfeile nicht
+  überschneiden können.}
+
+\help{Ich würde an der Stelle argumentieren, dass die Pfeile das Band in
+  $n+m$~Streifen erlegen, die alle $\leq\log(n+m)$ sind. Also lässt sich das
+  in $\log(n+m)$~\Time eingliedern. Ist das richtig?}
+
+Der parallele Algorithmus ist aber nicht streng optimal, da es einen
+Algorithmus gibt, der in $O(\log\log n)$~\Time mit $O(n)$~\Work funktioniert.
+Dazu später noch einmal mehr im \autoref{sec:mischen}.
+
+\section{Pipelin-Verfahren}
 
 2-3-Bäume (ähnlich Top-Down-2-3-4-Bäumen, ausbalancierter Suchbaum mit Knoten aus zwei oder drei Elementen)\\
 
@@ -2223,9 +2180,13 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
   }
 \end{algorithm}
 
-\subsection{Mischen}
+\section{Mischen}
+\label{sec:mischen}
 
-Als Konsequenz aus \autoref{satz:kruskal} ergibt sich:
+Das Thema Mischen war bereits Gegenstand des Abschnitts über Partitioning
+(\autoref{sec:partitioning}). Dabei wurden für die Operation $Rang(x:A)$ die
+serielle, binäre Suche eingesetzt. Mit den neuen Ideen von Kruskal über die
+parallele Suche ergibt sich folgende Konsequenz aus \autoref{satz:kruskal}:
 \begin{satz}
   Für das Bestimmen des Rangs einer sortierten Folge~$Y$ mit $m$~Gliedern
   bezüglich einer sortierten Folge~$X$ mit wesentlich mehr Gliedern ($n\gg m =
