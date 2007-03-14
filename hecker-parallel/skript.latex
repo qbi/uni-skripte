@@ -613,6 +613,7 @@ die gleichzeitig möglich sind (obere Stufe) und die Allokation über das
 Theorem von Brent (\autoref{satz:brent}) zu behandeln.
 
 \chapter{Die Güte von parallelen Algorithmen und das Theorem von Brent}
+\label{sec:algo-bewertung}
 
 Für die Bewertung serieller Algorithmen ist entscheident, wie viele
 Rechenoperationen (\Time) und wie viel Speicherplatz (\Space) sie zur
@@ -767,10 +768,9 @@ Bewerten wir mit dieser Maßgabe die Summation von $n$~Zahlen, so zeigt sich:
   $\frac{n}{\log n}$~Zahlen (Laufzeit: $O(\log\frac{n}{\log n})$ mit
   $\frac{n}{\log n}$~Prozessoren), ist der Algorithmus \textit{optimal}, da die
   Kosten $C_{\frac{n}{\log n}}(n) = O(\frac{n}{\log n}) \cdot \bigl(O(\log n) + O(\log
-  \frac{n}{\log n})\bigr) = O(n)$ betragen.
-  \label{alg:sum-optimal}
-  \todo{Diesen Algorithmus mal in ein eigenes Beispie packen, damit man ihn
-    besser referenzieren kann.}
+  \frac{n}{\log n})\bigr) = O(n)$ betragen. Dieses Vorgehen bezeichnet man als
+  Accelarated Cascading, was im \autoref{sec:acc-casc} noch einmal genauer
+  besprochen wird.
 \end{itemize}
 
 Die Definition ist also unzureichend. Eine bessere Definition ergibt sich mit
@@ -1303,7 +1303,7 @@ Die Strategie, um den Algorithmus optimal zu gestalten, ist
     $O(1)$~\Work.
 
     Da die Blöcke in $B$ alle die Länge~$\log m$ haben und in Blöcke der
-    Länge~$\logn n$ eingegliedert werden, ist der Aufwand für den zweiten
+    Länge~$\log n$ eingegliedert werden, ist der Aufwand für den zweiten
     Schritt $O(\frac{m}{\log m}\cdot\log n)=O(n)$~\Work. Die Rechenzeit ist
     $O(\log n)$~\Time.
 
@@ -1448,143 +1448,146 @@ $\Rightarrow O(\log n + \log k)=O(\log n)$ \Time
 \end{bemerk}
 
 \section{Accelarated Cascading}
+\label{sec:acc-casc}
 
-1. sehr schnell, nicht opt. Algo.
-2. langsam Algo. optimal
+Im \autoref{sec:algo-bewertung} kam bereits die Strategie des
+\highl{Accelarated Cascading} schon einmal zum Einsatz. Die Idee ist, einen
+langsamen, optimalen und einen schnellen, nicht optimalen Algorithmus so zu
+kombinieren, dass ein schneller(er) und optimaler Algorithmus entsteht.
+\begin{enumerate}
+ \item Verkleinere das Problem mit einem optimalen, aber langsamen Algorithmus,
+  bis durch die Anwendung des nicht optimalen, aber schnellen Algorithmus'
+  sich der \Work nicht erhöht.
+ \item Wende auf das verkleinerte Problem aus dem ersten Schritt den nicht
+  optimalen, aber schnellen Algorithmus an.
+\end{enumerate}
 
-speziell: seqential subset
+Ein Spezialfall des Accelarated Cascading ist das \highl{Sequential Subset}
+bei dem die zwei Algorithmen nicht nacheinander ausgeführt werden, sondern
+ineinander verschachtelt, so dass einer der beiden den globalen Ablauf
+bestimmt und der andere für die lokale Arbeit eingesetzt wird.
 
-Beispiel: Bestimmen des Maximums auf common CRCW in $O(\log\log n)$ \Time
-\emph{optimal}.
+Durch den Einsatz von Sequential Subset und Accelarated Cascading kann man
+einen Algorithmus bekommen, der in $O(\log\log n)$~\Time mit $O(n)$~\Work das
+Maximum bestimmt. Dies gilt aber nur für eine CRCW-PRAM. Auf einer CREW-PRAM
+gilt prinzipell $\Omega(\log n)$~\Time unabhängig von \Work.
 
 \begin{satz}
-  Das ist auf der CREW prinzipiell unmöglich: dort gilt $\Omega(\log n)$
-  für die Zeit (unabh. von \Work).
+  Auf einer CREW-PRAM ist $\Omega(\log n)$ die untere Schranke für das
+  bestimmen des Maximums von $n$~Elementen.
 
-  Spezialfall eines Satzes: Def.:
-  $n$-stell. Boolsche Fnkt. $f^{n}: \{0,1\}^{n}\rightarrow\{0,1\}
-  I=(x_{1},\ldots,x_{n}); I(i)  := (x_{i},\ldots,\bar{x_{i}},\ldots,x_{n})$
+  \begin{proof}
+    Das Problem ist äquivalent zur Berechnung einer $n$-stelligen boolschen
+    Funktion~$f\colon\{0,1\}^{n}\rightarrow\{0,1\}$.
 
-  $I$ kritisch $:\Leftrightarrow$ $\forall$ $i:1 \leq i \leq n: f(I)\ne
-  f(I(i))$ ($\max\{x_{1},\ldots,x_n\}$ -- $(0,\ldots,0)$ kritisch)
+    Für eine Eingabe~$I=(x_{1},\dotsc, x_{n})\in\{0,1\}^{n}$ ist $I(i) =
+    (x_{1},\dotsc, \neg x_{i},\dotsc, x_{n})\in\{0,1\}^{n}$. Eine Eingabe
+    heißt genau dann kritisch, wenn für alle $i$ ($1\leq i\leq n$) gilt: $f(I)
+    \ne f(I(i))$. (Bezogen auf das Maximumproblem wäre die Folge
+    $(0,\dotsc,0)$ eine kritische Eingabe.)
+
+    Irgendwo kommt ein Haupttheorem her, das besagt: Besitzt eine Funktion
+    $f\colon\{0,1\}^{n}\rightarrow \{0,1\}$ eine kritische Eingabe, dann sind
+    auf der CREW-PRAM $\Omega(\log n)$~Schritte zur Berechnung von $f$ nötig.
+    \help{Warum? Wieso? Weshalb? Können wir das beweisen oder dauert das zu
+      lange?}
+  \end{proof}
 \end{satz}
-
-Haupttheorem: $f: \{0,1\}^{n} \rightarrow \{0,1\}$ besitze kritischen
-Input. Dann sind auf der CREW $\Omega(\log n)$Schritte zur Berechnung von
-$f$ nötig
-
-Alog: "`Maximum von $n$ Elementen"'
-INPUT: Array $A$ von $p$ verschiedenen Elementen
-OUTPUT: Boolsches Array $M: M[i] = 1 \Leftrightarrow A[i] = Max$
-begin
-\begin{Verbatim}
-for i \le i,j \le p pardo
-if A[i] \ge A[j]
-then B(i,j) := 1
-else B(i,j) := 0
-for 1 $\Leftarrow$ i <= p
-M(i) = B(i,j)$\wedge$\ldots$\wedge$ B(i,p)
-\end{Verbatim}
-end.
-
-\begin{lemma}
-  Auf der common CRCW (schreiben nur dann, wenn alle das gleich schreiben
-  wollen) kann das Maximum in O(1) >\Time mit O($p^{2}$) Operationen
-  berechnet werden.
-\end{lemma}
 
 % 7.5.
 
-1. Ziel: auf CRCW optimal in $O(\log \log n)$ \Time
-Schritt A: $O(\log \log n)$ \Time mit $O(n \log \log n)$ \Work
-Schritt B: Accellerated cascading $\rightarrow$ optimal
+Die Bestimmung des Maximums einer Folge von $n$~Elementen geht mit dem
+Binärbaumparadigma in $O(\log n)$~\Time mit $O(n)$~\Work. Das ist optimal, da
+das serielle Optimum $T^{*}(n)=\Theta(n)$ ist, aber es geht schneller.
+\autoref{alg:max-konst} bestimmt das Maximum in konstanter Zeit mit
+$O(n^{2})$~\Work und kann auf einer common CRCW-PRAM implementiert werden, da
+in \autoref{line:max} alle Prozessoren das gleiche schreiben. Dieser
+Algorithmus ist aber nicht optimal.
 
-2.) Bäume doppelt logarithmischer Tiefe
+\begin{algorithm}
+  \dontprintsemicolon
+  \caption{schnelle, nicht optimale Bestimmung des Maximums von $n$~Elementen}
+  \label{alg:max-konst}
+  \KwIn{Ein Feld~$A$ mit $n$ verschiedenen Elementen}
+  \KwOut{Boolsches Feld~$M$ der Länge an, für das gilt $M[i]=1 \Leftrightarrow
+    A[i]=\max A$}
+  \Forpar{$i:= 1$ \KwTo $n$}{
+    $M[i] := 1$\;
+    \Forpar{$j:= 1$ \KwTo $n$}{
+      \If{$A[i] < A[j])$}{$M[i] := 0$\nllabel{line:max}}
+    }
+  }
+\end{algorithm}
 
-% Grafik: Vergleich von \log n und wurzel(n)
-% Bild: Baum mit levels
+Das Problem an \autoref{alg:max-konst} ist, dass er zu viele Prozessoren
+verwendent, wärend beim Binärbaum von Stufe zu Stufe weniger Prozessoren
+verwendet werden. Kombiniert man beide Algorithmen in dem Sinne, dass man die
+Berechnung stufenweise ablaufen lässt und immer größere Gruppen von
+Prozessoren mit dem nicht optimalen Algorithmus zusammenfasst, so bekommt man
+die gewünschte Beschleunigung mit konstantem Aufwand.
 
-Die Wurzel habe $n=2^{2^{k-1}}$ Söhne, jeder dieser Söhne habe
-$2^{2^{k-2}}$ Söhne, $2^{2^{k-i-1}}$ Söhne für die Knoten im Level $i$
-(0$\leq i\leq k-1)$
+Die Gruppengröße soll doppeltexponentiell wachsen, d.\,h. in der ersten Stufe
+sind es 2er Gruppen, in der zweiten 4er Gruppen, in der dritten 16er Gruppen
+usw. Es entsteht ein sogenannter Baum mit doppellogarithmischer Tiefe.
+\begin{gather*}
+  \begin{array}{l*{6}{c}}
+    \text{Stufe}& \#\,\text{Eingabe}& \text{Gr.größe}&
+    \#\,\text{Gr.}& \text{Proz. pro Gr.}& \text{Proz. insg.}&
+    \#\,\text{Ausgabe}\\
+    1.& n = \frac{n}{2^{0}}& 2=2^{1}& \frac{n}{2}& 2^{2}& 2n& \frac{n}{2}\\
+    2.& \frac{n}{2} = \frac{n}{2^{1}}& 4=2^{2}& \frac{n}{8}& 4^{2}&
+      \frac{16n}{8} = 2n& \frac{n}{8}\\
+    3.& \frac{n}{8}=\frac{n}{2^{3}}& 16=2^{4}& \frac{n}{128}& 16^{2}&
+      \frac{256n}{128}=2n& \frac{n}{128}\\
+    4.& \frac{n}{128}=\frac{n}{2^{7}}& 256=2^{8}& \frac{n}{2^{15}}& 2^{16}&
+      \frac{2^{16}n}{2^{15}}=2n& \frac{n}{2^{15}}\\
+    \vdots\\
+    i.& n\cdot2^{1-2^{i-1}}& 2^{2^{i-1}}& n\cdot2^{1-2^{i}} ~(\star)&
+      (2^{2^{i-1}})^{2} = 2^{2^{i}}& 2n~(\star\star)& n\cdot
+      2^{1-2^{i}}
+  \end{array}
+\end{gather*}
 
-Jeder Knoten im Level k habe 2 Söhne. Bsp.: $k=3$ dann $n=2^{2^{3}}=256$
-Knoten. Wurzel hat $2^{2^{3-1}}=16$ Söhne
+Für die Rechnung~$(\star)$:
+\begin{gather*}
+  n\cdot2^{1-2^{i-1}}\cdot 2^{-2^{i-1}} = n\cdot2^{1-2^{i}}
+\end{gather*}
 
-% Bild: Baum mit 16 S"ohnen
+Für die Rechnung~$(\star\star)$:
+\begin{gather*}
+  n\cdot2^{1-2^{i-1}}\cdot2^{2^{i-1}} = n\cdot 2^{1}
+\end{gather*}
 
-\begin{lemma}
-  Jeder Knoten im Level $i$ (0$\leq$ i $\leq$ k-1) hat $2^{2^{k-i-1}}$
-  Söhne.
-\end{lemma}
+Das Maximum ist bestimmt, wenn die Ausgabe einer Stufe nur noch ein Element
+umfasst:
+\begin{align*}
+  n\cdot 2^{1-2^{i}} &= 1 &\Leftrightarrow&
+     & 2^{2^{i}-1} &= n\\
+  & & \Leftrightarrow& & 2^{i}-1 &=\log n\\
+  & & \Leftrightarrow& & i&= \log(1+\log n)
+\end{align*}
 
-\begin{lemma}
-  Die Gesamtzahl der Knoten im Level $i$ für 0$\leq$ i $\leq$ k-1 ist
-  $2^{2^{k}-2^{k-i}}$
-\end{lemma}
+Der Algorithmus braucht also $O(\log\log n)$~\Time und $O(n\cdot\log\log
+n)$~\Work und ist damit nicht optimal. Aber durch den Einsatz von Accelarated
+Cascading kann ein optimaler Algorithmus entworfen werden:
+\begin{enumerate}
+ \item Mit dem optimalen (Binärbaum-)Algorithmus reduziert man die Elemente
+  auf $\frac{n}{\log\log n}$ Stück und
+ \item arbeitet dann mit dem nicht optimalen, doppeltexponentiellen Algorithmus
+  weiter.
+\end{enumerate}
 
-3.) Algorithmus für das Max. auf der common CRCW.
+Der erste Schritt braucht $O(\log\log\log n)$~\Time und verwendet $O(n)$~\Work
+(da der Algorithmus optimal; grobe Abschätzung).
+\begin{align*}
+  n\cdot2^{-i} &= \frac{n}{\log\log n} &\Leftrightarrow&
+     & 2^{i} &= \log\log n& \Leftrightarrow& &i=\log\log\log n
+\end{align*}
 
-\begin{lemma}
-  Höhe des Baumes doppelt logarithmischer Tiefe für $n$ Blätter ist
-  $(\log \log n)+1=k+1$.
-\end{lemma}
-
-Wir nutzen den Algorithmus in $O(1)$ \Time mit $O(n^{2})$ \Work für $n$
-Elemente und arbeiten mit einem Baum doppelt logarithm. Tiefer. Damit
-haben brauchen wir in jedem Level $O(1)$ \Time und reduzieren den \Work auf
-$O(\log \log n)$
-
-\begin{lemma}
-  \Work pro Level ist $O(n)$.
-
-  \begin{proof}
-    Sei $v$ Knoten im Level $i$. Er hat seine Söhne in Level $i+1$. Das
-    sind $2^{2^{k-i-1}}$ Söhne. $\Rightarrow$ \Work
-    O($(2^{2^{k-i-1}})^{2}$ nach der Eigenschaft des O(1)-Algo.
-    $\Rightarrow$ O($2^{2^{k-i}}$ \Work. Nach Lemma~2:
-    ($2^{2^{k}-2^{k-i}}$)-mal $\Rightarrow$ O($2^{2^{k}}$)=O(n)
-  \end{proof}
-\end{lemma}
-
-\begin{folger}
-  Das Maximum von $n'$ Elementen kann auf der common CRCW in $O(\log\log
-  n')$ \Time mit $O(n' \log \log n')$ \Work berechnet werden.
-\end{folger}
-
-I: Binärbaum-Algo. $O(\log n)$ \Time optimal
-II: Algo (*) (folgerung) $O(\log \log n)$ \Time, $O(n\log\log n)$ \Work
-
-Algo I $\lceil\log\log\log n\rceil$ Level lang ausführen. Schritt 1:
-$\frac{n}{2^{1}}$ 2. $\frac{n}{2^{2}}$, 3. $\frac{n}{2^{3}}$
-$\frac{n}{2^{\log \log \log n}}=\frac{n}{\log \log n}$ Elemente äls Rest
-
-Diese $\frac{n}{\log \log n}$ Blätter für den Baum doppelt log. Tiefe
-verarbeiten wir weiter nach Algo II $\Rightarrow$ liefert das Maximum, wa
-gesucht ist. \Time $O(\log\log n)$
-
-\Work-Analyse:
-
-\begin{description}
- \item[Für I:] $O(n)$ (trivial, da I insgesamt optimal, also imsgesamt
-  $O(n)$ \Work benötigt!)
- \item[Für II:] Folgerung: $n'=\frac{n}{\log \log n}$
-  \begin{description}
-   \item[\textnormal{\Time:}] $O(\log \log n')=O(\log \log n)$
-   \item[\textnormal{\Work:}] $O(\frac{n}{\log \log n} \log \log
-    (\frac{n}{\log \log n})= O(n)$
-  \end{description}
-\end{description}
-
-Acce cas: Man arbeitet mit einem optimalen Algorithmus solange, bis man
-noch $\log\log n$ Elemente hat, setzt dann einen nichtoptimalen schnellen
-Algo an.
-
-Alternativ:
-
-% alternativer Baum
-
-Zusammenwirken von Acc. casc. und sequential subset
+In den zweiten Schritt gehen $\frac{n}{\log\log n}$~Elemente ein. Das Ergebnis
+wird also in $O(\log\log\frac{n}{\log\log n})=O(\log\log n)$~\Time mit
+$O(\frac{n}{\log\log n}\cdot\log\log\frac{n}{\log\log n})=O(n)$~\Work
+bestimmt. Damit ist der Algorithmus optimal und alle sind glücklich.
 
 \section{Aufbrechen von Symmetrien}
 
@@ -2315,16 +2318,8 @@ Leider ist das Ergebnis noch nicht WT-optimal, da das Mischen im seriellen
 Fall in $T^{*}(n,m)=O(n+m)$~\Time geht. Zur Vereinfachung sei im Folgenden
 immer $n=m$.
 
-Mit dem in \autoref{alg:sum-optimal} auf Seite~\pageref{alg:sum-optimal}
-angewandten Verfahren, können wir auch hier zu einem optimalen Algorithmus
-kommen:
-\begin{enumerate}
- \item Verkleinere das Problem mit einem optimalen, aber langsamen Algorithmus,
-  bis durch die Anwendung des nicht optimalen, aber schnellen Algorithmus'
-  sich der \Work nicht erhöht.
- \item Wende auf das verkleinerte Problem aus dem ersten Schritt den nicht
-  optimalen, aber schnellen Algorithmus an.
-\end{enumerate}
+Mit Accellerated Cascading können wir auch hier zu einem optimalen Algorithmus
+kommen.
 
 \begin{enumerate}
  \item Zerlege $A$ und $B$ in $\frac{n}{\log\log n}$~Abschnitte der Länge
