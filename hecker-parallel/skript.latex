@@ -1,20 +1,9 @@
 % ToDo:
-%  * es müssen an allen align, gather und sonstigen Matheumgebungen die
-%    Sterne hinzugefügt werden, wenn sie nicht eine Nummer haben sollen
-%    align* gather*
-%  * einzeilige Gleichungen sollen equation werden
-%  * sinnvolle Umgebung für Algorithmen finden, unter Umständen selbst
-%    etwas bauen; aber es sollte einheitlich im ganzen Dokument werden
-%  * fehlenden Vorlesungen ergängen
-%  * Verweise untereinander ergänzen: \thref, \eqref mit \label
 %  * fehlende Grafiken ergänzen
-%  * in den ersten Vorlesungen fehlen noch die Umgebungen für Sätze und
-%    Folgerungen und Definitionen
-%  * an sehr vielen Stellen fehlen die Dollars um mathematische Sachen
-%    wie n oder k oder i oder \log oder $O(n^{2})$
 %  * Überlegen, ob man für KOSTEN auch einen Befehl macht. Kommt es oft
 %    genug im Dokument vor?
-%  * Alle Bilder in center-environment
+%  * Den Stil in den Algorithmen vereinheitlichen. Auf Felder sollte immer mit
+%    A[i] zugegriffen werden und nicht mit $a_{i}$
 
 % Einige zusätzliche Informationen für rubber
 %  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
@@ -911,7 +900,8 @@ Der Algorithmus zur Berechnung aller Präfixsummen einer Folge
 \end{enumerate}
 
 Der Algorithmus lässt sich für beliebige zweistellige, assoziative
-Operationen~$\star$ verwenden.
+Operationen~$\star$ verwenden und kann für beliebige $n$-stellige, assoziative
+Operationen erweitert werden.
 \begin{gather*}
   s_{k} = x_{1} \star x_{2} \star\dotsb\star x_{k-1} \star x_{k}
 \end{gather*}
@@ -922,9 +912,11 @@ daher optimal. Da ein serieller Algorithmus für die Berechnung der
 $n$.\,Präfixsumme mindestens einmal alle Folgenglieder betrachten muss,
 benötigt er $O(n)$~\Time. Der parallele Präfixsummenalgorithmus ist also auch
 streng optimal.
+\todo{Prüfen! Diese Aussage stimmt IMO nicht, da wir später noch einen
+  schnelleren Algorithmus bekommen.}
 
 Wenn die Zahlen in Form einer verketteten Liste gegeben sind, kann dieser
-Algorithmus nicht verwendet werden, da die Zuordnung von $n$.\,Element auf
+Algorithmus nicht verwendet werden, da die Zuordnung des $n$.\,Element auf den
 $n$.\,Prozessor, wie sie für den Aufbau des Baums notwendig ist, nicht in
 $O(1)$ durchgeführt werden kann. Dazu später mehr unter dem Thema
 Parallel Prefix im \autoref{sec:par-pref}.
@@ -947,27 +939,27 @@ Ein \highl{Wald} ist eine Menge von paarweise disjunkten Bäumen, die durch
 ihre Wurzel gekennzeichnet sind. Im Speziellen geht es um wurzelgerichtete
 Bäume, d.\,h. jeder Knoten des Baums, außer der Wurzel~$r$, hat genau einen
 Vorgängerknoten und der Baum ist in der Form gegeben, dass jeder Knoten auf
-seien Vorgängerknoten verweist. Der Vorgängerknoten des Wurzelknoten ist er
+seien Vorgängerknoten verweist. Der Vorgängerknoten des Wurzelknotens ist er
 selbst. \autoref{fig:wald}
 
 \begin{algorithm}
   \caption{Pointer jumping}
   \label{alg:ptr-jmp}
   \dontprintsemicolon
-  \KwIn{$n$-dimensionales Feld~$F$, wobei $f_{i}=j$, wenn $j$ der Vater
+  \KwIn{$n$-dimensionales Feld~$F$, wobei $F[i]=j$, wenn $j$ der Vater
     von $i$ ist}
-  \KwOut{$n$-dim.\,Feld~$S$, wobei $s_{i}=j$, wenn $j$ die Wurzel des
+  \KwOut{$n$-dim.\,Feld~$S$, wobei $S[i]=j$, wenn $j$ die Wurzel des
     Baums ist, in dem $i$ steht}
 
   \Forpar{i := 1 \KwTo n}%
-         {$s_{i} := f_{i}$\;
-          \While{$s_{i}\ne s_{s_{i}}$}%
-                {$s_{i} := s_{s_{i}}$}
+         {$S[i] := F[i]$\;
+          \While{$S[i]\ne S[S[i]]$}%
+                {$S[i] := S[S[i]]$}
          }
 \end{algorithm}
 
 Der Wald ist als ein $n$-dimensionales Feld~$F$ gegeben, in dem der
-$i$.\,Eintrag~$f_{i}$ den Vorgängerknoten des $i$.\,Knotens beinhaltet. Jedem
+$i$.\,Eintrag~$F[i]$ den Vorgängerknoten des $i$.\,Knotens beinhaltet. Jedem
 Knoten wird ein Prozessor zugewiesen, der den Wurzelknoten dadurch findet,
 dass er in jedem Schritt den Vorgängerknoten seines Vorgängerknotens
 ermittelt. \autoref{alg:ptr-jmp}
@@ -993,7 +985,7 @@ Knoten zu Knoten.
 $h$ sei die maximale Höhe eines Baums im Wald. Auf einer CREW-PRAM liefert der
 Algorithmus in $O(\log h)$~\Time und $O(n\cdot\log h)$~\Work die Wurzel zu
 jeden Knoten. Da sich das Problem im Seriellen in $\theta(n)$ lösen lässt, ist
-der Algorithmus ist nicht optimal.
+der Algorithmus nicht optimal.
 
 \subsection{Parallel Prefix}
 \label{sec:par-pref}
@@ -1001,8 +993,8 @@ der Algorithmus ist nicht optimal.
 Entartet man den Wald zu einem Baum, der auch keine Verzweigungen hat, kann
 man damit die \highl[Präfixsumme]{Präfixsummen} für Zahlen, die in einer
 verketteten Liste gegeben sind, berechnen. Dieses Problem bezeichnet man als
-\highl{Parallel Prefix}. Die Zahlen sind in einer weiteren Liste~$W$ gegeben,
-die allen Knoten im Wald~$F$ ein Gewicht zuordnet: $w_{i}$ ist das Gewicht am
+\highl{parallel Prefix}. Die Zahlen sind in einer weiteren Liste~$W$ gegeben,
+die allen Knoten im Wald~$F$ ein Gewicht zuordnet: $W[i]$ ist das Gewicht am
 Knoten~$i$. Der Wald selbst beschreibt die Ordnung der Zahlen, wobei der
 Wurzelknoten die erste Zahl und der Blattknoten die letzte Zahl ist.
 
@@ -1010,6 +1002,7 @@ Wurzelknoten die erste Zahl und der Blattknoten die letzte Zahl ist.
   \caption{Pointer Jumping mit Knotengewichten}
   \label{alg:par-pref}
   \dontprintsemicolon
+  \todo{Algorithmus auf Feldschreibweise ($[]$ statt Index) umstellen}\;
   \KwIn{zwei $n$-dim.\,Felder~$F,W$, wobei $w_i$ das Gewicht am Knoten~$i$
     ist und $f_{i}=j$, wenn $j$ der Vater von $i$ ist}
   \KwOut{$n$-dim.\,Feld~$P$, wobei $p_{i}$ die Summe der Gewichte auf dem
@@ -1029,8 +1022,10 @@ beschriebene Weise durch den Baum (die Liste). Dabei berechnet er jeweils die
 Summe der Gewichte von ihm bis zu seinem Vorgängerknoten, auf den er gerade
 springt/verweist.
 
-Mit Parallel Prefix kann man also in $O(\log n)$~\Time und $O(n\log n)$~\Work
+Mit parallel Prefix kann man also in $O(\log n)$~\Time und $O(n\log n)$~\Work
 sie Präfixsummen einer verketteten Liste berechnen.
+Da die Präfixsummenberechnung im seriellen mit $O(n)$~\Time funktioniert, ist
+der Algorithmus nicht optimal.
 
 In einem nicht entarteten Wald kann mit diesem Algorithmus für jeden Knoten
 die Entfernung zu seinem Wurzelknoten bestimmen, wenn man für die Knoten das
@@ -1303,7 +1298,8 @@ Die Strategie, um den Algorithmus optimal zu gestalten, ist
     $O(1)$~\Work.
 
     Da die Blöcke in $B$ alle die Länge~$\log m$ haben und in Blöcke der
-    Länge~$\log n$ eingegliedert werden, ist der Aufwand für den zweiten
+    Länge~$\log n$ \todo{falsch! es wird in $A$ eingegliedert und daher sind
+    es $\log n$ Schritte} eingegliedert werden, ist der Aufwand für den zweiten
     Schritt $O(\frac{m}{\log m}\cdot\log n)=O(n)$~\Work. Die Rechenzeit ist
     $O(\log n)$~\Time.
 
@@ -1317,6 +1313,8 @@ Die Strategie, um den Algorithmus optimal zu gestalten, ist
     Der dritte Schritt geht in $O(1)$~\Time mit $O(n+m)$~\Work.
   \end{proof}
 \end{satz}
+\todo{Das mit den drei Schritten und der Aufzählung mit drei Punkten zuvor
+  birgt eine Verwechslungsgefahr. Irgendwie umbauen.}
 
 Damit ist aber erst eine Vorstufe der Folge~$C$ erstellt. Die Paare
 $(A_{i},B_{i})$ müssen noch ineinander gemischt werden und diese Ergebnisse
@@ -1934,7 +1932,7 @@ wenn er $d$~Nachbarn hat: $\abs{L[v]}=d$.
   Die Funktion $S\colon E'\rightarrow E'$ beschreibt einen Eulerkreis in
   $T'=(V,E')$
   \begin{gather}
-    S(<u_{i},v>) := <v,u_{(i+1)\mod d}>
+    S(<u_{i},v>) := <v,u_{(i+1)\bmod d}>
   \end{gather}
 \end{satz}
 
@@ -2461,7 +2459,7 @@ Algorithmus arbeitet in Schritten $s$.
 
 \begin{defini}
   $v$ heißt \emph{aktiv} im Schritt $s$ :$\Leftrightarrow$ $alt(v) \leq
-  s \leq alt(v)$
+  s \leq 3\cdot alt(v)$
 \end{defini}
 
 \begin{folger}
