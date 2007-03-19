@@ -27,7 +27,7 @@ svn checkout $URL || exit
 # erstmal das alte wegräumen, weil wir u. U. kein Schreibrecht auf die
 # Datei haben, wenn sie von einem anderen Benutzer angelegt wurde
 rm -f $WEB/$SKRIPT.tar.gz
-GZIP=-9 tar -czf $WEB/$SKRIPT.tar.gz $SKRIPT
+GZIP=-9 tar --exclude=.svn -czf $WEB/$SKRIPT.tar.gz $SKRIPT
 echo "I: $SKRIPT.tar.gz erzeugt"
 
 cd $SKRIPT
