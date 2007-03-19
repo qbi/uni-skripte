@@ -256,7 +256,7 @@ neue_funktions_regel(qr/\\usepackage.*\{ntheorem\}/, qr/^$/, \&ntheorem, undef);
 sub thmsym
 {
     schimpfen('\\usepackage{ntheorem} fehlt die Option thmmarks')
-      unless (defined($ntheorem_optionen) and $ntheorem_optionen =~ /thmmarks/);
+      if ($paket_gefunden{ntheorem} and $ntheorem_optionen !~ /thmmarks/);
 }
 neue_funktions_regel(qr/\\theoremsymbol/, qr/^$/, \&thmsym, undef);
 
@@ -310,7 +310,7 @@ schimpfen('rubber muss darüber informiert werden, dass die Datei $base.thm '.
 foreach ('hyperref', 'amsmath')
 {
     schimpfen("$_ geladen, aber nicht bei \\usepackage{ntheorem} angegeben")
-      unless (defined($ntheorem_optionen) and $ntheorem_optionen =~ /$_/);
+      if ($paket_gefunden{ntheorem} and $ntheorem_optionen !~ /$_/);
 }
 
 alle_regeln_vergessen();
