@@ -105,6 +105,14 @@ svn status | while read aktion datei; do
     esac
 done
 
+keywords=$(svn propget svn:keywords $src)
+for i in LastChangedRevision LastChangedDate; do
+    case "$keywords" in
+      *"$i"*) ;;
+      *) echo "F: das SVN-Schlüsselwort \"$i\" ist nicht gesetzt";;
+    esac
+done
+
 # Wir sollten immer zu den Dateien die Quellen im SVN ablegen und rubber
 # daraus dann die Bilder bauen lassen
 dateien=$(find . -type f -name .svn -prune -o -name \*.ps -o -name \*.pdf)
