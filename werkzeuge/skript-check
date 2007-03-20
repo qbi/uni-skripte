@@ -64,9 +64,33 @@ sub neue_existiert_regel
     push(@existiert_regeln, [\$var, @_]);
 }
 
+our $deaktiviert = 0;
+our $ignorierte_zeilen;
+
 sub pruefe_zeile
 {
     our $zeile = shift @_;
+
+    if (/^\s*%\s*skript-check\s+aus$/)
+    {
+        print "I: ($.) skript-check abgeschaltet\n";
+        $deaktiviert = 1;
+        $ignorierte_zeilen = 0;
+        return;
+    }
+
+    if ($deaktiviert)
+    {
+        if (/^\s*%\s*skript-check\s+an$/)
+        {
+            print "I: ($.) skript-check eingeschaltet, ".
+              "$ignorierte_zeilen Zeilen übersprungen\n";
+            $deaktiviert = 0;
+        }
+
+        ++$ignorierte_zeilen;
+        return;
+    }
 
     foreach (@kommentar_regeln)
     {
