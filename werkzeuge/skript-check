@@ -217,9 +217,10 @@ our @theoreme_gefunden;
 sub theorem
 {
     our ($zeile, @theoreme_gefunden, $theoremstyle, @umgebungen_gefunden);
-    $zeile =~ /\\newtheorem{(\w*)}/;
+    $zeile =~ /\\newtheorem\*?{(\w*\*?)}/;
     my $thm = $1;
-    if  (defined($theoremstyle) and $theoremstyle =~ /^nonumber/)
+    if  ( (defined($theoremstyle) and $theoremstyle =~ /^nonumber/) or
+          $zeile =~ /\\newtheorem\*/)
     {
         push(@umgebungen_gefunden, $thm);
     }
@@ -228,7 +229,7 @@ sub theorem
         push(@theoreme_gefunden, $thm);
     }
 }
-neue_funktions_regel(qr/\\newtheorem[^*]/, qr/^$/, \&theorem, undef);
+neue_funktions_regel(qr/\\newtheorem/, qr/^$/, \&theorem, undef);
 
 our %autorefnames_gefunden;
 sub autorefname
