@@ -45,11 +45,6 @@ else
 fi
 echo "I: Verwende $src als LaTeX-Datei"
 
-# Aus irgendeinem Grund braucht das pdflatex aus TeXLive die HOME-Variable um
-# dort ein Unterverzeichnis .texlive2005 mit irgendwelchen Konfigurationen
-# anzulegen.
-export HOME=$TMP
-
 for ext in ps pdf; do
     # Das Skript verwendet PSTricks. rubber muss aus dem PS das PDF erstellen.
     if grep -q '^[^%]*\\usepackage.*{pst-' $src; then
