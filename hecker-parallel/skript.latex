@@ -14,11 +14,12 @@
 % rubber: makeidx.language  german-din
 % rubber: makeidx.modules   indexstyle.xdy
 
-\documentclass[draft,halfparskip*,german,twoside]{scrreprt}
-
-\usepackage[l2tabu]{nag}  % nag überprüft den Text auf verältete Befehle
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf verältete Befehle
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[draft,halfparskip*,german,twoside]{scrreprt}
+
 \usepackage{ifthen}
 
 \usepackage[algochapter,linesnumbered]{algorithm2e}
@@ -132,6 +133,8 @@
 
 \DeclareMathOperator{\card}{card}     % Kardinalität
 
+\renewcommand*{\tilde}[1]{\widetilde{#1}}  % die normale Schlange ist recht klein
+
 % Definition für Xindy für die Trennung der einzelnen Abschnitte im
 % Index. siehe auch die Datei indexstyle.xdy
 \newcommand*{\indexsection}{\minisec}
@@ -150,7 +153,7 @@
 
 \clearpage
 \chapter*{Vorwort}
-\begin{itshape}
+{\itshape
   Dieses Skript ist im Rahmen des
   \href{http://www.minet.uni-jena.de/~joergs/skripte/}{Projekts
   "`Vorlesungsskripte der Fakultät für Mathematik und Informatik"'}
@@ -187,7 +190,7 @@
    \item Fred Thiele (2005)
    \item Christian Raschka (2005)
   \end{itemize}
-\end{itshape}
+}
 
 \clearpage
 \pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
@@ -1049,9 +1052,6 @@ Gewicht~$w_{i}=1$ und für den Wurzelknoten~$r$ das Gewicht~$w_{r}=0$ wählt.
 \section{Teile und Herrsche}
 \label{sec:teile-herrsch}
 
-\todo{Den Abschnitt überarbeiten. Ich habe keine Ahnung, worum sich diese
-  ganze Sache mit den Punkten dreht.}
-
 Die Strategie \highl{Teile und Herrsche} (engl. \highl{Divide and Conquer})
 ist bereits von den seriellen Algorithmen bekannt. Ein Problem wird in
 Teilprobleme zerlegt, die untereinander möglichst gleich groß, aber kleiner
@@ -1060,7 +1060,8 @@ voneinander gelöst und aus deren Lösung die Lösung des Gesamtproblems
 konstruiert.
 
 Die Zerlegung in Teilprobleme sollte dabei "`einfach"' sein, das Zusammenfügen
-der Gesamtlösung kann "`kompliziert"' sein. Durch die Teilung in
+der Gesamtlösung kann "`kompliziert"' sein. --~Der umgekehrte Fall heißt
+Partitioning (\autoref{sec:partitioning}).~-- Durch die Teilung in
 \textit{unabhängige} Teilprobleme bietet sich eine Verteilung auf mehrere
 Prozessoren direkt an.
 
@@ -1116,7 +1117,6 @@ Der Algorithmus (\autoref{alg:conv-hull}) verläuft in zwei Phasen:
  \item in der Bottom-Up-Phase wird für je zwei oberen konvexen Hüllen die
   gemeinsame obere konvexe Hülle bestimmt, indem man die gemeinsame obere
   Tangente an beide Hüllen findet und sie so verbindet.
-  \todo{Davon ein Bild malen}
 \end{itemize}
 
 Der Rekursionsbaum hat also die Tiefe $O(\log n)$. Damit der Algorithmus
@@ -1130,51 +1130,89 @@ Bestimmung der Tangente muss also in $O(1)$~\Time erfolgen.
 % Quelle:
 % http://www.informatixx.de/privat/files/informatik/pdf/Parallele_Algorithmen_Komplett.pdf
 
+\begin{figure}
+  \centering
+  \input{figures/konvexe-huelle0.pdf_t}
+  \caption{Bestimmung der Tangente vom Punkt~$u$ aus an $V$}
+  \label{fig:konv-h0}
+\end{figure}
+
 Zur Vereinfachung der Schreibung sei $U:=UCH(S_{1})$ und $V:=UCH(S_{2})$. Der
 Punkt~$\tilde{v}_{u}\in V$ sei der Berührungspunkt der Hülle, so dass die
-Gerade durch $u$ und $\tilde{v}_{u}$ eine Tangente an $V$ ist. Alle Punkte von
-$V$ liegen dann unterhalb der Geraden~$\overline{u\tilde{v}_{u}}$.
-\help{Sollte man das noch erklären oder ist das offensichtlich? Wegen der
-  Konvexität der Menge.}
+Gerade durch $u$ und $\tilde{v}_{u}$ eine Tangente an $V$ ist. Da $V$ konvex
+ist, liegen alle Punkte unterhalb oder auf der Geraden~$\overline{u\tilde{v}_{u}}$.
 
 Um für einen Punkt~$u\in U$ die relative Lage des Punkts~$\tilde{v}_{u}\in V$
 zu $v_{i}\in V$ zu bestimmen, verbindet man die beiden Punkte durch eine
 Gerade~$\overline{uv_{i}}$ und bestimmt, ob der Vorgänger~$v_{i-1}\in V$ und
 der Nachfolger~$v_{i+1}\in V$ von $v$ nicht auf der gleichen Seite der
 Gerade~$\overline{uv_{i}}$ liegen. Ist dies der Fall, so liegt der
-Punkt~$\tilde{v}_{u}$ oberhalb von $v_{l}$. Sind also die Punkte $v_{i-1},
-\help{Ist das offensichtlich oder sollte man das mit der Lage nochmal erklären?}
+Punkt~$\tilde{v}_{u}$ oberhalb von $v_{l}$, da die Eigenschaft der Tangente
+eben besagt, dass kein Punkt über ihr liegt. Sind also die Punkte $v_{i-1},
 v_{i}, v_{i+1}$ mit wachsender $y$-Koordinate, so ist $j>i$ für
 $v_{j}=\tilde{v}_{u}$. Andernfalls ist $j\leq i$ für $v_{j}=\tilde{v}_{u}$.
+Siehe \autoref{fig:konv-h0}.
 Diese Entscheidung lässt sich in $O(1)$~\Time treffen.
+
+\begin{figure}
+  \centering
+  \input{figures/konvexe-huelle1.pdf_t}
+  \caption{Einschränken des Intervalls, in dem der Punkt für die Tangente
+    liegt}
+  \label{fig:konv-h1}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \input{figures/konvexe-huelle2.pdf_t}
+  \caption{Bestimmen des Punkts für die Tangente im einschränkten Intervall}
+  \label{fig:konv-h2}
+\end{figure}
 
 Zerlegt man $V$ in $d_{V} = \sqrt{\card V}$~gleichgroße
 Segmente~$V^{1},\dotsc, V^{d_{V}}$, so kann man für den Punkt~$u$ in
 $O(1)$~\Time mit $d_{V}$~Prozessoren ein Segment bestimmen, in dem der
 Punkt~$\tilde{v}_{u}$ liegt. Jeder Prozessor~$P_{k}$ bestimmt für die beiden
 Endpunkte von $V^{k}$, ob $\tilde{v}_{u}$ zwischen ihnen liegt --~also rechts
-vom linken und links vom rechten Punkt aus. Das geht in $O(1)$~\Time. Da das
+vom linken und links vom rechten Punkt aus. Siehe \autoref{fig:konv-h1}. Das
+geht in $O(1)$~\Time. Da das
 Intervall $d_{V}$~Punkte enthält, kann man mit den $d_{V}$~Prozessoren in
 $O(1)$~\Time darin den Punkt~$\tilde{v}_{u}$ finden, für den beide Nachbarn
-unterhalb der Geraden~$\overline{u\tilde{v}_{u}}$ liegen. Aufwand wiederum
+unterhalb der Geraden~$\overline{u\tilde{v}_{u}}$ liegen. Siehe
+\autoref{fig:konv-h2}. Aufwand wiederum
 $O(1)$~\Time.
+
+\begin{figure}
+  \centering
+  \input{figures/konvexe-huelle3.pdf_t}
+  \caption{Parallele Bestimmung der Tangente für ausgewählte Punkte von $U$}
+  \label{fig:konv-h3}
+\end{figure}
 
 Zerlegt man ebenfalls $U$ in $d_{U}=\sqrt{\card U}$~gleichgroße
 Segmente~$U^{1},\dotsc, U^{d_{U}}$ und führt mit $d_{U}$~Prozessoren die
 Bestimmung der Tangenten von den Endpunkten der $U^{j}$ aus, so bekommt man in
 $O(1)$~\Time über die gleiche Beziehung wie oben für $\tilde{v}_{u}$ ein
 Segment~$\hat{U}$, in dem der Berührungspunkt~$\hat{u}\in U$ der gemeinsamen
-Tangente an $U$ liegt. Dafür werden insgesamt $d_{U}\cdot d_{V} =\sqrt{U}
+Tangente an $U$ liegt. Siehe \autoref{fig:konv-h3}. Dafür werden insgesamt
+$d_{U}\cdot d_{V} =\sqrt{U}
 \cdot\sqrt{V}\leq\sqrt{\frac{n}{2}}\cdot\sqrt{\frac{n}{2}} =
 O(n)$~Prozessoren eingesetzt.
+
+\begin{figure}
+  \centering
+  \input{figures/konvexe-huelle4.pdf_t}
+  \caption{Bestimmung der oberen Tangente durch betrachten aller Tangenten aus
+    dem verbleibenden Intervall}
+  \label{fig:konv-h4}
+\end{figure}
 
 Da in dem Segment $\hat{U}$, das $\hat{u}$ enthält, $d_{U}$ Punkte liegen, kann
 man mit $d_{V}$~Prozessoren für jeden Punkt~$u_{i}\in U^{k}$ in $O(1)$~\Time
 den Berührungspunkt~$\tilde{v}_{u_{i}}$ an $V$ bestimmen. Die gemeinsame
 Tangente zeichnet sich dadaruch aus, dass die Nachbarpunkte~$u_{i-1}$ und
 $u_{i+1}$ unterhalb der Geraden~$\overline{u_{i}\tilde{v}_{u_{i}}}$ liegen.
-
-\todo{Bild malen, das versteht sonst keiner}
+Siehe \autoref{fig:konv-h4}.
 
 \section{Partitioning}
 \label{sec:partitioning}
