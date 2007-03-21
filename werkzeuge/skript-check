@@ -136,19 +136,44 @@ shift @ARGV;
 
 ##########
 #
-# Alles was vor \begin{document} geprüft werden soll:
+# Alles was vor \documentclass geprüft werden soll:
 #
+
 my ($rubber_watch_gefunden);
 neue_kommentar_suchregel(qr/^%[%\s]*rubber:\s*watch\s*\$base\.thm/,
                          \$rubber_watch_gefunden);
 
+# nag muss verwendet werden, damit wir veraltete Befehle finden
+neue_existiert_regel(qr/\\RequirePackage\[l2tabu,orthodox\]\{nag\}/, \&schimpfen,
+                     "Das Paket nag[l2tabu,orthodox] muss mit \\RequirePackage"
+                     ." vor \\documentclass eingebunden werden!");
+
+while (<DATEI>)
+{
+    last if (/^[^%]*\\documentclass/);
+    pruefe_zeile($_);
+}
+if ( !defined($_) )
+{
+    schimpfen('Im Hauptdokument gibt es kein \\documentclass');
+    exit 1;
+}
+foreach (@existiert_regeln)
+{
+    my ($var, $fun, $arg) = @$_;
+    &$fun($arg) unless ($$var);
+}
+
+alle_regeln_vergessen();
+
+##########
+#
+# Alles was vor \begin{document} geprüft werden soll:
+#
+
 # onlyamsmath muss verwendet werden, damit wir $$ $$ erkennen können
 neue_existiert_regel(qr/\\usepackage\[.*all.*\]\{onlyamsmath\}/, \&schimpfen,
                      "Das Paket onlyamsmath muss verwendet werden!");
-
-# nag muss verwendet werden, damit wir veraltete Befehle finden
-neue_existiert_regel(qr/\\usepackage\[l2tabu,orthodox\]\{nag\}/, \&schimpfen,
-                     "Das Paket nag muss[l2tabu,orthodox] verwendet werden!");
 
 # Kleiner Hack um alle Pakete mitzuschreiben
 our %paket_gefunden;
