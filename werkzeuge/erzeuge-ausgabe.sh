@@ -87,7 +87,7 @@ chmod +x $TMP/sc
 
 dateien=$(find . -type f -name .svn -prune -o -name \*tex \
                     -a -not -path "./$src")
-echo "I: skripte-check $src $dateien"
+echo I: skript-check $src $dateien
 $TMP/sc $src $dateien
 
 if [ -e ${src%.*}.idx ] && ! [ -e ${src%.*}.idx ]; then
