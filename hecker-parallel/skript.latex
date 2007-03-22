@@ -1224,15 +1224,20 @@ Teillösugen die Gesamtlösung konstruiert. Der Unterschied zum
 Teile-und-Herrsche-Ansatz ist, dass beim Partitioning die Zerlegung in
 Teilprobleme kompliziert, aber der Aufbau der Gesamtlösung einfach ist.
 
+Die Idee des Partitionings soll an der Vereinigung von zwei sortierten
+Folgen~$A$ und $B$ mit $m$ bzw. $n$~Elementen zu einer sortierten Folge~$C$
+mit $m+n$~Elementen erläutert werden. Dieses Problem wird als \highl{Merge}
+oder \highl{Mischen} bezeichnet.
+
 \begin{defini}
-  Eine Folge~$A=(a_{1},\dotsc, a_{n})$ heißt genau dann \highl{sortiert}, wenn
-  für alle Folgeglieder größer oder gleich ihren Vorgängern sind: $\forall
-  i\in\{1,\dotsc,n\} \forall j\in\{1,\dotsc,i\}\colon a_{j}\leq a_{i}$.
+  Eine Folge~$A=(a_{1},\dotsc, a_{m})$ heißt genau dann \highl{sortiert}, wenn
+  alle Folgenglieder größer oder gleich ihren Vorgängern sind: $\forall
+  i\in\{1,\dotsc,m\} \forall j\in\{1,\dotsc,i\}\colon a_{j}\leq a_{i}$.
 \end{defini}
 
 \begin{defini}
   Als den \highl{Rang} eines Elements~$x$ bezüglich einer
-  Menge~$A=\{a_{1},\dotsc, a_{n}\}$ bezeichnet man die Anzahl der Elemente aus
+  Menge~$A=\{a_{1},\dotsc, a_{m}\}$ bezeichnet man die Anzahl der Elemente aus
   $A$, die kleiner oder gleich $x$ sind.
   \begin{gather*}
     Rang(x:A) := \card\{ a\colon a\in A \wedge x\leq a\}
@@ -1242,7 +1247,8 @@ Teilprobleme kompliziert, aber der Aufbau der Gesamtlösung einfach ist.
   Menge~$A=\{a_{1},\dotsc, a_{m}\}$ bezeichnet man die Folge der Ränge der
   Elemente von $B$
   \begin{gather*}
-    Rang(B:A) := (Rang(b_{1}:A), Rang(b_{2}:A),\dotsc,Rang(b_{n-1}:A), Rang(b_{n}:A))
+    Rang(B:A) := \bigl(Rang(b_{1}:A), Rang(b_{2}:A),\dotsc,Rang(b_{n-1}:A),
+       Rang(b_{n}:A)\bigr)
   \end{gather*}
 \end{defini}
 
@@ -1256,21 +1262,16 @@ Teilprobleme kompliziert, aber der Aufbau der Gesamtlösung einfach ist.
   \end{align*}
 \end{bsp}
 
-\begin{defini}
-  Bei dem Problem \highl{Merge} geht es darum, zwei sortierte Folgen~$A$ und
-  $B$ der Länge~$n$ bzw. $m$ zu einer sortierten Folge~$C$ der Länge~$n+m$ zu
-  vereinen.
-\end{defini}
-
 \begin{bemerk}
   Im Folgenden seien zur Vereinfachung die Elemente aus $A$ und $B$ paarweise
   verschieden.
 \end{bemerk}
 
 \begin{satz}
-  Seien $A$ und $B$ zwei Folgen mit $n$ bzw. $m$~Elementen. Die
-  Folge~$C=(c_{1},\dotsc, c_{n+m})$ mit $c_{i} = x\in A\cup B$ genau dann,
-  wenn $i=Rang(x:A\cup B)$, ist die gemischte, sortierte Folge von $A$ und $B$.
+  Seien $A$ und $B$ zwei Folgen mit $m$ bzw. $n$~Elementen. Die
+  Folge~$C=(c_{1},\dotsc, c_{m+n})$ mit den Gleidern $c_{i}$ ist die
+  gemischte, sortierte Folge von $A$ und $B$, wobei $c_{i} = x\in A\cup B$
+  genau dann, wenn $i=Rang(x:A\cup B)$ ist.
   \begin{proof}
     trivial
   \end{proof}
@@ -1292,92 +1293,112 @@ Folge von $A$ und $B$ leicht zu bestimmen.
   Im Folgenden seien $A$ und $B$ immer sortiert.
 \end{bemerk}
 
+Um den Rang eines Elements~$x$ bezüglich einer sortierten Folge~$B$ mit $n$~Elementen
+zu bestimmen, kann man auf die sequentielle, binäre Suche zurückgreifen, womit
+sich $Rang(x:B)$ in $O(\log n)$~\Time bestimmen lässt.
+
 Da beide Aufgaben ($Rang(A:B)$ und $Rang(B:A)$) symetrisch sind, genügt es den
 Vorgang $Rang(A:B)$ zu analysieren: Da die Folge~$B$ sortiert ist, kann man
-für ein Element~$x\in A$ mit binärer Suche in $O(\log m)$~\Time mit einem
-Prozessor $Rang(x:B)$ bestimmen.
+für ein Element~$x\in A$ mit binärer Suche in $O(\log n)$~\Time mit einem
+Prozessor $Rang(x:B)$ bestimmen. Da alle Operationen parallel auf einer
+CREW-PRAM ausgeführt werden können, erhält man so für die gesamte Folge
+$O(\log n)$~\Time und $O(m\log n)$~\Work.
 
-Da alle Operationen parallel auf einer CREW-PRAM ausgeführt werden können,
-ergibt sich also $O(\log(m+n))$~\Time und $O((m+n)\log(m+n))$~\Work für den
-gesamten Algorithmus. Da das Mischen im seriellen in Linearzeit
+Analog erhält man für $Rang(B:A)$ $O(\log m)$~\Time und $O(n\log m)$~\Work.
+Für den gesamten Algorithmus ergibt sich somit $O(\log(m+n))$~\Time und
+$O((m+n)\log(m+n))$~\Work. Da das Mischen im Seriellen in Linearzeit
 $T^{*}(n)=\Theta(n)$~\Time geht, ist der Algorithmus nicht optimal.
 
-Die Strategie, um den Algorithmus optimal zu gestalten, ist
-\highl{Partitioning}.
+Um einen optimalen Algorithmus zu erhalten, kann man das Problem mit der
+\highl{Partitioning}-Strategie angehen:
 \begin{enumerate}
- \item Zerlegung (Partitioning) von $A$ und $B$ in $\frac{m}{\log m}$~Blöcke
+ \item Zerlegung (Partitioning) von $A$ in $\frac{m}{\log m}$~Abschnitte
   der Länge~$\log m$.
- \item Mischen der Blöcke mit einem sequentiellen Algorithmus (binäre Suche),
-  der in Linearzeit läuft. Das Mischen der Blöcke geschieht parallel.
- \item Aneinanderhängen der gemischten Blöcke zur Folge~$C$.
+ \item Für die Elemente an den Abschnittsgrenzen ihre Position innerhalb der
+  Folge~$B$ bestimmen.
+ \item Damit ergeben sich Paare von Abschnitten von $A$ und $B$ die unabhängig
+  voneinander mit einem sequentiellen Algorithmus, der in Linearzeit arbeitet,
+  gemicht werden können. Das Mischen der Abschnitte geschieht parallel.
+ \item Aneinanderhängen der gemischten Abschnitte zur Folge~$C$.
 \end{enumerate}
+
+\begin{figure}
+  \centering
+  \input{figures/merge-bin.pdf_t}
+  \caption{Zerlegung von zwei Folgen in kleine Abschnitte (Streifen) zum
+    direkten Mischen}
+  \label{fig:merge-bin}
+\end{figure}
+
+Beim Mischen der Paare~$(A_{i}, B_{i})$ muss darauf geachtet werden, dass
+beide Abschnitte höchstens $\log m$ bzw. $\log n$~Elemente enthalten, damit der
+Mischvorgang nicht länger als $(\log m+\log n)$~\Time braucht. Unter
+ungünstigsten Umständen sind alle Elemente aus $A$ größer als alle Elemente
+aus $B$, so dass der Prozessor für das Paar $(A_{0}, B_{0})$ alle Elemente von
+$B$ behandelt, weil $B_{0}=B$ ist.
+
+Für die Abschnitte~$A_{i}$ ist die Größenbeschränkung bereits gegeben. Sollte
+ein Abschnitt~$B_{i}$ mehr als $\log n$~Elemente enthalten, so teilt man ihn
+in Abschnitte der Länge $\log n$ und bestimmt für diese die zugehörigen
+(Unter"")"~Abschnitte innerhalb von $A_{i}$. Dadurch werden es zwar mehr
+Paare, aber es ist sichergestellt, dass sie in $O(\log m+\log n)$~\Time
+gemischt werden können, und es werden nie mehr als $m+n+1$~Paare. Siehe
+\autoref{fig:merge-bin}.
+
+Für das Eingliedern der neuen Abschnitte von $B_{i}$ ist es ausreichend den
+Abschnitt~$A_{i}$ zu betrachten, da alle Elemente aus $B_{i}$ größer sind als
+das erste Element im Abschnitt und dieses so gewählt wurde, dass es kleiner
+oder gleich dem ersten Element von $A_{i}$ ist. Ebenso sind alle Elemente
+kleiner als das letzte, welches so gewählt wurde, dass es kleiner oder gleich
+dem letzten Element in $A_{i}$ ist. Anschaulich gesprochen: Die Pfeile können
+sich nicht überschneiden.
 
 \begin{algorithm}
   \dontprintsemicolon
-  \caption{Partitioning}
+  \caption{Zerlegen zweier sortierten Folgen in Paare von Teilfolgen zum
+    Mischen}
   \label{alg:mischen}
-  \KwIn{Zwei sortierte Folgen $A$ und $B$ mit $n$ bzw. $m$ Gliedern.}
-  \KwOut{Menge von Paaren von Teilfolgen $(A_{i},B_{i})$, wobei $A_{i}\subset
-    A$ mit $\sum \card A_{i} = n$ und $B_{i}\subset B$ mit $\card B_{i}=\log
-    m$ und alle Elemente aus $A_i$ bzw. $B_i$ sind größer oder gleich aller
-    Elemente von $A_{i-1}$ bzw. $B_{i-1}$ ($1\leq i \leq k-1$)}
-  \todo{den Output-Spaß kürzer formulieren}\\
+  \KwIn{Zwei sortierte Folgen $A$ und $B$ mit $m$ bzw. $n$ Gliedern.}
+  \KwOut{Menge von Paaren von Teilfolgen $(A_{i},B_{i})$ für die gemischte
+    Gesamtfolge}
 
-  $k:= \frac{m}{\log m}$\;
+  $k := \frac{m}{\log m}$\;
   $j[0] := 0$\;
   $j[k] := n$\;
   \Forpar{$i:= 1$ \KwTo $k-1$}{
-    $j(i) := Rang(B[i\cdot \log m] : A)$\tcc*{mit binärer Suche}
+    $j[i] := Rang(A[i\cdot \log m] : B)$\tcc*{mit binärer Suche}
   }
   \Forpar{$i:= 0$ \KwTo $k-1$}{
-    $B_i := \bigl[B[i\cdot \log (m+1)],\dotsc,B[(i+1)\cdot \log m]\bigr]$\;
-    $A_i := \bigl[A[j[i]+1],\dotsc,A[j[i+1]]\bigr]$\;
+    $A_i := \bigl[A[(i\cdot \log m)+1],\dotsc,A[(i+1)\cdot \log m]\bigr]$\;
+    $B_i := \bigl[B[j[i]+1],\dotsc,B[j[i+1]]\bigr]$\;
   }
 \end{algorithm}
 
 \begin{satz}
-  Der \autoref{alg:mischen} benötigt $O(\log n)$~\Time und $O(n+m)$~\Work.
+  Das Mischen von zwei sortierten Folgen $A$ und $B$ mit $m$ bzw.
+  $n$~Elementen benötigt $O(\log m+\log n)$~\Time und $O(m+n)$~\Work.
 
   \begin{proof}
-    Für den ersten Schritt benötigt der Algorithmus $O(1)$~\Time und
+    Die Zerlegung von $A$ in Teilabschnitte $O(1)$~\Time und
     $O(1)$~\Work.
 
-    Da die Blöcke in $B$ alle die Länge~$\log m$ haben und in Blöcke der
-    Länge~$\log n$ \todo{falsch! es wird in $A$ eingegliedert und daher sind
-    es $\log n$ Schritte} eingegliedert werden, ist der Aufwand für den zweiten
-    Schritt $O(\frac{m}{\log m}\cdot\log n)=O(n)$~\Work. Die Rechenzeit ist
+    Die binäre Suche benötigt $\log n$~Schritte für die Bestimmung von
+    $Rang(A[i\cdot\log m]:B)$. Da dies für $\frac{m}{\log m}$~Elemente
+    gleichzeitig geschieht, ist der Aufwand für den zweiten
+    Schritt $O(\frac{m}{\log m}\cdot\log n)=O(m+n)$~\Work. Die Rechenzeit ist
     $O(\log n)$~\Time.
 
     Da $\lim_{z\rightarrow\infty}\frac{z}{\log z} = \infty$ ist, gilt für
     $m<m+n$
     \begin{gather*}
       \frac{m}{\log m} < \frac{m+n}{\log(m+n)} \quad\Rightarrow\quad
-         \frac{m}{\log m} \log n < \frac{m}{\log m} \log(m+n) < m+n = c\cdot n
+         \frac{m}{\log m} \log n < \frac{m}{\log m} \log(m+n) < m+n
     \end{gather*}
 
-    Der dritte Schritt geht in $O(1)$~\Time mit $O(n+m)$~\Work.
+    Das Mischen der Teilfolgen mit einem sequentiellen Algorithmus geht in
+    $O(\log m+\log n)$~\Time und benötigt $O(m+n)$~\Work.
   \end{proof}
 \end{satz}
-\todo{Das mit den drei Schritten und der Aufzählung mit drei Punkten zuvor
-  birgt eine Verwechslungsgefahr. Irgendwie umbauen.}
-
-Damit ist aber erst eine Vorstufe der Folge~$C$ erstellt. Die Paare
-$(A_{i},B_{i})$ müssen noch ineinander gemischt werden und diese Ergebnisse
-dann aneinander "`geklebt"' werden. Dabei ist zu beachten, dass für einige
-Paare die $A_{i}$ größer als $\log n$ seien können. Das Mischen, genauer
-$Rang(B_{i}:A_{i})$, würde also länger als $\log n$~\Time in Anspruch nehmen.
-Man zerlegt $A_{i}$ nochmal in Abschnitte der Länge $\log n$ und bestimmt für
-diese Abschnitte den $Rang$. Da sich aber die Pfeile nicht überschneiden
-können, müssen die $\log n$-Abschnitte von $A_{i}$ zwischen $B_{i}$
-eingegliedert werden. Damit hatt man dann wieder Paare, deren Länge $\leq\log
-n$ ist.
-
-\todo{Ich finde, man könnte mal erklären/beweisen, dass sich die Pfeile nicht
-  überschneiden können.}
-
-\help{Ich würde an der Stelle argumentieren, dass die Pfeile das Band in
-  $n+m$~Streifen erlegen, die alle $\leq\log(n+m)$ sind. Also lässt sich das
-  in $\log(n+m)$~\Time eingliedern. Ist das richtig?}
 
 Der parallele Algorithmus ist aber nicht streng optimal, da es einen
 Algorithmus gibt, der in $O(\log\log n)$~\Time mit $O(n)$~\Work funktioniert.
