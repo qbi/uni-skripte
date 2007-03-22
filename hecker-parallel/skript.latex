@@ -748,7 +748,7 @@ die Summe davon:
 
 Ein erster Ansatz für ein Gütekriterium eines Algorithmus wäre:
 \begin{defini}
-  Ein paralleler Algorithmus heißt \textit{optimal}, wenn seine Kosten der
+  Ein paralleler Algorithmus heißt \textit{kostenoptimal}, wenn seine Kosten der
   seriellen Komplexität entsprechen: $C_p(n) = T^{*}(n)$.
 \end{defini}
 
@@ -775,7 +775,7 @@ Bewerten wir mit dieser Maßgabe die Summation von $n$~Zahlen, so zeigt sich:
 Die Definition ist also unzureichend. Eine bessere Definition ergibt sich mit
 dem Arbeitsaufwand~$W(n)$ eines Algorithmus'.
 \begin{defini}
-  Ein paralleler Algorithmus heißt \highl{optimal} (zeitoptimal), wenn der
+  Ein paralleler Algorithmus heißt \highl{optimal} (\Work-optimal), wenn der
   Arbeitsaufwand der besten seriellen Laufzeit entspricht: $W(n) = T^{*}(n)$.
   Ein paralleler Algorithmus heißt \highl{WT-optimal} (\Work-\Time-optimal
   oder \highl{streng optimal}), wenn er optimal ist und wenn es keinen
@@ -815,6 +815,33 @@ Dieser Satz liefert die Grundlage für die allgemeine Betrachtung der
 Algorithmen mit einer nicht konkreten Anzahl an Prozessoren, denn jeder
 parallele Algorithmus kann im Normalfall auf jede Anzahl an Prozessoren
 angepasst werden.
+
+\begin{satz}[Satz von Eckstein]
+  Eine EREW-PRAM mit $p$~Prozessoren kann eine priority CRCW-PRAM so
+  simulieren, dass die Laufzeit nur um den Faktor $O(\log p)$ wächst.
+
+  \begin{proof}
+    Um das konkurierende Lesen der CRCW zu realisieren, kann ein vorbestimmter
+    Prozessor die Zelle lesen und die Information dann baumartig verteilen
+    --~jeder Prozessor gibt die Information an zwei andere Prozessor weiter.
+    so können alle Prozessoren in $\log p$~\Time benachrichtigt werden.
+
+    Für das konkurierende Schreiben wird der Baum von den Blättern aus
+    abgearbeitet. Jeder Prozessor verständigt sich mit einem Nachbarn über den
+    Wert, der geschrieben werden soll. Nach $\log p$~Schritten ist ein zu
+    schreibender Wert ermittelt.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Es gilt die folgende Ordnung der verschiedenen PRAM-Typen, wobei $X\preceq Y$
+  bedeutet: Algorithmen, die für $X$ erstellt wurden, können auf $X$ in der
+  gleichen Zeit ausgeführt werden.
+  \begin{center}
+    EREW $\preceq$ CREW $\preceq$ common CRCW $\preceq$ arbitrary CRCW
+    $\preceq$ priority CRCW
+  \end{center}
+\end{bemerk}
 
 \chapter{Die sieben Paradigmen beim Entwurf paralleler Algorithmen}
 
