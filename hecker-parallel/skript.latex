@@ -224,7 +224,7 @@
          {paralg\_ws20022003/skript.ps.gz}},
   Vorsicht: Es sind einige Fehler im Skript!
  \bibitem{zusfas} Markus Krebs, Andreas Horstmann: "`Zusammenfassung der
-  Vorlesung \glq{}Parallele Algorithmen\grq{} von Prof. Dr Amitava Datta"',
+  Vorlesung \glq{}Parallele Algorithmen\grq{} von Prof.\,Dr.\,Amitava Datta"',
   2002,
   \texttt{\small
     \href{http://www.informatixx.de/privat/files/informatik/pdf/Parallele_Algorithmen_Komplett.pdf}%
@@ -235,49 +235,42 @@
 \end{thebibliography}
 
 \chapter{Einleitung}
-\todo{Den Text ausbauen:
-  \url{http://www.tu-chemnitz.de/informatik/TI/paralg_ws20022003/skript.ps.gz}
-  Seite 1--6}
 
-Die Paradigmen (Entwurfsmuster) für serielle Algorithmen werden durch die
+Die Paradigmen (Strategien) für den Entwurf serieller Algorithmen werden durch die
 Kriterien Speicher- (\Space) und Zeitkomplexität (\Time), sowie ihrer
 einfachen Formulierbarkeit (Beschreibungskomplexität) bestimmt. Ein serieller
 Algorithmus soll bezüglich dieser Kriterien "`gut"' sein.
 
 Für die Bewertung serieller Algorithmen ist ein allgemein anerkanntes Modell
-die von-Neumann-Architektur. Sie beschreibt das Modell der \highl{Random
-access machine} (\highl{RAM}), bei dem die Basisoperationen in $O(1)$-\Time
-bewältigt werden.
+die random access machine (\highl{RAM}). Die RAM verfügt über eine
+Recheneinheit und einen beliebig großen Speicher, auf dessen Inhalt wahlfrei
+zugegriffen werden kann. Alle Basisoperationen können in $O(1)$~\Time
+berechnet werden.
 
 Für parallele Algorithmen hingegen gibt es verschiedene Modelle, die
-wesentlich abhängiger vom konkreten Rechner sind. Einige Kriterien sind
+wesentlich abhängiger vom konkreten Rechner sind. Einige (spezielle) Kriterien
+für Modelle sind:
 \begin{itemize}
  \item Geringe Anzahl leistungsfähiger Prozessoren
  \item Hohe Anzahl "`einfacher"' Prozessoren
  \item Verteilte Systeme (nicht Gegenstand der Vorlesung, siehe Rechnerarchitektur)
 \end{itemize}
 
-Faktoren:
-\help{Für was? Wozu sind die da?}
-\begin{description}
- \item[Computational Concurrency] möglicher Parallelisierungsgrad des Problems
- \item[Processor Allocation] Zuordnung der einzelnen Aufgaben an die
-  Prozessoren
- \item[Scheduling] Ausführungsreihenfolge der einzelnen Aufgaben, wann kommt
-  welcher Prozessor zum Zug
- \item[Communication] Kommunikation der Prozessoren untereinander bei der
-  Arbeit
- \item[Synchronization] eine allgemeine Uhr oder aufeinander abgestimmte Uhren
-\end{description}
-
-% \section{Algorithmenvorlesung}
-Wir haben also eine Vorlesung, die sich mit den Entwurfsprinzipien für
-parallele Algorithmen beschäftigt. Als allgemeine Prinzipien gelte für ein
-Modell:
+Bei der Betrachtung von parallelen Algorithmen treten aber auch neue Fragen
+auf, die sich für den seriellen Fall nicht ergeben:
 \begin{itemize}
- \item Einfachheit
- \item Möglichst maschinenunabhängig
- \item Implementierbarkeit
+ \item Computational Concurrency: Wie stark lässt sich eine Problem
+  parallelisieren? Bringt der Einsatz weiterer Prozessoren eine weitere
+  Beschleunigung?
+ \item Processor Allocation: Welcher Prozessor soll wann welche Operation
+  ausführen?
+ \item Scheduling: Welche Operationen können parallel ausgeführt werden? Welche
+  Operationen hängen von Ergebnissen anderer Operationen ab?
+ \item Communication: Wie kommen die Ergebnisse von einem Prozessor zu den
+  anderen Prozessoren?
+ \item Synchronization: Arbeiten alle Prozessoren unabhängig voneinander oder
+  arbeiten sie alle im gleichen Rythmus? Wie synchronisieren sie die
+  Prozessoren?
 \end{itemize}
 
 \section{Modelle für parallele Algorithmen}
@@ -298,8 +291,6 @@ innere Knoten.
   \centering
   \input{figures/dag_parallel.pdf_t}
   \caption{Zwei mögliche DAGs zur Berechnung der Summe von $n$~Zahlen}
-  \todo{entweder am linken Graphen noch den Ablaufplan ergänzen oder die
-    Prozessoren am rechten wegnehmen.}
   \label{fig:dag}
 \end{figure}
 
@@ -321,12 +312,12 @@ Darstellungen keine Parallelität aufweist.
     eine gerichtete Kante (von $u$ nach $v$) ist, so ist $t_v \ge t_u +1$.
   \end{enumerate}
 
-  Eine solche Zuordnung bezeichnet man als \highl{Ablaufplan} oder
+  Eine solche Zuordnung $S\colon V\rightarrow (\{1,\dotsc,p\}\times\N)$
+  bezeichnet man als \highl{Ablaufplan} oder
   \highl{Schedule}.
 
-  \todo{Eventuell noch die Definition 1.1 aus
-    \url{http://www.tu-chemnitz.de/informatik/TI/paralg_ws20022003/skript.ps.gz}
-    übernehmen.}
+  Als die Zeit~$T$ eines Ablaufplans~$S$ bezeichnet man $T(S) = \max\{ t\colon
+  \exists v\in V\colon S(v)=(j_{v},t_{v})\}$.
 \end{defini}
 
 Man erkennt an dem DAG leicht, welche Berechnungen voneinander abhängen und
@@ -343,17 +334,16 @@ untereinander. Die Prozessoren verfügen über einen \textit{lokalen} Speicher
 und tauschen ihre Daten mit den Operationen \highl{receive} und \highl{send}
 aus.
 
+\begin{figure}
+  \centering
+  \input{figures/netmodell_input.pdf_t}
+  \caption{Sortierung der Zahlen 2, 1, 5, 0 und 3 in einem linearen Feld von
+    Prozessoren, ein sogenanntes Sortiernetzwerk}
+  \label{fig:lin-feld}
+\end{figure}
+
 Mögliche Arten der Vernetzung, sogenannte Topologien, sind:
 \begin{itemize}
-  \begin{figure}
-    \centering
-    \input{figures/netmodell_input.pdf_t}
-    \caption{Sortierung der Zahlen 2, 1, 5, 0 und 3 in einem linearen Feld von
-    Prozessoren}
-    \todo{Der Schriftgrad könnte eins kleiner sein.}
-    \label{fig:lin-feld}
-  \end{figure}
-
  \item ein linearen Feld mit $p$~Prozessoren, in dem jeder innere Knoten genau
   zwei Nachbarn hat. Dabei können noch der erste und der letzte Knoten
   miteinander verbunden werden, so dass ein Ring entsteht.
