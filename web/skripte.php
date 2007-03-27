@@ -76,7 +76,7 @@ if ($id=="SKRIPT") {
               </p>";
 
 	echo "<h2>Die aktuellen Quellen</h2>";
-        $filename="$id.tar.gz";
+        $filename="$id.tgz";
         if (file_exists($filename)) {
           echo "<ul><li><a href='$filename'>$filename</a></li></ul>";
         } else {
