@@ -24,7 +24,7 @@ for skript in $(svnlook tree "$REPO" |
     log=$WEB/"$skript".Build.log
     rm --force "$log"
     nice -n 4 env -i PATH="$PATH" sh $tmp "$skript" "$WEB" > "$log" 2>&1
-    $give_away "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tar.gz
+    $give_away "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tgz
 
     echo fertig
 done

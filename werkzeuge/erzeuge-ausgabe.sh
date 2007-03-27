@@ -26,9 +26,9 @@ svn checkout $URL || exit
 
 # erstmal das alte wegräumen, weil wir u. U. kein Schreibrecht auf die
 # Datei haben, wenn sie von einem anderen Benutzer angelegt wurde
-rm -f $WEB/$SKRIPT.tar.gz
-GZIP=-9 tar --exclude=.svn -czf $WEB/$SKRIPT.tar.gz $SKRIPT
-echo "I: $SKRIPT.tar.gz erzeugt"
+rm -f $WEB/$SKRIPT.tgz
+GZIP=-9 tar --exclude=.svn -czf $WEB/$SKRIPT.tgz $SKRIPT
+echo "I: $SKRIPT.tgz erzeugt"
 
 cd $SKRIPT
 if [ -r skript.latex ]; then
