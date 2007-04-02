@@ -1,41 +1,89 @@
-% + Brueche auf nicefrac oder frac pruefen
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
 
-\documentclass[titlepage]{scrbook}
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
 \usepackage[latin1]{inputenc}
 \usepackage{ngerman}
-\usepackage[T1]{fontenc}
-\usepackage{amsmath}
-\usepackage{amsfonts,makeidx}
-\usepackage{amsthm}
-\usepackage{enumerate}
-\usepackage{paralist}
-\usepackage{pst-plot}
 \usepackage{nicefrac}
-\usepackage{wasysym}
+% \usepackage{tabularx}
 
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\CF}{\mathcal{F}}
-\newcommand{\CO}{\mathcal{O}}
-\newcommand{\FA}{\mathfrak{A}}
-\newcommand{\FB}{\mathfrak{B}}
-\newcommand{\FE}{\mathfrak{E}}
-\newcommand{\FP}{\mathfrak{P}}
-\newcommand{\FX}{\mathfrak{X}}
-\newcommand{\fmineins}{f^{-1}}
-\newcommand{\hmineins}{h^{-1}}
-\newcommand{\chiai}{\chi_{A_i}}
-\newcommand{\limn}{\lim_{n\rightarrow\infty}}
-\newcommand{\ofmu}{[\Omega,\CF,\mu]}
-\newcommand{\ofp}{[\Omega,\CF,P]}
-\newcommand{\rbel}{[\R,\FB,\ell]}
-\newcommand{\pxi}{P\circ\xi^{-1}}
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
 
-\theoremstyle{plain}
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{enumerate}   % wird evtl. nicht gebraucht und kann raus.
+\usepackage{pst-plot}
+\usepackage{wasysym}     % für den Blitz
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[section]
-\newtheorem*{satz*}{Satz o.B}
+\newtheorem*{satz*}{Satz o.\,B.}
+%\newtheorem{bemerk}{Bemerkung}[chapter]
+%\newtheorem{defini}{Definition}[chapter]
+%\newtheorem{bsp}{Beispiel}[chapter]
+%\newtheorem{festl}{Festlegung}[chapter]
 
 \theoremstyle{definition}
 \newtheorem*{definition}{Definition}
@@ -45,13 +93,120 @@
 \newtheorem*{remark}{Bemerkung}
 \newtheorem*{beispiel}{Beispiel}
 
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+\newcommand*{\CF}{\mathcal{F}}
+\newcommand*{\CO}{\mathcal{O}}
+\newcommand*{\FA}{\mathfrak{A}}
+\newcommand*{\FB}{\mathfrak{B}}
+\newcommand*{\FE}{\mathfrak{E}}
+\newcommand*{\FP}{\mathfrak{P}}
+\newcommand*{\FX}{\mathfrak{X}}
+\newcommand*{\fmineins}{f^{-1}}
+\newcommand*{\hmineins}{h^{-1}}
+\newcommand*{\chiai}{\chi_{A_i}}
+\newcommand*{\limn}{\lim_{n\rightarrow\infty}}
+\newcommand*{\ofmu}{[\Omega,\CF,\mu]}
+\newcommand*{\ofp}{[\Omega,\CF,P]}
+\newcommand*{\rbel}{[\R,\FB,\ell]}
+\newcommand*{\pxi}{P\circ\xi^{-1}}
+
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
 \makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+% + Brueche auf nicefrac oder frac pruefen
+
 
 \begin{document}
 \title{Elementare Wahrscheinlichkeitstheorie und Mathematische Statistik
   \thanks{$LastChangedRevision$ vom $LastChangedDate$}}
 \author{Prof.\,Dr.\,Karl-Heinz Fichtner}
-\date{WS 2004}
+\date{WS 2004/05}
 
 \tableofcontents
 
@@ -486,7 +641,7 @@ $\sigma$-Algebra über $\Omega$.
     \overset{(1)}{=} \lim_{n\rightarrow\infty} \mu(\bigcup_{k=1}^n
     B_k) \overset{4.}{=}\lim_{n\rightarrow\infty} \mu(A_n)$
   \item[zu b)] $A_n\supseteq A_{n+1}\Rightarrow A_n^c\subseteq
-    A_{n+1}^c$, d.h. die Folge der Komplemente ist monoton
+    A_{n+1}^c$, d.\,h. die Folge der Komplemente ist monoton
     wachsend. Nach (a) gilt nun: $\mu(\bigcup_{n=1}^\infty A_n^c) =
     \lim_{n\rightarrow\infty} \mu(A_n^c)$\\
     $\mu(\bigcup_{n=1}^\infty A_n^c)=\mu((\bigcap_{n=1}^\infty
@@ -713,7 +868,7 @@ der Grundmenge $\Omega=\times_{i=1}^n \Omega_i$ zu bauen.
     \ref{satz:stetigkeit} a erhält man $F(x)=P((-\infty,
     x))=P(\bigcup_{n=1}^\infty(-\infty, x_n))=\lim P((-\infty, x_n))=
     \lim F(x_n)$
-  \item Sei $x_n \uparrow +\infty$\footnote{d.h. $x_n\subseteq
+  \item Sei $x_n \uparrow +\infty$\footnote{d.\,h. $x_n\subseteq
       x_{n+1}, x_n\xrightarrow{n\rightarrow\infty}+\infty$}. Damit
     gilt wieder die schon oben angeführte Teilmengenbeziehung und es
     folgt: $\bigcup_{n=1}^\infty (-\infty, x_n)=\R$. Wie bereits oben
@@ -1190,7 +1345,7 @@ bezeichnen $(\CF,\FB)$-messbar als messbar.
   mit $f_n\leq f_{n+1}$ und $f=\limn f_n (f_n \uparrow f)$
 \end{satz}
 \begin{proof}
-  Der Beweis erfolgt konstruktiv, d.h. man konstruiert eine spezielle
+  Der Beweis erfolgt konstruktiv, d.\,h. man konstruiert eine spezielle
   Folge $(f_n)_{n=1}^\infty$:
   \[f_n:=\sum_{i=0}^{4^n-1} \frac{i}{2^n}
   \chi_{\fmineins([\frac{i}{2^n}, \frac{i+1}{2^n}))} +2^n
@@ -1232,7 +1387,7 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
 (d\omega) \hat{=} \int fd\mu$ wird in drei Stufen eingeführt:
 
 \begin{definition}[1. Stufe]
-  Sei $f\geq 0$ und einfach, d.h. wir haben eine Darstellung der Form
+  Sei $f\geq 0$ und einfach, d.\,h. wir haben eine Darstellung der Form
   $f=\sum_{i=1}^n a_i \chiai$ mit $n=1, a_1,\ldots,a_n\geq 0,
   A_i\in\CF$. Dann setzen wir 
   \[\int f(\omega)\mu(d\omega):=\sum_{i=1}^n
@@ -1244,12 +1399,12 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
 \begin{remark}
   \begin{enumerate}
   \item $\int fd\mu\geq 0$
-  \item Die Definition des Integrals ist eindeutig, d.h. unabhängig
+  \item Die Definition des Integrals ist eindeutig, d.\,h. unabhängig
     von der betrachteten Darstellung als Linearkombination von
     messbaren Indikatorfunktionen:\\ $f=\sum_{i=1}^n
     a_i\chiai=\sum_{k=1}^m b_k\chi_{B_k}\Rightarrow\sum_{i=1}^n
     a_i\mu(A_i) = \sum_{k=1}^m b_k\mu(B_k)$
-  \item Das Integral ist linear, d.h. $f,g=0$ und einfach,
+  \item Das Integral ist linear, d.\,h. $f,g=0$ und einfach,
     $\alpha,\beta \geq 0\Rightarrow\int(\alpha f+\beta g)d\mu=
     \alpha\int fd\mu+\beta\int gd\mu$. Denn sei $f=\sum a_i\chiai$ und
     $g=\sum b_j \chi_{B_j}$. Dann ist $\alpha f + \beta g=\sum \alpha
@@ -1288,7 +1443,7 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
   \item Die Definition ist "`sinnvoll"', weil das Integral nach der
     Definition erster Stufe definiert ist und der Limes nach der
     obigen Bemerkung 5 existiert.
-  \item Die Definition ist auch eindeutig, d.h. wenn wir haben: $0\leq
+  \item Die Definition ist auch eindeutig, d.\,h. wenn wir haben: $0\leq
     f_n\leq f_{n+1}, 0\leq g_n\leq g_{n+1}, f=\lim f_n=\lim g_n$ und
     beide sind einfach, dann folgt daraus: $\lim\int f_nd\mu=\lim\int
     g_nd\mu$. Dies ist eine direkte Folgerung aus der Bemerkung 6 oben.
@@ -1297,7 +1452,7 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
   \item Das so definierte Integral ist linear.\\
     Beweis: Sei $\alpha,\beta\in\R\geq 0, f,g\geq 0$ und
     messbar. Weiter seien $f=\lim f_n, g=\lim g_n, 0\leq f_n\leq
-    f_{n+1}, 0\leq g_n\leq g_{n+1}$ alle einfach, d.h. $\int fd\mu=
+    f_{n+1}, 0\leq g_n\leq g_{n+1}$ alle einfach, d.\,h. $\int fd\mu=
     \limn\int f_nd\mu$ und $\int gd\mu=\limn\int g_nd\mu$.\\
     $\alpha f+\beta g=\limn(\alpha f_n+\beta g_n)\Rightarrow \int
     (\alpha f+\beta g)d\mu=\limn\int(\alpha f_n+\beta g_n) d\mu=
@@ -1310,7 +1465,7 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
 \end{remark}
 
 \begin{definition}[3. Stufe]
-  Sei $f$ messbar und bezüglich $\mu$ integrierbar, d.h. $\int
+  Sei $f$ messbar und bezüglich $\mu$ integrierbar, d.\,h. $\int
   f^+d\mu$ und $\int(-f^-)d\mu<+\infty$. Dann gilt:
   \[\int fd\mu:=\int f^+d\mu-\int(-f^-)d\mu\]
 \end{definition}
@@ -1486,14 +1641,14 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
   \item Sei $f=\chi_A (A\in\CF_2)$ und damit messbar. Die Verknüpfung
     $f\circ h(\omega)=\chi_A(h(\omega))$. Es ist klar, dass
     $\chi_A\circ h$ eine Indikatorfunktion auf $\Omega_1$ sein muss,
-    d.h. $\exists B\subseteq\Omega_1$ mit $\chi_A\circ h=\chi_B$\\
+    d.\,h. $\exists B\subseteq\Omega_1$ mit $\chi_A\circ h=\chi_B$\\
     $\chi_B(\omega)=1\Leftrightarrow \chi_A(h(\omega))=1
     \Leftrightarrow h(\omega)\in A\Leftrightarrow w\in\hmineins(A)
     \Rightarrow B=\hmineins(A)\in\CF_1$
     \[\Rightarrow \chi_A \circ h = \chi_{\hmineins(A)}\]
     $\int f\circ h d\mu=\int\chi_{\hmineins(A)}d\mu=\mu(\hmineins(A))
     =\mu\circ\hmineins(A)=\int\chi_Ad\mu\circ\hmineins=\int fd\mu\hmineins=$
-  \item Sei $f\geq 0$ und einfach, d.h. $f=\sum_{i=1}^n a_i
+  \item Sei $f\geq 0$ und einfach, d.\,h. $f=\sum_{i=1}^n a_i
     \chiai$ mit $A_i\in\CF_2, a_i\geq 0$. Das Integral $\int fd\mu
     \circ\fmineins$ entspricht wegen der Linearität die Summe
     $\sum_{i=1}^n a_i\int \chiai d\mu\circ\hmineins=\sum_{i=1}^n a_i
@@ -1632,7 +1787,7 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
     0\Rightarrow (f-g)\chi_A=_\mu =0\Rightarrow \int (f-g)\chi_A
     d\mu=0\Rightarrow \mu f=\mu g$
   \item["`$\Rightarrow$"'] Angenommen $\neg f=_\mu g$,
-    d.h. $\mu(\{\omega\in\Omega|f(\omega)\neq g(\omega)\})=0
+    d.\,h. $\mu(\{\omega\in\Omega|f(\omega)\neq g(\omega)\})=0
     \Rightarrow \mu(\{\omega\in\Omega|f(\omega)>g(\omega)\})>0\vee
     \mu(\{\omega\in\Omega|f(\omega)<g(\omega)\})<0$. O.B.d.A. gelte
     die erste Gleichung und sei $A_n:=\{\omega\in\Omega|f(\omega)\geq
@@ -1729,7 +1884,7 @@ Im folgenden ist immer $\ofmu$ ein Maßraum und wir betrachten $f:
 \begin{definition}
   Sei $\ofmu$ ein Maßraum. Das Maß $\mu$ heißt
   \emph{$\sigma$-endlich\index{endlich}\index{Maß!endliches}}, wenn
-  eine messbare Zerlegung\footnote{d.h. $A_k\cap A_j=\emptyset\wedge
+  eine messbare Zerlegung\footnote{d.\,h. $A_k\cap A_j=\emptyset\wedge
     \bigcup A_k=\Omega$} $(A_k)_{k=1}^\infty$ von $\Omega$ existiert
   mit $\mu(A_k)<+\infty\,(k=1,2,\ldots)$.
 \end{definition}
@@ -1774,7 +1929,7 @@ Im folgenden seien $\Omega_1, \CF_1, \mu_1], \ldots, [\Omega_n, \CF_n,
   Seien $[\Omega_1,\CF_1,\mu_1],\ldots, [\Omega_n,\CF_n,\mu_n]$
   Maßräume mit $\sigma$-endlichen Maßen. Weiterhin seien $f_i:
   [\Omega_1, \CF_i]\rightarrow[\R,\FB], f_i\geq 0, \int f_i
-  d\mu_i=1$\footnote{d.h. $f_i$ ist Wahrscheinlichkeitsdichte
+  d\mu_i=1$\footnote{d.\,h. $f_i$ ist Wahrscheinlichkeitsdichte
     bezüglich $\mu_i$ bzw. $\mu_i f_i$ ist Wahrscheinlichkeitsmaß.}.
   Setzen $f(\omega_1,\ldots,\omega_n):=\prod_{i=1}^n
   f_i(\omega_i)$. Dann gilt:
@@ -2101,7 +2256,7 @@ von $(1-p)\sum_{k=0}^9 p^k=(1-p)\frac{(1-p^9)}{(1-p)}=1-p^9\approx
 
 \section{Der Poissonsche Grenzwertsatz}
 
-Wir betrachten die Binomialverteilung $B_{n,p}$, d.h. 
+Wir betrachten die Binomialverteilung $B_{n,p}$, d.\,h. 
 \[B_{n,p}(\{k\})=
 \begin{cases}
   \binom{n}{k} p^k (1-p)^{n-k} & 0\leq k\leq n\\
@@ -2840,7 +2995,7 @@ in $[X_i, \FX_i]$ ist.
 \begin{satz}
 \label{satz:535}
   Seien $\xi_1, \xi_2$ unabhängige Zufallsgrößen mit $P_{\xi_i}(\Z)=1$
-  ($i=1,2$), d.h. $P_{\xi_1}=\sum_{k\in\Z} a_k\delta_k, P_{\xi_2}=
+  ($i=1,2$), d.\,h. $P_{\xi_1}=\sum_{k\in\Z} a_k\delta_k, P_{\xi_2}=
   \sum_{k\in\Z} b_k\delta_k, a_k, b_k \geq 0, \sum a_k=\sum
   b_k=1$. Dann gilt:
   \begin{align*}
@@ -2848,7 +3003,7 @@ in $[X_i, \FX_i]$ ist.
     P_{\xi_1+\xi_2}(\{n\}) &= \sum_{k\in\Z} P_{\xi_1}(\{n-k\})
     P_{\xi_2} (\{k\})
   \end{align*}
-  D.h. $P_{\xi_1+\xi_2}=\sum_{k\in\Z} c_k\delta_k$ mit $c_k=\sum
+  d.\,h. $P_{\xi_1+\xi_2}=\sum_{k\in\Z} c_k\delta_k$ mit $c_k=\sum
   a_{n-k} b_k$.
 \end{satz}
 \begin{proof}
@@ -2953,7 +3108,7 @@ und wir betrachten die Zufallsgrößen $\xi, \eta, \zeta$.
 \end{proof}
 
 \begin{satz}
-  Sei $\xi$ eine nichtnegative Zufallsgröße, d.h. $P("`\xi\geq =``) =1 %"'
+  Sei $\xi$ eine nichtnegative Zufallsgröße, d.\,h. $P("`\xi\geq =``) =1 %"'
   \Leftrightarrow P_\xi([0, +\infty))=1$. Dann gilt:
   \[E\xi = \int_{[0, +\infty)} (1-f_\xi(x)) \ell dx\]
 \end{satz}
@@ -3078,7 +3233,7 @@ Zufallsgrößen $\xi, \eta$.
   \begin{enumerate}[a)]
   \item $D\xi\geq 0$
   \item $D\xi=0\Leftrightarrow
-    P_\xi=\delta_{E\xi}$. D.h. $P("`\xi=c``) =1$, %"'
+    P_\xi=\delta_{E\xi}$. d.\,h. $P("`\xi=c``) =1$, %"'
     also Determinismus.
   \item $D\xi$ endlich $\Leftrightarrow E\xi^2$ endlich. In diesem
     Fall gilt $D\xi=E\xi^2-(E\xi)^2$
@@ -3118,7 +3273,7 @@ Zufallsgrößen $\xi, \eta$.
 \end{remark}
 
 \begin{beispiel}[für $E\xi\cdot\eta\neq E\xi\cdot E\eta$]
-  Sei $\xi$ eine Zufallsgröße mit $D\xi>0$, d.h. $\xi$ ist keine
+  Sei $\xi$ eine Zufallsgröße mit $D\xi>0$, d.\,h. $\xi$ ist keine
   Konstante, und $\eta := \xi$. Dann folgt, $E\xi\cdot\eta=E\xi^2$. Da
   weiter gilt, $D\xi=E\xi^2-(E\xi)^2$ und $D\xi\neq 0$, folgt, dass
   $E\xi^2\neq E\xi\cdot E\xi$. Angenommen, es gelte, $E\xi\cdot\eta=
@@ -3320,7 +3475,7 @@ abgeschafft werden.
 Die ideale Messapparatur liefert der Wert $a$ und der reale Vorgang
 die zufällige Größe $\xi$. Da das Gerät zwar korrekt misst, aber auch
 anfällig für äußere Einflüsse ist, ergibt sich ein nicht
-systematischer Fehler, d.h. $E\xi=a$. Vom Hersteller erhält man
+systematischer Fehler, d.\,h. $E\xi=a$. Vom Hersteller erhält man
 $D\xi=\sigma^2$. Die übliche Verfahrensweise ist nun, dass wiederholte
 Messungen durchgeführt werden und man so viele $\xi,\ldots,\xi_n$
 bekommt. Für diese wird angenommen, dass sie unabhängig und identisch
@@ -3336,7 +3491,7 @@ gebildet:
 \end{align*}
 Folgende Ansprüche werden formuliert:
 \begin{enumerate}
-\item Die Schätzung soll "`hinreichend"' exakt sein, d.h. für ein
+\item Die Schätzung soll "`hinreichend"' exakt sein, d.\,h. für ein
   vorgegebenes $\varepsilon>0$ wird gefordert: $\lvert \eta_n -a\rvert
   < \varepsilon$.
 \item Vorgabe eines Sicherheitsniveaus $s<1$ mit
@@ -3374,7 +3529,7 @@ die Gleichung (\ref{eq:1}) gilt. Eine mögliche Antwort isT:
   Nunmehr sich hier wieder Satz~\ref{satz:563}
   anwenden und die obige Gleichung ist größergleich
   $1-\frac{\sigma^2}{n\varepsilon^2}\geq
-  s$. D.h. Gleichung~(\ref{eq:1}) wird realisiert, wenn $s\leq 1-
+  s$. d.\,h. Gleichung~(\ref{eq:1}) wird realisiert, wenn $s\leq 1-
   \frac{\sigma^2}{n\varepsilon^2}\Leftrightarrow n\geq
   \frac{\sigma^2}{(1-s)\varepsilon^2}$. Letzteres entspricht gerade
   Gleichung~(\ref{eq:2}).
@@ -3413,7 +3568,7 @@ $(\eta_i)_{i\geq 1}$ iid sind. Nun betrachten wir die $\xi_i:=\xi_i^A
 :=\chi_A(\eta_i)=\chi_A\circ\eta_i$ für $i=1,2,\ldots$. Diese sind
 messbar, da $A\in\FX$ und die Summe über alle $\xi_i$ entspricht der
 Anzahl, wie oft $A$ bei $1,\ldots,n$ realisiert wird,
-d.h. $\nicefrac{1}{n} \sum_{i=1}^n \xi_i$ ist die relative Häufigkeit
+d.\,h. $\nicefrac{1}{n} \sum_{i=1}^n \xi_i$ ist die relative Häufigkeit
 des Eintretens von $A$. Es ist klar, dass $(\xi_i)$ iid sind und aus
 Satz~\ref{satz:schwachges-571} ergibt sich $\nicefrac{1}{n} \sum \xi_i
 \xrightarrow{P} P_{\eta_1}(A)$. Dies ist eine rein qualitative Aussage
