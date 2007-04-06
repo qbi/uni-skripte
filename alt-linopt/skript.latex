@@ -5,112 +5,167 @@
 % rubber: watch $base.thm
 % rubber: makeidx.tool      xindy
 % rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
 
 \RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
                    % Befehle oder solche, die man nicht in LaTeX verwenden
                    % soll -- l2tabu-Checker in LaTeX
 
-\documentclass[german]{scrreprt}
+\documentclass[halfparskip*,ngerman,draft,twoside]{scrreprt}
 
 \usepackage{babel}
+%\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
 \usepackage[latin1]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{amsmath}
+\usepackage{ngerman}
+\usepackage{nicefrac}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
 \usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
                                        % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
 \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
-\usepackage{amsfonts}
-\usepackage[amsmath,thmmarks,hyperref]{ntheorem}
-\usepackage{paralist}
-\usepackage{eurosym} %% Eingabe des Eurosymbols
-\usepackage{sistyle} %% fuer die korrekte Angabe von Einheiten
-\usepackage{braket}  %% Zur Eingabe von Mengen: A={x| x>2}
-\usepackage{amssymb}
-\usepackage{color}
-\usepackage[draft=false,colorlinks,urlcolor=blue,breaklinks]{hyperref}
-\usepackage{makeidx}
-\usepackage{xspace}
-\usepackage{nicefrac}
-\usepackage{enumerate}
-\usepackage{booktabs}
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+%\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
 \usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
                          % SVN-Schlüsselwörter (s. vor \begin{document})
                          % dafür muss in SVN noch das Flag svn:keywords
                          % auf "LastChangedRevision LastChangedDate"
                          % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
 \usepackage{ellipsis}    % Korrektur für \dots
 \usepackage{fixltx2e}
-\usepackage{microtype} % Verbesserung der Typographie
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{amsfonts}
+\usepackage{eurosym}     %% Eingabe des Eurosymbols
+\usepackage{sistyle}     %% fuer die korrekte Angabe von Einheiten
+\usepackage{braket}      %% Zur Eingabe von Mengen: A={x| x>2}
+\usepackage{booktabs}    %% schöne Linien in Tabellen
 
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bem}{Bemerkung}[chapter]
+\newtheorem{defin}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{defin}{Definition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{satz}{Satz}
-\newtheorem{bem}{Bemerkung}
-\newtheorem{kor}{Korollar}
+\newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{kor}{Korollar}[chapter]
 
-%% schwarzes Quadrat für das Ende eines Beweises
-\theoremsymbol{\ensuremath{_{\blacksquare}}}
-\newtheorem*{proof}{Beweis:}
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
 
-\makeatletter
-% \autoref unterscheidet die Umgebungen, die angesprochen werden, anhand
-% ihres Zählernamens. Da sich aber alle Umgebungen einen Zähler mit satz
-% teilen sollen, bezeichnet \autoref alles mit "`Satz"'. Daher bekommt
-% jede Umgebung einen eigenen Zähler, der in Wirklichkeit ein Alias zu
-% satz ist
-% <news:m3wvitk0o9.fsf@sgifford.tir.com>
-\renewcommand*{\c@defin}{\c@bsp}
-\renewcommand*{\p@defin}{\p@bsp}
-\renewcommand*{\thedefin}{\thebsp}
-\renewcommand*{\c@lemma}{\c@bsp}
-\renewcommand*{\p@lemma}{\p@bsp}
-\renewcommand*{\thelemma}{\thebsp}
-\renewcommand*{\c@satz}{\c@bsp}
-\renewcommand*{\p@satz}{\p@bsp}
-\renewcommand*{\thesatz}{\thebsp}
-\renewcommand*{\c@bem}{\c@bsp}
-\renewcommand*{\p@bem}{\p@bsp}
-\renewcommand*{\thebem}{\thebsp}
-\renewcommand*{\c@kor}{\c@bsp}
-\renewcommand*{\p@kor}{\p@bsp}
-\renewcommand*{\thekor}{\thebsp}
-\makeatother
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
 
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
-\newcommand*{\bspautorefname}{Beispiel}
-\newcommand*{\definautorefname}{Definition}
-\newcommand*{\lemmaautorefname}{Lemma}
 \newcommand*{\satzautorefname}{Satz}
 \newcommand*{\bemautorefname}{Bemerkung}
+\newcommand*{\definautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\lemautorefname}{Lemma}
 \newcommand*{\korautorefname}{Korollar}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
 \renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
-%% Bezeichnungen diverser Zahlenmengen
-\newcommand*{\R}{\mathbb{R}}
-\newcommand*{\N}{\mathbb{N}}
-\newcommand*{\Q}{\mathbb{Q}}
-\newcommand*{\Z}{\mathbb{Z}}
+\pagestyle{headings}
 
-% Das original Epsilon sieht nicht so toll aus
-\renewcommand*{\epsilon}{\varepsilon}
-% \ldots  und mancheinem gefällt auch das Phi nicht
-\renewcommand*{\phi}{\varphi}
-
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+%\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+%\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+%\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
 
 %% kalligrafische Zeichen
 \newcommand*{\FF}{\mathcal{F}}
 
-%% sonstige Abkürzungen
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
 \newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+%% unter den Nebenbedingungen ist auch zu lang zum Eintippen
 \newcommand*{\unb}{unter den Nebenbedingungen\xspace}
 
-%% optische Unterstützer im Text
-\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+% \newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+% 			       {\mspace{8mu}gdw\mspace{8mu}}%
+% 			       {$gdw$\xspace}}
+% \newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+% 			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+% 			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
 
 \DeclareMathOperator{\co}{co}  %% konvexe Huelle
 \DeclareMathOperator{\rg}{rg}  %% Rang
@@ -495,7 +550,7 @@ Optimierungsproblemen.
     \min c^Tx \text{ mit}\\
     l_x\leq x\leq u_x\\
     l_A\leq A^{(1)}\leq u_A\\
-    A^{(2)}(x), b
+    A^{(2)}(x)= b
   \end{align*}
   wobei gilt: $x\in\R^n, c\in\R^n, l_x, u_x\in\R^n, A^{(1)}$ ist eine
   $m_1\times n$-Matrix, $l_A, u_A\in\R^{m_1}, A^{(2)}$ ist eine
