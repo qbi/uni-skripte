@@ -21,7 +21,6 @@
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
 
 \usepackage[latin1]{inputenc}
-\usepackage{ngerman}
 \usepackage{nicefrac}
 
 \usepackage{lmodern}		% Latin Modern
@@ -78,7 +77,7 @@
 \newtheorem{bem}{Bemerkung}[chapter]
 \newtheorem{defin}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{verf}{Verfahren}[chapter]
 \newtheorem{lemma}{Lemma}[chapter]
 \newtheorem{kor}{Korollar}[chapter]
 
@@ -99,7 +98,7 @@
 \newcommand*{\bemautorefname}{Bemerkung}
 \newcommand*{\definautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
-\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\verfautorefname}{Verfahren}
 \newcommand*{\lemautorefname}{Lemma}
 \newcommand*{\korautorefname}{Korollar}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
@@ -2486,6 +2485,14 @@ den Basistausch.
   \end{gather*}
 \end{bem}
 
+\begin{bsp}
+  \label{bsp:327}
+  \todo{Tabelle einfügen}
+  Mit der Zusatzregel ergibt sich $\frac{1}{4}
+  \begin{pmatrix}0\\1\\0\end{pmatrix} \prec \frac{1}{4}
+  \begin{pmatrix}0\\0\\1\end{pmatrix}\Rightarrow l=3$.
+\end{bsp}
+
 \section{Phase 1 des Simplexverfahrens}
 
 Ausgangspunkt ist ein lineares Programm in Standardform. Die Phase 1
@@ -2660,6 +2667,125 @@ Lösung gilt:
   \end{enumerate}
 \end{bsp}
 
+\begin{bsp}
+  \begin{gather*}
+    \min 2x_{1} +3x_{2}+ x_{3}
+  \end{gather*}
+  \unb
+  \begin{gather*}
+    -x_{1} + 2x_{2} + 3x_{4} = 2\\
+    4x_{1} + 2x_{2} + 4x_{4} = 2\\
+    x_{1} + x_{3} + 4x_{4} = 2\\
+    x_{i} \geq 0
+  \end{gather*}
+  Hilfsproblem für Phase 1\\
+  Das Problem aus \autoref{bsp:327} war: \todo{Tabelle einfügen}
+
+  Wir tauschen $x_{5}=y_{1}$ gegen $x_{4}$: \todo{Tabelle einfügen}
+
+  Das Streichen ergibt das obere Starttableau für die Phase 2. Die
+  letzte Zeile muss neu berechnet werden.
+\end{bsp}
+
+\begin{verf}[Zusammenfassung der Phase 1]
+  \begin{enumerate}
+   \item Berechne eine Lösung
+    $\tilde{e}=\begin{pmatrix}\tilde{x}\\\tilde{y}\end{pmatrix}$ vom
+    Hilfsproblem mit der Phase 2. Ist $\tilde{x}^{T}\tilde{z} > 0
+    \Rightarrow \FF =\emptyset$ und das Verfahren stoppt.
+   \item Berechne $l\in\{1,\dotsc,m\}$ mit $b(l)=\max_{1\leq i\leq m}
+    b(i=)$.
+   \item Ist $b(l)\leq n$, dann streiche die zu den Hilfsvariablen
+    gehörigen Spalten im linken Tableauteil, berechne die letzte
+    Tableauzeile neu und starte Phase 2.
+   \item Ist $b(l)>n$, dann führe den Basistausch $b(l)\Leftrightarrow
+    n(j)$ durch, wenn es ein $j\in\{1,\dotsc,n\}$ mit
+    $n(j)\in\{1,\dotsc,n\}$ und $\hat{A}_{l,j}\neq\emptyset$ gibt.
+   \item Falls $\rg(A)<m$, berechne $i=b(l)-n$ und streiche die $i$-te
+    Gleichungsrestriktion.xs
+  \end{enumerate}
+\end{verf}
+
+\begin{bem}
+  Gegeben sei ein lineares Problem vom Typ $\min c^{T}x$ \unb $Ax\leq
+  b, x\geq 0$. Wenn wir das in Standardform transformieren, erhalten
+  wir $\min (c^{T}, 0,\dotsc,0) \begin{pmatrix}x\\y\end{pmatrix}$ \unb
+  $(A, I_{m}) \begin{pmatrix}x\\y\end{pmatrix}=b, x,y\geq 0$.
+  Naheliegend ist es, $J_{B}=\{n+1,\dotsc,n+m\}$ zu wählen. Dies geht
+  nur, wenn $b\geq 0$ ist.
+\end{bem}
+
+\section{Das revidierte Simplex-Verfahren}
+
+Dieses Verfahren benutzt anstelle von $\hat{A}$ nur die Pivotspalte
+$\hat{w}$ und spart damit Speicherplatz. Es erhebt sich die Frage, wie
+man dann den Basiswechsel durchführen kann.
+
+Wir wählen einen Index $j\in\{1,\dotsc,n-m\}$ mit $\hat{s}_{j}<0$. Wir
+berechnen die Pivotspalte $\hat{w} = A^{-1}_{B} A_{.n(j)}$. Falls
+$\hat{w} \leq0$ ist das Unbeschränkheitskriterium erfüllt und das
+Verfahren stoppt.
+
+Als nächsten wählen wir einen Index $l\in\{1,\dotsc,m\}$ mit $\sigma =
+\frac{\overline{x}_{l}}{\hat{w}_{l}} =
+\min\{\frac{\overline{x}_{\mu}}{\hat{w}_{\mu}}\colon 1\leq \mu \leq m,
+\hat{w}_{\mu}>0\}$. Benutzt man beim reduzierten Problem die
+Suchrichtung $d$ mit $d_{j}=1, d_{i}=0, i\neq j$, dann ist $\delta$
+die maximale Schrittweite mit $v(t)=td\in\FF_{B}$.
+
+Die neue Ecke wird definiert durch
+\begin{align*}
+  x^{+}_{N} &= v^{+}=\delta d\\
+  x^{+}_{B} &= x^{*}_{B}-\delta\hat{w}
+\end{align*}
+
+Somit erhalten wir für $x^{+}$ die einfache Updateformel:
+\begin{align*}
+  x^{+}_{N} &= x^{*}_{B} -\delta\hat{w}\\
+  x^{+}_{n(j)} &= \delta
+\end{align*}
+Für den Vektor $\overline{x}=x^{*}_{B}$ bedeutet das:
+\begin{gather}\label{eq:324}
+  \overline{x}^{+}_{i}=
+     \begin{cases}
+       \overline{l}- \delta \hat{w}_{i} & i\neq l\\
+       \delta & i=l
+     \end{cases}
+\end{gather}
+
+Fasst man die Updateformel (\autoref{eq:317}) für die Pivotspalte und
+\autoref{eq:320} für $\overline{A}$ zusammen, folgt:
+\begin{gather}\label{eq:325}
+  \overline{A}^{+}_{l,\mu} = \frac{\overline{A}_{l,\mu}}{\hat{w}_{l}}
+     \qquad \mu=1,\dotsc,m\\
+\end{gather}
+und für $i\leq l$:
+\begin{gather}\label{eq:326}
+  \overline{A}^{+}_{i,\mu} = \overline{A}_{i,\mu}- \frac{\hat{w}_{i}
+     \overline{A}_{l,\mu}}{\hat{w}_{l}} \qquad \mu= 1,\dotsc,m
+\end{gather}
+
+\begin{verf}[revidiertes Simplex-Verfahren, Phase 2]
+  Gegeben seien eine Basis $B=B^{(0)}$ von $A$, die Matrix
+  $\overline{A}=A^{-1}_{B}$ und $\overline{x}=x_{B}$. Setze $k\colon=
+  0$.
+  \begin{enumerate}
+   \item Berechne $\overline{y}=A^{T} c_{B}, \hat{s}$ mit den
+    Komponenten $\hat{s}_{r}=c_{n(r)}-\overline{y} A_{.n(r)}$.
+   \item Optimalitätskriterium: Gilt $\hat{s}\geq0$, dann ist die
+    aktuelle Ecke optimal und das Verfahren stoppt.
+   \item Wähle $j\in\{1,\dotsc,n-m\}$ mit $\hat{s}_{j}<0$ und berechne
+    $\hat{w} =\overline{A}A_{.n(j)}$.
+   \item Unbeschränkheitskriterium: $\hat{w}\leq 0\Rightarrow 0$
+   \item Wähle $l\in\{1,\dotsc,m\}$ und $\delta$ wie oben.
+   \item Update von $\overline{x}$ und $\overline{A}$ nach
+    \autoref{eq:324}, \autoref{eq:325} und \autoref{eq:326}.
+   \item Indextausch: $b(l)\Leftrightarrow n(j)$
+   \item Setze $k\colon= k+1$ und gehe zum ersten Punkt.
+  \end{enumerate}
+\end{verf}
+
+% weiter mit Kapitel 4
 \appendix
 \chapter{Klausuraufgaben}
 
