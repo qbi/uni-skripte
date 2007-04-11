@@ -84,6 +84,9 @@ if ($id=="SKRIPT") {
           unter <a href='mailto:skripte@listserv.uni-jena.de'>
           skripte@listserv.uni-jena.de</a>";
         }
+        $filename="$id-mit-grafiken.tgz";
+        if (file_exists($filename))
+          echo "<ul><li><a href='$filename'>$filename</a></li></ul>";
 }
 echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
 und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
