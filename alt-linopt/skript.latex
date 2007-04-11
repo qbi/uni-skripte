@@ -82,8 +82,8 @@
 \newtheorem{kor}{Korollar}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
-\theoremstyle{nonumberbreak}
-\newtheorem{fakt}{Fakt}
+%\theoremstyle{nonumberbreak}
+%\newtheorem{fakt}{Fakt}
 
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
@@ -99,7 +99,7 @@
 \newcommand*{\definautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\verfautorefname}{Verfahren}
-\newcommand*{\lemautorefname}{Lemma}
+\newcommand*{\lemmaautorefname}{Lemma}
 \newcommand*{\korautorefname}{Korollar}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
@@ -110,7 +110,7 @@
 
 \newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
 %\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
-\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+%\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 %\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
 %\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
 
@@ -158,7 +158,7 @@
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+%\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
 \newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
 
 % Das original Epsilon sieht nicht so toll aus
@@ -377,21 +377,18 @@ können wir das Optimierungsproblem in der Form $\min c^Tx$ unter den
 Nebenbedingungen $Ax\leq b, x\geq 0$ schreiben.
 \end{bsp}
 
-\begin{bsp}
+\begin{bsp}\label{bsp:17}
   Eine Tierfarm kauft drei verschiedene Kornsorten, um daraus
   Futtermittel zu mischen.
 
   \begin{tabular}{l|r|r|r|r}
     & $S_1$ & $S_2$ & $S_3$ & Mindestbedarf\\
-    \hline
+    \bottomrule
     Nährstoff A & 2 & 3 & 7 & 1250\\
-    \hline
     Nährstoff B & 1 & 1 & 0 & 250\\
-    \hline
     Nährstoff C & 5 & 3 & 0 & 900\\
-    \hline
     Nährstoff D & 0,6 & 0,25 & 1 & 232,5\\
-    \hline
+    \bottomrule
     Kosten & 41 & 35 & 96 & \\
   \end{tabular}
 
@@ -2785,7 +2782,467 @@ und für $i\leq l$:
   \end{enumerate}
 \end{verf}
 
-% weiter mit Kapitel 4
+\chapter{Optimalitätsbedingungen und Dualität}
+
+Wir erinnern uns an die Analysisvorlesung. Seien $f\colon \R^{n}
+\rightarrow \R, g\colon \R^{n}\rightarrow \R^{m}$ stetig
+differenzierbar. Nun betrachten wir die Aufgabe $\min f(x)$ \unb
+$g(x)=0$.
+
+Falls $\tilde{x}$ Lösung des linearen Problems ist und $g(\tilde{x})$
+vollen Rang hat, dann gibt es ein $\lambda\in\R^{m}$ mit
+$f'(\tilde{x}) +\lambda^{T}g'(\tilde{x})=0$. Das $\lambda$ wird als
+\highl{Lagrangemultiplikator} bezeichnet. Für den Spezialfall
+$A\in\R^{m\times n}, b\in\R^{m}, g(x)=Ax-b$ gilt:
+\begin{gather*}
+  g(x)=0 \Leftrightarrow Ax=b\\
+  f'(\tilde{x})+\lambda^{T} A=0 \Leftrightarrow \nabla f(\tilde{x}) +
+     A^{T}\lambda=0
+\end{gather*}
+
+Nutzen dieser Bedigungen:
+\begin{enumerate}
+ \item $\tilde{x}$ Lösung $\Rightarrow\exists \lambda\colon \nabla
+  f(\tilde{x}) + A^{T}\lambda=0$ ($n$ Gleichungen)
+ \item $\tilde{x}$ ist Lösung $\Rightarrow \tilde{x}$ ist zulässig
+  $\Rightarrow A\tilde{x}=b$ ($m$ Gleichungen)
+\end{enumerate}
+Damit haben wir $n+m$ Gleichungen für die $n+m$ Unbekannten
+$\tilde{\alpha}\in \R^{n}, \lambda\in\R^{m}$.
+
+\section{Optimalitätsbedingungen}
+
+Sei $c\in\R^{n}, A\in\R^{m\times n}, B\in\R^{m}, m\leq n$ sowie das
+lineare Problem $\min c^{T}x$ \unb $x\in\FF=\{x\in\R^{n}\colon x\geq
+0, Ax=b\}$.
+
+\begin{satz}[Kuhn-Tucker]\label{satz:41}
+  Ein Punkt $\tilde{x}\in\FF$ ist genau dann Lösung des linearen
+  Problem, wenn ein $\tilde{y}\in\R^{m}, \tilde{s}\in\R^{n}$ existiert mit:
+  \begin{gather}\label{eq:41}
+    A^{T}\tilde{y}+\tilde{s}=c\qquad \tilde{x}^{T}\delta =\sigma\qquad
+    \tilde{s}\geq0
+  \end{gather}
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $x\in\FF$ die Lösung des linearen
+      Problems. Wir betrachten zunächst den Fall $\rg(A)=m$. Da das
+      Problem eine Lösung hat, berechnet das Simplex-Verfahren (nach
+      \autoref{satz:325}) in endlich vielen Schritten eine optimale
+      Ecke $x$ zu einer Basis $B$ von $A$.
+
+      Weiter ist die Optimalitätsbedingung $s_{N}\geq 0$ erfüllt und
+      $s_{N}^{T} = c_{N}^{T} - c_{B}^{T} A^{-1}_{B} A_{N}$. mit
+      $\tilde{y}^{T}\colon= c^{T}_{B} A^{-1}_{B}$ gilt daher:
+      \begin{align*}
+	s_{N} = c_{N} - A^{T}_{N}\tilde{y} &\Leftrightarrow A^{T}_{N}
+	   \tilde{y}\leq c_{N}\\
+	&\Rightarrow \begin{pmatrix}A^{T}_{B}\\A^{T}_{N}\end{pmatrix}
+	   \tilde{y} =
+	   \begin{pmatrix}c_{B}\\A^{T}_{N}\tilde{y}\end{pmatrix} \leq
+	   \begin{pmatrix}c_{B}\\c_{N}\end{pmatrix}\\
+	&\Leftrightarrow A^{T}\tilde{y}\leq c
+      \end{align*}
+      Wir definieren $\tilde{s}\colon= c-A^{T} \tilde{y}$. Dann gilt
+      $\tilde{s}\geq0, A^{T}\tilde{y}+\tilde{s}=c$ und weiter $b^{T}
+      \tilde{y} = y^{T}b= c^{T}_{B} \underbrace{A^{-1}_{B}b}_{=x_{B}}
+      = c^{T}_{B} x_{B} =^{x_{N}=0} c^{T}x=c^{T}\tilde{x} \Rightarrow
+      \tilde{x}^{T} \tilde{s} = \tilde{x}^{T} (c-A^{T} \tilde{y})=
+      c^{T}x - (\underbrace{A\tilde{x}}_{=b})\tilde{y}= c^{T}
+      \tilde{x} - b\tilde{y}= c^{T}\tilde{x}-c^{T} \tilde{x}=0$.
+      \begin{gather}\label{eq:41.1}
+	\tilde{x}^{T}\tilde{s}=0
+      \end{gather}
+
+      Ist $rg(A)=m_{1}<m$, dann können wir $m-m_{1}$ redundante
+      Gleichungen streichen. Damit erhält man ein äquivalentes Problem
+      zum (LP) und man kann den obigen Beweis anwenden. Man erhöht
+      \autoref{eq:41} für ein $\tilde{y}\in\R^{m}$. Setzt man für eine
+      redundante Gleichung mit Index $i\colon \tilde{y}_{i}=0$, dann
+      erhält man \autoref{eq:41} für das Ausgangsproblem.
+      \item["`$\Leftarrow$"'] Seien $\tilde{x}\in\FF$ und
+      $\tilde{y}\in\R^{m}, \tilde{s}\in\R^{n}$ mit \autoref{eq:41}
+      gegeben. Dann gilt \autoref{eq:41.1} und es folgt:
+      \begin{gather}\label{eq:41.2}
+	c^{T}\tilde{x} = b^{T}y	
+      \end{gather}
+      Sei $x\in\FF$ beliebig. Wegen \autoref{eq:41} ist
+      $A^{T}\tilde{y} =c-\tilde{s}$. Wir zeigen $c^{T}x\geq c^{T}
+      \tilde{x}$:
+      \begin{gather*}
+	b^{T} \tilde{y} = (Ax)^{T}\tilde{y} = x^{T}A^{T}\tilde{y} =
+	   x^{T} (c-\tilde{s}) = x^{T}c-x^{T}\tilde{s} = c^{T}x -
+	   \underbrace{x^{T}\tilde{s}}_{\geq 0}
+      \end{gather*}
+      Weiter ist $x\geq 0, \tilde{s}\geq0 \Rightarrow
+      x^{T}\tilde{s}\geq 0 \Rightarrow c^{T}\tilde{x} = c^{T}x - x^{T}
+      \tilde{s} \leq c^{T}x$.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+Die Vektoren $\tilde{y}, \tilde{s}$ heißen
+\highl{Lagrangemultiplikatoren}. Der Beweis des obigen Satzes zeigt:
+\begin{gather}\label{eq:42}
+  \tilde{x}^{T}\tilde{s}=0 \Leftrightarrow c^{T} \tilde{x} = b^{T}
+     \tilde{y}
+\end{gather}
+Aus $\tilde{x}^{T}\tilde{s}= \sum_{i=1}^{n} \tilde{x}_{i} s_{i}=0$ und
+$\tilde{x}\geq0, \tilde{s}\geq 0\Leftrightarrow$:
+\begin{gather}\label{eq:43}
+  \tilde{x}_{i} \tilde{s}_{i} = 0 \qquad \forall i=1,\dotsc,n
+\end{gather}
+d.\,h. ist $\tilde{x}_{i}>0\Rightarrow \tilde{s}_{i}=0$ und
+$\tilde{s}_{i}>0\Rightarrow \tilde{x}_{i}=0$. Die \autoref{eq:43}
+heißen \highl{Komplementaritätsbedingungen}.
+
+Somit folgt aus \autoref{satz:41}, dass ein Punkt $\tilde{x}\in\FF$
+genau dann Lösung des linearen Problems ist, wenn
+$\exists\tilde{y}\in\R^{m}, \exists\tilde{s}\in\R^{n}\colon (x,y,s)=
+(\tilde{x}, \tilde{y}, \tilde{s})$ Lösung des Systems:
+\begin{gather}\label{eq:44}
+  Ax=b\qquad x \geq 0\\
+  A^{T}y+s=0 \qquad s\geq 0\nonumber\\
+  x_{i}s_{i}=0 \qquad \forall i=1,\dotsc,n \nonumber
+\end{gather}
+ist. Dabei heißt $x$ \highl[Variable!primale]{primale Variable} und
+$y,s$ \highl[Variable!duale]{duale Variablen}.
+
+\begin{bem}
+  Der Multiplikator $\tilde{y}$ war formal definiert durch
+  $\tilde{y}=(c^{T}_{B} A^{-1}_{B})^{T}=(A^{-1}_{B})^{T} c_{B}$. Der
+  Vektor $\tilde{y}$ wird vom Simplex-Verfahren mit berechnet. Es ist
+  der untere rechte Tabelleneintrag.
+
+  Der Vektor $\tilde{s}$ war definiert durch:
+  \begin{align*}
+    \tilde{s}=c-A^{T}\tilde{y} \Leftrightarrow &\tilde{s}_{B}=
+       c_{B}-A^{T}_{B}\tilde{y}= c_{B}-c_{B}=0\\
+       &\tilde{s}_{N}=c_{N}-A^{T}_{N}\tilde{y}=c_{N}-c^{T}_{B}A^{-1}_{B}A_{N}
+  \end{align*}
+  d.\,h. $\tilde{s}_{B}=0_{m}$ und $\tilde{s}_{n}$ ist der vom
+  Simplex-Verfahren berechnete Testvektor. Für eine optimale
+  Basislösung $\tilde{x}$ zur Basis $B$ gilt daher:
+  \begin{gather*}
+    \tilde{x}^{T}\tilde{s}= \tilde{x}^{T}_{B}\tilde{s}_{B} +
+       \tilde{x}^{T}_{N} \tilde{s}_{N}=0
+  \end{gather*}
+\end{bem}
+
+\section{Duale Programme}
+
+Wegen \autoref{eq:42} ist das System aus \autoref{eq:44} äquivalent zu:
+\begin{align}\label{eq:45}
+  Ax &= b \qquad x\geq 0\\
+  A^{T}y+s &= c \qquad s\geq 0\nonumber\\
+  c^{T}x &= b^{T}y \Leftrightarrow x^{T}s=0
+\end{align}
+
+\begin{bsp}
+  Wir betrachten das bereits bekannte Mischungsproblem
+  (\autoref{bsp:17}). Gegeben sind
+  drei Kornsorten $s_{1}, s_{2}, s_{3}$ mit den Nährstoffen $A,B,C,D$.
+  \begin{tabular}{c|rrr|r}
+    & $s_{1}$ & $s_{2}$ & $s_{3}$ & Mindestbedarf\\
+    \toprule
+    A & 2 & 3 & 7 & 1250\\
+    B & 1 & 1 & 0 & 250\\
+    C & 5 & 3 & 0 & 900\\
+    D & 0,6 & 0,25 & 1 & 232,5\\
+    \bottomrule
+    Preis & 41 & 25 & 96 &
+  \end{tabular}
+  Das Ausgangs- oder primale Problem war die Herstellung einer
+  Mischung, die den Nährstoffbedarf deckt und möglichst billig ist.
+  Als lineares Problem:
+  \begin{align*}
+    \min 41x_{1} + 35x_{2} + 96x_{3} &\\
+    \text{\unb}&\\
+    2x_{1} + 3x_{2} + 7x_{3} &\geq 1250\\
+    x_{1}  +  x_{2}          &\geq 250\\
+    5x_{1} + 3x_{2}          &\geq 900\\
+    0,6x_{1} + 0,25x_{2} + x_{3} &\geq 232,5\\
+    x_{i} &\geq 0
+  \end{align*}
+  Ein zweiter Händler benutzt andere Kornsorten und möchte ein
+  Konkurrenzangebot machen. Die fiktiven Preise sind $y_{1}$ für $A$,
+  $y_{2}$ für $B$, $y_{3}$ für $C$ und $y_{4}$ für $D$. Das Ziel des
+  zweiten Händlers ist, die fiktiven Preise so zu berechnen, dass der
+  Gewinn möglichst groß ist und der Preis pro Mengeneinheit höchstens
+  so groß ist, wie der des ersten Händlers. Die Zielfunktion ist:
+  \begin{gather*}
+    1250y_{1}+250y_{2}+900y_{3}+232,5y_{4}=b^{T}y
+  \end{gather*}
+  Als Nebenbedingungen gilt, dass das Angebot konkurrenzfähig sein muss:
+  \begin{align*}
+    s_{1}&\colon 2y_{1}+y_{2}+5y_{3}+0,6y_{4} \leq 41\\
+    s_{2}&\colon 3y_{1}+y_{2}+3y_{3}+0,25y_{4} \leq 35\\
+    s_{3}&\colon 7y_{1}+y_{4}\leq 96
+  \end{align*}
+  Sinnvollerweise müssen die $y_{i}\geq 0$ sein. Das duale Problem
+  lautet: $\max b^{T}y$ \unb $A^{T}\leq c, y\geq0$.
+
+  Die obige Tabelle kann auf Standardform transformiert werden. Damit
+  folgt, $-y_{i}\leq 0, i=1,\dotsc,4 \Leftrightarrow y_{i}\geq 0$. Sei
+  $\tilde{y} =(\tilde{y}_{1},\dotsc,\tilde{y}_{4})^{T}$ Lösung des
+  dualen Problems. Das Angebot des Konkurrenten sei beispielsweise:
+  \begin{tabular}{c|rrr}
+    & $s_{1}'$ & $s_{2}'$ & $s_{3}'$\\
+    \hline
+    A & 3 & 2 & 3\\
+    B & 0,5 & 4 & 1\\
+    C & 6 & 4 & 1\\
+    D & 1 & 0 & 0
+  \end{tabular}
+  Dann sind die optimalen Preise für die Kornsorten:
+  \begin{align*}
+    s_{1}' &\colon 3\tilde{y}_{1}+ 0,5\tilde{y}_{2}+ 6\tilde{y}_{3} +
+       \tilde{y}_{4}\\
+    s_{2}' &\colon 2\tilde{y}_{1}+ 4\tilde{y}_{2}+ 4\tilde{y}_{3}\\
+    s_{3}' &\colon 3\tilde{y}_{1}+ \tilde{y}_{2}+ \tilde{y}_{3}
+  \end{align*}
+\end{bsp}
+
+Allgemeiner kann man ausgehend vom primalen Problem folgendes
+formulieren:
+\begin{gather}
+  \min c^{T}x \tag{LP}\\
+  \text{\unb} Ax=b, x\geq 0\nonumber\\
+  \FF_{P}=\{x\in\R^{n}\colon Ax=b, x\geq0\}\nonumber\\
+  \max b^{T}y \tag{DS}\nonumber\\
+  \text{\unb} \begin{pmatrix}y\\s\end{pmatrix} \in\FF_{D}=
+     \{y\in\R^{m}, s\in\R^{n}\colon A^{T}y+s=c, s\geq0\}\nonumber\\
+  \text{\emph{Äquivalente Formulierung}}\nonumber\\
+  \max b^{T}y \tag{DP}\\
+  \text{\unb} y\in\tilde{\FF}_{D}= \{y\in\R^{m}\colon A^{T}y\leq c\}
+\end{gather}
+
+\begin{bsp}
+  zu Beispiel \todo{richtigen Verweis finden}
+  Dort ist die zuläsige Menge von (DP) angegeben: $\tilde{\FF}_{D}=
+  \{y\in\R^{n}\colon \tilde{A}^{T}y\leq \tilde{c}\}$ mit $\tilde{A}=
+  (A, -I_{m}), \tilde{c}=
+  \begin{pmatrix}c\\0_{m}\end{pmatrix}\Rightarrow \tilde{\FF}_{D}=
+  \{y\in\R^{n}\colon A^{T}y\leq c, -y\leq 0_{n}\}= \{y\in\R^{n}\colon
+  A^{T}y\leq c, y\geq 0\}$. Anwendung des Satzes von Kuhn-Tucker auf
+  (DS) bzw. (DP).
+\end{bsp}
+
+\begin{satz}
+  \begin{enumerate}
+   \item Ein Punkt $(\tilde{y}, \tilde{s})\in\FF_{D}$ ist genau dann
+    Lösung von (DS), wenn es ein $\tilde{x}\in\R^{m}$ gibt:
+    \begin{gather}\label{eq:46}
+      A\tilde{x}=b \qquad \tilde{x}\geq0 \qquad \tilde{x}s=0
+    \end{gather}
+   \item Ein Punkt $\tilde{y}\in\tilde{\FF}_{D}$ ist genau dann Lösung
+    von (DP), wenn es ein $\tilde{x}\in\R^{n}$ gibt, so dass mit
+    $\tilde{s}=c-A^{T}\tilde{y}$ die Bedingung oben (\autoref{eq:46})
+    erfüllt ist.
+  \end{enumerate}
+  \begin{proof}
+    Wir müssen (DS) auf ein Problem in Standardform transformieren,
+    indem wir die Variablen $y^{-}, y^{+}$ mit $y=y^{+}-y^{-}, y^{+},
+    y^{-}\geq 0$ einführen. (Variablen des transformieren Problems:
+    $s, y^{+}, y^{-}$) Der Zielfunktionsvektor ist $(-b, b,
+    0_{n})^{T}$. Das (DS) ist $\max b^{T}y \Leftrightarrow \min
+    -b^{T}y \Leftrightarrow \min -b^{T}(y^{+}-y^{-})+0_{n}^{T}s$ und
+    $A^{T}y+s=c\Leftrightarrow A^{T}(y^{+}-y^{-})+I_{s}=c = (A^{T},
+    -A^{T}, I_{n})(y^{+}, y^{-}, s)^{T}$. Somit ist die Nebenbedingung
+    $(A^{T}, -A^{T}, I_{n})(y^{+}, y^{-}, s)^{T}=c, y^{+}, y^{-},
+    s\geq0$. Der Satz von Kuhn-Tucker ergibt, dass ein zulässiger
+    Punkt $(\tilde{y}^{+}, \tilde{y}^{-}, \tilde{s})$ genau dann
+    Lösung von $\min (-b^{T}, b^{T}, 0^{T}_{n})(y^{+}, y^{-}, s)^{T}$
+    \unb $(A^{T}, -A^{T}, I_{n})(y^{+}, y^{-}, s)^{T}=c$, wenn es
+    Vektoren (lagrangemultiplikatoren) $\xi\in\R^{n}, \sigma_{+},
+    \sigma_{-}\in\R^{m}, \sigma\in\R^{n}$ gibt mit:
+    \begin{gather}
+      \begin{pmatrix}
+	A\\-A\\I_{n}
+      \end{pmatrix}\xi +
+	 \begin{pmatrix}
+	   \sigma_{+}\\\sigma_{-}\\\sigma
+	 \end{pmatrix}=
+	 \begin{pmatrix}
+	   -b\\b\\0_{n}
+	 \end{pmatrix}\label{eq:47.1}\\
+      \sigma_{+}, \sigma_{-}, \sigma\geq 0\label{eq\colon47.2}\\
+      (\tilde{y}^{+})^{T} \sigma_{+} + (\tilde{y}^{-})^{T}\sigma_{-} +
+	 \tilde{s}^{T}\sigma=0\label{eq:47.3}
+    \end{gather}
+    Für die dritte Gleichung in \autoref{eq:47.1} ergibt sich
+    $\xi+\sigma= 0\Leftrightarrow \xi=-\sigma$ weiter folgt nach der
+    Addition der ersten beiden Gleichungen $A\xi-A\xi+\sigma_{+}+
+    \sigma_{-}=-b+b=0 \Leftrightarrow \sigma_{+}+\sigma_{-}=0
+    \Leftrightarrow^{\text{\autoref{eq:47.2}}} \sigma_{+}=0=
+    \sigma_{-}$. Sei $\tilde{x}\colon=\sigma=-\xi$. Dann gilt
+    $A\tilde{x}=b$ (wegen der zweiten Gleichung in \autoref{eq:47.1}),
+    $\tilde{x}\geq0$ und $\tilde{s}^{T}\tilde{x}=0$ wegen
+    \autoref{eq:47.3}.
+  \end{proof}
+\end{satz}
+
+\begin{bem}
+  Die Aussagen von \autoref{satz:41} und \autoref{satz:46}:
+  \begin{itemize}
+   \item Ein primal zuläsiger Punkt $\tilde{x}\in\FF_{P}$ ist genau
+    dann Lösung von (LP), wenn ein dual zulässiger Punkt $(\tilde{y},
+    \tilde{s})\in\FF_{D}$ mit $c^{T}\tilde{x}=b^{T}\tilde{y}$ existiert.
+   \item Ein dual zulässiger Punkt $(\tilde{y}, \tilde{s})\in\FF_{D}$
+    ist genau dann Lösung von (DS), wenn ein primal zulässiger Punkt
+    $\tilde{x}\in\FF_{P}$ mit $b^{T}\tilde{y}=c^{T}\tilde{x}$ existiert. 
+  \end{itemize}
+\end{bem}
+
+\begin{satz}[Schwacher Dualitätssatz]\label{satz:47}
+  Gegeben seien das Problem (LP) und das dazu duale Problem (DS). Dann
+  gilt:
+  \begin{enumerate}
+   \item Sind $x\in\FF_{P}$ und $(y,s)\in\FF_{D}$, dann ist $b^{T}y
+    \leq c^{T}x$.
+   \item Sind $\tilde{x}\in\FF_{P}$ und $(\tilde{y}, \tilde{s})\in
+    \FF_{D}$ mit $b^{T}\tilde{y}=c^{T}\tilde{x}$, dann ist $\tilde{x}$
+    Lösung von (LP) und $\tilde{y}$ Lösung von (DS).
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}
+     \item Seien $x\in\FF_{P}$ und $(y,s)\in\FF_{D}$ beliebig. Dann
+      gilt $b^{T}y=(Ax)^{T}y= \underbrace{x^{T}}_{\geq 0}
+      \underbrace{A^{T}y}_{\leq c} \leq x^{T}c=c^{T}x$.
+     \item Seien $\tilde{x}\in\FF_{P}$ und $(\tilde{y},
+      \tilde{s})\in\FF_{D}$ mit $c^{T}\tilde{x}= b^{T}\tilde{y}$.
+      Daraus folgt, dass für einen beliebigen Punkt $x\in\FF_{P}$ und
+      $(y,s)\in\FF_{D}$ gilt:
+      \begin{gather*}
+	b^{T}y\leq c^{T}\tilde{x} = b^{T}\tilde{y}\leq c^{T}x \qquad
+	   \forall x\in\FF_{P}\,\forall (y,s)\in\FF_{D}
+      \end{gather*}
+      Somit ist $\tilde{x}$ Lösung von (LP) und $(\tilde{y},
+      \tilde{s})$ Lösung von (DS).
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  Wir wenden die Erkenntnisse auf das Mischungsproblem an. Der Vektor
+  $x$ (primal zulässig) definiere eine zulässige Mischung für den
+  ersten Händler. Der Vektor $y$ (dual zulässig) definiere ein
+  zulässiges (fiktives) Angebot des zweiten Händlers. Dann gilt nach
+  dem obigen Satz $b^{T}y\leq c^{T}x$, d.\,h. ein beliebiges Angebot
+  des Konkurrenten muss billiger als jede zulässige Mischung des
+  ersten Händlers sein. Ist $\tilde{x}$ eine zulässige Mischung des
+  ersten Händlers und $\tilde{y}$ ein zulässiges Angebot des
+  Konkurrenten mit $c^{T}\tilde{x}=b^{T}\tilde{y}$ (gleiche Kosten),
+  dann ist $\tilde{x}$ optimal für den ersten Händler und $\tilde{y}$
+  optimal für den zweiten Händler.
+\end{bsp}
+
+\begin{bsp}[zum praktischen Nutzen der Dualität]
+  Sei $A\in\R^{m\times n}, b\in\R^{m}$. Diskrete lineare
+  Optimierungsaufgabe:
+  \begin{gather*}
+    \min_{x\in\R^{n}} f(x)=\norm{Ax-b} \qquad
+       \norm{y}=\max_{i=1,\dotsc,n} \norm{y_{i}}
+  \end{gather*}
+  Dies ist äquivalent zu dem (LP): $\min \delta$ \unb $\delta\geq 0,
+  -\delta e\leq ax-b\leq \delta e$. Dabei ist $e$ der Einheitsvektor.
+  Vergleiche:
+  \begin{gather*}
+    \min(-b^{T}, b^{T}, 0)y \text{\unb}\\
+    \begin{pmatrix}
+      A^{T} & -A^{T} & 0_{n}\\
+      e^{T} & e^{T} & 1
+    \end{pmatrix}y=
+       \begin{pmatrix}
+	 0_{n}\\1
+       \end{pmatrix}, y\geq 0
+  \end{gather*}
+\end{bsp}
+
+\begin{bem}\label{bem:410}
+  Es gelte $\FF_{P}\neq\emptyset$ und $\FF_{D}\neq\emptyset$. Dann
+  gilt nach \autoref{satz:47} für beliebige $x\in\FF_{P},
+  (y,s)\in\FF_{D}\colon b^{T}y\leq c^{T}x$ und es folgt, dass die
+  Zielfunktion von (LP) ist auf $\FF_{P}$ nach unten beschränkt.
+  Weiterhin folgt nach dem Hauptsatz der linearen Optimierung, dass
+  das (LP) eine Lösung hat. Dies ist analog, dass (DS) eine Lösung hat.
+\end{bem}
+
+\begin{satz}[Starker Dualitätssatz]
+  Gegeben seien das lineare Problem (LP) und das duale Problem (DS).
+  Ist $\FF_{P}\neq\emptyset$ und $\FF_{D}\neq\emptyset$, dann besitzen
+  beide Probleme eine Lösung und die Optimalwerte sind gleich.
+  \begin{proof}
+    Zur Existenz der Lösung vergleiche \autoref{bem:410}. Sei
+    $\tilde{x}\in\FF_{P}$ Lösung von (LP). Nach dem \autoref{satz:41}
+    gibt es $(\tilde{y}, \tilde{s})\in\FF_{P}$ mit
+    $\tilde{x}^{T}\tilde{s}=0\Leftrightarrow
+    b^{T}\tilde{y}=c^{T}\tilde{x}$. Somit folgt nach dem schwachen
+    Dualitätssatz, dass $(\tilde{y}, \tilde{s})$ Lösung von (DS) ist.
+  \end{proof}
+\end{satz}
+
+\section{Sensitivitätsanalyse}
+
+\begin{bsp}[Produktionsplanungssystem]
+  Aus drei Betriebsmitteln $B_{1}, B_{2}, B_{3}$ sollen vier Produkte
+  $P_{1}, P_{2}, P_{3}, P_{4}$ hergestellt werden:
+  \begin{tabular}{l|cccc|r}
+    & $P_{1}$ & $P_{2}$ & $P_{3}$ & $P_{4}$ & Vorrat\\
+    \toprule
+    $B_{1}$ & 1 & 1 & 1 & 1 & 15\\
+    $B_{2}$ & 7 & 5 & 3 & 2 & 120\\
+    $B_{3}$ & 3 & 5 & 10 & 15 & 100\\
+    \bottomrule
+    Gewinn & 4 & 5 & 9 & 11 &\\
+  \end{tabular}
+  Als Gleichung $\max 4x_{1} + 5x_{2} + 9x_{3} + 11x_{4}$ \unb
+  \begin{align*}
+    x_{1} + x_{2} + x_{3} + x_{4} &\leq 15\\
+    7x_{1}+ 5x_{2}+ 3x_{3}+ 2x_{4}&\leq 120\\
+    3x_{1}+ 5x_{2}+ 10x_{3}+15x_{4}&\leq 100\\
+    x_{i} &\geq 0, i=1,\dotsc,4
+  \end{align*}
+  Die Standardform ist gegeben durch:
+  \begin{gather*}
+    c = (-4, -5, -9, -11, 0,0,0)^{T}\\
+    A=
+       \begin{pmatrix}
+	 1 & 1 & 1 & 1 & 1 & 0 & 0\\
+	 7 & 5 & 3 & 2 & 0 & 1 & 0\\
+	 3 & 5 &10 &15 & 0 & 0 & 1
+       \end{pmatrix}\qquad
+       b=
+       \begin{pmatrix}
+	 15\\120\\100
+       \end{pmatrix}
+  \end{gather*}
+  Das Simplex-Verfahren berechnet:
+  \begin{tabular}{c|cccc|c|ccc}
+      & 5 & 2 & 7 & 4 &   & 1 & 6 & 3\\
+    1 & \nicefrac{10}{7} & \nicefrac{5}{7} & -\nicefrac{1}{7} &
+       -\nicefrac{5}{7} & \nicefrac{50}{7} & \nicefrac{10}{7} & 0 &
+       -\nicefrac{1}{7}\\
+    6 & -\nicefrac{61}{7} & -\nicefrac{6}{7} & \nicefrac{4}{7} &
+       \nicefrac{13}{7} & \nicefrac{325}{7} & -\nicefrac{61}{7} & 1 &
+       \nicefrac{4}{7}\\
+    3 & -\nicefrac{3}{7} & \nicefrac{2}{7} & \nicefrac{1}{7} &
+       \nicefrac{12}{7} & \nicefrac{55}{7} & -\nicefrac{3}{7} & 0 &
+       \nicefrac{1}{7}\\
+      & \nicefrac{13}{7} & \nicefrac{3}{7} & \nicefrac{5}{7} &
+       \nicefrac{11}{7} & -\nicefrac{695}{7} & -\nicefrac{13}{7} & 0 &
+       -\nicefrac{5}{7}
+  \end{tabular}
+  Die optimale primale Lösung ist $\tilde{x}=(\nicefrac{50}{7}, 0,
+  \nicefrac{55}{7}, 0, 0, \nicefrac{325}{7}, 0)^{T}$ und die optimale
+  duale Lösung ist $\tilde{y}=(-\nicefrac{13}{7}, 0, -\nicefrac{5}{7})$.
+\end{bsp}
+
+
+
+
+
+%% Anhang
 \appendix
 \chapter{Klausuraufgaben}
 
