@@ -69,6 +69,10 @@ for ext in ps pdf; do
     fi
 done
 
+rm -f $WEB/$SKRIPT-mit-grafiken.tgz
+GZIP=-9 tar --exclude=.svn -C .. -czf $WEB/$SKRIPT-mit-grafiken.tgz $SKRIPT
+echo "I: $SKRIPT-mit-grafiken.tgz erzeugt"
+
 ##########
 #
 # Qualitätsprüfung
