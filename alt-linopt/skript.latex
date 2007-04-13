@@ -3179,6 +3179,7 @@ formulieren:
 \section{Sensitivitätsanalyse}
 
 \begin{bsp}[Produktionsplanungssystem]
+  \label{bsp:412}
   Aus drei Betriebsmitteln $B_{1}, B_{2}, B_{3}$ sollen vier Produkte
   $P_{1}, P_{2}, P_{3}, P_{4}$ hergestellt werden:
   \begin{tabular}{l|cccc|r}
@@ -3232,7 +3233,91 @@ formulieren:
   duale Lösung ist $\tilde{y}=(-\nicefrac{13}{7}, 0, -\nicefrac{5}{7})$.
 \end{bsp}
 
+Für den Anwender ergeben sich also folgende Schritte:
+\begin{enumerate}[1. Schr{i}tt]
+ \item Berechnung einer Optimallösung
+ \item Sensitivitätsanalyse, d.\,h. Untersuchung der Abhängigkeit der Lösung
+  und des Optimalwertes von Parametern.
+\end{enumerate}
 
+Allgemein betrachten wir die folgende Situation:
+\begin{gather}
+  \min c^{T}x\text{\unb} \tag{(LP)\textsubscript{v}}\\
+  x\in\FF(v)=\{x\in\R^{n}\colon x\geq0, Ax=b+v\}\nonumber\\
+\end{gather}
+Frage: Wie hängen Lösung und Optimalwert von $V\in\R^{n}$ ab? Das duale
+Problem lautet:
+\begin{gather}
+  \max (b+t)^{T}y\text{\unb} \tag{(LP)\textsubscript{v}}\\
+  y\in\tilde{\FF}_{D}=\{y\in\R^{n}\colon A^{T}y\leq c\}\nonumber\\
+\end{gather}
+Sei $x$ eine Lösung des linearen Problems für $v=0_{m}$ zur Basis $B$ und
+$\tilde{y}$ der zugehörige Multiplikator. Dann ist:
+\begin{gather*}
+  \tilde{x}_{B} = A^{-1}_{B}b\qquad \tilde{y}= A^{-1}_{B}c_{B}
+\end{gather*}
+Für $v\in\R^{m}$ definieren wir:
+\begin{gather*}
+  x_{B}(v)= A^{-1}_{B}(b+v)=\tilde{x}_{B}+A^{-1}_{B}v \qquad x_{N}(v)= 0_{n-m}
+\end{gather*}
+
+\begin{satz}
+  Unter obiger Voraussetzung gelte $x_{B}(v)\geq0$ und damit auch
+  $x(v)\geq0$). dann ist $x(v)$ Lösung von $(LP)_{v}$. Für den Optimalwert
+  gilt:
+  \begin{gather}\label{eq:47}
+    c^{T}x(v)= c^{T}\tilde{x}+ \tilde{y}v
+  \end{gather}
+  Weiter ist auch $\tilde{y}$ Lösung von $(DP)_{v}$.
+  \begin{proof}
+    Nach der Definition von $x(v)$ gilt: $Ax(v)=A_{B}x_{B}(v)= b+v$. Nach der
+    Voraussetzung ist $x(v)\geq0\Rightarrow x(v)\in\FF_{v}$. Weiter ist
+    $\tilde{y}\in\tilde{\FF}_{D}$ und es gilt nach dem starken Dualitätssatz
+    $c^{T}\tilde{x}= b^{T}\tilde{y}$ und $\tilde{y}=(A^{-1}_{B})^{T} c_{B}
+    \Rightarrow c^{T}x(v)= c^{T}_{B} x_{B}(v)=\underbrace{c^{T}_{B}
+    \tilde{x}_{B}}_{=c^{T} \tilde{x}=b^{T}\tilde{y}} + c^{T}_{B} A^{-1}_{B} v=
+    (b+t)^{T}\tilde{y}$. Damit gilt $x(v)\in\FF_{v},
+    \tilde{y}\in\tilde{\FF}_{D}$ und $c^{T}x(v)=(b+v)^{T}\tilde{y}$ und es
+    folgt die Behauptung.
+  \end{proof}
+\end{satz}
+
+\begin{bem}
+  Bleibt $x(v)\geq0\Rightarrow x(v)$ ist Lösung von $(LP)_{v}$ zur Basis $B$.
+  Die \autoref{eq:47} zeigt: Der Multiplikator $\tilde{y}$ (duale Lösung)
+  bestimmt, wie sich der Optimalwert in Abhängigkeit von $v$ ändert. Die
+  $\tilde{y}_{i}$ mit $i=1,\dotsc,n$ heißen \highl{Spaltenpreise}.
+
+  Folgendes ist für die obige Theorie wichtig:\\
+  Die Referenzlösung für $v=0_{m}$ ist eine Basislösung an der Basis $B$ von
+  $A$ und damit Ecke der zulässigen Menge. Benutzt man das Simplex-Verfahren
+  zur Lösung des Referenzproblems, so erhält man immer eine optimale
+  Basislösung.
+\end{bem}
+
+\begin{bsp}[Fortsetzung von \autoref{bsp:412}]
+  Die kapazität (Vorrat) $b_{1}$ von $B_{1}$ soll geändert werden. Dazu
+  definieren wir $v_{\epsilon}=\epsilon\begin{pmatrix}1\\0\\0\end{pmatrix}$.
+  Somit gilt:
+  \begin{gather*}
+    x_{B}(v_{\epsilon})=\tilde{x}_{B}+\epsilon
+       A^{-1}_{B}\begin{pmatrix}1\\0\\0\end{pmatrix} =
+      \begin{pmatrix}
+	\nicefrac{50}{7}\\
+	\nicefrac{325}{7}\\
+	\nicefrac{55}{7}
+	\end{pmatrix}+ \epsilon
+       \begin{pmatrix}
+	 \nicefrac{10}{7}\\
+	 -\nicefrac{61}{7}\\
+	 -\nicefrac{3}{7}
+       \end{pmatrix}
+  \end{gather*}
+  Für $-5\leq\epsilon\leq\nicefrac{325}{61}$ ist $x_{B}(v_{\epsilon})\geq 0$
+  und damit also Lösung von $(LP)_{v_{\epsilon}}$. Der Optimalwert ist
+  $c^{T}\tilde{x}+\tilde{y}^{T}v_{\epsilon}= c^{T}\tilde{x}+\epsilon
+  \tilde{y}_{1}= -\nicefrac{695}{7}-\nicefrac{13}{7}\epsilon$.
+\end{bsp}
 
 
 
