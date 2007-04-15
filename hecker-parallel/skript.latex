@@ -2205,14 +2205,21 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 \chapter{Suchen, Mischen, Sortieren} % Kapitel 4
 \section{Suchen in einer sortierten Menge nach Kruskel}
 
-\todo{In diesem Abschnitt fehlen sehr viele Bilder, die das Vorgehen
-  wesentlich anschaulicher machen würden. Einarbeiten.}
+\help{Wie heißt denn der Mann richtig? Kruskal oder Kruskel?}
+
+\begin{figure}
+  \centering
+  \input{figures/kruskal-suche.pdf_t}
+  \caption{parallele Suche nach Kruskal in $n=124$~Elementen mit
+    $p=4$~Prozessoren}
+  \label{fig:krsukal-suche}
+\end{figure}
 
 \begin{lemma}
   \label{lem:1}
   Mit $k$~Schritten lässt sich ein Element in einem sortierten Feld mit
   $n$~Elementen finden, wenn $n=(p+1)^{k}-1$ ist und $p$~Prozessoren
-  eingesetzt werden.
+  eingesetzt werden. \autoref{fig:krsukal-suche}
 
   \begin{proof}
     Der Beweis erfolgt induktiv.
@@ -2324,30 +2331,35 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 \section{Mischen}
 \label{sec:mischen}
 
+\todo{In diesem Abschnitt fehlen sehr viele Bilder, die das Vorgehen
+  wesentlich anschaulicher machen würden. Einarbeiten.}
+
 Das Thema Mischen war bereits Gegenstand des Abschnitts über Partitioning
 (\autoref{sec:partitioning}). Dabei wurden für die Operation $Rang(x:A)$ die
-serielle, binäre Suche eingesetzt. Mit den neuen Ideen von Kruskal über die
-parallele Suche ergibt sich folgende Konsequenz aus \autoref{satz:kruskal}:
+serielle, binäre Suche eingesetzt. Mit der neuen Idee von Kruskal für die
+parallele Suche lässt sie das Mischen optimal in $O(\log\log n)$~\Time (statt
+$O(\log n)$~\Time mit binärer Suche) lösen.
+
 \begin{satz}
-  Für das Bestimmen des Rangs einer sortierten Folge~$Y$ mit $m$~Gliedern
-  bezüglich einer sortierten Folge~$X$ mit wesentlich mehr Gliedern ($n\gg m =
-  \Theta(n^{s})$ für $0<s<1$) --~$Rang(Y:X)$~-- benötigt man $O(1)$~\Time und
-  $O(n)$~\Work.
+  Für die Bestimmung des Rangs~$Rang(X:Y)$ einer Folge~$X$ mit $m$~Gliedern
+  bezüglich einer größeren, sortierten Folge~$Y$ mit $n$~Gliedern ($n> m =
+  \Theta(n^{s})$ für $0<s<1$) benötigt man $O(1)$~\Time und $O(n)$~\Work.
 
   \begin{proof}
-    Für jedes Element von $Y$ wird der Kruskel-Algorithmus mit
+    Für ein Element aus $X$ kann der Kruskel-Algorithmus mit
     $p=\floor[\big]{\frac{n}{m}}$~Prozessoren durchgeführt.
     Dies geht in $O(1)$~\Time.
     \begin{gather*}
-      O\biggl(\frac{\log(n+1)}{\log(p+1)}\biggr)
-         = O\biggl(\frac{\log(n+1)}{\log(\floor{\frac{n}{m}}+1)}\biggr)
-         = O\biggl(\frac{\log(n+1)}{\log(\floor{n\cdot n^{-s}}+1)}\biggr)
-         = O(1)
+      \frac{\log(n+1)}{\log(p+1)}
+         = \frac{\log(n+1)}{\log(\floor{\frac{n}{m}}+1)}
+         = \frac{\log(n+1)}{\log(\floor{n\cdot n^{-s}}+1)}
+         \leq \frac{\log(n+1)}{\log(n^{1-s})}
+         = \frac{1}{1-s} \cdot \frac{\log(n+1)}{\log n}
     \end{gather*}
 
     Verwendet man $n = m\cdot\frac{n}{m}$~Prozessoren, kann man für die
-    $m$~Elemente von $Y$ in $m\cdot O(1)=O(1)$~\Time mit $W(n) = m\cdot
-    O\bigl(\frac{n}{m}\bigr) = O(n)$~\Work den Rang bezüglich $X$ bestimmen.
+    $m$~Elemente von $X$ in $m\cdot O(1)=O(1)$~\Time mit $W(n) = m\cdot
+    O\bigl(\frac{n}{m}\bigr) = O(n)$~\Work den Rang bezüglich $Y$ bestimmen.
   \end{proof}
 \end{satz}
 
@@ -2434,6 +2446,8 @@ Leider ist das Ergebnis noch nicht WT-optimal, da das Mischen im seriellen
 Fall in $T^{*}(n,m)=O(n+m)$~\Time geht. Zur Vereinfachung sei im Folgenden
 immer $n=m$.
 
+\todo{Der Rest dieses Abschitts ist wahrscheinlich falsch.}
+
 Mit Accellerated Cascading können wir auch hier zu einem optimalen Algorithmus
 kommen.
 
@@ -2478,6 +2492,14 @@ Zeit- und Aufwandsanalyse:\\
      $\frac{n}{\log\log n}\cdot O(\log\log\log n)=O(n)$& \\[2mm]
   5.& $O(1)$& $\frac{n}{\log\log n}\cdot O(\log\log n)=O(n)$& \autoref{satz:3}
 \end{tabular}
+
+\begin{enumerate}
+ \item Zerlege die Folgen~$A,B$ in $\sqrt{n}$~Abschnitte der Länge~$\sqrt{n}$.
+ \item Erstelle aus den Abschnittsgrenzen zwei neue Folgen $A'$ und $B'$.
+ \item Für jedes Element aus $A'$ mit $\sqrt{n}$~Prozessoren bestimme
+  $Rang(A':B')$. Ebenso für $Rang(B':A')$.
+ \item Bestimme $Rang(A':B)$
+\end{enumerate}
 
 \begin{bemerk}
   Die Klasse $\PP$ der in polynomeller Zeit lösbaren Algorithmen zerfällt für
