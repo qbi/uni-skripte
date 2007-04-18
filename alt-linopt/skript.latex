@@ -68,12 +68,12 @@
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[chapter]
-\newtheorem{bem}{Bemerkung}[chapter]
-\newtheorem{defin}{Definition}[chapter]
-\newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{verf}{Verfahren}[chapter]
-\newtheorem{lemma}{Lemma}[chapter]
-\newtheorem{kor}{Korollar}[chapter]
+\newtheorem{bem}[satz]{Bemerkung}
+\newtheorem{defin}[satz]{Definition}
+\newtheorem{bsp}[satz]{Beispiel}
+\newtheorem{verf}[satz]{Verfahren}
+\newtheorem{lemma}[satz]{Lemma}
+\newtheorem{kor}[satz]{Korollar}
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 %\theoremstyle{nonumberbreak}
@@ -152,7 +152,7 @@
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-%\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
 \newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
 
 % Das original Epsilon sieht nicht so toll aus
@@ -3405,7 +3405,7 @@ Problem:
 Die zulässige Menge von (AS) ist nicht leer und kompakt. Damit folgt
 nach dem Satz von Weierstraß, dass (AS) eine Lösung hat.
 
-\begin{lemma}
+\begin{lemma}\label{lem:53}
   Sei $\overline{x}\in\FF_{P}^{0}$ keine Lösung von (LP). Weiter sei
   $\overline{d}$ eine Lösung von (AS). Dann ist $\overline{d}$
   zulässige Abstiegsrichtung in $\overline{x}$.
@@ -3497,7 +3497,7 @@ wählen.
 
 \section{Berechnung der Suchrichtung}
 
-\begin{satz}
+\begin{satz}\label{satz:56}
   Sei $x^{(k)}\in\FF_{P}^{0}$ und $\rg(A)=m<n$. Wir definieren:
   \begin{gather}\label{eq:54}
     y^{(k)}\colon=(AX_{k}^{2} A^{T})^{-1} AX_{k}^{2}c\qquad
@@ -3558,6 +3558,95 @@ minimiert.
   \end{proof}
 \end{satz}
 
+\section{Wahl der Schrittweite}
+
+Für die Wahl der Schrittweite existieren zwei Varianten:
+\begin{itemize}
+ \item Short-Step-Variante: Man benutzt in jedem Schritt eine feste
+  Schrittweite $0<\sigma<1$.
+ \item Long-Step-Variante: Man benutzt in jedem Schritt die
+  größtmögliche Schrittweite.
+\end{itemize}
+
+\subsection{Die Short-Step-Variante}
+
+\begin{lemma}
+  Sei $\rg(A)=m$. Ist $x^{(k)}\in\FF_{P}^{0}, s^{(k)}\neq 0, d^{(k)}$
+  durch \autoref{eq:58} definiert und $0<\sigma<1$. Dann ist
+  $x=x^{(k)}+\sigma d^{(k)}\in\FF_{P}^{0}$.
+  \begin{proof}
+    Es gilt $Ax^{(k)}=b, Ad^{(k)}=0\Rightarrow Ax=Ax^{(k)}+\sigma
+    Ad^{(k)}=b$. Nun bleibt zu zeigen, dass $x\geq0$. Für einen
+    beliebigen Index $i\in\{1,\dotsc,n\}$ gilt: \todo{Summen richtig
+    einfügen}
+    \begin{align*}
+      &= \sigma^{2} (d^{(k)})^{T} X_{k}^{2} d^{(k)} = \sigma^{2}
+	 (X_{k}^{-1}d^{(k)})^{T} (X_{k}^{-1}d^{(k)})\\
+      &= \sigma^{2} \norm{X_{k}^{-1} d^{(k)}}^{2} = \sigma^{2}
+	 \norm{d^{(k)}}^{2}_{X_{k}} \leq\sigma^{2}
+    \end{align*}
+    Wegen $x^{(k)}<0$ und $0<\sigma<1$ folgt:
+    \begin{align*}
+      \abs{x_{i}x_{i}^{(k)}} &\leq\sigma x_{i}^{(k)}<x_{i}^{(k)}
+	 \qquad 1\leq i\leq n\\
+      x_{i}<x_{i}^{(k)} &\Rightarrow \abs{x_{i}-x_{i}^{(k)}} -
+	 x_{i}^{(k)} -x_{i}< x_{i}^{(k)}\Rightarrow x_{i}>0\\
+      x_{i}\geq x_{i}^{(k)} &\Rightarrow x_{i}\geq x_{i}^{(k)}>0
+    \end{align*}
+  \end{proof}
+\end{lemma}
+
+\subsection{Die Long-Step-Variante}
+
+Man wählt in jedem Iterationsschritt möglichst große Schrittweite.
+
+\begin{lemma}
+  Es gelte $\rg(A)=m$ und  $x^{(k)}\in\FF_{P}^{0}$ sei keine Lösung
+  von (LP). Dann ist $s^{(k)}\neq =0$ und $d^{(k)}$ sei durch
+  \autoref{eq:58} definiert. Ist $d^{(k)}>0$\footnote{genau dann, wenn
+  $s^{(k)}\leq0$}, dann ist die Zielfunktion von (LP) auf der
+  zulässigen Menge $\FF_{P}$ nicht nach unten beschränkt.
+  \begin{proof}
+    Für $\sigma>0$ sei $x(\sigma)\colon= x^{(k)}+\sigma d^{(k)}$. Dann
+    gilt $x(\sigma)\geq0$ für alle $\sigma\geq0$ und
+    $Ax(\sigma)=\underbrace{Ax^{(k)}}_{=b} + \sigma
+    \underbrace{Ad^{(k)}}_{=0}=b$ für alle $\sigma\geq0$, d.\,h.
+    $x(\sigma)\in\FF_{P}^{0}$. Nach \autoref{lem:53} ist $d^{(k)}$ als
+    Lösung von (AS)\textsubscript{k} zulässige Abstiegsrichtung,
+    d.\,h. $c^{T}d^{(k)}<0 \Rightarrow c^{T}x(\sigma)=c^{T}x^{(k)}+
+    \sigma c^{T}c^{(k)}\xrightarrow{\sigma\rightarrow\infty} -\infty$.
+
+    Ist der aktuelle Iterationspunkt $x^{(k)}$ keine Lösung von (LP),
+    dann gibt es zwei Möglichkeiten:
+    \begin{enumerate}
+     \item $d^{(k)}\geq0$ bzw. $s^{(k)}\leq0\Rightarrow$ Das lineare
+      Problem hat keine Lösung.
+     \item $\exists j\in\{1,\dotsc,n\}\colon d_{j}^{(k)}<0$
+    \end{enumerate}
+    \todo{Fall zwei zu Ende führen}
+  \end{proof}
+\end{lemma}
+
+\section{Abbruchkriterium}
+
+Nach \autoref{satz:56} ist $x^{(k)}$ Lösung von (LP), wenn
+$s^{(k)}\geq0$. Es gilt aber $x^{(k)}>0$. In einer Lösung $\tilde{x}$
+von (LP) gilt in der Regel $\tilde{x}_{i}=0$ für mindestens einen
+Index $i\in\{1,\dotsc,n\}$, d.\,h. die Bedingung $s^{(k)}=0_{n}$ ist
+in der Regel nicht erfüllt.
+
+Sei nun $\epsilon\geq0$. Ein Punkt $\overline{x}\in\FF_{P}$ heißt
+\highl{$\epsilon$-Minimum} von (LP), wenn $c^{T}\overline{x}\leq
+c^{T}x+\epsilon$ für alle $x\in\FF_{P}$ gilt. Hat (LP) eine Lösung
+$\tilde{x}$, dann muss $c^{T}\overline{x}\leq c^{T} \tilde{x}\epsilon$ gelten.
+Entsprechend heißt ein Punkt $\overline{y}\in\FF_{D}$
+$\epsilon$-Maximum von (DP), wenn $b^{T}\overline{y}\geq
+b^{T}y-\epsilon$ für alle $y\in\FF_{D}$ gilt. Hat (DP) eine Lösung
+$\tilde{y}$, muss gelten $b^{T}\overline{y}\geq
+b^{T}\tilde{y}-\epsilon$.
+
+Unser Ziel ist nun, dass Verfahren der affinen Skalierung abzubrechen,
+wenn $x^{(k)}$ ein $\epsilon$-Minimum von (LP) ist.
 
 
 %% Anhang
