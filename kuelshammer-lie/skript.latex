@@ -1,0 +1,683 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,twoside]{scrreprt}
+\KOMAoptions{parskip=half*}
+\usepackage{ifthen}
+\usepackage{makeidx}
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\bb}{\mathfrak{b}}
+\newcommand*{\FM}{\mathfrak{M}}
+\newcommand*{\FF}{\mathfrak{F}}
+\newcommand*{\FU}{\mathfrak{U}}
+
+\DeclareMathOperator{\gl}{gl}
+\DeclareMathOperator{\kr}{Ker}
+\DeclareMathOperator{\spur}{Spur}
+\DeclareMathOperator{\sll}{sl}
+\DeclareMathOperator{\ad}{ad}
+\DeclareMathOperator{\Hom}{Hom}
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Lie-Algebren}
+\author{Prof. Dr. Burkhard Külshammer}
+\date{Semester: SS 2007}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \texttt{<jens@kubieziel.de>}} (2007)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\setdefaultenum{(i)}{}{}{}
+
+%%% Start der Vorlesung
+\chapter{Grundbegriffe}
+
+\begin{defini} % 1.1
+  Eine (endlich-dimensionale und komplexe) \highl{Lie-Algebra} ist ein
+  endlich-dimensionaler $\C$-Vektorraum $L$ mit einer bilinearen Abbildung
+  $L\times L\rightarrow L, (a,b)\mapsto [a,b]$, so dass gilt:
+  \begin{enumerate}
+   \item (\highl{Schiefsymmetrie}) $[a,a]=0\,\forall a\in L$
+   \item (\highl{Jacobi-Identität}) $[[a,b],c]+[[b,c],a]+ [[c,a]+b]= 0\,\forall
+    a,b,c\in L$
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  In dieser Vorlesung betrachten wir den Körper $\C$. Verallgemeinerungen sind
+  möglich, müssen aber evtl. speziell betrachtet werden. Wir betrachten ohne
+  besondere Nennung immer endlich-dimensionale Lie-Algebren. Spezialfälle
+  werden besonders erwähnt.
+\end{bemerk}
+
+Mann nennt $[a,b]$ das \highl{Lie-Produkt}, \highl{Lie-Klammer} oder
+\highl{Kommutator}.
+
+\begin{bemerk}
+  Für $a,b\in L$ ist $0=[a+b,a+b]=[a,a]+[b,b]+[b,a]+[a,b]$, d.\,h. $[b,a]=-
+  [a,b]$. Außerdem erhält man aus der Bilinearität $[0,a]=0=[a,0]$.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Jeder $\C$-Vektorram $V$ ist eine Lie-Algebra mit $[a,b]\colon=0$ für
+    alle $a,b\in V$.
+   \item Für Lie-Algebren $L_{1},\dotsc, L_{n}$ dann ist auch das
+    \highl[Produkt!direktes]{direkte Produkt} $L_{1}\times\dotso \times L_{n}$ eine Lie-Algebra, wenn man
+    definiert: $[(a_{1},\dotsc, a_{n}),\dotsc,(b_{1},\dotsc, b_{n})] \colon=
+    ([a_{1}, b_{1}],\dotsc,[a_{n},b_{n}])$ für $a_{1}, b_{1}\in L_{1},\dotsc,
+    a_{n}, b_{n}\in L_{n}$.
+   \item Für $n\in\N$ bilden die komplexen $n\times n$-Matrizen eine
+    Lie-Algebra $gl_{n}=\C^{n\times n}$ mit $[a,b]\colon= ab-ba$ für $a,b\in
+    gl_{n}$.
+    Für $a,b,c\in gl_{n}$ gilt: $[[a,b],c]=(ab-ba)c-c(ab-ba)=abc-bac-cab+cba$,
+    also erhalten wir $[[a,b],c]+[[b,c],a]+[[c,a],b]= abc-bac-cab+cba +bca
+    -cba-abc+acb + cab-acb-bca+bac=0$. Man nennt $gl_{n}$ die
+    \highl[Lie-Algebra!allgemeine lineare]{allgemeine lineare Lie-Algebra} des
+    Grades $n$
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Eine \highl{Unteralgebra} einer Lie-Algebra $L$ ist ein Untervektorraum
+  $K\subseteq L$ mit $[a,b]\in K$ für $a,b\in K$.
+\end{defini}
+
+\begin{bemerk}
+  Gegenenfalls wird $K$ mit den entsprechend eingeschränkten Verknüpfungen
+  selbst zu einer Lie-Algebra.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Für $n\in \N$ bilden die oberen Dreiecksmatrizen eine Unteralgebra
+    $\bb_{n}$ von $gl_{n}$. Denn das Produkt von oberen Dreiecksmatrizen
+    ist wieder eine.
+   \item In jeder Lie-Algebra $L$ sind $0, L$ und $\C a$ für $a\in L$
+    Unteralgebren.
+   \item Für jeden Untervektorraum $U\subseteq L$ ist der \highl{Normalisator}
+    $N_{L}(U)\colon= \{a\in l\colon [a,u]\in U\,u\in U\}$ von $U$ in $L$. Denn
+    für $\alpha, \beta\in \C, a,b\in N_{L}(U), u\in U$ gilt: $[\alpha a+\beta
+    b,u]=\alpha[a,u]+\beta[a,u]\in U$ und  $[[a,b],u]=-[[b,u],a]-[[u,a],b]=
+    [a, \underbrace{[b,u]}_{\in U}]- [b, \underbrace{[a,u]}_{\in U}]$.
+   \item Für jeder Teilmenge $X\subseteq L$ ist der \highl{Zentralisator}
+    $G_{L}(X)\colon= \{a\in L\colon [a,x]=0\,\forall x\in X\}$ von $X$
+    eine Unteralgebra von $L$. Ist $X=\{x\}$ für ein $x\in L$, so schreiben
+    wir $C_{L}(x)$ und sprechen vom hzentralisator von $x$.
+   \item Insbesondere ist das \highl{Zentrum} $Z(L)\colon= G_{L}(L)= \{a\in
+    L\colon [a,b]=0\,\forall b\in l\}$ von $L$ eine Unteralgebra von $L$.
+   \item Für jede Menge $\FM$ von Unteralgebren von $L$ ist auch
+    $\bigcap_{U\in \FM}$ eine Unteralgebra von $L$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Ein \highl{Ideal} einer Lie-Algebra $L$ ist ein Untervektorraum $I\subseteq
+  L$ mit $[a,b]\in I$ für alle $a\in I, b\in L$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Gegenenfalls ist auch $[b,a]=-[a-b]\in I$ für alle $a\in I, b\in L$.
+   \item Jedes Ideal von $L$ ist eine Unteralgebra von $L$. Eine Unteralgebra
+    ist im Allgemeinen \emph{kein} Ideal.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $\bb_{2}$ ist kein Ideal in $gl_{2}$, denn
+    $\begin{pmatrix}1&0\\0&0\end{pmatrix} \begin{pmatrix}0&0\\1&0\end{pmatrix}
+    - \begin{pmatrix}0&0\\1&0\end{pmatrix}
+    \begin{pmatrix}1&0\\0&0\end{pmatrix}=
+    \begin{pmatrix}0&0\\-1&0\end{pmatrix}$.
+   \item In jeder Lie-Algebra $L$ sind $0, L$ und $Z(L)$ Ideale. Für $z\in
+    Z(L), a\in L$ ist nämlich $[z,a]=0\in Z(L)$.
+   \item Jede Unteralgebra $K\subseteq L$ ist ein Ideal in $N_{L}(K)$ und $K$
+    ist genau dann ein ideal in $L$, wenn der Normalisator $N_{L}(K)=L$ ist.
+   \item Der Durchschnitt von Idealen ist wieder ein Ideal: Für jede Menge
+    $\FF$ von Idealen in $L$ ist auch $\bigcap_{I\in\FF} I$ ein Ideal in $L$.
+   \item Für Ideale $I,J$ von $L$ ist auch $I+J=\{a+b\colon a\in I, b\in
+     J\}$ ist ein Ideal in $L$. Es gilt nämlich $[a+b,x]=[a,x]+[b,x]\in
+    [I+J]$. Analog für Summen von endlich vielen Idealen.
+   \item Für Ideale $I,J$ von $L$ ist auch $[I,J]=\{\sum_{k=1}^n [a_i,
+    b_i]\colon a_1,...,a_n,\in I, b_1,...,b_n\in J\}$ ein Ideal in $L$. Für
+    $a_1,\dotsc,a_n\in I, b_1,\dotsc,b_n\in J, x\in L$ gilt nämlich:
+    $[\sum_{k=1}^n [a_k,b_k],x]=\sum_{k=1}^n (-[ [ b_k,x], a_k]-[ [x,a_k],
+    b_k])= \sum_{k=1}^n ([a_k, [b_k,x]]+[ [a_k,x], b_k])\in [I,J]$.
+    Insbesondere ist die abgeleitete Algebra $L'\colon= [L,L]\colon= 
+    \{\sum_{k=1}^n [a_k, b_k]\colon a_1, b_1,\dots,a_n,b_n\in L, n\in\N_0$\}
+\item Definiert man man induktiv $L^{(0)}\colon= L, L^{(1)}\colon= L',
+    L^{(n)}\colon= (L^{(n-1)})'$ oder $L^1\colon= L, L^2=L', L^n\colon=
+    [L^{n-1}, L]$. so sind $L^{(n)}, L^n$ für $n\in\N$ Ideale in $L$. Man
+    nennt $L^{(0)} \supseteq L^{(1)}\supseteq L^{[2)}\supseteq \dots$ die
+    \highl{abgeleitete Kette} von $L$ und $L^1\supseteq L^2 \supseteq
+    L^3\supseteq \dots$ die \highl[Zentralkette!absteigende]{absteigende} oder
+    \highl[Zentralkette!untere]{untere Zentralkette} von $L$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{satz}
+Für jedes Ideal $I$ einer Lie-Algebra $L$ bilden die Restklassen
+  $a+I=\{a+x\colon x\in I\}$ bilden eine Lie-Algebra $L/_I$, die
+  \highl{Restklassenalgebra} von $L$ modulo $I$, wenn man für $\alpha \in \C,
+  a,b\in L$ definiert:
+  \begin{gather*}
+    \alpha(a+I)\colon= \alpha a+I\qquad (a+I)+(b+I)=(a+b)+I\qquad [a+I,
+  b+I]\colon=[a,b]+I
+  \end{gather*}
+  \begin{proof}
+    Die Lie-Klammer auf $L/_I$ ist wohldefiniert. Sind nämlich $a,a', b,b'\in
+    L$ mit $a+I=a'+I$ und $b+I=b'+I$, so ist $a-a'\in I$, also
+    $[a,b]-[a',b]=[a-a',b]=I$, d.\,mh. $[a,b]+I=[a',b]+I$. Genauso verfährt
+    man mit $b$ und $b'$. Die Axiome einer Lie-Algebra rechnet man leicht
+    nach.
+  \end{proof}
+\end{satz}
+
+\begin{defini}
+Ein \highl{Homomorphismus} einer Lie-Algebra $L$ in eine Lie-Algebra $M$ ist
+  eine lineare Abbildung $\varphi\colon L\rightarrow M$ mit $\varphi([a,b])=
+  [\varphi(a),\varphi(b)]$ für alle $a,b\in L$. Wie üblich definiert man
+  Monomorphismen, Epimorphismen, Isomorphismen, Endomorphismen und
+  Automorphismen zwischen Lie-Algebren.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Für jede Unteralgebra $U\subseteq L$ und jeden Homomorphismus
+    $\varphi\colon L\rightarrow M$ ist $\varphi(U)\subseteq M$ eine
+    Unteralgebra. Für $a,b\in U$ ist nämlich $[\varphi(a),
+    \varphi(b)]=\varphi(\underbrace{[a,b]}_{\in U})\in \varphi(U)$.
+    Insbesondere ist das Bild $\varphi(L)$ eine Unteralgebra von $M$.
+   \item Für jedes Ideal $I\subseteq L$ ist $\varphi(I)\subseteq \varphi(L)$
+    Ideal. Denn für $a\in I, b\in  L$ ist $[\varphi(a), \varphi(b)]=
+    \varphi(\underbrace{[a,b]}_{\in I})\in\varphi(I)$. Jedoch ist $\varphi(I)$
+    im Allgemeinen kein Ideal in $M$. Wie der folgende Homomorphismus
+    $\bb_2\rightarrow \gl_2, a\mapsto a$ und das Ideal $I\colon=\bb_2$ von
+    $\bb_2$ zeigen.
+   \item Für jede Unteralgebra $V\subseteq M$ ist $\varphi^{-1}(V)= \{a\in
+    L\colon \varphi(a)\in V\}\subseteq L$ ist eine Unteralgebra von $L$. Denn
+    für $a,b\in\varphi^{-1}(V)$ ist $\varphi([a,b])=[\varphi(a),
+    \varphi(b)]\in V$, d.\,h. $[a,b]\in\varphi^{-1}(V)$.
+   \item Für jedes Ideal $J\subseteq M$ ist $\varphi^{-1}(J)\subseteq L$
+    Ideal. Denn für $a\in\varphi^{-1}(J), b\in  L$ ist
+    $\varphi([a,b])=[\varphi(a), \varphi(b)]\in J$, d.\,h.
+    $[a,b]\in\varphi^{-1}(J)$. Insbesondere ist der Kern $\kr(\varphi)\colon=
+    \varphi^{-1}(0)=\{a\in L\colon \varphi(a)=0\}\subseteq L$ ein Ideal.
+   \item Sind $L, M, N$ drei Lie-Algebren und $\varphi\colon L\rightarrow M,
+    \psi\colon M\rightarrow N$ Homomorphismen, so auch $\psi\cdot\varphi\colon
+    L\rightarrow N$.
+   \item Ist $\varphi\colon L\rightarrow M$ ein Isomorphismus, so auch
+    $\varphi^{-1}\colon M\rightarrow L$. Denn für $x,y\in M$ gilt
+    $\varphi^{-1}([x,y])=\varphi^{-1}([\varphi(\varphi^{-1}(x)),
+    \varphi(\varphi^{-1}(y))])= \varphi^{-1}(\varphi([\varphi^{-1}(x),
+    \varphi^{-1}(y)]))=[\varphi^{-1}(x), \varphi^{-1}(y)]$.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Für jedes Ideal $I$ einer Lie-Algebra $L$ ist die kanonische
+    Abbildung $\nu\colon L\rightarrow L/_{I}, a\mapsto a+I$ ein Epimorphimus
+    mit $\kr I$.
+   \item Betrachtet man $\C$ als Lie-Algebra mit $[\alpha, \beta]=0$ für alle
+    $\alpha, \beta\in\C$, so ist für $n\in\N$ die Abbildung $\spur\colon
+    \gl_{n}\rightarrow \C, (\alpha_{ij})\mapsto \sum_{i=1}^{n} \alpha_{ii}$
+    ein Epimorphimus. Denn für $a,b\in\gl_{n}$ ist bekanntlich
+    $\spur([a,b])=\spur(ab-ba)=\spur(ab)-\spur(ba)=0=[\spur(a), \spur(b)]$.
+    Daher ist $\sll_{n} \colon= \kr(\spur)=\{a\in
+    \gl_{n}\colon\spur(a)=0\}\subseteq \gl_{n}$  Ideal. Man nennt $\sll_{n}$ die
+    \highl{spezielle lineare Lie-Algebra} des Grades $n$.
+   \item Für jeden endlich-dimnesionalen $\C$-Vektorraum $V$ bilden die
+    linearen Abbildungen von $V$ in sich ein Lie-algebra $\gl(V)$, die
+    \highl{allgemeine lineare Lie-Algebra} von $V$, wenn man $[\phi, \psi]=
+    \phi\dot \psi-\psi\dot\phi$ für $\phi$, $\psi\in \gl(V)$ definiert. Dies
+    zeigt man analog zu Beispiel 1.1 (iii) \todo{Link einfügen}. Wählt man
+    eine Basis $b_{1},\dotsc, b_{n}$ von $V$ und schreibt man $\phi(b_{j}) 0
+    \sum_{i=1}^{n} \alpha_{ij}(\phi)b_{i}$ mit $\alpha_{ij}(\phi)in\C$ für
+    $i,j=1,\dotsc,n$. $\gl(V)\rightarrow\gl_{n, \phi\mapsto
+    (\alpha_{ij}(\phi))}$ ein Isomorphismus. Das Urbild von $\sll_{n}$ unter
+    dieser Abbildung ist $\sll(V)\colon= \{\phi\in\gl(V)\colon
+    \spur(\phi)=0\}$. Das hängt nicht von der Wahl der Basis ab. Man nennt
+    $\sll(V)$ \highl{spezielle lineare Lie-Algebra} von $V$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Lie-Algebren $L, M$ heißen isomorph ($L\equiv M$), falls ein Isomorphismus
+  $\phi\colon L\rightarrow M$ existiert.
+\end{defini}
+
+\begin{bsp}
+  Für jeden $\C$-Vektorraum $V$ der Dimension $n<\infty$ ist $\gl(V)\equiv
+  \gl_{n}$. 
+\end{bsp}
+
+\begin{bemerk}
+  $\equiv$ ist eine Äquivalenzrelation.
+\end{bemerk}
+
+\begin{satz}[Homomorphiesatz]
+  Für jeden Homomorphismus von Lie-Algebren $\phi\colon L\rightarrow M$ ist
+  die Abbildung $\overline{\phi}\colon L/_{\kr\phi}\rightarrow \phi(L),
+  a+\kr(\phi) \mapsto \phi(a)$ ein Isomorphismus. Insbesondere ist
+  $L/_{\kr\phi}\equiv \phi(L)$.
+  \begin{proof}
+    Man rechnet leicht nach, dass die Abbildung $\overline{\phi}$
+    wohldefiniert, linear und bijektiv ist. Außerdem gilt für alle $a,b\in
+    L\colon \overline{\phi}([a+\kr\phi,
+    b+\kr\phi])=\overline{\phi}([a,b]+\kr\phi)= \phi([a,b])= [\phi(a),
+    \phi(b)]= [\overline{\phi}(a+\kr\phi), \overline{\phi}(b+\kr\phi)]$.
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Erster Isomorphiesatz]
+  Für jedes Ideal $I$ und jede Unteralgebra $K$ einer Lie-Algebra $L$, dann
+  ist $K+I$ eine Unteralgebra von $L$. Darin ist $I$ ein Ideal, $K\cap I$
+  Ideal in $K$ und
+  \begin{gather*}
+  K/_{K\cap I} \equiv K+I/_{I}    
+  \end{gather*}
+  \begin{proof}
+    Sei $\nu\colon L\rightarrow L/_{I}, a\mapsto a+I$ kanonisch. Nach Bem 1.5
+    \todo{Link}
+    ist $\nu(K)=\{a+I:a\in K\}$ eine Unteralgebra von $L/_{I}$. Daher ist
+    $\nu^{-1}(\nu(K))$ eine Unteralgebra von $L$. Es ist in der Regel nicht
+    dasselbe wie $\nu$. Für $x\in\nu^{-1}(\nu(K))$ ist $x+I=\nu(x)\in \nu(K)$.
+    Also $x+I=a+I$ für ein $a\in K$. Daher ist $i\colon= x-a\in I$ und das
+    element $x=a+i\in K+I$. Für $b\in K, j\in I$ ist andererseits das
+    $\nu(b+j)=b+j+I=b+I=\nu(b)\in\nu(K)$, d.\,h. $b+j\in\nu^{-1}(\nu(K))$.
+    Folglich ist $\nu^{-1}(\nu(K))=K+I$ Unteralgebra von $L$.
+
+    Da $I$ Ideal in $L$, ist es auch Ideal in $K+I$. Ferner ist $K/_{I}$ der
+    Kern der Einschränkung von $\nu$ auf $K$. Also ist das ein Ideal in $K$.
+    Wende Homomorphiesatz auf diese Einschränkung von $\nu$ an: $K/_{K\cap
+    I}\equiv \nu(K) =\{a+I\colon a\in K\}= \{a+j+I\colon a\in K, j\in I\} =
+    K+I/_{I}$.
+  \end{proof}
+\end{satz}
+
+\begin{satz}[Zweiter Isomorphiesatz]
+  Sind $I, J$ zwei Ideale einer Lie-Algebra $L$ mit $I\subseteq J$, so ist
+  $J/_{I}$ ein Ideal in $L/_{I}$ mit
+  \begin{gather*}
+  (L/_{I})/_{(J/_{I})}\equiv L/_{J}    
+  \end{gather*}
+  \begin{proof}
+    Sei $\nu\colon L\rightarrow L/_{I}$ kanonische Abbildung. Nach der Bem.
+    1.5 ist $J/_{I}=\nu(J)$ Ideal in $\nu(L)=L/_{I}$. Sei $\mu\colon
+    L/_{I}\rightarrow (L/_{I})/_{(J/_{I})}$ kanonisch. Dann ist $\kr(\mu\dot
+    \nu)=J$ (Nachrechnen). Wende den Homomorphiesatz auf $\mu\dot\nu$ an:
+    $L/_{J}\equiv (L/_{I})/_{(J/_{I})}$.
+  \end{proof}
+\end{satz}
+
+\chapter{Darstellungen und Moduln}
+
+\begin{defini}
+  Seien $L$ eine Lie-Algebra und $V$ ein endlich-dimensionaler
+  $\C$-Vektorraum. Eine \highl{Darstellung} von $L$ auf $V$ ist ein
+  Homomorphismus $\Delta\colon L \rightarrow \gl(V)$.
+\end{defini}
+
+\begin{bsp}
+  Für $a\in L$ ist die Abbildung $\ad_{a}=\ad_{a}^{L}\colon L\rightarrow L,
+  x\mapsto [a,x]$ linear mit $\ad_{[a,b]}(x)=[[a,b],x]=-[[b,x],a]-[[x,a],b] =
+  [a,[b,x]]-[b,[a,x]]= (\ad_{a}\dot \ad_{b})(x)-(\ad_{b}\dot\ad_{a})(x)=
+  [\ad_{a}, \ad_{b}](x)$ für alle $b,x\in L$. daher ist die Abbildung
+  $\ad\colon L\rightarrow \gl(L), a\mapsto \ad_{a}$ ein Homomorphismus von
+  Lie-Algebren und damit eine darstellung von $L$ auf $L$, die
+  \highl{adjungierte Darstellung} von $L$. Ihr Kern ist $\{a\in L\colon
+  \ad_{a}=0\}=\{a\in L\colon [a,x]=0\,\forall x\in L\}=Z(L)$.
+\end{bsp}
+
+\begin{bemerk}
+  Wir werden die adjungierte Darstellung dazu benutzen, um Methoden der
+  linearen Algebra auf Lie-Algebren anzuwenden.
+\end{bemerk}
+
+\begin{defini}
+  Sei $L$ eine Lie-Algebra. Ein $L$-\highl{Modul} ist ein $\C$-Vektorraum mit
+  einer bilinearen Abbildung $L\times V\rightarrow V, (a,v)\mapsto a\cdot v$
+  für die gilt
+  \begin{gather*}
+    [a,b]\cdot v=a\cdot(b\cdot v)-b\cdot(a\cdot v)\quad a,b\in L, v\in V
+  \end{gather*}
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Für $a\in  L$ ist also dann die Abbildung $\Delta(a)\colon
+    V\rightarrow V, v\mapsto av$ linear und gleichzeitig ist die Abbildung
+    $\Delta\colon L\rightarrow \gl(V), a\mapsto \Delta(a)$ ein Homomorphismus
+    von Lie-Algebra, also Darstellung. Auf diese Weise liefert jeder $L$-Modul
+    eine Darstellung.
+   \item Ist umgekehrt $\Delta$ eine Darstellung einer Lie-Algebra $L$ auf
+    einen endlich-dimensionalen $\C$-Vektorraum $V$, so kann man $V$ zu einem
+    $L$-Modul machen, indem man definiert $a\cdot v\colon= (\Delta(a))(v)$ für
+    $a\in L, v\in V$. Dies rechnet man leicht nach. Darstellung einer
+    Lie-Algebra $L$ und $L$-Modul beschreiben den gleichen mathematischen
+    Sachverhalt.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Jede Lie-algebra $L$ ist selbst ein $L$-Modul, wenn man $a\cdot
+    v\colon=[a,v]$ für $a,v\in L$ setzt. Die entsprechende Darstellung ist die
+    adjungierte Darstellung.
+   \item Jeder endlich-dimensionale $\C$-Vektorraum wird zu einem $L$-Modul,
+    wenn man $a\cdot v=0$ definiert.
+   \item Für $L$-Moduln $V_{1},\dotsc, V_{n}$ ist auch das \highl{direkte
+    Produkt} $V_{1}\times\dotso \times V_{n}$ ein $L$-Modul, wenn man
+    definiert $a\cdot (v_{1},\dotsc, v_{n})\colon= (a\cdot v_{1},\dotsc,
+    a\cdot v_{n})$ mit $a\in L, v_{1}\in V_{1},\dotsc, v_{n}\in V_{n}$.
+   \item Für $L$-Moduln $V,W$ wird der $\C$-Vektorraum $\Hom_{\C}(V,W)$ aller
+    linearer Abbildungen von $V$ nach $W$ zu einem $L$-Modul, wenn man $a\cdot
+    f$ für $a\in L f\in\Hom_{\C}(V,W)$ durch $(a\cdot f)(v)\colon= a\cdot f(v)
+    -f(a\cdot v)$ für $v\in V$ definiert. Dies rechnet man leicht nach.
+
+    Insbesondere ist $V^{*}\colon= \Hom_{\C}(V,\C)$ ein $L$-Modul mit $(a\cdot
+    f)(v)= -f(a\cdot v)$ für $a\in L, f\in V^{*}, v\in V$. $V^{*}$ heißt
+    \highl[Modul!dualer]{dualer Modul}.
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Seien $L$ eine Lie-Algebra und $n\in\N$. Eine \highl{Matrixdarstellung} des
+  Grades $n$ von $L$ ist ein Homomorphismus $\Lambda\colon L\rightarrow
+  \gl_{n}$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Für jede Matrixdarstellung $\Lambda$ des Grades $n$ von $L$ wird der
+    $\C^{n}$ zu einem $L$-Modul, wenn man definiert $a\cdot v\colon=
+    \Lambda(a) v$ für $a\in L, v\in\C^{n}$.
+   \item Ist umgekehrt $V$ ein $L$-Modul, $b_{1},\dotsc, b_{n}$ eine Basis von
+    $V$ und $a\cdot b_{j}=\sum_{i=1}^{n} \lambda_{ij}(a\cdot b_{i})$ mit
+    $\lambda_{ij}(a)\in\C$, so ist die Abbildung $\Lambda\colon L\rightarrow
+    \gl_{n}, a\mapsto (\lambda_{ij}(a))$ eine Matrixdarstellung von $L$. Daher
+    besteht kein großer Unterschied zwischen Darstellungen, Matrixdarstellung
+    und Moduln. Wir werden meist mit Moduln arbeiten.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{defini}
+  Seien $L$ eine Lie-Algebra und $V$ ein $L$-Modul. Ein \highl{Untermodul} von
+  $V$ ist ein Untervektorraum $U\subseteq V$ mit $a\cdot u\in U$ für alle
+  $a\in L, u\in U$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Gegebenenfalls ist $U$ selbst ein $L$-Modul mit den entspechend
+    eingeschränkten Verknüpfungen.
+   \item Für jeden Untermodul $U\subseteq V$ wird die Menge
+    $V/_{U}=\{v+U\colon v\in V\}$ zu einem $L$-Modul, wenn man definiert:
+    \begin{gather*}
+      (v+U)+(v'+U)\colon= (v+v')+U\\
+      \alpha(v+U)\colon= \alpha v+U\\
+      a\cdot(v+U)\colon= (a\cdot v)+U\qquad v,v'\in V, \alpha\in \C, a\in L
+    \end{gather*}
+    Man bezeichnet diese Menge als \highl{Faktormodul} von $V$ modulo $U$.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $0,V$ sind stets Untermoduln. Sind dies die einzigen Untermoduln und
+    ist außerdem $V\neq 0$, so nennt man $V$ \highl{einfach} oder
+    \highl{irreduzibel}.
+   \item Die Untermoduln von $L$ selbst sind genau die Ideale von $L$.
+   \item Für jede Menge $\FU$ von Untermoduln von $V$ ist auch
+    $\bigcap_{U\in\FU} U$ Untermodul von $V$.
+   \item Für Untermoduln $U_{1},\dotsc, U_{n}$ von $V$ ist auch die Summe
+    $U_{1}+\dotsb+ U_{n}$ ein Untermodul von $V$.
+  \end{enumerate}
+\end{bsp}
+
+
+\todo{Vorlesung vom 2007-04-23}
+
+\todo{Vorlesung vom 2007-04-25}
+
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{mathmode} Math mode von Herbert Voss,\\
+  \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+ \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+  \bibitem{humph} J. Humphreys, Intro
+  \bibitem{erd} Karin Erdmann und Mark J. Wildon, Introduction to Lie
+  Algebras, Springer SUMS
+  \bibitem{stew} Ian Stewart
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
