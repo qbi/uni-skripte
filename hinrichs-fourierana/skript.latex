@@ -1,0 +1,407 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,twoside]{scrreprt}
+\KOMAoptions{parskip=half*} % laut Warnung muss die Option so lauten
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{color}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+
+\usepackage{lmodern}		% Latin Modern
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{nicefrac}
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+\theoremnumbering{arabic}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Fourieranalysis}
+\author{PD Dr. Aike Hinrichs}
+\date{Semester: SS 2007}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Denoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \texttt{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \texttt{<jens@kubieziel.de>}} (2007)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Einführung}
+
+Für die Fourieranalysis existieren diverse Synonyme. Man nennt die
+Fourieranalysis auch als harmonische Analysis. Es geht darum, Funktionen in
+einfache Funktionen umzustellen. Diese werden untersucht. Wozu ist das gut?
+Anfangs (zu Zeiten Fouriers) war man der Meinung, dass das nichts bringt.
+Fourier war von seinem Ansatz überzeugt und hat das in seinem Buch
+dargestellt. Im Laufe der Jahre hat sich die Fourieranalysis durchgesetzt.
+Denn Fouriers Prinzip funktioniert. Im Laufe der Jahre gab es starke
+Weiterentwicklungen.
+
+Wir behandeln die folgenden Punkte:
+\begin{enumerate}
+ \item Fourierreihen (Entwicklung, Konvergenz, Summierbarkeit etc.)
+ \item Fouriertransformation
+ \item singuläre Integrale
+ \item harmonische Analyse auf lokalkompakten abelschen Gruppen
+ \item Wavelets
+ \item Anwendungen
+\end{enumerate}
+
+Im 18.\,Jahrhundert wurden hauptsächlich zwei Differentialgleichungen
+studiert. Zum einen war das die Wellengleichung $\frac{\partial^{2}
+u}{\partial x^{2}}= \frac{\partial^{2} u}{\partial t^{2}}$ und zum anderen die
+Wärmeleitungsgleichung $\frac{\partial^{2} u}{\partial x^{2}}= \frac{\partial
+u}{\partial t}$. Der Lösungsansatz ist die Separation der Variablen und
+Superposition (siehe auch Analysis 3). Die Frage ist nun, welche Funktionen
+$f(x)=u(x,0)=\sum_{j=1}^{\infty} b_{j} \sin jx$ lassen sich so darstellen.
+Damals war der Summenbegriff noch nicht klar definiert. Daher kamen bei der
+Summenbildung nicht immer sinnvolle Ergebnisse heraus. Der Mathematiker Jean
+Baptiste Joseph Fourier (1768--1830) dachte über die Theorie der Wärmeleitung
+nach und fand heraus, dass man allgemeine Funktionen entwickeln kann. Daraus
+ist die Fourieranalysis entstanden.
+
+\chapter{Fourierreihen}
+
+\section{Schwingende Saite}
+
+Eine Saite ist an zwei Enden ($0, \pi$) eingespannt und wird gezupft. Sie
+bewegt sich und versucht, wieder in Ruhestellung zu kommen. Die Funktion
+$u(x,t)$ hängt von ort und Zeit ab. Woher kommt nun die Gleichung
+$\frac{\partial^{2} u}{\partial x^{2}}=a^{2} \frac{\partial^{2} u}{\partial
+t^{2}}$? Man macht Infinitesimalrechnung. an den Enden wirkt die Spannung
+$S(x,t)$ in Tangentialrichtung und hängt von Ort und Zeit ab. Wir nehmen zur
+Vereinfachung an, dass die Masseteilchen sich nur vertikal bewegen. Die
+horizonalte Komponente von $S$ nennen wir $H(x,t)=S(x,t)\cos\Theta(x,t)$.
+Dabei ist $\Theta(x,t)$ der Winkel von $S$ zur Horizontalen. Es gilt
+$H(x+\Delta x,t)-H(x,t)=0=S(x+\Delta x,t)\cos (\Theta+\Delta\Theta)- S(x,t)
+\cos\Theta$. Die vertikale Komponente heißt $V(x,t)=S(x,t)\sin\Theta$. Nach
+Newton gilt, dass die externe Kraft gleich der Masse mal Beschleunigung ist.
+Das bedeutet, $V(x+\Delta x,t)-V(x,t)=\rho\Delta x \frac{\partial^{2}
+u}{\partial t^{2}}(\overline{x},t)$. Dabei ist $\rho$ die Massendichte der
+saite und $\overline{x}$ der Masseschwerpunkt des Saitenstücks von $x$ bis
+$x+\Delta x$. Für $\Delta x\rightarrow 0$ folgt $\frac{\partial V}{\partial
+x}(x,t)=\rho \frac{\partial^{2} u}{\partial t^{2}}(x,t)$. Weiter stellen wir
+fest, dass $H(x,t)=H(t)$, d.\,h. $H$ hängt nicht von $x$ ab. Ferner ist
+$V(x,t)=H(x,t)\tan\Theta$. Wie kann man $\tan \Theta$ durch $u$ ausdrücken? Es
+gilt $\tan \Theta=\frac{\partial u}{\partial x}(x,t)$ und es folgt
+$\frac{\partial V}{\partial x}= H(t) \frac{\partial^{2} u}{\partial x^{2}}=
+\rho \frac{\partial^{2} u}{\partial t^{2}}$. Eine weitere Annahme zur
+Vereinfachung ist, dass wir nur kleine Auslenkungen betrachten. Damit ist
+$\cos\Theta$ nahe bei 1 und $H(t)$ ist fast gleich zu $S(t)$.
+
+Nun sei noch die Spannung an den Enden der Saiten zeitlich konstant. Damit ist
+auch $S$ konstant. Es bleibt also übrig:
+\begin{gather*}
+  \rho\frac{\partial^{2} u}{\partial t^{2}} = S\frac{\partial^{2} u}{\partial
+     x^{2}}
+\end{gather*}
+Zur weiteren Vereinfachung setzt man $a^{2}=\nicefrac{S}{\rho}$.
+
+d'Alembert bestimmte die allgemeine Lösung durch $u(x,t)=\nicefrac{1}{2}
+(f(x+t)+g(x-t))$. Dabei sind $f,g$ beliebig.
+
+Zu einem vernünftig gestellten physikalischen Problem gehört noch die
+Anfangsbedingung: $u(x,0)=\phi(x), \frac{\partial u}{\partial t}(x,0) =
+\psi(x)$ und die Randbedingung $u(0,t)=u(\pi,t)=0$. Es ist
+$u(x,0)=\phi(x)=\nicefrac{1}{2} (f(x)+g(x))$ und $\frac{\partial u}{\partial
+t}(t,0)=\psi(x)= \nicefrac{1}{2} (f'(x)-g'(x))$.
+
+Bernoulli hat ebenfalls lösungen gesucht: $u_{j}(x,t)= \sin jx \cos jt$ mit
+der Superposition: $u(x,t)=\sum_{j=1}^{\infty} b_{j} \sin jx \cos jt$. Nach
+dem Einsetzen der Randbedingungen ergibt sich: $u(x,0)=\sum_{j=1}^{\infty}
+b_{j} \sin jx=\colon \phi(x)$. Bernoulli fragte sich, für welche $\phi$ das
+funktionierte. Eine Lösung lieferten Fourier und Dirichlet.
+
+\begin{enumerate}
+ \item Fourier: Integrierbare Funktionen lassen sich so darstellen.
+ \item Dirichlet: Erklärung, was die Konvergenz einer Reihe ist (Konvergenz
+  von Partialsummen)
+\end{enumerate}
+
+Fouriers Idee war $\int_{0}^{\pi} \phi(x) \sin kx\,dx= \sum_{j=1}^{\infty}
+b_{j} \int_{0}^{\pi} \sin jx \sin kx\,dx=
+\begin{cases}
+  0 & j\neq k\\
+  \frac{\pi}{2} & j=k
+\end{cases}=\nicefrac{\pi}{2}b_{k}$. Damit muss man eher das Problem, wann die
+Reihe gegen $\phi(x)$ konvergiert, betrachten.
+
+\paragraph{Klassische Fourierreihen}
+\begin{gather*}
+  \sum_{j=1}^{\infty} a_{j} \cos jx\qquad \sum_{j=1}^{\infty} b_{j} \sin jx\\
+  \sum_{j=1}^{\infty} (a_{j}\cos jx+ b_{j}\sin jx)
+\end{gather*}
+
+Besser ist der moderne Ansatz, das komplex zu betrachten:
+\begin{gather*}
+  \cos  jx = \frac{e^{ijx}+e^{-ijx}}{2i} \qquad \sin jx =
+     \frac{e^{ijx}-e^{-ijx}}{2i}\\
+  \Rightarrow \sum_{j=-\infty}^{\infty} c_{j} e^{ijx}
+\end{gather*}
+
+\section{Fourierreihen -- eine Einführung}
+
+Im $\R^{n}$ gibt es Gruppen, die natürlich darauf operieren.
+\begin{itemize}
+ \item Translation
+ \item Rotation
+ \item Dilatation
+\end{itemize}
+Interessant sind Funktionen, die sich bezüglich dieser Operationen gut
+verhalten.
+
+Für Fourreihen muss man sich ein anderes Objekt besorgen, den \highl{Torus}
+$\T=\R/_{2\pi\Z}$. Als einfaches Modell kann man das Intervall $[0,2\pi)]$
+nehmen. Addition und Subtraktion machen wir modulo $2\pi$. Funktionen auf dem
+Torus entsprechen $2\pi$-periodischen Funktionen auf $\R$.
+\begin{gather*}
+  \int_{0}^{2\pi} f(x)\,dx=\int_{0}^{2\pi} f(x+y)\,dx
+\end{gather*}
+
+Ein zweites Modell für den Torus ist der Einheitskreis in $\C$. Es ist $x\in\R
+\leadsto e^{ix}\in \C$. Der Torus addiert auf sich selbst als Gruppe. Sei
+$x\in\T$. Die Translation $\tau\colon\T\rightarrow \T$ bildet $x\mapsto x+y\mod
+2\pi$ ab (Modell 1) bzw. $e^{ix}\mapsto e^{i(x+y)}$ (modell 2).
+
+Fage: Welche Funktionen verhalten sich gut gegenüber dieser Aktion? Der erste
+Ansatz wäre: $\tau_{y}f(x)=f(x)=f(x+y)\Rightarrow f$ ist konstant. Der zweite
+Ansatz ist $\abs{\tau_{y}f(x)}=\abs{f(x)}=\abs{f(x+y)}$. Wir können schreiben
+$f(x+y)=f(x)\phi(x)$ mit $\abs{\phi(x)}=1$
+Für $f\neq0\Rightarrow f(y)=f(0)\phi(y)$, d.\,h. $f$ ist bis auf eine
+Konstante durch $\phi$ bestimmt. Somit folgt $\phi(x+y)=\phi(x)\cdot\phi(y)$.
+Also $\phi$ ist ein Homomorphismus von $\T$ in Modell 1 nach $\T$ in Modell 2.
+Wir verlangen zusätzlich, dass $\phi$ stetig ist.
+
+\begin{defini}
+  Ein stetiger Homomorphismus $\phi\colon\T\rightarrow\T$ heißt
+  \highl{Charakter} auf dem Torus.
+\end{defini}
+
+
+
+
+
+\clearpage
+\appendix
+% \begin{thebibliography}{99}
+%  \bibitem{mathmode} Math mode von Herbert Voss,\\
+%   \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+%  \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+%   \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+% \end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
