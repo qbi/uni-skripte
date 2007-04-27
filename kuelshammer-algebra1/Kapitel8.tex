@@ -1,0 +1,121 @@
+\chapter{Polynome und Codes}
+\begin{itemize}
+	\item Ziel der Codierungstheorie:
+	\begin{itemize}
+		\item sichere Datenübertragung und -speicherung [Funkverkehr zu Satelliten, Mobilfunk, CD, DVD, ... ]
+		\item automatische Erkennung und Korrektur von Übertragungsfehlern [Rauschen, Staub, Kratzer, Materialfehler, ...]
+	\end{itemize}
+	\item durch geeignete Codierung und Decodierung:
+	\[\begin{array}{ccccccccc}
+\text{Nachricht} & \rightarrow & \text{Codierer} & \rightarrow & \text{Kanal} & \rightarrow & \text{Decodierer} & \rightarrow & \text{Nachricht}\\
+& & & & \uparrow & & & &\\
+& & & & \text{Rauschen} & & & &
+\end{array}\]
+\end{itemize}
+
+Dabei:
+\begin{itemize}
+	\item Nachricht = Vektor in $K^k$ $\left(K \text{ endlicher Körper, } \left|K\right| = q\right)$ [oft $K = \F_2$, aber: bei CD, DVD: $K = \F_256$]
+	\item Codierung: injektive Abbildung\\
+	$\underbrace{E}_{\text{Encode}} \colon K^k \mapsto K^n \ \left(n > k\right)$  [oft: $E$ linear]
+	\item Decodierung: $D \colon K^n \mapsto K^k$ mit $D \circ E = id_{K^k}$
+	\item Hilfreich \addindex{Hamming!Abstand}{Hamming--Abstand} \randbem{Hamming: Pionier der Codierungstheorie} $d \colon K^n \times K^n \mapsto \R$ \randbem{$d$ Metrik}
+	\[d\left(x, y\right) := \left|\left\{i \colon 1 \leq i \leq n, x_i \neq y_i\right\}\right| \text{ für } x = \left(x_1, \ldots, x_n\right), \left(y_1, \ldots, y_n\right) \in K^n\] misst Anzahl der Fehler:
+	\begin{itemize}
+		\item $d\left(x, y\right) \geq 0$, $d\left(x, y\right) = 0 \Leftrightarrow x = y$
+		\item $d\left(x, y\right) = d\left(y, x\right)$
+		\item $d\left(x, z\right) \leq d\left(x, y\right) + d\left(y, z\right)$ (Dreiecksungleichung)
+	\end{itemize}
+	\item \addindex{Hamming!Gewicht}{Hamming--Gewicht}: $w \colon K^n \mapsto \R$,
+	\[w(x) = \left|\left\{i \colon 1 \leq i \leq n, x_i \neq 0\right\}\right| \text{ für } x = \left(x_1, \ldots, x_n\right) \in K^n\]
+	Dann: $d\left(x, y\right) = w\left(x - y\right)$
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%
+% Definition 8.1
+%%%%%%%%%%%%%%%%%%%
+\begin{defi}{defi:8.1}
+Ein (linearer) Code der Länge $n$ ist ein Untervektorraum $C \subseteq K^n$. Man nennt $k := \dim C$ die Dimension von $C$. Außerdem heißt
+\[\delta := \min{\left\{d\left(x, y\right) \colon x, y \in C, x \neq y\right\}} = \min{\left\{w(z) \colon 0 \neq z \in C\right\}}\]
+\addindex{}{Minimalabstand} (\addindex{}{Minimalgewicht}) von $C$. Man spricht dann auch von einem $\left[n, k, \delta\right]$--Code.
+\end{defi}
+
+\emph{Idee:} $C$ ist das Bild von $E \colon K^k \mapsto K^n$. Ist $e \in E$ mit $2e < \delta$ so kann $C$ mindestens $e$ Fehler korrigieren. (Kreise von Radius $e$ um Codewörter schneiden sich nicht.)
+
+Ein "`guter"' Code hat folgende Eigenschaften:
+\begin{itemize}
+	\item großer Minimalabstand ($\Rightarrow$ gute Korrekturmöglichkeit)
+	\item $\underbrace{\text{große Dimension}}_{\text{möglichst viele Codewörter in } C}$ ($\Rightarrow$ kostengünstig, effizient)
+\end{itemize}
+Beide Ziele liegen in verschiedenen Richtungen (Kompromisse!).
+
+%%%%%%%%%%%%%%%%%%%
+% Bemerkung 8.1
+%%%%%%%%%%%%%%%%%%%
+\begin{bem}\label{bem:8.1}
+Viele \randbem{Vorteil dieser Konstruktion, zu Codes als Untervektorraum: man muss nur $\varphi$ und $n$ speichern, keine Basis eines Untervektorraumes mit $k$ Elementen} in der Praxis auftretende Codes werden mit Hilfe von Polynomringen konstruiert. Dabei identifiziert man $K^n$ mit $K[X] / \left(X^n - 1\right)$ durch \[\left(a_0, a_1, \ldots, a_{n-1}\right) \leftrightarrow a_0 + a_1X + a_2X^2 + \ldots + a_{n-1}X^{n-1} + \left(X^n - 1\right)\]
+Für jeden Teiler $\varphi$ von $X^n - 1$ gilt: $\left(X^n - 1\right) \subseteq \left(\varphi\right)$.\\
+Daher ist $C := \left(\varphi\right) / \left(X^n - 1\right) := \left\{\alpha\varphi + \left(X^n - 1\right) \colon \alpha \in K[X]\right\}$ ein Untervektorraum von $K[X] / \left(X^n - 1\right)$. Man nennt $C$ den \addindex{Zyklischer Code}{zyklischen Code} der Länge $n$ über $K$ mit \addindex{}{Generatorpolynom} $\varphi$.
+\end{bem}
+
+%%%%%%%%%%%%%%%%%%%
+% Satz 8.1
+%%%%%%%%%%%%%%%%%%%
+\begin{satz}\label{satz:8.1}
+Sei $C := (\varphi) / \left(X^n - 1\right)$ wie oben und $l := \deg\varphi$, also $l \leq n$. Dann gilt: $\dim C = n - l$.
+\end{satz}
+
+%%%%%%%%%%%%%%%%%%%
+% Beweis
+%%%%%%%%%%%%%%%%%%%
+\begin{beweis}
+Schreibe $\varphi = a_0 + a_1X + \ldots + a_lX^l \ \left(a_0, \ldots, a_l \in K, a_l \neq 0\right)$.\\
+Dann sind 
+\[\begin{array}{rcllllll}
+\varphi + \left(X^n - 1\right) & = & a_0 & + & a_1X + & & \ldots + a_lX^l & + \left(X^n - 1\right)\\
+X\varphi + \left(X^n - 1\right) & = & & & a_0X + a_1X^2 + & & \ldots + a_lX^{l + 1} & + \left(X^n - 1\right)\\
+& \vdots \\
+X^{n - l - 1}\varphi + \left(X^n - 1\right) & = & & & & a_0X^{n - l - 1} + & \ldots + a_lX^{n - 1} & + \left(X^n - 1\right)
+\end{array}\]
+offenbar linear unabhängig in $C$.\\
+Also: $\dim C \geq n - l$.\\
+Wegen $\varphi\mid X^n - 1$ existiert ein $\psi \in K[X]$ mit $X^n - 1 = \varphi\psi$. Sei $\alpha \in (\varphi)$, etwas $\alpha = \beta\varphi$ mit $\beta \in K[X]$.\\
+Division mit Rest: $\beta = \kappa\psi + \rho$ mit $\deg\rho < \deg\psi = n - l$.\\
+Schreibe $\rho = r_0 + r_1X + \ldots + r_{n - l - 1}X^{n - l - 1} \ \left(r_i \in K\right)$.\\
+Dann: \[
+\begin{array}{lcl}
+\alpha + \left(X^n - 1\right) & = & \beta\varphi + \left(X^n - 1\right) = \kappa\underbrace{\varphi\psi}_{= \left(X^n - 1\right)} + \rho\varphi + \left(X^n - 1\right)\\
+& = & \rho\varphi + \left(X^n - 1\right)\\
+& = & r_0\varphi + r_1X\varphi + \ldots + r_{n - l - 1}X^{n - l - 1}\varphi + \left(X^n - 1\right)
+\end{array}\]
+Daher bilden $\varphi + \left(X^n - 1\right), X\varphi + \left(X^n - 1\right), \ldots, X^{n - l - 1}\varphi + \left(X^n - 1\right)$ eine Basis von $C$.
+\end{beweis}
+
+%%%%%%%%%%%%%%%%%%%
+% Beispiel 8.1
+%%%%%%%%%%%%%%%%%%%
+\begin{bsp}\label{bsp:8.1}
+\begin{enumerate}[(a)]
+	\item (\addindex{Code!Ternärer Golay}{Ternärer Golay Code})\\
+	$q = 3, n = 11, \varphi = X^5 + X^4 - X^3 + X^2 - 1 \in \F_3[X], C := (\varphi) / \left(X^{11} - 1\right)$. [Man kann zeigen, dass $\varphi$ ein irreduzibler Teiler von $X^{11} - 1$ ist.]\\
+	Dann hat $C$ Länge $n = 11$ und Diemension $k = 6$.\\
+	Indem \randbem{Minimalgewicht bei Polynomen: Anzahl von $0$ verschiedenen Koeffizienten.} man die $3^6 = 729$ Codewörter berechnet (Computer!), sieht man, dass $C$ das Minimalgewicht $\delta = 5$ hat. (Das geht auch mit etwas Theorie.)\\
+	Daher schneiden sich Kreise mit Radius $2$ um Codewörter nicht. Jeder Kreis enthält: 
+	\[1 + \underbrace{11 \cdot 2}_{\text{Vektoren mit Abstand } 1} + \underbrace{\binom{11}{2} \cdot 4}_{\text{Abstand } 2} = 243 = 3^5\]
+	Vektoren. \randbem{Code kann 2 Fehler korrigieren.} Daher enthalten die Kreise vom Radius $2$ umd die $3^6$ Codewörter, insgesamt genau $3^6 \cdot 3^5 = 3^{11}$ verschiedene Vektoren, überdecken also ganz $\F_3^{11}$. Man spricht von einem \addindex{Code!perfekter}{perfekten Code}.
+	\item (\addindex{Code!Binärer Golay}{Binärer Golay Code})\\
+	$q = 2, n = 23, \varphi := X^{11} + X^{10} + X^6 + X^5 + X^4 + X^2 + 1 \in \F_2[X], C := (\varphi) / \left(X^n - 1\right)$. [Man kann zeigen, dass $\varphi$ ein irreduzibler Teiler von $X^{23} - 1$ ist.]\\
+	Dann hat $C$ Länge $n = 23$ und Dimension $k = 12$.\\
+	Indem man die $2^{12} = 4096$ Codewörter ausrechnet (Computer!), sieht man, dass $C$ Minimalgewicht $\delta = 7$ hat. (Das geht auch mit etwas Theorie.)\\
+	Daher schneiden sich Kreise vom Radius $3$ um Codewörter nicht. Jeder Kreise enthält:
+	\[1 + 23 + \binom{23}{2} + \binom{23}{3} = 2048 = 2^{11}\]
+	Vektoren. Diese $2^{12}$ Kreise enthalten insgesamt $2^{12} \cdot 2^{11} = 2^{23}$ Vektoren, überdecken ganz $\F_2^{23}$. Man spricht wieder von einem perfekten Code.
+\end{enumerate}
+\end{bsp}
+
+%%%%%%%%%%%%%%%%%%%
+% Bemerkung 8.2
+%%%%%%%%%%%%%%%%%%%
+\begin{bem}\label{bem:8.2}
+Die Golay-Codes sind sowohl für die Theorie als auch für die Praxis von großer Bedeutung. Man kann zeigen, dass sie im wesentlichen die beiden einzigen perfekten Codes sind, die mehr als einen Fehler korrigieren können.
+\end{bem}
