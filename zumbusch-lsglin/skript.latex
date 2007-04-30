@@ -59,6 +59,8 @@
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{nicefrac}
+\usepackage{listings}
+\usepackage{booktabs}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -332,9 +334,20 @@ Kommunikation sorgen.
 
 Vereinfachtes Muster:
 Man kommuniziert über globale Variablen. Bezeichung:
-\verb|globale Variable|\\
-\verb|thread<name1>[Parameter]{lokale Variable\\Anweisung}|\\
-\verb|thread<name2>[Parameter]{lokale Variable\\Anweisung}| und evtl. weitere.
+\lstset{numbers=left,numberstyle=tiny,language=C}
+\begin{lstlisting}
+globale Variable
+thread<name1>[Parameter]{
+  lokale Variable\\
+  Anweisung
+  }
+thread<name2>[Parameter]{
+  lokale Variable\\
+  Anweisung
+  }  
+\end{lstlisting}
+
+\todo{Listing ordentlich machen}
 
 Obiges ist ein Modell mit statischen Threads. Diese starten alle (unter
 Umständen nicht gleichzeitig, aber zeitnah). Das parallele Programm
@@ -342,6 +355,112 @@ terminiert, wenn alle Prozesse terminieren. Die genauen Eigenschaften hängen
 vom System ab. Üblicherweise hat der Prozess einen eigenen Daten- und
 Adressraum. Dagegen hat ein Thread keinen eigenen Adressraum. Dadurch ist er
 etwas billiger.
+
+\todo{Vorlesung vom 2007-04-23}
+
+\todo{Vorlesung vom 2007-04-24}
+
+
+%% Vorlesung vom 2007-04-30
+\chapter{Instruktionsparallelismus}
+Bisher haben wir immer eine sequentielle Programmiersprache betrachtet. Die
+Idee ist nun, dass man schon bei den Intruktionen Parallelität ausnutzt.
+
+\section{von-Neumann-Modell}
+In dem Modell gibt es Befehle und Daten. Alles steht in einem großen Speicher.
+Die Befehle gehen in einen Befehlszähler und werden nacheinander abgearbeitet.
+Seit den siebziger jahren ist bekannt, dass man an technische Grenzen stößt
+und es wurde am Einsatz von Parallelität gearbeitet.
+
+\section{Pipelining-Vektorrechner}
+Man zerlegt Operationen in Teiloperationen und versucht diese, schneller
+auszuführen. Das ganze geschieht am "`Fließband"'. Wir brauchen mehrere
+Zeittakte um eine Operation zu beenden. Als Beispiel haben wir einen Befehl
+mit vier Teiloperationen. Zuerst wird der erste Befehl ausgeführt. Der wird in
+vier Takten bearbeitet. Wenn nach dem ersten Zeittakt die erste Operation
+beendet ist, könnte man hier schon den nächsten Befehl bearbeiten. Wenn dieser
+abgearbeitet ist, sind erst fünf Takte um. Für den dritten Befehl werden sechs
+Takte benötigt usw. Insgesamt wird dann pro Takt eine Operation fertig.
+
+Wir haben eine Pipeline der Länge $m$ und eine Operation dauert $m$ Takte. Für
+$N$ Operationen dauert die Bearbeitung $m+N-1$ Takte. Die Beschleunigung
+(Speedup) berechnet sich nach $S(N)=\frac{T_{S}(N)}{T_{P}(N)}= \frac{N\cdot
+top\cdot m}{(m+N-1)\cdot top}= m\frac{N}{m+N-1}$. Es gilt $\lim_{N\rightarrow
+\infty} S(N)=m$. Die Abhängigkeit liegt nur vor, wenn der Abstand der Operationen
+kleiner als $m$ ist. \todo{Aussage nochmal genau prüfen und klarer
+aufschreiben}
+
+Man kann die Vektoroperationen $a[i]+b[i], a[i]+c, a[i]\cdot b[i]$ und
+$a[i]\cdot c$ schnell ausführen. Andere Operationen sind vergleichsweise
+langsam. Daher kommt der Name \emph{RISC} (Reduced instruction set computing).
+Das Ziel ist, wenige, einfache Befehle zu haben, die schnell sind und sich
+"`pipelinen"' lassen. Wenn man auf den Speicher zugreifen wollte, hat man
+Laden-und-Speichern (load and store) gemacht. Es wird nur im Register
+gerechnet. (Inzwischen ist das schon wieder etwas aufgeweicht.)
+Schwierigkeiten gibt es immer dann, wenn die Pipeline nicht funktioniert,
+d.\,h. wenn es nicht genügend Operationen gibt, die man unabhängig voneinander
+ausführen kann. Eine zweite Problematik kann auftreten, wenn der Prozessor
+nicht mehr weiß, wo es hin geht (bedingte Sprünge).
+
+\begin{bsp}
+%  \lstset{language=x86masm}
+  % \begin{lstlisting}
+  %   R1=N
+  %   READ x[R1], R2
+  %   MULT R2, A, R2
+  %   WRITE R2, x[R1]
+  %   DEC R1
+  %   JMP, IF R1>0
+  % \end{lstlisting}
+\end{bsp}
+
+Bei neueren Prozessoren gibt es Erweiterungen, die explizit parallel arbeiten.
+Diese in der Regel als Multimediaerweiterungen beworben. Bei Intel heißt die
+Technologie SSE2, bei AMD 3Dnow und beim PowerPC Altivec. Beispielsweise kann
+man da mit vier Floats in 128 Bitregistern arbeiten.
+
+Nach Abschätzungen von Wissenschaftlern kann man normale Anwendungen um den
+Faktor 3 bis 5 beschleunigen. Numerische Anwendungen könnten hingegen mehr
+beschleunigt werden.
+
+
+\section{Superskalar}
+
+Es gibt mehrfache Instruktionseinheiten, die Operationen ausführen können. Man
+will mehr als einen Befehl pro Takt haben. Dabei versucht man, Befehle zu
+finden, die nichts miteinander zu tun haben und diese parallel zu betreiben.
+Beispielsweise kann man Integerarithmetik, Addition/Subtraktion und
+Multiplikation von Gleitpunktzahlen in Einheiten zu packen. Wie wird sowas
+programmiert? In der Regel wird einige Befehle vorausgeschaut und wenn alle
+"`Zutaten"' da sind, werden diese ausgeführt. Prozessor kann also Befehle in
+beliebiger Reihenfolge ausführen. Dabei gilt die Bedingung, dass dabei
+dasselbe Ergebnis wie bei sequentieller Bearbeitung herauskommen muss. Das
+nennt man \emph{Out-of-order Execution}. Hierfür braucht man viele Register
+und eine komplexe interne Logik. Der Speedup ist hier bei kleiner 4 bis 5.
+Eine weiterführende Idee ist, diese Logik auf den Compiler auszulagern. 
+
+\emph{Long instruction word} beim Itanium waren das drei unabhängige Befehle
+pro Takt. Damit ergibt sich ein Speedup von $\leq 3$.
+
+\emph{Hyperthreading} bezeichnet die Idee, dass sich mehrere Threads die
+Ressourcen eines Prozessors teilen.
+
+\section{Klassifikation nach Flynn}
+\begin{tabular}{l|l|l}
+  & Single instruction & multiple instruction\\
+  \toprule
+  single data & SISD (von Neumann) & \\
+  multiple data & SIMD (Vektorrechner) & MIMD (Multiprozessor)
+\end{tabular}
+
+
+Weiterhin kann man nach dem Speicher klassifizieren:
+\begin{itemize}
+  \item gemeinsamer Speicher (als symmetric multiprocessing (SMP) oder
+  non-uniform memory access (NUMA))
+ \item verteilter Speicher
+\end{itemize}
+
 
 \clearpage
 \appendix
