@@ -212,10 +212,10 @@ neue_funktions_regel(qr/\\documentclass/, qr/\{scr/, \&schimpfen,
 # Textes wie bei $Id$ unwahrscheinlicher machen.
 neue_existiert_regel(qr/\\SVN \$LastChangedRevision: \d+ \$/, \&schimpfen,
                      '\SVN für LastChangedRevision nicht gefunden; '.
-                  '"svn propset svn:keyword LastChangedRevision" aktiviert?');
+                  '"svn propset svn:keywords LastChangedRevision" aktiviert?');
 neue_existiert_regel(qr/\\SVN \$LastChangedDate: .{3,} \$/, \&schimpfen,
                      '\SVN für LastChangedDate nicht gefunden; '.
-                     '"svn propset svn:keyword LastChangedDate" aktiviert?');
+                     '"svn propset svn:keywords LastChangedDate" aktiviert?');
 
 our $theoremstyle;
 sub thmstyle
@@ -279,7 +279,7 @@ sub newcommand
     if ( defined($1) )
     {
         my $var;
-        neue_suchregel(qr/\\$1[\W_]/, \$var);
+        neue_suchregel(qr/\\$1($|[\W_])/, \$var);
         push(@befehle_gefunden, [$1, \$var]);
     }
     else
@@ -521,7 +521,7 @@ foreach (@theoreme_gefunden, @umgebungen_gefunden)
 foreach (@befehle_gefunden)
 {
     my ($cmd, $var) = @$_;
-    neue_existiert_regel(qr/\\$cmd[\W_]/, \&monieren,
+    neue_existiert_regel(qr/\\$cmd($|[\W_])/, \&monieren,
                      "Der Befehl '\\$cmd' wurde definiert, aber nie verwendet")
       unless ($$var > 0 or $cmd eq 'todo' or $cmd eq 'help' or
               $cmd eq 'indexsection' or $cmd =~ /autorefname$/);
@@ -530,10 +530,19 @@ foreach (@befehle_gefunden)
 # Alle selbstdefinierten Matheoperatoren sollten auch im Dokument vorkommen
 foreach (@mathops_gefunden)
 {
-    neue_existiert_regel(qr/\\$_\W/, \&monieren,
+    neue_existiert_regel(qr/\\$_($|[\W_])/, \&monieren,
                    "Der Operator '\\$_' wurde definiert, aber nie verwendet");
 }
 
+# Da Leerzeichen vor und nach ~, \, und \  diese zerstören, werden solche
+# Stellen bemängelt; leider gibt es auch viele Treffer im Mathemodus, wo die
+# Leerzeichen kein Problem sind
+neue_funktions_regel(qr/[ \t](\\[ ,]|~)/, qr/^$/, \&monieren,
+                     'Vor ~, \, und "\\ " dürfen keine Leerzeichen '.
+                     'kommen, sonst ist das Spezialleerzeichen futsch');
+neue_funktions_regel(qr/((^|[^\\])(\\\\)*\\[ ,]|~)([ \t]|$)/, qr/^$/, \&monieren,
+                     'Nach ~, \, und "\\ " dürfen keine Leerzeichen '.
+                     'kommen, sonst ist das Spezialleerzeichen futsch');
 ##########
 #
 # Den Rumpf des LaTeX-Dokuments einlesen.
