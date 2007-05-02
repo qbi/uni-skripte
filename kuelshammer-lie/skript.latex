@@ -55,7 +55,8 @@
                          % gesetzt werden
 \usepackage{ellipsis}    % Korrektur für \dots
 \usepackage{fixltx2e}
-\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage[final]{microtype}
+
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -117,6 +118,8 @@
 \DeclareMathOperator{\sll}{sl}
 \DeclareMathOperator{\ad}{ad}
 \DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Der}{Der}
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -661,6 +664,198 @@ Ein \highl{Homomorphismus} einer Lie-Algebra $L$ in eine Lie-Algebra $M$ ist
 \todo{Vorlesung vom 2007-04-23}
 
 \todo{Vorlesung vom 2007-04-25}
+
+
+%% Vorlesung vom 2007-05-02
+\begin{defini}
+  Sei $\Delta\colon L\rightarrow \gl(V)$ eine Darstellung einer Lie-Algebra
+  $L$ und ist $\Delta(a)$ nilpotent für alle $a\in L$, dann heißt $\Delta$ im
+  folgenden \highl{Nildarstellung}.
+\end{defini}
+
+\begin{satz}\label{satz:37}
+  Sei $\Delta\colon L\rightarrow\gl(V)$ eine Nildarstellung einer Lie-Algebra
+  $L$ mit der Eigenschaft, dass der entsprechende $L$-Modul $V$ irreduzibel
+  ist. Dann ist $\dim V=1$ und daher $\Delta(a)=0$ für alle $a\in L$.
+  \begin{proof}
+    Nach Voraussetzung ist jedes Element in $\Delta(L)$ nilpotent. Nach dem
+    Satz 3.2\todo{Link einfügen} existiert also ein $v\in V\setminus \{0\}$
+    mit $a\cdot v=0$ für alle $a\in L$. Dann ist also $\C v\subseteq V$
+    Untermodul. Da $V$ irreduzibel, folgt, $V=\C v$.
+  \end{proof}
+\end{satz}
+
+\begin{satz}\label{satz:38}
+  Sei $\Delta\colon L\rightarrow\gl(V)$ eine Nildarstellung einer Lie-Algebra
+  $L$. Dann existiert eine Basis $B$ von $V$ mit der Eigenschaft, dass für
+  jedes $a\in L$ die Matrix $\Delta(a)$ bzgl. $B$ eine obere Dreiecksmatrix
+  mit Hauptdiagonale 0 ist.
+  \begin{proof}
+    Setze $V_{0}\colon= V$ und wählen, soweit möglich, für $i=1,2,\dotsc$
+    einen Untermodul $V_{i}\subsetneq V_{i-1}$ möglichst großer Dimension..
+    Dann ist $V=V_{0}\supset V_{2}\supset \dotso \supset V_{n-1}\supset
+    V_{n}=0$ für ein $n\in\N_{0}$. Für $i=1,\dotsc,n$ ist $V_{i-1}/_{V_{i}}$
+    ein irreduzibler $L$-Modul und die Darstellung von $L$ auf
+    $V_{i-1}/_{V_{i}}$ ist eine Nildarstellung. Nach dem Satz
+    \autoref{satz:37} ist also $\dim V_{i-1}/_{V_{i}}=1$ und $0=a\cdot
+    (v+V_{i})=av+V_{i}$ für alle $a\in L, v\in V_{i-1}$, d.\,h. $a\cdot
+    V_{i-1}\subseteq V_{i}$. Wir wählen eine Basis $b_{1},\dotsc, b_{n}$ von
+    $V$ mit der Eigenschaft, dass $b_{1},\dotsc, b_{i}$ für alle
+    $i=1,\dotsc,n$ eine Basis von $V_{n-i}$ ist. Dann folgt die Behauptung.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Aus der Bemerkung 3.6 \todo{Link einfügen} und \autoref{satz:38} folgt also,
+  dass zu jeder nilpotenten Lie-Algebra und jedem unzerlegbaren $L$-Modul $V$
+  ein Homomorphismus  $\lambda\colon L\rightarrow\C$ und eine Basis von $V$
+  existieren mit der Eigenschaft, dass in der entsprechenden Matrixdarstellung
+  $\Lambda$ von $L$ die Matrix $\Lambda(a)$ für $a\in L$ die folgende Form hat:
+  \begin{gather*}
+    \Lambda(a)= \begin{pmatrix}\lambda(a) & & \\
+		  0 & \ddots & *\\
+		  0 & & \lambda(a)\end{pmatrix}
+  \end{gather*}\todo{Matrix ordentlich machen}
+\end{bemerk}
+
+\begin{defini}
+  Sei $\Delta\colon L\rightarrow \gl(V)$ eine Darstellung einer nilpotenten
+  Lie-Algebra $L$. Für ein $\lambda\in L^{*}=\Hom_{\C}(L,\C)$ heißt
+  $V_{\lambda}\colon=\{v\in V\colon \forall a\in L\, \exists n\in\N\colon
+  (\Delta(a)-\lambda(a)\id_{V})^{n}(v)=0\}$ \highl{Gewichtsraum} von $V$ bzgl.
+  $\lambda$. Im Fall $V_{\lambda}\neq 0$ heißt $\lambda$ \highl{Gewicht} von
+  $V$.
+\end{defini}
+
+\begin{satz}
+  Seien $L$ eine nilpotente Lie-Algebra und $V$ ein $L$-Modul. Für $\lambda\in
+  L^{*}$ ist $V_{\lambda}\subseteq V$ Untermodul und
+  \begin{gather*}
+   V=\oplus_{\lambda\in  L^{*}} V_{\lambda} 
+  \end{gather*}
+  Insbesondere hat $V$ nur endlich viele Gewichte. Ferner
+  ist jedes Gewicht ein Homomorphismus von Lie-Algebren.
+  \begin{proof}
+    Wir schreiben $V=U_{1}\oplus\dotso \oplus U_{k}$ mit unzerlegbaren
+    Untermoduln $U_{1},\dotsc, U_{k}$. Für $i=1,\dotsc,k$ liefert $U_{i}$
+    einen Homomorphismus von Lie-Algebren $\lambda_{i}\colon L\rightarrow\C$
+    wie oben. Wir bezeichnen mit $U(\lambda_{i})$ die Summe aller $U_{j}$ mit
+    $\lambda_{i}=\lambda_{j}$. Dann ist $U(\lambda_{i})\subseteq
+    V_{\lambda_{i}}$ und $V$ ist die direkte Summe der verschiedenen
+    $U(\lambda_{i})$. o.\,B.\,d.\,A. sieht das so aus:
+    $V=U(\lambda_{1})\oplus\dotso \oplus U(\lambda_{l})$ für $l\leq k$.
+
+    Sei $\mu\in L^{*}$ und $v\in V\mu$. Schreiben $v=\sum_{i=1}^{l} v_{i}$ mit
+    $v_{i} \in U(\lambda_{i})$ für $i=1,\dotsc,l$. Im Fall $\mu\neq
+    \lambda_{j}$ wählen wir $a\in L$ mit $\mu(a)\neq \lambda_{j}(a)$. Sei
+    $\Delta$ die darstellung von $L$ auf $V$ und $\Delta_{j}$ die Darstellung
+    von $L$ auf $U(\lambda_{j})$. Dann hat die Matrix von
+    $\Delta_{j}(a)-\mu(a)\id_{U(\lambda_{j})}$ bzgl. einer geeigneten Basis
+    die Form:
+    \begin{gather*}
+      \begin{pmatrix}
+	\lambda_{j}(a)-\mu(a) & & \\
+	0 & \ddots & *\\
+	0 & 0 & \lambda_{j}(a)-\mu(a)
+      \end{pmatrix}
+    \end{gather*}\todo{Matrix schön machen}
+    Diese Matrix ist regulär. Andererseits existiert ein $n\in\N$ mit
+    $0=(\Delta(a)-\mu(a)\id_{V})^{n}(v)=\sum_{i=1}^{l}
+    \underbrace{(\Delta(a)-\mu(a)\id_{V})^{n} (v_{i})}_{\in U(\lambda_{i})}$.
+    Daher ist $0=(\Delta(a)-\mu(a)\id_{V})^{n}(v_{j})= (\Delta_{j}(a)-
+    \mu(a)id_{U(\lambda_{j})})^{n}(v_{j})$, d.\,h. $v_{j}=0$. Daher sind
+    $\lambda_{1},\dotsc,\lambda_{l}$ die einzigen Gewichte und es ist
+    $U(\lambda_{i})=V_{\lambda_{i}}$ für $i=1,\dotsc,l$.
+  \end{proof}
+\end{satz}
+
+
+\chapter{Cartanalgebren}
+
+\begin{defini}
+  Eine \highl{Derivation} einer Lie-Algebra $L$ ist eine lineare Abbildung
+  $\delta\colon L\rightarrow L$ mit $\delta([x,y])=[\delta(x),y]+
+  [x,\delta(y)]$ für alle $x,y\in L$.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+    \item Für $a\in L$ ist $\ad_{a}$ eine Derivation von $L$. Denn für $x,y\in
+    L$ gilt: $\ad_{a}([x,y])= [a,[x,y]]= -[[x,y],a]= [[y,a],x]+ [[a,x],y]=
+    [x,\ad_{a}(y)]+ [\ad_{a}(x),y]$. Man nennt $\ad_{a}$ eine
+    \highl[Derivation!innere]{innere Derivation} von $L$.
+   \item Für Derivationen $\delta, \delta'$ von $L$ und $\alpha\in\C$ sind
+    auch $\delta+\delta', \alpha\delta, [\delta, \delta']$ Derivationen von
+    $L$. Denn für $x,y\in L$ gilt $[\delta, \delta']([x,y])=
+    \delta(\delta'([x,y]))- \delta'(\delta([x,y]))= \delta([\delta'(x), y]+
+    [x,\delta'(y)])- \delta'([\delta(x),y]+ [x,\delta(y)]) =
+    [\delta(\delta'(x)), y]+ [\delta'(x), \delta(y)]+ [\delta(x), \delta'(y)]+
+    [x,\delta(\delta'(y))]- [\delta'(\delta(x)),y]- [\delta(x), \delta'(y)]-
+    [\delta'(x), \delta(y)]- [x,\delta'(\delta(y))]= [[\delta,\delta'](x),y]+
+    [x, [\delta,\delta'](y)]$.
+
+    Daher bilden die Derivationen der Lie-Algebra $L$ eine Unteralgebra
+    $\Der(L)\subseteq \gl(V)$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  Für $a\in L$ und $\delta\in\Der(K)$ ist \[[\delta,\ad_{a}]= \ad_{\delta(a)}\]
+  Denn für alle $x\in L$ gilt $[\delta,\ad_{a}](x)= \delta(\ad_{a}(x))-
+  \ad_{a}(\delta(x))= \delta([a,x])-[a,\delta(x)]= [\delta(a),x]=
+  \ad_{\delta(a)}(x)$.
+
+  Daher bilden die inneren Derivationen von $L$ ein Ideal in $\Der(L)$.
+\end{bemerk}
+
+\begin{satz}
+  Seien $L$ eine Lie-Algebra, $\delta\in\Der(L)$ und $\lambda, \mu\in\C$. Dann
+  ist
+  \begin{gather*}
+    [L_{\lambda}(\delta), L_{\mu}(\delta)]\subseteq L_{\lambda+\mu}(\delta)
+  \end{gather*}
+  Inbesondere ist $L_{0}(\delta)\subseteq L$ eine Unteralgebra.
+  \begin{proof}
+    Seien $x\in L_{\lambda}(\delta), y\in L_{\mu}(\delta)$ und $k,l\in\N_{0}$
+    mit $(\delta-\lambda\id_{L})^{k}(x)=0=(\delta-\mu\id_{L})^{l}(y)$. Wegen
+    $\ad_{\delta}(\ad_{x})=[\delta, \ad_{x}]= \ad_{\delta(x)}$ ist
+    $(\ad_{\delta}- \lambda \id_{\gl(L)})^{i}(\ad_{x})= \ad_{(\delta-
+    \lambda\id_{L})^{i}}(x)$. Nach Satz 3.4\todo{Link einfügen} gilt also:
+    \begin{align*}
+      (\delta- (\lambda+\mu)\id_{L})^{k+l}([x,y])&= \sum_{i=0}^{k+l}
+	 \binom{k+l}{i} ((\ad_{\delta} -\lambda
+	 \id_{\gl(L)})^{i}(\ad_{x})\cdot (\delta -\mu\id_{L})^{k+l-i})(y)\\
+      &=\sum_{i=0}^{k+l} \binom{k+l}{i} (\ad_{(\delta-
+	 \lambda\id_{L})^{i}(x)}\dot (\delta- \mu\id_{L})^{k+l-i})(y)\\
+      &= \sum_{i=0}^{k+l} \binom{k+l}{i} [(\delta- \lambda\id_{L})^{i}(x),
+	 (\delta- \mu\id_{L})^{k+l-i}(y)]=0
+    \end{align*}
+    Denn für $i\geq k$ ist $(\delta- \lambda\id_{L})^{i}(x)=0$ und für $i<k$
+    ist $(\delta-\mu\id_{L})^{k+l-i}(y)=0$.
+  \end{proof}
+\end{satz}
+
+\begin{defini}
+  Für jede Lie-Algebra $L$ und jedes Element $a\in L$ heißt
+  \begin{gather*}
+  L_{0}(\ad_{a})=\{x\in L\colon (\ad_{a})^{n}(x)=0, n\in\N\}    
+  \end{gather*}
+  \highl{Engelalgebra} (oder $a$-Engelalgebra) von $L$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+    \item Wegen $\ad_{a}(a)=[a,a]=0$ ist stets $a\in L_{0}(\ad_{a})$.
+   \item Sei $V$ ein endlich-dimensionaler $\C$-Vektorraum, $\phi\in\gl(V)$
+    und $U\subseteq V$ ein Untervektorraum mit $\phi(U)\subseteq U$. seien
+    $\phi_{U}\in \gl(U)$ die Einschränkung von $\phi$ und $\phi^{U}\colon
+    V_{U}\rightarrow V/_{U}, v+U\mapsto \phi(v)+U$ die von $\phi$ induzierte
+    lineare Abbildung. Für $\lambda\in\C$ ist dann $U_{\lambda}(\phi_{U})=
+    U\cap V_{\lambda}(\phi)$ und $(V/_{U})_{\lambda}(\phi^{U})=
+    V_{\lambda}(\phi) + U/_{U}$. das werden wir im folgenden benutzen.
+  \end{enumerate}
+\end{bemerk}
+
 
 
 \clearpage
