@@ -17,8 +17,8 @@
                    % Befehle oder solche, die man nicht in LaTeX verwenden
                    % soll -- l2tabu-Checker in LaTeX
 
-\documentclass[ngerman,draft,twoside]{scrreprt}
-\KOMAoptions{parskip=half*} % laut Warnung muss die Option so lauten
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
 \usepackage{ifthen}
 \usepackage{makeidx}
 % \usepackage[final]{graphicx}  % Für Grafiken
@@ -69,9 +69,18 @@
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
 % Körpers ist normal und der Kopf wird fett gesetzt
 \theoremstyle{break}
+\theoremnumbering{arabic}
 \theorembodyfont{\normalfont}
 \theoremheaderfont{\normalfont\bfseries}
-\theoremnumbering{arabic}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
 
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
@@ -85,6 +94,7 @@
 \theoremstyle{nonumberbreak}
 \newtheorem{fakt}{Fakt}
 
+% \theoremheaderfont{\global\hasprooftrue\scshape}
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
 % Das Zeichen am Ende eines Beweises
@@ -258,6 +268,16 @@
   \end{proof}
 \end{satz}
 
+Die Umgebung \texttt{proof} sollte immer innerhalb der Umgebung stehen, zu der
+der Beweis gehört. Das hat den Vorteil, dass man Umgebungen ohne Beweis z.\,B.
+mit $\scriptstyle\Box$ enden lassen kann, wärend Umgebungen mit Beweisen
+mit $\scriptstyle\blacksquare$ enden. Dadurch kann man im laufenden Text
+auch das Ende von Sätzen, Bemerkungen und dergleichen erkennen, was sonst
+schwer ist, da die gleiche Schrift sowohl innerhalb als auch außerhalb
+verwendet wird.
+% Man beachte die speziellen Anweisungen bei der theorem-Definition in der
+% Präampel
+
 \begin{bemerk}
   Der ganz tolle und wichtige \autoref{satz:1} ist gar nicht so toll und
   wichtig ist er schon gar nicht.
@@ -265,8 +285,7 @@
 
 \begin{bemerk}[Wichtiger Hinweis]
   Aber merke: Keine \texttt{equation}-Umgebung mehr verwenden.
-  Stattdessen lieber \texttt{gather}. Siehe % \url{news:d9bfko$fdp$1@news.BelWue.DE}
-  \verb+news:d9bfko$fdp$1@news.BelWue.DE+ oder die
+  Stattdessen lieber \texttt{gather}. Siehe \url{news:d9bfko$fdp$1@news.BelWue.DE}
   \href{ftp://cam.ctan.org/tex-archive/macros/latex/contrib/onlyamsmath/onlyamsmath.dvi}
   {Dokumentation von onlyamsmath}
   und einfach mal "`\texttt{texdoc amsldoc}"' aufrufen.
