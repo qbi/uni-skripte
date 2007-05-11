@@ -28,7 +28,11 @@
  Hilfesuche.</li>
 
  <li><a href="http://linuxwiki.de/SubVersion">Eine kleine Beschreibung zu
-   Subversion mit nützlichen Verweisen</li>
+   Subversion mit nützlichen Verweisen</a></li>
+
+ <li>Die Antwort auf "alle" Fragen zur Mathematik:
+   <a href='http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf'>
+     Herbert Voss' Mathmode</a></li>
 </ul>
 
 Die Qualität der folgenden Links kann ich nicht bewerten, da ich sie
@@ -36,9 +40,6 @@ noch nicht gelesen habe, aber ich hab sie auch irgendwo als Empfehlung
 aufgeschnappt:
 <ul><li><a href='http://www.wiwiss.fu-berlin.de/w3/w3iso/download/Latex_Fortgeschritten_Manuela_Juergens.pdf'>
 LaTeX - Fortgeschrittene Anwendungen</a></li>
-
-<li><a href='http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf'>
-Mathmode</a></li>
 </ul>
 
 ...und noch etwas Werbung für die Konkurrenz
