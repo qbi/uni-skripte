@@ -23,7 +23,7 @@
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
 
-\documentclass[halfparskip*,ngerman,draft,twoside]{scrreprt}
+\documentclass[ngerman,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
 \usepackage{makeidx}
@@ -288,7 +288,6 @@
 \clearpage
 \chapter*{Vorwort}
 
-% entspricht Vorlage: 426
 {\itshape
   Dieses Dokument wurde als Skript für die auf der
   Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
@@ -349,8 +348,9 @@
 
 \clearpage
 \pdfbookmark[0]{Literaturverzeichnis}{literaturverzeichnis}
-\begin{thebibliography}{99}
- \bibitem{Mendelson} Elliott Mendelson: Introduction to mathematical logic
+\begin{thebibliography}{9}
+ \bibitem{Mendelson} Elliott Mendelson: Introduction to mathematical logic,
+  4.~Auflage (1997), Chapman~\& Hall/CRC
  \bibitem{Boolos-Jeffrey} George S.\,Boolos, Richard C.\,Jeffrey: Computability and logic
  \bibitem{Nerode-Shore} Anil Nerode, Richard A.\,Shore: Logic for applications
  \bibitem{Fitting} Melvin Fitting: First-order logic and automated theorem proving
@@ -360,11 +360,11 @@
 
 \addchap{Vorbemerkung}
 
-Diese Vorlesung bietet eine Einführung in die Mathematische Logik.
+Diese Vorlesung bietet eine Einführung in die mathematische Logik.
 
-Logik stellt eine (formale) Sprache zur Verfügung, 
+Logik stellt eine (formale) Sprache zur Verfügung,
 in der Aussagen gemacht werden können,
-und einen \glqq Mechanismus\grqq, mit dem
+und einen \glqq{}Mechanismus\grqq{}, mit dem
 Aussagen bewiesen werden können.
 Die beweisbaren Aussagen heißen Theoreme,
 und die Logik soll garantieren, dass die
@@ -381,19 +381,19 @@ ein inhaltlicher -- semantischer -- Begriff,
 der aus unserer Vorstellung von Wahrheit stammt
 (und trotzdem formal definiert sein kann).
 Ziel ist stets, zu untersuchen, ob diese beiden
-Begriffswelten übereinstimmen (\glqq Vollständigkeit und Korrektheit\grqq).
+Begriffswelten übereinstimmen (\glqq{}Vollständigkeit und Korrektheit\grqq{}).
 
 Wir werden Aussagenlogik, Prädikatenlogik
 und Formale Zahlentheorie als grundlegende Logiken betrachten.
-Während die Ausdrucksmöglichkeiten der 
+Während die Ausdrucksmöglichkeiten der
 Sprachen von Aussagenlogik und Prädikatenlogik
 eher auf die rein logischen Dinge (was immer das heißen soll)
 beschränkt ist, kann man in der Formalen Zahlentheorie
 schon schöne Aussagen wie z.\,B.
-\glqq Es gibt unendlich viele Primzahlen.\grqq\xspace oder
-\glqq Es gibt unendlich viele Primzahlzwillinge\footnote{Ein
+\glqq{}Es gibt unendlich viele Primzahlen.\grqq{} oder
+\glqq{}Es gibt unendlich viele Primzahlzwillinge\footnote{Ein
 Primzahlzwilling ist ein Paar von Primzahlen mit Differenz $2$,
-z.\,B. $17$ und $19$.}.\grqq\xspace machen.
+z.\,B. $17$ und $19$.}.\grqq{} machen.
 Während wir wissen, dass die erste Aussage wahr ist,
 wissen wir nichts genaues über die zweite Aussage.
 Wir können sie nicht beweisen, und wir können ihr
@@ -410,7 +410,7 @@ und Schlussregeln gibt (die bestimmte vernünftige Anforderungen erfüllen),
 mit denen alle wahren Aussagen der Zahlentheorie
 formal bewiesen werden können.
 Es gibt also wahre Aussagen
-(\glqq Es gibt unendlich viele Primzahlzwillinge.\grqq\xspace
+(\glqq{}Es gibt unendlich viele Primzahlzwillinge.\grqq{}
  könnte eine solche sein (was aber nicht wirklich geglaubt wird)),
 die man nicht formal beweisen kann.
 Wir werden eine solche Aussage am Ende der Vorlesung sehen.
@@ -427,8 +427,8 @@ Aufgrund von Zeitmangel werden dazu nicht alle Zwischenschritte bewiesen.
 Aber man erhält einen guten Einblick in die Materie.
 
 Die Vorlesung richtet sich hauptsächlich nach dem Buch
-\glqq Introduction to mathematical logic\grqq\xspace
-von Elliott Mendelson (4.~Auflage (1997), Chapman \& Hall/CRC).
+\glqq{}Introduction to mathematical logic\grqq{}
+von Elliott Mendelson\cite{Mendelson}.
 Die Vorlesung bei Prof.\,V.\,S.\,Cherniavsky an der TU~Braunschweig
 im Jahre 1983 nach einer früheren Auflage dieses Werkes ist
 mir unvergesslich geblieben.
@@ -438,31 +438,32 @@ Auch wenn dieses Skript mal fertiggestellt sein sollte,
 kann ich nur empfehlen: Lest das Buch von Mendelson!!
 \vspace{2ex}
 
-\null\hfill Martin Mundhenk
-
+\begin{flushright}
+  Martin Mundhenk
+\end{flushright}
 
 
 \chapter{Aussagenlogik}
 
-Aussagenlogik beschäftigt sich mit Aussagen 
-(\glqq Die Straße ist nass.\grqq, \glqq Es regnet.\grqq)
+Aussagenlogik beschäftigt sich mit Aussagen
+(\glqq{}Die Straße ist nass.\grqq{}, \glqq{}Es regnet.\grqq{})
 und deren Verknüpfung zu komplexeren Aussagen
-(\glqq Wenn es regnet, dann ist die Straße nass.\grqq,
-\glqq Es regnet nicht und die Straße ist nass.\grqq).
+(\glqq{}Wenn es regnet, dann ist die Straße nass.\grqq{},
+\glqq{}Es regnet nicht und die Straße ist nass.\grqq{}).
 Durch Verknüpfungen können Aussagen entstehen,
-die inhärent wahr sind (Tautologien)
-(\glqq Die Straße ist nass oder die Straße ist nicht nass.\grqq,
- \glqq Wenn die Aussage
+die inhärent wahr sind, sogenannte Tautologien
+(\glqq{}Die Straße ist nass oder die Straße ist nicht nass.\grqq{},
+ \glqq{}Wenn die Aussage
       \glq Wenn es regnet, dann ist die Straße nass.\grq\xspace
-       wahr ist und die Straße nicht nass ist, dann regnet es nicht.\grqq).
+       wahr ist und die Straße nicht nass ist, dann regnet es nicht.\grqq{}).
 Sie machen z.\,B. Aussagen über das korrekte Schlussfolgern.
 Nun möchte man z.\,B. gerne wissen, ob eine Schlussfolgerung korrekt ist.
 Das heißt, man will wissen, ob eine Aussagenverknüpfung eine Tautologie ist.
 Dazu gibt es verschiedene Ansätze.
-Der semantische Ansatz basiert auf dem Begriff Wahrheit.
-(In der Aussagenlogik ist der Wahrheits-Begriff noch handhabbar,
- in der Prädikatenlogik nicht mehr.)
-Der syntaktische Ansatz basiert auf der Struktur der Aussagenverknüpfungen.
+Der semantische Ansatz basiert auf dem Begriff Wahrheit\footnote{In der
+Aussagenlogik ist der Wahrheits-Begriff noch handhabbar, in der
+Prädikatenlogik nicht mehr.}, wärend der syntaktische Ansatz auf der Struktur
+der Aussagenverknüpfungen basiert.
 Wir werden hier verschiedene syntaktische Ansätze (Theorien)
 kennenlernen.
 Während der semantische Ansatz durch den Wahrheits-Begriff klar definiert ist,
@@ -512,14 +513,14 @@ Beispiele für Aussagen:
 \end{itemize}
 
 \textit{Vorsicht:} Umgangssprachlich versteht man unter "`oder"' oft ein
-"`entweder \ldots oder"' (genau eine der beiden Aussagen ist wahr).
+"`entweder \ldots{} oder"' (genau eine der beiden Aussagen ist wahr).
 Logisch betrachtet ist die Disjunktion zweier Aussagen wahr,
 wenn mindestens eine der beiden Aussagen wahr ist.
 Eine Disjunktion ist also auch wahr, wenn beide Aussagen wahr sind.
 
 \emph{Implikation} zweier Aussagen:
 \begin{itemize}
- \item \emph[indexrand=wenn \ldots dann]{Wenn
+ \item \emph[indexrand=wenn \ldots{} dann]{Wenn
   \textnormal{die Straße nass ist,} dann} liegt Hamburg in
   Thüringen.
   (wahre Aussage)
@@ -533,18 +534,18 @@ Eine Disjunktion ist also auch wahr, wenn beide Aussagen wahr sind.
 \end{itemize}
 
 Für die formale Beschreibung von Aussagen verwendet man \emph{Variablen}
-bzw. Aussagezeichen wie $A_{0}, A_{1}, A_{2}, \ldots, B_{0}, B_{1},
-B_{2},\ldots$ und für Verknüpfungen setzt man Symbole: $\neg$
+bzw. Aussagezeichen wie $A_{0}, A_{1}, A_{2}, \dotsc, B_{0}, B_{1},
+B_{2},\dotsc$ und für Verknüpfungen setzt man Symbole: $\neg$
 (Negation), $\wedge$ (Konjunktion), $\vee$ (Disjunktion), $\rightarrow$
 (Implikation), $\leftrightarrow$ (Äquivalenz).
 
 \begin{defini}[Aussagenlogische Formel]
   Aussagenlogische Formeln sind wie folgt definiert:
   \begin{enumerate}
-   \item Jede Variable $A_{0}, A_{1}, A_{2}, \ldots,B_{0}, B_{1}, B_{2},
-    \ldots$ ist eine aussagenlogische Formel.
+   \item Jede Variable $A_{0}, A_{1}, A_{2}, \dotsc,B_{0}, B_{1}, B_{2},
+    \dotsc$ ist eine aussagenlogische Formel.
    \item Wenn $\alpha$ und $\beta$ aussagenlogische Formeln sind, dann
-    sind auch die fünf daraus entstehenden Verknüpfungen 
+    sind auch die fünf daraus entstehenden Verknüpfungen
     \begin{gather*}
       (\neg \alpha), \quad (\alpha\wedge\beta), \quad(\alpha\vee\beta),
          \quad (\alpha\rightarrow\beta), \quad (\alpha\leftrightarrow\beta)
@@ -577,8 +578,8 @@ B_{2},\ldots$ und für Verknüpfungen setzt man Symbole: $\neg$
   Die Formel $\neg A \rightarrow B \vee C$
   bedeutet also $((\neg A) \rightarrow (B \vee C))$.
 
-  Jetzt können unnötige Klammern weggelassen werden. 
-  Zur Vereinfachung der Schreibweise können auch $A,B,C,\ldots$
+  Jetzt können unnötige Klammern weggelassen werden.
+  Zur Vereinfachung der Schreibweise können auch $A,B,C,\dotsc$
   als Variablen genommen werden.
 \end{bemerk}
 
@@ -619,7 +620,7 @@ Verknüpfungsbaum für die obige Formel in \autoref{fig:verknbaum1} abgebildet.
 \begin{table}[ht]
   \begin{tabular}{ccc*{5}{|c}}
     $A$ & $B$ & $C$ & $A\wedge B$ & $B\vee C$ & $A\rightarrow(B\vee C)$ &
-       $\neg(A\rightarrow(B\vee C))$ & $\ldots \leftrightarrow \ldots$\\
+       $\neg(A\rightarrow(B\vee C))$ & $\dotso \leftrightarrow \dotso$\\
     \hline
     $f$ & $f$ & $f$ & $f$ & $f$ & $w$ & $f$ & $w$\\
     $f$ & $f$ & $w$ & $f$ & $w$ & $w$ & $f$ & $w$\\
@@ -644,13 +645,13 @@ Verknüpfungsbaum für die obige Formel in \autoref{fig:verknbaum1} abgebildet.
   \label{fig:verknbaum1}
 \end{figure}
 
-Die Zuordnung von Wahrheitswerten zu Variablen nennt man \emph{Belegung}. 
-Die Belegung ist eine Abbildung von Variablen auf Wahrheitswerte. 
+Die Zuordnung von Wahrheitswerten zu Variablen nennt man \emph{Belegung}.
+Die Belegung ist eine Abbildung von Variablen auf Wahrheitswerte.
 Wir beschreiben eine Belegung durch eine Menge
 \begin{gather*}
-  \mathcal{A} \subseteq \{ A_{0}, A_{1}, A_{2}, \ldots,B_{0}, B_{1},
-     B_{2}, \ldots \} \cup \{ \neg A_{0}, \neg A_{1}, \neg A_{2}, \ldots,
-     \neg B_{0}, \neg B_{1}, \neg B_{2}, \ldots \}
+  \mathcal{A} \subseteq \{ A_{0}, A_{1}, A_{2}, \dotsc,B_{0}, B_{1},
+     B_{2}, \dotsc \} \cup \{ \neg A_{0}, \neg A_{1}, \neg A_{2}, \dotsc,
+     \neg B_{0}, \neg B_{1}, \neg B_{2}, \dotsc \}
 \end{gather*}
 mit $\{A_{i}, \neg A_{i}\}\nsubseteq \mathcal{A}$ und $\{B_{i}, \neg
 B_{i}\}\nsubseteq \mathcal{A}$ für alle $i$.
@@ -843,9 +844,9 @@ ausdrücken.
 
 \begin{proof}
   Das Lemma hat die logische Struktur $(C\wedge D)\rightarrow E$,
-  wobei $C$ für \glqq $\alpha$ ist eine Tautologie\grqq,
-  $D$ für  \glqq $\alpha\rightarrow\beta$ ist eine Tautologie\grqq\xspace
-  und  $E$ für \glqq $\beta$ ist eine Tautologie\grqq\xspace steht.
+  wobei $C$ für \glqq{}$\alpha$ ist eine Tautologie\grqq{},
+  $D$ für  \glqq{}$\alpha\rightarrow\beta$ ist eine Tautologie\grqq{}
+  und  $E$ für \glqq{}$\beta$ ist eine Tautologie\grqq{} steht.
   Es gilt $(C\wedge D)\rightarrow E \equiv (C\wedge \neg E)\rightarrow \neg D$,
   und wir zeigen letztere Aussage.
 
@@ -862,7 +863,7 @@ ausdrücken.
 Jede Formel mit $k$ Variablen beschreibt
 lässt sich durch eine Wahrheitstafel mit $k+1$ Spalten beschreiben:
 die ersten $k$ Spalten enthalten die möglichen Wahrheitswerte
-der Variablen, und die letzte Spalte enthält den Wahrheiswert 
+der Variablen, und die letzte Spalte enthält den Wahrheiswert
 der Formel unter der durch die ersten $k$ Spalten festgelegten Belegung
 (siehe \autoref{tab:wahrheitstafel}).
 \begin{table}
@@ -905,7 +906,7 @@ die genau durch die in der Zeile angegebene Belegung wahr wird.
     $w$ & $w$ & $f$ & $w$ & $\star$ & $     A_1 \wedge      A_2 \wedge \neg A_3$ \\
   \end{tabular}
 
-}  
+}
 
 Diese Konjunktionen verknüpft man mittels Disjunktion.
 \begin{gather*}
@@ -913,8 +914,8 @@ Diese Konjunktionen verknüpft man mittels Disjunktion.
      A_{2} \wedge \neg A_{3}) \vee (A_{1} \wedge \neg A_{2}\wedge \neg
      A_{3}) \vee (A_{1}\wedge A_{2} \wedge \neg A_{3})
 \end{gather*}
-Die erhaltene Formel $\varphi$ ist 
-in \emph[index=disjunktive Normalform]{disjunktiver Normalform} 
+Die erhaltene Formel $\varphi$ ist
+in \emph[index=disjunktive Normalform]{disjunktiver Normalform}
 (\emph[index=]{DNF})\index{DNF|see{disjunktive Normalform}},
 da sie eine Disjunktion von Konjunktionen von Literalen ist.
 
@@ -948,7 +949,7 @@ verzichten.
 
     \begin{mdescription}
      \item[IA:] $\alpha$ ist eine Variable $A$.
-                Dann enthält $\alpha$ garkeine Verknüpfungszeichen.
+                Dann enthält $\alpha$ gar keine Verknüpfungszeichen.
 
      \item[IV:] Für beliebige Formeln $\beta$ und $\gamma$ gibt es
       äquivalente Formeln $\beta' \equiv \beta$ und
@@ -1023,7 +1024,7 @@ Die folgenden Mengen von Verknüpfungszeichen sind adäquat.
   gerade Anzahl an Einträgen $w$ und eine gerade Anzahl an Einträgen $f$ hat
   (unabhängig davon, ob das Ergebnis nochmal negiert wird),
   kann man keine Formel aufstellen, die eine ungerade Anzahl an Einträgen $w$ hat
-  (wie z.\,B.\,eine zu $A\wedge B$ äquivalente Formel).
+  (wie z.\,B. eine zu $A\wedge B$ äquivalente Formel).
 
   Formeln, die nur Konjunktion und Disjunktion als Verknüpfungszeichen enthalten,
   nennt man \emph{monotone Formeln}.
@@ -1100,10 +1101,10 @@ von Verknüpfungszeichen.
 
 \begin{proof}
 Es reicht aus, zu zeigen, dass das jeweilige Verknüpfungszeichen
-alle Verknüpfungszeichen einer anderen adäquaten Menge \glqq simulieren\grqq\xspace
+alle Verknüpfungszeichen einer anderen adäquaten Menge \glqq{}simulieren\grqq{}
 kann.
 Es gilt $\neg A \equiv A \downarrow A \equiv A \uparrow A$,
-und 
+und
 \begin{align*}
   A\wedge B &\equiv \neg\neg(A\wedge B)\\
   &\equiv \neg(\neg A\vee \neg B)\\
@@ -1113,13 +1114,13 @@ und
 Da $\{\neg,\wedge\}$ adäquat ist,
 ist $\{\downarrow\}$ ebenfalls adäquat.
 
-Mit 
+Mit
 \begin{align*}
  A\downarrow B & \equiv \neg(A\vee B) \\
              & \equiv \neg\neg(\neg A\wedge\neg B) \\
              & \equiv \neg\neg((A\uparrow A) \wedge (B\uparrow B)) \\
              & \equiv \neg ((A\uparrow A) \uparrow (B\uparrow B)) \\
-             & \equiv ((A\uparrow A) \uparrow (B\uparrow B)) \uparrow 
+             & \equiv ((A\uparrow A) \uparrow (B\uparrow B)) \uparrow
                      ((A\uparrow A) \uparrow (B\uparrow B))
 \end{align*}
 folgt, dass $\{\uparrow\}$ ebenfalls adäquat ist.
@@ -1138,8 +1139,8 @@ ist eine Obermenge der fünf genannten adäquaten Mengen.
 
 
 Mathematiker beweisen wahre mathematische Aussagen.
-Die \glqq grundlegenden\grqq\xspace Wahrheiten sind
-die Tautologien. 
+Die \glqq{}grundlegenden\grqq{} Wahrheiten sind
+die Tautologien.
 Ein Beweis für eine Tautologie $\alpha$ ist etwas,
 was jeden davon überzeugt, dass $\alpha$ eine Tautologie ist.
 Zum Beispiel kann eine Wahrheitstafel, in der in der rechten
@@ -1159,9 +1160,9 @@ Betrachten wir dazu einen Beweis der folgenden Behauptung.
  \item[Beweis:] Sei $n$ eine natürliche Zahl.
      und $n$ sei ungerade.
 
-  Weil $n$ ungerade ist, hat $n$ nicht den Primfaktor $2$. 
-  $n^{2}$ hat die gleichen Primfaktoren wie $n$. 
-  Folglich hat $n^{2}$ nicht den Primfaktor 2. 
+  Weil $n$ ungerade ist, hat $n$ nicht den Primfaktor $2$.
+  $n^{2}$ hat die gleichen Primfaktoren wie $n$.
+  Folglich hat $n^{2}$ nicht den Primfaktor 2.
   Also ist $n^{2}$ nicht gerade.
 \end{mdescription}
 
@@ -1173,22 +1174,22 @@ auf, wie die einzelnen Beweisschritte zustande kommen.
   $n$ ist eine ungerade Zahl & Hypothese & $A$ \\
   $n$ ist ungerade $\leftrightarrow$ $n$ hat nicht
   Primfaktor $2$ & Definition & $A\leftrightarrow B$ \\
-  $n$ hat nicht Primfaktor $2$ 
+  $n$ hat nicht Primfaktor $2$
    $\rightarrow$ $n^{2}$ hat nicht Primfaktor $2$ & wahre Aussage & $B\rightarrow C$ \\
   $n^{2}$ hat nicht Primfaktor $2$ $\leftrightarrow$ $n^{2}$ ist ungerade &
          Definition & $C\leftrightarrow D$ \\
-  $n^{2}$ ist ungerade & Folgerung & $D$ 
+  $n^{2}$ ist ungerade & Folgerung & $D$
 \end{tabular}
 
-Zuerst wird die Hypothese $A$ als wahr angenommen. 
-Im nächsten Schritt wird die Definition von \glqq ungerade Zahl\grqq\xspace
+Zuerst wird die Hypothese $A$ als wahr angenommen.
+Im nächsten Schritt wird die Definition von \glqq{}ungerade Zahl\grqq{}
 auf die Zahl $n$ angewendet.
-Im darauffolgenden Beweisschritt zeigt man, 
+Im darauffolgenden Beweisschritt zeigt man,
 dass die Aussage $B\rightarrow C$ wahr ist.
-Danach wendet man wieder die Definition \glqq ungerade Zahl\grqq\xspace an,
+Danach wendet man wieder die Definition \glqq{}ungerade Zahl\grqq{} an,
 aber diesmal auf die Zahl $n^2$.
 Im abschließenden Schritt folgert man daraus $D$.
-Insgesamt wird 
+Insgesamt wird
 $(A\wedge (A\leftrightarrow B) \wedge (B\rightarrow C)
  \wedge (C\leftrightarrow D)) \rightarrow D$ bewiesen.
 Das ist in der Tat eine Tautologie.
@@ -1222,20 +1223,20 @@ Die Art der Schlussfolgerungen wird durch die Ableitungsregeln festgelegt.
 \end{defini}
 
 Die Formelmenge $\mathcal{F}$ bezeichnet man auch als \textit{Sprache}
-der Theorie. 
+der Theorie.
 Jede Formel in $\mathcal{F}$ wird auch als \textit{Formel in der Theorie} bezeichnet.
 Theoreme einer Theorie sind die Formeln, die man beweisen kann.
 
 \begin{defini}[Beweis und Theorem]
   Ein \emph{Beweis} in einer Theorie $\mathcal{S}$ ist eine Folge
-  $\alpha_1, \alpha_2, \ldots, \alpha_k$ von Formeln von $\mathcal{S}$, so
-  dass für $\alpha_{i}$ ($i=1,2,\ldots, n$) gilt:
+  $\alpha_1, \alpha_2, \dotsc, \alpha_k$ von Formeln von $\mathcal{S}$, so
+  dass für $\alpha_{i}$ ($i=1,2,\dotsc, n$) gilt:
   \begin{enumerate}
    \item $\alpha_{i}$ ist ein Axiom von $\mathcal{S}$ oder
    \item $\alpha_{i}$ ist aus vorhergehenden $\alpha_j$ mit einer Ableitungsregel von
-    $\mathcal{S}$ ableitbar, d.\,h. $R(\alpha_{j_1},\alpha_{j_2},\ldots,
+    $\mathcal{S}$ ableitbar, d.\,h. $R(\alpha_{j_1},\alpha_{j_2},\dotsc,
     \alpha_{j_m},\alpha_i)$ für eine Ableitungsregel $R$ von $\mathcal{S}$
-    und $j_1,j_2,\ldots,j_m < i$.
+    und $j_1,j_2,\dotsc,j_m < i$.
   \end{enumerate}
 
   Ein \emph{Theorem} von $\mathcal{S}$ ist eine Formel, die am Ende eines
@@ -1264,12 +1265,12 @@ Auch dieser Begriff wird formal erfasst.
        $\alpha$ ist Theorem von $\mathcal{S}$
   \end{tabular}
 
-  Falls $\Gamma=\{\beta_1,\ldots,\beta_k\}$ eine endliche Menge ist,
+  Falls $\Gamma=\{\beta_1,\dotsc,\beta_k\}$ eine endliche Menge ist,
   schreibt man
 
   \begin{tabular}{rcl}
-    $\beta_1,\ldots,\beta_k \xvdash[\mathcal{S}]{} \alpha$ & anstelle von &
-       $\{ \beta_1,\ldots,\beta_k \} \xvdash[\mathcal{S}]{} \alpha$ \\
+    $\beta_1,\dotsc,\beta_k \xvdash[\mathcal{S}]{} \alpha$ & anstelle von &
+       $\{ \beta_1,\dotsc,\beta_k \} \xvdash[\mathcal{S}]{} \alpha$ \\
     $\Gamma, \beta \xvdash[\mathcal{S}]{} \alpha$ & anstelle von & $\Gamma
        \cup \beta \xvdash[\mathcal{S}]{} \alpha$ \\
   \end{tabular}
@@ -1297,9 +1298,9 @@ Das liegt daran, dass es nicht einfach ist, von einer Formel
 festzustellen, ob sie ein Axiom ist -- also eine Tautologie.
 Die Grundidee ist, dass das Verifizieren von Beweisen einfach sein muss.
 Es soll also einfach sein, von einer Formel festzustellen, ob sie
-ein Axiom ist, und es soll einfach festzustellen sein, 
+ein Axiom ist, und es soll einfach festzustellen sein,
 ob eine Formel mittels einer Ableitungsregel aus anderen Formeln entsteht.
-Diese \glqq Einfachheit\grqq\xspace steckt zwar nicht in der Definition
+Diese \glqq{}Einfachheit\grqq{} steckt zwar nicht in der Definition
 einer formalen Theorie (man kann ihn dort aber auch konkret unterbringen),
 ist aber die Intention der Schöpfer des Begriffes.
 
@@ -1363,12 +1364,12 @@ Alle Axiome von $\mathrm{L}$ sind Tautologien.
 Betrachte ein Axiom $\gamma=\alpha\rightarrow(\beta\rightarrow \alpha)$
 entsprechend (A1).
 Sei $\cA$ eine passende Belegung.
-Dann gilt $\cA(\gamma)=w$ genau dann, wenn 
+Dann gilt $\cA(\gamma)=w$ genau dann, wenn
 $\cA(\alpha)=f$ oder $\cA(\beta)=f$ oder $\cA(\alpha)=w$.
 Da $\cA(\alpha)$ einen der beiden Werte $w$ und $f$ annimmt,
 ist diese Aussage wahr.
-Also gilt $\cA(\gamma)=w$ für jede passende Belegung.
-D.\,h. $\gamma$ ist eine Tautologie.
+Also gilt $\cA(\gamma)=w$ für jede passende Belegung und damit ist $\gamma$
+  eine Tautologie.
 
 Die Beweise für die anderen Axiome(nschemata) gehen entsprechend.
 \end{proof}
@@ -1385,7 +1386,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
 
 \begin{bsp}[Ein Beweis für $B\rightarrow B$ in $\mathbf{\mathrm{L}}$]
   \label{bsp:1}
-  Wir konstruieren eine Folge $\alpha_1,\ldots,\alpha_5$ wie folgt:
+  Wir konstruieren eine Folge $\alpha_1,\dotsc,\alpha_5$ wie folgt:
   \begin{align*}
     \alpha_1 &= B\rightarrow(B\rightarrow B)
        &\text{A1}\\
@@ -1399,7 +1400,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
     \alpha_5 &= B\rightarrow B
        &\text{MP auf $\alpha_1$, $\alpha_4$}
   \end{align*}
-  Die Folge $\alpha_1,\ldots,\alpha_5$ ist ein Beweis von $\mathrm{L}$,
+  Die Folge $\alpha_1,\dotsc,\alpha_5$ ist ein Beweis von $\mathrm{L}$,
   da $\alpha_1$, $\alpha_2$ und $\alpha_3$ Axiome sind,
   $\alpha_4$ mittels modus ponens aus $\alpha_2$ und $\alpha_3$
   ensteht (es gilt $MP(\alpha_2,\alpha_3,\alpha_4)$) und
@@ -1408,7 +1409,7 @@ $\alpha\rightarrow\gamma$ wahr ist, dann muss auch $\gamma$ wahr sein.
   Also ist $B\rightarrow B$ ein Theorem von $\mathrm{L}$.
 \end{bsp}
 
-Der Beweis $\alpha_{1},\ldots,\alpha_{5}$ ist ohne Einschränkungen bzgl.
+Der Beweis $\alpha_{1},\dotsc,\alpha_{5}$ ist ohne Einschränkungen bzgl.
 $B$ geführt worden.
 Deshalb kann man ihn statt für $B$ auch für jede beliebige Formel $\beta$ führen.
 
@@ -1489,7 +1490,7 @@ dass die Theoreme von $\mathrm{L}$ genau die Tautologien sind.
 Die eine Beweisrichtung ist relativ einfach:
 jedes Theorem ist eine Tautologie.
 Diese Eigenschaft von $\mathrm{L}$ heißt \emph{Korrektheit}.
-Man kann nichts \glqq falsches\grqq\xspace -- was keine Tautologie ist --
+Man kann nichts \glqq{}falsches\grqq{} -- was keine Tautologie ist --
 beweisen.
 
 \begin{satz}[Korrektheit von $\mathrm{L}$]\label{satz:1}
@@ -1502,7 +1503,7 @@ beweisen.
 
     \begin{mdescription}
      \item[IA:] Sei $k=1$, d.\,h. $\beta$ ist ein Axiom. Alle Axiome sind
-      Tautologien (\autoref{lemma-axiome-tautologien}), 
+      Tautologien (\autoref{lemma-axiome-tautologien}),
       also ist $\beta$ auch eine Tautologie.
 
      \item[IV:] Jedes Theorem von $\mathrm{L}$, dessen Beweis Länge
@@ -1537,7 +1538,7 @@ Letztlich ist die Folgerung nichts anderes als eine Implikation
 (informell gesprochen).
 Die Aussage des folgenden Deduktionstheorems (für einen einfachen Fall) lautet:
 \begin{quote}
-wenn man $\beta$ aus der Hypothese $\alpha$ folgern kann ($\alpha \vdash \beta$), 
+wenn man $\beta$ aus der Hypothese $\alpha$ folgern kann ($\alpha \vdash \beta$),
 dann ist $\alpha\rightarrow\beta$ beweisbar ($\vdash\alpha\rightarrow\beta$).
 \end{quote}
 Mit Benutzung des Deduktionstheorems kann also $\vdash B\rightarrow B$ sehr schnell
@@ -1555,14 +1556,14 @@ Der Sinn des Deduktionstheorems ist seine Benutzung zur Vereinfachung von Beweis
 
   \begin{proof}
     \begin{mdescription}
-     \item[\glqq$\Leftarrow$\grqq] Es gelte $\Gamma \Lvdash
+     \item[\glqq$\Leftarrow$\grqq{}] Es gelte $\Gamma \Lvdash
       \alpha\rightarrow\beta$. Nimmt man zusätzlich $\alpha$ zur Menge
       $\Gamma$ hinzu, gilt $\Gamma, \alpha \Lvdash \alpha$
       und $\Gamma, \alpha \Lvdash \alpha\rightarrow\beta$.
       Daraus kann man mittels Anwendung von modus ponens: $\Gamma,\alpha
       \Lvdash \beta$ zeigen.
 
-     \item[\glqq$\Rightarrow$\grqq] Es gelte $\Gamma, \alpha \Lvdash \beta$.
+     \item[\glqq$\Rightarrow$\grqq{}] Es gelte $\Gamma, \alpha \Lvdash \beta$.
 
       Wir führen eine Induktion über die Länge $k$ des Beweises von
       $\beta$ aus $\Gamma,\alpha$.
@@ -1597,7 +1598,7 @@ Der Sinn des Deduktionstheorems ist seine Benutzung zur Vereinfachung von Beweis
        \item[IS:] Der Beweis von $\Gamma, \alpha \Lvdash \beta$
         habe die Länge $n+1$ und die Formeln
         \begin{gather*}
-          \alpha_{1}, \ldots,\alpha_{i},\ldots,\alpha_{j},\ldots,
+          \alpha_{1}, \dotsc,\alpha_{i},\dotsc,\alpha_{j},\dotsc,
              \alpha_{n+1} = \beta
         \end{gather*}
 
@@ -1631,7 +1632,7 @@ Im Beweis des folgenden Lemmas werden wir das Deduktionstheorem benutzen.
   $\alpha\rightarrow(\beta \rightarrow\gamma), \beta \Lvdash
   \alpha\rightarrow\gamma$
 \begin{proof}
-  Wir beweisen zuerst 
+  Wir beweisen zuerst
      $\alpha \rightarrow (\beta\rightarrow\gamma), \beta,\alpha \Lvdash \gamma$.
   \begin{align*}
     (1)\quad &\alpha \rightarrow(\beta\rightarrow\gamma)&\text{Hypothese}\\
@@ -1752,7 +1753,7 @@ Folgt mit dem Deduktionstheorem aus \autoref{lem:01}.
   und keine Zahlen als Bezeichnung der Schritte), da ein Beweis in der
   Theorie~$\mathrm{L}$ eine Folge von Formeln ist, in denen jedoch nicht
   das Zeichen $\vdash$ vorkommen darf. Jede Zeile mit einem $\vdash$ steht
-  eigentlich als Abkürzung für einen korrekten formalen Beweis \ldots
+  eigentlich als Abkürzung für einen korrekten formalen Beweis \ldots{}
 
   Uns soll dies hier jedoch genügen, da damit der Beweis skizziert ist.
   Der formale Beweis ist einfach nur länger.
@@ -1807,8 +1808,8 @@ Nocheinmal als Zusammenfassung alle gezeigten Theoreme:
 
 \subsection{Vollständigkeit von \texorpdfstring{$\mathrm{L}$}{L}}
 
-\glqq Vollständigkeit von $\mathrm{L}$\grqq\xspace bedeutet, dass jede
-Tautologie ein Theorem von $\mathrm{L}$ ist. 
+\glqq{}Vollständigkeit von $\mathrm{L}$\grqq{} bedeutet, dass jede
+Tautologie ein Theorem von $\mathrm{L}$ ist.
 
 Im ersten Schritt (\autoref{satz:2}) werden wir zeigen, dass
 aus einer Belegung -- das ist ja eine Menge von Literalen -- $\cA$,
@@ -1845,7 +1846,7 @@ bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
     Sei $\phi_{\mathcal{A}} = \begin{cases} \phi & \mathcal{A}(\phi)=w\\
     \neg\phi & \mathcal{A}(\phi)=f\end{cases}$
 
-    Wir müssen $\cA\Lvdash \varphi_{\cA}$ zeigen und 
+    Wir müssen $\cA\Lvdash \varphi_{\cA}$ zeigen und
     machen das mittels Induktion über den Formelaufbau.
 
     \begin{mdescription}
@@ -1867,7 +1868,7 @@ bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
       \begin{itemize}
        \item $\phi=\neg\alpha$
         \begin{faelle}
-         \item $\mathcal{A}(\phi)=w$ d.\,h. $\mathcal{A}(\alpha)=f$. 
+         \item $\mathcal{A}(\phi)=w$ d.\,h. $\mathcal{A}(\alpha)=f$.
 
           Nach IV gilt $\mathcal{A} \Lvdash
           \alpha_{\mathcal{A}} = \neg\alpha =\phi_{\mathcal{A}}$, d.\,h.
@@ -1942,31 +1943,27 @@ wie der aus einer Belegung konstruierte Beweis aussieht.
   Wir betrachten die Formel
   $\phi = A\rightarrow \neg(\neg A\rightarrow B)$
   und die Belegung $\mathcal{A}=\{A, \neg B\}$.
-  Da $\cA(\phi)=f$ ist 
+  Da $\cA(\phi)=f$ ist
   $\phi_{\mathcal{A}} = \neg(A\rightarrow \neg(\neg A\rightarrow B))$.
   Der Beweis für $\cA\Lvdash \varphi_{\cA}$ wird induktiv aus dem
   Formelaufbau von $\varphi$ konstruiert.
 
   Der induktive Aufbau der Formel,
   die sich aus den Teilen ergebenden beweisbaren Folgerungen
-  und der Aufbau des Beweises 
+  und der Aufbau des Beweises
   sind graphisch in \autoref{fig-formelaufbau} und \autoref{fig-beweisaufbau} dargestellt.
   Interessanterweise wird die Hypothese $\neg B$ in dem Beweis
-  nicht benutzt. 
+  nicht benutzt.
   Wenn man den Wahrheitswert von $\phi$ unter $\cA$ ausrechnet,
   sieht man auch, dass der $\cA(A)=w$ zu seiner Bestimmung ausreicht
   -- die Belegung von $B$ spielt keine Rolle.
 \end{bsp}
 
 \begin{figure}[ht]
-{
 \centering
-
 \includegraphics{resolution.14}
 \qquad \qquad
-\includegraphics{resolution.15}
-
-}
+\includegraphics{resolution.15}\\
 \caption{Induktiver Aufbau der Formel $A\rightarrow\neg(\neg A\rightarrow B)$
 und die für Belegung $\cA=\{A,\neg B\}$ beweisbaren (Teil-)Formeln
 (\autoref{bsp-Belegungen})}
@@ -1993,14 +1990,14 @@ Dazu betrachten wir zuerst ein Beispiel.
 Die Formel $A \rightarrow (B\rightarrow B)$ ist eine Tautologie.
 Nach obigem Satz kann man eine beliebige Belegung nehmen
 und daraus die Formel beweisen.
-Wir nehmen die beiden Belegungen 
+Wir nehmen die beiden Belegungen
 $\mathcal{A}_{1}=\{\neg A, B\}$ und $\mathcal{A}_{2}=\{\neg A,B\}$.
 Nach obigem Satz gilt
 {
 
 \centering
 
-$\neg A, B \Lvdash A \rightarrow (B\rightarrow B)$ und 
+$\neg A, B \Lvdash A \rightarrow (B\rightarrow B)$ und
 $\neg A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$.
 
 }
@@ -2011,13 +2008,13 @@ Wir wenden auf beide Folgerungen das Deduktionstheorem an und erhalten
 
 \centering
 
-$\neg A \Lvdash B\rightarrow(A \rightarrow (B\rightarrow B))$ und 
+$\neg A \Lvdash B\rightarrow(A \rightarrow (B\rightarrow B))$ und
 $\neg A \Lvdash \neg B\rightarrow (A \rightarrow (B\rightarrow B))$.
 
 }
 
 Die beiden Folgerungen haben nun die gleichen Hypothesen.
-Mit \autoref{lem:7} 
+Mit \autoref{lem:7}
 ($\Lvdash (\alpha \rightarrow \beta) \rightarrow ((\neg \alpha
   \rightarrow \beta) \rightarrow \beta)$)
 folgt daraus
@@ -2032,12 +2029,12 @@ $\neg A \Lvdash A \rightarrow (B\rightarrow B)$. \quad $(\star)$
 Wir haben also einen Beweis der Tautologie
 als Folgerung aus einer Hypothesenmenge, in der eine Variable weniger vorkommt.
 Entsprechend
-kann aus 
+kann aus
 {
 
 \centering
 
-$A, B \Lvdash A \rightarrow (B\rightarrow B)$ und 
+$A, B \Lvdash A \rightarrow (B\rightarrow B)$ und
 $A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$
 
 }
@@ -2081,7 +2078,7 @@ Im Beweis des folgenden Satzes wird dieses Vorgehen benutzt.
     von $\phi$. Das heißt, $\cA$ enthält kein Literal mit einer Variablen,
     die nicht in $\phi$ vorkommt.
     Also ist $\cA$ eine endliche Menge.
-    Wir führen eine Induktion über die Größe $\abs{\mathcal{B}}$ 
+    Wir führen eine Induktion über die Größe $\abs{\mathcal{B}}$
     von $\mathcal{B}\subseteq\cA$.
     \begin{mdescription}
      \item[IA:] Sei $|\mathcal{B}|=|\mathcal{A}|$.
@@ -2091,7 +2088,7 @@ Im Beweis des folgenden Satzes wird dieses Vorgehen benutzt.
       Mit \autoref{satz:2} folgt
       $\mathcal{B}\Lvdash \phi$.
 
-     \item[IV:] Für jede Belegung $\cA$ und für jede Belegung $\mathcal{B}\subseteq \cA$ 
+     \item[IV:] Für jede Belegung $\cA$ und für jede Belegung $\mathcal{B}\subseteq \cA$
       der Größe $\abs{\mathcal{B}}=|\cA|-k$ gilt $\mathcal{B} \Lvdash\phi$.
 
      \item[IS:] Sei $\mathcal{B}\subseteq \cA$ eine Belegung der Größe $|\cA|-k-1$.
@@ -2141,7 +2138,7 @@ der Aussagenlogik sind gleich.
 
 Resolution ist eine Methode zum Nachweis der Unerfüllbarkeit
 aussagenlogischer Formeln.
-Es ist eine \glqq syntaktische\grqq\xspace Methode.
+Es ist eine \glqq{}syntaktische\grqq{} Methode.
 Sie basiert auf der äußeren Form von Formeln.
 Resolution ist beliebt für Computeranwendungen.
 Die Programmiersprache PROLOG basiert auf Resolution
@@ -2150,7 +2147,7 @@ Wir werden in diesem Abschnitt die Resolution in der
 Aussagenlogik vorstellen und anschließend zeigen, dass
 sie auch als formale Theorie ausgedrückt werden kann.
 
-Eine Formel $\phi$ heißt \emph{unerfüllbar} (auch Kontradiktion), 
+Eine Formel $\phi$ heißt \emph{unerfüllbar} (auch Kontradiktion),
 falls $\phi$ unter jeder
 passenden Belegung $\mathcal{A}$ den Wert $\mathcal{A}(\phi)=f$ hat. Den
 Nachweis einer Tautologie erhält man über die Beziehung: $\alpha$ ist
@@ -2159,7 +2156,7 @@ Formel $\neg(A\rightarrow(B\rightarrow A))$ unerfüllbar.
 
 \begin{figure}
 
-  \centering 
+  \centering
 
    \includegraphics{resolution.13}
 
@@ -2210,7 +2207,7 @@ Verfahren für die Umformung verwenden.
 
 \begin{satz}
   Für jede Formel $\phi$ kann in polynomieller Rechenzeit eine
-  erfüllbarkeitsäquivalente Formel $\phi'$ in konjuktiver Normalform berechnet werden. 
+  erfüllbarkeitsäquivalente Formel $\phi'$ in konjuktiver Normalform berechnet werden.
   Dabei bedeutet \emph[rand=erfüllbarkeitsäqu.]{erfüllbarkeitsäquivalent}, dass
   $\phi$ erfüllbar ist \gdw $\phi'$ erfüllbar ist.
 \end{satz}
@@ -2254,7 +2251,7 @@ Verfahren für die Umformung verwenden.
 
     Betrachten wir die Formel $\phi = (A\wedge B) \rightarrow
     \neg(A\vee\neg B)$. Der induktive Aufbau von $\phi$ ist in
-    dem Baum in \autoref{fig:vknb-bsp} dargestellt. 
+    dem Baum in \autoref{fig:vknb-bsp} dargestellt.
     Damit können wir die
     erfüllbarkeitsäquivalente Formel $\phi'$ konstruieren.
     Für jeden Knoten mit einem Verknüfungszeichen
@@ -2268,10 +2265,10 @@ Verfahren für die Umformung verwenden.
     $\neg $ ist, dann hat dieser Knoten nur einen rechten Sohn und keinen Linken Sohn.
     Jede dieser "`kleinen"' Äquivalenzen aus 3~Variablen hat eine
     konjunktive Normalform (\autoref{satz:5}) aus höchstens 8~Klauseln zu
-    je 3~Literalen. 
+    je 3~Literalen.
     Die Markierung $c_m$ der Wurzel des Baumes wird auch zu einem Konjunkt von $\phi'$.
 
-    Für die Beispielformel ergibt sich folgende 
+    Für die Beispielformel ergibt sich folgende
     erfüllbarkeitsäquivalente Formel $\phi'$:
   \begin{multline*}
     \phi' = (c_{0} \leftrightarrow (A\wedge B))
@@ -2456,7 +2453,7 @@ für die Unerfüllbarkeit von Formeln.
 \begin{defini}[Resolutionsbeweis]
   Sei $C$ eine Klausel und $S$ eine Klauselmenge.
   Ein \emph{Resolutionsbeweis} aus $S$
-  ist eine endliche Folge von Klauseln $C_1,C_2,\ldots,C_n$, wobei
+  ist eine endliche Folge von Klauseln $C_1,C_2,\dotsc,C_n$, wobei
   \begin{enumerate}
    \item $C_n=C$, und
    \item $C_i\in S$ oder $C_i$ ist Resolvent von $C_a$ und $C_b$, $a,b<i$,
@@ -2542,7 +2539,7 @@ der Resolutionsmethode nachweisen.
 \begin{proof}
   Sei $S$  eine erfüllbare Klauselmenge.
   Dann gibt es ein Modell $\cA$ von $S$.
-  Sei $C_1,C_2,\ldots,C_n$ eine Herleitung von $C_n$ aus $S$.
+  Sei $C_1,C_2,\dotsc,C_n$ eine Herleitung von $C_n$ aus $S$.
   Da $C_1\in S$, ist $\cA$ Modell von $C_1$.
   Ist $C_{i+1}\in S$, dann ist $\cA$ ebenfalls Modell von $C_{i+1}$.
   Anderenfalls ist $C_{i+1}$ Resolvent von $C_a$ und $C_b$ für $a,b<i+1$.
@@ -2587,7 +2584,7 @@ müssen wir Widerlegungen der beiden Klauselmengen
 \end{gather*}
 angeben.
 Diese Widerlegungen sind in \autoref{zweiwiderlegungen} dargestellt.
-Die \glqq Blätter\grqq\xspace der beiden Bäume in \autoref{zweiwiderlegungen}
+Die \glqq{}Blätter\grqq{} der beiden Bäume in \autoref{zweiwiderlegungen}
 sind Klauseln aus $S^A$ bzw. Klauseln aus $S^{\lneg A}$.
 Nun fügen wir in alle Blätter, die nicht durch Klauseln in $S$
 beschriftet sind,
@@ -2620,7 +2617,7 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
 
   \begin{proof}
     Sei $S^{\ell}$ widerlegbar.
-    Dann gibt es eine Herleitung $C_1,\ldots,C_m$ der leeren Klausel aus $S^{\ell}$.
+    Dann gibt es eine Herleitung $C_1,\dotsc,C_m$ der leeren Klausel aus $S^{\ell}$.
     Wir fügen das entfernte Literal $\bar{\ell}$
     in die Herleitung der leeren Klausel aus $S^{\ell}$ auf folgende Weise ein:
     Für $1\leq i\leq m$ definieren wir Klauseln $C'_i$ durch
@@ -2638,7 +2635,7 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
     \end{gather*}
 
     Da $C'_i\in\big\{C_i,C_i\cup\{\bar{\ell}\}\big\}$
-    und $C_m=\Box$ ist, ist  $C'_1,\ldots,C'_m$ eine
+    und $C_m=\Box$ ist, ist  $C'_1,\dotsc,C'_m$ eine
     Herleitung von $\Box$ oder $\{\bar{\ell}\}$ aus $S$.
   \end{proof}
 \end{lemma}
@@ -2763,11 +2760,11 @@ Optimierungen:
 
 Es gibt Klauselmengen, deren Resolutionswiderlegungen exponentiell lang sind.
 Ein Beispiel dafür sind die
-Taubenschlagformeln $PHP_{k}$ (\glqq pigeon hole principle\grqq\xspace für $k$
+Taubenschlagformeln $PHP_{k}$ (\glqq{}pigeon hole principle\grqq{} für $k$
 Tauben) -- in einem Taubenschlag mit $k-1$ Löchern können nicht $k$
 Tauben sitzen, wenn in jedem Loch höchstens eine Taube sitzen darf.
-Variable $A_{i,j}$ entspricht \glqq Taube $j$ sitzt in Loch $i$\grqq\xspace
-($i=1,2,\ldots,k; j=1,2,\ldots,k-1$).
+Variable $A_{i,j}$ entspricht \glqq{}Taube $j$ sitzt in Loch $i$\grqq{}
+($i=1,2,\dotsc,k; j=1,2,\dotsc,k-1$).
 Die Formeln bestehen aus zwei Teilen.
 Der erste Teil drückt aus, dass jede Taube in (mindestens) einem Loch sitzt,
 und der zweite Teil drückt aus,
@@ -2775,7 +2772,7 @@ dass in jedem Loch höchstens eine Taube sitzt.
 
 Taube $j$ sitzt in einem der $k-1$ Löcher:
 \begin{gather*}
-  A_{1,j} \vee A_{2,j} \vee \ldots \vee A_{k-1,j}\quad =  \theta_j
+  A_{1,j} \vee A_{2,j} \vee \dotsb \vee A_{k-1,j}\quad =  \theta_j
 \end{gather*}
 Jede der $k$ Taube sitzt in einem der $k-1$ Löcher:
 \begin{gather*}
@@ -2845,7 +2842,7 @@ muss also $S$ am Ende des Beweises stehen.
 Alle Beweise beginnen also mit der Klauselmenge, die nur aus der leeren Klausel besteht
 (einziges Axiom).
 Diese Klauselmenge ist unerfüllbar.
-Durch die Ableitungsregel (Res) wird ein Resolutionsschritt \glqq rückwärts\grqq\xspace
+Durch die Ableitungsregel (Res) wird ein Resolutionsschritt \glqq{}rückwärts\grqq{}
 ausgeführt,
 und durch (Einf) wird eine beliebige zusätzliche Klausel in
 die Klauselmenge eingefügt.
@@ -2903,7 +2900,7 @@ und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
 
 % 17. Mai 2006
 
-\chapter{Theorien 1.\texorpdfstring{\,}{~}Ordnung -- Prädikatenlogik}
+\chapter{Theorien 1.~Ordnung -- Prädikatenlogik}
 
 \begin{bsp}
   Jeder der mich mag, mag auch meine Frau. Peter mag meine Frau nicht.
@@ -2911,11 +2908,11 @@ und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
 
   Sprachliche Mittel:
   \begin{itemize}
-   \item Eigenschaft $M(x,y)$ mit der Bedeutung \glqq $x$ mag $y$\grqq
-   \item Individuen $a$ bedeutet \glqq ich\grqq, $b$ bedeutet \glqq meine Frau\grqq\xspace und
-    $c$ bedeutet \glqq Peter\grqq
-   \item Quantoren über Variablen: "`$\forall x\colon P(x)$"' heißt \glqq für alle $x$
-    gilt Eigenschaft $P$\grqq\xspace 
+   \item Eigenschaft $M(x,y)$ mit der Bedeutung \glqq{}$x$ mag $y$\grqq
+   \item Individuen $a$ bedeutet \glqq{}ich\grqq{}, $b$ bedeutet \glqq{}meine Frau\grqq{} und
+    $c$ bedeutet \glqq{}Peter\grqq
+   \item Quantoren über Variablen: "`$\forall x\colon P(x)$"' heißt \glqq{}für alle $x$
+    gilt Eigenschaft $P$\grqq{}
      (im Bsp.: $\forall x\colon (M(x,a) \rightarrow M(x,b))$)
   \end{itemize}
 \end{bsp}
@@ -2924,7 +2921,7 @@ und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
   Der Nachfolger jeder geraden ganzen Zahl ist ungerade. 2 ist eine
   gerade ganze Zahl. Also ist der Nachfolger von 2 ungerade.
 
-  \begin{tabular}{r@{\,\ldots\,}l}
+  \begin{tabular}{r@{~\ldots{}~}l}
     $G(x)$ & $x$ ist eine ganze Zahl\\
     $E(x)$ & $x$ ist gerade\\
     $f(x)$ & bezeichne den Nachfolger von $x$\\
@@ -2942,7 +2939,7 @@ und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
   \index{Quatoren}
   $\forall$ bezeichnet man als \emph{Allquantor} und $\exists$ als
   \emph{Existenzquantor}. $\forall x\colon P(x)$ bedeutet "`für alle $x$
-  gilt $P(x)$"' und $\exists x\ P(x)$ bedeutet \glqq es gibt
+  gilt $P(x)$"' und $\exists x\ P(x)$ bedeutet \glqq{}es gibt
   (mindestens) ein $x$ für das $P(x)$ gilt\grqq{}.
 \end{defini}
 
@@ -2952,12 +2949,12 @@ und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
   Also gibt es Tiere, die laufen können & $\exists x\colon T(x) \wedge L(x)$
 \end{tabular}
 
-Die \glqq Sprache\grqq{} der Theorien 1.\,Ordnung:
+Die \glqq{}Sprache\grqq{} der Theorien 1.~Ordnung:
 \begin{description}
  \item[Zeichen:] logische Verknüpfungszeichen wie $\neg$, $\rightarrow$,
   $\wedge$, $\vee$, $\leftrightarrow$,\\
-  \emph{Variablensymbole} wie $x_{1}, x_{2}, x_{3}, \ldots$,\\
-  \emph{Konstantensymbole} $a_{1}, a_{2}, a_{2},\ldots$,\\
+  \emph{Variablensymbole} wie $x_{1}, x_{2}, x_{3}, \dotsc$,\\
+  \emph{Konstantensymbole} $a_{1}, a_{2}, a_{2},\dotsc$,\\
   \emph{Prädikatensymbole} $A_{k}^{n}$, wobei $n\in\N^+$ die Stelligkeit und $k\in\N^+$,
   z.\,B. $A_{1}^{1}, A_{1}^{2}, A_{1}^{3}, A_{2}^{5}$,\\
   \emph{Funktionensymbole} $f_{k}^{n}$, $n\in\N^+$ ist die Stelligkeit, $k\in\N^+$ und\\
@@ -2965,8 +2962,8 @@ Die \glqq Sprache\grqq{} der Theorien 1.\,Ordnung:
  \item[Terme:]
   \begin{enumerate}
    \item Jedes Variablen- oder Konstantensymbol ist ein \emph{Term}
-   \item Wenn $t_{1},\ldots,t_{n}$ Terme sind, dann ist
-    $f^{n}_{k}(t_{1},\ldots,t_{n})$ ein Term
+   \item Wenn $t_{1},\dotsc,t_{n}$ Terme sind, dann ist
+    $f^{n}_{k}(t_{1},\dotsc,t_{n})$ ein Term
   \end{enumerate}
 \end{description}
 
@@ -2977,8 +2974,8 @@ Die \glqq Sprache\grqq{} der Theorien 1.\,Ordnung:
 \end{bsp}
 
 \begin{defini}[Atomare Formeln]
-  Für Terme $t_{1},t_{2},\ldots,t_{n}$ ist $A_{k}^{n}
-  (t_{1},\ldots,t_{n})$ eine \emph[index=Formel!atomare]{atomare Formel}.
+  Für Terme $t_{1},t_{2},\dotsc,t_{n}$ ist $A_{k}^{n}
+  (t_{1},\dotsc,t_{n})$ eine \emph[index=Formel!atomare]{atomare Formel}.
 \end{defini}
 
 \begin{defini}[Formeln]
@@ -2992,7 +2989,7 @@ Die \glqq Sprache\grqq{} der Theorien 1.\,Ordnung:
     abkürzende Schreibweise gebraucht werden. $(\exists x_{i} ~ \alpha)$
     ist Abkürzung für $(\neg (\forall x_{i} ~ (\neg \alpha)))$]}
 
-    \glqq Überflüssige\grqq\xspace Klammern können zur Vereinfachung der Schreibweise
+    \glqq{}Überflüssige\grqq{} Klammern können zur Vereinfachung der Schreibweise
     weggelassen werden.
   \end{enumerate}
 \end{defini}
@@ -3006,7 +3003,7 @@ Die \glqq Sprache\grqq{} der Theorien 1.\,Ordnung:
 \end{bsp}
 
 In $(\forall x_{i} ~ \alpha)$ ist $\alpha$ der \emph{Gültigkeitsbereich}
-des Quantors \glqq$\forall x_{i}$\grqq. Eine Variable $y$, die im
+des Quantors \glqq$\forall x_{i}$\grqq{}. Eine Variable $y$, die im
 Gültigkeitsbereich eines Quantors $\forall y$ liegt oder die Teil des
 Quantors sind, heißt \emph[index=Variable!gebundene]{gebunden}. Falls
 eine Variable nicht gebunden ist, dann heißt sie
@@ -3027,7 +3024,7 @@ eine Variable nicht gebunden ist, dann heißt sie
 Eine Variable ist \emph[index=Variable!freie]{frei} in $\alpha$, falls
 alle Vorkommen der Variablen in $\alpha$ frei sind. (analog: gebunden)
 \begin{bsp}
-In der Formel 
+In der Formel
 $(\forall x_1 ~ ( \forall x_2 ~ A^2_1(x_1,x_2)) \rightarrow  A^3_1(x_1,x_2,x_3))$
 sind alle Vorkommen von $x_1$ gebunden
 und alle Vorkommen von $x_3$ frei.
@@ -3042,14 +3039,14 @@ falls alle Variablen in der Formel gebunden sind.
 
 Der \emph[index=Formel!Abschluss einer]{Abschluss}
 einer Formel $\alpha$ entsteht aus $\alpha$,
-indem für jede frei in $\alpha$ vorkommende Variable 
+indem für jede frei in $\alpha$ vorkommende Variable
 ein Allquantor an den Anfang der Formel geschrieben wird.
 
 \begin{bsp}
 In der Formel
 $(\forall x_1 ~ ( \forall x_2 ~ A^2_1(x_1,x_2)) \rightarrow  A^3_1(x_1,x_2,x_3))$
 kommen $x_2$ und $x_3$ frei vor.
-Also ist 
+Also ist
 $(\forall x_2 ~ (\forall x_3 ~
         (\forall x_1 ~ ( \forall x_2 ~ A^2_1(x_1,x_2)) \rightarrow  A^3_1(x_1,x_2,x_3))))$
 der Abschluss der Formel.
@@ -3118,7 +3115,7 @@ Eine \emph{Interpretation} $\mathcal{M}$ besteht aus
 
 $\Sigma_{\mathcal{M}}$ bezeichne die Menge aller Funktionen von der Menge aller
 Variablensymbole nach $D$, $\Sigma_{\mathcal{M}} = \big\{s\big| s\colon
-\{x_{1},x_{2},x_{3},\ldots\}\rightarrow D\big\}$ (Variablenbelegungen)
+\{x_{1},x_{2},x_{3},\dotsc\}\rightarrow D\big\}$ (Variablenbelegungen)
 ($x_{j}$ sind Variablensymbole)
 
 Für Variablenbelegungen $s$ und eine Interpretation $\mathcal{M}$ ist $s^{\ast}(t)$
@@ -3127,16 +3124,16 @@ für alle Terme $t$ definiert als:
  \item Wenn $t=x_{j}$ eine Variable ist, dann ist $s^{\ast}(t) = s(x_{j})$.
  \item Wenn $t=a_{j}$ eine Konstante ist, dann ist $s^{\ast}(t) =
   (a_{j})^{\mathcal{M}}$.
- \item Wenn $t=f_{k}^{n}(t_{1},\ldots,t_{n})$ für Terme
-  $t_{1},\ldots,t_{n}$, dann ist $s^{\ast}(t) =
-  (f_{k}^{n})^{\mathcal{M}}\big(s^{\ast}(t_{1}), \ldots, s^{\ast}(t_{n}) \big)$.
+ \item Wenn $t=f_{k}^{n}(t_{1},\dotsc,t_{n})$ für Terme
+  $t_{1},\dotsc,t_{n}$, dann ist $s^{\ast}(t) =
+  (f_{k}^{n})^{\mathcal{M}}\big(s^{\ast}(t_{1}), \dotsc, s^{\ast}(t_{n}) \big)$.
 \end{enumerate}
 
 $s$ erfüllt die Formel $\alpha$, falls
 \begin{gather*}
   \begin{cases}
-    \big(s^{\ast}(t_{1}),\ldots,s^{\ast}(t_{n})\big)\in (A_{k}^{n})^{\mathcal{M}}
-    &\text{und\ } \alpha=A_{k}^{n}(t_{1},\ldots,t_{n})\text{\ eine
+    \big(s^{\ast}(t_{1}),\dotsc,s^{\ast}(t_{n})\big)\in (A_{k}^{n})^{\mathcal{M}}
+    &\text{und\ } \alpha=A_{k}^{n}(t_{1},\dotsc,t_{n})\text{\ eine
     atomare Formel ist}\\
     s\text{\ erfüllt\ }\beta\text{\ nicht} &\text{und\ }
     \alpha=(\neg\beta)\\
@@ -3150,13 +3147,13 @@ $s$ erfüllt die Formel $\alpha$, falls
 % 2006-05-24
 
 \begin{bsp}
-  Wir betrachten die Formel 
+  Wir betrachten die Formel
       $\alpha_0=\exists x_{2} ~ A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$.
 
   Die Interpretation $\cM_0$ wird angegeben durch eine
   nicht leere Grundmenge $D$ und die Interpretation der
   in den Formeln vorkommenden Konstanten-, Funktions- und Prädikatensymbole.
-  \begin{itemize}  
+  \begin{itemize}
     \item   die Grundmenge von $\cM_0$  sei $\N$
     \item die Interpretation des Funktionssymbols $f_{1}^{2}$ sei
        $(f_{1}^{2})^{\cM_0} = ((a,b) \mapsto a\cdot b)$
@@ -3164,7 +3161,7 @@ $s$ erfüllt die Formel $\alpha$, falls
        $(A_{1}^{2})^{\cM_0} = \{ (a,b)\in \N^{2}\colon a=b\}$
   \end{itemize}
 
-  In der Interpretation $\cM_0$ hat 
+  In der Interpretation $\cM_0$ hat
     $\exists x_{2} ~ A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$
   die Bedeutung $\exists z ~ x\cdot z=y$.
 
@@ -3173,48 +3170,48 @@ $s$ erfüllt die Formel $\alpha$, falls
   Sie weist jedem Variablensymbol $x_i$ einen Wert aus der Grundmenge zu.
 
   { \centering
-  
+
   \begin{tabular}{r*{6}{|c}}
-    & $x_{1}$ & $x_{2}$ & $x_{3}$ & $x_{4}$ & $x_{5}$ & \ldots\\
+    & $x_{1}$ & $x_{2}$ & $x_{3}$ & $x_{4}$ & $x_{5}$ & \ldots{}\\
     \hline
-    $s_{1}(x_{i})$ & 2 & 3 & 8 & 9 & 10 & \ldots
+    $s_{1}(x_{i})$ & 2 & 3 & 8 & 9 & 10 & \ldots{}
   \end{tabular}
 
   }
 
-  In der Interpretation $\cM_0$ mit Variablenbelegung $x_1$ hat 
+  In der Interpretation $\cM_0$ mit Variablenbelegung $x_1$ hat
     $\exists x_{2} ~ A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$
   die Bedeutung $\exists z \colon 2\cdot z=8$.
 
-  Nun wollen wir feststellen, ob 
+  Nun wollen wir feststellen, ob
     $\exists x_{2} ~  A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$
   von $s_1$ erfüllt wird. Dazu wenden wir (wiederholt)
   obige Definitionen an.
 
   \begin{tabular}{p{5mm}cp{0.85\textwidth}}
-  \multicolumn{3}{l}{$s_{1}$ erfüllt 
+  \multicolumn{3}{l}{$s_{1}$ erfüllt
           $(\exists x_{2} ~ A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}),x_{3}) )$} \\
-    & $\Leftrightarrow$ & 
-         $s_{1}$ erfüllt 
+    & $\Leftrightarrow$ &
+         $s_{1}$ erfüllt
        $\neg(\forall x_{2} ~ \neg A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}),x_{3}))$ \\
     & $\Leftrightarrow$ &
-          $s_{1}$ erfüllt nicht 
+          $s_{1}$ erfüllt nicht
          $(\forall x_{2} ~\neg A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}),x_{3}))$  \\
-    & $\Leftrightarrow$ & 
-          nicht jede Variablenbelegung $s$ mit 
-           $s(x_{i}) = s_{1}(x_{i})$ für alle $i\ne2$ erfüllt 
+    & $\Leftrightarrow$ &
+          nicht jede Variablenbelegung $s$ mit
+           $s(x_{i}) = s_{1}(x_{i})$ für alle $i\ne2$ erfüllt
          $\neg A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$ \\
-    & $\Leftrightarrow$ & 
-          nicht jede Variablenbelegung $s$ mit 
+    & $\Leftrightarrow$ &
+          nicht jede Variablenbelegung $s$ mit
              $s(x_{i}) = s_{1}(x_{i})$ für alle $i\ne2$ erfüllt nicht
            $A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$ \\
-    & $\Leftrightarrow$ & 
-       nicht jede Variablenbelegung $s$ mit 
+    & $\Leftrightarrow$ &
+       nicht jede Variablenbelegung $s$ mit
            $s(x_{i}) = s_{1}(x_{i})$ für alle $i\ne2$ erfüllt nicht
         $(s^{\ast}(f_{1}^{2}(x_{1},x_{2})), s^{\ast}(x_{3}))\in(A_{1}^{2})^{\cM_0}$ \\
-    & $\Leftrightarrow$ & 
+    & $\Leftrightarrow$ &
        nicht jede Variablenbelegung $s$ mit $s(x_{i}) = s_{1}(x_{i})$ für
-          alle $i\ne2$ erfüllt nicht 
+          alle $i\ne2$ erfüllt nicht
        $((f_{1}^{2})^{\cM_0}(s(x_{1}),s(x_{2})), s(x_{3}))\in (A_{1}^{2})^{\cM_0}$
   \end{tabular}
 
@@ -3222,17 +3219,17 @@ $s$ erfüllt die Formel $\alpha$, falls
   Wir wollen zeigen, dass $\star$ wahr ist.
   Also müssen wir eine Variablenbelegung $s$ finden,
   so dass die Aussage $(f_{1}^{2})^{\cM_0}(s(x_{1}),s(x_{2})) = s(x_{3})$ gilt
-  (d.\,h. $s(x_1)\cdot s(x_2)=s(x_3)$), 
+  (d.\,h. $s(x_1)\cdot s(x_2)=s(x_3)$),
   wobei $s(x_{1})=s_{1}(x_{1})=2$ und $s(x_{3})=s_{1}(x_{3})=8$.
   Wir wählen $s$ so, dass $s(x_{2})=4$.
-  Also 
+  Also
 
   { \centering
 
   \begin{tabular}{r*{6}{|c}}
-    & $x_{1}$ & $x_{2}$ & $x_{3}$ & $x_{4}$ & $x_{5}$ & \ldots\\
+    & $x_{1}$ & $x_{2}$ & $x_{3}$ & $x_{4}$ & $x_{5}$ & \ldots{}\\
     \hline
-    $s(x_{i})$ & 2 & 4 & 8 & 9 & 10 & \ldots
+    $s(x_{i})$ & 2 & 4 & 8 & 9 & 10 & \ldots{}
   \end{tabular}
 
   }
@@ -3240,21 +3237,21 @@ $s$ erfüllt die Formel $\alpha$, falls
   Für $s$ gilt: $2\cdot 4 = s(x_1)\cdot s(x_2) = s(x_3)=8$, also
     erfüllt die Variablenbelegung $s$
        $((f_{1}^{2})^{\cM_0}(s(x_{1}),s(x_{2})), s(x_{3}))\in (A_{1}^{2})^{\cM_0}$.
-  Die Variablenbelegung $s$ erfültt die Bedingungen 
-      \glqq$s(x_{i}) = s_{1}(x_{i})$ für alle $i\ne2$\grqq.
+  Die Variablenbelegung $s$ erfültt die Bedingungen
+      \glqq$s(x_{i}) = s_{1}(x_{i})$ für alle $i\ne2$\grqq{}.
   Folglich ist die Aussage
-  \glqq jede Variablenbelegung $s$ mit \ldots erfüllt  nicht 
-       $((f_{1}^{2})^{\cM_0}(s(x_{1}),s(x_{2})), s(x_{3}))\in (A_{1}^{2})^{\cM_0}$\grqq\xspace
+  \glqq{}jede Variablenbelegung $s$ mit \ldots{} erfüllt  nicht
+       $((f_{1}^{2})^{\cM_0}(s(x_{1}),s(x_{2})), s(x_{3}))\in (A_{1}^{2})^{\cM_0}$\grqq{}
   falsch.
   Dehalb ist die Negation der Aussage wahr,
   und diese Negation ist genau die Aussage $\star$.
-  Da $\star$ äquivalent zur Aussage \glqq $s_1$ erfüllt $\alpha_0$\grqq\xspace ist,
-  gilt: $s_{1}$ erfüllt die Formel 
+  Da $\star$ äquivalent zur Aussage \glqq{}$s_1$ erfüllt $\alpha_0$\grqq{} ist,
+  gilt: $s_{1}$ erfüllt die Formel
        $(\exists x_{2} ~ A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}),x_{3}))$.
 
   Für jede Variablenbelegung $s_2$ mit $s_2(x_1)=0$ und $s_2(x_3)\ne0$ gilt:
   $s_2$ erfüllt $\alpha_0$ nicht (unter $\cM_0$).
-  In der Interpretation $\cM_0$ mit Variablenbelegung $s_2$ hat 
+  In der Interpretation $\cM_0$ mit Variablenbelegung $s_2$ hat
     $\exists x_{2} ~ A_{1}^{2}(f_{1}^{2}(x_{1},x_{2}), x_{3})$
   die Bedeutung $\exists z ~ 0\cdot z\ne0$.
 \end{bsp}
@@ -3294,12 +3291,12 @@ $(A^1_2)^{\cM_2}=\emptyset$ ist die Formel $\alpha_0$ falsch.
 Also ist $\cM_1$ ein Modell für $\alpha_0$.
 
 Unter einer Interpretation $\cM_3$ mit Grundmenge $\N$,
-$(A^1_2)^{\cM_3}=\{(a,b)\in\N^2\colon b=0 \vee b \text{ teilt } a\}$ 
+$(A^1_2)^{\cM_3}=\{(a,b)\in\N^2\colon b=0 \vee b \text{ teilt } a\}$
 und $(f^2_1)^{\cM_3} = ((a,b) \mapsto a+b)$
 ist $\alpha_0$ wahr.
 \end{bsp}
 
-Schreibweise für \glqq $\alpha$ ist wahr unter $\cM$\grqq: ~~~$\Mmodels ~\alpha$ .
+Schreibweise für \glqq{}$\alpha$ ist wahr unter $\cM$\grqq{}: ~~~$\Mmodels ~\alpha$ .
 
 
 Wichtige Eigenschaften von Formeln
@@ -3331,7 +3328,7 @@ in Bezug auf die Begriffe wahr und falsch (ohne Beweise):
              (Für den Abschluss $\beta$ von $\alpha$ gilt also:
                      $\Mmodels \beta$ ~gdw.~ $\Mmodels \alpha$.)
 
- \item[(E7)] Eine Instanz einer Tautologie erhält man, 
+ \item[(E7)] Eine Instanz einer Tautologie erhält man,
              indem man die Aussagevariablen einer Tautologie durch
              Formeln ersetzt (gleiche Aussagevariablen
              durch gleiche Formeln).
@@ -3392,10 +3389,10 @@ Offensichtlich gilt:
 
 
 
-\section{Theorien 1.Ordnung}
+\section{Theorien 1.~Ordnung}
 
-\begin{defini}[Theorie 1.\,Ordnung]
-  Eine \emph{Theorie 1.\,Ordnung} $\mathrm{K}$ besteht aus
+\begin{defini}[Theorie 1.~Ordnung]
+  Eine \emph{Theorie 1.~Ordnung} $\mathrm{K}$ besteht aus
   \begin{enumerate}
    \item[1.] \textit{Formeln}
 
@@ -3403,7 +3400,7 @@ Offensichtlich gilt:
     Theorien können sich durch die zugelassenen Variablen-, Konstanten-,
      Funktions- und Prädikatensymbole unterscheiden.
 
-   \item[2.] \textit{logischen Axiomen} 
+   \item[2.] \textit{logischen Axiomen}
 
     Sie entstehen aus den Axiomenschemata (A1)--(A5)
     durch Einsetzen von bel. Formeln für $\alpha$, $\beta$ und $\gamma$.
@@ -3426,7 +3423,7 @@ Offensichtlich gilt:
    \item[3.] \textit{zusätzlichen Axiomen}
 
       Die Menge der zusätzlichen Axiome kann leer sein.
-      Eine Theorie 1.\,Ordnung ohne zusätzliche Axiome wird  
+      Eine Theorie 1.~Ordnung ohne zusätzliche Axiome wird
         \emph{Prädikatenkalkül 1.~Ordnung} genannt.
       In \autoref{chapter-zahlentheorie} werden wir eine Theorie betrachten,
       die zusätzliche Axiome zur Beschreibung von Eigenschaften der natürlichen
@@ -3452,11 +3449,11 @@ Offensichtlich gilt:
   \end{enumerate}
 \end{defini}
 
-Jede Theorie 1.\,Ordnung ist eine formale Theorie.
+Jede Theorie 1.~Ordnung ist eine formale Theorie.
 Damit sind auch die Begriffe Beweis und Theorem definiert.
 Ein \emph[indexrand=Modell einer Theorie 1.Ordnung]{Modell einer Theorie $\mathrm{K}$ 1.Ordnung}
 ist ein Modell für die Menge aller (logischen und zusätzlichen) Axiome von $\mathrm{K}$.
-Aus (E3) und (E6) folgt, dass 
+Aus (E3) und (E6) folgt, dass
 jedes Modell von $\mathrm{K}$ auch ein Modell
 aller Theoreme von $\mathrm{K}$ ist.
 
@@ -3475,7 +3472,7 @@ aller Theoreme von $\mathrm{K}$ ist.
 \end{bsp}
 
 An diesem Beispiel sehen wir, dass sich das Deduktionstheorem
-nicht direkt auf Theorien 1.\,Ordnung übertragen lässt.
+nicht direkt auf Theorien 1.~Ordnung übertragen lässt.
 Im obigen Beispiel finden beide Anwendungen von (Gen) statt auf Formeln,
 die aus $\alpha$ abgeleitet wurden.
 Deshalb gilt \underline{nicht}:
@@ -3483,15 +3480,15 @@ $(\forall x_1 ~\alpha)\rightarrow \beta \vdash \alpha \rightarrow (\forall x_1 ~
 
 
 
-\section{Eigenschaften von Theorien 1.\texorpdfstring{\,}{~}Ordnung}
+\section{Eigenschaften von Theorien 1.~Ordnung}
 
 
 % 31.5.06
 
 Ohne zusätzliche Axiome können ausschließlich gültige Formeln bewiesen werden.
 
-\begin{satz}[Korrektheit des Prädikatenkalküls 1.\,Ordnung]\label{satz-korrektheit-theorien-1.ordnung}
-  Für jeden Prädikatenkalkül 1.\,Ordnung $K$ und jede Formel $\alpha$
+\begin{satz}[Korrektheit des Prädikatenkalküls 1.~Ordnung]\label{satz-korrektheit-theorien-1.ordnung}
+  Für jeden Prädikatenkalkül 1.~Ordnung $K$ und jede Formel $\alpha$
   gilt:
   \begin{center}
     Wenn $\xvdash[K]{} \alpha$, dann ist $\alpha$ gültig.
@@ -3506,7 +3503,7 @@ Ohne zusätzliche Axiome können ausschließlich gültige Formeln bewiesen werde
 
 
 
-Das alte Deduktionstheorem gilt nicht für Theorien 1.\,Ordnung.
+Das alte Deduktionstheorem gilt nicht für Theorien 1.~Ordnung.
 Betrachte dazu folgenden Beweis.
 %
 \begin{align*}
@@ -3522,10 +3519,10 @@ Ihre Beweisbarkeit widerspräche \autoref{satz-korrektheit-theorien-1.ordnung}.
 Das Problem liegt hier in der Anwendung der Generalisierung
 auf eine Variable, die in der Hypothese frei vorkommt.
 
-Um ein Deduktionstheorem für Theorien 1.\,Ordnung zu formulieren,
+Um ein Deduktionstheorem für Theorien 1.~Ordnung zu formulieren,
 brauchen wir eine Eigenschaft von Beweisen.
-Sei $\alpha\in\Gamma$ und $\beta_{1},\ldots,\beta_{k}$ sei eine
-Herleitung aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots ab]
+Sei $\alpha\in\Gamma$ und $\beta_{1},\dotsc,\beta_{k}$ sei eine
+Herleitung aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots{} ab]
 {hängt} von $\alpha$ ab, falls
 \begin{itemize}
  \item $\beta_{i}=\alpha$ oder
@@ -3540,11 +3537,11 @@ Herleitung aus $\Gamma$. $\beta_{i}$ \emph[indexrand=hängt\ldots ab]
 \end{lemma}
 
 
-\begin{satz}[Deduktionstheorem für Theorien 1.\,Ordnung]\label{Deduktionstheorem2}
+\begin{satz}[Deduktionstheorem für Theorien 1.~Ordnung]\label{Deduktionstheorem2}
   Sei $\alpha\notin\Gamma$ und $\Gamma,\alpha~\vdash~\beta$,
-  wobei $\beta_{1},\ldots,\beta_{k}$ eine
+  wobei $\beta_{1},\dotsc,\beta_{k}$ eine
   Herleitung von $\beta$ aus $\Gamma\cup\{\alpha\}$ mit folgender
-  Eigenschaft: 
+  Eigenschaft:
 \begin{quote}
 wenn $\beta_{i}=(\forall x_{j} ~ \beta_{q})$ durch Anwendung
   der Generalisierungsregel auf $\beta_{q}$ entsteht, dann gilt (1)
@@ -3626,7 +3623,7 @@ wenn $\beta_{i}=(\forall x_{j} ~ \beta_{q})$ durch Anwendung
   Da durch (Gen) die Variablen $x_1$ und $x_2$ gebunden wurden,
   die beide nicht frei in ~$(\forall x_1 ~(\forall x_2~\alpha) )$ vorkommen,
   kann das Deduktionstheorem angewendet werden.
-  Damit folgt 
+  Damit folgt
     $\vdash~ (\forall x_1~(\forall x_2~\alpha) )
             \rightarrow(\forall x_2~(\forall x_1~\alpha) ) $.
 \end{bsp}
@@ -3656,7 +3653,7 @@ in $\alpha$ ist.
 Regel RE4: $\alpha[x/t] \vdash (\exists x ~ \alpha)$, falls $t$ frei für $x$
 in $\alpha$ ist.
 
-(Auf die Beweise der Korrektheit der Regeln wird aus Platzgründen verzichtet \ldots)
+(Auf die Beweise der Korrektheit der Regeln wird aus Platzgründen verzichtet \ldots{})
 
 \begin{bsp}
   Zeige $\vdash (\forall x ~ \alpha) \rightarrow (\exists x ~ \alpha)$.
@@ -3732,14 +3729,14 @@ Weitere Regeln (ohne Korrektheits-Beweise):
   Sei $\beta$ eine Teilformel von $\alpha$,
   und $\alpha'$ sei eine Formel, die
   aus $\alpha$ entsteht, indem in $\alpha$ beliebig viele Vorkommen von $\beta$ durch
-  $\gamma$ ersetzt werden. Dabei enthält $y_{1}, y_{2}, \ldots, y_{k}$ alle
+  $\gamma$ ersetzt werden. Dabei enthält $y_{1}, y_{2}, \dotsc, y_{k}$ alle
   freien Variablen von $\beta$ oder $\gamma$, die in $\alpha$ gebunden
   vorkommen.
 
   Dann gilt:
   \begin{enumerate}
-   \item $(\forall y_{1} \ldots (\forall y_{k}~
-    \beta\leftrightarrow\gamma)\ldots) \rightarrow
+   \item $(\forall y_{1} \dotso (\forall y_{k}~
+    \beta\leftrightarrow\gamma)\dotso) \rightarrow
     (\alpha\leftrightarrow\alpha')$
 
    \item Aus $\vdash\beta\leftrightarrow\gamma$ folgt $\vdash\alpha
@@ -3859,9 +3856,9 @@ Die Verwendung der Regel C unterliegt den folgenden Einschränkungen.
 \end{satz}
 
 \section{Vollständigkeit des Prädikatenkalküls
-1.\texorpdfstring{\,}{~}Ordnung}
+  1.~Ordnung}
 
-Wir wollen zeigen, dass in jedem Prädikatenkalkül 1.\,Ordnung
+Wir wollen zeigen, dass in jedem Prädikatenkalkül 1.~Ordnung
 alle gültigen Formeln beweisbar sind
 (d.\,h. aus $\models \alpha$ folgt $\vdash\alpha$).
 Diese Eigenschaft des Prädikatenkalküls nennt man \textit{Vollständigkeit}.
@@ -3872,7 +3869,7 @@ eine Interpretation finden, unter der $\alpha$ falsch ist.
 Die Konstruktion dieser Interpretation basiert auf einer
 Erweiterung des Prädikatenkalküls durch zusätzliche Axiome.
 Im ersten Schritt werden Axiome hinzugenommen, so dass
-für jede geschlossene Formel $\alpha$ 
+für jede geschlossene Formel $\alpha$
 entweder $\alpha$ oder $\neg \alpha$ beweisbar.
 Eine Theorie mit dieser Eigenschaft heißt \textit{abgeschlossen}.
 Da die zusätzlichen Axiome nicht notwendigerweise gültig sind,
@@ -3882,7 +3879,7 @@ dieser Erweiterung. Wichtig ist jedoch nur, dass am Ende
 Im zweiten Schritt werden Axiome hinzugenommen,
 die die einfache Konstruktion eines Modells für die Theorie ermöglichen.
 Diese Axiome machen die Theorie \textit{T-produktiv}.
-Die Vollständigkeit jedes Prädikatenkalküls 1.\,Ordnung
+Die Vollständigkeit jedes Prädikatenkalküls 1.~Ordnung
 basiert also darauf, dass man ihn zu einer abgeschlossenen
 und T-produktiven Theorie erweitern kann, die ein Modell besitzt
 (\autoref{lemma-abz-modelle}).
@@ -3928,7 +3925,7 @@ dass man die Menge aller Formeln abzählen kann.
 \end{lemma}
 
 \begin{satz}
-  Die Menge aller Formeln einer Theorie 1.\,Ordnung ist abzählbar.
+  Die Menge aller Formeln einer Theorie 1.~Ordnung ist abzählbar.
 
   \begin{proof}
     Wir definieren eine Funktion $g^{\ast}$, die die Menge aller Formeln
@@ -3936,26 +3933,24 @@ dass man die Menge aller Formeln abzählen kann.
     Dazu definieren wir zuerst eine Funktion $g$, die jedes Symbol,
     das in einer Formel vorkommen kann, durch eine natürliche Zahl kodiert.
     Formeln bestehen aus folgenden Symbolen:
-    \begin{quote}
     \begin{description}
-     \item[Variablensymbole:] $x_{1}, x_{2}, x_{3},\ldots$ (abzählbar
+     \item[Variablensymbole:] $x_{1}, x_{2}, x_{3},\dotsc$ (abzählbar
       viele)
-     \item[Konstantensymbole:] $a_{1},a_{2},a_{3},\ldots$ (abzählbar
+     \item[Konstantensymbole:] $a_{1},a_{2},a_{3},\dotsc$ (abzählbar
       viele)
-     \item[Funktionssymbole:] $f_{1}^{1}, f_{2}^{1},\ldots, f_{1}^{2},
+     \item[Funktionssymbole:] $f_{1}^{1}, f_{2}^{1},\dotsc, f_{1}^{2},
       f_{2}^{2}$ (abzählbar viele)
-     \item[Prädikatensymbole:] $A_{1}^{1}, A_{2}^{1},\ldots,A_{1}^{2},
+     \item[Prädikatensymbole:] $A_{1}^{1}, A_{2}^{1},\dotsc,A_{1}^{2},
       A_{2}^{2}$ (abzählbar viele)
      \item[sonstige Zeichen:] $(, ), \forall, \neg, \rightarrow, ,$ (Komma)
     \end{description}
-    \end{quote}
 
     Die Funktion $g\colon \text{Menge aller
     Symbole}\rightarrow\N$ ist wie folgt definiert:
 
     \begin{tabular}{r|*{6}{|c}|}
       $u$ & $($ & $)$ & $,$ & $\neg$ & $\rightarrow$ & $\forall$ \\ \hline
-      $g(u)$ & 1 & 2 & 3 & 4 & 5 & 6 
+      $g(u)$ & 1 & 2 & 3 & 4 & 5 & 6
     \end{tabular}
 
     \begin{tabular}{r|*{4}{|c}|}
@@ -3963,25 +3958,25 @@ dass man die Menge aller Formeln abzählen kann.
       $g(u)$ & $3+4i$ & $4+4i$ & $9+4\cdot bp(j-1,i-1)$
          & $10+ 4\cdot bp(j-1,i-1)$
     \end{tabular}
- 
+
     Die Funktion $g$ ist injektiv (man kann aus einer Zahl $g(u)$ eindeutig
     das Symbol $u$ bestimmen), aber nicht surjektiv (ist auch nicht nötig).
     Folgende Tabbelle zeigt die Kodierung einiger Symbole.
 
     \begin{tabular}{c*{9}{|c}}
       $u$ & $x_{1}$ & $a_{1}$ & $f_{1}^{1}$ & $A_{1}^{1}$ & $x_{2}$ &
-         $a_{2}$ & $f_{1}^{2}$ & $A_{1}^{2}$ & \ldots\\ \hline
-      $g(u)$ & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & \ldots
+         $a_{2}$ & $f_{1}^{2}$ & $A_{1}^{2}$ & \ldots{}\\ \hline
+      $g(u)$ & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & \ldots{}
     \end{tabular}
 
     Die Funktion
     \begin{gather*}
-      g^{\ast}:\text{Menge aller Formeln}\rightarrow\N
+      g^{\ast}\colon\text{Menge aller Formeln}\rightarrow\N
     \end{gather*}
     ist definiert durch
     \begin{gather*}
-      g^{\ast}(u_{1}\ldots
-            u_{k}) = 2^{g(u_{1})}\cdot 3^{g(u_{2})}\cdot 5^{g(u_{3})}\cdot \ldots \cdot
+      g^{\ast}(u_{1}u_{2}\dotso
+            u_{k}) = 2^{g(u_{1})}\cdot 3^{g(u_{2})}\cdot 5^{g(u_{3})}\dotsm
              p_{k}^{g(u_{k})} ,
     \end{gather*}
     wobei $p_{k}$ die $k$-te Primzahl ist ($p_1=2$).
@@ -4004,7 +3999,7 @@ dass man die Menge aller Formeln abzählen kann.
     für die Symbolfolge "`$,\neg$"' steht, die aber keine Formel ist.
     $g^{\ast}$ definiert auf natürliche Weise eine Ordnung auf den Formeln.
     Wir sagen $\alpha<\beta$, falls $g^{\ast}(\alpha)<g^{\ast}(\beta)$.
-    Damit können wir eine Funktion 
+    Damit können wir eine Funktion
     \begin{gather*}
         f\colon\N\rightarrow\text{Menge aller Formeln}
     \end{gather*}
@@ -4015,9 +4010,9 @@ dass man die Menge aller Formeln abzählen kann.
     $f$ kann wie folgt definiert werden:
     \begin{align*}
        f(0) & = \text{die kleinste Formel} \\
-       f(n+1) & = \text{die kleinste Formel, die nicht in $\{f(0),\ldots,f(n)\}$ ist}
+       f(n+1) & = \text{die kleinste Formel, die nicht in $\{f(0),\dotsc,f(n)\}$ ist}
     \end{align*}
-Jede Menge von Formeln oder Termen einer Theorie 1.\,Ordnung kann ebenfalls
+Jede Menge von Formeln oder Termen einer Theorie 1.~Ordnung kann ebenfalls
 geordnet aufgezählt werden.
 Von den folgenden Mengen werden wir diese Eigenschaft noch nutzen.
 \begin{itemize}
@@ -4035,7 +4030,7 @@ Eine Theorie, in der sowohl eine Formel $\alpha$
 als auch ihre Negation $\neg \alpha$ bewiesen werden kann,
 ist insofern sinnlos, da in dieser Theorie alle Formeln Theoreme sind
 (siehe \autoref{bemerk-nichtkonsistenz}).
-Die \glqq nicht sinnlosen\grqq\xspace Theorien heißen \textit{konsistent}
+Die \glqq{}nicht sinnlosen\grqq{} Theorien heißen \textit{konsistent}
 (siehe \autoref{defini-konsistent}).
 In diesem Abschnitt geht es darum,
 wie man eine konsistente Theorie erweitern kann (durch zusätzliche Axiome),
@@ -4068,7 +4063,7 @@ dann wird die Theorie nicht konsistent.
 \end{defini}
 
 \begin{lemma}\label{lemma-KonsistenzPK}
-  Jeder Prädikatenkalkül 1.\,Ordnung ist konsistent.
+  Jeder Prädikatenkalkül 1.~Ordnung ist konsistent.
 
   \begin{proof}
     Aus $\xvdash[K]{}\alpha$ folgt $\models\alpha$
@@ -4185,9 +4180,9 @@ und jede konsistente Theorie lässt sich dazu erweitern.
 
 \begin{proof}
   Sei $K$ eine konsistente Theorie.
-  $\beta_1, \beta_2, \ldots$ sei eine
+  $\beta_1, \beta_2, \dotsc$ sei eine
   Aufzählung aller geschlossenen Formeln von $K$.
-  Wir definieren induktiv Theorien $J_0, J_1, J_2, \ldots$,
+  Wir definieren induktiv Theorien $J_0, J_1, J_2, \dotsc$,
   die Erweiterungen von $K$ sind.
   \begin{enumerate}
    \item $J_0=K$
@@ -4211,7 +4206,7 @@ und jede konsistente Theorie lässt sich dazu erweitern.
 
   Jeder Beweis in $K'$ ist endlich
   und kann deshalb nur eine endliche Anzahl von Axiomen enthalten.
-  Also kann jeder Beweis auch in einer \glqq Untertheorie\grqq\xspace $J_i$
+  Also kann jeder Beweis auch in einer \glqq{}Untertheorie\grqq{} $J_i$
   geführt werden.
   Da alle $J_i$ konsistent sind, muss $K'$ ebenfalls konsistent sein.
 
@@ -4264,7 +4259,7 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
 
 
 \begin{defini}[T-produktive Theorie]
-  Eine Theorie $K$ heißt \emph{T-produktiv} (\glqq scape goat\grqq, engl. Sündenbock),
+  Eine Theorie $K$ heißt \emph{T-produktiv} (\glqq{}scape goat\grqq{}, engl. Sündenbock),
   falls für jede Formel $\alpha$ mit genau einer freien Variablen $x$ ein
   variablenfreier Term $t$ existiert mit
   \begin{gather*}
@@ -4278,37 +4273,35 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
 
   \begin{proof}
     $K'$ entsteht aus $K$ durch Hinzufügen von neuen Konstantensymbolen
-    $\{c_{1},c_{2},\ldots\}$ und durch Hinzufügen neuer zusätzlicher
-    Axiome wie folgt. Sei $\alpha_{1},\alpha_{2},\ldots$ eine Aufzählung
+    $\{c_{1},c_{2},\dotsc\}$ und durch Hinzufügen neuer zusätzlicher
+    Axiome wie folgt. Sei $\alpha_{1},\alpha_{2},\dotsc$ eine Aufzählung
     aller Formeln in $K'$ mit genau einer freien Variablen; $\alpha_{i}$
-    enthalte die Variablen $x_{j_{i}}$ frei. Sei $b_{1},b_{2},\ldots$
-    eine Aufzählung einer Teilmenge von $\{c_{1},c_{2},\ldots\}$ so, dass
-    $b_{i}$ weder in $\alpha_{1},\ldots,\alpha_{i-1}$ nicht in
-    $b_{1},\ldots,b_{i-1}$ vorkommt.
+    enthalte die Variablen $x_{j_{i}}$ frei. Sei $b_{1},b_{2},\dotsc$
+    eine Aufzählung einer Teilmenge von $\{c_{1},c_{2},\dotsc\}$ so, dass
+    $b_{i}$ weder in $\alpha_{1},\dotsc,\alpha_{i-1}$ nicht in
+    $b_{1},\dotsc,b_{i-1}$ vorkommt.
 
     Definiere $\sigma_{k}=(\exists x_{j_{k}} ~ \neg\alpha)
     \rightarrow\neg\alpha[x_{j_{k}}/b_{k}]$. $K'$ hat zusätzliche Axiome
-    $\sigma_{1},\sigma_{2},\ldots$.
+    $\sigma_{1},\sigma_{2},\dotsc$.
 
     Um zu zeigen, dass $K'$ konsistent ist, betrachten wir die Teiltheorien
-    $K_{0},K_{1},K_{2},\ldots$ mit\\
-    \null\hfill
-    \begin{tabular}{r@{$\,=\,$}l}
-      $K_{0}$ &$K$ erweitert um die neuen Konstantensmbole
-         $\{c_{1},c_{2},\ldots\}$\\
-      $K_{i+1}$ & $K_{i}$ erweitert um zusätzliches Axiom $\sigma_{i+1}$
-    \end{tabular}
-    \hfill\null\\
-    ($K_{j}$ hat die zusätzlichen Axiome $\sigma_{1},\sigma_{2},\ldots,
+    $K_{0},K_{1},K_{2},\dotsc$ mit
+    \begin{align*}
+      K_{0} &= K \text{~erweitert um die neuen Konstantensmbole~}
+         \{c_{1},c_{2},\dotsc\}\\
+      K_{i+1} &= K_{i} \text{~erweitert um zusätzliches Axiom~} \sigma_{i+1}
+    \end{align*}
+    ($K_{j}$ hat die zusätzlichen Axiome $\sigma_{1},\sigma_{2},\dotsc,
     \sigma_{j}$).
 
-    Wenn $K_{0},K_{1},K_{2},\ldots$ konsistent sind, dann ist auch $K'$
+    Wenn $K_{0},K_{1},K_{2},\dotsc$ konsistent sind, dann ist auch $K'$
     konsistent.
     \begin{itemize}
      \item $K_{0}$ ist konsistent, da $K$ konsistent ist.
      \item Sei angenommen, dass $K_{n}$ nicht konsistent ist.
-      Dann gilt $\xvdash[K_{n}]{}\neg\sigma_{n}$. 
-      Also folgt $\sigma_{n} \xvdash[K_{n-1}]{}\neg\sigma_{n}$. 
+      Dann gilt $\xvdash[K_{n}]{}\neg\sigma_{n}$.
+      Also folgt $\sigma_{n} \xvdash[K_{n-1}]{}\neg\sigma_{n}$.
       Mit dem Deduktionstheorem folgt
       $\xvdash[K_{n-1}]{}\sigma_{n}\rightarrow\neg\sigma_{n}$ und mit der
       Tautologie $(\sigma_{n}\rightarrow\neg\sigma_{n})\rightarrow
@@ -4356,16 +4349,16 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     \begin{itemize}
      \item Die Grundmenge $D$ besteht aus allen variablenfreien Termen,
       die in $J$ gebildet werden können.
-     \item Konstanten- und Funktionssymbole werden \glqq durch sich selbst\grqq\xspace
+     \item Konstanten- und Funktionssymbole werden \glqq{}durch sich selbst\grqq{}
       interpretiert:
       \begin{align*}
         (a_i)^{\cM} & = a_i \\
-        (f^n_i)^{\cM}(t_1,\ldots,t_n) & = f^n_i(t_1,\ldots,t_n)
+        (f^n_i)^{\cM}(t_1,\dotsc,t_n) & = f^n_i(t_1,\dotsc,t_n)
       \end{align*}
      \item Prädikatensymbole werden durch Beweisbarkeit interpretiert:
       \begin{gather*}
-        (A^n_i)^{\cM}  =  \big\{(t_1,\ldots,t_n)\in D^n \bigm|
-           ~ \xvdash[J]{} A^n_i(t_1,\ldots,t_n)\big\} \\
+        (A^n_i)^{\cM}  =  \big\{(t_1,\dotsc,t_n)\in D^n \bigm|
+           ~ \xvdash[J]{} A^n_i(t_1,\dotsc,t_n)\big\} \\
       \end{gather*}
     \end{itemize}
     Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
@@ -4465,7 +4458,7 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     und Interpretationen.
     Äquivalenz (2) folgt aus der Induktionsvoraussetzung,
     da $\alpha$ eine geschlossene Formel ist.
-    Äquivalenz (3) folgt aus der Generalisierung bzw.\,Axiom (A4),
+    Äquivalenz (3) folgt aus der Generalisierung bzw. Axiom (A4),
     da $\alpha[y/t]=\alpha$ ($y$ kommt in $\alpha$ nicht frei vor).
 
     Nun zum Fall, dass $\alpha$ keine geschlossene Formel ist.
@@ -4539,11 +4532,11 @@ Modell mit einer abzählbaren Grundmenge.
 \subsection{Der Vollständigkeitssatz von Gödel}
 
 Aus den Lemmata und Sätzen der letzten Abschnitte folgt,
-dass alle gültigen Formeln in einem  Prädikatenkalkül 1.\,Ordnung
+dass alle gültigen Formeln in einem  Prädikatenkalkül 1.~Ordnung
 auch tatsächlich bewiesen werden können.
 
 \begin{satz}[Vollständigkeitssatz von Gödel]\label{satz-vollstPK}
-  Sei $K$ ein Prädikatenkalkül 1.\,Ordnung. Dann ist jede gültige Formel
+  Sei $K$ ein Prädikatenkalkül 1.~Ordnung. Dann ist jede gültige Formel
   in $K$ beweisbar, d.\,h. für jede Formel $\alpha$ von $K$ gilt: aus
   $\models\alpha$ folgt $\xvdash[K]{}\alpha$.
 
@@ -4574,11 +4567,11 @@ auch tatsächlich bewiesen werden können.
   \end{proof}
 \end{satz}
 
-Zum Abschluss dieses Kapitels fassen wir 
+Zum Abschluss dieses Kapitels fassen wir
 \autoref{satz-vollstPK} und \autoref{satz-korrektheit-theorien-1.ordnung} zusammen.
 
-\begin{korol}[Korrektheit und Vollständigkeit des Prädikatenkalküls 1.\,Ordnung]
-Sei $K$ ein Prädikatenkalkül 1.\,Ordnung. 
+\begin{korol}[Korrektheit und Vollständigkeit des Prädikatenkalküls 1.~Ordnung]
+Sei $K$ ein Prädikatenkalkül 1.~Ordnung.
 Dann gilt für jede Formel $\alpha$ von $K$:
 
 {\centering
@@ -4589,12 +4582,12 @@ $\alpha$ ist gültig genau dann, wenn $\alpha$ in $K$ beweisbar ist.
 \end{korol}
 
 Diese Korrektheit und Vollständigkeit ist genau das, was man
-als \glqq natürlich\grqq\xspace annimmt.
+als \glqq{}natürlich\grqq{} annimmt.
 Man formuliert ja gerade Axiome und Ableitungsregeln, damit
 man Beweise führen kann.
 Und man will natürlich alles beweisen können, was wahr ist.
 Im nächsten Kapitel werden wir sehen,
-dass Vollständigkeit nur in recht \glqq kleinen\grqq\xspace Theorien
+dass Vollständigkeit nur in recht \glqq{}kleinen\grqq{} Theorien
 garantiert werden kann.
 Wir werden eine Erweiterung des Prädikatenkalküls betrachten,
 in der man mit natürlichen Zahlen rechnen kann.
@@ -4606,8 +4599,8 @@ Das liegt letztlich daran, dass man in der von der Theorie zur Verfügung gestel
 Sprache Aussagen über die Theorie machen kann.
 Jede Erweiterung der elementaren Zahlentheorie
 ist ebenfalls nicht vollständig (solange entscheidbar bleibt,
-was die Axiome der Theorie sind\footnote{\glqq entscheidbar\grqq\xspace
-heißt hier im intuitiven Sinne, dass man von jeder Formel nach endlicher 
+was die Axiome der Theorie sind\footnote{\glqq{}entscheidbar\grqq{}
+heißt hier im intuitiven Sinne, dass man von jeder Formel nach endlicher
 Zeit zum Überlegen sagen kann, ob sie ein Axiom ist oder nicht}).
 Die Welt, in der wir leben, besitzt also keine entscheidbare
 Menge von Axiomen, aus der alle Wahrheiten abgeleitet werden können.
@@ -4624,19 +4617,19 @@ Einerseits scheint es einfach, ein intuitives Verständnis von
 den natürlichen Zahlen zu entwickeln.
 Andererseits möchte man gerne Axiome formulieren,
 auf deren Grundlage man formal Sätze der Zahlentheorie beweisen kann.
-Als Grundlage dafür dienen die fünf \textit{Peano-Axiome}.
+Als Grundlage dafür dienen die fünf \emph{Peano-Axiome}.
 
 \begin{enumerate}[(P1)]
  \item $0$ ist eine natürliche Zahl.
- \item Jede nat.\,Zahl $z$ hat einen Nachfolger $z'$. \ \  ($z'$ steht für $z+1$)
+ \item Jede nat.\,Zahl $z$ hat einen Nachfolger $z'$ ($z'$ steht für $z+1$).
  \item $0\ne z'$ für jede nat.\,Zahl $z$.
  \item Aus $x'=y'$ folgt $x=y$.
  \item Sei $Q$ eine Eigenschaft von nat.\,Zahlen.
   Wenn
   \begin{enumerate}[(1.)]
    \item $0$ Eigenschaft $Q$ hat, und
-   \item aus \glqq $z$ hat Eigenschaft $Q$\grqq ~ folgt
-    \glqq $z'$ hat Eigenschaft $Q$\grqq,
+   \item aus \glqq{}$z$ hat Eigenschaft $Q$\grqq{} folgt
+    \glqq{}$z'$ hat Eigenschaft $Q$\grqq{},
   \end{enumerate}
   dann haben alle nat.\,Zahlen Eigenschaft $Q$.
 \end{enumerate}
@@ -4649,7 +4642,7 @@ Die Gleichheitsrelation wird hier bereits als bekannt vorausgesetzt.
 Basierend auf diesen Axiomen definieren wir eine formale Theorie
 für die Zahlentheorie.
 Diese Theorie nennen wir $\mathrm{S}$.
-Sie hat nur ein eingeschränktes \glqq Vokabular\grqq\xspace
+Sie hat nur ein eingeschränktes \glqq{}Vokabular\grqq{}
 an Konstanten-, Funktions- und Prädikatensymbolen.
 
 \textit{Formeln} der Theorie $\mathrm{S}$ bestehen aus folgenden Symbolen:
@@ -4661,7 +4654,7 @@ an Konstanten-, Funktions- und Prädikatensymbolen.
   $f^1_1$, wobei $f^1_1(t)$ mit $t'$ bezeichnet wird \\
   $f^2_1$, wobei $f^2_1(s,t)$ mit $s+t$ bezeichnet wird \\
   $f^2_2$, wobei $f^2_2(s,t)$ mit $s\cdot t$ bezeichnet wird
- \item[übrige Symbole ohne Einschränkung:] Variablensymbole $x_1, x_2, \ldots$,
+ \item[übrige Symbole ohne Einschränkung:] Variablensymbole $x_1, x_2, \dotsc$,
   logische Verknüpfungszeichen, Klammern
 \end{mdescription}
 
@@ -4821,19 +4814,19 @@ sowie der Addition (Kommutativität, Assoziativität).
       Damit ist bewiesen:
       \begin{gather*}
         x_{1}=x_{2},~ x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}
-            \Svdash x_{1}+x_{3}' = x_{2} + x_{3}' . 
+            \Svdash x_{1}+x_{3}' = x_{2} + x_{3}' .
       \end{gather*}
       Mit zweimaliger Anwendung des Deduktionstheorems folgt
       \begin{gather*}
         \Svdash \left(x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}\right)
-                    \rightarrow 
+                    \rightarrow
                  \left(x_{1}=x_{2} \rightarrow x_{1}+x_{3}' = x_{2} + x_{3}'\right)
       \end{gather*}
       Darauf wenden wir noch einmal die Generalisierung an und bekommen
       \begin{gather*}
-        \Svdash \forall x_3 ~ 
+        \Svdash \forall x_3 ~
           \underbrace{\left(x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}\right)}_{\alpha(x_3)}
-                    \rightarrow 
+                    \rightarrow
           \underbrace{\left(x_{1}=x_{2} \rightarrow x_{1}+x_{3}' = x_{2} + x_{3}'\right)}_{\alpha(x_3')}
       \end{gather*}
 
@@ -4862,7 +4855,7 @@ Beweise in der Zahlentheorie laufen also wie gewohnt.
 Wie nicht anders zu erwarten, werden die Beweise schnell lang.
 
 In $\mathrm{S}$ gibt es keine Symbole für natürliche Zahlen außer der $0$.
-Der Nachfolger von $0$ ist $0'$, 
+Der Nachfolger von $0$ ist $0'$,
 und das ist im intuitiven Verständnis die $1$.
 Wir führen die Schreibweise
 $\overline{1}$ für $0'$
@@ -4910,7 +4903,7 @@ ein.
   \begin{enumerate}
    \item
     Falls $m=n$,
-    dann gilt $\Svdash \overline{m}=\overline{n}$.   
+    dann gilt $\Svdash \overline{m}=\overline{n}$.
    \item
     Falls $m\ne n$,
     dann gilt $\Svdash \neg(\overline{m}=\overline{n})$.
@@ -4951,7 +4944,7 @@ ein.
 
 Weitere abkürzende Schreibweisen:
 
-\begin{tabular}{r@{~\ldots~}l}
+\begin{tabular}{r@{~\ldots{}~}l}
   $t<s$ & für $(\exists w ~ w\ne0 \wedge t+w=s)$\\
   $t\leq s$ & für $t<s \vee t=s$\\
   $t>s$ & für $s<t$\\
@@ -4964,7 +4957,7 @@ Weitere abkürzende Schreibweisen:
 
 Das Standardmodell für $\mathrm{S}$ besteht
 aus den natürlichen Zahlen als Grundmenge
-und der \glqq intuitiven\grqq\xspace Interpretation der übrigen Symbole.
+und der \glqq{}intuitiven\grqq{} Interpretation der übrigen Symbole.
 
 \begin{itemize}
  \item Grundmenge: die natürlichen Zahlen
@@ -4974,17 +4967,17 @@ und der \glqq intuitiven\grqq\xspace Interpretation der übrigen Symbole.
  \item $A^2_1$ wird durch die Gleichheitsrelation interpretiert
 \end{itemize}
 
-\glqq Offensichtlich\grqq\xspace sind die Axiome von $\mathrm{S}$ wahr 
+\glqq{}Offensichtlich\grqq{} sind die Axiome von $\mathrm{S}$ wahr
 im Standardmodell.
 Damit folgt auch, dass alle beweisbaren Formeln wahr sind.
 
 Das Standardmodell ist jedoch nicht das einzige Modell für $\mathrm{S}$.
 Es gibt auch Modelle für $\mathrm{S}$ mit
-überabzählbarer Grundmenge \ldots
+überabzählbarer Grundmenge \ldots{}
 
 Versuche ein Modell $\mathcal{M}$ für $\mathrm{S}$ zu finden, das nicht
 die natürlichen Zahlen als Grundmenge hat. Erweitern wir die Grundmenge
-um die Elemente $p_{0}, p_{1}, p_{2},\ldots$, wobei $p_{1}$ Nachfolger von
+um die Elemente $p_{0}, p_{1}, p_{2},\dotsc$, wobei $p_{1}$ Nachfolger von
 $p_{0}$ und $p_{2}$ Nachfolger von $p_{1}$ ist usw. Eine mögliche
 Interpretation von $+$ wäre dann:
 \begin{gather*}
@@ -5015,7 +5008,7 @@ natürlichen Zahlen. Versuch gescheitert.
 
   Wir benötigen die Größerrelation $x>y\colon (\exists z\in\N ~
   z\ne0 ~\wedge~ x=y+z)$. Für die unendliche Formelmenge $\mathcal{C}=
-  \{c>0, c>1, c>2, c>3, \ldots\}$ gibt es für jede Teilmenge ein Modell
+  \{c>0, c>1, c>2, c>3, \dotsc\}$ gibt es für jede Teilmenge ein Modell
   $\mathcal{M}$ mit der Interpretation $c^{\mathcal{M}} = c+1$.
 
   Modell $\mathcal{M}$ für $\mathcal{C}$ kann $c$ nicht durch ein Element
@@ -5027,11 +5020,11 @@ die wahr ist und die man nicht beweisen kann.
 In der Prädikatenlogik gibt es eine solche Formel nicht,
 aber in der Zahlentheorie gibt es sie.
 Grundidee dieser Formel ist eine Paradoxie
-wie \glqq Dieser Satz ist falsch\grqq.
+wie \glqq{}Dieser Satz ist falsch\grqq{}.
 In einer formalen Theorie kann man nicht über wahr und falsch
 sprechen, dafür aber über beweisbar und nicht beweisbar.
 Die zu formulierende Aussage geht dann in die
-Richtung \glqq Formel $\phi$ ist nicht beweisbar\grqq\xspace
+Richtung \glqq{}Formel $\phi$ ist nicht beweisbar\grqq{}
 (für eine feste Formel $\phi$).
 Wäre diese Aussage beweisbar,
 dann wäre eine falsche Aussage beweisbar
@@ -5040,7 +5033,7 @@ Also muss sie nicht beweisbar sein, womit sie auch
 eine wahre Aussage ist.
 
 Das Problem liegt nun darin, eine solche Aussage in
-der Zahlentheorie zu formulieren. 
+der Zahlentheorie zu formulieren.
 Dort kann man über natürliche Zahlen und deren Eigenschaften sprechen.
 Also muss man eine Übersetzung (Kodierung) von Formeln, Beweisen usw.~in
 die natürlichen Zahlen finden.
@@ -5051,8 +5044,8 @@ In diesem Zusammenhang heißt diese Übersetzung Arithmetisierung von Formeln.
 
 Eigenschaften von Formeln lassen sich dann durch Eigenschaften
 von natürlichen Zahlen ausdrücken.
-Eine Formel $\alpha$ mit einer freien Variablen $x_1$ 
-kann als Darstellung der Menge 
+Eine Formel $\alpha$ mit einer freien Variablen $x_1$
+kann als Darstellung der Menge
 $\{n\in\N \mid \Svdash \alpha[x_1/\overline{n}]\}$ aufgefasst werden.
 Also lassen sich Eigenschaften von Formeln
 durch Formeln darstellen.
@@ -5065,14 +5058,14 @@ Wir wissen, dass es abzählbar viele Formeln
 und überabzählbar viele Eigenschaften von Formeln gibt.
 Kann man die Eigenschaft der Beweisbarkeit
 -- also die Menge
-$\{ n\in\N\mid n\mbox{ ist Kodierung einer in $\mathrm{S}$ beweisbaren Formel}\}$ 
+$\{ n\in\N\mid n\mbox{ ist Kodierung einer in $\mathrm{S}$ beweisbaren Formel}\}$
 -- durch eine Formel in $\mathrm{S}$ darstellen?
 Die Darstellung von Mengen in $\mathrm{S}$ ist auf den ersten
 Blick recht kompliziert.
 Aber es gibt ein sehr schönes Werkzeug dafür:
 die (primitiv-)rekursiven Funktionen.
 
-Die hier angerissenen Begriffe werden nun in umgekehrter 
+Die hier angerissenen Begriffe werden nun in umgekehrter
 Reihenfolge betrachtet.
 Wir beginnen mit den (primitiv-)rekursiven Funktionen,
 zeigen dann die Verbindung zwischen diesen Funktionen
@@ -5094,20 +5087,20 @@ Die Basisfunktionen sind
   $Z(\,)=0$
  \item die \emph{Nachfolgerfunktion} $N\colon\N\rightarrow\N$ mit $N(n)=n+1$
  \item die \emph[rand=Projektionsfunkt.]{Projektionsfunktionen}
-  $U^{(k)}_i\colon\N^k\rightarrow\N$ mit $U^{(k)}_i(x_1,\ldots,x_k)=x_i$
+  $U^{(k)}_i\colon\N^k\rightarrow\N$ mit $U^{(k)}_i(x_1,\dotsc,x_k)=x_i$
   wobei $k\in\N^+$ und $1\leq i\leq k$.
 \end{itemize}
 %
 
 \begin{defini}[Komposition]
   Seien $f\colon\N^k\rightarrow\N$
-  und $g_1,\ldots,g_k\colon\N^l\rightarrow\N$
+  und $g_1,\dotsc,g_k\colon\N^l\rightarrow\N$
   Funktionen auf den natürlichen Zahlen.
   Die Funktion $h\colon\N^l\rightarrow\N$ mit
   \begin{gather*}
-    h(x_1,\ldots,x_l) = f\big(g_1(x_1,\ldots,x_l),\ldots,g_k(x_1,\ldots,x_l)\big)
+    h(x_1,\dotsc,x_l) = f\big(g_1(x_1,\dotsc,x_l),\dotsc,g_k(x_1,\dotsc,x_l)\big)
   \end{gather*}
-  entsteht aus $f$ und $g_1,\ldots,g_k$ durch \emph{Komposition}.
+  entsteht aus $f$ und $g_1,\dotsc,g_k$ durch \emph{Komposition}.
 \end{defini}
 
 \begin{bsp}\label{bsp:3}
@@ -5122,7 +5115,7 @@ $f\colon\N^3\rightarrow\N$ mit $f(x,y,z)=x+y+z$ und
 $g_1,g_2,g_3\colon\N^2\rightarrow\N$
 mit $g_1(x,y)=x^2$, $g_2(x,y)=h(x)$ und $g_3(x,y)=y^2$
 liefert die Funktion
-$h':\N^2\rightarrow\N$ mit $h'(x,y)=x^2+2x+y^2$.
+$h'\colon\N^2\rightarrow\N$ mit $h'(x,y)=x^2+2x+y^2$.
 
 \begin{defini}[totale Funktion]
   Eine Funktion $f\colon\Gamma\rightarrow\Omega$ heißt
@@ -5174,8 +5167,8 @@ Die anderen Argumente werden nur "`mitgeschleift"'.
   Die Funktion $h\colon\N^{k+1}\rightarrow\N$ entsteht mittels
   \emph{Rekursion} aus $f$ und $g$, falls
   \begin{align*}
-    h(x_1,\ldots,x_k,0) & = f(x_1,\ldots,x_k) \text{\quad und} \\
-    h(x_1,\ldots,x_k,n+1) & = g\big(n,h(x_1,\ldots,x_k,n),x_1,\ldots,x_k\big) .
+    h(x_1,\dotsc,x_k,0) & = f(x_1,\dotsc,x_k) \text{\quad und} \\
+    h(x_1,\dotsc,x_k,n+1) & = g\big(n,h(x_1,\dotsc,x_k,n),x_1,\dotsc,x_k\big) .
   \end{align*}
 \end{defini}
 
@@ -5193,10 +5186,10 @@ Die anderen Argumente werden nur "`mitgeschleift"'.
   Ein Prädikat $R\subseteq \N^k$ heißt \emph{primitiv-rekursiv},
   falls die zu $R$ gehörende charakteristische Funktion $\chi_R\colon\N^k\rightarrow\N$ mit
   \begin{gather*}
-    \chi_R(x_1,\ldots,x_k) =
+    \chi_R(x_1,\dotsc,x_k) =
        \begin{cases}
-         0, & \text{falls $(x_1,\ldots,x_k)\notin R$} \\
-         1, & \text{falls $(x_1,\ldots,x_k)\in R$}
+         0, & \text{falls $(x_1,\dotsc,x_k)\notin R$} \\
+         1, & \text{falls $(x_1,\dotsc,x_k)\in R$}
        \end{cases}
   \end{gather*}
   primitiv-rekursiv ist.
@@ -5274,14 +5267,14 @@ Die anderen Argumente werden nur "`mitgeschleift"'.
   \end{align*}
 
  \item Die konstanten Nullfunktionen bel. Stelligkeit
-       $Z^{(k)}:\N^k\rightarrow \N$ mit $Z^{(k)}(x_1\ldots,x_k)=0$.
+       $Z^{(k)}\colon\N^k\rightarrow \N$ mit $Z^{(k)}(x_1\dotsc,x_k)=0$.
 
        Offensichtlich ist $Z^{(0)}=Z$.
        Wir definieren $Z^{(k+1)}$ induktiv aus $Z^{(k)}$.
        \begin{align*}
-         Z^{(k+1)}(x_1,\ldots,x_k,0) & = Z^{(k)}(x_1,\ldots,x_k) & ( = 0 ) \\
-         Z^{(k+1)}(x_1,\ldots,x_k,n+1) & = 
-              U^{(k+2)}_{2}(n,Z^{(k+1)}(x_1,\ldots,x_k,n),x_1,\ldots,x_k) 
+         Z^{(k+1)}(x_1,\dotsc,x_k,0) & = Z^{(k)}(x_1,\dotsc,x_k) & ( = 0 ) \\
+         Z^{(k+1)}(x_1,\dotsc,x_k,n+1) & =
+              U^{(k+2)}_{2}(n,Z^{(k+1)}(x_1,\dotsc,x_k,n),x_1,\dotsc,x_k)
                   & ( = 0 )
        \end{align*}
 
@@ -5352,7 +5345,7 @@ Die anderen Argumente werden nur "`mitgeschleift"'.
   \end{align*}
 
  \item
-  Das Ungleichnullprädikat ist $\overline{\alpha}:\N\rightarrow\{0,1\}$ mit
+  Das Ungleichnullprädikat ist $\overline{\alpha}\colon\N\rightarrow\{0,1\}$ mit
   \begin{gather*}
     \alpha(x)=
        \begin{cases}
@@ -5419,10 +5412,10 @@ Dieses Mittel kann man auch für primitiv-rekursive Funktionen verwenden.
   und $P\subseteq \N^k$ sei ein primitiv-rekursives Prädikat.
   Dann ist auch die Funktion $f\colon\N^k\rightarrow\N$ mit
   \begin{gather*}
-    f(x_1,\ldots,x_k) =
+    f(x_1,\dotsc,x_k) =
        \begin{cases}
-         g(x_1,\ldots,x_k), & \text{falls $(x_1,\ldots,x_k)\in P$} \\
-         h(x_1,\ldots,x_k), & \text{sonst}
+         g(x_1,\dotsc,x_k), & \text{falls $(x_1,\dotsc,x_k)\in P$} \\
+         h(x_1,\dotsc,x_k), & \text{sonst}
     \end{cases}
   \end{gather*}
   primitiv-rekursiv.
@@ -5431,8 +5424,8 @@ Dieses Mittel kann man auch für primitiv-rekursive Funktionen verwenden.
 \begin{proof}
   Offensichtlich gilt
   \begin{gather*}
-    f(x_1,\ldots,x_k) = g(x_1,\ldots,x_k) \cdot \chi_P(x_1,\ldots,x_k)
-       + h(x_1,\ldots,x_k) \cdot \alpha\big(\chi_P(x_1,\ldots,x_k)\big)\ \ .
+    f(x_1,\dotsc,x_k) = g(x_1,\dotsc,x_k) \cdot \chi_P(x_1,\dotsc,x_k)
+       + h(x_1,\dotsc,x_k) \cdot \alpha\big(\chi_P(x_1,\dotsc,x_k)\big)\ \ .
   \end{gather*}
   Also ist $f$ primitiv-rekursiv.
 \end{proof}
@@ -5454,38 +5447,38 @@ Gleiches gilt für das Produkt.
   Dann sind auch die folgenden Funktionen $g,h\colon\N^{k+1}\rightarrow\N$
   primitiv-rekursiv.
   \begin{align*}
-    g(x_1,\ldots,x_k,y) & = \sum_{t=0}^{y} f(x_1,\ldots,x_k,t) \\
-    h(x_1,\ldots,x_k,y) & = \prod_{t=0}^{y} f(x_1,\ldots,x_k,t)
+    g(x_1,\dotsc,x_k,y) & = \sum_{t=0}^{y} f(x_1,\dotsc,x_k,t) \\
+    h(x_1,\dotsc,x_k,y) & = \prod_{t=0}^{y} f(x_1,\dotsc,x_k,t)
   \end{align*}
 \end{satz}
 
 \begin{proof}
   Sei $f\colon\N^{k+1}\rightarrow\N$ primitiv-rekursiv.
-  Definiere $f':\N^{k}\rightarrow\N$
+  Definiere $f'\colon\N^{k}\rightarrow\N$
   mit
   \begin{align*}
-    f'(x_1,\ldots,x_k) & = f(x_1,\ldots,x_k,0) \\
-    & = f\left(U^{(k)}_1\left(x_1,\ldots,x_k\right),\ldots,
-    U^{(k)}_k\left(x_1,\ldots,x_k\right),Z^{(k)}\left(x_1,\ldots,x_k\right)\right)\ \ .
+    f'(x_1,\dotsc,x_k) & = f(x_1,\dotsc,x_k,0) \\
+    & = f\left(U^{(k)}_1\left(x_1,\dotsc,x_k\right),\dotsc,
+    U^{(k)}_k\left(x_1,\dotsc,x_k\right),Z^{(k)}\left(x_1,\dotsc,x_k\right)\right)\ \ .
   \end{align*}
   $f'$ ensteht also durch Komposition aus
-  den primitiv-rekursiven Funktionen $f$, $U^{(k)}_1$, \ldots, $U^{(k)}_k$, $Z^{(k)}$.
+  den primitiv-rekursiven Funktionen $f$, $U^{(k)}_1$, \ldots{}, $U^{(k)}_k$ und $Z^{(k)}$.
   Also ist $f'$ primitiv-rekursiv.
   Nun kann $g$ mittels Rekursion definiert werden.
   %
   \begin{align*}
-    g(x_1,\ldots,x_k,0) & = f'(x_1,\ldots,x_k) \\
-    g(x_1,\ldots,x_k,y+1) & =
-    \underbrace{g(x_1,\ldots,x_k,y)}_{=\sum\limits_{t=0}^{y} f(x_1,\ldots,x_k,t)}
-    + f(x_1,\ldots,x_k,N(y))
+    g(x_1,\dotsc,x_k,0) & = f'(x_1,\dotsc,x_k) \\
+    g(x_1,\dotsc,x_k,y+1) & =
+    \underbrace{g(x_1,\dotsc,x_k,y)}_{=\sum\limits_{t=0}^{y} f(x_1,\dotsc,x_k,t)}
+    + f(x_1,\dotsc,x_k,N(y))
   \end{align*}
 
   Für die Funktion $h$ wird entsprechend vorgegangen.
   \begin{align*}
-    h(x_1,\ldots,x_k,0) & = f'(x_1,\ldots,x_k) \\
-    h(x_1,\ldots,x_k,y+1) & =
-    \underbrace{h(x_1,\ldots,x_k,y)}_{=\prod\limits_{t=0}^{y} f(x_1,\ldots,x_k,t)}
-    \cdot f(x_1,\ldots,x_k,N(y))
+    h(x_1,\dotsc,x_k,0) & = f'(x_1,\dotsc,x_k) \\
+    h(x_1,\dotsc,x_k,y+1) & =
+    \underbrace{h(x_1,\dotsc,x_k,y)}_{=\prod\limits_{t=0}^{y} f(x_1,\dotsc,x_k,t)}
+    \cdot f(x_1,\dotsc,x_k,N(y))
   \end{align*}
 \end{proof}
 
@@ -5494,20 +5487,20 @@ Man muss die Summe nicht unbedingt bei Index $0$ beginnen.
   Sei $f\colon\N^{k+1}\rightarrow\N$ primitiv-rekursiv.
   Dann sind auch die folgenden Funktionen primitiv-rekursiv.
   \begin{align*}
-    g(x_1,\ldots,x_k,y) & = \sum_{t=1}^y f(x_1,\ldots,x_k,t) \\
-    h(x_1,\ldots,x_k,y) & = \prod_{t=1}^y f(x_1,\ldots,x_k,t)
+    g(x_1,\dotsc,x_k,y) & = \sum_{t=1}^y f(x_1,\dotsc,x_k,t) \\
+    h(x_1,\dotsc,x_k,y) & = \prod_{t=1}^y f(x_1,\dotsc,x_k,t)
   \end{align*}
 \end{satz}
 
 \begin{proof}
   Mit
   \begin{gather*}
-    \sum_{t=1}^y f(x_1,\ldots,x_k,t) =
-       \big(\sum_{t=0}^y f(x_1,\ldots,x_k,t)\big) \dminus f(x_1,\ldots,x_k,0)
+    \sum_{t=1}^y f(x_1,\dotsc,x_k,t) =
+       \big(\sum_{t=0}^y f(x_1,\dotsc,x_k,t)\big) \dminus f(x_1,\dotsc,x_k,0)
   \end{gather*}
   folgt dieser Satz direkt aus dem letzten Satz.
   Für das Produkt muss der Spezialfall
-  $f(x_1,\ldots,x_k,0)=0$ getrennt betrachtet werden.
+  $f(x_1,\dotsc,x_k,0)=0$ getrennt betrachtet werden.
 \end{proof}
 
 Die Argumente von Prädikaten lassen sich quantifizieren.
@@ -5516,15 +5509,15 @@ die nur über einen Anfangsabschnitt der natürlichen Zahlen definiert sind.
 Sei $P$ ein $(k+1)$-stelliges Prädikat.
 Das ebenfalls $(k+1)$-stellige Prädikat $E$ mit
 \begin{gather*}
-  E(x_1,\ldots,x_k,y) = (\exists t)_{\leq y} P(x_1,\ldots,x_k,t)
+  E(x_1,\dotsc,x_k,y) = (\exists t)_{\leq y} P(x_1,\dotsc,x_k,t)
 \end{gather*}
 ist wahr genau dann, wenn es (mindestens) ein $t\leq y$ gibt,
-für das $P(x_1,\ldots,x_k,t)$ gilt.
+für das $P(x_1,\dotsc,x_k,t)$ gilt.
 Entsprechend ist
 \begin{gather*}
-  A(x_1,\ldots,x_k,y) = (\forall t)_{\leq y} P(x_1,\ldots,x_k,t)
+  A(x_1,\dotsc,x_k,y) = (\forall t)_{\leq y} P(x_1,\dotsc,x_k,t)
 \end{gather*}
-wahr genau dann, wenn $P(x_1,\ldots,x_k,t)$ für alle $t\leq y$ wahr ist.
+wahr genau dann, wenn $P(x_1,\dotsc,x_k,t)$ für alle $t\leq y$ wahr ist.
 Diese beschränkten Quantoren können durch primitiv-rekursive Konstrukte
 beschrieben werden.
 
@@ -5534,30 +5527,30 @@ beschrieben werden.
   Dann sind auch die folgenden mit beschränkten Quantoren definierten
   Prädikate primitiv-rekursiv.
   \begin{gather*}
-    (\exists t)_{\leq y} P(x_1,\ldots,x_k,t)
+    (\exists t)_{\leq y} P(x_1,\dotsc,x_k,t)
        \qquad\text{und}\qquad
-       (\forall t)_{\leq y} P(x_1,\ldots,x_k,t)\ \ .
+       (\forall t)_{\leq y} P(x_1,\dotsc,x_k,t)\ \ .
   \end{gather*}
 \end{satz}
 
 \begin{proof}
-  Beim Summieren aller Werte $P(x_1,\ldots,x_k,t)$ für alle $t=0,1,2,\ldots,k$
-  erhält man einen Wert größer $0$ genau dann, wenn es ein $t\leq y$ mit $P(x_1,\ldots,x_k,t)$
+  Beim Summieren aller Werte $P(x_1,\dotsc,x_k,t)$ für alle $t=0,1,2,\dotsc,k$
+  erhält man einen Wert größer $0$ genau dann, wenn es ein $t\leq y$ mit $P(x_1,\dotsc,x_k,t)$
   gibt.
   Also gilt
   \begin{align*}
-    (\exists t)_{\leq y} P(x_1,\ldots,x_k,t)
-    & = \bigg( \Big[\sum_{t=0}^y P(x_1,\ldots,x_k,t)\Big] \ne 0 \bigg) \\
-    & = 1 \dminus \alpha \Big(\sum_{t=0}^y P(x_1,\ldots,x_k,t)\Big)
+    (\exists t)_{\leq y} P(x_1,\dotsc,x_k,t)
+    & = \bigg( \Big[\sum_{t=0}^y P(x_1,\dotsc,x_k,t)\Big] \ne 0 \bigg) \\
+    & = 1 \dminus \alpha \Big(\sum_{t=0}^y P(x_1,\dotsc,x_k,t)\Big)
   \end{align*}
 
-  Entsprechend ist das Produkt aller Werte $P(x_1,\ldots,x_k,t)$ für alle $t=0,1,2,\ldots,k$
-  gleich $1$ genau dann, wenn $P(x_1,\ldots,x_k,t)$ für alle $t=0,1,2,\ldots,k$ gilt.
+  Entsprechend ist das Produkt aller Werte $P(x_1,\dotsc,x_k,t)$ für alle $t=0,1,2,\dotsc,k$
+  gleich $1$ genau dann, wenn $P(x_1,\dotsc,x_k,t)$ für alle $t=0,1,2,\dotsc,k$ gilt.
   Also gilt
   \begin{align*}
-    (\forall t)_{\leq y} P(x_1,\ldots,x_k,t)
-    & = \bigg(\Big[\prod_{t=0}^y P(x_1,\ldots,x_k,t)\Big] = 1 \bigg) \\
-    & = \prod_{t=0}^y P(x_1,\ldots,x_k,t)
+    (\forall t)_{\leq y} P(x_1,\dotsc,x_k,t)
+    & = \bigg(\Big[\prod_{t=0}^y P(x_1,\dotsc,x_k,t)\Big] = 1 \bigg) \\
+    & = \prod_{t=0}^y P(x_1,\dotsc,x_k,t)
   \end{align*}
 \end{proof}
 
@@ -5606,11 +5599,11 @@ Sei $P\colon\N^{k+1}\rightarrow\N$
 ein $(k+1)$-stelliges Prädikat.
 Dann ist $\min P\colon\N^k\rightarrow\N$ eine Funktion mit
 \begin{gather*}
-  \min_{t\leq y} P(x_1,\ldots,x_k,t) =
+  \min_{t\leq y} P(x_1,\dotsc,x_k,t) =
      \begin{cases}
        t, & \begin{minipage}[t]{100mm}
-         falls es ein $t\leq y$ gibt mit \\$P(x_1,\ldots,x_k,t)$
-         und $\neg P(x_1,\ldots,x_k,s)$ für $s=0,\ldots,t-1$
+         falls es ein $t\leq y$ gibt mit \\$P(x_1,\dotsc,x_k,t)$
+         und $\neg P(x_1,\dotsc,x_k,s)$ für $s=0,\dotsc,t-1$
        \end{minipage} \\[0.5ex]
        0, & \mbox{sonst}
      \end{cases}
@@ -5647,29 +5640,29 @@ Mitteln primitiv-rekursiver Funktionen beschreiben.
   Sei $P\colon\N^{k+1}\rightarrow\N$ ein primitiv-rekursives
   Prädikat und $f\colon\N^{k+1}\rightarrow\N$ sei definiert als
   \begin{gather*}
-    f(y,x_1,\ldots,x_k) = \min\limits_{t\leq y} P(x_1,\ldots,x_k,t)\ .
+    f(y,x_1,\dotsc,x_k) = \min\limits_{t\leq y} P(x_1,\dotsc,x_k,t)\ .
   \end{gather*}
   Dann ist $f$ primitiv-rekursiv.
 \end{satz}
 
 
 \begin{proof}
-  Zuerst betrachten wir den Fall, dass $P(x_1,\ldots,x_k,t)$ für ein $t\leq y$ gilt,
-  und sei $t_0 = \min\limits_{t\leq y} P(x_1,\ldots,x_k,t)$.
-  Dann ist $P(x_1,\ldots,x_k,u)=0$ für $u=0,1,2,\ldots,t_0-1$.
-  Damit folgt für alle $s=0,1,2,\ldots,t_0-1$
+  Zuerst betrachten wir den Fall, dass $P(x_1,\dotsc,x_k,t)$ für ein $t\leq y$ gilt,
+  und sei $t_0 = \min\limits_{t\leq y} P(x_1,\dotsc,x_k,t)$.
+  Dann ist $P(x_1,\dotsc,x_k,u)=0$ für $u=0,1,2,\dotsc,t_0-1$.
+  Damit folgt für alle $s=0,1,2,\dotsc,t_0-1$
   \begin{gather*}
-    \sum_{u=0}^{s} P(x_1,\ldots,x_k,u) \ \ =\ \  0 \ \ .
+    \sum_{u=0}^{s} P(x_1,\dotsc,x_k,u) \ \ =\ \  0 \ \ .
   \end{gather*}
-  Wegen $P(x_1,\ldots,x_k,t_0)=1$ folgt für alle $s=t_0,t_0+1,\ldots,y$
+  Wegen $P(x_1,\dotsc,x_k,t_0)=1$ folgt für alle $s=t_0,t_0+1,\dotsc,y$
   \begin{gather*}
-    \sum_{u=0}^{s} P(x_1,\ldots,x_k,s) \ \ \geq\ \  1 \ \ .
+    \sum_{u=0}^{s} P(x_1,\dotsc,x_k,s) \ \ \geq\ \  1 \ \ .
   \end{gather*}
   Also gilt
   \begin{align*}
     t_0 & = \text{Anzahl aller $s\leq y$ mit\ }
-       \sum_{u=0}^s P(x_1,\ldots,x_k,u) = 0 \\
-    & = \sum_{s=0}^y\  \alpha\Big(\sum_{u=0}^s P(x_1,\ldots,x_k,u)\Big)
+       \sum_{u=0}^s P(x_1,\dotsc,x_k,u) = 0 \\
+    & = \sum_{s=0}^y\  \alpha\Big(\sum_{u=0}^s P(x_1,\dotsc,x_k,u)\Big)
   \end{align*}
 
 
@@ -5678,18 +5671,18 @@ Mitteln primitiv-rekursiver Funktionen beschreiben.
   Funktion $g\colon\N^{k+1}\rightarrow\N$ auf.
   Definiere
   \begin{gather*}
-    g(y,x_1,\ldots,x_k) = \sum_{s=0}^y
-       \alpha\Big(\sum_{u=0}^s P(x_1,\ldots,x_k,u)\Big) \ \ .
+    g(y,x_1,\dotsc,x_k) = \sum_{s=0}^y
+       \alpha\Big(\sum_{u=0}^s P(x_1,\dotsc,x_k,u)\Big) \ \ .
   \end{gather*}
   Da $P$ primitiv-rekursiv ist, ist $g$ ebenfalls primitiv-rekursiv.
   Durch Fallunterscheidung kann jetzt noch der Fall abgefangen werden,
   dass das gesuchte Minimum nicht existiert.
   Damit ergibt sich
   \begin{gather*}
-    f(y,x_1,\ldots,x_k) =
+    f(y,x_1,\dotsc,x_k) =
        \begin{cases}
-         g(y,x_1,\ldots,x_k), &
-         \text{falls $(\exists t)_{\leq y} P(x_1,\ldots,x_k,t)$} \\
+         g(y,x_1,\dotsc,x_k), &
+         \text{falls $(\exists t)_{\leq y} P(x_1,\dotsc,x_k,t)$} \\
          0, & \sonst
     \end{cases}
   \end{gather*}
@@ -5742,8 +5735,8 @@ Damit gilt schließlich
 
 Primzahlen können zur Kodierung von Folgen von natürlichen Zahlen
 durch natürliche Zahlen verwendet werden.
-Die Folge $a_{0}, a_{1},\ldots,a_{n}$ mit $a_{n}\ne 0$ wird kodiert als
-$2^{a_{0}}\cdot 3^{a_{1}}\cdot 5^{a_{2}}\cdot \ldots \cdot p_{n}^{a_{n}}$, wobei
+Die Folge $a_{0}, a_{1},\dotsc,a_{n}$ mit $a_{n}\ne 0$ wird kodiert als
+$2^{a_{0}}\cdot 3^{a_{1}}\cdot 5^{a_{2}}\dotsm p_{n}^{a_{n}}$, wobei
 $p_{i}$ die $i$-te Primzahl ist ($p_{0}=2$).
 Da die Zerlegung von natürlichen Zahlen in Primfaktoren eindeutig ist,
 lassen sich die einzelnen Elemente der Folge dekodieren.
@@ -5767,11 +5760,11 @@ Die Länge einer kodierten Folge lässt sich primitiv-rekursiv berechnen.
      mit $i>j$}, =0 \text{sonst}} \big)
 \end{gather*}
 
-Die \emph{Konkatenation} von zwei kodierten Folgen $m = 2^{a_{0}}\cdot 3^{a_{1}}\cdot
-\ldots \cdot p_{k}^{a_{k}}$ und $q = 2^{b_{0}} \cdot 3^{b_{1}} \cdot
-\ldots \cdot p_{l}^{b_{l}}$ ist $m\ast q = 2^{a_{0}}\cdot 3^{a_{1}}\cdot
-\ldots \cdot p_{k}^{a_{k}}\cdot p_{k+1}^{b_{0}} \cdot p_{k+2}^{b_{1}} \cdot
-\ldots \cdot p_{k+l+1}^{b_{l}}$.
+Die \emph{Konkatenation} von zwei kodierten Folgen $m = 2^{a_{0}}\cdot
+3^{a_{1}}\dotsm p_{k}^{a_{k}}$ und $q = 2^{b_{0}} \cdot 3^{b_{1}} \dotsm
+p_{l}^{b_{l}}$ ist $m\ast q = 2^{a_{0}}\cdot 3^{a_{1}}\dotsm
+p_{k}^{a_{k}}\cdot p_{k+1}^{b_{0}} \cdot p_{k+2}^{b_{1}} \dotsm
+p_{k+l+1}^{b_{l}}$.
 \begin{gather*}
   m\ast q = m\cdot \prod_{i=0}^{lh(q)} (p_{lh(m)+i+1})^{(q)_{i}}
 \end{gather*}
@@ -5781,7 +5774,7 @@ Offensichtlich ist die Konkatenation assoziativ: $(m\ast q)\ast r = m\ast
 \begin{defini}
   Um später die allgemeine Rekursion einzuführen definieren wir
   \begin{gather*}
-    f\#(y) = 2^{f(0)} \cdot 3^{f(1)}\cdot \ldots \cdot p_{y-1}^{f(y-1)} =
+    f\#(y) = 2^{f(0)} \cdot 3^{f(1)}\dotsm p_{y-1}^{f(y-1)} =
        \prod_{i=0}^{y-1} p_{i}^{f(i)}
   \end{gather*}
   für eine beliebige Funktion $f\colon\N\rightarrow\N$.
@@ -5813,17 +5806,17 @@ Da $f(n) = h(n, f\#(n))$, ist $f$ ebenfalls primitiv-rekursiv.
 Verzichtet man auf die obere Schranke für das gesuchte Minimum,
 dann kann der Funktionswert von $\min P$ undefiniert sein.
 \begin{gather*}
-  \min\limits_{y} P(x_1,\ldots,x_k,y) =
+  \min\limits_{y} P(x_1,\dotsc,x_k,y) =
      \begin{cases}
-       \min\{t\mid P(x_1,\ldots,x_k,t)\}, &
-         \exists t\in\N\colon P(x_1,\ldots,x_k,t) \wedge\\
-       & \forall s<t, s\in\N\colon\neg P(x_1,\ldots,x_k,s)\\
+       \min\{t\mid P(x_1,\dotsc,x_k,t)\}, &
+         \exists t\in\N\colon P(x_1,\dotsc,x_k,t) \wedge\\
+       & \forall s<t, s\in\N\colon\neg P(x_1,\dotsc,x_k,s)\\
        \uparrow, & \text{sonst}
      \end{cases}
 \end{gather*}
 Die Funktion $g$ mit
 \begin{gather*}
-  g(x_1,\ldots,x_k) = \min\limits_y P(x_1,\ldots,x_k,y)
+  g(x_1,\dotsc,x_k) = \min\limits_y P(x_1,\dotsc,x_k,y)
 \end{gather*}
 entsteht aus $P$ durch (unbeschränkte) Minimierung.
 
@@ -5892,13 +5885,13 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
   falls es eine Formel $\alpha$ in $\mathrm{S}$
   mit folgenden Eigenschaften gibt.
   \begin{enumerate}
-   \item $\alpha$ hat die freien Variablen $x_1,\ldots,x_k$, und
-   \item für alle $n_1,\ldots,n_k\in\N$ gilt:
+   \item $\alpha$ hat die freien Variablen $x_1,\dotsc,x_k$, und
+   \item für alle $n_1,\dotsc,n_k\in\N$ gilt:
     \begin{itemize}
-     \item[(1)] falls $(n_1,\ldots,n_k)\in R$,
-      dann $\Svdash \alpha[x_1/\overline{n_1},\ldots,x_k/\overline{n_k}]$
-     \item[(2)] falls $(n_1,\ldots,n_k)\notin R$,
-      dann $\Svdash \neg \alpha[x_1/\overline{n_1},\ldots,x_k/\overline{n_k}]$
+     \item[(1)] falls $(n_1,\dotsc,n_k)\in R$,
+      dann $\Svdash \alpha[x_1/\overline{n_1},\dotsc,x_k/\overline{n_k}]$
+     \item[(2)] falls $(n_1,\dotsc,n_k)\notin R$,
+      dann $\Svdash \neg \alpha[x_1/\overline{n_1},\dotsc,x_k/\overline{n_k}]$
     \end{itemize}
   \end{enumerate}
 \end{defini}
@@ -5965,12 +5958,12 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
   falls es eine Formel $\alpha$ in $\mathrm{S}$
   mit folgenden Eigenschaften gibt.
   \begin{enumerate}
-   \item $\alpha$ hat die freien Variablen $x_1,\ldots,x_k,x_{k+1}$, und
-   \item für alle $n_1,\ldots,n_k,m\in\N$ gilt:
+   \item $\alpha$ hat die freien Variablen $x_1,\dotsc,x_k,x_{k+1}$, und
+   \item für alle $n_1,\dotsc,n_k,m\in\N$ gilt:
     \begin{itemize}
-     \item[(1)] falls $f(n_1,\ldots,n_k)=m$,
-      dann $\Svdash \alpha[x_1/\overline{n_1},\ldots,x_k/\overline{n_k},x_{k+1}/\overline{m}]$, und
-     \item[(2)] $\Svdash (\exists_1 x_{k+1}~ \alpha[x_1/\overline{n_1},\ldots,x_k/\overline{n_k}])$
+     \item[(1)] falls $f(n_1,\dotsc,n_k)=m$,
+      dann $\Svdash \alpha[x_1/\overline{n_1},\dotsc,x_k/\overline{n_k},x_{k+1}/\overline{m}]$, und
+     \item[(2)] $\Svdash (\exists_1 x_{k+1}~ \alpha[x_1/\overline{n_1},\dotsc,x_k/\overline{n_k}])$
 
       $(\exists_1 x ~ \alpha)$ ist abkürzende Schreibweise für
       $(\exists x~\alpha) \wedge (\forall x~ \forall y ~ (\alpha\wedge\alpha[x/y])\rightarrow x=y)$.
@@ -5987,7 +5980,7 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
 
 
 \begin{bsp}
-  Die Additionsfunktion $f:\N^2\rightarrow\N$ mit $f(a,b) = a +b$
+  Die Additionsfunktion $f\colon\N^2\rightarrow\N$ mit $f(a,b) = a +b$
   ist streng repräsentierbar in $\mathrm{S}$.
   $f$ wird repräsentiert durch die Formel $\alpha$:
   \begin{gather*}
@@ -6085,9 +6078,9 @@ Die Nachfolgerfunktion $N\colon\N\rightarrow\N$ mit $N(n) = n+1$ ist repräsenti
 \end{gather*}
 
 Die Projektionsfunktion $U_{i}^{(k)}\colon \N^{k}\rightarrow\N$ mit
-$U_{i}^{(k)}(n_{1},\ldots,n_{k})=n_{i}$ ist repräsentierbar
+$U_{i}^{(k)}(n_{1},\dotsc,n_{k})=n_{i}$ ist repräsentierbar
 \begin{gather*}
-  \alpha_{U_{i}^{(k)}}\colon x_{1}=x_{1}\wedge \ldots x_{k}=x_{k} \wedge
+  \alpha_{U_{i}^{(k)}}\colon x_{1}=x_{1}\wedge \dotsb x_{k}=x_{k} \wedge
      x_{k+1}=x_{i}
 \end{gather*}
 
@@ -6095,19 +6088,19 @@ Fügt man repräsentierbare Funktionen mittels Komposition zusammen,
 dann erhält man wiederum repräsentierbare Funktionen.
 
 Die Komposition von Funktionen: Seien $g\colon \N^{k} \rightarrow \N$
-und $h_{1},\ldots,h_{m}\colon \N^{k}\rightarrow\N$ repräsentierbar
-durch $\alpha, \beta_{1},\ldots,\beta_{m}$. Definiere $f\colon
+und $h_{1},\dotsc,h_{m}\colon \N^{k}\rightarrow\N$ repräsentierbar
+durch $\alpha, \beta_{1},\dotsc,\beta_{m}$. Definiere $f\colon
 \N^{k}\rightarrow\N$ durch
 \begin{gather*}
-  f(n_{1},\ldots,n_{k}) = g(h_{1}(n_{1},\ldots,n_{k}),
-     h(n_{1},\ldots,n_{k}))
+  f(n_{1},\dotsc,n_{k}) = g(h_{1}(n_{1},\dotsc,n_{k}),
+     h(n_{1},\dotsc,n_{k}))
 \end{gather*}
 Dann ist $f$ repräsentierbar durch
 \begin{gather*}
-  \exists y_{1} \ldots \exists y_{n} ~
-     \beta_{1}(x_{1},\ldots,x_{k},y_{1}) \wedge \ldots \wedge
-     \beta_{n}(x_{1},\ldots,x_{k},y_{n}) \wedge
-     \alpha(y_{1},\ldots,y_{n}, y_{k+1})
+  \exists y_{1} \dotso \exists y_{n} ~
+     \beta_{1}(x_{1},\dotsc,x_{k},y_{1}) \wedge \dotsb \wedge
+     \beta_{n}(x_{1},\dotsc,x_{k},y_{n}) \wedge
+     \alpha(y_{1},\dotsc,y_{n}, y_{k+1})
 \end{gather*}
 
 
@@ -6125,26 +6118,26 @@ in $\mathrm{S}$ repräsentierbaren Funktionen entsteht,
 ebenfalls in $\mathrm{S}$ repräsentierbar ist.
 Es bleibt also noch zu zeigen,
 dass auch mittels Rekursion entstandene Funktionen diese Eigenschaft haben.
-Der \glqq Trick\grqq\xspace liegt hier in der
+Der \glqq{}Trick\grqq{} liegt hier in der
 Kodierung der Zwischenergebnisse, die bei der Berechnung
 einer rekursiv definierten Funktion anfallen.
 
 Dazu verwenden wir eine Folgerung aus dem Chinesischen Restsatz.
 
 \begin{korol}[Folgerung aus dem Chinesischen Restsatz]\label{korol-chin-restsatz}
-  Seien $x_1,\ldots,x_k$ paarweise teilerfremde natürliche Zahlen,
-  und $y_1,\ldots,y_k$ seien natürliche Zahlen mit $y_i<x_i$.
-  Dann gibt es eine natürliche Zahl $z<x_1\cdot x_2 \cdot \ldots \cdot x_k$, so dass
-  für alle $i=1,2,\ldots,k$ gilt:
+  Seien $x_1,\dotsc,x_k$ paarweise teilerfremde natürliche Zahlen,
+  und $y_1,\dotsc,y_k$ seien natürliche Zahlen mit $y_i<x_i$.
+  Dann gibt es eine natürliche Zahl $z<x_1\cdot x_2 \dotsm x_k$, so dass
+  für alle $i=1,2,\dotsc,k$ gilt:
   $y_i = z \bmod x_i$.
 \end{korol}
 
 \autoref{korol-chin-restsatz} kann wie folgt zur Kodierung
-einer Folge $k_0,k_1,\ldots,k_m$ von natürlichen Zahlen verwendet werden.
+einer Folge $k_0,k_1,\dotsc,k_m$ von natürlichen Zahlen verwendet werden.
 
 \begin{enumerate}
- \item bestimme $j=\max(m,k_0,k_1,\ldots,k_m)+1$
- \item die Zahlen $u_0,u_1,\ldots,u_m$ mit $u_i=(i+1)\cdot j! +1$
+ \item bestimme $j=\max(m,k_0,k_1,\dotsc,k_m)+1$
+ \item die Zahlen $u_0,u_1,\dotsc,u_m$ mit $u_i=(i+1)\cdot j! +1$
   sind paarweise teilerfremd, und es gilt $k_i<u_i$
   \begin{quote}
     \small Sei angenommen, dass $u_i$ und $u_k$ nicht teilerfremd sind (für $i<k$).
@@ -6157,7 +6150,7 @@ einer Folge $k_0,k_1,\ldots,k_m$ von natürlichen Zahlen verwendet werden.
     Da $p$ eine Primzahl ist, kann $p$ also kein Teiler von $(k-i)\cdot j!$ sein:
     Widerspruch.
   \end{quote}
- \item durchlaufe für $z$ die Zahlen $1,2,\ldots,k_0\cdot k_1\cdot \ldots \cdot k_m$,
+ \item durchlaufe für $z$ die Zahlen $1,2,\dotsc,k_0\cdot k_1\dotsm k_m$,
   bis ein $z$ mit $k_i = z \bmod u_i$ gefunden wurde
 \end{enumerate}
 
@@ -6199,54 +6192,54 @@ um durch Rekursion entstandene Funktionen zu repräsentieren.
 Sei $f\colon\N^{k+1}\rightarrow\N$ aus $g\colon\N^k\rightarrow \N$ und
 $h\colon\N^{k+2}\rightarrow \N$ mittels Rekursion entstanden.
 \begin{align*}
-  f(x_1,\ldots,x_n,0) & = g(x_1,\ldots,x_n) \\
-  f(x_1,\ldots,x_n,y+1) & = h(y,f(x_1,\ldots,x_n,y), (x_1,\ldots,x_n))
+  f(x_1,\dotsc,x_n,0) & = g(x_1,\dotsc,x_n) \\
+  f(x_1,\dotsc,x_n,y+1) & = h(y,f(x_1,\dotsc,x_n,y), (x_1,\dotsc,x_n))
 \end{align*}
-$g$ und $h$ seien durch $\gamma(x_1,\ldots,x_{n+1})$ und
-$\delta(x_1,\ldots,x_{n+3})$ repräsentierbar.
-Man kann sich die Berechnung von $f(k_1,\ldots,k_n,m)$
-mittels folgendem \glqq Programm\grqq\xspace vorstellen.
+$g$ und $h$ seien durch $\gamma(x_1,\dotsc,x_{n+1})$ und
+$\delta(x_1,\dotsc,x_{n+3})$ repräsentierbar.
+Man kann sich die Berechnung von $f(k_1,\dotsc,k_n,m)$
+mittels folgendem \glqq{}Programm\grqq{} vorstellen.
 
 \begin{quote}
-  $v_0 := g(k_1,\ldots,k_n)$ \\
-  für $i:=1,2,\ldots,m$ wiederhole\\
+  $v_0 := g(k_1,\dotsc,k_n)$ \\
+  für $i:=1,2,\dotsc,m$ wiederhole\\
   $\{$ \\
-  \rule{10mm}{0mm} $v_i:=h(i-1,v_{i-1},k_1,\ldots,k_n)$ \\
+  \rule{10mm}{0mm} $v_i:=h(i-1,v_{i-1},k_1,\dotsc,k_n)$ \\
   $\}$
 \end{quote}
-Dann ist $f(k_1,\ldots,k_n,m)=v_m$.
+Dann ist $f(k_1,\dotsc,k_n,m)=v_m$.
 
 Wir betrachten die vom Programm berechnete
-Zahlenfolge $v_0,v_1,\ldots,v_m$
+Zahlenfolge $v_0,v_1,\dotsc,v_m$
 kodiert als Zahl $z$ mit $v_i=\beta(z,c,i)$.
 Dann gilt (umgangssprachlich ausgedrückt)
 \begin{gather*}
-  \beta(z,c,0)=g(k_1,\ldots,k_n) ~ \wedge ~
-     (\forall i  ~ i<m \rightarrow \beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\ldots,k_n))
+  \beta(z,c,0)=g(k_1,\dotsc,k_n) ~ \wedge ~
+     (\forall i  ~ i<m \rightarrow \beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\dotsc,k_n))
 \end{gather*}
 Daraus entwickeln wir nun die Formel, die die
 Funktion $f$ repräsentiert.
 
-$\beta(z,c,0)=g(k_1,\ldots,k_n)$ wird ausgedrückt durch
-$(\exists w ~ Bt(z,c,0,w) \wedge \gamma(x_1,\ldots,x_n,w)$.
+$\beta(z,c,0)=g(k_1,\dotsc,k_n)$ wird ausgedrückt durch
+$(\exists w ~ Bt(z,c,0,w) \wedge \gamma(x_1,\dotsc,x_n,w)$.
 Dabei sind $z$ und $c$ Variablensymbole, die
 genau die durch die Kodierung intendierten Werte annehmen sollen.
 
-$\beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\ldots,k_n)$ wird ausgedrückt durch
-$(\exists u ~ \exists v ~ Bt(z,c,i,u) \wedge Bt(z,c,i',v) \wedge \delta(i,u,x_1,\ldots,x_n,v))$.
+$\beta(z,c,i+1)=h(i,\beta(z,c,i),k_1,\dotsc,k_n)$ wird ausgedrückt durch
+$(\exists u ~ \exists v ~ Bt(z,c,i,u) \wedge Bt(z,c,i',v) \wedge \delta(i,u,x_1,\dotsc,x_n,v))$.
 
 Schließlich muss noch ausgedrückt werden,
-dass $f(k_1,\ldots,k_n,m)=\beta(z,c,m)$ ist.
+dass $f(k_1,\dotsc,k_n,m)=\beta(z,c,m)$ ist.
 Das geschieht durch $Bt(z,c,x_{n+1},x_{n+2})$.
 
 Insgesamt erhalten wir folgende Formel zur Repräsentation von $f$.
 
 $
 \begin{array}{rcl}
-  \exists z ~ \exists c & & (\exists w ~ Bt(z,c,0,w) \wedge \gamma(x_1,\ldots,x_n,w)) \\
+  \exists z ~ \exists c & & (\exists w ~ Bt(z,c,0,w) \wedge \gamma(x_1,\dotsc,x_n,w)) \\
   & \wedge &
   (\forall i ~ i<m \rightarrow
-  (\exists u ~ \exists v ~ Bt(z,c,i,u) \wedge Bt(z,c,i',v) \wedge \delta(i,u,x_1,\ldots,x_n,v))) \\
+  (\exists u ~ \exists v ~ Bt(z,c,i,u) \wedge Bt(z,c,i',v) \wedge \delta(i,u,x_1,\dotsc,x_n,v))) \\
   & \wedge & Bt(z,c,x_{n+1},x_{n+2})
 \end{array}
 $
@@ -6266,24 +6259,24 @@ repräsentiert, sparen wir uns hier.)
 
 % 2006-07-12
 
-\section{Arithmetisierung} 
+\section{Arithmetisierung}
 
-In der Sprache der Theorie $\mathrm{S}$ 
+In der Sprache der Theorie $\mathrm{S}$
 können Aussagen über Zahlen gemacht werden.
 Im Abschnitt über Abzählbarkeit haben wir gesehen,
 dass Formeln auch durch Zahlen kodiert werden können.
-Über diesen \glqq Umweg\grqq\xspace lassen sich in $\mathrm{S}$
+Über diesen \glqq{}Umweg\grqq{} lassen sich in $\mathrm{S}$
 also auch Aussagen über Formeln und Eigenschaften von Formeln ausdrücken.
 In $\mathrm{S}$ können wir die primitiv-rekursiven Funktionen
 dazu benutzen, und das werden wir jetzt tun.
-Wir beginnen mit der Kodierung von Symbolen, 
+Wir beginnen mit der Kodierung von Symbolen,
 Ausdrücken und Folgen von Ausdrücken durch natürliche Zahlen
 und drücken anschließend Eigenschaften von Formeln
 durch primitiv-rekursive Relationen und Funktionen aus.
 Ziel ist der Nachweis,
 dass das Überprüfen eines Beweises auf Korrektheit primitiv-rekursiv ist.
 Das erlaubt einem schließlich,
-eine Aussage der Art \glqq Formel $\alpha$ ist in $\mathrm{S}$ nicht beweisbar\grqq\xspace
+eine Aussage der Art \glqq{}Formel $\alpha$ ist in $\mathrm{S}$ nicht beweisbar\grqq{}
 in $\mathrm{S}$ zu formulieren.
 
 
@@ -6303,8 +6296,8 @@ Symbole ($n,k\geq 1$):
   \begin{array}{r|*{10}{|c}}
     u    & ( & ) & , & \neg & \rightarrow & \forall & a_k        & x_k & f^n_k & A^n_k\\[.5mm] \hline
     \rule{0mm}{4mm}
-    g(u) & 3 & 5 & 7 &  9   &     11      &   13    & 7+8\cdot k & 13+ 8\cdot k 
-    & 1+8\cdot(2^n\cdot 3^k) & 3+8\cdot(2^n\cdot 3^k) 
+    g(u) & 3 & 5 & 7 &  9   &     11      &   13    & 7+8\cdot k & 13+ 8\cdot k
+    & 1+8\cdot(2^n\cdot 3^k) & 3+8\cdot(2^n\cdot 3^k)
   \end{array}
 \end{gather*}
 
@@ -6316,16 +6309,16 @@ Für $u\geq 15$ gibt $g(u) \bmod 8$ gibt an, welche
 Art von Symbol $u$ ist.
 
 
-Sei $u_0 u_1 \ldots u_n$ eine endliche Folge von Symbolen.
+Sei $u_0 u_1 \dotso u_n$ eine endliche Folge von Symbolen.
 Dann ist
 \begin{gather*}
-  g(u_0 u_1 \ldots u_n) = 2^{g(u_0)} \cdot 3^{g(u_1)} \cdot \ldots \cdot p_n^{g(u_n)}
+  g(u_0 u_1 \dotso u_n) = 2^{g(u_0)} \cdot 3^{g(u_1)} \dotsm p_n^{g(u_n)}
       = \prod_{i=0}^{n} p_i^{g(u_i)}
 \end{gather*}
 wobei $p_i$ die $i$-te Primzahl ist ($p_0=2$).
 \vspace{1ex}
 
-Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1)) = 2^{13} \cdot 3^{21} \cdot 5^{138} 
+Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1)) = 2^{13} \cdot 3^{21} \cdot 5^{138}
           \cdot 7^3 \cdot 11^{21} \cdot 13^{5}$
 \vspace{1ex}
 
@@ -6336,16 +6329,16 @@ Das \textit{Symbol} $x_1$ hat GN $g(x_1)=21$ (ist ungerade).
 Der \textit{Ausdruck} $x_1$ hat GN $g(x_1)=2^{21}$ (ist gerade).
 \vspace{2ex}
 
-Sei $e_0, e_1, \ldots, e_n$ eine endliche Folge von Ausdrücken.
+Sei $e_0, e_1, \dotsc, e_n$ eine endliche Folge von Ausdrücken.
 Dann ist
 \begin{gather*}
-  g(e_0, e_1, \ldots, e_n) = 2^{g(e_0)} \cdot 3^{g(e_1)} \cdot \ldots \cdot p_n^{g(e_n)}
+  g(e_0, e_1, \dotsc, e_n) = 2^{g(e_0)} \cdot 3^{g(e_1)} \dotsm p_n^{g(e_n)}
      = \prod_{i=0}^{n} p_i^{g(e_i)}
 \end{gather*}
 wobei $p_i$ die $i$-te Primzahl ist ($p_0=2$).
 \vspace{2ex}
 
-Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1), x_1) 
+Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1), x_1)
 = 2^{(2^{13} \cdot 3^{21} \cdot 5^{138} \cdot 7^3 \cdot 11^{21} \cdot 13^{5})}
   \ \cdot 3^{(2^{21})}$
 \vspace{3ex}
@@ -6354,7 +6347,7 @@ Bsp.:\ \  \ $g(\forall x_1~ A_2^1(x_1), x_1)
 Der \textit{Ausdruck} $x_1$ hat GN $g(x_1)=2^{21}$ (ungerade Zweierpotenz).
 \vspace{0.5ex}
 
-Die \textit{Folge von Ausdrücken} $x_1$ hat GN 
+Die \textit{Folge von Ausdrücken} $x_1$ hat GN
 $g(x_1)=2^{2^{21}}$ (gerade Zweierpotenz).
 
 
@@ -6368,51 +6361,51 @@ Für die in $\mathrm{S}$ zugelassenen Symbole sind
 diese Relationen primitiv-rekursiv.
 
 \begin{itemize}
-\item $IC = \{ n \mid n\mbox{ ist GN eines Konstantensymbols} \}$ 
+\item $IC = \{ n \mid n\mbox{ ist GN eines Konstantensymbols} \}$
 \vspace{1ex}
 
 $IC(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 7)$
 \vspace{1ex}
 
-\item $Vb = \{ n \mid n\mbox{ ist GN eines Variablensymbols} \}$ 
+\item $Vb = \{ n \mid n\mbox{ ist GN eines Variablensymbols} \}$
 \vspace{1ex}
 
 $Vb(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 5)$
 \vspace{1ex}
 
-\item $FL = \{ n \mid n\mbox{ ist GN eines Funktionssymbols} \}$ 
+\item $FL = \{ n \mid n\mbox{ ist GN eines Funktionssymbols} \}$
 \vspace{1ex}
 
 $FL(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 1)$
 \vspace{1ex}
 
-\item $PL = \{ n \mid n\mbox{ ist GN eines Prädikatensymbols} \}$ 
+\item $PL = \{ n \mid n\mbox{ ist GN eines Prädikatensymbols} \}$
 \vspace{1ex}
 
 $PL(n)\ = \ (n\geq 15) \wedge (n \bmod 8 = 3)$
 
-\item $EIC = \{ n \mid n\mbox{ ist GN eines Ausdrucks, der aus einem Konstantensymbol besteht} \}$ 
+\item $EIC = \{ n \mid n\mbox{ ist GN eines Ausdrucks, der aus einem Konstantensymbol besteht} \}$
 \vspace{0.5ex}
 
 $EIC(n)\ = \ (\exists z)_{\leq n}~ (IC(z) \wedge n=2^z)$
 \vspace{1ex}
 
-\item $EVb = \{ n \mid n\mbox{ ist GN eines Ausdrucks, 
-der aus einem Variablensymbol besteht} \}$ 
+\item $EVb = \{ n \mid n\mbox{ ist GN eines Ausdrucks,
+der aus einem Variablensymbol besteht} \}$
 \vspace{0.5ex}
 
 $EVb(n)\ = \ (\exists z)_{\leq n} ~ (Vb(z) \wedge n=2^z)$
 \vspace{1ex}
 
-\item $EFL = \{ n \mid n\mbox{ ist GN eines Ausdrucks, 
-         der aus einem Funktionssymbol besteht} \}$ 
+\item $EFL = \{ n \mid n\mbox{ ist GN eines Ausdrucks,
+         der aus einem Funktionssymbol besteht} \}$
 \vspace{0.5ex}
 
 $EFL(n)\ = \ (\exists z)_{\leq n} ~ (FL(z) \wedge n=2^z)$
 \vspace{1ex}
 
-\item $EPL = \{ n \mid n\mbox{ ist GN eines Ausdrucks, 
-           der aus einem Prädikatensymbol besteht} \}$ 
+\item $EPL = \{ n \mid n\mbox{ ist GN eines Ausdrucks,
+           der aus einem Prädikatensymbol besteht} \}$
 \vspace{0.5ex}
 
 $EPL(n)\ = \ (\exists z)_{\leq n}~(PL(z) \wedge n=2^z)$
@@ -6440,7 +6433,7 @@ die in $\mathrm{S}$ primitiv-rekursiv sind.
 
 \subsection{Erkennen von Formeln}
 
-Wir wollen nun zeigen, 
+Wir wollen nun zeigen,
 dass die Menge aller Kodierungen von Formeln
 primitiv-rekursiv ist.
 Das heißt es gibt eine primitiv-rekursive Funktion $h$,
@@ -6458,7 +6451,7 @@ Diese Funktion ist die charakteristishe Funktion der Menge
 Terme sind induktiv aufgebaut.
 Die einfachsten Terme sind Konstanten- und Variablensymbole.
 Zum Erkennen dieser Terme können wir $EIC$ und $EVb$ benutzen.
-Die übrigen Terme sind aus einem Funktionssymbol 
+Die übrigen Terme sind aus einem Funktionssymbol
 und weiteren Termen zusammengesetzte Ausdrücke.
 Zum Beispiel ist der Term
 $t=f^3_5(x_1, f_2^2(a_3,x_1), f^1_3(f^2_2(a_1,a_2),x_1,a_{13}))$
@@ -6488,8 +6481,8 @@ Formal drücken wir die Zerlegung eines Termes durch folgendes Prädikat aus.
 \vspace{1ex}
 
 $Zerl_T\ = \ \{ (x,w)\mid$\begin{tabular}[t]{ll}
-                       $x$ ist GN eines Termes $f^n_i(t_1,\ldots,t_k)$ \\
-         und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \cdot \ldots \cdot p_{n-1}^{g(t_n)}$ & $\}$ 
+                       $x$ ist GN eines Termes $f^n_i(t_1,\dotsc,t_k)$ \\
+         und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \dotsm p_{n-1}^{g(t_n)}$ & $\}$
                \end{tabular}
 
 Dieses Prädikat ist primitiv-rekursiv.
@@ -6504,8 +6497,8 @@ Atomare Formeln können entsprechend in ihre Terme zerlegt werden.
 Dafür benutzen wir $Zerl_A(x,w)$.
 
 $Zerl_A\ = \ \{ (x,w)\mid$\begin{tabular}[t]{ll}
-                       $x$ ist GN einer atomaren Formel $A^n_i(t_1,\ldots,t_k)$ \\
-             und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \cdot \ldots \cdot p_{n-1}^{g(t_n)}$ & $\}$
+                       $x$ ist GN einer atomaren Formel $A^n_i(t_1,\dotsc,t_k)$ \\
+             und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \dotsm p_{n-1}^{g(t_n)}$ & $\}$
                \end{tabular}
 
 Dieses Prädikat ist primitiv-rekursiv.
@@ -6517,20 +6510,20 @@ Dieses Prädikat ist primitiv-rekursiv.
 \end{gather*}
 
 Mit diesen Prädikaten können wir
-einfach testen, ob eine Kodierung einen Term bzw.\, eine atomare Formel kodiert.
+einfach testen, ob eine Kodierung einen Term bzw. eine atomare Formel kodiert.
 Die folgenden Relationen sind primitiv-rekursiv.
 
 \begin{itemize}
-\item $Trm=\{ n \mid \mbox{ $n$ ist GN eines Termes}\}$ 
+\item $Trm=\{ n \mid \mbox{ $n$ ist GN eines Termes}\}$
 
   \begin{multline*}
     Trm(n) = EIC(n) ~\vee~ EVb(n) ~\vee~ \\
-    \big( EFL((n)_0) ~\wedge~ 
-       (\exists w)_{<(p_n)^{n^2}} ( Zerl_T(n,w) \wedge 
+    \big( EFL((n)_0) ~\wedge~
+       (\exists w)_{<(p_n)^{n^2}} ( Zerl_T(n,w) \wedge
        (\forall i)_{\leq lh(w)} Trm((w)_i) ) \big) ~ ~ .
   \end{multline*}
 
-\item $Atmfml=\{ n \mid \mbox{ $n$ ist GN einer atomaren Formel}\}$ 
+\item $Atmfml=\{ n \mid \mbox{ $n$ ist GN einer atomaren Formel}\}$
 
   \begin{gather*}
     Atmfml(n) \ = \ EPL((n)_0) ~\wedge~
@@ -6576,7 +6569,7 @@ $
 Fml(x) \ = & \multicolumn{3}{l}{Atmfml(x) ~ \vee} \\
 & (\exists z)_{<x} \big[ & (Fml(z)~ \wedge ~ x=NegFml(z)) ~ \vee \\
 & & ( Fml((z)_0) ~ \wedge ~ Fml((z)_1) ~ \wedge ~ x=CondFml((z)_0,(z)_1)) ~\vee \\
-& & ( Fml((z)_0) ~ \wedge ~ Vb((z)_1) ~ \wedge ~ x=GenFml((z)_0,(z)_1) 
+& & ( Fml((z)_0) ~ \wedge ~ Vb((z)_1) ~ \wedge ~ x=GenFml((z)_0,(z)_1)
           & \big] \\
 \end{array}
 $
@@ -6589,7 +6582,7 @@ und den Unvollständigkeitssatz von Gödel (\autoref{satz-unvollst}).
 
 Die Formel $\alpha[x/t]$ entsteht aus der Formel $\alpha$
 durch Ersetzen aller freien Vorkommen der Variablen $x$ durch den Term $t$.
-Wir wollen die Kodierung von $\alpha[x/t]$ 
+Wir wollen die Kodierung von $\alpha[x/t]$
 berechnen aus den Kodierungen von $\alpha$, $x$ und $t$.
 Dazu beginnen wir bei den Termen, in denen die Ersetzungen
 tatsächlich stattfinden.
@@ -6610,8 +6603,8 @@ Wir betrachten zuerst die zu unterscheidenden Fälle.
          dann ist $\alpha[x_i/t]=t$
 \item wenn $\alpha=x_j$ eine Variable ungleich $x_i$ ist,
          dann ist $\alpha[x_i/t]=\alpha$
-\item wenn $\alpha=f^m_j(t_1,\ldots,t_m)$ ist,
-dann ist $\alpha[x_i/t] = f^m_j(t_1[x_i/t],\ldots,t_m[x_i/t])$.
+\item wenn $\alpha=f^m_j(t_1,\dotsc,t_m)$ ist,
+dann ist $\alpha[x_i/t] = f^m_j(t_1[x_i/t],\dotsc,t_m[x_i/t])$.
 Die Ersetzungen werden also induktiv im zusammengesetzten Term vorgenommen.
 \end{enumerate}
 Die folgende Formel drückt genau diese Fallunterscheidung aus.
@@ -6799,17 +6792,17 @@ $\mathit{Prf} \ = \ \{ y \mid \mbox{$y$ ist GN eines Beweises} \}$
 
 Dazu betrachten wir folgende induktive Definition von Beweisen.
 
-Eine Folge $\alpha_1,\alpha_2,\ldots,\alpha_n$ ist ein Beweis, falls
+Eine Folge $\alpha_1,\alpha_2,\dotsc,\alpha_n$ ist ein Beweis, falls
 \begin{enumerate}
 \item $n=1$ und $\alpha_1$ ein Axiom ist, oder
 \item $\alpha_n$ ein Axiom ist, oder
-\item $\alpha_1,\alpha_2,\ldots,\alpha_{n-1}$ ein Beweis ist
+\item $\alpha_1,\alpha_2,\dotsc,\alpha_{n-1}$ ein Beweis ist
       und $\alpha_n$ mittels Generalisierung aus $\alpha_i$ mit $i<n$ entsteht.
-\item $\alpha_1,\alpha_2,\ldots,\alpha_{n-1}$ ein Beweis ist
+\item $\alpha_1,\alpha_2,\dotsc,\alpha_{n-1}$ ein Beweis ist
       und $\alpha_n$ mittels modus ponens aus $\alpha_i$ und $\alpha_j$
       mit $i,j<n$ entsteht, oder
 \end{enumerate}
-Folgender Ausdruck zeigt, dass 
+Folgender Ausdruck zeigt, dass
 $\mathit{Prf}$ eine primitiv-rekursive Relation ist
 (für jede Theorie, in der $Ax$ primitiv-rekursiv ist.
 
@@ -6830,16 +6823,16 @@ Jeder Prädikatenkalkül ist vollständig in dem Sinne,
 dass jede gültige Formel auch bewiesen werden kann (\autoref{satz-vollstPK}).
 Diese Eigenschaft hat die formale Zahlentheorie nicht.
 Das heißt, es gibt Formeln,
-die in der Zahlentheorie \glqq gültig\grqq\xspace sind\footnote{%
-Eine Formel ist \glqq gültig in S\grqq,
+die in der Zahlentheorie \glqq{}gültig\grqq{} sind\footnote{%
+Eine Formel ist \glqq{}gültig in S\grqq{},
 falls jedes Modell von S auch Modell der Formel ist.},
 für die es aber keinen Beweis gibt.
 Der Unvollständigkeitssatz von Gödel macht eine allgemeinere
-Aussage, für welche Theorien es solche \glqq gültigen\grqq\xspace
+Aussage, für welche Theorien es solche \glqq{}gültigen\grqq{}
 und unbeweisbaren Formeln gibt.
-Die Idee zum Beweis des Unvollständigkeitssatzes 
+Die Idee zum Beweis des Unvollständigkeitssatzes
 basiert auf der sog.~Paradoxie
-\glqq Dieser Satz ist falsch\grqq.
+\glqq{}Dieser Satz ist falsch\grqq{}.
 Dieser Satz kann weder wahr noch falsch sein,
 also ist er keine Aussage.
 Über Wahrheit kann man innerhalb der Theorie S keine Aussagen machen.
@@ -6857,9 +6850,9 @@ die $\mathit{Pf}$ repräsentiert.
 Wenn eine Formel $\alpha$ mit Gödelnummer $u$ in S nicht beweisbar ist,
 dann ist die Formel $\forall x_1 ~ \neg \phi_{Pf}[x_2/\overline{u}]$
 wahr (im Standardmodell).
-Analog zu \glqq Dieser Satz ist falsch\grqq
+Analog zu \glqq{}Dieser Satz ist falsch\grqq{}
 könnte man nun versuchen, eine Formel zu konstruieren,
-die der Aussage \glqq Diese Aussage ist nicht beweisbar.\grqq\xspace entspricht.
+die der Aussage \glqq{}Diese Aussage ist nicht beweisbar.\grqq{} entspricht.
 Man könnte eine Zahl $u$ suchen,
 so dass $u$ genau die Gödelnummer von
 $\forall x_1 ~ \neg \phi_{Pf}[x_2/\overline{u}]$ ist.
@@ -6867,14 +6860,14 @@ Mit der hier betrachteten Kodierung von Formeln und Termen in Zahlen
 geht das nicht.
 Muss man dazu nun eine geschicktere Kodierung wählen?
 Eine kodierungsunabhängige Antwort liefert das Diagonalisierungslemma (\autoref{satz:6}).
-Dort wird gezeigt, dass es 
+Dort wird gezeigt, dass es
 eine Formel $\gamma_0$ gibt,
-deren Äquivalenz zur Aussage \glqq $\gamma_0$ ist nicht beweisbar\grqq\xspace
+deren Äquivalenz zur Aussage \glqq{}$\gamma_0$ ist nicht beweisbar\grqq{}
 bewiesen werden kann.
 D.\,h. für
-die Gödelnummer $g$ von $\gamma_0$ gilt 
+die Gödelnummer $g$ von $\gamma_0$ gilt
 $\Svdash \gamma_0 \leftrightarrow (\forall x_1 ~ \neg \phi_{Pf}[x_2/\overline{g}])$.
-Diese Formel $\gamma_0$ ist in der Tat nicht in S beweisbar 
+Diese Formel $\gamma_0$ ist in der Tat nicht in S beweisbar
 (\autoref{satz-gamma0-nicht-beweisbar}).
 Also ist $\forall x_1 ~ \neg \phi_{Pf}[x_2/\overline{g}]$ wahr (im Standardmodell),
 und da $\gamma_0$ beweisbar äquivalent dazu ist,
@@ -6892,11 +6885,11 @@ wahre und nicht beweisbare Formel gibt.
 
 Das geht indirekt über die Konstruktion
 einer zu einer solchen Aussage äquivalenten Aussage.
-Grundlage dafür ist das folgende 
+Grundlage dafür ist das folgende
 (recht technisch aussehende)
 Diagonalisierungslemma.
 
-Für Formel $\alpha$ mit Gödelnummer $u$ 
+Für Formel $\alpha$ mit Gödelnummer $u$
 bezeichnet $\ucorner{\alpha}$ den Term $\overline{u}$.
 
 \begin{satz}[Diagonalisierungslemma]\label{satz:6}
@@ -6935,7 +6928,7 @@ bezeichnet $\ucorner{\alpha}$ den Term $\overline{u}$.
            &\text{$(\star)$} \\
         (4)\quad& \alpha[x_{2}/\ucorner{\gamma}] &\text{MP (2), (3)}
       \end{align*}
-      Mit dem Deduktionstheorem folgt 
+      Mit dem Deduktionstheorem folgt
         $\Svdash\gamma \rightarrow \alpha[x_{2}/\ucorner{\gamma}]$.
 
      \item $\Svdash \alpha[x_{2}/\ucorner{\gamma}] \rightarrow \gamma$:
@@ -6970,7 +6963,7 @@ bezeichnet $\ucorner{\alpha}$ den Term $\overline{u}$.
 
 Ein Beweis einer Formel $\alpha$ ist eine
 Folge von Formeln, die ein Beweis ist und mit $\alpha$ endet.
-Das primitiv-rekursive Prädikat $\mathit{Prf}$ 
+Das primitiv-rekursive Prädikat $\mathit{Prf}$
 erkennt Formelfolgen, die korrekte Bweise sind.
 Es ist einfach zu testen, ob eine Formelfolge mit einer bestimmten Formel endet.
 Deshalb ist folgendes Prädikat $\mathit{Pf}$ primitiv-rekursiv
@@ -6992,9 +6985,9 @@ es gibt eine Formel $\gamma_0$ mit
      [x_{2}/\ucorner{\gamma_{0}}])
 \end{gather*}
 $\gamma_{0}$ ist also (beweisbar) äquivalent zu der Formel
-für die Aussage \glqq Keine Zahl ist die Gödelnummer eines
-Beweises der Formel mit Gödelnummer $\gamma_{0}$.\grqq\xspace
-oder etwas kompakter \glqq $\gamma_0$ ist nicht beweisbar.\grqq.
+für die Aussage \glqq{}Keine Zahl ist die Gödelnummer eines
+Beweises der Formel mit Gödelnummer $\gamma_{0}$.\grqq{}
+oder etwas kompakter \glqq{}$\gamma_0$ ist nicht beweisbar.\grqq{}.
 Wir zeigen, dass das eine wahre Aussage ist.
 
 \begin{satz}\label{satz-gamma0-nicht-beweisbar}
@@ -7004,15 +6997,15 @@ Wir zeigen, dass das eine wahre Aussage ist.
     $\mathrm{S}$ ist konsistent, d.\,h. es existiert keine Formel
     $\alpha$, für die $\Svdash \alpha$ und $\Svdash\neg\alpha$ gilt.
 
-    Annahme: Es gelte $\Svdash\gamma_{0}$. 
-    Sei $r$ die Gödelnummer eines Beweises von $\gamma_{0}$ in $\mathrm{S}$. 
-    Dann folgt $\Svdash \phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}, x_{1}/\overline{r}]$. 
-    Aufgrund der Konstruktion von $\gamma_0$ mit dem 
-    Diagonalisierungslemma (\autoref{satz:6}) gilt 
+    Annahme: Es gelte $\Svdash\gamma_{0}$.
+    Sei $r$ die Gödelnummer eines Beweises von $\gamma_{0}$ in $\mathrm{S}$.
+    Dann folgt $\Svdash \phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}, x_{1}/\overline{r}]$.
+    Aufgrund der Konstruktion von $\gamma_0$ mit dem
+    Diagonalisierungslemma (\autoref{satz:6}) gilt
     $\Svdash\gamma_{0} \leftrightarrow
-         (\forall x_{2} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$. 
-    Nach Äquivalenzregel folgt 
-    $\Svdash (\forall  x_{1} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$. 
+         (\forall x_{2} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$.
+    Nach Äquivalenzregel folgt
+    $\Svdash (\forall  x_{1} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$.
     Mit RA~4 folgt
     $\Svdash\neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}, x_{1}/\overline{r}]$.
     Also ist $\mathrm{S}$ nicht konsistent.
@@ -7020,15 +7013,15 @@ Wir zeigen, dass das eine wahre Aussage ist.
 \end{satz}
 
 Wir führen jetzt noch einen stärkeren Begriff der Konsistenz ein,
-der sich stärker auf die Standardinterpretation der Zahlentheorie 
+der sich stärker auf die Standardinterpretation der Zahlentheorie
 mit den natürlichen Zahlen als Grundmenge bezieht.
 
 \begin{defini}[$\omega$-Konsistenz]\label{defi-omega-Konsistenz}
-  Sei $K$ eine Theorie mit dem Konstantensymbol $0$ 
-  und dem Funktionssymbol $f_{1}^{1}$ (Nachfolgerfunktion). 
+  Sei $K$ eine Theorie mit dem Konstantensymbol $0$
+  und dem Funktionssymbol $f_{1}^{1}$ (Nachfolgerfunktion).
   $K$ heißt \emph{$\omega$-konsistent}, falls für jede Formel $\alpha$ in $K$ gilt:
   \begin{gather*}
-    \text{falls für jede natürliche Zahl $n$ gilt $\xvdash[K]{} \neg\alpha[x/\overline{n}]$, 
+    \text{falls für jede natürliche Zahl $n$ gilt $\xvdash[K]{} \neg\alpha[x/\overline{n}]$,
            dann
        $\not\xvdash[K]{}(\exists x ~ \alpha)$}
   \end{gather*}
@@ -7067,22 +7060,22 @@ $\mathrm{S}$ ist $\omega$-konsistent, da die Standardinterpretation
   d.\,h. $\not\xvdash[S]{}\neg\gamma_{0}$.
 
   \begin{proof}
-    Nehmen wir an, dass wir $\neg\gamma_{0}$ in $\mathrm{S}$ beweisen können. 
-    Aufgrund der Konstruktion von $\gamma_0$ aus dem Diagonalisierungslemma 
+    Nehmen wir an, dass wir $\neg\gamma_{0}$ in $\mathrm{S}$ beweisen können.
+    Aufgrund der Konstruktion von $\gamma_0$ aus dem Diagonalisierungslemma
     (\autoref{satz:6}) gilt
-    $\Svdash\gamma_{0} \leftrightarrow 
-          (\forall x_{1} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$. 
-    Mit der Äquivalenzregel folgt 
-    $\Svdash\neg(\forall x_{1} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$, 
+    $\Svdash\gamma_{0} \leftrightarrow
+          (\forall x_{1} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$.
+    Mit der Äquivalenzregel folgt
+    $\Svdash\neg(\forall x_{1} ~ \neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$,
     d.\,h. $\Svdash (\exists x_{1} ~ \phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$.
 
-    Wir wissen: $\not\Svdash \gamma_{0}$ (\autoref{satz-gamma0-nicht-beweisbar}). 
-    Also ist $\mathit{Pf}(r, u)$ ($u$ ist die Gödelnummer von $\gamma_{0}$) 
-    falsch für jedes $r\in\N$. 
+    Wir wissen: $\not\Svdash \gamma_{0}$ (\autoref{satz-gamma0-nicht-beweisbar}).
+    Also ist $\mathit{Pf}(r, u)$ ($u$ ist die Gödelnummer von $\gamma_{0}$)
+    falsch für jedes $r\in\N$.
     Folglich gilt $\Svdash\neg\phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}, x_{1}/\overline{r}]$
-    für jedes $r\in\N$. 
+    für jedes $r\in\N$.
     Dann folgt aus der $\omega$-Konsistenz von
-    $\mathrm{S}$: $\not\Svdash (\exists x_{1} ~  \phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$. 
+    $\mathrm{S}$: $\not\Svdash (\exists x_{1} ~  \phi_{Pf}[x_{2}/\ucorner{\gamma_{0}}])$.
     Das ist ein Widerspruch zur Konsistenz von $\mathrm{S}$.
   \end{proof}
 \end{satz}
@@ -7090,7 +7083,7 @@ $\mathrm{S}$ ist $\omega$-konsistent, da die Standardinterpretation
 Da in $\mathrm{S}$
 weder $\gamma_0$ noch $\neg\gamma_0$ beweisbar,
 kann man $\mathrm{S}$ durch Hinzunahme von $\gamma_0$ als
-zusätzliches Axiom konsistent zu einer Theorie $\mathrm{S}'$ erweitern 
+zusätzliches Axiom konsistent zu einer Theorie $\mathrm{S}'$ erweitern
 (\autoref{lemma-kons-erweiterung}).
 In $\mathrm{S}'$ ist $\gamma_0$ beweisbar (da es ein Axiom ist).
 Das Diagonalisierungslemma gilt aber auch für $\mathrm{S}'$,
@@ -7101,7 +7094,7 @@ Aber es ist in $\mathrm{S}'$ repräsentierbar.
 Deshalb gilt \autoref{satz-gamma0-nicht-beweisbar} entsprechend für $\mathrm{S}'$.
 Also gibt es auch für $\mathrm{S}'$
 eine wahre und nicht in $\mathrm{S}'$ beweisbare Formel.
-Die Konstruktion einer solchen Formel 
+Die Konstruktion einer solchen Formel
 geht für jede Theorie $K$ mit den folgenden Eigenschaften:
 \begin{enumerate}
  \item Die Menge aller Axiome von $K$ ist repräsentierbar;
@@ -7137,7 +7130,7 @@ Der Beweis des Satzes geht analog zu den Beweisen der vorherigen Sätze.
 
   Die Konsistenz einer Theorie $K$ lässt sich nicht "`innerhalb"' von $K$
   zeigen. ($\mathrm{S}$ ist konsistent bedeutet "`$0=\overline{1}$"' ist
-  nicht beweisbar; $\forall x_{1}~ \neg\phi_{Pf}[x_{2}/\text{\glqq $0=\overline{1}$\grqq}]$).
+  nicht beweisbar; $\forall x_{1}~ \neg\phi_{Pf}[x_{2}/\text{\glqq{}$0=\overline{1}$\grqq{}}]$).
 
   Daraus hat sich die Berechenbarkeitstheorie mit den (primitiv-)rekursiven
   Funktionen entwickelt.
@@ -7241,8 +7234,8 @@ Sind die folgenden Argumentationen logisch korrekt?
   eine Tautologie (\autoref{satz:1}). Dann ist $\neg\alpha$ keine
   Tautologie. Folglich gilt nicht $\Lvdash\neg\alpha$.
 
-  Aus der Negation von \glqq Wenn $\Lvdash\alpha$ ein Theorem
-  ist, dann ist $\alpha$ eine Tautologie\grqq\xspace folgt: Wenn $\alpha$ keine
+  Aus der Negation von \glqq{}Wenn $\Lvdash\alpha$ ein Theorem
+  ist, dann ist $\alpha$ eine Tautologie\grqq{} folgt: Wenn $\alpha$ keine
   Tautologie ist, dann gilt nicht $\Lvdash\alpha$. Wenn
   $\neg\alpha$ also kein Theorem ist, dann ist $\alpha$ kein Theorem
 
@@ -7277,7 +7270,7 @@ Sind die folgenden Argumentationen logisch korrekt?
 In wievielen Beweisschritten ist eine Tautologie in $\mathrm{L}$ beweisbar?
 (Abschätzung nach Anzahl von Verknüpfungszeichen und Anzahl der Variablen in der Formel.)
 
-Aus dem Beweis von \autoref{satz:2} folgt: 
+Aus dem Beweis von \autoref{satz:2} folgt:
 Jede Formel baut sich induktiv aus ihren Teilformeln auf
 (siehe z.\,B. \autoref{fig-formelaufbau}).
 Jede Teilformel einer Tautologie $\alpha$ fügt höchstens $3$ Beweisschritte
@@ -7295,7 +7288,7 @@ Beweisschritten induktiv in $2^n-1$ Schritten
 zu einem Beweis für $\Lvdash \alpha$ zusammengefasst.
 In jedem dieser weiteren Schritte wird
 $2$ mal das Deduktionstheorem verwendet
-und mit den so erhaltenen Formeln 
+und mit den so erhaltenen Formeln
 $2$ mal modus ponens auf eine Tautologie angewendet.
 Rechnet man die Schritte zum Beweis der jeweiligen Tautologie nicht mit,
 dann ergeben sich daraus $4\cdot(2^n-1)$ weitere Beweisschritte.
@@ -7316,9 +7309,9 @@ kann der Beweis von \autoref{satz:1} übernommen werden und folglich
 ist $\mathrm{L}'$ korrekt.
 
 Wir zeigen, dass sich aus den Axiomen A1, A2 und A3' und dem modus ponens
-das Axiom A3 beweisen lässt. 
-Damit sind alle Beweise, die wir bisher geführt haben und die A3 verwenden, 
-auch mit A3' herleitbar. 
+das Axiom A3 beweisen lässt.
+Damit sind alle Beweise, die wir bisher geführt haben und die A3 verwenden,
+auch mit A3' herleitbar.
 
 $\mathrm{L}'$ vollständig (d.\,h. für jede Tautologie $\phi$ gilt:
 $\xvdash[\mathrm{L}']{} \phi$): hinreichend ist $\xvdash[\mathrm{L}']{} A3$.
@@ -7345,12 +7338,12 @@ eine Tautologie ist.
 \end{gather*}
 
 Wenn A2 eine Tautologie ist, dann ist die Negation davon eine
-Kontradiktion (d.\,h. eine Formel, die unter jeder Belegung falsch ist). 
+Kontradiktion (d.\,h. eine Formel, die unter jeder Belegung falsch ist).
 Die konjunktive Normalform ist
 also die UND"=Verknüpfung der Negation aller passenden Belegungen:
 \begin{gather*}
   (\neg A\vee \neg B\vee\neg C) \wedge (\neg A\vee \neg B\vee C) \wedge
-     (\neg A\vee B\vee\neg C) \wedge \ldots \wedge (A \vee \neg B\vee C)
+     (\neg A\vee B\vee\neg C) \wedge \dotsb \wedge (A \vee \neg B\vee C)
      \wedge (A\vee B \vee\neg C) \wedge (A\vee B\vee C)
 \end{gather*}
 Daraus erhalten wir folgende resolutionsherleitung der leeren Klausel.
@@ -7387,8 +7380,8 @@ Wie lang kann ein Resolutionsbeweis höchstens sein?
 
 Aus $n$ Variablen können höchstens $2^{2n}$ Klauseln gebildet werden.
 
-Bei Klauselmengen mit Variablen $A_{1},A_{2},\ldots,A_{n}$ ist jede
-Klausel eine Teilmenge von $\underbrace{\{A_{1},\ldots,A_{n}, \neg A_{1},\ldots,\neg
+Bei Klauselmengen mit Variablen $A_{1},A_{2},\dotsc,A_{n}$ ist jede
+Klausel eine Teilmenge von $\underbrace{\{A_{1},\dotsc,A_{n}, \neg A_{1},\dotsc,\neg
 A_{n}\}}_{2n\ \text{Elemente}}$. Eine Menge mit $2n$ Elementen hat
 $2^{2n}$ Teilmengen.
 
@@ -7403,21 +7396,21 @@ Was bedeuten die Formeln und den angegebenene Interpretationen?
 \begin{enumerate}
  \item $(\exists n A_{1}^{2}(f_{1}^{2}(x,u), y) \wedge (\exists v
   A_{1}^{2}(f_{1}^{2}(x,v),z))$ auf der Grundmenge $\N$ und $A_{1}^{2}$
-  ist die Gleichheit \glqq $=$\grqq\xspace und $f_{1}^{2}$ die Multiplikation
+  ist die Gleichheit \glqq{}$=$\grqq{} und $f_{1}^{2}$ die Multiplikation
   ($u,v,x,y,z$ sind Variablensymbole)
 
   $(\exists u\in\N  x\cdot u=y) \wedge (\exists v\in\N  x\cdot
-  v=z)$. Das entspricht der Aussage \glqq $x$ ist gemeinsamer Teiler von $y$
-  und $z$\grqq.
+  v=z)$. Das entspricht der Aussage \glqq{}$x$ ist gemeinsamer Teiler von $y$
+  und $z$\grqq{}.
 
  \item $\forall y( (\exists z A_{1}^{2}(f_{1}^{2}(y,z),x)) \rightarrow
   (A_{1}^{2}(y,a) \wedge A_{1}^{2}(y,x)))$, Interpretation wie oben und
   $a=1$
 
   $\forall y\in\N ~ (\exists z\in\N ~ y\cdot z=x \rightarrow)
-  \rightarrow (y=1 \vee y=x)$. Das bedeutet \glqq $y$ ist Teiler von $x$
-  $\rightarrow$ $(y=1 \vee y=x)$.\grqq\xspace Dies wiederum bedeutet \glqq $x$ ist eine
-  Primzahl.\grqq
+  \rightarrow (y=1 \vee y=x)$. Das bedeutet \glqq{}$y$ ist Teiler von $x$
+  $\rightarrow$ $(y=1 \vee y=x)$.\grqq{} Dies wiederum bedeutet \glqq{}$x$ ist eine
+  Primzahl.\grqq{}
 \end{enumerate}
 
 \subsection*{Aufgabe 2}
@@ -7430,7 +7423,7 @@ folgende Bedeutung hat.
     T(x, a) \wedge T(x,b) \wedge (\forall y ~ T(y,a) \wedge T(y, b)
        \wedge y\leq x)
   \end{gather*}
-  mit $T(\alpha,\beta)$ als \glqq$\alpha$ teilt $\beta$\grqq.
+  mit $T(\alpha,\beta)$ als \glqq$\alpha$ teilt $\beta$\grqq{}.
 
  \item Es gibt unendlich viele Primzahlen.
 
@@ -7438,7 +7431,7 @@ folgende Bedeutung hat.
     \neg \big( \exists u ~ P(u) \wedge (\forall x ~ P(x) \wedge x
        < u) \big)
   \end{gather*}
-  mit $P(\alpha)$ als \glqq$\alpha$ ist prim\grqq.
+  mit $P(\alpha)$ als \glqq$\alpha$ ist prim\grqq{}.
 
   oder: $P(2) \wedge \forall x \exists y (P(y) \wedge A_{1}^{2}(x,y))$
   mit $P(\alpha)$ als $\alpha$ ist prim und $A_{1}^{2}(\alpha,\beta)$ als
@@ -7606,8 +7599,8 @@ Zeigen Sie, dass dann gilt:
     $\alpha[x/c]=\alpha$ kommt $c$ auch nicht in der zu beweisenden
     Formel vor.
   \end{faelle}
-  Die beiden Aussagen können wieder zur Gesamtaussage mittels der Äquivalenzregel 
-  $\alpha\rightarrow\beta,\beta\rightarrow\alpha\vdash \alpha\leftrightarrow\beta$ 
+  Die beiden Aussagen können wieder zur Gesamtaussage mittels der Äquivalenzregel
+  $\alpha\rightarrow\beta,\beta\rightarrow\alpha\vdash \alpha\leftrightarrow\beta$
   gebracht werden.
 
  \item $\vdash \alpha \leftrightarrow (\alpha \rightarrow (\forall
@@ -7736,7 +7729,7 @@ kann das Deduktionstheorem angewendet werden.
 
 
 \subsection*{Aufgabe 3}
-Gebundene Umbenennung von Variablen. 
+Gebundene Umbenennung von Variablen.
 
 Bsp.: in einer Formel können quantifizierte Variable
 umbenannt werden, ohne dass die Aussage der Formel geändert wird.
@@ -7805,7 +7798,7 @@ Also ist $K+\{\alpha\}$ nicht konsistent.
 \subsection*{Aufgabe 2}
 
 Sei $\alpha$ eine Formel ohne Quantoren und $\vdash\alpha$ im
-Prädikatenkalkül 1.\,Ordnung. Zeigen Sie: $\alpha$ ist Instanz einer
+Prädikatenkalkül 1.~Ordnung. Zeigen Sie: $\alpha$ ist Instanz einer
 Tautologie. (Hinweis: falls nicht, dann gibt es eine Interpretation mit
 der Menge aller Terme von $\alpha$ als Grundmenge, unter der $\alpha$
 falsch ist.)
@@ -7843,11 +7836,11 @@ Konstruktion einer Interpretation $\mathcal{M}$ und einer
 Variablenbelegung $s$: Grundmenge sei die Menge aller Terme aus
 Bestandteilen von $\alpha$
 \begin{gather*}
-  \{x, y, f(x), f(y), f(f(x)), f(f(y)), \ldots\}
+  \{x, y, f(x), f(y), f(f(x)), f(f(y)), \dotsc\}
 \end{gather*}
 und $(f)^{\mathcal{M}}(t) = f(t)$ für jedes $t$ in der Grundmenge.
 
-\glqq Terme werden durch sich selbst interpretiert.\grqq
+\glqq{}Terme werden durch sich selbst interpretiert.\grqq{}
 
 [$(A)^{\mathcal{M}} = \{x,y\}, (B)^{\mathcal{M}} = \emptyset$.]
 Prädikatensymbole werden entsprechend der Belegung der aussagenlogischen
@@ -7903,38 +7896,38 @@ Wir zeigen $\Svdash x=0+x$ mittels Induktion über $x$
 Beweisen Sie, dass die Nullfunktion (streng) repräsentierbar ist.
 \begin{gather*}
   Z\colon\N^{k} \rightarrow \N\quad\text{mit}\quad
-     Z(n_{1},\ldots,n_{k})=0 \qquad\text{für alle~} n_{1},\ldots,n_{k}\in\N
+     Z(n_{1},\dotsc,n_{k})=0 \qquad\text{für alle~} n_{1},\dotsc,n_{k}\in\N
 \end{gather*}
 
 Rerpäsentation ist:
 \begin{gather*}
-  x_{1} = x_{1} \wedge \ldots \wedge x_{k}=x_{k} \wedge x_{k+1}=0
+  x_{1} = x_{1} \wedge \dotsb \wedge x_{k}=x_{k} \wedge x_{k+1}=0
 \end{gather*}
 
 \begin{enumerate}[(1)]
  \item
-  Für $Z(n_{1},\ldots,n_{k})=m=0$ gilt $\Svdash \overline{n_{1}} =
-  \overline{n_{2}}\wedge \overline{n_{2}}=\overline{n_{2}}\wedge \ldots
-  \wedge \overline{n_{k}}=\overline{n_{k}}\wedge 0=0$. 
+  Für $Z(n_{1},\dotsc,n_{k})=m=0$ gilt $\Svdash \overline{n_{1}} =
+  \overline{n_{2}}\wedge \overline{n_{2}}=\overline{n_{2}}\wedge \dotsb
+  \wedge \overline{n_{k}}=\overline{n_{k}}\wedge 0=0$.
   \begin{align*}
     (1)\quad & \overline{n_{1}} = \overline{n_{1}} & \text{\autoref{lemma-zahlen-elem}}\\
     \vdots\quad & \vdots\\
     (k)\quad & \overline{n_{k}} = \overline{n_{k}}\\
     (k+1)\quad & \overline{0} = \overline{0}\\
     (k+2)\quad & \overline{n_{1}} = \overline{n_{2}}\wedge
-       \overline{n_{2}}=\overline{n_{2}}\wedge \ldots
+       \overline{n_{2}}=\overline{n_{2}}\wedge \dotsb
        \wedge \overline{n_{k}}=\overline{n_{k}}\wedge 0=0
        &\text{Konjunktionsregel}
   \end{align*}
 
  \item $\Svdash \exists_{1} x_{k+1} ~ \overline{n_{1}} \ne
-  \overline{n_{2}}\wedge \overline{n_{2}}\ne\overline{n_{2}}\wedge \ldots
+  \overline{n_{2}}\wedge \overline{n_{2}}\ne\overline{n_{2}}\wedge \dotsb
   \wedge \overline{n_{k}}\ne\overline{n_{k}}\wedge x_{k+1}\ne0$
 
   einfacher: $\Svdash \exists_{1}x_{k+1} ~ x_{k+1}=0$ d.\,h.
   \begin{gather*}
     \Svdash (\exists x_{k+1} ~ x_{k+1} =0) \wedge (\forall x_{k+1}
-       \ldots \forall y ~ (x_{k+1} = 0\wedge y=0) \rightarrow x_{+1}
+       \dotso \forall y ~ (x_{k+1} = 0\wedge y=0) \rightarrow x_{+1}
        = y)
   \end{gather*}
 
@@ -7944,7 +7937,7 @@ Rerpäsentation ist:
     (2)\quad & \exists x_{1} ~ x_{k+1}=0 &\text{RE 4}
   \end{align*}
 
-  $(\forall x_{k+1} \ldots \forall y ~ (x_{k+1} = 0\wedge y=0)
+  $(\forall x_{k+1} \dotso \forall y ~ (x_{k+1} = 0\wedge y=0)
   \rightarrow x_{+1} = y)$
   \begin{align*}
     (1)\quad & x_{k+1} = 0\wedge y=0 &\text{Hypothese}\\
@@ -7958,15 +7951,15 @@ Rerpäsentation ist:
 Beweisen Sie, dass die Konstantenfunktion $C_{i}\colon\N\rightarrow\N$
 mit $C_{i}(n) =i$ (streng) repräsentierbar ist.
 \begin{gather*}
-  x_{1} = x_{1} \wedge \ldots x_{k}=x_{k} \wedge x_{k+1} = \overline{m}
+  x_{1} = x_{1} \wedge \dotsb \wedge x_{k}=x_{k} \wedge x_{k+1} = \overline{m}
 \end{gather*}
 
 \begin{enumerate}[(1)]
- \item Für $C_{m}^{k}(n_{1},\ldots,n_{k})= m$ gilt
-  $\Svdash (m_{1}=n_{1}\wedge\ldots \wedge n_{k}=n_{k} \wedge
+ \item Für $C_{m}^{k}(n_{1},\dotsc,n_{k})= m$ gilt
+  $\Svdash (m_{1}=n_{1}\wedge\dotsb \wedge n_{k}=n_{k} \wedge
   \overline{m}=\overline{m})$
  \item $\Svdash(\exists_{1} x_{k+1} ~
-  \overline{n_{1}}=\overline{n_{1}} \wedge\ldots
+  \overline{n_{1}}=\overline{n_{1}} \wedge\dotsb\wedge
   \overline{n_{k}}=\overline{n_{k}} \wedge x_{k+1}=\overline{m}$
 \end{enumerate}
 
@@ -8045,7 +8038,7 @@ die zwei aufeinanderfolgende Fibonacci-Zahlen kodiert.
      f_{add} ( (U_{2}^{(2)}(a,b))_{0}, (U_{2}^{(2)}(a,b))_{1} ) ) \Big)
 \end{align*}
 Also ist $f$ primitiv-rekursiv.
-Zum Abschluss müssen wir noch sagen, 
+Zum Abschluss müssen wir noch sagen,
 wie die Fibonacci-Funktion definiert ist:
 \begin{gather*}
   fin(n) = (f(n))_{0}
