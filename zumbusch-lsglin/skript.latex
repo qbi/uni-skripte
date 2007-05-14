@@ -159,6 +159,7 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
+\renewcommand*{\CK}{\mathcal{K}}
 \makeindex
 
 \SVN $LastChangedRevision$
@@ -452,6 +453,87 @@ Weiterhin kann man nach dem Speicher klassifizieren:
  \item verteilter Speicher
 \end{itemize}
 
+\todo{Vorlesung vom 2007-05-07}
+
+\todo{Vorlesung vom 2007-05-08}
+
+Betrachten $\Phi(x)=\nicefrac{1}{2} x^{T}Ax-b^{T}x$. Wenn $A=A^{T}$ positiv
+definit ist, dass ist das äquivalent zu $\nabla\Phi(x)=0\Leftrightarrow Ax=b$.
+Die zweite Charakterisierung ist $A$-Orthogonalität: $\langle
+p,Aq\rangle=0\Leftrightarrow p \perp_{A} q$ konjugiert. Wir minimieren
+bezüglich eines ganzen Raumes, nämlich des Krylov-Raumes. Das Residuum ist
+$r=Ax-b$. Dann reicht es bezüglich des Raumes $\{x, Ax, A^{2}x,
+A^{3}x,\dotsc,\}$ zu minimieren. Man startet mit einem $x_{0}=Ax^{0}-b$ und
+versucht diesbezüglich Lösungen zu berechnen. Zuerst kommt ein
+Gradientenschritt. Nach dem ersten Schritt ist das orthogonal zum alten
+Residuum. Im zweiten Raum kommt der Raum raus, der von $x$ und $Ax$
+aufgespannt wird. Der Krylovraum steigt von Iteration zu Iteration.
+
+Wir haben im CG-Verfahren Suchrichtungen. In einem Schritt ist das $p^{(k+1)}$
+mit $\langle p^{(k+1)}, Ap^{(j)}\rangle=0$ für alle $j\leq k$. Die erste
+Suchrichtung ist $p^{(0)}=r^{(0)}=Ax^{(0)}-b$. Weiter gilt dann, $p^{(k+1)} =
+r^{(k+1)} -\beta_{k} p^{(k)}$, wobei für $r^{(k+1)}= r^{(k)}-\alpha_{k}
+A p^{(k)}$ gilt.
+
+Nehmen wir $K^{(0)}= \langle r^{(0)}\rangle$, $K^{(k+1)}= \langle K^{(k)},
+Ap^{(k)}$. Es gilt $p^{(0)}=r^{(0)}\in K^{(0)}$ und $p^{(k+1)}, r^{(k+1)}\in
+K^{(k+1)}$. Wenn man das iterativ macht, bekommt man eine neue Beschreibung:
+$K^{(k)}= \langle r^{(0)}, Ar^{(0)}, \dotsc, A^{k}r^{(0)}\rangle$.
+Das bezeichnet man als \highl{Krylovräume}.
+
+Wegen der Eigenschaft der Krylovräume kann man schreiben: $y\in K^{(k)}
+\Rightarrow y=\sum_{i=0}^{k} r_{k} A^{k} r^{(0)}$. Vergleiche dies mit dem
+Polynom $z=\sum_{i=0}^{k} r_{k} x^{k}$. Sei nun $\abs{z(x)}<c$ für
+$x\in[a,b]$. Wenn man das kann, kann man überlegen, was mit $A^{k}$ passiert.
+Wenn die Eigenwerte von $A$ beschränkt sind ($a\leq EW(A)\leq b$), dann
+erhalten wir eine Schranke für das obige $y$. Insgesamt erhält man sowas wie
+$\norm{y}\leq c\norm{r^{(0)}}$. Solche Polynome erhält man als
+\highl{Tschebyscheffpolynome}. Man kann also $y$ so konstruieren, dass es eine
+Näherung des Gleichungssystems ist.
+
+\paragraph{Konvergenz des CG-Verfahrens}
+$\norm{e^{(k)}}_{A}\leq 2 \frac{c^{k}}{1+c^{2k}} \norm{e^{(0)}}_{A}$ mit
+$c=\frac{\sqrt{\CK(A)}-1}{\sqrt{\CK(A)}+1}.
+
+Vergleiche hierzu auch das Gradientenverfahren mit
+$($\frac{\CK(A)-1}{\CK(A)+1})^{k}$. Bei exakter Rechnung ist man nach $n$
+Schritten fertig.
+
+Start mit $r^{(0)}=Ax^{(0)}-b, p^{(0)}=r^{(0)}$\\
+Für $k=0,1,2,\dotsc$ führt man folgendes aus:
+\begin{itemize}
+  \item $\alpha_{k}=\frac{p^{(k)T}r^{(k)}}{p^{(k)T} AP^{(k)}}$
+ \item $x^{(k+1)}= x^{(k)} +\alpha_{k} p^{(k)}$
+ \item $r^{(k+1)}= r^{(k)} -\alpha_{k} Ap^{(k)}$
+ \item $\beta_{k}= \frac{(Ap^{(k)})^{T} r^{(k+1)}}{(Ap^{(k)})^{T} p^{(k)}}$
+ \item $p^{(k+1)= r^{(k+1)} -\beta_{k}p^{(k)}}$
+\end{itemize}
+Wobei die Matrximultiplation sehr teuer werden kann. Daher rechnet man
+$Ap^{(k)}$ in jedem Schritt nur einmal aus.
+
+\paragraph{Allgemeine Matrizen}
+$A^{T}Ax=A^{T}b$. Im Allgemeinen gilt $A\neq A^{T}$ und $A$ hat positive wie
+negative Eigenwerte. Angenommen $\CK(A^{T}A)=\CK^{2}(A)>\CK(A)$. Konjugiertes
+Gradientenverfahren würde das Verfahren somit kaputt machen.
+
+Multiplikation mit $A^{T}$ kann kompliziert sein, z.\,B. Randbedingungen.
+
+Eine Variante mit $A^{T}A$ zu arbeiten, ist von Hestenes und Stiefel (1952).
+Berechne $Ax=b$ und $A^{T}x=b$ mit dem BICG-Verfahren von Fletcher (1975).
+Ohne $A^{T}$ heißt es CGS von Sonnefeld von 1989. Van der Vorst hat es weiter
+verbessert und BICG-Stab genannt.
+
+Ein weiterer Weg ist die Minimierung von $\norm{Ax-b}_{2}$ von Saad und
+Schultz (1986). Es heißt GMRES. Daraus entstand dann die Quasiminimierung
+(quasi minimal residual, QMR) von Freund und Nachtigall (1991). Letzteres
+Verfahren wurde auch von BICG beeinflusst. Nun versuchte man wieder $A^{T}$ zu
+entfernen und es entstand das TFQMR (transposed free QMR) wieder von Freund
+(1993).
+
+\paragraph{Modellbeispiel: Konvektion-Diffusion}
+Die Idee ist: $-\epsilon\Delta u+ \beta\nabla u=0$ in $x\in(0,1)^{2}$ und
+$u=g$ auf $\partial(0,1)^{2}$ mit $\beta\colon\Omega\rightarrow \R^{2}$ und
+$\epsilon>0$.
 
 \clearpage
 \appendix
