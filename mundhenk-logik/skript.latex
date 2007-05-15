@@ -191,23 +191,17 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
-% \vdash und \models mit variabler Strichlänge und so, dass man drüber-
-% und drunterschreiben kann. \xvdash[drunter]{drüber} und
-% \xmodels[drunter]{dürber} Der Name ist an \xrightarrow[]{} aus amsmath
-% angelehnt. Dies ist nach dem Vorschlag von Herbert
-% Voss in <news:e6ge88$a9q$01$1@news.t-online.com>.
-\makeatletter
-\newcommand*{\vdashfill@}{\arrowfill@{|\mkern2mu}\relbar\relbar}
-\newcommand*{\xvdash}[2][]{%
-   \ext@arrow0099\vdashfill@{#1}{#2}} % die Ziffern 0099 sind 4 Parameter
-\newcommand*{\modelsfill@}{\arrowfill@{|\mkern1.5mu}\Relbar\Relbar}
-\newcommand*{\xmodels}[2][]{%
-   \ext@arrow0099\modelsfill@{#1}{#2}} % die Ziffern 0099 sind 4 Parameter
-\makeatother
+% \vdash und \models mit verlängerter Strichlänge und so, dass man
+% drunterschreiben kann. \xvdash{drunter} und \xmodels{drunter}
+\newcommand*{\xvdash}[1]{\mathrel\vert\joinrel%
+  \mathrel{\mkern-1mu\mathop{\relbar\joinrel\mkern-.5mu\relbar}\limits_{#1}}}
+\newcommand*{\xmodels}[1]{\mathrel\vert\joinrel%
+   \mathrel{\mkern-.9mu\mathop{\Relbar\joinrel\Relbar}\limits_{#1}}}
 
-\newcommand*{\Lvdash}{\xvdash[\mathrm{L}]{}}
-\newcommand*{\Svdash}{\xvdash[\mathrm{S}]{}}
-\newcommand*{\Mmodels}{\xmodels[\scriptscriptstyle\mathcal{M}]{}}
+% ... damit man sich nicht immer die Finger wund tippt.
+\newcommand*{\Lvdash}{\xvdash{\mathrm{L}}}
+\newcommand*{\Svdash}{\xvdash{\mathrm{S}}}
+\newcommand*{\Mmodels}{\xmodels{\scriptscriptstyle\mathcal{M}}}
 
 % Umdefinierung von \vdash und \models, damit die Striche länger sind.
 \renewcommand*{\vdash}{\xvdash{\hphantom{L}}}
@@ -1275,21 +1269,21 @@ Auch dieser Begriff wird formal erfasst.
 
   Schreibweisen:\\[.5ex]
   \begin{tabular}{rcl}
-    $\Gamma \xvdash[\mathcal{S}]{} \alpha$ & bedeutet & $\alpha$ ist
+    $\Gamma \xvdash{\mathcal{S}} \alpha$ & bedeutet & $\alpha$ ist
        Folgerung von $\Gamma$ in $\mathcal{S}$\\
-    $ \xvdash[\mathcal{S}]{} \alpha$ & schreibt man für &
-       $\emptyset \xvdash[\mathcal{S}]{} \alpha$\\
-    $\xvdash[\mathcal{S}]{} \alpha$ & bedeutet &
+    $ \xvdash{\mathcal{S}} \alpha$ & schreibt man für &
+       $\emptyset \xvdash{\mathcal{S}} \alpha$\\
+    $\xvdash{\mathcal{S}} \alpha$ & bedeutet &
        $\alpha$ ist Theorem von $\mathcal{S}$
   \end{tabular}
 
   Falls $\Gamma=\{\beta_1,\dotsc,\beta_k\}$ eine endliche Menge ist,
   schreibt man\\[.5ex]
   \begin{tabular}{rcl}
-    $\beta_1,\dotsc,\beta_k \xvdash[\mathcal{S}]{} \alpha$ & anstelle von &
-       $\{ \beta_1,\dotsc,\beta_k \} \xvdash[\mathcal{S}]{} \alpha$ \\
-    $\Gamma, \beta \xvdash[\mathcal{S}]{} \alpha$ & anstelle von & $\Gamma
-       \cup \beta \xvdash[\mathcal{S}]{} \alpha$ \\
+    $\beta_1,\dotsc,\beta_k \xvdash{\mathcal{S}} \alpha$ & anstelle von &
+       $\{ \beta_1,\dotsc,\beta_k \} \xvdash{\mathcal{S}} \alpha$ \\
+    $\Gamma, \beta \xvdash{\mathcal{S}} \alpha$ & anstelle von & $\Gamma
+       \cup \beta \xvdash{\mathcal{S}} \alpha$ \\
   \end{tabular}
 \end{defini}
 
@@ -3507,7 +3501,7 @@ Ohne zusätzliche Axiome können ausschließlich gültige Formeln bewiesen werde
   Für jeden Prädikatenkalkül 1.~Ordnung $K$ und jede Formel $\alpha$
   gilt:
   \begin{center}
-    Wenn $\xvdash[K]{} \alpha$, dann ist $\alpha$ gültig.
+    Wenn $\xvdash{K} \alpha$, dann ist $\alpha$ gültig.
   \end{center}
 \end{satz}
 
@@ -4075,14 +4069,14 @@ dann wird die Theorie nicht konsistent.
 
 \begin{defini}[konsistente Theorie]\label{defini-konsistent}
   Eine Theorie $K$ heißt \emph{konsistent}, falls es keine
-  Formel $\alpha$ gibt mit $\xvdash[K]{}\alpha$ und $\xvdash[K]{}\neg\alpha$.
+  Formel $\alpha$ gibt mit $\xvdash{K}\alpha$ und $\xvdash{K}\neg\alpha$.
 \end{defini}
 
 \begin{lemma}\label{lemma-KonsistenzPK}
   Jeder Prädikatenkalkül 1.~Ordnung ist konsistent.
 
   \begin{proof}
-    Aus $\xvdash[K]{}\alpha$ folgt $\models\alpha$
+    Aus $\xvdash{K}\alpha$ folgt $\models\alpha$
     (\autoref{satz-korrektheit-theorien-1.ordnung}). Da höchstens eine der
     Formeln $\alpha$ und $\neg\alpha$ gültig ist, muss $K$ konsistent sein.
   \end{proof}
@@ -4090,13 +4084,13 @@ dann wird die Theorie nicht konsistent.
 
 \begin{bemerk}\label{bemerk-nichtkonsistenz}
   Wenn $K$ eine nicht konsistente Theorie ist, dann kann man jede
-  beliebige Formel $\alpha$ beweisen: $\xvdash[K]{}\alpha$.
+  beliebige Formel $\alpha$ beweisen: $\xvdash{K}\alpha$.
 
   \begin{proof}
     Sei $K$ eine nicht konsistente Theorie. Dann gibt es eine Formel
-    $\beta$ mit $\xvdash[K]{}\beta$ und $\xvdash[K]{}\neg\beta$. Mit der
-    Instanz der Tautologie $\xvdash[K]{}\beta \rightarrow (\neg\beta
-    \rightarrow\alpha)$ und zweimal modus ponens folgt $\xvdash[K]{}\alpha$.
+    $\beta$ mit $\xvdash{K}\beta$ und $\xvdash{K}\neg\beta$. Mit der
+    Instanz der Tautologie $\xvdash{K}\beta \rightarrow (\neg\beta
+    \rightarrow\alpha)$ und zweimal modus ponens folgt $\xvdash{K}\alpha$.
   \end{proof}
 \end{bemerk}
 
@@ -4120,37 +4114,37 @@ um die Konsistenz der um Axiom $\alpha$ erweiterten Theorie zu beweisen.
   Dann gilt:
 
   \centering{%
-  wenn $\neg \alpha$ in $K$ nicht beweisbar ist (d.\,h. $\not\xvdash[K]{} \neg \alpha$),
+  wenn $\neg \alpha$ in $K$ nicht beweisbar ist (d.\,h. $\not\xvdash{K} \neg \alpha$),
   dann ist $K'$ konsistent.
   }
 \end{lemma}
 
 \begin{proof}
   Wir beweisen das Lemma, indem wir zeigen:
-  wenn $K'$ nicht konsistent ist, dann gilt $\xvdash[K]{} \neg \alpha$.
+  wenn $K'$ nicht konsistent ist, dann gilt $\xvdash{K} \neg \alpha$.
 
   Sei also $K'$ nicht konsistent.
   Dann gibt es eine Formel $\beta$
-  mit $\xvdash[K']{} \beta$ und $\xvdash[K']{} \neg\beta$.
+  mit $\xvdash{K'} \beta$ und $\xvdash{K'} \neg\beta$.
   Die Formel $\beta\rightarrow(\neg \beta \rightarrow \neg \alpha)$
   ist Instanz einer Tautologie und deshalb in $K'$ beweisbar.
   Durch Anwendung von modus ponens erhält man
   aus den letzten drei Formeln
-  $\xvdash[K']{} \neg \alpha$.
+  $\xvdash{K'} \neg \alpha$.
 
   Da das zusätzliche Axiom $\alpha$ der einzige Unterschied
   zwischen $K$ und $K'$ ist,
   ist der Beweis für $\neg \alpha$ in $K'$
   auch ein Beweis in $K$ mit Hypothese $\alpha$,
-  d.\,h. $\alpha \xvdash[K]{} \neg \alpha$.
+  d.\,h. $\alpha \xvdash{K} \neg \alpha$.
   Da $\alpha$ geschlossen ist,
   kann das Deduktionstheorem angewendet werden,
-  und man erhält $\xvdash[K]{} \alpha \rightarrow \neg \alpha$.
+  und man erhält $\xvdash{K} \alpha \rightarrow \neg \alpha$.
   Die Formel $(\alpha \rightarrow \neg \alpha) \rightarrow \neg \alpha$
   ist Instanz einer Tautologie
   und deshalb in $K$ beweisbar.
   Mit modus ponens folgt aus den letzten beiden Formeln
-  $\xvdash[K]{} \neg \alpha$.
+  $\xvdash{K} \neg \alpha$.
 \end{proof}
 
 Die Menge aller Theoreme in $K'$ ist eine
@@ -4160,7 +4154,7 @@ da jedes Axiom von $K$ ebenfalls ein Axiom von $K'$ ist.
 \begin{defini}
   Eine Theorie $K'$ ist eine \emph{Erweiterung} von $K$,
   falls jedes Theorem von $K$ ebenfalls ein Theorem von $K'$ ist
-  (d.\,h. aus $\xvdash[K]{} \alpha$ folgt $\xvdash[K']{} \alpha$).
+  (d.\,h. aus $\xvdash{K} \alpha$ folgt $\xvdash{K'} \alpha$).
 \end{defini}
 
 Wenn -- wie oben -- $K'$ aus $K$ durch Hinzunahme
@@ -4179,7 +4173,7 @@ natürlich die beweisbare Formel auswählen.
 \begin{defini}[abgeschlossene Theorie]\label{defini-abgeschlossene-Theorie}
   Eine Theorie $K$ heißt \emph{abgeschlossen},
   falls für jede geschlossene Formel $\alpha$ (von $K$)
-  gilt: $\xvdash[K]{} \alpha$ oder $\xvdash[K]{} \neg \alpha$.
+  gilt: $\xvdash{K} \alpha$ oder $\xvdash{K} \neg \alpha$.
 \end{defini}
 
 In einer konsistenten und abgeschlossenen Theorie
@@ -4203,15 +4197,15 @@ und jede konsistente Theorie lässt sich dazu erweitern.
   \begin{enumerate}
    \item $J_0=K$
    \item $J_{i+1} = \begin{cases}
-     J_i, & \text{falls $\xvdash[J_i]{} \neg \beta_{i+1}$} \\
-     J_i + \{\beta_{i+1}\}, &\text{falls $\not\xvdash[J_i]{} \neg \beta_{i+1}$}
+     J_i, & \text{falls $\xvdash{J_i} \neg \beta_{i+1}$} \\
+     J_i + \{\beta_{i+1}\}, &\text{falls $\not\xvdash{J_i} \neg \beta_{i+1}$}
    \end{cases}
     $
   \end{enumerate}
   Für $J_i$ gilt also:
-  $\xvdash[J_i]{} \neg \beta_i$ (da $\xvdash[J_{i-1}]{} \neg \beta_{i}$)
+  $\xvdash{J_i} \neg \beta_i$ (da $\xvdash{J_{i-1}} \neg \beta_{i}$)
   oder
-  $\xvdash[J_i]{} \beta_i$ (da $\not\xvdash[J_{i-1}]{} \neg \beta_{i}$
+  $\xvdash{J_i} \beta_i$ (da $\not\xvdash{J_{i-1}} \neg \beta_{i}$
   und $\beta_i$ Axiom von $J_i$ ist).
 
   Nach \autoref{lemma-kons-erweiterung} ist jedes $J_i$ konsistent.
@@ -4229,10 +4223,10 @@ und jede konsistente Theorie lässt sich dazu erweitern.
   $K'$ ist abgeschlossen:
   sei $\alpha$ eine geschlossene Formel.
   Dann gibt es ein $i$ mit $\alpha=\beta_i$.
-  Nach obiger Bemerkung gilt $\xvdash[J_i]{} \neg \beta_i$
-  oder $\xvdash[J_i]{} \beta_i$.
+  Nach obiger Bemerkung gilt $\xvdash{J_i} \neg \beta_i$
+  oder $\xvdash{J_i} \beta_i$.
   Da $K'$ eine Erweiterung von $J_i$ ist,
-  folgt $\xvdash[K]{} \neg \beta_i$ oder $\xvdash[K]{} \beta_i$.
+  folgt $\xvdash{K} \neg \beta_i$ oder $\xvdash{K} \beta_i$.
 \end{proof}
 
 
@@ -4279,7 +4273,7 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
   falls für jede Formel $\alpha$ mit genau einer freien Variablen $x$ ein
   variablenfreier Term $t$ existiert mit
   \begin{gather*}
-    \xvdash[K]{} (\exists x ~ \neg\alpha) \rightarrow \neg\alpha[x/t]
+    \xvdash{K} (\exists x ~ \neg\alpha) \rightarrow \neg\alpha[x/t]
   \end{gather*}
 \end{defini}
 
@@ -4316,40 +4310,40 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     \begin{itemize}
      \item $K_{0}$ ist konsistent, da $K$ konsistent ist.
      \item Sei angenommen, dass $K_{n}$ nicht konsistent ist.
-      Dann gilt $\xvdash[K_{n}]{}\neg\sigma_{n}$.
-      Also folgt $\sigma_{n} \xvdash[K_{n-1}]{}\neg\sigma_{n}$.
+      Dann gilt $\xvdash{K_{n}}\neg\sigma_{n}$.
+      Also folgt $\sigma_{n} \xvdash{K_{n-1}}\neg\sigma_{n}$.
       Mit dem Deduktionstheorem folgt
-      $\xvdash[K_{n-1}]{}\sigma_{n}\rightarrow\neg\sigma_{n}$ und mit der
+      $\xvdash{K_{n-1}}\sigma_{n}\rightarrow\neg\sigma_{n}$ und mit der
       Tautologie $(\sigma_{n}\rightarrow\neg\sigma_{n})\rightarrow
-      \neg\sigma_{n}$ folgt $\xvdash[K_{n-1}]{}\neg\sigma_{n}$, d.\,h.
+      \neg\sigma_{n}$ folgt $\xvdash{K_{n-1}}\neg\sigma_{n}$, d.\,h.
       \begin{gather*}
-        \xvdash[K_{n-1}]{}\neg(\exists x_{j_{n}} ~ \neg\alpha)
+        \xvdash{K_{n-1}}\neg(\exists x_{j_{n}} ~ \neg\alpha)
            \rightarrow \neg\alpha[x_{j_{n}}/b_{n}]
       \end{gather*}
 
       Mit der Implikationsregel folgt
       \begin{gather*}
-        \xvdash[K_{n-1}]{} (\exists x_{j_{n}} ~
+        \xvdash{K_{n-1}} (\exists x_{j_{n}} ~
            \neg\alpha)\quad\text{und}\quad
-           \xvdash[K_{n-1}]{} \neg\neg\alpha[x_{j_{n}}/b_{n}] ,
+           \xvdash{K_{n-1}} \neg\neg\alpha[x_{j_{n}}/b_{n}] ,
       \end{gather*}
-      und mit der Negationsregel $\xvdash[K_{n-1}]{} \alpha[x_{j_{n}}/b_{n}]$.
+      und mit der Negationsregel $\xvdash{K_{n-1}} \alpha[x_{j_{n}}/b_{n}]$.
 
       Das $b_{n}$ kommt in keinem zusätzlichen Axiom von $K_{n-1}$ vor.
-      Deshalb kann es im Beweis von $\xvdash[K_{n-1}]{}
+      Deshalb kann es im Beweis von $\xvdash{K_{n-1}}
       \alpha[x_{j_{n}}/b_{n}]$ durch eine Variable $x'$ ersetzt werden,
       die im Beweis sonst nicht vorkommt, und wir erhalten
-      $\xvdash[K_{n-1}]{}\alpha[x_{j_{n}}/x']$.
+      $\xvdash{K_{n-1}}\alpha[x_{j_{n}}/x']$.
 
       Nach der Aufgabe 3 auf \hyperref[sec:uebung8]{Blatt~\ref*{sec:uebung8}} gilt
-      $\xvdash[K_{n-1}]{}(\forall x_{j_{n}} ~ \alpha) \leftrightarrow
-      (\forall x' ~ \alpha[x_{j_{n}}/x']$). Aus $\xvdash[K_{n-1}]{}
-      \alpha[x_{j_{n}}/x']$ folgt mit Generalisierung $\xvdash[K_{n-1}]{}
+      $\xvdash{K_{n-1}}(\forall x_{j_{n}} ~ \alpha) \leftrightarrow
+      (\forall x' ~ \alpha[x_{j_{n}}/x']$). Aus $\xvdash{K_{n-1}}
+      \alpha[x_{j_{n}}/x']$ folgt mit Generalisierung $\xvdash{K_{n-1}}
       (\forall x' ~ \alpha[x_{j_{n}}/x'])$.
 
-      Mit Äquivalenzregel folgt $\xvdash[K_{n-1}]{}(\forall x_{j_{n}} ~
-      \alpha)$. Aus $\xvdash[K_{n-1}]{} (\exists x_{j_{n}} ~
-      \neg\alpha)$ folgt $\xvdash[K_{n-1}]{} \neg(\forall x_{j_{n}} ~
+      Mit Äquivalenzregel folgt $\xvdash{K_{n-1}}(\forall x_{j_{n}} ~
+      \alpha)$. Aus $\xvdash{K_{n-1}} (\exists x_{j_{n}} ~
+      \neg\alpha)$ folgt $\xvdash{K_{n-1}} \neg(\forall x_{j_{n}} ~
       \alpha)$. Also ist $K_{n-1}$ nicht konsistent.
     \end{itemize}
   \end{proof}
@@ -4374,17 +4368,17 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
      \item Prädikatensymbole werden durch Beweisbarkeit interpretiert:
       \begin{gather*}
         (A^n_i)^{\cM}  =  \big\{(t_1,\dotsc,t_n)\in D^n \bigm|
-           ~ \xvdash[J]{} A^n_i(t_1,\dotsc,t_n)\big\} \\
+           ~ \xvdash{J} A^n_i(t_1,\dotsc,t_n)\big\} \\
       \end{gather*}
     \end{itemize}
     Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
     Dazu zeigen wir, dass für jede \textit{geschlossene} Formel $\alpha$ gilt:
-    aus $\Mmodels \alpha$ folgt $\xvdash[J]{} \alpha$.
+    aus $\Mmodels \alpha$ folgt $\xvdash{J} \alpha$.
     (Eine nicht geschlossene Formel $\beta$ und deren Abschluss $\beta'$
      haben die gleichen Eigenschaften in Bezug auf Gültigkeit und Beweisbarkeit.
      Für jede Formel $\beta$ und deren Abschluss $\beta'$ gilt
     (1) $\Mmodels \beta$ gdw. $\Mmodels \beta'$ (wg. (E6)) und
-    (2) $\xvdash[J]{} \beta$ gdw. $\xvdash[J]{} \beta'$ (wg. Gen und (RA4).)
+    (2) $\xvdash{J} \beta$ gdw. $\xvdash{J} \beta'$ (wg. Gen und (RA4).)
     Der Beweis wird mittels Induktion über den Formelaufbau geführt,
     d.\,h. über die Anzahl der in der Formel vorkommenden Verknüpfungszeichen.
 
@@ -4392,7 +4386,7 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     ohne Verknüpfungszeichen -- also ohne Quantoren.
     Diese Formeln enthalten keine Variablensymbole.
     Es folgt direkt aus der Definition der Interpretation der
-    Prädikatensymbole, dass $\Mmodels \alpha$ gdw. $\xvdash[J]{} \alpha$.
+    Prädikatensymbole, dass $\Mmodels \alpha$ gdw. $\xvdash{J} \alpha$.
 
     Die Induktionsvoraussetzung lautet, dass die Behauptung für alle geschlossenen Formeln
     bis zu einer bestimmten Größe gilt.
@@ -4410,11 +4404,11 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
       \Mmodels \gamma ~ \Leftrightarrow_{(1)} ~
          \not\Mmodels \alpha
          ~ \Leftrightarrow_{(2)} ~
-         \not\xvdash[J]{} \alpha
+         \not\xvdash{J} \alpha
          ~ \Leftrightarrow_{(3)} ~
-         \xvdash[J]{} (\neg \alpha)
+         \xvdash{J} (\neg \alpha)
          ~ \Leftrightarrow_{(4)} ~
-         \xvdash[J]{} \gamma
+         \xvdash{J} \gamma
     \end{gather*}
     Äquivalenz (1) folgt aus $\gamma = (\neg \alpha)$,
     (2) folgt aus der Induktionsvoraussetzung,
@@ -4429,11 +4423,11 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
          ~ \Leftrightarrow_{(1)} ~
          \Mmodels \alpha \text{~und~} \not\Mmodels \beta
          ~ \Leftrightarrow_{(2)} ~
-         \xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta
+         \xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta
          ~ \Leftrightarrow_{(3)} ~
-         \xvdash[J]{} (\neg \gamma)
+         \xvdash{J} (\neg \gamma)
          ~ \Leftrightarrow_{(4)} ~
-         \not\xvdash[J]{} \gamma
+         \not\xvdash{J} \gamma
     \end{gather*}
 
     Die Äquivalenzen (1), (2) und (4) sind einfach.
@@ -4443,15 +4437,15 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     und (4)  folgt aus der Abgeschlossenheit von $J$.
 
     Für Äquivalenz (3) betrachten wir beide Richtungen getrennt.
-    Aus ~$\xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta$~
-    folgt zuerst $\xvdash[J]{} \neg\beta$ aus der Abgeschlossenheit von $J$.
+    Aus ~$\xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta$~
+    folgt zuerst $\xvdash{J} \neg\beta$ aus der Abgeschlossenheit von $J$.
     Mit der Tautologie $\alpha\rightarrow(\neg \beta \rightarrow\neg(\alpha\rightarrow\beta))$
-    und modus ponens ergibt sich $\xvdash[J]{} \neg(\alpha\rightarrow\beta)$,
-    also $\xvdash[J]{} (\neg \gamma)$.
+    und modus ponens ergibt sich $\xvdash{J} \neg(\alpha\rightarrow\beta)$,
+    also $\xvdash{J} (\neg \gamma)$.
 
     Die andere Implikation  ~
-    $\xvdash[J]{} \neg(\alpha\rightarrow\beta) \Rightarrow
-    \xvdash[J]{} \alpha \text{~und~} \not\xvdash[J]{} \beta$
+    $\xvdash{J} \neg(\alpha\rightarrow\beta) \Rightarrow
+    \xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta$
     ~
     folgt direkt aus der Implikationsregel.
 
@@ -4466,9 +4460,9 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
          ~ \Leftrightarrow_{(1)} ~
          \Mmodels \alpha
          ~ \Leftrightarrow_{(2)} ~
-         \xvdash[J]{} \alpha
+         \xvdash{J} \alpha
          ~ \Leftrightarrow_{(3)} ~
-         \xvdash[J]{} (\forall y ~\alpha)
+         \xvdash{J} (\forall y ~\alpha)
     \end{gather*}
     Äquivalenz (1) ist die grundlegende Eigenschaft (E6) von Formeln
     und Interpretationen.
@@ -4489,7 +4483,7 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
       & \Leftrightarrow_{(2)}
       \text{für jeden variablenfreien Term $t$ gilt:~} \Mmodels \alpha[y/t] \\
       & \Leftrightarrow_{(3)}
-      \text{für jeden variablenfreien Term $t$ gilt:~} \xvdash[J]{} \alpha[y/t]
+      \text{für jeden variablenfreien Term $t$ gilt:~} \xvdash{J} \alpha[y/t]
     \end{align*}
     Äquivalenz (3) folgt aus der Induktionsvoraussetzung.
     Äquivalenz (1) folgt aus der semantischen Definition des Allquantors.
@@ -4502,27 +4496,27 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
 
     Es bleibt noch folgende Äquivalenz ($\star$) zu zeigen:
     \begin{gather*}
-      \text{für jeden variablenfreien Term $t$ gilt~} \xvdash[J]{} \alpha[y/t]
+      \text{für jeden variablenfreien Term $t$ gilt~} \xvdash{J} \alpha[y/t]
          ~ ~ \Leftrightarrow ~ ~
-         \xvdash[J]{} (\forall y ~ \alpha)
+         \xvdash{J} (\forall y ~ \alpha)
     \end{gather*}
     Wir zeigen die beiden Implikationsrichtungen von ($\star$) getrennt.
 
-    Aus $\xvdash[J]{} (\forall y~ \alpha)$ folgt
-    $\xvdash[J]{} \alpha[y/t]$ für jeden variablenfreien Term $t$
+    Aus $\xvdash{J} (\forall y~ \alpha)$ folgt
+    $\xvdash{J} \alpha[y/t]$ für jeden variablenfreien Term $t$
     mittels Axiom A4 und modus ponens.
 
     Die andere Implikationsrichtung zerlegen wir in folgende Teile.
 
     $
     \begin{array}{cclc}
-      \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \xvdash[J]{} \alpha[y/t]} & (1) \\
+      \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \xvdash{J} \alpha[y/t]} & (1) \\
       \rule{20mm}{0mm} & \Rightarrow &
-      \text{für jeden variablenfreien Term $t$ gilt:~} \not\xvdash[J]{} \neg\alpha[y/t] & (2) \\
+      \text{für jeden variablenfreien Term $t$ gilt:~} \not\xvdash{J} \neg\alpha[y/t] & (2) \\
       & \Rightarrow &
-      \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\xvdash[J]{} \neg\alpha[y/a_j] & (3) \\
-      & \Rightarrow & \not\xvdash[J]{} \neg(\forall y ~ \alpha) & (4) \\
-      & \Rightarrow & \xvdash[J]{} (\forall y ~ \alpha) & (5)
+      \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\xvdash{J} \neg\alpha[y/a_j] & (3) \\
+      & \Rightarrow & \not\xvdash{J} \neg(\forall y ~ \alpha) & (4) \\
+      & \Rightarrow & \xvdash{J} (\forall y ~ \alpha) & (5)
     \end{array}
     $
 
@@ -4530,7 +4524,7 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     Aus (2) folgt (3), da jedes Konstantensymbol ein variablenfreier Term ist.
     Aus dem Axiom
     $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/a_i]$
-    und $\xvdash[J]{} \neg(\forall y ~ \alpha)$ folgt $\xvdash[J]{} \neg\alpha[y/a_i]$.
+    und $\xvdash{J} \neg(\forall y ~ \alpha)$ folgt $\xvdash{J} \neg\alpha[y/a_i]$.
     Also folgt die Negation von (3) aus der Negation von (4).
     Damit folgt (4) aus (3).
     Die Abgeschlossenheit von $J$ führt schließlich zu (5).
@@ -4554,11 +4548,11 @@ auch tatsächlich bewiesen werden können.
 \begin{satz}[Vollständigkeitssatz von Gödel]\label{satz-vollstPK}
   Sei $K$ ein Prädikatenkalkül 1.~Ordnung. Dann ist jede gültige Formel
   in $K$ beweisbar, d.\,h. für jede Formel $\alpha$ von $K$ gilt: aus
-  $\models\alpha$ folgt $\xvdash[K]{}\alpha$.
+  $\models\alpha$ folgt $\xvdash{K}\alpha$.
 
   \begin{proof}
     Sei $\beta$ eine Formel, die nicht in $K$ beweisbar ist
-    ($\not\xvdash[K]{}\beta$).
+    ($\not\xvdash{K}\beta$).
     $\beta$ ist beweisbar in $K$ genau dann, wenn der Abschluss von $\beta$
      in $K$ beweisbar ist.
     Sei $\alpha$ der Abschluss von $\beta$.
@@ -4579,7 +4573,7 @@ auch tatsächlich bewiesen werden können.
     die kein Modell von $\beta$ ist, d.\,h. $\beta$ ist nicht gültig,
     also $\not\models\beta$.
 
-    Damit haben wir gezeigt: aus $\not\xvdash[K]{}\beta$ folgt $\not\models\beta$.
+    Damit haben wir gezeigt: aus $\not\xvdash{K}\beta$ folgt $\not\models\beta$.
   \end{proof}
 \end{satz}
 
@@ -7037,9 +7031,9 @@ mit den natürlichen Zahlen als Grundmenge bezieht.
   und dem Funktionssymbol $f_{1}^{1}$ (Nachfolgerfunktion).
   $K$ heißt \emph{$\omega$-konsistent}, falls für jede Formel $\alpha$ in $K$ gilt:
   \begin{gather*}
-    \text{falls für jede natürliche Zahl $n$ gilt $\xvdash[K]{} \neg\alpha[x/\overline{n}]$,
+    \text{falls für jede natürliche Zahl $n$ gilt $\xvdash{K} \neg\alpha[x/\overline{n}]$,
            dann
-       $\not\xvdash[K]{}(\exists x ~ \alpha)$}
+       $\not\xvdash{K}(\exists x ~ \alpha)$}
   \end{gather*}
 \end{defini}
 
@@ -7052,18 +7046,18 @@ $\mathrm{S}$ ist $\omega$-konsistent, da die Standardinterpretation
 
   \begin{proof}
     Wenn $K$ nicht konsistent ist, dann lässt sich in $K$ alles beweisen,
-    da aus den logischen Axiomen folgt: wenn $\xvdash[K]{} \alpha$ und
-    $\xvdash[K]{} \neg\alpha$, dann folgt für jede Formel $\beta$:
-    $\xvdash[K]{} \beta$ (wegen der Tautologie $\xvdash[K]{} \alpha \rightarrow
+    da aus den logischen Axiomen folgt: wenn $\xvdash{K} \alpha$ und
+    $\xvdash{K} \neg\alpha$, dann folgt für jede Formel $\beta$:
+    $\xvdash{K} \beta$ (wegen der Tautologie $\xvdash{K} \alpha \rightarrow
     (\neg\alpha \rightarrow \beta)$).
 
     Also reicht es aus, eine Formel $\beta$ aus $K$ zu finden, die nicht
     beweisbar ist. Sei $\beta$ eine beliebige Formel und $\alpha$ sei
     $\beta\wedge\neg\beta$. Dann ist $\neg\alpha$ eine gültige Formel und
     $\neg \alpha[x/\overline{u}]$ ist Instanz einer Tautologie. Also gilt
-    $\xvdash[K]{} \neg\alpha[x/\overline{u}]$ für jedes $n\in\N$.
+    $\xvdash{K} \neg\alpha[x/\overline{u}]$ für jedes $n\in\N$.
 
-    Da $K$ $\omega$-konsistent ist, folgt $\not\xvdash[K]{} (\exists x ~ \alpha)$.
+    Da $K$ $\omega$-konsistent ist, folgt $\not\xvdash{K} (\exists x ~ \alpha)$.
   \end{proof}
 \end{lemma}
 
@@ -7073,7 +7067,7 @@ $\mathrm{S}$ ist $\omega$-konsistent, da die Standardinterpretation
 
 \begin{satz}
   Man kann $\neg\gamma_{0}$ in $\mathrm{S}$ nicht beweisen,
-  d.\,h. $\not\xvdash[S]{}\neg\gamma_{0}$.
+  d.\,h. $\not\xvdash{S}\neg\gamma_{0}$.
 
   \begin{proof}
     Nehmen wir an, dass wir $\neg\gamma_{0}$ in $\mathrm{S}$ beweisen können.
@@ -7118,7 +7112,7 @@ geht für jede Theorie $K$ mit den folgenden Eigenschaften:
        d.\,h. das Prädikat $\{m ~\colon \text{$m$
   ist Gödelnummer eines Axioms von $K$}\}$ ist repräsentierbar in $K$.
 
- \item $\xvdash[K]{} 0\ne\overline{1}$.
+ \item $\xvdash{K} 0\ne\overline{1}$.
 
  \item Jede primitiv-rekursive Funktion ist repräsentierbar in $K$.
 \end{enumerate}
@@ -7128,9 +7122,9 @@ geht für jede Theorie $K$ mit den folgenden Eigenschaften:
   wahre Formel $\gamma$ mit:
   \begin{enumerate}
    \item Wenn $K$ konsistent ist, dann ist $\gamma$ in $K$
-    nicht beweisbar, d.\,h. $\not\xvdash[K]{} \gamma$.
+    nicht beweisbar, d.\,h. $\not\xvdash{K} \gamma$.
    \item Wenn $K$ $\omega$-konsistent ist, dann ist $\neg\gamma$ in
-    $K$ nicht beweisbar, d.\,h. $\not\xvdash[K]{} \neg\gamma$.
+    $K$ nicht beweisbar, d.\,h. $\not\xvdash{K} \neg\gamma$.
   \end{enumerate}
 \end{satz}
 
@@ -7318,7 +7312,7 @@ Axiom A3 ersetzt wird durch Axiom A3': $(\neg \alpha
 \rightarrow \neg\beta) \rightarrow(\beta\rightarrow\alpha)$.
 
 Zeigen Sie, dass $\mathrm{L}'$ korrekt und vollständig ist, das heißt,
-$\phi$ ist Tautologie \gdw $\xvdash[\mathrm{L}']{} \phi$.
+$\phi$ ist Tautologie \gdw $\xvdash{\mathrm{L}'} \phi$.
 
 Da (jede Instanz von) A3' eine Tautologie ist,
 kann der Beweis von \autoref{satz:1} übernommen werden und folglich
@@ -7330,7 +7324,7 @@ Damit sind alle Beweise, die wir bisher geführt haben und die A3 verwenden,
 auch mit A3' herleitbar.
 
 $\mathrm{L}'$ vollständig (d.\,h. für jede Tautologie $\phi$ gilt:
-$\xvdash[\mathrm{L}']{} \phi$): hinreichend ist $\xvdash[\mathrm{L}']{} A3$.
+$\xvdash{\mathrm{L}'} \phi$): hinreichend ist $\xvdash{\mathrm{L}'} A3$.
 
 \begin{align*}
   (1)\quad &\neg\beta \rightarrow \neg\alpha &\text{Hypothese}\\
