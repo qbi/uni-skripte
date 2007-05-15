@@ -159,6 +159,7 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
+\DeclareMathOperator{\spn}{span}
 
 \makeindex
 
@@ -533,7 +534,102 @@ entfernen und es entstand das TFQMR (transposed free QMR) wieder von Freund
 \paragraph{Modellbeispiel: Konvektion-Diffusion}
 Die Idee ist: $-\epsilon\Delta u+ \beta\nabla u=0$ in $x\in(0,1)^{2}$ und
 $u=g$ auf $\partial(0,1)^{2}$ mit $\beta\colon\Omega\rightarrow \R^{2}$ und
-$\epsilon>0$.
+$\epsilon>0$ auf irgendeinem Gebiet\footnote{Quadrat ist schon recht schwer.}.
+
+%% Vorlesung vom 2007-05-15
+
+Für $\epsilon=0$ gibt es ein Transportproblem (DGL erster Ordnung). Im
+Allgemeinen findet man keine Lösung, außer die Randbedigungen passen. Die
+Frage ist, was passiert, wenn $\epsilon$ in der Nähe von 0 ist. Was macht man
+weiterhin mit finiten Differenzen?
+\begin{gather*}
+  \frac{\partial u}{\partial x}(x_{i}) = \frac{u_{i+1}-u_{i-1}}{2h}\\
+  \frac{\partial u}{\partial x}(x_{i}) = \frac{u_{i+1}-u_{i}}{h}\qquad
+     \frac{\partial u}{\partial x}(x_{i}) = \frac{u_{i}-u_{i-1}}{h}\\
+  -\epsilon \Delta u= \epsilon\frac{1}{h^{2}} \begin{pmatrix}2 & -1 & & & \\
+						            -1 & 2  & -1 & \\
+						             \ddots& \ddots &
+						\ddots & \end{pmatrix}\\
+  \beta\frac{\partial u}{\partial x} \equiv \frac{\beta}{2h}
+     \begin{pmatrix}
+       0 & 1 & & \\
+      -1 & 0 & 1 & \\
+         &-1 & 0 & 1\\
+         &   & \ddots & \ddots\\
+     \end{pmatrix}\\
+  \frac{\beta}{h}
+     \begin{pmatrix}
+       -1 & 1 & & \\
+        0 &-1 & 1 & \\
+          & 0 & -1 & 1\\
+     \end{pmatrix}
+     \qquad
+     \frac{\beta}{h}
+     \begin{pmatrix}
+       1 & 0 & & \\
+       -1& 1 & 0 & \\
+         &-1 & 1 & 0\\
+     \end{pmatrix}
+\end{gather*}
+
+Sei $\beta>0$.
+
+Rechtsseitig wird es für kleine $\epsilon$ negativ oder indefinit, linksseitig
+ist $-\epsilon\Delta u+ \beta\nabla u$ positiv definit für alle $\epsilon\geq
+0$. Finite Differenz: $[-\frac{\epsilon}{h^{2}}-\frac{\beta}{2h},
+\frac{2\epsilon}{h^{2}}, -\frac{\epsilon}{h^{2}}+\frac{\beta}{2h}]$. Wenn der
+Term diagonaldominant sein soll, muss man sich die Vorzeichen genau anschauen.
+Etwa mit $-\frac{\epsilon}{h^{2}}+\frac{\beta}{2h}\leq0 \Rightarrow -\epsilon+
+\beta\nicefrac{h}{2}\leq0 \Rightarrow h\leq \frac{2\epsilon}{\beta}$. Wobei
+$h$ die Gitterweite ist. Mit sehr kleinem $\epsilon$ bzw. sehr großem $\beta$
+hat man eine starke Schrittweitenbeschränkung.
+
+Linksseitige Differenz nur $O(h)$, aber immer stabil für $h>0$. Zentrale
+Differenz $O(h^{2})$, aber stabil für
+$h\leq\frac{2\epsilon}{\norm{\beta}_{\infty}}$. Etwas eleganter ist eine
+Linearkombination $\frac{\epsilon}{h^{2}}[-1, 2, 1]+\frac{\beta}{h}(\alpha[-1, 10]+ \frac{1-\alpha}{2}[-1,
+01])$ mit $\alpha\in[0,1]$. Dabei ist $\alpha=1$ für große $h$ und $\alpha=0$
+für $h\leq\frac{2\epsilon}{\norm{\beta}_{\infty}}$. Das Ganze nennt sich
+"`Upwind"'.
+
+Wenn die zentrale Differenz immer verwendet werden soll, wird es für
+$h=\frac{2\epsilon}{\norm{\beta}_{\infty}}$ instabil. Damit folgt,
+$\epsilon=\nicefrac{h}{2}\norm{\beta}_{\infty}$. Das nennt sich dann
+\highl[]Diffusion!künstliche{künstliche Diffusion}. Setzen $a\colon=
+\nicefrac{h}{2} \norm{\beta}_{\infty}$ und $\frac{\min(\epsilon, a)}{h^{2}}
+[-1 2 -1]+ \frac{\beta}{2h} [-1 0 1]$ mit $\frac{a}{h^{2}} [-1 2 -1]$
+entspricht dem $-a\Delta u$ Mindestmass an Diffusion zur Stabilisierung. Es
+ist in der zweiten Ordnung stabil, aber für $\epsilon<a$ die falsche Gleichung.
+
+Wir betrachten nun Grenzfälle: $h=\frac{2\epsilon}{\beta}$. Dann liefert das
+Upwind: $[-\frac{\beta}{h}- \frac{\epsilon}{h^{2}}
+\frac{2\epsilon}{h^{2}}+\frac{\beta}{h} -\frac{\epsilon}{h^{2}}]$.
+
+
+\chapter{Krylovraumverfahren}
+
+Wir versuchen möglichst allgemeine Voraussetzungen zu machen und betrachten
+eine Matrix $A$, die regulär ist.
+
+\section{Arnoldialgorithmus}
+
+Das Verfahren wurde vor dem CG-Algorithmus im Jahr 1951 veröffentlicht. Wir
+betrachten den Krylovraum $K_{j}$, der vom Residuum $r_{0}$ sowie bis
+$A^{j-1}r_{0}$ aufgespannt wird. Wir konstruieren eine Orthogonalbasis des
+Krylovraumes $K_{j}$ und bezeichnen diese mit $\{v_{1},\dotsc, v_{j}\}$.
+Ansatz: $v_{m+1}=Av_{m}+\zeta$ mit $\zeta\in\spn\{v_{1},\dotsc,
+v_{m}\}=K_{m}$. Das $\zeta$ erhalten wir aus der
+Gram-Schmidt-Othogonalisierung: $\zeta=-\sum_{j=1}^{m} \alpha_{j} v_{j}$.
+Weiter: $\langle v_{m+1}, v_{j}\rangle= \langle Av_{m}, v_{j}\rangle+
+\langle\zeta, v_{j}\rangle= \langle Av_{m}, v_{j}\rangle- \sum_{j=1}^{m}
+\alpha_{j} \langle v_{j}, v_{k}\rangle= \langle Av_{m}, v_{j}\rangle-
+\alpha_{j}\langle v_{j}, v_{j}\rangle \Rightarrow \alpha_{j}=\frac{\langle
+Av_{m}, v_{j}\rangle}{\langle v_{j}, v_{j}\rangle}$. Wenn die $v_{j}$ normiert
+sind, gilt $\langle v_{j}, v_{j}\rangle=1\Rightarrow \alpha_{j}=\langle
+Av_{m}, v_{j}\rangle$.
+
+
+
 
 \clearpage
 \appendix
