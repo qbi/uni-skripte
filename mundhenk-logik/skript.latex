@@ -23,7 +23,7 @@
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
 
-\documentclass[ngerman,draft,twoside]{scrreprt}
+\documentclass[parskip=half*,ngerman,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
 \usepackage{makeidx}
@@ -81,6 +81,7 @@
 \theorembodyfont{\normalfont}
 \theoremheaderfont{\normalfont\bfseries}
 \theoremnumbering{arabic}
+\theoremsymbol{\ensuremath{\triangleleft}}
 
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
@@ -183,6 +184,7 @@
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
 \newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\lcorner}[1]{\raisebox{-1mm}{$\llcorner$}#1\raisebox{-1mm}{$\lrcorner$}}
 \newcommand*{\ucorner}[2][]{#1\ulcorner\!#2#1\!\urcorner}
 
 % Das original Epsilon sieht nicht so toll aus
@@ -586,8 +588,8 @@ B_{2},\dotsc$ und für Verknüpfungen setzt man Symbole: $\neg$
 Jede Variable einer aussagenlogischen Formel kann einen der beiden
 \emph[indexrand=Wahrheitswert]{Wahrheitswerte} $w$ ("`\emph{wahr}"', $T$, 1) und $f$
 ("`\emph{falsch}"', $F$, 0) annehmen. Der Wahrheitswert einer
-zusammengesetzten Formel ergibt sich aus den Wahrheitswerten ihrer Teile.
-siehe \autoref{tab:einfache-wahrheitstafel}
+zusammengesetzten Formel ergibt sich aus den Wahrheitswerten ihrer Teile;
+siehe \autoref{tab:einfache-wahrheitstafel}.
 
 \begin{table}[ht]
   \centering
@@ -612,12 +614,13 @@ $A\rightarrow B$ wahr.
 
 Für die etwas komplexere Formel $(A\rightarrow(B\vee C)\leftrightarrow \neg
 (A\rightarrow(B\vee C)))$ bestimmt man den Wahrheitswert in mehreren
-Schritten: siehe \autoref{tab:wht1}. Um sich größere Formeln besser
+Schritten; siehe \autoref{tab:wht1}. Um sich größere Formeln besser
 veranschaulichen zu können, beschreibt man diese mit
 \emph[rand=Verknüpfungsbaum]{Verknüpfungsbäumen}. Als Beispiel ist der
 Verknüpfungsbaum für die obige Formel in \autoref{fig:verknbaum1} abgebildet.
 
 \begin{table}[ht]
+  \centering
   \begin{tabular}{ccc*{5}{|c}}
     $A$ & $B$ & $C$ & $A\wedge B$ & $B\vee C$ & $A\rightarrow(B\vee C)$ &
        $\neg(A\rightarrow(B\vee C))$ & $\dotso \leftrightarrow \dotso$\\
@@ -733,19 +736,18 @@ Es gilt
     \cA(A\rightarrow\neg(\neg B\vee A)) &=f &\gdw &&
        \cA(A)&=w\text{ und }\cA(\neg(\neg B\vee A))=f\\
     &&\gdw&& \cA(A)&=w\text{~und~}\cA(\neg B\vee A)=w\\
-    &&\gdw&& \cA(A)&=w\text{~und~}\raisebox{-1mm}{$\llcorner$}\cA(\neg B)=w
-       \text{~oder~} \cA(A)=w\raisebox{-1mm}{$\lrcorner$}\\
-    &&\gdw&& \cA(A)&=w\text{~und~}\raisebox{-1mm}{$\llcorner$}\cA(B)=f
-         \text{~oder~}\cA(A)=w\raisebox{-1mm}{$\lrcorner$}
+    &&\gdw&& \cA(A)&=w\text{~und~}\lcorner{\cA(\neg B)=w
+       \text{~oder~} \cA(A)=w}\\
+    &&\gdw&& \cA(A)&=w\text{~und~}\lcorner{\cA(B)=f \text{~oder~}\cA(A)=w}
   \end{align*}
-Da $\cA(A)=w$ und $\cA(B)=f$, die letzte Aussage wahr.
-Also gilt $\cA(A\rightarrow\neg(\neg B\vee A))=f$.
+Da mit der Belegung der Variablen -- $\cA(A)=w$ und $\cA(B)=f$ -- die letzte
+  Aussage wahr ist, gilt $\cA(A\rightarrow\neg(\neg B\vee A))=f$.
 \end{bsp}
 
 \begin{defini}[Tautologie und Kontradiktion]
   Eine Formel, die unter jeder passenden Belegung den Wahrheitswert $w$
-  hat, nennt man \emph{Tautologie}. Eine Formel, die unter allen passenden
-  Belegungen der Wahrheitswert $f$ ist, nennt man \emph{Kontradiktion}.
+  hat, nennt man \emph{Tautologie}. Eine Formel, dessen Wahrheitswert unter
+  allen passenden Belegungen $f$ ist, nennt man \emph{Kontradiktion}.
 \end{defini}
 
 Beispiele für Tautologien sind $A\vee\neg A$ oder
@@ -754,6 +756,8 @@ Ausdruck $\big((A\rightarrow B)\wedge (B\rightarrow C) \big) \rightarrow
 (A\rightarrow C)$.
 
 % 2006-04-19
+
+\subsection{Äquivalenz von Formeln}
 
 \begin{defini}[Formeläquivalenz]
   Zwei Formeln $\alpha$ und $\beta$ sind \emph{äquivalent}, wenn sie bei jeder passenden
@@ -808,16 +812,18 @@ indem $A$ durch $A\rightarrow B$ und $B$ durch $C \vee \neg B$ ersetzt wird.
 \end{gather*}
 
 \begin{bsp}
-$A\rightarrow B \not\equiv B\rightarrow A$, denn für die Belegung
+  Die Aussage $A\rightarrow B$ ist nicht äquuivalent zur Aussage $B\rightarrow A$
+  ($A\rightarrow B \not\equiv B\rightarrow A$), denn für die Belegung
 $\mathcal{A} = \{A,\neg B\}$ ist $\mathcal{A}(A\rightarrow B) = f$ und
 $\mathcal{A}(B\rightarrow A) = w$.
 
-$A\rightarrow B \equiv \neg B \rightarrow \neg A$, denn
-\begin{align*}
-  A\rightarrow B &\equiv \neg A \vee B \equiv B \vee \neg A\\
-  &\equiv \neg\neg B \vee\neg A\\
-  &\equiv \neg B \rightarrow \neg A
-\end{align*}
+  Wohingegen die Äquuivalenz $A\rightarrow B \equiv \neg B \rightarrow \neg A$
+  gilt, denn
+  \begin{gather*}
+    A\rightarrow B \equiv \neg A \vee B \equiv B \vee \neg A
+    \equiv \neg\neg B \vee\neg A
+    \equiv \neg B \rightarrow \neg A
+  \end{gather*}
 \end{bsp}
 
 
@@ -828,9 +834,9 @@ ausdrücken.
   \begin{tabular}{ccc}
     $\underbrace{\alpha\equiv\beta}$ & $\underbrace{\text{genau dann, wenn}}$
        & $\underbrace{\alpha\leftrightarrow\beta}$ eine Tautologie ist.\\
-    \parbox{3.5cm}{\centering Äquivalenz zwischen Formeln} &
-       \parbox{3.5cm}{\centering umgangssprachl. Äquivalenz} &
-       \parbox{5.5cm}{\centering Verknüpfungszeichen für aussagenlog.
+    \parbox[t]{3.5cm}{\centering Äquivalenz zwischen Formeln} &
+       \parbox[t]{3.5cm}{\centering umgangssprachl. Äquivalenz} &
+       \parbox[t]{5.5cm}{\centering Verknüpfungszeichen für aussagenlog.
          Formeln für Äquivalenz}
   \end{tabular}
 \end{center}
@@ -860,64 +866,72 @@ ausdrücken.
 
 \subsection{Adäquate Verknüpfungszeichen}
 
-Jede Formel mit $k$ Variablen beschreibt
+Jede Formel mit $k$ Variablen
 lässt sich durch eine Wahrheitstafel mit $k+1$ Spalten beschreiben:
 die ersten $k$ Spalten enthalten die möglichen Wahrheitswerte
-der Variablen, und die letzte Spalte enthält den Wahrheiswert
-der Formel unter der durch die ersten $k$ Spalten festgelegten Belegung
-(siehe \autoref{tab:wahrheitstafel}).
-\begin{table}
+der Variablen, und die letzte Spalte enthält den Wahrheitswert
+der Formel unter der durch die ersten $k$ Spalten festgelegten Belegung;
+siehe \autoref{tab:wahrheitstafel}.
+
+\begin{table}[ht]
   \centering
-  \begin{tabular}{ccc|cl}
-    $A_{1}$ & $A_{2}$ & $A_{3}$ & $\cA\big(\neg \big(A_{1}\vee(A_{3}\leftrightarrow
-    A_{2})\big) \vee (A_{1}\wedge\neg A_{3})\big)$ \\ % $g(A_{1},A_{2}, A_{3})$ & \\
-    \hline
-    $f$ & $f$ & $f$ & $f$ &\\
-    $f$ & $f$ & $w$ & $w$ & $\star$\\
-    $f$ & $w$ & $f$ & $w$ & $\star$\\
-    $f$ & $w$ & $w$ & $f$ &\\
-    $w$ & $f$ & $f$ & $w$ & $\star$\\
-    $w$ & $f$ & $w$ & $f$ &\\
-    $w$ & $w$ & $f$ & $w$ & $\star$\\
-    $w$ & $w$ & $w$ & $f$ &\\
-  \end{tabular}
+  \begin{gather*}
+    \begin{array}{ccc|cl}
+      A_{1} & A_{2} & A_{3} & \cA\big(\neg \big(A_{1}\vee(A_{3}\leftrightarrow
+      A_{2})\big) \vee (A_{1}\wedge\neg A_{3})\big) \\ % g(A_{1},A_{2}, A_{3}) & \\
+      \hline
+      f & f & f & f &\\
+      f & f & w & w & \star\\
+      f & w & f & w & \star\\
+      f & w & w & f &\\
+      w & f & f & w & \star\\
+      w & f & w & f &\\
+      w & w & f & w & \star\\
+      w & w & w & f &\\
+    \end{array}
+  \end{gather*}
   \caption{Wahrheitstafel der Funktion $g$}
   % g(A_{1},A_{2},A_{3})=\neg \big(A_{1}\vee(A_{3}\leftrightarrow
   % A_{2})\big) \vee (A_{1}\wedge\neg A_{3})$}
   \label{tab:wahrheitstafel}
 \end{table}
+
 Aus der Wahrheitstafel kann man direkt eine Formel ablesen,
 die zu der Formel, für die die Wahrheitstafel konstruiert wurde,
 äquivalent ist (die also die gleiche Wahrheitstafel hat).
-Man wählt man alle Zeilen mit Wahrheitswert $w$ in der letzten Spalte
+Man wählt alle Zeilen mit dem Wahrheitswert~$w$ in der letzten Spalte
 (Zeilen mit $\star$ in \autoref{tab:wahrheitstafel}).
 Für jede dieser Zeilen bildet man eine Konjunktion von Literalen,
-die genau durch die in der Zeile angegebene Belegung wahr wird.
+die genau durch die in der Zeile angegebene Belegung wahr wird; siehe
+\autoref{tab:aquiv-formel}.
 
-{
+\begin{table}[ht]
   \centering
+  \begin{gather*}
+    \begin{array}{ccc|cl|c}
+      A_{1} & A_{2} & A_{3} & \cA(\alpha) & & \text{Konjunktion von Literalen} \\
+      \hline
+      f & f & w & w & \star & \neg A_1 \wedge \neg A_2 \wedge      A_3 \\
+      f & w & f & w & \star & \neg A_1 \wedge      A_2 \wedge \neg A_3 \\
+      w & f & f & w & \star &      A_1 \wedge \neg A_2 \wedge \neg A_3 \\
+      w & w & f & w & \star &      A_1 \wedge      A_2 \wedge \neg A_3 \\
+    \end{array}
+  \end{gather*}
+  \parbox{.7\linewidth}{\caption{Erster Schritt für die Bestimmung einer
+    äquivalenten Formeln zur Formel aus \autoref{tab:wahrheitstafel}.}
+  \label{tab:aquiv-formel}}
+\end{table}
 
-  \begin{tabular}{ccc|cl|c}
-    $A_{1}$ & $A_{2}$ & $A_{3}$ & $\cA(\alpha)$ & & Konjunktion von Literalen \\
-    \hline
-    $f$ & $f$ & $w$ & $w$ & $\star$ & $\neg A_1 \wedge \neg A_2 \wedge      A_3$ \\
-    $f$ & $w$ & $f$ & $w$ & $\star$ & $\neg A_1 \wedge      A_2 \wedge \neg A_3$ \\
-    $w$ & $f$ & $f$ & $w$ & $\star$ & $     A_1 \wedge \neg A_2 \wedge \neg A_3$ \\
-    $w$ & $w$ & $f$ & $w$ & $\star$ & $     A_1 \wedge      A_2 \wedge \neg A_3$ \\
-  \end{tabular}
-
-}
-
-Diese Konjunktionen verknüpft man mittels Disjunktion.
+Diese Konjunktionen verknüpft man mittels Disjunktion und erhält so eine zur
+Ausgangsformel äquivalente Formel.
 \begin{gather*}
   \phi = (\neg A_{1} \wedge \neg A_{2} \wedge A_{3}) \vee (\neg A_{1}\wedge
      A_{2} \wedge \neg A_{3}) \vee (A_{1} \wedge \neg A_{2}\wedge \neg
      A_{3}) \vee (A_{1}\wedge A_{2} \wedge \neg A_{3})
 \end{gather*}
-Die erhaltene Formel $\varphi$ ist
-in \emph[index=disjunktive Normalform]{disjunktiver Normalform}
-(\emph[index=]{DNF})\index{DNF|see{disjunktive Normalform}},
-da sie eine Disjunktion von Konjunktionen von Literalen ist.
+Diese spezielle Struktur -- Disjunktion von Konjunktionen von Literalen -- der
+neuen Formel~$\varphi$ bezeichnet man als \emph{disjunktive Normalform}
+(\emph[index=]{DNF}). \index{DNF|see{disjunktive Normalform}}
 
 \begin{lemma}\label{lemma-DNF}
 Für jede beliebige aussagenlogische Formel gibt es eine äquivalente
@@ -984,7 +998,6 @@ verzichten.
     A\vee B \equiv \neg\neg A \vee \neg\neg B \equiv \neg(\neg
        A\wedge\neg B)
   \end{gather*}
-
   weiteres Beispiel:
   \begin{align*}
     A\rightarrow(B\leftrightarrow C) &\equiv \neg A \vee \big((B\wedge C)
@@ -1015,10 +1028,11 @@ Die folgenden Mengen von Verknüpfungszeichen sind adäquat.
 \end{lemma}
 
 \begin{bemerk}
-  $\neg$ und $\leftrightarrow$ reichen auch nicht aus! Eine Formel, die
-  nur diese beiden Verknüpfungszeichen verwendet, hat entweder die
-  Struktur $A \leftrightarrow B$  oder $\neg A$ mit $A$
-  und $B$ als beliebig komplexe Formeln, die wiederum nur die
+  Die beiden Verknüpfungszeichen $\neg$ und $\leftrightarrow$ reichen nicht
+  aus! Eine Formel, die nur die Verknüpfungen Negation und Implikation
+  verwendet, hat entweder die Struktur $\alpha \leftrightarrow \beta$ oder
+  $\neg \alpha$ mit $\alpha$ und $\alpha$ als beliebig komplexe Formeln, die
+  wiederum nur die
   Verknüpfungen $\neg$ und $\leftrightarrow$ verwenden. Da
   die Wahrheitswerttabelle für die Äquivalenz \autoref{tab:1} immer eine
   gerade Anzahl an Einträgen $w$ und eine gerade Anzahl an Einträgen $f$ hat
@@ -1081,15 +1095,15 @@ Die folgenden Mengen von Verknüpfungszeichen sind adäquat.
   \end{tabular}
   \hfill\null\\
   \centering
-  \caption{Wahrheitswerttabelle für Äquivalenz (links), \emph[rand=]{NOR}
-    (mitte) und \emph[rand=]{NAND} (rechts)}
-  \label{tab:1}
+  \parbox{.8\linewidth}{\caption{Wahrheitswerttabelle für Äquivalenz (links),
+    \emph[rand=]{NOR} (mitte) und \emph[rand=]{NAND} (rechts)}
+  \label{tab:1}}
 \end{table}
 
 Es gibt zwei (bisher noch nicht betrachtete)
 Verknüpfungszeichen, die jeweils einzeln
 eine adäquate Menge von Verknüpfungszeichen darstellen.
-Das ist das NAND ($\uparrow$) und das NOR ($\downarrow$).
+Das ist das \emph{NAND} ($\uparrow$) und das \emph{NOR} ($\downarrow$).
 Die Namen spiegeln ihre Definition wieder.
 Es gilt $A\uparrow B \equiv \neg(A\wedge B)$
 und $A\downarrow B \equiv \neg(A\vee B)$.
@@ -1097,7 +1111,6 @@ und $A\downarrow B \equiv \neg(A\vee B)$.
 \begin{lemma}
 $\{\uparrow\}$ und $\{\downarrow\}$ sind adäquate Mengen
 von Verknüpfungszeichen.
-\end{lemma}
 
 \begin{proof}
 Es reicht aus, zu zeigen, dass das jeweilige Verknüpfungszeichen
@@ -1124,10 +1137,12 @@ Mit
                      ((A\uparrow A) \uparrow (B\uparrow B))
 \end{align*}
 folgt, dass $\{\uparrow\}$ ebenfalls adäquat ist.
+\end{proof}
 
 Wie man sieht, werden die Formeln, in denen nur NAND und NOR verwendet werden,
 schnell groß.
-\end{proof}
+\end{lemma}
+
 
 Jede andere adäquate Menge von Verknüfungszeichen
 ist eine Obermenge der fünf genannten adäquaten Mengen.
@@ -1157,7 +1172,7 @@ Betrachten wir dazu einen Beweis der folgenden Behauptung.
 \begin{mdescription}
  \item[Behauptung:] Sei $n$ eine natürliche Zahl. Wenn $n$
   ungerade ist, dann ist $n^{2}$ ungerade.
- \item[Beweis:] Sei $n$ eine natürliche Zahl.
+ \item[Beweis:] Sei $n$ eine natürliche Zahl
      und $n$ sei ungerade.
 
   Weil $n$ ungerade ist, hat $n$ nicht den Primfaktor $2$.
@@ -1168,18 +1183,19 @@ Betrachten wir dazu einen Beweis der folgenden Behauptung.
 
 Wir schreiben den Beweis nochmal mit Bemerkungen dazu
 auf, wie die einzelnen Beweisschritte zustande kommen.
-
-\begin{tabular}{l|l|l}
-  Aussage & Erläuterung & formal \\ \hline
-  $n$ ist eine ungerade Zahl & Hypothese & $A$ \\
-  $n$ ist ungerade $\leftrightarrow$ $n$ hat nicht
-  Primfaktor $2$ & Definition & $A\leftrightarrow B$ \\
-  $n$ hat nicht Primfaktor $2$
-   $\rightarrow$ $n^{2}$ hat nicht Primfaktor $2$ & wahre Aussage & $B\rightarrow C$ \\
-  $n^{2}$ hat nicht Primfaktor $2$ $\leftrightarrow$ $n^{2}$ ist ungerade &
-         Definition & $C\leftrightarrow D$ \\
-  $n^{2}$ ist ungerade & Folgerung & $D$
-\end{tabular}
+\begin{center}
+  \begin{tabular}{l|l|l}
+    Aussage & Erläuterung & formal \\ \hline
+    $n$ ist eine ungerade Zahl & Hypothese & $A$ \\
+    $n$ ist ungerade $\leftrightarrow$ $n$ hat nicht
+       Primfaktor $2$ & Definition & $A\leftrightarrow B$ \\
+    $n$ hat nicht Primfaktor $2$
+       $\rightarrow$ $n^{2}$ hat nicht Primfaktor $2$ & wahre Aussage & $B\rightarrow C$ \\
+    $n^{2}$ hat nicht Primfaktor $2$ $\leftrightarrow$ $n^{2}$ ist ungerade &
+       Definition & $C\leftrightarrow D$ \\
+    $n^{2}$ ist ungerade & Folgerung & $D$
+  \end{tabular}
+\end{center}
 
 Zuerst wird die Hypothese $A$ als wahr angenommen.
 Im nächsten Schritt wird die Definition von \glqq{}ungerade Zahl\grqq{}
@@ -1196,7 +1212,7 @@ Das ist in der Tat eine Tautologie.
 (Das zeigt aber nur, dass die Schlussfolgerungen im Beweis korrekt sind.)
 
 Wir wollen diese Art des Beweisens nun auf formale Füße stellen.
-Dazu wir der Begriff der Formalen Theorie eingeführt.
+Dazu wir der Begriff der formalen Theorie eingeführt.
 Eine formale Theorie dient dazu, über Beweise sprechen zu können.
 Die Grundlage bildet eine Menge von Formeln.
 Eine Teilmenge davon sind die Theoreme (=Formeln, die man beweisen kann).
@@ -1222,21 +1238,24 @@ Die Art der Schlussfolgerungen wird durch die Ableitungsregeln festgelegt.
   \end{enumerate}
 \end{defini}
 
-Die Formelmenge $\mathcal{F}$ bezeichnet man auch als \textit{Sprache}
+Die Formelmenge $\mathcal{F}$ bezeichnet man auch als \emph{Sprache}
 der Theorie.
-Jede Formel in $\mathcal{F}$ wird auch als \textit{Formel in der Theorie} bezeichnet.
+Jede Formel in $\mathcal{F}$ wird auch als
+\emph[indexrand=Formel i.\,d. Theorie]{Formel in der Theorie} bezeichnet.
 Theoreme einer Theorie sind die Formeln, die man beweisen kann.
 
 \begin{defini}[Beweis und Theorem]
-  Ein \emph{Beweis} in einer Theorie $\mathcal{S}$ ist eine Folge
-  $\alpha_1, \alpha_2, \dotsc, \alpha_k$ von Formeln von $\mathcal{S}$, so
+  Ein \emph{Beweis} in einer (formalen) Theorie $\mathcal{S}$ ist eine Folge
+  $\alpha_1, \alpha_2, \dotsc, \alpha_n$ von Formeln von $\mathcal{S}$, so
   dass für $\alpha_{i}$ ($i=1,2,\dotsc, n$) gilt:
   \begin{enumerate}
    \item $\alpha_{i}$ ist ein Axiom von $\mathcal{S}$ oder
-   \item $\alpha_{i}$ ist aus vorhergehenden $\alpha_j$ mit einer Ableitungsregel von
-    $\mathcal{S}$ ableitbar, d.\,h. $R(\alpha_{j_1},\alpha_{j_2},\dotsc,
-    \alpha_{j_m},\alpha_i)$ für eine Ableitungsregel $R$ von $\mathcal{S}$
-    und $j_1,j_2,\dotsc,j_m < i$.
+   \item $\alpha_{i}$ ist aus vorhergehenden Formeln
+    $\alpha_{j_{1}},\dotsc,\alpha_{j_{m}}$ ($j_1,j_2,\dotsc,j_m < i$) mit
+    einer Ableitungsregel von $\mathcal{S}$ ableitbar, d.\,h. die
+    Ableitungsregel
+    $R(\alpha_{j_1},\alpha_{j_2},\dotsc,\alpha_{j_m},\alpha_i)$ gehört zu
+    $\mathcal{S}$.
   \end{enumerate}
 
   Ein \emph{Theorem} von $\mathcal{S}$ ist eine Formel, die am Ende eines
@@ -1254,8 +1273,7 @@ Auch dieser Begriff wird formal erfasst.
   \mathrm{Ax}\cup\Gamma, \mathrm{R})$ gibt, in der man die Menge $\Gamma$
   zu den Axiomen von $\mathcal{S}$ hinzugenommen hat.
 
-  Schreibweisen:
-
+  Schreibweisen:\\[.5ex]
   \begin{tabular}{rcl}
     $\Gamma \xvdash[\mathcal{S}]{} \alpha$ & bedeutet & $\alpha$ ist
        Folgerung von $\Gamma$ in $\mathcal{S}$\\
@@ -1266,8 +1284,7 @@ Auch dieser Begriff wird formal erfasst.
   \end{tabular}
 
   Falls $\Gamma=\{\beta_1,\dotsc,\beta_k\}$ eine endliche Menge ist,
-  schreibt man
-
+  schreibt man\\[.5ex]
   \begin{tabular}{rcl}
     $\beta_1,\dotsc,\beta_k \xvdash[\mathcal{S}]{} \alpha$ & anstelle von &
        $\{ \beta_1,\dotsc,\beta_k \} \xvdash[\mathcal{S}]{} \alpha$ \\
@@ -1358,25 +1375,22 @@ Ausdruckstärke verloren geht.
 
 \begin{lemma}\label{lemma-axiome-tautologien}
 Alle Axiome von $\mathrm{L}$ sind Tautologien.
-\end{lemma}
 
 \begin{proof}
-Betrachte ein Axiom $\gamma=\alpha\rightarrow(\beta\rightarrow \alpha)$
-entsprechend (A1).
-Sei $\cA$ eine passende Belegung.
-Dann gilt $\cA(\gamma)=w$ genau dann, wenn
-$\cA(\alpha)=f$ oder $\cA(\beta)=f$ oder $\cA(\alpha)=w$.
-Da $\cA(\alpha)$ einen der beiden Werte $w$ und $f$ annimmt,
-ist diese Aussage wahr.
-Also gilt $\cA(\gamma)=w$ für jede passende Belegung und damit ist $\gamma$
-  eine Tautologie.
+    Wir betrachten das Axiom (A1) $\gamma=\alpha\rightarrow(\beta\rightarrow
+    \alpha)$. Sei $\cA$ eine passende Belegung für $\gamma$, dann gilt
+    $\cA(\gamma)=w$ genau dann, wenn $\cA(\alpha)=f$ oder $\cA(\beta)=f$ oder
+    $\cA(\alpha)=w$. Da $\cA(\alpha)$ für jede passende Belegung wahr ist,
+    gilt auch $\cA(\gamma)=w$ für jede passende Belegung $\cA$ und damit ist
+    $\gamma$ eine Tautologie.
 
-Die Beweise für die anderen Axiome(nschemata) gehen entsprechend.
+    Die Beweise für die anderen Axiome(nschemata) gehen entsprechend.
 \end{proof}
+\end{lemma}
 
 Die Ableitungsregel modus ponens (vollständig
 \href{http://de.wikipedia.org/wiki/Modus_ponens}{modus ponendo ponens})
-besagt: wenn $\alpha$ und $\alpha\rightarrow\gamma$ ebgeleitet werden können,
+besagt: wenn $\alpha$ und $\alpha\rightarrow\gamma$ abgeleitet werden können,
 dann kann auch $\gamma$ abgeleitet werden.
 Dies ist auch mit der Deutung der Implikation aus \autoref{sec:1}
 anschaulich: Wenn $\alpha$ wahr ist und die Implikation
@@ -1420,7 +1434,7 @@ Für jede aussagenlogische Formel $\beta$ gilt: $\Lvdash \beta\rightarrow\beta$.
 Also ist zum Beispiel
   $(A_1\rightarrow \neg(A_2\rightarrow A_1))
             \rightarrow(A_1\rightarrow \neg(A_2\rightarrow A_1))$ ebenfalls
-  eine Axiom von $\mathrm{L}$.
+  ein Axiom von $\mathrm{L}$.
 
 Um zu verifizieren, dass eine Formel ein Axiom ist,
 muss man versuchen, sie in die Struktur eines der drei Axiomenschemata
@@ -1462,7 +1476,8 @@ In diesem Sinne erfüllt die Theorie $\mathrm{L}$ die Ansprüche an die Einfachh
 Aus widersprüchlichen Hypothesen lässt sich alles folgern.
 
 \begin{lemma}\label{lem:01}
-Für alle al. Formeln $\alpha$ und $\beta$ gilt $\neg\alpha, \alpha \Lvdash \beta$.
+  Für alle aussagenlogischen Formeln $\alpha$ und $\beta$ gilt $\neg\alpha,
+  \alpha \Lvdash \beta$.
 \begin{proof}
   \begin{align*}
     (1)\quad & \alpha & \text{Hypothese} \\
@@ -1541,7 +1556,8 @@ Die Aussage des folgenden Deduktionstheorems (für einen einfachen Fall) lautet:
 wenn man $\beta$ aus der Hypothese $\alpha$ folgern kann ($\alpha \vdash \beta$),
 dann ist $\alpha\rightarrow\beta$ beweisbar ($\vdash\alpha\rightarrow\beta$).
 \end{quote}
-Mit Benutzung des Deduktionstheorems kann also $\vdash B\rightarrow B$ sehr schnell
+Mit Benutzung des Deduktionstheorems kann also $\vdash B\rightarrow B$
+(\autoref{bsp:1}) sehr schnell
 bewiesen werden.
 $B\vdash B$ geht mit einem Beweisschritt ($B$ wird als Hypothese benutzt),
 und mit dem Deduktionstheorem folgt direkt $\vdash B\rightarrow B$.
@@ -1551,7 +1567,7 @@ Der Sinn des Deduktionstheorems ist seine Benutzung zur Vereinfachung von Beweis
   Sind $\alpha$ und $\beta$ zwei aussagenlogische Formeln und $\Gamma$
   eine Formelmenge, dann gilt:
   \begin{gather*}
-    \Gamma, \alpha \Lvdash \beta \gdw \Gamma \Lvdash \alpha\rightarrow\beta
+    \Gamma, \alpha \Lvdash \beta \quad\gdw\quad \Gamma \Lvdash \alpha\rightarrow\beta
   \end{gather*}
 
   \begin{proof}
