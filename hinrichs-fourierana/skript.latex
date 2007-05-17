@@ -72,6 +72,7 @@
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
 \newtheorem{satz}{Satz}[section]
+\newtheorem{folgmit}[satz]{Folgerung}
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -1110,7 +1111,7 @@ Das liefert eine Funktion auf $\R^{n}$, die
 
 Manchmal verwenden wir eine andere Bezeichnung: $\FF f=\hat{f}$.
 
-\begin{satz}
+\begin{satz}\label{satz:211}
   Die Fouriertransformation ist ein beschränkter linearer Operator von
   $L_{1}(\R^{n})\rightarrow L_{\infty}(\R^{n})$, genauer:
   \begin{gather*}
@@ -1122,7 +1123,8 @@ Manchmal verwenden wir eine andere Bezeichnung: $\FF f=\hat{f}$.
   \end{proof}
 \end{satz}
 
-\begin{satz}
+%Satz 2.1.2
+\begin{satz}\label{satz:212}
   Sei $f\in L_{1}(\R^{n})$ differenzierbar in der $j$-ten Komponente, d.\,h.
   die $j$-te partielle Ableitung existiert und weiter $\frac{\partial
   f}{\partial x_{j}}\in L_{1}(\R^{n})$. Dann gilt:
@@ -1197,7 +1199,7 @@ Manchmal verwenden wir eine andere Bezeichnung: $\FF f=\hat{f}$.
   \end{proof}
 \end{satz}
 
-\begin{satz}
+\begin{satz}\label{satz:213}
   Sei $f\in L_{1}(\R^{n})$ mit $\xi_{j}f\in L_{1}(\R^{n})$. Dann gilt
   \begin{gather*}
     \widehat{-ix_{j} f}= \frac{\partial }{\partial \xi_{j}} \hat{f}
@@ -1213,21 +1215,380 @@ Manchmal verwenden wir eine andere Bezeichnung: $\FF f=\hat{f}$.
 \end{satz}
 
 % satz 2.1.4
-\begin{satz}[Riemann-Lebesgue]
+\begin{satz}[Riemann-Lebesgue]\label{satz:214}
   Ist $f\in L_{1}(\R^{n})$, dann gilt:
   \begin{gather*}
     \lim_{\abs{\xi}\rightarrow\infty} \abs{\hat{f}(\xi)}=0
   \end{gather*}
   \begin{proof}
     \begin{enumerate}
-      \item Sei $f\in C^{\infty}_{c}(\R^{n})$. Dann gilt
+      \item Sei $f\in C^{\infty}_{c}(\R^{n})$. Dann gilt:
+      \begin{align*}
+	\abs{\xi_{j}^{2} \hat{f}(\xi)} &=^{\text{\autoref{satz:212}}}
+	   \abs{\widehat{\frac{\partial^{2} }{\partial x_{j}^{2}}}
+	     (\xi)} \leq^{\text{\autoref{satz:211}}}
+	   (2\pi)^{-\nicefrac{n}{2}} \norm{\frac{\partial^{2}
+	   f}{\partial x_{j}^{2}} |L_{1}}\\
+	\Rightarrow \abs{(1+\abs{\xi}^{2})\hat{f}(\xi)} &\leq C \quad
+	   \forall \xi\in\R^{n}\\
+	\Rightarrow \abs{\hat{f}(\xi)} &\leq \frac{C}{1+\abs{\xi}^{2}}
+	   \xrightarrow{\abs{\xi} \rightarrow\infty} 0
+      \end{align*}
+     \item Sei $f\in L_{1}$. Wähle $g\in C^{\infty}_{c}(\R^{n})$ mit
+      $\norm{f-g|L_{1}}<\epsilon$. Damit folgt, $\abs{\hat{f}(\xi)} \leq
+      \abs{\widehat{f-g}(\xi)} + \abs{\hat{g}(\xi)} \leq
+      (2\pi)^{-\nicefrac{n}{2}} \norm{f-g|L_{1}} + \abs{\hat{g}(\xi)} <
+      (2\pi)^{-\nicefrac{n}{2}} \epsilon+\epsilon$ für $\abs{\xi}\geq M(\xi)$
+      nach dem obigen, ersten Punkt.
     \end{enumerate}
   \end{proof}
 \end{satz}
 
+\begin{bemerk}
+  Analog beweist man (siehe Übungsaufgaben im Anhang)
+  \begin{gather*}
+    f\in C^{n+1}(\R^{n})\cap L_{1}(\R^{n}) \Rightarrow\hat{f}\in L_{1}(\R^{n})
+  \end{gather*}
+\end{bemerk}
 
-\todo{Vorlesungen ergaenzen}
+\begin{folg}
+  Die Fouriertransformation bildet $L_{1}(\R^{n})$ linear und stetig in den
+  Raum $C_{0}(\R^{n})$ der im unendlichen verschwindenden Funktionen ab.
+  Insbesondere ist mit $f\in L_{1}(\R^{n})$ auch $\hat{f}$ gleichmäßig stetig:
+  \begin{gather*}
+    \hat{ }\colon L_{1}(\R^{n})\rightarrow C_{0}(\R^{n})
+  \end{gather*}
+\end{folg}
 
+\begin{bemerk}
+  Die Fouriertransformation auf dem Torus, also die Entwicklung der
+  Fourierreihen ist:
+  \begin{align*}
+    \hat{ }\colon L_{1}(\T) &\rightarrow C_{0}(\Z)\\
+    f &\mapsto (\hat{f}(j))_{j=-\infty}^{\infty}
+  \end{align*}
+\end{bemerk}
+
+\section{Invarianz und Symmetrie der Fouriertransformation}
+
+Wir betrachten die Invarianz gegenüber Transformationen des $\R^{n}$:
+\begin{itemize}
+  \item Rotationen
+ \item Dilatationen
+ \item Translationen
+\end{itemize}
+
+\paragraph{Rotationen}
+Die orthogonale Gruppe $O(N)$ ist die Gruppe der orthogonalen $N\times
+N$-Matrizen. Die Zeilen der reellen Matrix $\rho$ bilden genau dann ein
+Orthogonalsystem im $\R^{n}$, wenn $\rho\in O(N)$ ist. Weiter ist $SO(N)=
+\{\rho\in O(N)\colon \det M=1\}$ die spezielle orthogonale Gruppe. Man
+bezeichnet $M\in SO(N)$ als \highl{Rotation}.
+
+% Satz 2.2.1
+\begin{satz}
+  Sei $\rho\in SO(N)$. Für $f\in L_{1}(\R^{n})$ definieren wir $\rho f\in
+  L_{1}(\R^{n})$ durch $(\rho f)(x)= f(\rho(x))$, d.\,h. $\rho f=f\circ\rho$.
+  Dann gilt:
+  \begin{gather*}
+    \widehat{\rho f} = \rho\hat{f}
+  \end{gather*}
+  \begin{proof}
+    Für $\rho\in O(N)$ gilt $\rho^{-1}=\rho^{T}$. Dann folgt:
+    \begin{align*}
+      \widehat{\rho f}(\xi) &= c\int(\rho f)(x)e^{-ix\xi}\,dx = c\int
+	 f(\rho(x)) e^{-ix\xi}\,dx\\
+      &= c\int f(y) e^{-i\rho^{-1}\xi}\,dy \quad \text{Substitution}\\
+      &= c\int f(y) e^{-iy\rho(\xi)}\,dy \quad\rho^{T}(y)\xi=y\rho(\xi)\text{
+	 und } \rho^{-1}=\rho^{T}\\
+      &= \hat{f}(\rho(\xi)) = (\rho\hat{f})(\xi)
+    \end{align*}
+    Anmerkung zu $\rho^{T}(y)\xi=y\rho(\xi)$:
+    \begin{align*}
+      \rho &= (\rho_{hk})_{h,k=1}^{n} & \rho^{T} &= (\rho_{kh})_{h,k=1}^{n}\\
+      \rho(\xi) &= (\sum_{k=1}^{n} \rho_{hk} \xi_{k})_{h=1}^{n} & \rho^{T}y &=
+	 (\sum_{k=1}^{n} \rho_{kh} y_{k})_{h=1}^{n}\\
+      y\rho(\xi) &= \sum_{h=1}^{n} y_{h} \sum_{k=1} \rho_{hk}\xi_{k} =
+	 \sum_{h=1}^{n} \sum_{k=1}^{n} \rho_{hk} y_{h} \xi_{k}\\
+      \rho^{T}y\xi &= \sum_{h=1}^{n}\left(\sum_{k=1}^{n} \rho_{kh}
+	 y_{k}\right) \xi_{h} = \sum_{k=1}^{n} \sum_{h=1}^{n} \rho_{kh} y_{k}
+	 \xi_{h}
+     \end{align*}
+  \end{proof}
+\end{satz}
+
+\paragraph{Dilatationen}
+Für $\delta>0$ gilt $x\mapsto\delta x$. Dann haben wir $(a_{\delta}f)(x)
+\colon= f(\delta x)$ und $(a^{\delta}f)(x)\colon= \delta^{-n}
+f(\nicefrac{x}{\delta})$ für $f\in L_{1}$.
+
+% Satz 2.2.2
+\begin{satz}\label{satz:222}
+  Sei $\delta>0$ und $f\in L_{1}(\R^{n})$. Dann gilt:
+  \begin{gather*}
+    \widehat{a_{\delta}f} = a^{\delta}f \qquad \widehat{a^{\delta} f} =
+       a_{\delta}f
+  \end{gather*}
+  \begin{proof}
+    Wir zeigen nur die zweite Behauptung. Die erste folgt analog:
+    \begin{align*}
+      \widehat{a^{\delta}f}(\xi) &= c\int(a^{\delta}f)(x)e^{-ix\xi}\,dx =c\int
+	 \delta^{-n} f(\nicefrac{x}{\delta})e^{-ix\xi}\,dx\\
+      &= c\int f(\nicefrac{x}{\delta})
+	 e^{-i\nicefrac{x}{\delta}(\delta\xi)}\,d\nicefrac{x}{\delta}
+      =c\int f(y)e^{-iy(\delta\xi)}\,dy\\
+      &= \hat{f}(\delta\xi)=(a_{\delta}\hat{f})(\xi)
+    \end{align*}
+  \end{proof}
+\end{satz}
+
+\paragraph{Translationen}
+Für $a\in\R^{n}$ ist $(\tau_{a} f)(x) \colon= f(x-a)$.
+
+% Satz 2.2.3
+\begin{satz}\label{satz:223}
+  Sei $f\in L_{1}(\R^{n})$ und $a\in\R^{n}$. Dann gilt:
+  \begin{gather*}
+    \widehat{\tau_{a} f}(\xi) = e^{-ia\xi}\hat{f}(\xi)\qquad
+       (\tau_{a}\hat{f})(\xi) = \widehat{e^{ia}f(.)}(\xi)
+  \end{gather*}
+  \begin{proof}
+    Wir beweisen wieder nur die zweite Gleichung. Die erste Gleichung
+    verbleibt als Übung.
+    \begin{align*}
+      (\tau_{a}\hat{f})(\xi) &= \hat{f}(\xi-a) = c\int f(x)e^{-ix(\xi-a)}\,dx
+	 = c\int e^{ixa} f(x) e^{-ix\xi}\,dx\\
+      &= \widehat{e^{ia}f(.)}(\xi)
+    \end{align*}
+  \end{proof}
+\end{satz}
+
+\paragraph{Symmetrieeigenschaften}
+Es gilt, $\tilde{f}8x)\colon=f(-x)$ und
+$\overline{f}(x)\colon=\overline{f(x)}$.
+
+% Satz 2.2.4
+\begin{satz}\label{satz:224}
+  Seien $f,g\in L_{1}(\R^{n})$. Dann gilt:
+  \begin{enumerate}
+   \item $\hat{\tilde{f}}=\tilde{\hat{f}}$
+   \item $\hat{\overline{f}}=\overline{\tilde{\hat{f}}}$
+   \item $\int_{\R^{n}} \hat{f}g=\int_{\R^{n}} f\hat{g}$
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}
+      \item $\hat{\tilde{f}}(\xi)= c\int \tilde{f}(x) e^{-ix\xi}\,dx = c\int
+      f(-x)e^{-ix\xi}\,dx= c\int f(y)e^{iy\xi}\,dy = \hat{f}(-\xi)=
+      \tilde{\hat{f}}(\xi)$
+     \item $\hat{\overline{f}}(\xi)= c\int \overline{f(x)} e^{-ix\xi}\,dx =
+      \overline{c\int f(x)e^{+ix\xi}\,dx} = \overline{\hat{f}(-\xi)}=
+      \overline{\tilde{\hat{f}}}$
+     \item $\int\hat{f}g= \int_{\R^{n}} \hat{f}(\xi)g(\xi)\,d\xi=
+      \int_{\R^{n}} c\int_{\R^{n}} f(x)e^{-ix\xi}\,dxg(\xi)\,d\xi=
+      \int_{\R^{n}} c\int_{\R^{n}} g(\xi) e^{-ix\xi}\,d\xi f(x)\,dx=
+      \int_{\R^{n}} \hat{g}(x)f(x)\,dx= \int f\hat{g}$
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\section{Faltung und inverse Fouriertransformation}
+Frage: Kann man aus den Fourierreihen $\hat{f}$ einer Funktion $f\in
+L_{1}(\R^{n})$ die Funktion $f$ zurückgewinnen? Ist die Fouriertransformation
+$\hat{ }\colon L_{1}\rightarrow C_{0}$ eine bijektive Abbildung? Vergleiche
+hierzu die Konvergenz der Fourierreihen!
+
+Wir nutzen zur weiteren Betrachtung als Hilfsmittel die Faltung. Für $f,g\in
+L_{1}(\R^{n})$ gilt $f*g=\int_{\R^{n}} f(x-y)g(y)\,dy$. Weiterhin ergibt der
+Satz von Fubini, dass $f*g$ endlich fast überall und $f*g\in L_{1}(\R^{n})$ ist.
+
+\begin{satz}
+  Seien $f,g\in L_{1}(\R^{n})$. Dann gilt
+  \begin{gather*}
+    \widehat{f*g} = (2\pi)^{-\nicefrac{n}{2}} \hat{f}\hat{g}
+  \end{gather*}
+  \begin{proof}
+    \begin{align*}
+      \widehat{f*g}(\xi) &= c\int_{\R^{n}} f*g(x)e^{-ix\xi}\,dx =
+	 c\int_{\R^{n}} \int_{\R^{n}} f(x-y)g(y)\,dy e^{-ix\xi}\,dx\\
+      &=^{\text{Fubini}} \int_{\R^{n}} c \int_{\R^{n}} f(x-y)
+	 e^{-(x-y)\xi}\,dx g(y) e^{-iy\xi}\,dy\\
+      &= \int_{\R^{n}} \hat{f}(\xi)
+	 g(y) e^{-iy\xi}\,dy = \hat{f}(\xi) \hat{g}(\xi) \nicefrac{1}{c}
+    \end{align*}
+  \end{proof}
+\end{satz}
+
+\begin{gather*}
+  G(x)= e^{-\frac{\abs{x}^{2}}{2}}\tag{Gauss-Weierstrass-Kern}
+\end{gather*}
+
+\begin{satz}
+  Der Gauß-Weierstrass-Kern $G$ ist eine Eigenfunktion der
+  Fouriertransformation, genauer $\hat{G}=G$.
+  \begin{proof}
+    Wegen $G(x)=\prod_{i=1}^{n} e^{-\nicefrac{x_{i}^{2}}{2}}$ genügt es, den
+    eindimensionalen Fall $n=1$ zu betrachten. Dazu:
+    \begin{gather*}
+      \frac{\partial \hat{G}}{\partial \xi} (\xi)
+	 =^{\text{\autoref{satz:213}}} \widehat{-ixG}(\xi)= -ic
+	 \int_{-\infty}^{\infty} x G(x) e^{-ix\xi}\,dx
+    \end{gather*}
+    Partielle Integration mit $dv= xG(x)\,dx$ und $u=e^{-ix\xi}$ liefert:
+    \begin{gather*}
+      v=-e^{-\nicefrac{x^{2}}{2}}=-G(x)\qquad du=-i\xi e^{-ix\xi}\\
+      \frac{\partial \hat{G}}{\partial \xi} (\xi) = +ic\int_{-\infty}^{\infty}
+	 v\,du= -c\xi \int_{-\infty}^{\infty} G(x)e^{-ix\xi}\,dx= -\xi
+	 \hat{G}(\xi)
+    \end{gather*}
+    Also erfüllt $\hat{G}$ die gewöhnliche Differentialgleichung
+    $\hat{G}'(\xi)= -\xi\hat{G}(\xi)$, deren Lösung $\hat{G}(\xi)= \hat{G}(0)
+    e^{-\nicefrac{\xi^{2}}{2}}$ ist.
+
+    Außerdem gilt:
+    \begin{align*}
+      \hat{G}(0) &= \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty}
+	 e^{-\nicefrac{x^{2}}{2}}\,dx\\
+      \hat{G}(0)^{2} &= \frac{1}{2\pi} \int_{-\infty}^{\infty}
+	 e^{-\nicefrac{x^{2}}{2}}\,dx \int_{-\infty}^{\infty}
+	 e^{-\nicefrac{y^{2}}{2}}\,dy = \frac{1}{2\pi} \int_{\R^{2}}
+	 e^{-\frac{x^{2}+y^{2}}{2}}\,dxdy\\
+      &= \frac{1}{2\pi} \int_{0}^{2\pi} \int_{0}^{\infty}
+	 e^{-\nicefrac{r^{2}}{2}} r\,drd\phi= \int_{0}^{\infty}
+	 re^{-\nicefrac{r^{2}}{2}}\,dr=
+	 \left[-e^{-\nicefrac{r^{2}}{2}}\right]_{0}^{\infty} =1
+    \end{align*}
+    Folglich ist $\hat{G}(0)=1$ und somit $\hat{G}(\xi)=
+    e^{-\nicefrac{\xi^{2}}{2}} =G(\xi)$.
+  \end{proof}
+\end{satz}
+
+% Satz 2.3.3
+\begin{satz}[Gauß-Weierstraß-Summation]\label{satz:233}
+  Sei $f\in C^{n+1}_{c}(\R^{n})$. Dann ist $\hat{f}\in L_{1}(\R^{n})$ und es
+  gilt
+  \begin{gather*}
+    f(0)= \lim_{\epsilon\searrow0} (2\pi)^{-\nicefrac{n}{2}} \int_{\R^{n}}
+       \hat{f} e^{-\epsilon\nicefrac{\abs{\xi}^{2}}{2}}\,d\xi =
+       (2\pi)^{-\nicefrac{n}{2}} \int_{\R^{n}} \hat{f}(cmx)\,d\xi
+  \end{gather*}
+  \begin{proof}
+    Setze
+    \begin{gather*}
+      G_{\epsilon}(x)= [a^{\sqrt{\epsilon}}(G)](x)=\epsilon^{-\nicefrac{n}{2}}
+	 e^{-\nicefrac{\abs{x}^{2}}{2\epsilon}}
+    \end{gather*}
+    Dann gilt
+    \begin{align*}
+      \hat{G}_{\epsilon}(\xi) &= \widehat{a^{\sqrt{\epsilon}}G}(\xi)
+	 =^{\text{\autoref{satz:222}}} [a_{\sqrt{\epsilon}}\hat{G}](\xi) =
+	 [a_{\sqrt{\epsilon}}G](\xi)= G(\sqrt{\xi}\xi)=
+	 e^{-\epsilon\nicefrac{\abs{\xi}^{2}}{2}}\\
+      \hat{\hat{G}}_{\epsilon}(x) &= \widehat{a_{\sqrt{\epsilon}}G}(x)
+	 =^{\text{\autoref{satz:222}}} a^{\sqrt{\epsilon}}
+	 \hat{G}(x)= a^{\sqrt{\epsilon}}G(x)= G_{\epsilon}(x)
+    \end{align*}
+    Sei nun $f\in C^{n+1}_{c}(\R^{n})$. Aus der Bemerkung nach
+    \autoref{satz:214} folgt $\hat{f}\in L_{1}(\R^{n})$. Außerdem ist
+    $\hat{f}\in C_{0}(\R^{n})$ insbesondere stetig. Der dritte Punkt von
+    \autoref{satz:224} liefert:
+    \begin{gather*}
+      \int fG_{\epsilon}= \int f\hat{\hat{G}}_{\epsilon} = \int\hat{f}
+	 \hat{G}_{\epsilon}= \int_{\R^{n}} \hat{f}(\xi) e^{-\epsilon
+	 \nicefrac{\abs{\xi}^{2}}{2}}\,d\xi\xrightarrow{\epsilon\searrow 0}
+	 \int \hat{f}(\xi)\,d\xi
+    \end{gather*}
+    da $e^{-\epsilon\nicefrac{\abs{\xi}^{2}}{2}}\xrightarrow{\epsilon\searrow
+    0} 1$ gleichmäßig auf kompakten Mengen (Lebesgue-majorisierte Konvergenz).
+    Weiter ist
+    \begin{gather*}
+      \int G_{\epsilon}(x)\,dx= \int G_{\epsilon}(x)e^{-ix0}\,dx=
+	 (2\pi)^{\nicefrac{n}{2}} \hat{G}_{\epsilon}(0)=
+	 (2\pi)^{\nicefrac{n}{2}}
+    \end{gather*}
+    für alle $\epsilon>0$. Also ist
+    \begin{align*}
+      (2\pi)^{-\nicefrac{n}{2}} \int f(x)G_{\epsilon}(x)\,dx &=
+	 (2\pi)^{-\nicefrac{n}{2}} \int f(0)G_{\epsilon}(x)\,dx +
+	 (2\pi)^{-\nicefrac{n}{2}} \int (f(x)-f(0))G_{\epsilon}(x)\,dx\\
+      &= f(0)+(2\pi)^{-\nicefrac{n}{2}} \underbrace{\int_{\R^{n}} (f(x)-f(0))
+	 G_{\epsilon}(x)\,dx}_{\xrightarrow{\epsilon\searrow0}0 \text{ wegen
+	 Stetigkeit von $f$}} =f(0)
+    \end{align*}
+    Zusammen erhalten wir
+    \begin{gather*}
+      f(0) = (2\pi)^{-\nicefrac{n}{2}} \int fG_{\epsilon}\,dx=
+	 \lim_{\epsilon\searrow0} (2\pi)^{-\nicefrac{n}{2}} \int \hat{f}(\xi)
+	 e^{-\epsilon \nicefrac{\abs{\xi}^{2}}{2}}\,d\xi =
+	 (2\pi)^{-\nicefrac{n}{2}} \int \hat{f}(\xi)\,d\xi
+    \end{gather*}
+  \end{proof}
+\end{satz}
+
+Man kann also $f(0)$ zurückgewinnen aus $\hat{f}$. Die
+Translationseigenschaften der Fouriertransformation liefert dann auch $f(x)$.
+
+\begin{satz}[Fourierinversion]\label{satz:234}
+  Seien $\in L_{1}(\R^{n}), \hat{f}\in L_{1}(\R^{n})$ und $f$ stetig. Dann
+  gilt:
+  \begin{align*}
+    f(x)&= (2\pi)^{-\nicefrac{n}{2}} \int \hat{f}(\xi) e^{ix\xi}\,d\xi=
+       \hat{\hat{f}}(-x)\quad \forall x\in\R^{n}\\
+    f &= \tilde{\hat{\hat{f}}}
+  \end{align*}
+  \begin{proof}
+    Für $f\in C^{n+1}_{c}(\R^{n})$ haben wir:
+    \begin{align*}
+      f(x) &= (\tau_{-x}f)(0) =^{\text{\autoref{satz:233}}}
+	 (2\pi)^{-\nicefrac{n}{2}} \int \widehat{\tau_{-x}f}(\xi)\,d\xi\\
+      &=^{\text{\autoref{satz:223}}} (2\pi)^{-\nicefrac{n}{2}} \int
+	 \hat{f}(\xi) e^{ix\xi}\,d\xi= \hat{\hat{f}}(-x)
+    \end{align*}
+    Der allgemeine Fall folgt durch Approximation von $f\in L_{1}(\R^{n})$ mit
+    einer Folge aus $C^{\infty}_{c}(\R^{n})$.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Sind also $f,\hat{f}\in L_{1}(\R^{n})$, so kann $f$ auf einer Nullmenge so
+  abgeändert werden, dass $f$ stetig wird.
+\end{bemerk}
+
+% Folgerung 2.3.5
+\begin{folgmit}
+  Die Fouriertransformation ist injektiv, d.\,h. sind $f,g\in L_{1}(\R^{n})$
+  mit $\hat{f}=\hat{g}$, dann ist $f=g$ fast überall.
+  \begin{proof}
+    \begin{align*}
+      \widehat{f-g} &= \hat{f}-\hat{g}=0\in L_{1} \text{ und } f-g\in L_{1}\\
+      \Rightarrow \widehat{(f-g)*G_{\epsilon}} &= \widehat{f-g}
+	 \hat{G}_{\epsilon}=0 \quad \forall\epsilon>0\\
+      \Rightarrow^{\text{\autoref{satz:234}}} (f-g)*G_{\epsilon} &= 0
+	 \Rightarrow^{\epsilon\searrow0} f-g\stackrel{L_{1}}{=} 0
+    \end{align*}
+  \end{proof}
+\end{folgmit}
+
+\begin{defini}
+  Die \highl[Fouriertransformation!inverse]{inverse Fouriertransformation}
+  einer Funktion $f\in L_{1}(\R^{n})$ wird durch die Formel
+  \begin{gather*}
+    \check{f}(x)= (2\pi)^{-\nicefrac{n}{2}} \int_{\R^{n}}
+       f(\xi)e^{ix\xi}\,d\xi= \tilde{\hat{f}}(x)
+  \end{gather*}
+  bestimmt
+\end{defini}
+
+Sind also $f,\hat{f}\in L_{1}(\R^{n})$, so haben wir:
+\begin{gather*}
+  f=\check{\hat{f}}= \hat{\check{f}}
+\end{gather*}
+Es gilt aber:
+
+% Satz 2.3.6
+\begin{satz}
+  Die Fouriertransformation $\hat{ }\colon L_{1}(\R^{n})\rightarrow
+  C_{0}(\R^{n})$ ist \emph{nicht} surjektiv.
+\end{satz}
 
 \section{Die Fouriertransformation in \texorpdfstring{$L_{p}(\R^{n})$}{Lp(Rn)}}
 
@@ -1448,6 +1809,9 @@ Damit können wir die Fouriertransformation auf $L_{2}$ definieren:
   (mit einem Algebraprogramm).
  \item Betrachte $f(x)=x$ auf $[0,2\pi]$ (Koeffizienten ausrechnen) und
   berechne die Parseval-Gleichung.
+ \item Beweise die Folgerung $f\in C^{n+1}(\R^{n})\cap L_{1}(\R^{n})
+  \Rightarrow\hat{f}\in L_{1}(\R^{n})$. Hinweise liefert der
+  \autoref{satz:214}.
 \end{enumerate}
 
 
