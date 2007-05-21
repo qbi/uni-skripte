@@ -28,7 +28,7 @@
 \usepackage{ifthen}
 \usepackage{makeidx}
 \usepackage[final]{graphicx}  % Für Grafiken
-\usepackage{color}
+\usepackage{xcolor}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
 
 \usepackage[utf8]{inputenc}
@@ -247,12 +247,12 @@
 \newcounter{falldepth}
 \setcounter{falldepth}{0}
 % skript-check aus
-\newcommand*{\falliformat}{\itshape Fall \arabic{falli}:}
+\newcommand*{\falliformat}{\itshape Fall \arabic{falli}}
 \newcommand*{\falliiformat}{\falliformat\alph{fallii}}
 % skript-check an
 \newenvironment*{faelle}%
      {\stepcounter{falldepth}%
-      \begin{list}{\csname fall\roman{falldepth}format\endcsname}
+      \begin{list}{\csname fall\roman{falldepth}format\endcsname:}
                   {\usecounter{fall\roman{falldepth}}%
            \settowidth{\labelwidth}{\csname fall\roman{falldepth}\endcsname}%
                       \setlength{\leftmargin}{1.3cm}%
@@ -1219,7 +1219,7 @@ Die Art der Schlussfolgerungen wird durch die Ableitungsregeln festgelegt.
  in \autoref{subsec-Theorie-L} zu lesen, die gleichzeitig auch als
  Beispiel für die Defintionen angesehen werden kann.)
 
-\begin{defini}[formale Theorie]
+\begin{defini}[formale Theorie]\label{def:theorie}
   Eine \emph[index=Theorie!formale]{formale Theorie} $\mathcal{S}$
   ist ein Tripel $(\mathcal{F}, \mathrm{Ax}, \mathrm{R})$ bestehend aus
   \begin{enumerate}
@@ -1368,9 +1368,9 @@ Ausdruckstärke verloren geht.
 \end{defini}
 
 \begin{lemma}\label{lemma-axiome-tautologien}
-Alle Axiome von $\mathrm{L}$ sind Tautologien.
+  Alle Axiome von $\mathrm{L}$ sind Tautologien.
 
-\begin{proof}
+  \begin{proof}
     Wir betrachten das Axiom (A1) $\gamma=\alpha\rightarrow(\beta\rightarrow
     \alpha)$. Sei $\cA$ eine passende Belegung für $\gamma$, dann gilt
     $\cA(\gamma)=w$ genau dann, wenn $\cA(\alpha)=f$ oder $\cA(\beta)=f$ oder
@@ -1378,8 +1378,36 @@ Alle Axiome von $\mathrm{L}$ sind Tautologien.
     gilt auch $\cA(\gamma)=w$ für jede passende Belegung $\cA$ und damit ist
     $\gamma$ eine Tautologie.
 
-    Die Beweise für die anderen Axiome(nschemata) gehen entsprechend.
-\end{proof}
+    Der Beweis, dass das Axiom (A2) eine Tautologie ist, lässt sich am
+    Einfachsten mit einer Wahrheitstabelle führen:
+    \begin{gather*}
+      \begin{array}{ccc|ccccc|c}
+        \alpha& \beta& \gamma& \beta\rightarrow\gamma&
+        \alpha\rightarrow(\beta\rightarrow\gamma)& \alpha\rightarrow\beta&
+        \alpha\rightarrow\gamma& (\alpha\rightarrow\beta) \rightarrow
+        (\alpha\rightarrow\gamma)& \dotso\\
+        \hline
+        f& f& f& w& w& w& w& w& w\\
+        f& f& w& w& w& w& w& w& w\displaybreak[0]\\
+        f& w& f& f& w& w& w& w& w\\
+        f& w& w& w& w& w& w& w& w\displaybreak[0]\\
+        w& f& f& w& w& f& f& w& w\\
+        w& f& w& w& w& f& w& w& w\displaybreak[0]\\
+        w& w& f& f& f& w& f& f& w\\
+        w& w& w& w& w& w& w& w& w
+      \end{array}
+    \end{gather*}
+
+    Das Axiom (A3) wird für eine passende Belegung $\cA$ $wahr$ genau dann,
+    wenn $\cA(\neg\beta\rightarrow\neg\alpha)=f$ oder
+    $\cA(\neg\beta\rightarrow\neg\alpha)=f$ oder $\cA(\beta)=w$. Dies gilt
+    genau dann, wenn $\lcorner{\cA(\neg\beta)=w\text{~und~}\cA(\neg\alpha)=f}$
+    oder $\lcorner{\cA(\neg\beta)=w\text{~und~}\cA(\alpha)=f}$ oder
+    $\cA(\beta)=w$. Mit Hilfe des Distributivgesetzes können wir den Ausdruck
+    zu $\cA(\beta)=f$ oder $\lcorner{\cA(\alpha)=w\text{~und~}\cA(\alpha)=f}$
+    oder $\cA(\beta)=w$ umformen, womit leicht ersichtlich ist, dass das
+    Axiom~(A3) unter allen möglichen Belegungen von $\beta$ $wahr$ wird.
+  \end{proof}
 \end{lemma}
 
 Die Ableitungsregel modus ponens (vollständig
@@ -1598,7 +1626,7 @@ Der Sinn des Deduktionstheorems ist seine Benutzung zur Vereinfachung von Beweis
 
           Da $\Lvdash \beta\rightarrow\beta$
           (\autoref{bsp:1}), folgt $\Gamma \Lvdash
-          \beta\rightarrow\beta$
+          \beta\rightarrow\beta$.
         \end{faelle}
 
        \item[IV:] Die Behauptung $\Gamma,\alpha\Lvdash \beta
@@ -1696,7 +1724,8 @@ Für jede aussagenlogische Formel $\beta$ gilt $\Lvdash \neg\neg \beta \rightarr
 \end{lemma}
 
 \begin{lemma}\label{lem:4}
-Für alle al. Formeln $\alpha$ und $\beta$ gilt
+  Für alle aussagenlogischen Formeln $\alpha$ und $\beta$ kann man die
+  folgenden Formeln ableiten:
     $\Lvdash \neg\alpha \rightarrow  (\alpha \rightarrow \beta)$
 und $\Lvdash \alpha \rightarrow  (\neg\alpha \rightarrow \beta)$.
 \begin{proof}
@@ -1707,40 +1736,44 @@ Folgt mit dem Deduktionstheorem aus \autoref{lem:01}.
 
 \begin{lemma}\label{lem:3}
   $\Lvdash \beta \rightarrow \neg\neg\beta$
-  \begin{align*}
-    (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
-       \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\beta\big) &
-       \text{A3}\\
-    (2)\quad & \neg\neg\neg\beta \rightarrow \neg\beta &
-       \text{\autoref{lem:2}}\\
-    (3)\quad & (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
-       \neg\neg\beta &\text{MP 2,1}\\
-    (4)\quad & \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta)
-       &\text{A1}\\
-    (5)\quad & \beta \rightarrow \neg\neg\beta
-       &\text{\autoref{bsp:2} mit 4,3}\\
-  \end{align*}
+  \begin{proof}
+    \begin{align*}
+      (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
+         \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\beta\big) &
+         \text{A3}\\
+      (2)\quad & \neg\neg\neg\beta \rightarrow \neg\beta &
+         \text{\autoref{lem:2}}\\
+      (3)\quad & (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
+         \neg\neg\beta &\text{MP 2,1}\\
+      (4)\quad & \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta)
+         &\text{A1}\\
+      (5)\quad & \beta \rightarrow \neg\neg\beta
+         &\text{\autoref{bsp:2} mit 4,3}
+    \end{align*}
+  \end{proof}
 \end{lemma}
 
 \begin{lemma}\label{lem:5}
   $\Lvdash (\alpha \rightarrow \beta) \rightarrow (\neg \beta \rightarrow \neg \alpha)$.
   Dieser Schluss heißt \emph{modus tollens}.
 
-  Wir zeigen zuerst $\alpha \rightarrow \beta\ \Lvdash\ \neg\beta\rightarrow\neg\alpha$.
-  \begin{align*}
-    (1)\quad & \alpha \rightarrow \beta & \text{Hypothese}\\
-    (2)\quad & \neg\neg\alpha \rightarrow \alpha & \text{\autoref{lem:2}} \\
-    (3)\quad & \neg\neg\alpha \rightarrow \beta
-       & \text{\autoref{bsp:2} mit 2,1}\\
-    (4)\quad & \beta \rightarrow \neg\neg\beta & \text{\autoref{lem:3}} \\
-    (5)\quad & \neg\neg\alpha \rightarrow \neg\neg \beta &
-       \text{\autoref{bsp:2} mit 3,4}\\
-    (6)\quad & (\neg\neg\alpha \rightarrow \neg\neg \beta) \rightarrow
-       (\neg\beta \rightarrow \neg \alpha) & \text{\autoref{enu:1} auf
-       Aufgabenblatt 2}\\
-    (7)\quad & \neg\beta \rightarrow \neg \alpha & \text{MP 5,6}
-  \end{align*}
-  Das Lemma folgt durch Anwendung des Deduktionstheorems.
+  \begin{proof}
+    Wir zeigen zuerst $\alpha \rightarrow \beta\ \Lvdash\ \neg\beta\rightarrow\neg\alpha$.
+    \begin{align*}
+      (1)\quad & \alpha \rightarrow \beta & \text{Hypothese}\\
+      (2)\quad & \neg\neg\alpha \rightarrow \alpha & \text{\autoref{lem:2}} \\
+      (3)\quad & \neg\neg\alpha \rightarrow \beta
+         & \text{\autoref{bsp:2} mit 2,1}\\
+      (4)\quad & \beta \rightarrow \neg\neg\beta & \text{\autoref{lem:3}} \\
+      (5)\quad & \neg\neg\alpha \rightarrow \neg\neg \beta &
+         \text{\autoref{bsp:2} mit 3,4}\\
+      (6)\quad & (\neg\neg\alpha \rightarrow \neg\neg \beta) \rightarrow
+         (\neg\beta \rightarrow \neg \alpha) & \text{\autoref{enu:1} auf
+         Aufgabenblatt 2}\\
+      (7)\quad & \neg\beta \rightarrow \neg \alpha & \text{MP 5,6}
+    \end{align*}
+    Das Lemma folgt durch Anwendung des Deduktionstheorems.
+  \end{proof}
 \end{lemma}
 
 \begin{lemma}\label{lem:6}
@@ -1818,7 +1851,9 @@ Nocheinmal als Zusammenfassung alle gezeigten Theoreme:
 
 \subsection{Vollständigkeit von \texorpdfstring{$\mathrm{L}$}{L}}
 
-\glqq{}Vollständigkeit von $\mathrm{L}$\grqq{} bedeutet, dass jede
+Mit \autoref{satz:1} hatten wir bereits gezeigt, dass jedes Theorem von
+$\mathrm{L}$ eine Tautologie ist. In diesem Abschnitt soll die die
+\emph{Vollständigkeit} von $\mathrm{L}$ gezeit werden, also dass jede
 Tautologie ein Theorem von $\mathrm{L}$ ist.
 
 Im ersten Schritt (\autoref{satz:2}) werden wir zeigen, dass
@@ -1833,8 +1868,8 @@ gilt folglich $\cA \Lvdash \alpha$.
 Wenn die Belegungen $\cA$ und $\cA'$ fast gleich sind
 und sich nur in der Belegung einer einzigen Variablen $B$ unterscheiden,
 kann man diese Variable aus den Belegungen entfernen.
-Falls $B\in \cA$ und $\neg\in\cA'$,
-dann gilt $\cA-\{B\} \Lvdash \alpha$.
+Falls $B\in \cA$ und $\neg B\in\cA'$,
+dann gilt $\cA\setminus\{B\} \Lvdash \alpha$.
 Für eine Tautologie $\alpha$ kann man diesen Prozess wiederholen,
 bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
 
@@ -1869,37 +1904,35 @@ bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
         Da $\mathcal{A}(B)=f$, folgt die Behauptung.
       \end{itemize}
 
-     \item[IV:] für alle Formeln $\phi\in\mathcal{M}$ gilt $\mathcal{A}
+     \item[IV:] für alle Formeln $\phi$ gilt $\mathcal{A}
       \Lvdash \phi_{\mathcal{A}}$
 
-     \item[IS:] $\phi=\neg\alpha$ oder $\phi=\alpha \rightarrow\beta$ für
-      $\alpha,\beta\in\mathcal{M}$ (Formelmenge)
+     \item[IS:] die Formel $\phi$ kann die Gestalt $\neg\alpha$ oder $\alpha
+      \rightarrow\beta$ mit zwei beliebigen Formeln $\alpha$ und $\beta$ haben.
 
-      \begin{itemize}
-       \item $\phi=\neg\alpha$
+      \begin{faelle}
+       \item $\phi$ ist eine Negation -- $\phi=\neg\alpha$
         \begin{faelle}
-         \item $\mathcal{A}(\phi)=w$ d.\,h. $\mathcal{A}(\alpha)=f$.
+         \item Unter der Belegung $\cA$ ist $\phi$ $wahr$. Dann muss $\alpha$
+          unter der Belegung $falsch$ sein. Nach der Induktionsvorraussetzung
+          gilt $\mathcal{A} \Lvdash \alpha_{\mathcal{A}} = \neg\alpha = \phi$,
+          d.\,h. $\mathcal{A} \Lvdash \phi = \phi_{\mathcal{A}}$.
 
-          Nach IV gilt $\mathcal{A} \Lvdash
-          \alpha_{\mathcal{A}} = \neg\alpha =\phi_{\mathcal{A}}$, d.\,h.
-          $\mathcal{A} \Lvdash \phi_{\mathcal{A}}$
-
-         \item $\mathcal{A}(\phi)=f$, d.\,h. $\mathcal{A}(\alpha)=w$
+         \item $\phi$ ist $falsch$ unter der Belegung $\cA$, also ist
+          $\mathcal{A}(\alpha)=w$.
           \begin{align*}
             (1)\quad & \alpha & \text{IV}\\
             (2)\quad & \alpha\rightarrow\neg\neg\alpha
                &\text{\autoref{lem:3}}\\
             (3)\quad & \neg\neg\alpha &\text{MP 1,2}
           \end{align*}
-          Da $\phi_{\mathcal{A}}=\neg\neg\alpha$, folgt $\mathcal{A}
-          \Lvdash \phi_{\mathcal{A}}$.
+          Es gilt also $\cA \Lvdash \neg\neg\alpha = \phi_{\mathcal{A}}$.
         \end{faelle}
 
-       \item $\phi=\alpha\rightarrow\beta$
+       \item $\phi$ ist eine Implikation -- $\phi=\alpha\rightarrow\beta$
         \begin{faelle}
-         \item $\mathcal{A}(\phi)=f$ (d.\,h. $\phi_{\mathcal{A}}=\neg(
-          \alpha\rightarrow\beta)$), d.\,h. $\mathcal{A}(\alpha)=w$ und
-          $\mathcal{A}(\beta)=f$
+         \item $\phi$ ist $falsch$ unter der Belegung $\mathcal{A}$. Dann muss
+          gelten, dass $\mathcal{A}(\alpha)=w$ und $\mathcal{A}(\beta)=f$ ist.
           \begin{align*}
             (1)\quad & \alpha &\text{IV}\\
             (2)\quad & \neg\beta &\text{IV}\\
@@ -1910,26 +1943,27 @@ bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
             (5)\quad & \neg(\alpha\rightarrow\beta) &\text{MP 2,4}
           \end{align*}
           Also gilt $\mathcal{A} \Lvdash
-          \neg(\alpha\rightarrow\beta)$, d.\,h. $\mathcal{A}
-          \Lvdash \phi_{\mathcal{A}}$
+          \neg(\alpha\rightarrow\beta) = \phi_{\mathcal{A}}$.
 
-         \item $\mathcal{A}(\phi)=w$, d.\,h. $\phi_{\mathcal{A}}
-          =\alpha\rightarrow\beta$
-          \begin{enumerate}[{Fall 2}a]
-           \item $\mathcal{A}(\alpha)=f$, Nach Induktionsvorraussetzung
-            gilt $\mathcal{A} \Lvdash \neg\alpha$
+         \item $\phi$ ist $wahr$ unter der Belegung $\mathcal{A}$, d.\,h.
+          $\phi_{\mathcal{A}}=\alpha\rightarrow\beta$. Für die beiden
+          Teilformeln gibt es folgende Möglichkeiten:
+          \begin{itemize}
+           \item Die Formel $\alpha$ ist $falsch$ unter der Belegung $\cA$.
+            Nach Induktionsvorraussetzung gilt dann $\mathcal{A} \Lvdash
+            \neg\alpha$.
             \begin{align*}
               (1)\quad & \neg\alpha &\text{IV}\\
               (2)\quad & \neg\alpha \rightarrow (\alpha\rightarrow\beta)
                  &\text{\autoref{lem:4}}\\
               (3)\quad & \alpha\rightarrow\beta & \text{MP 1,3}
             \end{align*}
-            Also gilt $\mathcal{A} \Lvdash
-            \alpha\rightarrow\beta$, d.\,h. $\mathcal{A}
-            \Lvdash \phi_{\mathcal{A}}$
+            Also gilt $\mathcal{A} \Lvdash \alpha\rightarrow\beta=
+            \phi_{\mathcal{A}}$.
 
-           \item $\mathcal{A}(\beta)=w$, Nach Induktionsvorraussetzung
-            gilt $\mathcal{A} \Lvdash \beta$
+           \item Die Teilformel $\beta$ ist $wahr$ unter der Belegung
+            $\mathcal{A}$. Nach Induktionsvorraussetzung gilt dann
+            $\mathcal{A} \Lvdash \beta$.
             \begin{align*}
               (1)\quad & \beta &\text{IV}\\
               (2)\quad & \beta\rightarrow(\alpha\rightarrow\beta) &
@@ -1937,11 +1971,10 @@ bis die Hypothesenmenge leer ist, und damit folgt $\Lvdash \alpha$.
               (3)\quad & \alpha\rightarrow\beta &\text{MP 1,2}
             \end{align*}
             Also gilt $\mathcal{A} \Lvdash
-            \alpha\rightarrow\beta$, d.\,h.
-            $\mathcal{A}\Lvdash \phi_{\mathcal{A}}$.
-          \end{enumerate}
+            \alpha\rightarrow\beta = \phi_{\mathcal{A}}$.
+          \end{itemize}
         \end{faelle}
-      \end{itemize}
+      \end{faelle}
     \end{mdescription}
   \end{proof}
 \end{satz}
@@ -1976,17 +2009,13 @@ wie der aus einer Belegung konstruierte Beweis aussieht.
 \includegraphics{resolution.15}\\
 \caption{Induktiver Aufbau der Formel $A\rightarrow\neg(\neg A\rightarrow B)$
 und die für Belegung $\cA=\{A,\neg B\}$ beweisbaren (Teil-)Formeln
-(\autoref{bsp-Belegungen})}
+(\autoref{bsp-Belegungen})}.
 \label{fig-formelaufbau}
 \end{figure}
 
 \begin{figure}
-{
 \centering
-
-\includegraphics{resolution.16}
-
-}
+\includegraphics{resolution.16}\\
 \caption{Fortsetzung von \autoref{fig-formelaufbau}:
 Induktiver Aufbau des Beweises gemäß \autoref{satz:2}}
 \label{fig-beweisaufbau}
@@ -1998,74 +2027,47 @@ Dazu betrachten wir zuerst ein Beispiel.
 
 \begin{bsp}
 Die Formel $A \rightarrow (B\rightarrow B)$ ist eine Tautologie.
-Nach obigem Satz kann man eine beliebige Belegung nehmen
+  Nach dem eben bewiesenen \autoref{satz:2} kann man eine beliebige Belegung nehmen
 und daraus die Formel beweisen.
 Wir nehmen die beiden Belegungen
 $\mathcal{A}_{1}=\{\neg A, B\}$ und $\mathcal{A}_{2}=\{\neg A,B\}$.
 Nach obigem Satz gilt
-{
-
-\centering
-
-$\neg A, B \Lvdash A \rightarrow (B\rightarrow B)$ und
-$\neg A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$.
-
-}
-
+  \begin{gather*}
+    \neg A, B \Lvdash A \rightarrow (B\rightarrow B)\text{~und~}
+       \neg A, \neg B \Lvdash A \rightarrow (B\rightarrow B)
+  \end{gather*}
 Wir wenden auf beide Folgerungen das Deduktionstheorem an und erhalten
-
-{
-
-\centering
-
-$\neg A \Lvdash B\rightarrow(A \rightarrow (B\rightarrow B))$ und
-$\neg A \Lvdash \neg B\rightarrow (A \rightarrow (B\rightarrow B))$.
-
-}
-
+  \begin{gather*}
+    \neg A \Lvdash B\rightarrow(A \rightarrow (B\rightarrow B))\text{~und~}
+       \neg A \Lvdash \neg B\rightarrow (A \rightarrow (B\rightarrow B))
+  \end{gather*}
 Die beiden Folgerungen haben nun die gleichen Hypothesen.
-Mit \autoref{lem:7}
+  Unter Verwendung von \autoref{lem:7}
 ($\Lvdash (\alpha \rightarrow \beta) \rightarrow ((\neg \alpha
-  \rightarrow \beta) \rightarrow \beta)$)
-folgt daraus
-{
-
-\centering
-
-$\neg A \Lvdash A \rightarrow (B\rightarrow B)$. \quad $(\star)$
-
-}
+  \rightarrow \beta) \rightarrow \beta)$ mit der Zuordnung $\alpha=B$ und
+  $\beta=A\rightarrow(B\rightarrow B)$) und zweimaliger Anwendung des modus
+  ponens folgt daraus
+  \begin{gather}\label{eq:1}
+    \neg A \Lvdash A \rightarrow (B\rightarrow B)
+  \end{gather}
 
 Wir haben also einen Beweis der Tautologie
 als Folgerung aus einer Hypothesenmenge, in der eine Variable weniger vorkommt.
 Entsprechend
 kann aus
-{
-
-\centering
-
-$A, B \Lvdash A \rightarrow (B\rightarrow B)$ und
-$A, \neg B \Lvdash A \rightarrow (B\rightarrow B)$
-
-}
-
-mit dem Deduktionstheorme und \autoref{lem:7}
-{
-
-\centering
-
-$A \Lvdash A \rightarrow (B\rightarrow B)$. \quad $(\star\star)$
-
-}
+  \begin{gather*}
+    A, B \Lvdash A \rightarrow (B\rightarrow B)\text{~und~}
+       A, \neg B \Lvdash A \rightarrow (B\rightarrow B)
+  \end{gather*}
+mit dem Deduktionstheorm und \autoref{lem:7}
+  \begin{gather}\label{eq:2}
+    A \Lvdash A \rightarrow (B\rightarrow B)
+  \end{gather}
 bewiesen werden.
-Aus $(\star)$ und $(\star\star)$ kann auf die gleiche Weise
-{
-
-\centering
-
-$\Lvdash A \rightarrow (B\rightarrow B)$.
-
-}
+Aus \autoref{eq:1} und \autoref{eq:2} kann auf die gleiche Weise
+  \begin{gather*}
+    \Lvdash A \rightarrow (B\rightarrow B)
+  \end{gather*}
 bewiesen werden.
 Damit haben wir einen Beweis für die Tautologie
 aus ihren Beweisen mit den verschiedenen Belegungen
@@ -2124,40 +2126,41 @@ Im Beweis des folgenden Satzes wird dieses Vorgehen benutzt.
   \end{proof}
 \end{satz}
 
-Aufgrund der Korrektheit (\autoref{satz:1}) und Vollständigkeit
-(\autoref{satz:4}) von $\mathrm{L}$ ergibt sich:
 \begin{korol}\label{korrektkeit-und-vollst-von-L}
-Für jede al. Formel $\phi$ gilt:
+  Aufgrund der Korrektheit (\autoref{satz:1}) und Vollständigkeit
+  (\autoref{satz:4}) von $\mathrm{L}$ gilt für jede aussagenlogische Formel
+  $\phi$\,:
+  \begin{center}
     $\phi$ ist eine aussagenlogische Tautologie \gdw $\Lvdash \phi$.
+  \end{center}
 \end{korol}
 
 Der Begriff "`Tautologie"' ist ein semantischer Ausdruck
 -- er basiert auf der Bedeutung (dem Wahrheitswert) von Formeln.
 Dagegen ist "`$\Lvdash$"' ein syntaktischer Ausdruck --
 er basiert auf der äußeren Form von Formeln.
-(Ob eine Formel ein Axiom ist oder ob sie aus anderen Formeln
+Ob eine Formel ein Axiom ist oder ob sie aus anderen Formeln
  abgeleitet werden kann, ergibt sich nur aus ihrer Form; man
- muss dazu nichts über ihre Wahrheitswerte wissen.)
-\autoref{korrektkeit-und-vollst-von-L} sagt, dass beide
+ muss dazu nichts über ihre Wahrheitswerte wissen.
+\autoref{korrektkeit-und-vollst-von-L} besagt, dass beide
 Begriffe gleichbedeutend sind.
 Die semantische und die syntaktische Betrachtungsweise
-der Aussagenlogik sind gleich.
+der Aussagenlogik sind also gleich.
 
 
 \section{Resolution für die Aussagenlogik}
 
 Resolution ist eine Methode zum Nachweis der Unerfüllbarkeit
 aussagenlogischer Formeln.
-Es ist eine \glqq{}syntaktische\grqq{} Methode.
-Sie basiert auf der äußeren Form von Formeln.
-Resolution ist beliebt für Computeranwendungen.
-Die Programmiersprache PROLOG basiert auf Resolution
-(allerdings für die Prädikatenlogik).
+Sie basiert auf der äußeren Form von Formeln und ist daher eine
+\glqq{}syntaktische Methode\grqq{}.
+Die Resolution ist beliebt für Computeranwendungen und ist z.\,B. in die
+Grundlage der Programmiersprache PROLOG (allerdings für die Prädikatenlogik).
 Wir werden in diesem Abschnitt die Resolution in der
 Aussagenlogik vorstellen und anschließend zeigen, dass
 sie auch als formale Theorie ausgedrückt werden kann.
 
-Eine Formel $\phi$ heißt \emph{unerfüllbar} (auch Kontradiktion),
+Eine Formel $\phi$ heißt \emph{unerfüllbar} (auch \emph{Kontradiktion}),
 falls $\phi$ unter jeder
 passenden Belegung $\mathcal{A}$ den Wert $\mathcal{A}(\phi)=f$ hat. Den
 Nachweis einer Tautologie erhält man über die Beziehung: $\alpha$ ist
@@ -2165,12 +2168,9 @@ eine Tautologie \gdw $\neg\alpha$ ist unerfüllbar. Zum Beispiel ist die
 Formel $\neg(A\rightarrow(B\rightarrow A))$ unerfüllbar.
 
 \begin{figure}
-
   \centering
-
    \includegraphics{resolution.13}
-
-  \caption{Die Zerlegung aussagenlogischer Formeln bezgl. Erfüllbarkeit}
+  \caption{Die Zerlegung aussagenlogischer Formeln bzgl. Erfüllbarkeit}
   \label{figure-zerlegung-al-Formeln}
 \end{figure}
 
@@ -2197,11 +2197,11 @@ Die Resolution arbeitet mit Formeln in konjunktiver Normalform:
   Zu jeder aussagenlogischen Formel gibt es eine äquivalente Formel in
   konjunktiver Normalform.
   \begin{proof}
-    Sei $\alpha$ eine Formel.
+    Sei $\alpha$ eine aussagenlogische Formel.
     Nach \autoref{lemma-DNF} gibt es zu $\neg \alpha$
-    eine äquivalente Formel $\phi$ in disjunktiver Normalform.
-    Also gilt $\alpha\equiv\neg\phi$.
-    Zieht man das Negationszeichen von $\neg \phi$ nach innen,
+    eine äquivalente Formel $\beta$ in disjunktiver Normalform.
+    Also gilt $\alpha\equiv\neg\beta$.
+    Zieht man das Negationszeichen von $\neg\beta$ nach innen,
     dann erhält man eine äquivalente Formel in konjunktiver Normalform.
   \end{proof}
 \end{lemma}
@@ -2225,7 +2225,7 @@ Verfahren für die Umformung verwenden.
 
 \begin{figure}
   \captionsetup{justification=RaggedRight,format=hang}
-  \begin{minipage}{7.2cm}
+  \begin{minipage}[b]{7.2cm}
     \centering
     \input{verkn-baum-bsp.pdf_t}
     \caption{Der Verknüpfungsbaum für $(A\wedge B) \rightarrow \neg(A\vee
@@ -2233,8 +2233,7 @@ Verfahren für die Umformung verwenden.
     \label{fig:vknb-bsp}
   \end{minipage}
   \hfill
-  \begin{minipage}{6.8cm}
-    \vspace*{8.57mm}
+  \begin{minipage}[b]{6.8cm}
     \centering
     \begin{tabular}{ccc|cc}
       $c_{0}$ & $c_{3}$ & $c_{4}$ & $c_{0}\rightarrow c_{3}$ &
@@ -2259,20 +2258,19 @@ Verfahren für die Umformung verwenden.
     Wir betrachten ein Beispiel statt eines Beweises.
     Daraus sollte klar werden, wie der Beweis geht.
 
-    Betrachten wir die Formel $\phi = (A\wedge B) \rightarrow
-    \neg(A\vee\neg B)$. Der induktive Aufbau von $\phi$ ist in
-    dem Baum in \autoref{fig:vknb-bsp} dargestellt.
-    Damit können wir die
-    erfüllbarkeitsäquivalente Formel $\phi'$ konstruieren.
-    Für jeden Knoten mit einem Verknüfungszeichen
-    wird eine neue Variable $c_i$ eingeführt.
-    Die Formel $\phi'$ ist eine Konjunktion von Äquivalenzen.
-    Für jedes $c_i$ enthält $\phi$ eine Äquivalenz $c_i \leftrightarrow( l~ op~ r)$.
-    Dabei ist $op$ das Verknüpfungszeichen des mit $c_i$ markierten Knotens,
-    $l$ ist die Variable, mit der der linke Sohn von $c_i$ markiert ist,
-    und $r$ ist die Variable, mit der der rechte Sohn von $c_i$ markiert ist.
-    Falls $c_i$ die Markierung eines Knotens mit Verknüpfungszeichen
-    $\neg $ ist, dann hat dieser Knoten nur einen rechten Sohn und keinen Linken Sohn.
+  Wir kontruieren eine erfüllbarkkeitsäquivalente Formel $\phi'$ zu $\phi =
+  (A\wedge B) \rightarrow \neg(A\vee\neg B)$. Der induktive Aufbau von $\phi$
+  ist in dem Baum in \autoref{fig:vknb-bsp} dargestellt. Für jeden Knoten --
+  also jedes Verknüpfungszeichen -- wird eine neue Variable $c_i$ eingeführt.
+  In die Formel~$\phi'$ wird für jedes $c_i$ eine Äquivalenz
+  $c_i\leftrightarrow (l~op~r)$ eingefügt, wobei $op$ das Verknüpfungszeichen
+  des mit $c_i$ markierten Knotens, $l$ die Variable, mit der der linke Sohn
+  von $c_i$ markiert ist, und $r$ die Variable ist, mit der der rechte Sohn
+  von $c_i$ markiert ist. Falls $c_i$ die Markierung eines Knotens mit dem
+  Verknüpfungszeichen $\neg $ ist, dann hat dieser Knoten nur einen rechten
+  und keinen linken Sohn. Die Formel $\phi'$ ist dann die Konjunktion aller
+  Äquivalenzen.
+
     Jede dieser "`kleinen"' Äquivalenzen aus 3~Variablen hat eine
     konjunktive Normalform (\autoref{satz:5}) aus höchstens 8~Klauseln zu
     je 3~Literalen.
@@ -2293,8 +2291,8 @@ Verfahren für die Umformung verwenden.
   \mathcal{A}'(\phi)=w$ wobei $\mathcal{A}'=\{A, \neg B, \neg c_{0},
   c_{1}, c_{2}, \neg c_{3}, c_{4}\}$ ist.
 
-  Aus $\mathcal{A}(\phi')=w$ folgt $\mathcal{A}(\phi)=w$,
-  $\mathcal{A}=\{c_{4}, c_{3}, \neg c_{2}, c_{1}, c_{0}, \neg B, \neg A\}$
+  Aus $\mathcal{A}(\phi')=w$ folgt $\mathcal{A}(\phi)=w$, z.\,B.
+  $\mathcal{A}=\{c_{4}, c_{3}, \neg c_{2}, c_{1}, c_{0}, \neg B, \neg A\}$.
 
   Mit der Wahrheitswerttabelle (\autoref{tab:wtab-erfaeq}) kann man
   z.\,B. für die Verknüpfung $c_{4}\leftrightarrow c_{0}\rightarrow
@@ -2307,7 +2305,7 @@ Verfahren für die Umformung verwenden.
   \end{gather*}
 
   Mit den konjunktiven Normalformen aller "`kleinen"' Äquivalenzen kann
-  man so ein erfüllbarkeitsäquivalente Formel in konjunktiver Normalform
+  man so eine erfüllbarkeitsäquivalente Formel in konjunktiver Normalform
   aufstellen.
 \end{bsp}
 
@@ -2326,11 +2324,11 @@ B \vee C)$.
 Eine Belegung $\cA$ erfüllt eine Klausel $C$ genau dann, wenn $\cA\cap C\ne\emptyset$.
 Die \emph{leere Klausel} -- also die leere Menge von Literalen --
 wird mit dem Symbol $\Box$ dargestellt.
-Da $\cA \cap \Box=\emptyset$ für jede Belegung $\cA$,
+Da $\cA \cap \Box=\emptyset$ für jede Belegung $\cA$ gilt,
 ist die leere Klausel unerfüllbar.
 
 Eine Konjunktion von Klauseln
-wird \emph{Klauselmenge} dargestellt,
+wird \emph{Klauselmenge} genannt,
 z.\,B.~$(A \vee \lneg B \vee C)\wedge(B \vee \lneg C) \wedge \lneg A$
 als die Menge $\big\{ \{A, \lneg B, C \}, \{B, \lneg C\},\{\lneg A\} \big\}$.
 Die Belegung $\cA$ erfüllt die Klauselmenge $S$,
@@ -2345,23 +2343,17 @@ die man wie folgt aus $S$ erhält:
 \begin{enumerate}
  \item Entferne jede Klausel aus $S$, die $\ell$ enthält, und
  \item entferne das Literal $\bar{\ell}$
-  aus den verbliebenen Klauseln.
+  aus den verbleibenden Klauseln.
 \end{enumerate}
 Die so konstruierte Klauselmenge wird mit $S^{\ell}$ bezeichnet.
 Formal definiert sieht das so aus:
-\begin{gather*}
-  S^{\ell} = \{C\setminus\{\bar{\ell}\}\colon C\in S, \ell\notin C\}.
-\end{gather*}
+$S^{\ell} = \{C\setminus\{\bar{\ell}\}\colon C\in S, \ell\notin C\}$.
 
 Für
-\begin{gather*}
-  S=\big\{\{A,\lneg B, C\},\{\lneg A, C\}, \{\lneg A, B\},\{\lneg B, C\}\big\}
-\end{gather*}
+$S=\big\{\{A,\lneg B, C\},\{\lneg A, C\}, \{\lneg A, B\},\{\lneg B, C\}\big\}$
 ist
-\begin{gather*}
-  S^{A} = \big\{\{C\}, \{ B\},\{\lneg B, C\}\big\} \quad\text{und}\quad
-     S^{\lneg A}=\big\{ \{\lneg B, C\} \big\}.
-\end{gather*}
+$S^{A} = \big\{\{C\}, \{ B\},\{\lneg B, C\}\big\}$ und
+$S^{\lneg A}=\big\{ \{\lneg B, C\} \big\}$.
 
 Wir betrachten die erfüllende Belegung $\cA=\{\lneg B, \lneg C\}$
 der obigen Menge $S^{\lneg A}$.
@@ -2377,7 +2369,6 @@ $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
   Sei $S$ eine Klauselmenge und $\ell$ ein Literal.
   Wenn $S^{\ell}$ oder $S^{\bar{\ell}}$ erfüllbar ist,
   dann ist auch $S$ erfüllbar.
-\end{lemma}
 
 \begin{proof}
   Sei $S^{\ell}$ erfüllbar,
@@ -2397,6 +2388,7 @@ $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
   gezeigt werden, dass $\cB'=(\cA\setminus\{{\ell}\})\cup\{\bar{\ell}\}$
   Modell von $S$ ist.
 \end{proof}
+\end{lemma}
 
 Um die Erfüllbarkeit oder Unerfüllbarkeit
 einer Klauselmenge nachzuweisen,
@@ -2413,14 +2405,11 @@ die Ausgangsmenge erfüllbar.
   und $C_2$ sei eine Klausel, die das Literal $\bar{\ell}$
   enthält.
   Dann heißt die Klausel
-  \begin{gather*}
-    R=\big(C_1\setminus\{\ell\})\cup(C_2\setminus\{\bar{\ell}\}\big)
-  \end{gather*}
+  $R=\big(C_1\setminus\{\ell\})\cup(C_2\setminus\{\bar{\ell}\}\big)$
   \emph{Resolvent} der Klauseln $C_1$ und $C_2$ (nach dem Literal $\ell$).
-  \index{Resolvent}
 \end{defini}
 
-Zum Beispiele kann aus den Klauseln $\{A,B\}$ und $\{\lneg A, B,\lneg
+Zum Beispiel kann aus den Klauseln $\{A,B\}$ und $\{\lneg A, B,\lneg
 C\}$ der Resolvent $\{B,\lneg C\}$ (nach dem Literal $A$) gebildet
 werden.
 
@@ -2434,9 +2423,9 @@ gebildet werden (und keine anderen).
   dann erfüllt $\cA$ auch den Resolventen $R$.
 
   \begin{proof}
-    Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$ nach Literal $\ell$,
-    und erfülle $\cA$ die Klauseln $C_1$ und $C_2$
-    (d.\,h. $\cA\cap C_1\ne\emptyset$ und $\cA\cap C_2\ne\emptyset$).
+    Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$ nach dem Literal $\ell$,
+    und erfülle $\cA$ die Klauseln $C_1$ und $C_2$,
+    d.\,h. $\cA\cap C_1\ne\emptyset$ und $\cA\cap C_2\ne\emptyset$.
     Ist $\ell\notin\cA$, dann ist $\cA\cap(C_1\setminus\{\ell\})\ne\emptyset$;
     ist $\bar{\ell}\notin\cA$,
     dann ist $\cA\cap(C_2\setminus\{\bar{\ell}\})\ne\emptyset$.
@@ -2471,16 +2460,14 @@ für die Unerfüllbarkeit von Formeln.
   \end{enumerate}
 
   Eine \emph[rand=Resol.herleitung]{Resolutionsherleitung}
-  von Klausel $C$ aus Klauselmenge $S$ ist ein Resolutionsbeweis aus $S$,
+  der Klausel $C$ aus der Klauselmenge $S$ ist ein Resolutionsbeweis aus $S$,
   der $C$ enthält.
 
   Eine \emph[rand=Resol.widerlegung]{Resolutionswiderlegung} von $S$
   ist eine Resolutionsherleitung der leeren Klausel $\Box$ aus $S$.
 \end{defini}
 
-%\begin{enumerate}\label{beisp-res-herleitungen}
-%\item
-Für die Klauselmenge $S=\{\{A,B\},\{\lneg A\}, \{\lneg B\}\}$.
+Betrachten wir die Klauselmenge $S=\{\{A,B\},\{\lneg A\}, \{\lneg B\}\}$.
 Dann ist
 $\{A,B\}, \{\lneg A\} ,\{B\}$
 eine Herleitung von $\{B\}$ aus $S$.
@@ -2495,9 +2482,7 @@ ist eine Herleitung von $\Box$ aus $S$:
   C_5 &= \Box &\text{Resolvent aus $C_3$ und $C_4$}
 \end{align*}
 $S$ ist also widerlegt.
-%
 
-%\item
 Die Klauselmenge
 $S=\{\{A,B\},\{\lneg A,B\},\{A,\lneg B\},\{\lneg A,\lneg B\}\}$
 kann man mit folgender Herleitung widerlegen:
@@ -2510,7 +2495,7 @@ kann man mit folgender Herleitung widerlegen:
   C_6 &= \{\lneg B\} & \text{Resolvent aus $C_4$ und $C_5$}\\
   C_7 &= \Box & \text{Resolvent aus $C_3$ und $C_6$}
 \end{align*}
-%
+
 Die Herleitungen mittels Resolution kann man auch als
 Bäume veranschaulichen.
 Die Knoten des Baumes sind mit Klauseln markiert.
@@ -2522,17 +2507,15 @@ Vorgänger. ($C_1$ und $C_2$ heißen auch Elternklauseln von $R$.)
   \includegraphics{resolution.1}
 \end{center}
 
-%\end{enumerate}
-
 Die beiden Herleitungen aus obigem Beispiel
 lassen sich wie in \autoref{Res-Baeume} veranschaulichen.
 
 \begin{figure}[t]
-  %
+  \hfill
   \includegraphics{resolution.2}
   \hfill
   \includegraphics{resolution.3}
-  %
+  \hfill
   \caption{Widerlegungen mittels Resolution}\label{Res-Baeume}
 \end{figure}
 
@@ -2544,24 +2527,22 @@ der Resolutionsmethode nachweisen.
   \label{satz-korrektheit-resolution-vor}
   Ist eine Klauselmenge $S$ erfüllbar,
   dann ist $S$ nicht mittels Resolution widerlegbar.
-\end{satz}
-
 \begin{proof}
   Sei $S$  eine erfüllbare Klauselmenge.
   Dann gibt es ein Modell $\cA$ von $S$.
   Sei $C_1,C_2,\dotsc,C_n$ eine Herleitung von $C_n$ aus $S$.
-  Da $C_1\in S$, ist $\cA$ Modell von $C_1$.
+  Da $C_1\in S$, ist $\cA$ ein Modell von $C_1$.
   Ist $C_{i+1}\in S$, dann ist $\cA$ ebenfalls Modell von $C_{i+1}$.
   Anderenfalls ist $C_{i+1}$ Resolvent von $C_a$ und $C_b$ für $a,b<i+1$.
-  Ist $\cA$ Modell von $C_a$ und $C_b$, so ist nach
-  dem Resolutionslemma
-  $\cA$ ebenfalls Modell von $C_{i+1}$.
+  Ist $\cA$ ein Modell von $C_a$ und $C_b$, so ist nach dem Resolutionslemma
+  (\autoref{Resolutionslemma}) $\cA$ ebenfalls ein Modell von $C_{i+1}$.
   Also folgt schließlich, dass $\cA$ Modell von $C_{n}$ ist.
   Da $\Box$ unerfüllbar ist, ist $\cA$ kein Modell von $\Box$.
   Demnach ist $C_n\ne\Box$.
   Folglich gibt es keine Herleitung von $\Box$ aus $S$,
   das heißt $S$ ist nicht widerlegbar.
 \end{proof}
+\end{satz}
 
 \autoref{satz-korrektheit-resolution-vor} zeigt tatsächlich die
 \textit{Korrektheit der Resolutionsmethode}:
@@ -2589,7 +2570,7 @@ zu beweisen,
 müssen wir Widerlegungen der beiden Klauselmengen
 \begin{gather*}
   S^A = \big\{\{B,\lneg D\},\{B,D\},\{\lneg B\}\big\}
-  \intertext{und}
+  \quad\text{und}\quad
   S^{\lneg A} = \big\{\{B,\neg C, D\}, \{B,C,D\}, \{B,\neg D\}, \{\lneg B\}\big\}
 \end{gather*}
 angeben.
@@ -2638,7 +2619,7 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
            C_i\cup\{\bar{\ell}\} & \text{falls~}
            C_i\cup\{\bar{\ell}\}\in S \text{~und~} C_i\notin S\\
            C &\text{falls $C_i$ Resolvent von $C_a$ und $C_b$ nach $\ell'$
-           ist}\\
+           ist,}\\
            &\text{\hspace{5mm} wobei $C$ Resolvent von $C'_a$ und $C'_b$ nach
            $\ell'$ ist.}
          \end{cases}
@@ -2653,14 +2634,14 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
 \index{Resolutionsmethode!Vollständigkeit der}
 \begin{satz}[Vollständigkeit der Resolutionsmethode]\label{satz-vollst-resolution}
   Ist eine Klauselmenge $S$ unerfüllbar,
-  dann ist $S$ widerlegbar mittels Resolution.
+  dann ist $S$ mittels Resolution widerlegbar.
 
   \begin{proof}
     Sei $S$ unerfüllbar.
     Wir führen einen induktiven Beweis über die
     Anzahl der verschiedenen in $S$ enthaltenen Variablen.
 
-    \begin{description}
+    \begin{mdescription}
      \item[IA:]
       $S$ enthält keine Variablen.
       Wenn $S$ unerfüllbar ist, muss $S=\{\Box\}$ gelten.
@@ -2687,7 +2668,7 @@ zu einer Herleitung von $\Box$ aus $S$ ergänzen.
       mit dem $\Box$ aus $\{\ell\}$ und $\{\bar{\ell}\}$ resolviert wird,
       eine Herleitung von $\Box$ aus $S$ konstruieren.
       Also ist $S$ widerlegbar.
-    \end{description}
+    \end{mdescription}
   \end{proof}
 \end{satz}
 
@@ -2695,10 +2676,10 @@ Aus der Korrektheit und der Vollständigkeit der Resolutionsmethode
 ergibt sich der Resolutionssatz der Aussagenlogik.
 
 \index{Resolutionssatz}
-\begin{satz}\label{resolutionssatz}
+\begin{korol}\label{resolutionssatz}
   Die Klauselmenge $S$ ist unerfüllbar genau dann,
   wenn $S$ mittels Resolution widerlegbar ist.
-\end{satz}
+\end{korol}
 
 
 Die Unerfüllbarkeit
@@ -2716,11 +2697,11 @@ die Unerfüllbarkeit von $\lneg\alpha$
 nachweist.
 Dazu noch ein abschließendes Beispiel.
 
-\begin{bsp}
-  Wir zeigen, dass
+\begin{bsp}\label{bsp:4}
+  Wir zeigen, dass der Ringschluss
   \begin{gather*}
-    \alpha=\big((\lneg A\lor B)\wedge(\lneg B\lor C)\wedge
-       (A\lor \lneg C) \wedge (A \lor B \lor C)\big)
+    \alpha=\big((A\rightarrow B)\wedge(B\rightarrow C)\wedge
+       (C\rightarrow A) \wedge (A \lor B \lor C)\big)
        \limplies (A \wedge B\wedge C)
   \end{gather*}
   eine Tautologie ist.
@@ -2740,7 +2721,8 @@ Dazu noch ein abschließendes Beispiel.
 \begin{figure}[t]
   \centering
   \includegraphics{resolution.8}
-  \caption{Widerlegung von $\lneg\alpha$ mittels Resolution}\label{last-resolution}
+  \caption{Widerlegung von $\lneg\alpha$ aus \autoref{bsp:4} mittels Resolution}
+  \label{last-resolution}
 \end{figure}
 
 % 16.5.06
@@ -2773,7 +2755,7 @@ Ein Beispiel dafür sind die
 Taubenschlagformeln $PHP_{k}$ (\glqq{}pigeon hole principle\grqq{} für $k$
 Tauben) -- in einem Taubenschlag mit $k-1$ Löchern können nicht $k$
 Tauben sitzen, wenn in jedem Loch höchstens eine Taube sitzen darf.
-Variable $A_{i,j}$ entspricht \glqq{}Taube $j$ sitzt in Loch $i$\grqq{}
+Variable $A_{i,j}$ entspricht \glqq{}Taube $j$ sitzt in Loch~$i$\grqq{}
 ($i=1,2,\dotsc,k; j=1,2,\dotsc,k-1$).
 Die Formeln bestehen aus zwei Teilen.
 Der erste Teil drückt aus, dass jede Taube in (mindestens) einem Loch sitzt,
@@ -2784,7 +2766,7 @@ Taube $j$ sitzt in einem der $k-1$ Löcher:
 \begin{gather*}
   A_{1,j} \vee A_{2,j} \vee \dotsb \vee A_{k-1,j}\quad =  \theta_j
 \end{gather*}
-Jede der $k$ Taube sitzt in einem der $k-1$ Löcher:
+Jede der $k$~Tauben sitzt in einem der $k-1$~Löcher:
 \begin{gather*}
   \theta_1 \wedge \theta_2 \wedge \cdots \wedge \theta_k
   = \bigwedge_{j=1}^{k} \bigvee_{i=1}^{k-1} A_{i,j}
@@ -2824,8 +2806,8 @@ Die Taubenschlagformel $PHP_k$ lautet
 
 \subsection{Formulierung der Resolution als Theorie}
 
-Zur Erinnerung: Eine Theorie besteht aus Formeln, Axiomenschemata und
-Ableitungsregeln.
+Zur Erinnerung: Eine Theorie (\autoref{def:theorie}) besteht aus Formeln,
+Axiomenschemata und Ableitungsregeln.
 Ein Beweis einer Formel besteht aus einer
 Folge von Formeln, die Axiome sind oder mittels Ableitungsregeln
 aus bereits abgeleiteten Formeln abgeleitet werden.
@@ -2836,9 +2818,10 @@ muss also $S$ am Ende des Beweises stehen.
 \begin{mdescription}
  \item[Formeln:] die Klauselmengen
  \item[Axiomenschema:] $\{\Box\}$
- \item[Ableitungsregeln:]
+ \item[Ableitungsregeln:]~\\
   \begin{enumerate}
-   \item[(Res)] Für Klauselmenge $S$ und Klausel $R\in S$, die Resolvent von $C_1$ und $C_2$ ist:
+   \item[(Res)] Für die Klauselmenge $S$ und die Klausel $R\in S$, die
+    Resolvent von $C_1$ und $C_2$ ist:
     \begin{gather*}
       \frac{S}{(S\setminus\{R\})\cup\{C_1, C_2\}}
     \end{gather*}
@@ -2905,6 +2888,7 @@ Man kann (leicht) zeigen,
 dass die Ableitungsregeln die Unerfüllbarkeit der Klauselmenge nicht ändern
 und dass jede unerfüllbare Klauselmenge einen Beweis besitzt
 (entsprechend \autoref{satz-korrektheit-resolution-vor} und \autoref{satz-vollst-resolution}).
+Die Resolution als Theorie ist also auch vollständig und korrekt.
 
 %% Ende des Abschnittes ueber Resolution
 
