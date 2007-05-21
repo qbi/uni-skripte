@@ -1882,25 +1882,24 @@ Algo. Pointer Jumping
 % Bild der Liste: Einfacher Strang
 
 
-begin
 \begin{algorithm}
 \KwIn{Nachfolgerarray S}
 \KwOut{$\forall i: R(i)\ldots$ Abstand zum Ende}
 \dontprintsemicolon
 \caption{Algorithmus: List-Ranking}
   \Forpar {i := 1 \KwTo n}{
-     if $S(i) \ne 0$ then $R(i) := 1$ ;
+     if $S(i) \ne 0$ then $R(i) := 1$ \;
      else $R(i) := 0$ ;
   }
   \Forpar {$i:=1 \KwTo n$}{
-    $Q(i) := S(i)$ ;
+    $Q(i) := S(i)$ \;
     \While{$Q(i) \ne 0 and Q(Q(i)) \ne 0$}{
       $R(i) := R(i) + R(Q(i))$ ;
       $Q(i) := Q(Q(i))$ ;
     }
   }
 \end{algorithm}
-end.
+
 
 \begin{defini}
   Eine Teilmenge $I$ aller Knoten heiße unabhängig, wenn für alle $i$:
@@ -1915,12 +1914,12 @@ begin
 \dontprintsemicolon
   Bestimme Seriennummern $N(i) \forall i \in I$: %
   $1 \leq N(i) \leq |I| =: n'$ geht in $O(\log n)$ \Time optimal %
-  mit Hilfe des Präfixsummen-Algo über den Array ;
+  mit Hilfe des Präfixsummen-Algo über den Array \;
   \Forpar {$i \in I$}{
-    $U(N(i)) := (i, S(i), R(i))$ -- Info, die sonst verlohren geht! ;
-    $R(P(i) (Vorgänger) ) := R(P(i)) + R(i)$ ;
-    $S(P(i)) := S(i)$ ;
-    $P(S(i)) := P(i)$ ;
+    $U(N(i)) := (i, S(i), R(i))$ -- Info, die sonst verlohren geht! \;
+    $R(P(i) (Vorgänger) ) := R(P(i)) + R(i)$ \;
+    $S(P(i)) := S(i)$ \;
+    $P(S(i)) := P(i)$ \;
   }
 \end{algorithm}
 end.
@@ -2173,12 +2172,42 @@ Verbesserung gegenüber dem Seriellen darstellt.
   Die Kontraktion funktioniert auf einer EREW-PRAM in 
   $O(\log n)$ \Time und $O(n)$ \Work.
 
-  % Proof mal deutsch formulieren
   \begin{proof}
-    Es gibt m Blätter $\rightarrow$ nach Schritt $\floor{m_{2}}$ Blätter $\rightarrow$
-    nach $\ceil{\log (n+1)}$ Iterationen fertig.
+    \begin{itemize}
+      \item Es gibt m Blätter $\rightarrow$ nach einer Iteration $\floor{\frac{m}{2}}$ Blätter $\rightarrow$
+            nach $\ceil{\log (n+1)}$ Iterationen fertig.
+
+      \item Zeile 1 mit Eulertour in $O(\log n)$ \Time
+      \item Zeilen 3 und 4 mit Eulertour in $O(1)$ \Time und $O(n)$ \Work
+      \item Zeile 5 in $O(1)$ \Time
+
+      \item Anzahl der Operationen: $O(|A|)$, $A_{even} \leq \frac{|A|}{2}$, $O(\sum_{i} \frac{n}{2^{i}})=O(n)$
+    \end{itemize}
   \end{proof}
 \end{satz}
+
+\help{RAKE-Beispiel aus Vorlesung (21.5.07) einfügen}
+
+\begin{satz}
+  Bei gegebenem Binärbaum, der Konstanten in den Blättern hält und '+' und '*' in den inneren Knoten,
+  kann die Auswertung in $O(\log n)$ \Time und $O(n)$ \Work erfolgen.
+  Denn: \
+  \begin{enumeration}
+    \item Ummarkierung bei RAKE in $O(1)$ \Time
+    \item Baumkontraktion erfüllt diese Schranken
+  \end{enumeration}
+\end{satz}
+
+\begin{bemerk}
+  Gegeben sei ein Wurzelbaum T, der in den Knoten Zahlen enthält. Dann kann das Maximum / Minimum (oder
+  jede andere angewendete binäre Operation) in $O(\log n)$ \Time optimal gewonnen werden.
+  \begin{proof}
+    \begin{enumeration}
+      \item Umformung in Binärbaum
+      \item Baumkontraktion mit Markierung
+    \end{enumeration}
+  \end{proof}
+\end{bemerk}
 
 % Grafik: "`B"' Kreise mit Zahlen: 8 3 4 5 2 11 15 17 n=$2^{l}$
 
@@ -2190,7 +2219,7 @@ LCA steht für "lowest common ancestor" (jüngster gemeinsame Vorfahre) und bezieh
 sich auf den tiefsten Knoten in einem Binärbaum, der Vater der Teilbäume ist, 
 in denen die Knoten u und v vorkommen.
 Das Problem ist ein Preprocessing-Problem, welches die Anfrage LCA(u, v) möglichst
-schnell beantworten kann.
+schnell beantworten kann (man besteht auf $O(1)$ \Time).
 
 INPUT: Wurzelbaum T
 OUTPUT: Baum, für den einzelne LCA-Anfragen schnell beantwortet werden können
@@ -2204,7 +2233,9 @@ Man unterscheidet 2 Fälle, für die LCA-Anfragen trivial sind:
 \begin{description}
  \item[Achtung:] Der Algorithmus im Ja'Ja ist falsch!
  \item[Grund:] In der Praxis ist dieser Umstand lange nicht aufgefallen, da der Algorithmus
-   nur für den Spezialfall angewendet wird, für den er zufälligerweise richtig ist.
+   nur für den Spezialfall angewendet wird, für den er zufälligerweise richtig ist. Bisher
+   gab es wohl keine Neuauflage des Ja'Ja und es ist nicht bekannt, ob der Fehler an den
+   Autor bzw. den Verleger weitergereicht worden ist. Der Ansatz ist aber wohl brauchbar.
 \end{description}
 
 Um das LCA-Problem zu lösen, wird es auf das Range-Minima-Problem zurückgeführt.
@@ -2347,7 +2378,7 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
   \end{proof}
 \end{lemma}
 
-\begin{satz}[Satz von Kruskel (1984)]
+\begin{satz}[Satz von Kruskal (1984)]
   \label{satz:kruskal}
   Um eine Folge von $n$~Elementen mit $p$~Prozessoren zu durchsuchen, sind
   $T_{p}(n)$~Schritte notwendig und hinreichend.
