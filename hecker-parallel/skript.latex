@@ -1875,24 +1875,31 @@ Aufgabe für Listranking: INPUT Liste, OUTPUT für jeden Knoten den
 Abstand zum Ende.
 
 Algo. Pointer Jumping
-\begin{tabular}{ccccccccc}
-  1&2&3&4&5&6&7&8&9\\
-  2 & 6 &1&5&7&8&3&9&0
+\begin{tabular}{cccccccccc}
+  $i$&1&2&3&4&5&6&7&8&9\\
+  $S(i)$&2&6 &1&5&7&8&3&9&0
 \end{tabular}
 % Bild der Liste: Einfacher Strang
 
-OUTPUT: $\forall i: R(i)\ldots$ Abstand vom Ende
+
 begin
-\begin{Verbatim}
-for 1 \leq i $\leq$ n pardo
-if S(i) != 0 then R(i) := 1
-else R(i) := 0
-for i=1 to n pardo
-Q(i) := S(i)
-while Q(i) != 0 and Q(Q(i)) != 0 do
-R(i) := R(i)+R(Q(i))
-Q(i) := Q(Q(i))
-\end{Verbatim}
+\begin{algorithm}
+\KwIn{Nachfolgerarray S}
+\KwOut{$\forall i: R(i)\ldots$ Abstand zum Ende}
+\dontprintsemicolon
+\caption{Algorithmus: List-Ranking}
+  \Forpar {i := 1 \KwTo n}{
+     if $S(i) \ne 0$ then $R(i) := 1$ ;
+     else $R(i) := 0$ ;
+  }
+  \Forpar {$i:=1 \KwTo n$}{
+    $Q(i) := S(i)$ ;
+    \While{$Q(i) \ne 0 and Q(Q(i)) \ne 0$}{
+      $R(i) := R(i) + R(Q(i))$ ;
+      $Q(i) := Q(Q(i))$ ;
+    }
+  }
+\end{algorithm}
 end.
 
 \begin{defini}
@@ -1900,21 +1907,34 @@ end.
   $[i\in I\rightarrow S(i)\notin I]$
 \end{defini}
 
-Algo entferne I:
-INPUT: Gesamtliste, Teilliste
-OUTPUT: Gesamtliste ohne die Teilliste
 begin
-\begin{Verbatim}
-Ordne Reihennummern den Elem. von I zu: N(i) :
-1$\leq$ N(i) $\leq$ |I| =: n' geht in O(\log n) \Time optimal
-mit Hilfe des Präfixsummen-Algo über den Array
-für alle i\in I pardo
-U(N(i)) := (i, S(i), R(i)) -- Info, die sonst verlohren geht!
-R(P(i) (Vorgänger) ) := R(P(i))+R(i)
-S(P(i)) := S(i)
-P(S(i)) := P(i)
-\end{Verbatim}
+\begin{algorithm}
+\KwIn{Nachfolgerarray S, Vorgängerarray P, Teilliste I, $\forall i: R(i)$}
+\KwOut{Gesamtliste ohne I (independent set)}
+\caption{Algorithmus: Entferne I}
+\dontprintsemicolon
+  Bestimme Seriennummern $N(i) \forall i \in I$: %
+  1$\leq$ N(i) $\leq$ |I| =: n' geht in O(\log n) \Time optimal %
+  mit Hilfe des Präfixsummen-Algo über den Array ;
+  \Forpar {$i \in I$}{
+    $U(N(i)) := (i, S(i), R(i))$ -- Info, die sonst verlohren geht! ;
+    $R(P(i) (Vorgänger) ) := R(P(i)) + R(i)$ ;
+    $S(P(i)) := S(i)$ ;
+    $P(S(i)) := P(i)$ ;
+  }
+\end{algorithm}
 end.
+
+\begin{bsp}
+  $I = \{1,5,6\}$, $i=6$: $U(N(6)) = U(3) = (6,8,2)$
+  R(2)=4, S(2)=8, P(8)=2
+  Da U(3)=(6,8,2) $\rightarrow$ 8 war Nachfolger von 6 $\rightarrow$ $R(6) = R(8)+2 = 3$
+  Ausserdem kann jetzt 6 wieder eingefügt werden
+\end{bsp}
+
+\begin{description}
+ \item[Ziel:] große unabhängige Menge; k-Färbung der Knoten
+\end{description}
 
 Die Knoten seien k-gefärbt: Farben \{0,\ldots,k-1\}
 Knoten heißt lokales Minimum $\Leftrightarrow$ Farbe(i) =
