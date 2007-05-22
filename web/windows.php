@@ -14,49 +14,47 @@ if (!$id) {
 	echo "<h1>Windows-Anleitung für das Skript: $id</h1>
 	<p>(Zur <a href='./windows.php'>allgemeinen Windowsanleitung</a>)</p>";
 }
+?>
 
-echo "<h2>direkte SVN-Unterstützung im Explorer (geht nicht in der Uni)</h2>
+<h2>direkte SVN-Unterstützung im Explorer (geht nicht in der Uni)</h2>
 <ol>
    <li>Den <a href='http://tortoisesvn.net/download'>SVN-Client</a>
-   herunterladen</li>
+     herunterladen</li>
    <li>Die heruntergeladene Datei ausführen</li>
-   <li>In den Ordner \"Eigene Dateien\" gehen und dort die rechte Maustaste
-   klicken. \"SVN Checkout\" wählen und folgende Angaben machen:<br>
-   URL: <pre>svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/$id</pre>
-   FRZ-Login ist <b>dein</b> Benutzername im FRZ!";
+   <li>In den Ordner "Eigene Dateien" gehen und dort die rechte Maustaste
+     klicken. "SVN Checkout" wählen und folgende Angaben machen:<br>
+     URL: <pre>svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/<?php echo $id; ?></pre>
+     FRZ-Login ist <b>dein</b> Benutzername im FRZ!
+<?php
    if ($id=="SKRIPT"){
-   	echo " $id aus der obigen Liste auswählen (und in der URL ersetzen),
+   	echo "$id aus der obigen Liste auswählen (und in der URL ersetzen),
    	z.&nbsp;B. für <tt>hecker-parallel</tt>
    	<pre>svn+ssh://peter3@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/hecker-parallel</pre>";
    }
-   echo "</li>
+?>
+     Achtung: Du musst Dein Passwort <b>dreimal</b> eingeben. Eine
+     wiederholte Abfrage bedeutet also nicht, dass das Passwort falsch war.
+   </li>
    <li><tt>skript.latex</tt> im Texnic-Center öffnen</li>
-   <li>LATEX->PDF einstellen und 3-mal (in Worten: drei mal) übersetzen</li>
-   <li>Ist alles gut gegangen -> weiter bei 9.</li>
-   <li>Ist eine Fehlermeldung der Art
-   <pre>! LaTeX Error: File `ntheorem.sty' not found.</pre>
-   gekommen? Dann kopiere dir die Datei
-   <a href='http://www.minet.uni-jena.de/~joergs/skripte/sty/ntheorem.sty'>
-   http://www.minet.uni-jena.de/~joergs/skripte/sty/ntheorem.sty</a> in das
-   Verzeichnis mit dem Skript. -> weiter bei 5.</li>
-   <li>Sind viele Warnungen der Art<br>
-   <pre>Package hyperref Warning: bookmark level for unknown satz defaults to 0.</pre>
-   aufgetreten? Dann kopiere dir die Dateien aus
-   <a href='http://www.minet.uni-jena.de/~joergs/skripte/sty/'>
-   http://www.minet.uni-jena.de/~joergs/skripte/sty/</a> in das Verzeichnis
-   mit dem Skript. -> weiter bei 5.</li>
+   <li>LATEX->PDF einstellen und dreimal übersetzen</li>
+   <li>Ist alles gut gegangen -> weiter bei 8.</li>
+   <li>Wenn es eine Fehlermeldung wegen fehlender Dateien gab und Du nicht
+     weißt, wie diese erzeugen sollst, dann hole Dir die Datei
+<?php echo "<a href=\"$id-mit-grafiken.tgz\">$id-mit-grafiken.tgz</a>"; ?>
+     und entnehme dieser die fehlenden Dateien. -> weiter bei 5.
+   </li>
    <li>fertig</li>
- </ol>
+</ol>
 
 
 Du willst deine Kopie auf den neusten Stand brigen?
 <ol><li>Gehe in das Verzeichnis, in dem dein Skript liegt.</li>
-   <li>Rechte Maustaste klicken und \"SVN Update\" sagen.</li></ol>
-   
+   <li>Rechte Maustaste klicken und "SVN Update" sagen.</li></ol>
+
 Du hast Änderungen gemacht und willst diese veröffentlichen?
 <ol><li>Sicherstellen, dass die Datei übersetzt</li>
    <li>Im Explorer in das Verzeichnis mit dem Skript gehen. Rechte Maustaste
-   und dann mit \"SVN Diff\" dir ansehen, was du geändert hast und ob das
+   und dann mit "SVN Diff" dir ansehen, was du geändert hast und ob das
    so seien soll.</li>
    <li>Dann rechte Maustaste und SVN Commit sagen. Achte bitte darauf, dass
    du keine Dateien veröffentlichst, die von Latex generiert wurde. Sowas
@@ -66,20 +64,17 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
    <pre>Beispiel:
    * skript.latex
      + Paket graphicx und color hinzugefügt, damit die Bilder funktionieren
-   
+
      + alle \include durch \input ersetzt -- das ist, was man will.
-   
+
      + Viele $$ hinzugefügt
-     
+
      + aus vielen log ein \log gemacht
-     
+
      + viele \Work und \Time ersetzt
-   
+
    * figures/parall_modell.fig
-     + es fehlten die $$ um die P_n
-   
-   * figures/parall_modell.pdf, figures/parall_modell.pdf_t als
-     \"Combined PDF/Latex\" aus XFig exportiert</pre></li></ol>
+     + es fehlten die $$ um die P_n</pre></li></ol>
 
 <h1>wenn der SVN-Client nicht geht (Windowspool)</h1>
 
@@ -98,35 +93,33 @@ http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html</a>
    eingeben und dann das Unix-Passwort.</li>
    <li>Du siehst eine Kommandozeile.</li>
    <li>Gebe folgendes ein:
-   <pre>svn checkout file:///home/stud/md01/joergs/.svnroot/skripte/$id</pre>";
+   <pre>svn checkout file:///home/stud/md01/joergs/.svnroot/skripte/<?php echo $id; ?></pre>
+<?php
    if ($id=="SKRIPT") {
    	echo "$id aus der obigen Liste auswählen (und statt $id einsetzen),
    	z.&nbsp;B. für <tt>hecker-parallel</tt>
    	<pre>file:///home/stud/md01/joergs/.svnroot/skripte/hecker-parallel</pre>";
    	}
-   echo "</li>
+?>
+   </li>
    <li>Im Texnic-Center solltest du jetzt auf Laufwerk M: (das Laufwerk von
    paxp02f) ein Verzeichnis mit dem Namen des Skripts finden. Darin die
    Datei skript.latex öffnen.</li>
-   <li>LATEX->PDF einstellen und 3-mal (in Worten: drei mal) übersetzen</li>
-   <li>Ist alles gut gegangen -> weiter bei 11.</li>
-   <li>Ist eine Fehlermeldung der Art<br>
-   <pre>! LaTeX Error: File `ntheorem.sty' not found.</pre>
-   gekommen? Dann kopiere dir die Datei
-   http://www.minet.uni-jena.de/~joergs/skripte/sty/ntheorem.sty in das
-   Verzeichnis mit dem Skript. -> weiter bei 7.</li>
-   <li>Sind viele Warnungen der Art<br>
-    <pre>Package hyperref Warning: bookmark level for unknown satz defaults to 0.</pre>
-    aufgetreten? Dann kopiere dir die Dateien aus
-    http://www.minet.uni-jena.de/~joergs/skripte/sty/ in das Verzeichnis
-    mit dem Skript. -> weiter bei 7.</li>
-   <li>Fertig</li></ol>
+   <li>LATEX->PDF einstellen und dreimal übersetzen</li>
+   <li>Ist alles gut gegangen -> weiter bei 10.</li>
+   <li>Wenn es eine Fehlermeldung wegen fehlender Dateien gab und Du nicht
+     weißt, wie diese erzeugen sollst, dann hole Dir die Datei
+<?php echo "<a href=\"$id-mit-grafiken.tgz\">$id-mit-grafiken.tgz</a>"; ?>
+     und entnehme dieser die fehlenden Dateien. -> weiter bei 7.
+   </li>
+   <li>fertig</li>
+</ol>
 
 Du willst deine Kopie auf den neusten Stand brigen?
 <ol><li>Putty starten und wie bei der Installation unter Punkt 2+3+4 verfahren.</li>
    <li>Den Befehl
-   <pre>cd $id</pre>
-   eingeben. $id ist der Verzeichnisname des Skripts.</li>
+   <pre>cd <?php echo $id; ?></pre>
+   eingeben. <?php echo $id; ?> ist der Verzeichnisname des Skripts.</li>
    <li>Dann den Befehl
    <pre>svn update eingeben</pre></li></ol>
 
@@ -137,24 +130,21 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
    <pre>Beispiel:
    * skript.latex
      + Paket graphicx und color hinzugefügt, damit die Bilder funktionieren
-   
+
      + alle \include durch \input ersetzt -- das ist, was man will.
-   
+
      + Viele $$ hinzugefügt
-     
+
      + aus vielen log ein \log gemacht
-     
+
      + viele \Work und \Time ersetzt
-   
+
    * figures/parall_modell.fig
-     + es fehlten die $$ um die P_n
-   
-   * figures/parall_modell.pdf, figures/parall_modell.pdf_t als
-     \"Combined PDF\/Latex\" aus XFig exportiert</pre></li>
+     + es fehlten die $$ um die P_n</pre></li>
    <li>Putty starten und wie bei der Installation unter Punkt 2+3+4 verfahren.</li>
    <li>Den Befehl
-   <pre>cd $id</pre>
-   eingeben. $id ist der Verzeichnisname des Skripts.</li>
+   <pre>cd <?php echo $id; ?></pre>
+   eingeben. <?php echo $id; ?> ist der Verzeichnisname des Skripts.</li>
    <li>Den Befehl
    <pre>svn diff | less</pre>
    eingeben und prüfen, ob deine Änderungen so seien sollen. Mit den
@@ -162,7 +152,9 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
    Kommandozeile.</li>
    <li>Mit dem Befehl
    <pre>svn commit -F changes</pre>
-   die Änderungen übertragen.</li></ol>
-";
+   die Änderungen übertragen.</li>
+</ol>
+
+<?php
 include('footer.php');
 ?>
