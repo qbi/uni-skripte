@@ -121,6 +121,7 @@
 \newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\ThS}{\mathrm{S}}    % die form, Theorie zur Zahlenth. in Kap 3
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -200,7 +201,7 @@
 
 % ... damit man sich nicht immer die Finger wund tippt.
 \newcommand*{\Lvdash}{\xvdash{\mathrm{L}}}
-\newcommand*{\Svdash}{\xvdash{\mathrm{S}}}
+\newcommand*{\Svdash}{\xvdash{\ThS}}
 \newcommand*{\Mmodels}{\xmodels{\scriptscriptstyle\mathcal{M}}}
 
 % Umdefinierung von \vdash und \models, damit die Striche länger sind.
@@ -2681,6 +2682,8 @@ ergibt sich der Resolutionssatz der Aussagenlogik.
 
 \index{Resolutionssatz}
 \begin{korol}\label{resolutionssatz}
+  \help{Ich habe hieraus auch ein Korolar gemacht, weil
+    \autoref{korrektkeit-und-vollst-von-L} auch ein Korolar ist.}
   Die Klauselmenge $S$ ist unerfüllbar genau dann,
   wenn $S$ mittels Resolution widerlegbar ist.
 \end{korol}
@@ -2899,6 +2902,7 @@ Die Resolution als Theorie ist also auch vollständig und korrekt.
 % 17. Mai 2006
 
 \chapter{Theorien 1.~Ordnung -- Prädikatenlogik}
+\label{cha:prlogik}
 
 \begin{bsp}
   Jeder der mich mag, mag auch meine Frau. Peter mag meine Frau nicht.
@@ -3401,7 +3405,7 @@ Offensichtlich gilt:
 
 \section{Theorien 1.~Ordnung}
 
-\begin{defini}[Theorie 1.~Ordnung]
+\begin{defini}[Theorie 1.~Ordnung]\label{def:theo1.ord}
   Eine \emph{Theorie 1.~Ordnung} $\mathrm{K}$ besteht aus
   \begin{enumerate}[1.]
    \item \textit{Formeln}
@@ -4624,174 +4628,245 @@ Menge von Axiomen, aus der alle Wahrheiten abgeleitet werden können.
 \chapter{Formale Zahlentheorie}
 \label{chapter-zahlentheorie}
 
-Zahlentheorie befasst sich mit Eigenschaften von natürlichen Zahlen.
-Einerseits scheint es einfach, ein intuitives Verständnis von
-den natürlichen Zahlen zu entwickeln.
-Andererseits möchte man gerne Axiome formulieren,
-auf deren Grundlage man formal Sätze der Zahlentheorie beweisen kann.
-Als Grundlage dafür dienen die fünf \emph{Peano-Axiome}.
+Wir begeben uns nun auf die Zielgerade mit dem Blick auf Gödels
+Unvollständigkeitssatz. Im \href{cha:prlogik}{\ref*{cha:prlogik}.~Kapitel} haben
+wir uns die Hilfsmittel für die Formalisierung der Zahlentheorie geschaffen.
+\todo{weiterschreiben, was kommt denn nun alles?}
 
+Die \emph{Zahlentheorie} befasst sich mit Eigenschaften natürlicher Zahlen.
+Die wohl am Häufigsten gebrauchte Beschreibung der natürlichen Zahlen sind die
+fünf \emph{Peano-Axiome}:
 \begin{enumerate}[(P1)]
  \item $0$ ist eine natürliche Zahl.
- \item Jede nat.\,Zahl $z$ hat einen Nachfolger $z'$ ($z'$ steht für $z+1$).
- \item $0\ne z'$ für jede nat.\,Zahl $z$.
- \item Aus $x'=y'$ folgt $x=y$.
- \item Sei $Q$ eine Eigenschaft von nat.\,Zahlen.
+ \item Jede natürliche Zahl~$z$ hat genau einen Nachfolger~$z'$, der ebenfalls
+  eine natürliche Zahl ist. % ($z'$ steht für $z+1$)
+ \item Die Zahl~$0$ ist kein Nachfolger einer natürlichen Zahl;
+  $\forall z\in \N\quantsep z'\ne0$.
+ \item Jede natürliche Zahl ist Nachfolger höchstens einer natürlichen Zahl;
+  $\forall x,y\in\N\quantsep x'=y' \Rightarrow x=y$.
+ \item Sei $Q$ eine Eigenschaft von natürlichen Zahlen.
   Wenn
-  \begin{enumerate}[(1.)]
-   \item $0$ Eigenschaft $Q$ hat, und
-   \item aus \glqq{}$z$ hat Eigenschaft $Q$\grqq{} folgt
-    \glqq{}$z'$ hat Eigenschaft $Q$\grqq{},
+  \begin{enumerate}[1.]
+   \item $0$ die Eigenschaft $Q$ besitzt, und
+   \item für alle Zahlen~$z$ aus \glqq{}$z$ hat die Eigenschaft $Q$\grqq{}
+    folgt \glqq{}$z'$ hat Eigenschaft $Q$\grqq{},
   \end{enumerate}
-  dann haben alle nat.\,Zahlen Eigenschaft $Q$.
+  dann besitzen alle natürlichen Zahlen die Eigenschaft $Q$. Dieses Prinzip
+  wird \emph[index=Induktionsprinzip]{Induktion} genannt;
+  $(Q(0)\wedge(\forall z\in\N\quantsep Q(z)\rightarrow Q(z')))\rightarrow
+  (\forall z\in\N\quantsep Q(z))$
 \end{enumerate}
+Man beachte, dass an dieser Stelle die Gleichheitsrelation bereits als bekannt
+vorausgesetzt wird.
 
-Die Gleichheitsrelation wird hier bereits als bekannt vorausgesetzt.
+Die Peano-Axiome vermitteln zwar ein intuitives Verständnis von den
+natürlichen Zahlen, denoch möchte man gerne Axiome formulieren, auf deren
+Grundlage man die Sätze der Zahlentheorie formal beweisen kann.
 
+\section{Die Theorie \texorpdfstring{$\ThS$}{S}}
 
-\section{Die Theorie \texorpdfstring{$\mathrm{S}$}{S}}
+Ausgehend von dem, wie die Peano-Axiomen die natürlichen Zahlen definieren,
+wollen wir Axiome einer formalen Theorie 1.~Ordnung für die Zahlentheorie
+aufstellen. Diese Theorie nennen wir $\ThS$.
 
-Basierend auf diesen Axiomen definieren wir eine formale Theorie
-für die Zahlentheorie.
-Diese Theorie nennen wir $\mathrm{S}$.
-Sie hat nur ein eingeschränktes \glqq{}Vokabular\grqq{}
-an Konstanten-, Funktions- und Prädikatensymbolen.
-
-\textit{Formeln} der Theorie $\mathrm{S}$ bestehen aus folgenden Symbolen:
-\begin{mdescription}
- \item[ein Konstantensymbol:] $a_1$, das mit $0$ bezeichnet wird
- \item[ein Prädikatensymbol:] $A^2_1$, das mit $=$ bezeichnet wird
- \item[drei Funktionssymbole:] \mbox{}
-
-  $f^1_1$, wobei $f^1_1(t)$ mit $t'$ bezeichnet wird \\
-  $f^2_1$, wobei $f^2_1(s,t)$ mit $s+t$ bezeichnet wird \\
-  $f^2_2$, wobei $f^2_2(s,t)$ mit $s\cdot t$ bezeichnet wird
- \item[übrige Symbole ohne Einschränkung:] Variablensymbole $x_1, x_2, \dotsc$,
-  logische Verknüpfungszeichen, Klammern
-\end{mdescription}
-
-Zu den logischen Axiomen kommen in $\mathrm{S}$
-folgende zusätzliche Axiome.
-
-\begin{itemize}
- \item[(S1)] $x_1= x_2 ~ \rightarrow ~ (x_1=x_3 ~ \rightarrow ~ x_2=x_3)$
- \item[(S2)] $x_1= x_2 ~ \rightarrow ~ x_1'= x_2'$
- \item[(S3)] $0\ne x_1'$
- \item[(S4)] $x_1'= x_2' ~ \rightarrow ~ x_1= x_2$
- \item[(S5)] $x_1+0 = x_1$
- \item[(S6)] $x_1+(x_2') = (x_1+x_2)'$
- \item[(S7)] $x_1\cdot 0 = 0$
- \item[(S8)] $x_1\cdot (x_2') = (x_1\cdot x_2) + x_1$
- \item[(S9)] Sei $\alpha$ eine Formel mit freier Variable $x$.\\
-  $\alpha(0)$ bezeichne $\alpha[x/0]$,
-  $\alpha(x)$ bez. $\alpha$, und
-  $\alpha(x')$ bez. $\alpha[x/x']$.\\
+Zu den Axiomen, die von der Theorien 1.~Ordnung (\autoref{def:theo1.ord})
+übernommen werden, ergänzen wir in $\ThS$ noch folgende Axiome, wobei $a_{1}$
+das einzige Konstantensymbol, $A_{1}^{2}$ das einzige Prädikatensymbol und
+$f_{1}^{1}, f_{1}^{2}$ und $f_{2}^{2}$ drei Funktionensybole sind -- auf ihre
+Bedeutungen \help{wäre an der Stelle Interpretationen richtig?} kommen wir
+gleich zu sprechen. Alle übrigen Symbole -- Variablensymbole $x_1, x_2, \dotsc$,
+logische Verknüpfungszeichen, Klammern -- werden ohne Einschränkung übernommen.
+\begin{enumerate}[(S1)]
+ \item $A_{1}^{2}(x_1, x_2) \rightarrow (A_{1}^{2}(x_1,x_3) \rightarrow
+  A_{1}^{2}(x_2,x_3))$
+ \item $A_{1}^{2}(x_1, x_2) \rightarrow
+  A_{1}^{2}(f_{1}^{1}(x_1), f_{1}^{1}(x_2))$
+ \item $\neg A_{1}^{2}(a_{1}, f_{1}^{1}(x_1))$
+ \item $A_{1}^{2}(f_{1}^{1}(x_1), f_{1}^{1}(x_2)) \rightarrow A_{1}^{2}(x_1, x_2)$
+ \item $A_{1}^{2}(f_{1}^{2}(x_1, a_{1}), x_1)$
+ \item $A_{1}^{2}(f_{1}^{2}(x_1, f_{1}^{1}(x_2)),
+  f_{1}^{1}(f_{1}^{2}(x_1,x_2)))$
+ \item $A_{1}^{2}(f_{2}^{2}(x_1, a_{1}), a_{1})$
+ \item $A_{1}^{2}(f_{2}^{2}(x_1, f_{1}^{1}(x_2)),
+  f_{1}^{2}(f_{2}^{2}(x_1, x_2), x_1))$
+ \item Sei $\alpha$ eine Formel mit freier Variable $x$. $\alpha(a_{1})$
+  bezeichne $\alpha[x/a_{1}]$, $\alpha(x)$ bezeichne $\alpha$, und
+  $\alpha(f_{1}^{1}(x))$ bezeichne $\alpha[x/f_{1}^{1}(x)]$.
   Dann ist folgende Formel ein Axiom:
+  \begin{gather*}
+    \alpha(a_{1}) \rightarrow \Big((\forall x\quantsep \alpha(x) \rightarrow
+       \alpha(f_{1}^{1}(x))\big) \rightarrow \big(\forall x\quantsep
+       \alpha(x)\big)\Big)
+  \end{gather*}
+\end{enumerate}
+\help{Woher wissen wir eigentlich, dass diese Axiome insich nicht
+  widersprüchlich sind?}
 
-  \centering{
-
-  $\alpha(0) ~ \rightarrow ~ \big((\forall x ~ \alpha(x) \rightarrow \alpha(x')\big)
-  ~ \rightarrow ~ \big(\forall x ~ \alpha(x)\big)$
-  }
+Um die Bedeutung der Axiome etwas eingängiger darzustellen, verwenden wir die
+üblichen Schreibweisen aus der Mathematik:
+\begin{itemize}
+ \item statt dem Konstantensymbol~$a_1$ verwenden wir das Symbol $0$,
+ \item statt dem Prädikatensymbol~$A^2_1(s,t)$ verwenden wir $s=t$ und
+ \item für die drei Funktionssymbole schreiben wir
+  \begin{enumerate}
+   \item $t'$ (Nachfolger von $t$) statt $f^1_1(t)$,
+   \item $s+t$ statt $f^2_1(s,t)$ und
+   \item $s\cdot t$ statt $f^2_2(s,t)$.
+  \end{enumerate}
 \end{itemize}
 
-(S3) entspricht (P3), und (S4) entspricht (P4).
-(S5) und (S6) werden zur Definition der Additon gebraucht,
-und (S7) sowie (S8) entsprechend zur Multiplikation.
-(S9) beschreibt die Induktion.
-(S1) und (S2) werden zur Definition
-von Eigenschaften der Gleichheit gebraucht.
+Damit ist die Bedeutung der einzelnen Axiome auch leichter erkennbar:
+\begin{itemize}
+ \item Die Axiome (S1) und (S2) benötigen wir zur Beschreibung der
+  Gleichheitsrelation, welche bei den Peano-Axiomen bereits vorrausgesetzt
+  wurde. Das Axiom~(S1) beschreibt die Gleichheitsbeziehung zwischen drei
+  Elementen und mit Axiom~(S2) ist die Fortsetzung der Gleichheit -- zwei
+  Zahlen sind gleich, wenn ihre Vorgänger gleich sind.
+
+ \item Das Axiom~(S3) entspricht dem Peano-Axiom~(P3), Axiom~(S4) entspricht
+  dem Peano-Axiom~(P4) und das Axiom~(S9) entspricht dem Peano-Axiom~(P5).
+
+ \item Die Axiome~S(5)--(S8) beschreiben grundlegende Eigenschaften der
+  Addition ($f_{1}^{2}$) und der Multiplikation ($f_{2}^{2}$).
+  \help{Kann man diese nicht auch aus den anderen Axiomen ableiten? Nachfolger
+    $\rightarrow$ Addition $\rightarrow$ Multiplikation}
+\end{itemize}
+
+Die beiden ersten Peano-Axiome~(P1) und (P2) sind durch die Festlegung von
+$a_{1}$ als Konstantensymbol bzw. $f_{1}^{1}$ als die Nachfolgerfunktion
+umgesetzt. Damit haben wir eine formale Theorie 1.~Ordnung für die
+Zahlentheorie bestimmt.
+
+Hier noch einmal die Axiome mit der eingängigeren Schreibweise:
+\begin{enumerate}[(S1)]
+ \item $x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3)$
+ \item $x_1= x_2 \rightarrow x_1'= x_2'$
+ \item $\neg(0=x_{1}')$ oder abkürzend dafür $0\ne x_1'$
+ \item $x_1'= x_2' \rightarrow x_1= x_2$
+ \item $x_1+0 = x_1$
+ \item $x_1+(x_2') = (x_1+x_2)'$
+ \item $x_1\cdot 0 = 0$
+ \item $x_1\cdot (x_2') = (x_1\cdot x_2) + x_1$
+ \item Sei $\alpha$ eine Formel mit freier Variable $x$. $\alpha(0)$ bezeichne
+  $\alpha[x/0]$, $\alpha(x)$ bezeichne $\alpha$, und $\alpha(x')$ bezeichne
+  $\alpha[x/x']$. Dann ist folgende Formel ein Axiom:
+  \begin{gather*}
+    \alpha(0) \rightarrow \Big((\forall x\quantsep \alpha(x) \rightarrow \alpha(x')\big)
+       \rightarrow \big(\forall x\quantsep \alpha(x)\big)\Big)
+  \end{gather*}
+\end{enumerate}
 
 \begin{lemma}
   Alle Formeln, die aus Axiomen mittels Ersetzen von Variablen
-  durch Terme bestehen, sind in $S$ beweisbar.
+  durch Terme entstehen, sind in der Theorie~$\ThS$ beweisbar.
+
+  \help{Wieso haben wir eigentlich die Axiome mit Variablen formuliert? Alle
+    anderen Axiome sind doch auch mit Formeln $\alpha,\beta$ formuliert, warum
+    diese nicht?}
+
+  \todo{klären: Was ist mit S9? Funktioniert da Generalisierung?}
+
+  \begin{proof}
+    Da in den Axiomen (S1)--(S8) alle Variablen frei vorkommen, kann man
+    schrittweise für jede Variable die Generalisierung und die Regel~RA4
+    anwenden.
+
+    Beispielhaft wollen wir den Beweis für das Axiom~(S1) führen. Das
+    entstehenden Axiomenschema bezeichnen wir mit (S1').
+
+    (S1'): für alle Terme $r,s,t$ gilt
+    $\Svdash r=s \rightarrow (r=t \rightarrow s=t)$.
+
+    \begin{align*}
+      (1)\quad & x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3)
+         & \text{(S1)}\\
+      (2)\quad & (\forall x_1\quantsep x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3))
+         & \text{Gen, 1}\\
+      (3)\quad & r = x_2 \rightarrow (r=x_3 \rightarrow x_2=x_3)
+         & \text{RA4, 2}\displaybreak[0]\\
+      (4)\quad & (\forall x_2\quantsep r= x_2 \rightarrow (r=x_3 \rightarrow x_2=x_3))
+         & \text{Gen, 3}\\
+      (5)\quad & r = s \rightarrow (r=x_3 \rightarrow s=x_3)
+         & \text{RA4, 4}\displaybreak[0]\\
+      (6)\quad & (\forall x_3\quantsep r = s \rightarrow (r=x_3 \rightarrow s=x_3))
+         & \text{Gen, 5}\\
+      (7)\quad &  r = s \rightarrow (r=t \rightarrow s=t)
+         & \text{RA4, 6}
+    \end{align*}
+  \end{proof}
 \end{lemma}
-
-Als Beispiel betrachten wir die Formeln,
-die man aus (S1) mittels Ersetzen von Variablen durch Terme erhält.
-Dieses Axiomenschema nennen wir (S1').
-
-(S1'): für alle Terme $r,s,t$ gilt
-$\Svdash r=s ~ \rightarrow ~ (r=t ~ \rightarrow ~ s=t)$
-
-
-\begin{proof}\mbox{}
-
-  $
-  \begin{array}{cll}
-    (1) & x_1= x_2 ~ \rightarrow ~ (x_1=x_3 ~ \rightarrow ~ x_2=x_3) & \mbox{(S1)} \\
-    (2) & (\forall x_1 ~ x_1= x_2 ~ \rightarrow ~ (x_1=x_3 ~ \rightarrow ~ x_2=x_3)) & \mbox{Gen}, 1 \\
-    (3) & r = x_2 ~ \rightarrow ~ (r=x_3 ~ \rightarrow ~ x_2=x_3)   & \mbox{RA4}, 2 \\
-    (4) & (\forall x_2 ~ r= x_2 ~ \rightarrow ~ (r=x_3 ~ \rightarrow ~ x_2=x_3)) & \mbox{Gen}, 3 \\
-    (5) & r = s ~ \rightarrow ~ (r=x_3 ~ \rightarrow ~ s=x_3)   & \mbox{RA4}, 4 \\
-    (6) & (\forall x_3 ~ r = s ~ \rightarrow ~ (r=x_3 ~ \rightarrow ~ s=x_3))   & \mbox{Gen}, 5 \\
-    (7) &  r = s ~ \rightarrow ~ (r=t ~ \rightarrow ~ s=t)   & \mbox{RA4}, 6 \\
-  \end{array}
-  $
-
-~
-\end{proof}
 
 %%%%%%%%%%%%%
 
-Wir erhalten folgende Theoreme von $\mathrm{S}$
-über grundlegende Eigenschaften der Gleichheitsrelation
-(Reflexivität, Symmetrie, Transitivität)
-sowie der Addition (Kommutativität, Assoziativität).
+Folgende grundlegende Eigenschaften der Gleichheitsrelation -- Reflexivität,
+Symmetrie, Transitivität -- sowie der Addition -- Kommutativität,
+Assoziativität -- können wir auch in der Theorie~$\ThS$ beweisen.
 
 \begin{lemma}\label{lemma-zahlen-elem}
-  Für alle Terme $r$, $s$, $t$ sind folgende Formeln
-  Theoreme von S.
+  Für alle Terme $r$, $s$ und $t$ sind folgende Formeln
+  Theoreme von $\ThS$.
 
-  $
-  \begin{array}{clcl}
-    (a) & t=t & (i) & t=r ~ \rightarrow ~ s+t=s+r \\
-    (b) & t=r ~ \rightarrow ~ r=t & (j) & (t+r)+s = t+ (r+s) \\
-    (c) & t=r ~ \rightarrow ~ (r=s ~ \rightarrow ~ t=s) & (k) & t=r ~ \rightarrow~ t\cdot s= r\cdot s \\
-    (d) & r=t ~ \rightarrow ~ (s=t ~ \rightarrow ~ r=s) & (l) & 0\cdot t = 0 \\
-    (e) & t=r ~ \rightarrow ~ t+s=r+s & (m) & t'\cdot r = t\cdot r + r \\
-    (f) & t = 0+t & (n) & t \cdot r = r\cdot t\\
-    (g) & t'+r = (t+r)' & (o) & t=r ~\rightarrow~ s\cdot t=s\cdot r\\
-    (h) & t+r = r+t & & \\
-  \end{array}
-  $
+  \begin{minipage}[t]{.5\linewidth}
+    \centering
+    \begin{enumerate}[(a)]
+     \item $t=t$
+     \item $t=r \rightarrow r=t$
+     \item $t=r \rightarrow (r=s \rightarrow t=s)$
+     \item $r=t \rightarrow (s=t \rightarrow r=s)$
+     \item $t=r \rightarrow t+s=r+s$
+     \item $t = 0+t$
+     \item $t'+r = (t+r)'$
+     \item $t+r = r+t$
+    \end{enumerate}
+  \end{minipage}%
+  \begin{minipage}[t]{.5\linewidth}
+    \centering
+    \begin{enumerate}[(a)]\setcounter{enumi}{8}
+     \item $t=r \rightarrow s+t=s+r$
+     \item $(t+r)+s = t+ (r+s)$
+     \item $t=r \rightarrow t\cdot s= r\cdot s$
+     \item $0\cdot t = 0$
+     \item $t'\cdot r = t\cdot r + r$
+     \item $t \cdot r = r\cdot t$
+     \item $t=r \rightarrow s\cdot t=s\cdot r$
+    \end{enumerate}
+  \end{minipage}
+
   \begin{proof}
-    Wir führen ein paar Beweise auf, die auch als Beispiele
+    Wir führen nur ein einige Beweise auf, die auch als Beispiel
     für die fehlenden Beweise gesehen werden können.
 
-    (a)
-    $
-    \begin{array}[t]{cll}
-      (1) & t+0=t & \text{(S5')} \\
-      (2) & (t+0=t) \rightarrow ((t+0=t)\rightarrow(t=t)) & \text{(S1')} \\
-      (3) & (t+0=t)\rightarrow(t=t) & \text{MP}~ 1,2 \\
-      (4) & t=t & \text{MP}~ 1,3
-    \end{array}
-    $
+    Ein Beweis der Formel (a)
+    \begin{align*}
+      (1)\quad & t+0=t & \text{(S5')}\\
+      (2)\quad & (t+0=t) \rightarrow ((t+0=t)\rightarrow(t=t)) & \text{(S1')}\\
+      (3)\quad & (t+0=t)\rightarrow(t=t) & \text{MP~ 1,2}\\
+      (4)\quad & t=t & \text{MP 1,3}
+    \end{align*}
 
-    (b)
-    $
-    \begin{array}[t]{cll}
-      (1) & (t=r) \rightarrow((t=t) \rightarrow(r=t)) & \text{(S1')} \\
-      (2) & t=r & \text{Hypothese} \\
-      (3) & (t=t) \rightarrow (r=t) & \text{MP}~ 2,1 \\
-      (4) & t=t & \text{Teil (a)} \\
-      (5) & r=t & \text{MP}~ 5,4
-    \end{array}
-    $
+    Für die Formel (b) kann man $t=r\Svdash r=t$ beweisen woraus mit Hilfe des
+    Deduktionstheorems die eigentliche Formel folgt.
+    \begin{align*}
+      (1)\quad & (t=r) \rightarrow((t=t) \rightarrow(r=t)) & \text{(S1')}\\
+      (2)\quad & t=r & \text{Hypothese} \\
+      (3)\quad & (t=t) \rightarrow (r=t) & \text{MP 2,1}\\
+      (4)\quad & t=t & \text{Teil (a)}\\
+      (5)\quad & r=t & \text{MP 5,4}
+    \end{align*}
 
-    (e)
-    Wir beweisen $\Svdash
-    x_{1}=x_{2} \rightarrow x_{1}+x_{3}=x_{2}+x_{3}$ mittels Induktion über
-    $x_{3}$.
-    \begin{description}
-     \item[$\alpha(0)$:] $x_{1}=x_{2} \rightarrow x_{1}+0 = x_{2}+0$
+    Die Formel (e) $\Svdash x_{1}=x_{2} \rightarrow x_{1}+x_{3}=x_{2}+x_{3}$
+    beweisen wir mittels Induktion über $x_{3}$.
+    \help{Die Formel $\Svdash t=r \rightarrow t+s=r+s$ ist aber mit Termen und
+      nicht mit Variablen. Arbeiten wir hier mit (S9) oder (S9')}
+    \begin{enumerate}
+     \item Für den Induktionsanfang $\alpha(0)$ müssen wir $x_{1}=x_{2}
+      \rightarrow x_{1}+0 = x_{2}+0$ zeigen
       \begin{align*}
         (1)\quad& x_{1}+0 =x_{1} &\text{S5}\\
         (2)\quad& x_{2}+0 = x_{2} &\text{S5}\\
         (3)\quad& x_{1} = x_{2} &\text{Hypothese}\\
         (4)\quad& x_{1}+0 = x_{1} \rightarrow (x_{1} = x_{2} \rightarrow
-           x_{1}+0=x_{2}) &\text{Eigenschaft (c)}\\
+           x_{1}+0=x_{2}) &\text{(c) mit $t=x_{1}+0$}\\
         (5)\quad& x_{1}+0 = x_{2} &\text{MP 1,3,4}\\
         (6)\quad& x_{2}+0 = x_{2} \rightarrow x_{2}=x_{2}+0 &\text{(b)}\\
         (7)\quad& x_{2} = x_{2}+0 &\text{MP 2,6}\\
@@ -4802,7 +4877,8 @@ sowie der Addition (Kommutativität, Assoziativität).
       Mit dem Deduktionstheorem folgt $x_{1}=x_{2} \rightarrow x_{1}+0 =
       x_{2}+0$. Damit ist der Induktionsanfang $\alpha(0)$ bewiesen.
 
-     \item[$\alpha(x_{3})\rightarrow\alpha(x_{3}')$]
+     \item Für den Induktionsschritt $\alpha(x_{3})\rightarrow\alpha(x_{3}')$
+      zeigen wir
       \begin{gather*}
         (x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}) \rightarrow
            (x_{1}=x_{2} \rightarrow x_{1}+x_{3}' = x_{2}+x_{3}')
@@ -4825,8 +4901,8 @@ sowie der Addition (Kommutativität, Assoziativität).
       \end{align*}
       Damit ist bewiesen:
       \begin{gather*}
-        x_{1}=x_{2},~ x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}
-            \Svdash x_{1}+x_{3}' = x_{2} + x_{3}' .
+        x_{1}=x_{2}, x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}
+            \Svdash x_{1}+x_{3}' = x_{2} + x_{3}'
       \end{gather*}
       Mit zweimaliger Anwendung des Deduktionstheorems folgt
       \begin{gather*}
@@ -4834,85 +4910,94 @@ sowie der Addition (Kommutativität, Assoziativität).
                     \rightarrow
                  \left(x_{1}=x_{2} \rightarrow x_{1}+x_{3}' = x_{2} + x_{3}'\right)
       \end{gather*}
+      \help{Was ist mit mit $x_{1}=x_{2}$ passiert? Wie soll dann das mit der
+        Generalisierung von statten gehen?}
       Darauf wenden wir noch einmal die Generalisierung an und bekommen
       \begin{gather*}
-        \Svdash \forall x_3 ~
+        \Svdash \forall x_3\quantsep
           \underbrace{\left(x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}\right)}_{\alpha(x_3)}
                     \rightarrow
           \underbrace{\left(x_{1}=x_{2} \rightarrow x_{1}+x_{3}' = x_{2} + x_{3}'\right)}_{\alpha(x_3')}
       \end{gather*}
+    \end{enumerate}
 
-      Bis jetzt gezeigt: $\Svdash\alpha(0)$ und $\Svdash (\forall
-      x_{3} ~ \alpha(x_{3}) \rightarrow \alpha(x_{3}'))$
-
-      $
-      \begin{array}{ll}
-        \Svdash \alpha(0) \rightarrow ((\forall x_{3} ~
-        \alpha(x_{3}) \rightarrow \alpha(x_{3}')) \rightarrow (\forall
-        x_{3} ~ \alpha(x_{3}))) & \text{S9}\\
-        \Svdash (\forall x_{3} ~
-        \alpha(x_{3}) \rightarrow \alpha(x_{3}')) \rightarrow (\forall
-        x_{3} ~ \alpha(x_{3})) & \text{mit MP aus S9 und $\alpha(0)$}\\
-        \Svdash \forall x_{3} ~ \alpha(x_{3})&\text{mit MP aus $(\forall x_3~\alpha(x_)\rightarrow\alpha(x_3'))$} \\
-        \Svdash \alpha(x_{3}) & \text{RA4}
-      \end{array}
-      $
-
-    \end{description}
-
+    Bis jetzt haben wir $\Svdash\alpha(0)$ und $\Svdash (\forall
+    x_{3}\quantsep \alpha(x_{3}) \rightarrow \alpha(x_{3}'))$ gezeigt.
+    \begin{align*}
+      &\Svdash \alpha(0) \rightarrow ((\forall x_{3}\quantsep
+         \alpha(x_{3}) \rightarrow \alpha(x_{3}')) \rightarrow (\forall
+         x_{3}\quantsep \alpha(x_{3}))) & \text{S9}\\
+      &\Svdash (\forall x_{3}\quantsep
+         \alpha(x_{3}) \rightarrow \alpha(x_{3}')) \rightarrow (\forall
+         x_{3}\quantsep \alpha(x_{3})) & \text{MP aus S9 und $\alpha(0)$}\\
+      &\Svdash \forall x_{3}\quantsep \alpha(x_{3})
+         &\text{MP aus $(\forall x_3\quantsep\alpha(x_3)\rightarrow\alpha(x_3'))$} \\
+      &\Svdash \alpha(x_{3}) & \text{RA4}
+    \end{align*}
+    Sollte bei RA4 im letzten Schritt nicht ein Termsymbol entstehen?
   \end{proof}
 \end{lemma}
 
-Beweise in der Zahlentheorie laufen also wie gewohnt.
-Wie nicht anders zu erwarten, werden die Beweise schnell lang.
+Die Beweise in der Zahlentheorie laufen also wie gewohnt, aber wie es nicht
+anders zu erwarten war, werden die Beweise schnell lang.
 
-In $\mathrm{S}$ gibt es keine Symbole für natürliche Zahlen außer der $0$.
-Der Nachfolger von $0$ ist $0'$,
-und das ist im intuitiven Verständnis die $1$.
-Wir führen die Schreibweise
-$\overline{1}$ für $0'$
-und entsprechend
-$\overline{m}$ für %% $0\underbrace'^{\cdots}'}_{\text{$m$-mal}}$
-$0\overbrace{'\raisebox{.7ex}{$\cdots$} '}^{\text{$m$-mal}}$
-ein.
+In der Theorie $\ThS$ -- wie auch bei den Peano-Axiomen -- gibt es keine
+Symbole für natürliche Zahlen außer der $0$. Der Nachfolger von $0$ ist $0'$,
+und das ist im intuitiven Verständnis die $1$. Wir führen die abkürzende
+Schreibweise $\overline{1}$ für $0'$, $\overline{2}$ für $0''$, \dots{} und
+entsprechend $\overline{m}$ für $0\overbrace{'\raisebox{.7ex}{$\cdots$}'}
+^{\text{$m$-mal}}$ ein. Der Einheitlichkeit halber soll auch $\overline{0}=0$
+sein.
+\help{Hätte man nicht besser von Anfang an die Null mit $\overline{0}$
+  bezeichnet?}
+
+Den Strich über den Zahlen setzen wir, um die Symbole für die Elemente unserer
+Theorie~$\ThS$ von den natürlichen Zahlen abzuheben. Denn bereits der Strich
+$'$ war eine Abkürzung für $f_{1}^{1}$.
+\begin{gather*}
+  \overline{2} = \overline{1} + \overline{1} \quad\text{ist}\quad
+     0'' = 0' + 0' \quad\text{ist}\quad
+     A_{1}^{2}\Bigl(f_{1}^{1}\bigl(f_{1}^{1}(a_{1})\bigr),
+     f_{1}^{2}\bigl(f_{1}^{1}(a_{1}), f_{1}^{1}(a_{1})\bigr)\Bigr)
+\end{gather*}
 
 \begin{lemma}\label{lemma-eins}
   Sei $t$ ein Term. Dann gilt
-  \begin{enumerate}
+  \begin{enumerate}[(a)]
    \item $\Svdash t + \overline{1} = t'$
    \item $\Svdash t\cdot\overline{1} = t$
   \end{enumerate}
-%\end{lemma}
 
-\begin{proof}
-\begin{enumerate}
-\item $
-      \begin{array}[t]{cll}
-       (1) & t+0'=(t+0)' & \text{S6'} \\
-       (2) & t+0 = t & \text{S5'} \\
-       (3) & (t+0)' = t' & \text{(2), S2', MP} \\
-       (4) & t+0' = t'   & \text{(1), (3), Trans. von $=$}
-      \end{array}
-      $
-\item $
-      \begin{array}[t]{cll}
-       (1) & t\cdot 0' = t\cdot 0 + t & \text{S8'} \\
-       (2) & t\cdot 0 = 0 & \text{S7'} \\
-       (3) & t\cdot 0 + t = 0+t & \text{(2), \autoref{lemma-zahlen-elem}(e), MP} \\
-       (4) & t\cdot 0' = 0+t & \text{(1),(3),MP} \\
-       (5) & 0+t = t & \text{\autoref{lemma-zahlen-elem}(f), Symm. von $=$} \\
-       (6) & t\cdot 0' = t & \text{(4),(5), Trans. von $=$}
-      \end{array}
-      $
-\end{enumerate}
-~
-\end{proof}
+  \begin{proof}
+    Der Beweis für die Addition mit 1:
+    \begin{align*}
+      (1)\quad & t+0 = t & \text{S5'}\\
+      (2)\quad & t+0 = t \rightarrow (t+0)' = t'& \text{(S9')}\\
+      (3)\quad & (t+0)' = t' & \text{MP, 1,2}\\
+      (4)\quad & t+0'=(t+0)' & \text{(S6')}\\
+      (5)\quad & t+0' = t'   & \text{\autoref{lemma-zahlen-elem}~(c) Trans. von $=$ mit 4,3}
+    \end{align*}
+
+    Der Beweis für die Multiplikation mit 1:
+    \begin{align*}
+      (1)\quad & t\cdot 0 = 0 & \text{S7'}\\
+      (2)\quad & t\cdot0 = 0 \rightarrow t\cdot0+t = 0+t&
+         \text{\autoref{lemma-zahlen-elem}~(e)}\\
+      (3)\quad & t\cdot 0 + t = 0+t & \text{MP 1,2}\\
+      (4)\quad & t\cdot 0' = t\cdot 0 + t & \text{S8'}\\
+      (5)\quad & t\cdot 0' = 0+t & \text{Trans. von $=$ mit 4,3}\\
+      (6)\quad & t = 0+t& \text{\autoref{lemma-zahlen-elem}~(f)}\\
+      (7)\quad & t\cdot0' = 0+t \rightarrow (t=0+t \rightarrow t\cdot 0'=t)
+         &\text{\autoref{lemma-zahlen-elem}~(d)}\\
+      (8)\quad & t\cdot 0' = t & \text{MP 5,6,7}
+    \end{align*}
+  \end{proof}
 \end{lemma}
 
 
 \begin{lemma}\label{lemma-numerale1}
   Seien $m$ und $n$ natürliche Zahlen.
-  \begin{enumerate}
+  \begin{enumerate}[(a)]
    \item
     Falls $m=n$,
     dann gilt $\Svdash \overline{m}=\overline{n}$.
@@ -4922,42 +5007,88 @@ ein.
    \item
     $\Svdash \overline{n+m} = \overline{n} + \overline{m}$
   \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(a)]
+     \item Folgt aus \autoref{lemma-zahlen-elem}~(a).
+
+     \item Für den Beweis benötigen wir das Theorem $\Svdash \neg(t=s)
+      \rightarrow\neg(t'=s')$, welches sich leicht durch den modus ponens aus
+      Axiom~(S4) ($t'=s'\rightarrow t=s$) und \autoref{lem:5} ($\Svdash
+      (\alpha\rightarrow\beta)\rightarrow(\neg\beta\rightarrow\neg\alpha)$)
+      herleiten lässt.
+      \help{Ist der Einsatz von \autoref{lem:5} hier in Ordnung?}
+
+      \begin{faelle}
+        \item Wenn $n>m$, dann ist $n-m-1\geq0$ und kann daher als
+        $\overline{n-m-1}$ geschrieben werden.
+        \begin{align*}
+          (1)\quad& 0\ne\overline{n-m-1}'& \text{S4}\\
+          (2)\quad& 0\ne\overline{n-m} \rightarrow 0'\ne\overline{n-m}'&
+             \text{Vorbem.}\\
+          (3)\quad& \overline{1} \ne \overline{n-m}'& \text{MP 1,2}\\
+          (4)\quad& \overline{1}\ne\overline{n-m+1} \rightarrow
+             \overline{1}'\ne\overline{n-m+1}'& \text{Vorbem.}\\
+          (5)\quad& \overline{2}\ne \overline{n-m+2}& \text{MP, 3,4}\\
+          \vdots\qquad& \quad\vdots& \vdots\quad\\
+          (2m)\quad& \overline{m-1}\ne\overline{n-1} \rightarrow
+             \overline{m-1}' \ne\overline{n-1}'& \text{Vorbem.}\\
+          (2m+1)\quad& \overline{m}\ne\overline{n}& \text{MP $2m-1$,$2m$}
+        \end{align*}
+
+       \item Wenn $m>n$, dann ist $\overline{m-n-1}$ zulässig. Mit dem
+        Beweis im Fall~1 erhalten wir nach $2n+1$~Schritten das Ergebnis
+        $\overline{n}\ne\overline{m}$.
+
+        Wir können aber leicht mit \autoref{lem:5} und
+        \autoref{lemma-zahlen-elem}~(b) die Symmetrie des
+        Ungleichheitszeichens ($\Svdash t\ne r\rightarrow r\ne t$) zeigen und
+        damit unter Einsatz des modus ponens' das Theorem
+        $\overline{m}\ne\overline{n}$ herleiten.
+      \end{faelle}
+
+     \item Zuvor ein kurzer Beweis für $\Svdash t'+r = t+r'$
+      \begin{align*}
+        (1)\quad& t'+r = (t+r)'& \text{\autoref{lemma-zahlen-elem}~(g)}\\
+        (2)\quad& t+r' = (t+r)'& \text{(S6')}\\
+        (3)\quad& t'+r = (t+r)' \rightarrow (t+r' = (t+r)' \rightarrow t'+r =
+           t+r')& \text{\autoref{lemma-zahlen-elem}~(d)}\\
+        (4)\quad& t'+r = t+r'& \text{MP 1,2,3}
+      \end{align*}
+
+      Damit können wir nun den eigentlichen Beweis antreten:
+      \begin{align*}
+        (1)\quad& \overline{n+m} = \overline{n+m-1}'& \text{nach Def. von
+           $\overline{n}$}\\
+        (2)\quad& \overline{n+m-1} + \overline{1} = \overline{n+m-1}'&
+           \text{\autoref{lemma-eins}~(a)}\\
+        (3)\quad& \overline{n+m} = \overline{n+m-1} + \overline{1}&
+           \text{MP 1,2,\autoref{lemma-zahlen-elem}~(d)}\\
+        (4)\quad& \underbrace{\overline{n+m-2}'}_{=\overline{n+m-1}}
+           + \overline{1} = \overline{n+m-2} +
+           \underbrace{\overline{1}'}_{=\overline{2}}& \text{nach Vorbem.}\\
+        (5)\quad& \overline{n+m} = \overline{n+m-2} + \overline{2}&
+           \text{MP 3,4,\autoref{lemma-zahlen-elem}~(c)}\\
+        (6)\quad& \underbrace{\overline{n+m-3}'}_{=\overline{n+m-2}}
+           + \overline{2} = \overline{n+m-3} +
+           \underbrace{\overline{2}'}_{=\overline{3}}& \text{nach Vorbem.}\\
+        (7)\quad& \overline{n+m} = \overline{n+m-3} + \overline{3}&
+           \text{MP 5,6,\autoref{lemma-zahlen-elem}~(c)}\\
+        \vdots\quad& \quad\vdots& \vdots\quad\\
+        (2m-1)\quad& \overline{n+m} = \overline{n+m-(m-1)} + \overline{m-1}\\
+           % &\text{MP $2m-3$,$2m-2$,\autoref{lemma-zahlen-elem}~(c)}\\
+        (2m)\quad& \overline{n+m-m}' + \overline{m-1} = \overline{n+m-m} +
+           \overline{m-1}'\\ %& \text{nach Vorbem.}\\
+        (2m+1)\quad& \overline{n+m} = \overline{n} + \overline{m}
+           % &\text{MP $2m-1$,$2m$,\autoref{lemma-zahlen-elem}~(c)}
+      \end{align*}
+      \help{Ist der Beweis in Ordnung?}
+    \end{enumerate}
+  \end{proof}
 \end{lemma}
 
-\begin{proof}
-  \begin{enumerate}
-   \item Folgt aus \autoref{lemma-zahlen-elem}(a).
-
-   \item O.\,B.\,d.\,A. sei $m>n$.
-
-    $
-    \begin{array}{cll}
-      (1) & \overline{n} = \overline{m} & \text{Hypothese} \\
-      (2) & \overline{n} = \overline{m} ~\rightarrow~ \overline{n-1}=\overline{m-1} & \text{(S4')} \\
-      \vdots & \rule{10mm}{0mm}\vdots & \rule{4mm}{0mm}\vdots \\
-      (n+1) & \overline{1} = \overline{m-n+1} ~\rightarrow~ \overline{0}=\overline{m-n} & \text{(S4')} \\
-      (n+2) & \overline{0}=\overline{m-n} & \text{MP} ~ (1)-(n+1) \\
-      (n+3) & \neg (0=\overline{m-n}) & \text{(S3'), da $m-n>0$} \\
-      (n+4) & \overline{0}=\overline{m-n} ~ \wedge \neg (0=\overline{m-n}) &
-      \text{Konjunktions-Regel}~ (n+2), (n+3)
-    \end{array}
-    $
-
-    Damit ist gezeigt: $\overline{n} = \overline{m} \Svdash
-    \overline{0}=\overline{m-n} ~ \wedge \neg (0=\overline{m-n})$.
-    Mit der Regel Widerspruchsbeweis folgt $\Svdash \overline{n} = \overline{m}$.
-
-   \item \todo{Beweis einfügen}
-
-  \end{enumerate}
-\end{proof}
-
-
-
-Weitere abkürzende Schreibweisen:
-
+Weitere abkürzende Schreibweisen:\\
 \begin{tabular}{r@{~\ldots{}~}l}
-  $t<s$ & für $(\exists w ~ w\ne0 \wedge t+w=s)$\\
+  $t<s$ & für $(\exists w\quantsep w\ne0 \wedge t+w=s)$\\
   $t\leq s$ & für $t<s \vee t=s$\\
   $t>s$ & für $s<t$\\
   $t\geq s$ & für $s\leq t$\\
@@ -4967,7 +5098,7 @@ Weitere abkürzende Schreibweisen:
 
 
 
-Das Standardmodell für $\mathrm{S}$ besteht
+Das Standardmodell für $\ThS$ besteht
 aus den natürlichen Zahlen als Grundmenge
 und der \glqq{}intuitiven\grqq{} Interpretation der übrigen Symbole.
 
@@ -4979,15 +5110,16 @@ und der \glqq{}intuitiven\grqq{} Interpretation der übrigen Symbole.
  \item $A^2_1$ wird durch die Gleichheitsrelation interpretiert
 \end{itemize}
 
-\glqq{}Offensichtlich\grqq{} sind die Axiome von $\mathrm{S}$ wahr
+\glqq{}Offensichtlich\grqq{} sind die Axiome von $\ThS$ wahr
 im Standardmodell.
 Damit folgt auch, dass alle beweisbaren Formeln wahr sind.
 
-Das Standardmodell ist jedoch nicht das einzige Modell für $\mathrm{S}$.
-Es gibt auch Modelle für $\mathrm{S}$ mit
+Das Standardmodell ist jedoch nicht das einzige Modell für $\ThS$.
+Es gibt auch Modelle für $\ThS$ mit
 überabzählbarer Grundmenge \ldots{}
+\help{Wieso? Worauf fußt diese Behauptung?}
 
-Versuche ein Modell $\mathcal{M}$ für $\mathrm{S}$ zu finden, das nicht
+Versuche ein Modell $\cM$ für $\ThS$ zu finden, das nicht
 die natürlichen Zahlen als Grundmenge hat. Erweitern wir die Grundmenge
 um die Elemente $p_{0}, p_{1}, p_{2},\dotsc$, wobei $p_{1}$ Nachfolger von
 $p_{0}$ und $p_{2}$ Nachfolger von $p_{1}$ ist usw. Eine mögliche
@@ -5008,9 +5140,9 @@ natürlichen Zahlen. Versuch gescheitert.
 
 % 2006-06-27
 
-\begin{satz}[Endlichkeitssatz (Compactness Theorem)]
+\begin{satz}[Endlichkeitssatz -- Compactness Theorem]
   Sei $\mathcal{S}$ eine unendliche Menge von Formeln. $\mathcal{S}$ hat
-  eine Modell genau dann, wenn jede endliche Teilmenge von $\mathcal{S}$
+  ein Modell genau dann, wenn jede endliche Teilmenge von $\mathcal{S}$
   ein Modell hat.
 
   (In der Aussagenlogik: Sei $T$ eine unendliche Menge aussagenlogischer
@@ -5018,8 +5150,8 @@ natürlichen Zahlen. Versuch gescheitert.
   dann, wenn jede endliche Teilmenge von $T$ eine erfüllende Belegung
   besitzt.)
 
-  Wir benötigen die Größerrelation $x>y\colon (\exists z\in\N ~
-  z\ne0 ~\wedge~ x=y+z)$. Für die unendliche Formelmenge $\mathcal{C}=
+  Wir benötigen die Größerrelation $x>y\colon (\exists z\in\N \quantsep
+  z\ne0 \wedge x=y+z)$. Für die unendliche Formelmenge $\mathcal{C}=
   \{c>0, c>1, c>2, c>3, \dotsc\}$ gibt es für jede Teilmenge ein Modell
   $\mathcal{M}$ mit der Interpretation $c^{\mathcal{M}} = c+1$.
 
