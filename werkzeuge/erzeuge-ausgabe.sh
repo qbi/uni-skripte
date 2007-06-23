@@ -45,6 +45,10 @@ else
 fi
 echo "I: Verwende $src als LaTeX-Datei"
 
+if grep -q '\\documentclass\[[^]]*draft' $src; then
+    sed -i.orig -e '/\\documentclass/ { s/draft,//; s/,draft\]//; }' $src
+fi
+
 for ext in ps pdf; do
     # Das Skript verwendet PSTricks. rubber muss aus dem PS das PDF erstellen.
     if grep -q '^[^%]*\\usepackage.*{pst-' $src; then
@@ -68,6 +72,11 @@ for ext in ps pdf; do
         ) > /tmp/joergs.debug.$$ 2>&1
     fi
 done
+
+if [ -e $src.orig ]; then
+    rm $src
+    mv $src.orig $src
+fi
 
 rm -f $WEB/$SKRIPT-mit-grafiken.tgz
 GZIP=-9 tar --exclude=.svn -C .. -czf $WEB/$SKRIPT-mit-grafiken.tgz $SKRIPT
