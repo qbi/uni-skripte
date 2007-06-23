@@ -358,8 +358,10 @@
  \bibitem{Nerode-Shore} Anil Nerode, Richard A.\,Shore: Logic for applications
  \bibitem{Fitting} Melvin Fitting: First-order logic and automated theorem proving
  \bibitem{Wolf} Robert S.\,Wolf: A tour through mathematical logic
- \bibitem{Richter-Gebert} Jürgen, Richter-Gebert: Skript zur Vorlesung "`Logik"',
+ \bibitem{Richter-Gebert} Jürgen Richter-Gebert: Skript zur Vorlesung "`Logik"',
   ETH~Zürich, 2000/2001,\\ \url{http://www-hm.ma.tum.de/archiv/in2/ss04/literatur.html}
+ \bibitem{Haken} A.\,Haken: The intractibility of resolution, Theoret. Comput.
+  Sci.~39, 1985, Seite 297--308
 \end{thebibliography}
 
 
@@ -2285,7 +2287,9 @@ Verfahren für die Umformung verwenden.
 
   Wir kontruieren eine erfüllbarkkeitsäquivalente Formel $\phi'$ zu $\phi =
   (A\wedge B) \rightarrow \neg(A\vee\neg B)$. Der induktive Aufbau von $\phi$
-  ist in dem Baum in \autoref{fig:vknb-bsp} dargestellt. Für jeden Knoten --
+  ist in dem Baum in \autoref{fig:vknb-bsp} dargestellt.
+
+  Für jeden Knoten --
   also jedes Verknüpfungszeichen -- wird eine neue Variable $c_i$ eingeführt.
   In die Formel~$\phi'$ wird für jedes $c_i$ eine Äquivalenz
   $c_i\leftrightarrow (l~op~r)$ eingefügt, wobei $op$ das Verknüpfungszeichen
@@ -2300,6 +2304,10 @@ Verfahren für die Umformung verwenden.
     konjunktive Normalform (\autoref{satz:5}) aus höchstens 8~Klauseln zu
     je 3~Literalen.
     Die Markierung $c_m$ der Wurzel des Baumes wird auch zu einem Konjunkt von $\phi'$.
+  Auf diese Weise muss man für eine Formel mit $n$~Variablen, bei der
+  beispielsweise je zwei Variablen miteinander verknüpft sind, nicht $2^{n}$
+  verschiedene Belegungen auswerten, sondern nur
+  $8\cdot(2\cdot n-1)$~Belegungen -- linearer statt exponentieller Aufwand.
 
     Für die Beispielformel ergibt sich folgende
     erfüllbarkeitsäquivalente Formel $\phi'$:
@@ -2340,8 +2348,8 @@ Verfahren für die Umformung verwenden.
   Die erfüllende Belegung $\cA$ wird auch \emph{Modell} von $\phi$ genannt.
 \end{defini}
 
-Im Zusammenhang mit Resolution stellt man Formeln in konjunktiver Normalform
-als Mengen dar.
+Im Zusammenhang mit Resolution schreibt man Formeln in konjunktiver Normalform
+als Mengen.
 Jede Klausel wird als Menge ihrer Literale dargestellt,
 z.\,B.~steht die Menge $\{A, \lneg B, C\}$ für die Klausel $(A \vee \lneg
 B \vee C)$.
@@ -2353,11 +2361,11 @@ Da $\cA \cap \Box=\emptyset$ für jede Belegung $\cA$ gilt,
 ist die leere Klausel unerfüllbar.
 
 Eine Konjunktion von Klauseln
-wird \emph{Klauselmenge} genannt,
+wird \emph{Klauselmenge} genannt und als Menge von Mengen dargestellt,
 z.\,B.~$(A \vee \lneg B \vee C)\wedge(B \vee \lneg C) \wedge \lneg A$
 als die Menge $\big\{ \{A, \lneg B, C \}, \{B, \lneg C\},\{\lneg A\} \big\}$.
 Die Belegung $\cA$ erfüllt die Klauselmenge $S$,
-wenn $\cA\cap C\ne\emptyset$ für jede Klausel $C\in S$.
+wenn $\cA\cap C\ne\emptyset$ für jede Klausel $C\in S$ gilt.
 Deshalb ist die leere Klauselmenge eine Tautologie.
 
 
@@ -2385,7 +2393,7 @@ der obigen Menge $S^{\lneg A}$.
 Jede Klausel in $S$, aus der eine Klausel in $S^{\lneg A}$ wurde
 -- also die Klauseln $\{A,\lneg B, C\}$ und $\{\lneg B, C\}$ --,
 werden von $\cA$ erfüllt.
-Alle übrigen Klauseln in $S$ ernthalten das Literal $\lneg A$
+Alle übrigen Klauseln in $S$ enthalten das Literal $\lneg A$
 und werden von $\cA\cup\{\lneg A\}$ erfüllt.
 Entsprechend wird aus der $S^{A}$ erfüllenden Belegung
 $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
@@ -2396,18 +2404,34 @@ $\cB=\{B,C\}$ die $S$ erfüllende Belegung $\cB\cup\{A\}$.
   dann ist auch $S$ erfüllbar.
 
 \begin{proof}
-  Sei $S^{\ell}$ erfüllbar,
-  und $\cA$ sei ein Modell von $S^{\ell}$.
+  Sei $S^{\ell}$ erfüllbar und $\cA$ ein Modell von $S^{\ell}$.
   Dann ist $\cB=(\cA\setminus\{\bar{\ell}\})\cup\{\ell\}$
   ebenfalls Modell von $S^{\ell}$, da weder $\ell$ noch $\bar{\ell}$
-  in einer Klausel in $S^{\ell}$ vorkommt.
-  Da jede Klausel in $S$ entweder
-  (1) in $S^{\ell}$ vorkommt
-  oder
-  (2) aus einer Klausel in $S^{\ell}$ durch Hinzufügen von $\bar{\ell}$
-  entsteht
-  oder
-  (3) $\ell$ enthält, ist $\cB$ auch Modell von $S$.
+  in einer Klausel in $S^{\ell}$ vorkommt. Für alle Klauseln~$C\in S^{\ell}$
+  gilt also $C\cap\cB\ne\emptyset$.
+
+  Für jede Klausel~$C'\in S$ trifft einer der folgenden Fälle zu:
+  \begin{faelle}
+   \item $C'$ enthält weder $\ell$ noch $\bar{\ell}$ und ist somit auch in
+    $S^{\ell}$. Also gilt $C'\cap\cB\ne\emptyset$.
+
+   \item $C'$ enthält $\bar{\ell}$, d.\,h. $C' = C\cup\{\bar{\ell}\}$ für
+    ein $C\in S^{\ell}$. Es gilt dann:
+    \begin{gather*}
+      (C\cup\{\bar{\ell}\}) \cap \cB =
+         \underbrace{(C\cap\cB)}_{\ne\emptyset} \cup (\{\bar{\ell}\}\cap\cB)
+         \ne\emptyset
+    \end{gather*}
+
+   \item Oder $C'$ einhält $\ell$ und es gilt:
+    \begin{gather*}
+      C'\cap\cB
+         = C'\cap((A\setminus\{\bar{\ell}\}) \cup\{\ell\})
+         = (C'\cap(A\setminus\{\bar{\ell}\})) \cup
+         \underbrace{(C'\cap\{\ell\})}_{=\{\ell\}\ne\emptyset}
+         \ne\emptyset
+    \end{gather*}
+  \end{faelle}
 
   Ist $S^{\bar{\ell}}$ erfüllbar, dann kann entsprechend
   gezeigt werden, dass $\cB'=(\cA\setminus\{{\ell}\})\cup\{\bar{\ell}\}$
@@ -2451,18 +2475,19 @@ gebildet werden (und keine anderen).
     Sei $R$ Resolvent der Klauseln $C_1$ und $C_2$ nach dem Literal $\ell$,
     und erfülle $\cA$ die Klauseln $C_1$ und $C_2$,
     d.\,h. $\cA\cap C_1\ne\emptyset$ und $\cA\cap C_2\ne\emptyset$.
-    Ist $\ell\notin\cA$, dann ist $\cA\cap(C_1\setminus\{\ell\})\ne\emptyset$;
-    ist $\bar{\ell}\notin\cA$,
-    dann ist $\cA\cap(C_2\setminus\{\bar{\ell}\})\ne\emptyset$.
-    Da einer dieser beiden Fälle eintreten muss,
-    ist $\cA\cap((C_1\setminus\{\ell\})\cup(C_2\setminus\{\bar{\ell}\}))\ne\emptyset$.
-    Also wird $R$ von $\cA$ erfüllt.
+    Es gilt entweder $\ell\in\cA$ oder $\bar{\ell}\in\cA$.
+    Ist $\bar{\ell}\notin\cA$,
+    dann ist $\cA\cap(C_2\setminus\{\bar{\ell}\})\ne\emptyset$;
+    ist $\ell\notin\cA$, dann ist $\cA\cap(C_1\setminus\{\ell\})\ne\emptyset$.
+    Es gilt also
+    $\cA\cap((C_1\setminus\{\ell\})\cup(C_2\setminus\{\bar{\ell}\}))\ne\emptyset$
+    und daher erfüllt $\cA$ auch den Resolventen $R$.
   \end{proof}
 \end{lemma}
 
 Vereinigt man also eine Klauselmenge mit den Resolventen,
 die sich aus ihren Klauseln bilden lassen,
-erhält man eine logisch äquivalente Klauselmenge.
+erhält man eine erfüllungsäquivalente Klauselmenge.
 Diese Klauselmenge kann man wiederum mit ihren Resolventen
 vereinigen ohne die Erfüllbarkeit zu beeinflussen, und so weiter.
 Lässt sich schließlich die unerfüllbare leere Klausel
@@ -2493,12 +2518,13 @@ für die Unerfüllbarkeit von Formeln.
 \end{defini}
 
 Betrachten wir die Klauselmenge $S=\{\{A,B\},\{\lneg A\}, \{\lneg B\}\}$.
-Dann ist
-$\{A,B\}, \{\lneg A\} ,\{B\}$
+Dann ist die Folge
+$\{A,B\}$, $\{\lneg A\}, \{B\}$
 eine Herleitung von $\{B\}$ aus $S$.
-Die Folge von Klauseln
+Die Folge
 $\{A,B\},\{\lneg A\},\{B\},\{\lneg B\}, \Box$
-ist eine Herleitung von $\Box$ aus $S$:
+ist eine Herleitung von $\Box$ aus $S$ -- die Klauselmenge~$S$ ist damit
+widerlegt:
 \begin{align*}
   C_1 &= \{A,B\} &\text{Klausel aus $S$}\\
   C_2 &= \{\lneg A\} &\text{Klausel aus $S$}\\
@@ -2506,7 +2532,6 @@ ist eine Herleitung von $\Box$ aus $S$:
   C_4 &= \{\lneg B\} &\text{Klausel aus $S$}\\
   C_5 &= \Box &\text{Resolvent aus $C_3$ und $C_4$}
 \end{align*}
-$S$ ist also widerlegt.
 
 Die Klauselmenge
 $S=\{\{A,B\},\{\lneg A,B\},\{A,\lneg B\},\{\lneg A,\lneg B\}\}$
@@ -2563,7 +2588,7 @@ der Resolutionsmethode nachweisen.
   (\autoref{Resolutionslemma}) $\cA$ ebenfalls ein Modell von $C_{i+1}$.
   Also folgt schließlich, dass $\cA$ Modell von $C_{n}$ ist.
   Da $\Box$ unerfüllbar ist, ist $\cA$ kein Modell von $\Box$.
-  Demnach ist $C_n\ne\Box$.
+  Demnach muss $C_n\ne\Box$ sein.
   Folglich gibt es keine Herleitung von $\Box$ aus $S$,
   das heißt $S$ ist nicht widerlegbar.
 \end{proof}
@@ -2595,7 +2620,7 @@ zu beweisen,
 müssen wir Widerlegungen der beiden Klauselmengen
 \begin{gather*}
   S^A = \big\{\{B,\lneg D\},\{B,D\},\{\lneg B\}\big\}
-  \quad\text{und}\quad
+  \qquad
   S^{\lneg A} = \big\{\{B,\neg C, D\}, \{B,C,D\}, \{B,\neg D\}, \{\lneg B\}\big\}
 \end{gather*}
 angeben.
@@ -2701,7 +2726,7 @@ Aus der Korrektheit und der Vollständigkeit der Resolutionsmethode
 ergibt sich der Resolutionssatz der Aussagenlogik.
 
 \index{Resolutionssatz}
-\begin{korol}\label{resolutionssatz}
+\begin{korol}[Resolutionssatz der Aussagenlogik]\label{resolutionssatz}
   \help{Ich habe hieraus auch ein Korolar gemacht, weil
     \autoref{korrektkeit-und-vollst-von-L} auch ein Korolar ist.}
   Die Klauselmenge $S$ ist unerfüllbar genau dann,
@@ -2738,7 +2763,7 @@ Dazu noch ein abschließendes Beispiel.
   \begin{gather*}
     \lneg\alpha\equiv(\lneg A\lor B)\wedge(\lneg B\lor C)\wedge
        (A\lor \lneg C) \wedge (A \lor B \lor C)
-       \wedge (\lneg A \lor \lneg B \lor \lneg C)\ \ .
+       \wedge (\lneg A \lor \lneg B \lor \lneg C)
   \end{gather*}
   \autoref{last-resolution} veranschaulicht
   die Resolutionswiderlegung von $\lneg \alpha$.
@@ -2756,8 +2781,8 @@ Dazu noch ein abschließendes Beispiel.
 
 \subsection{Algorithmus zum Test auf Unerfüllbarkeit einer Klauselmenge}
 
-Eingabe $S$ als Klauselmenge
 \begin{Verbatim}[commandchars=\\\{\}]
+\textnormal{Eingabe von \texttt{S} als Klauselmenge}
 T := \ensuremath{\emptyset}
 \schlwort{wiederhole}
     S := S \ensuremath{\cup} T
@@ -2769,21 +2794,26 @@ T := \ensuremath{\emptyset}
 \schlwort{sonst} Ausgabe \glqq{}erfüllbar\grqq{}
 \end{Verbatim}
 
-Optimierungen:
+Für den Algorithmus sind noch einige Optimierungen möglich:
 \begin{itemize}
- \item $\exists A, B\in S\colon A \subset B $ $\Rightarrow$ $S
-  := S\setminus \{ B \}$
- \item $\exists A\in S\colon x\in A, \neg x\in A$ $\Rightarrow$ $S := S\setminus
-  \{A\}$
+ \item Wenn es zwei Klausel $A, B\in S$ gibt, von denen eine Teilmenge der
+  anderen ist ($A \subset B$), so braucht man die größere der beiden Mengen
+  nicht weiter betrachten ($S := S\setminus \{ B \}$), da
+  $(\alpha\vee\beta)\wedge\alpha$ äquivalent zu $\alpha$ ist.
+
+ \item Wenn es eine Klausel $A\in S$ sowohl $x$ als auch $\neg x$ enthält --
+  die Klausel entspricht also der Formel $x\vee\dotsb\vee\neg x$ --, dann muss
+  man diese Klausel nicht mehr betrachten ($S := S\setminus \{A\}$).
 \end{itemize}
 
-Es gibt Klauselmengen, deren Resolutionswiderlegungen exponentiell lang sind.
+Es gibt aber auch Klauselmengen, deren Resolutionswiderlegungen exponentiell
+lang sind.\cite{Haken}
 Ein Beispiel dafür sind die
-Taubenschlagformeln $PHP_{k}$ (\glqq{}pigeon hole principle\grqq{} für $k$
-Tauben) -- in einem Taubenschlag mit $k-1$ Löchern können nicht $k$
+Taubenschlagformeln $PHP_{k}$ (\glqq{}pigeonhole principle\grqq{} für $k$
+Tauben): in einem Taubenschlag mit $k-1$ Löchern können nicht $k$
 Tauben sitzen, wenn in jedem Loch höchstens eine Taube sitzen darf.
-Variable $A_{i,j}$ entspricht \glqq{}Taube $j$ sitzt in Loch~$i$\grqq{}
-($i=1,2,\dotsc,k; j=1,2,\dotsc,k-1$).
+Die Variable $A_{i,j}$ entspricht \glqq{}Taube $j$ sitzt im Loch~$i$\grqq{}
+($i=1,2,\dotsc,k-1; j=1,2,\dotsc,k$).
 Die Formeln bestehen aus zwei Teilen.
 Der erste Teil drückt aus, dass jede Taube in (mindestens) einem Loch sitzt,
 und der zweite Teil drückt aus,
@@ -2791,7 +2821,7 @@ dass in jedem Loch höchstens eine Taube sitzt.
 
 Taube $j$ sitzt in einem der $k-1$ Löcher:
 \begin{gather*}
-  A_{1,j} \vee A_{2,j} \vee \dotsb \vee A_{k-1,j}\quad =  \theta_j
+  A_{1,j} \vee A_{2,j} \vee \dotsb \vee A_{k-1,j} =  \theta_j
 \end{gather*}
 Jede der $k$~Tauben sitzt in einem der $k-1$~Löcher:
 \begin{gather*}
@@ -2831,6 +2861,47 @@ Die Taubenschlagformel $PHP_k$ lautet
   PHP_{k} = \alpha_{k} \wedge \beta_{k}
 \end{gather*}
 
+% Der Beweis ist von
+% http://math.ucsd.edu/~sbuss/ResearchWeb/resolutionPHP/paper.pdf Seite 7
+% abgekupfert.
+
+Der Beweis, dass die Resolutionswiderlegung mindestens $2^{k-1}$~Schritte
+benötigt, erfolgt Induktiv über die Anzahl~$k$ der Tauben:
+\begin{mdescription}
+ \item[IA:] Es gibt nur zwei Tauben $k=2$. Also ist
+  $\alpha_{2} = A_{1,1}\wedge A_{1,2}$ und
+  $\beta_{2} = \neg A_{1,1}\vee\neg A_{1,2}$. Als Klauselmenge geschrieben
+  lautet $PHP_{2}$ also $\big\{\{A_{1,1}\},\{A_{1,2}\}, \{\neg A_{1,1}\vee
+  \neg A_{1,2}\}\}$. Mit zwei Resolutionsschritten kann man die leere
+  Klausel~$\Box$ herleiten, die Formel also wiederlegen.
+
+ \item[IS:] Nehmen wir an, die leere Klausel ist der Resolvent der
+  Klauseln~$C_{1}$ und $C_{2}$. Es sei o.\,B.\,d.\,A. $C_{1}=\{A_{r,s}\}$ und
+  $C_{2}=\{\neg A_{r,s}\}$.
+
+  % Für das $r$.~Loch gilt:
+  % \begin{gather*}
+  %   \sigma_{r} = \bigwedge_{p=1}^{k}\bigwedge_{\substack{q=1\\q\ne p}}^{k}
+  %      \neg A_{r,p} \vee \neg A_{r,q}
+  %      = \Big(\bigwedge_{\substack{p=1\\p\ne s}}^{k}
+  %      \bigwedge_{\substack{q=1\\q\ne p}}^{k}
+  %      \neg A_{r,p} \vee \neg A_{r,q}\Big) \wedge
+  %      \bigwedge_{\substack{q=1\\q\ne s}}^{k} \neg A_{r,s} \vee \neg A_{r,q}
+  % \end{gather*}
+
+  Setzt dann $A_{r,s}=w$, sprich man legt fest, dass die Taube~$s$ im
+  $r$.~Loch sitzt, ergibt sich eine Taubschlagformel~$PHP_{k-1}$ für
+  $k-1$~Tauben mit $k-2$~Löchern. Für diese Formel erhält man einen Beweis,
+  indem man aus allen Klauseln der Resolutionsherleitung von $C_{1}$ bzw.
+  $C_{2}$ alle Klauseln, die $A_{r,s}$ enthalten, entfernt und aus den
+  übrigen Klauseln $\neg A_{r,s}$ streicht.
+
+  Nach Induktionsvorraussetzung benötigt der Beweis zur Herleitung der leeren
+  Klausel aus $PHP_{k-1}$ mindestens $2^{k-2}$~Schritte. Für die Herleitung
+  der leeren Klausel aus $PHP_{k}$ benötigt man also $2^{k-2}+2^{k-2}+1\geq
+  2^{k-1}$ viele Schritte.
+\end{mdescription}
+
 \subsection{Formulierung der Resolution als Theorie}
 
 Zur Erinnerung: Eine Theorie (\autoref{def:theorie}) besteht aus Formeln,
@@ -2843,20 +2914,20 @@ muss also $S$ am Ende des Beweises stehen.
 (Das ist genau andersherum als bei der Resolution.)
 
 \begin{mdescription}
- \item[Formeln:] die Klauselmengen
+ \item[Formeln:] alle Klauselmengen
  \item[Axiomenschema:] $\{\Box\}$
- \item[Ableitungsregeln:]~\\
-  \begin{enumerate}
+ \item[Ableitungsregeln:] die Theorie verwendet die Regeln
+  \begin{itemize}
    \item[(Res)] Für die Klauselmenge $S$ und die Klausel $R\in S$, die
     Resolvent von $C_1$ und $C_2$ ist:
     \begin{gather*}
       \frac{S}{(S\setminus\{R\})\cup\{C_1, C_2\}}
     \end{gather*}
-   \item[(Einf)] Für Klauselmenge $S$ und beliebige Klausel $C$:
+   \item[(Einf)] Für die Klauselmenge $S$ und eine beliebige Klausel $C$:
     \begin{gather*}
       \frac{S}{S \cup\{C\}}
     \end{gather*}
-  \end{enumerate}
+  \end{itemize}
 \end{mdescription}
 
 Alle Beweise beginnen also mit der Klauselmenge, die nur aus der leeren Klausel besteht
@@ -2892,11 +2963,11 @@ die Klauselmenge eingefügt.
     (3)\quad & \{ \{ B \}, \{ A \}, \{\neg A, \neg B\} \}
        & \text{(Res) für $\neg A$ auf $\{\neg B\}$ in (2)}  \\
     (4)\quad & \{ \{ \neg A, B \}, \{ A \}, \{\neg A, \neg B\} \}
-       & \text{(Res) für $\neg A$ auf $\{B\}$ in (3)}  \\
+       & \text{(Res) für $\neg A$ auf $\{B\}$ in (3)}  \displaybreak[0]\\
     (5)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B\} \}
-       & \text{(Res) für $\neg C$ auf $\{A\}$ in (4)}  \\
+       & \text{(Res) für $\neg C$ auf $\{A\}$ in (4)}  \displaybreak[0]\\
     (6)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-       & \text{(Res) f. $\neg C$ auf $\{\neg A, \neg B\}$ in (5)}  \\
+       & \text{(Res) f. $\neg C$ auf $\{\neg A, \neg B\}$ in (5)}  \displaybreak[0]\\
     (7)\quad & \big\{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\},
        & \text{(Res) für $B$ auf $\{C\}$ in (6)}  \\
     &\quad  \{\neg A, \neg B, \neg C\} \big\}\\
