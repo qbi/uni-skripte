@@ -2829,23 +2829,27 @@ Realisierung erhält man $\omega\in\Omega$. Daraus folgt die Abbildung
 $\xi(\omega)$. Das $P$ muss die Verteilung $P_\xi$ haben. Das Anliegen
 der Statistik ist die Bestimmung von $P_\xi$.
 
-\begin{beispiel}
+\begin{beispiel}[Bernoulli"=Schema]
   \begin{align*}
     \ofp &= [\{0,1\}, \FP(\{0,1\}), p\delta_1+ (1-p)
     \delta_0]^{n\times}\\
+    &=[\{0,1\}^{n}, \FP(\{0,1\}^{n}), (p\delta_{1}+
+       (1-p)\delta_{0})nx]\\
     \Omega &= \{[\varepsilon_1, \ldots, \varepsilon_n]| \varepsilon_i
-    \in \{0,1\}, i=1,\ldots,n\}
+    \in \{0,1\}, i=1,\ldots,n\}\\
+    \xi_{k}&\colon \Omega\rightarrow\R,
+       \xi_{k}([\omega_{1},\dotsc,\omega_{n}]) \colon= \omega_{k}
   \end{align*}
   Nun fixieren wir ein $i$ und betrachten das Tupel
   $\xi_i([\varepsilon_1, \ldots, \varepsilon_n])=\xi_i$. Es ist klar,
   dass $\xi_i$ eine Zufallsgröße ist.
   \begin{align*}
-    P_{\xi_i}(A) &= P(\xi^{-1}_i(A))\\
+    P_{\xi_i}(A) &= P\circ\xi_{i}^{-1}(A)= P(\xi^{-1}_i(A)) \quad A\in\FB\\
     \xi^{-1}_i &= \{[\varepsilon_1, \ldots, \varepsilon_n]|
     \xi_i([\varepsilon_1, \ldots, \varepsilon_n])\in A\}=
-    \{0,1\}^{(i-1)\times} \times A \times \{0,1\}^{(n-1)\times}\\
+    \{0,1\}^{(i-1)} \times A \times \{0,1\}^{(n-k)}\\
     P(\xi^{-1}_i (A)) &= P(\{0,1\}^{(i-1)\times} \times A \times
-    \{0,1\}^{(n-1)\times})\\
+    \{0,1\}^{(n-k)\times})\\
     &= (p\delta_1+(1-p)\delta_0)^{n\times} (\{0,1\}^{(i-1)\times}
     \times A\times \{0,1\}^{(n-1)\times})\\
     &= \underbrace{(p\delta_1+(1-p)\delta_0)^{(i-1)\times}
@@ -2859,10 +2863,25 @@ der Statistik ist die Bestimmung von $P_\xi$.
   Projektion in $\times_{k=1}^n P_k$ ist, dann ist $P_{\xi_i}=P_i$
 \end{beispiel}
 
+Wir setzen $\xi\colon= \sum_{k=1}^{n} \xi_{k}$. Die Frage ist nun, was
+$P_{\xi}$ ist. Anzunehmen ist, dass sich die Binomialverteilung ergibt. Dazu
+genüg es, statt $P_{\xi}(A)$ nur $P_{\xi}(\{j\})$ zu betrachten
+\begin{align*}
+  P_{\xi}(\{j\}) &= P(\xi^{-1}(\{j\})) =
+     P(\{[\omega_{1},\dotsc,\omega_{n}]\colon
+     \xi([\omega_{1},\dotsc,\omega_{n}]) = j \})\\
+  &=
+     P(\{[\omega_{1},\dotsc,\omega_{n}]\colon \sum_{k=1}^{n}
+     \underbrace{\xi_{k}([\omega_{1},\dotsc,\omega_{n}])}_{=\omega_{k}}=j\})\\
+  &= P(\{[\omega_{1},\dotsc,\omega_{n}]\colon \sum_{k=1}^{n} \omega_{k}=j\}) =
+     \binom{n}{j} p^{j} (1-p)^{n-j}= B_{n,p}(\{j\})\\
+  &\Rightarrow P_{\xi}=B_{n,p}
+\end{align*}
+
 \begin{satz}
   Sei $Q$ ein Wahrscheinlichkeitsmaß auf $[\R, \FB]$ mit stetiger und
   streng monoton wachsender Verteilungsfunktion $F_Q$. Dann ist
-  $\xi_i=F_Q^{-1}$ eine \highl{Zufallsgröße} über dem
+  $\xi=F_Q^{-1}$ eine \highl{Zufallsgröße} über dem
   Wahrscheinlichkeitsraum $[(0,1),\FB\cap (0,1), Gl_{(0,1)}]$ mit
   $P_\xi=Q$.
 \begin{proof}
@@ -2872,12 +2891,18 @@ der Statistik ist die Bestimmung von $P_\xi$.
   Verteilungsfunktion eindeutig bestimmt ist. Damit genügt es zu
   zeigen, dass $F_{P_\xi}=F_Q$.
 
-  Dazu ist  nach Definition $F_{P_\xi}=P_\xi((-\infty, x))$. Weiterhin
-  ist:
+  Es gilt, $F_{Q}(x)\in[0,1]$ mit $x\in\R$. Aber $F_{Q}$ kann nie die Werte 0
+  oder 1 wegen der strengen Monotonie annehmen $\Rightarrow F_{Q}(x)\in(0,1)$.
+  Somit existiert $F_{Q}^{-1}$ auf $(0,1)$ und $F_{Q}^{-1}$ ist stetig
+  $\Rightarrow$ $F_{Q}^{-1}$ messbar. Also ist $\xi=F_{Q}^{-1}$ eine
+  Zufallsgröße. (Genauere Betrachtungen zu oben.)
+
+  Dazu ist nach Definition $F_{P_\xi}(x)=P_\xi((-\infty,
+  x))=P(\xi^{-1}((-\infty,x)))$. Weiterhin ist:
   \begin{align*}
-    P_\xi((-\infty, x)) &=  P(\underbrace{\xi^{-1}(-\infty,
-      x)}_{\{y\in (0,1)|\xi y\in(-\infty, x)\}=\{y\in(0,1)|
-      \xi(y)<x\}}) = P(\{y\in (0,1)|\xi(y)<x\})\\
+    P_\xi((-\infty, x)) &=  P(\xi^{-1}((-\infty,
+      x)))= P(\{y\in (0,1)|\xi (y)\in(-\infty, x)\})\\
+    &= P(\{y\in (0,1)|\xi(y)<x\})\\
     &= P(\{y\in(0,1)|F_Q^{-1}(y)<x\})= P(\{y\in(0,1)|y<F_Q(x)\})\\
     &= P((0, F_Q(x)))
   \end{align*}
@@ -2890,28 +2915,43 @@ der Statistik ist die Bestimmung von $P_\xi$.
 \begin{remark}
   Schreibweise: $F_\xi\colon= F_{P_\xi}$ und $P(\xi^{-1}(A))=\colon P(\text{"`$\xi\in
   A$"'}) \colon= P(\{\omega\in\Omega| \xi(\omega)\in A\}) \Rightarrow
-  F_\xi(x) = P(\text{"`$\xi\in(-\infty,x)$"'})=P(\text{"`$\xi< x$"'})$ 
+  F_\xi(x) = P(\text{"`$\xi\in(-\infty,x)$"'})=P(\text{"`$\xi< x$"'})$
+
+  Es reicht die Forderung, $F_{Q}$ ist streng monoton wachsend auf $(a,b)$ mit
+  $Q((a,b))=1$. Dabei ist $a=\infty, b=-\infty$ zulässig. Ohne Stetigkeit gilt
+  die Aussage nicht.
 \end{remark}
+
+\begin{beispiel}
+  Betrachten die Exponentialverteilung $Q=\Ex_{\lambda}\rightarrow
+  Q((0,+\infty))=1, F_{Q}(x)=1-e^{-\lambda x}$ für $x\in(0,+\infty)$. Weitere
+  Betrachtung in der Übung.
+\end{beispiel}
 
 
 \section{Unabhängige Zufallsgrößen}
 
-Im folgenden Abschnitt gilt immer, dass $\ofp$ ein
-Wahrscheinlichkeitsraum und eine Familie $(\xi_i)_{i\in I}$ mit Werten
-in $[X_i, \FX_i]$ ist.
+Im folgenden Abschnitt gilt immer, dass $\ofp$ ein Wahrscheinlichkeitsraum und
+eine Familie von Zufallsvariablen $(\xi_i)_{i\in I}$ mit Werten in $[X_i,
+\FX_i]$ ist.
+
+Spezialfall: $[X_{i}, \FX_{i}]=[\R, \FB]$.
 
 \begin{definition}
-  $(\xi_i)_{i\in I}$ heißt \highl{unabhängig}, wenn für alle
-  Folgen $B_i\in\FX_i\,(i\in I)$ die Familie $\{\xi_i^{-1}(B)|i\in
+  Die Familie $(\xi_i)_{i\in I}$ heißt \highl{unabhängig}, wenn für alle
+  Folgen $B_i\in\FX_i\,(i\in I)$ die Familie $\{\xi_i^{-1}(B_{i})|i\in
   I\}\subseteq \CF$ (vollständig) unabhängig ist.
 \end{definition}
 
-\begin{satz}
-\label{satz:chiiunab-521}
-  Wegen der Bemerkung h nach Definition von unabhängigen
+\begin{satz}\label{satz:chiiunab-521}
+  Wegen der Bemerkung h nach der Definition von unabhängigen
   Ereignissystemen ist klar: $(\xi_i)_{i\in I}$ ist genau dann
   unabhängig, wenn für alle $n\geq 2$ gilt, dass $\{\xi_1, \ldots,
   \xi_n\}\subseteq \{\xi_i|i\in I\}$ unabhängig ist.
+
+  Andere Formulierung: Die $(\xi_{i})_{i\in I}$ sind genau dann unabhängig,
+  wenn für jedes $n\geq2$ und $i_{1},\dotsc, i_{n}\subseteq I$ die Folge
+  $\xi_{i_{1}},\dotsc,\xi_{i_{n}}$ unabhängig ist.
 \end{satz}
 
 \begin{satz}
