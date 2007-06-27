@@ -82,6 +82,10 @@
 \newtheorem{bsp}{Beispiel}
 \newtheorem{folg}{Folgerung}
 
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+%\newtheorem{fakt}{Fakt}
+\newtheorem{bemerkON}{Bemerkung}
 
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
@@ -89,6 +93,7 @@
 \theoremsymbol{\ensuremath{_\blacksquare}}
 % \theoremsymbol{q.\,e.\,d.}
 \newtheorem{proof}{Beweis:}
+
 
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
@@ -161,15 +166,7 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
-
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-% \newenvironment*{mdescription}%
-%                 {\renewcommand*{\descriptionlabel}[1]%
-%  			       {\hspace\labelsep\normalfont ##1}%
-% 		 \begin{description}}%
-% 		{\end{description}}
+\DeclareMathOperator{\spn}{span}
 
 \makeindex
 
@@ -2083,7 +2080,7 @@ $L_{p}(G)=L_{p}(G,\FB(G),\mu)$ für $1\leq p\leq\infty$.
       für $y\in V$:
       \begin{gather*}
 	\abs{T_{K} f(y) - T_{K} f(y_{0})} \leq \int_{X} \abs{f(x)}
-	  \abs{K(x,y)-K(x,y_{0})}\,d\mu(x)}
+	  \abs{K(x,y)-K(x,y_{0})}\,d\mu(x)
       \end{gather*}
       Mit der obigen Bemerkung drei wählen wir $K$ so ,dass $\int_{X\setminus
       K} \abs{f}<\epsilon$. Dann
@@ -2111,6 +2108,187 @@ $L_{p}(G)=L_{p}(G,\FB(G),\mu)$ für $1\leq p\leq\infty$.
 \end{satz}
 
 \appendix
+
+\chapter{Wavelets}
+
+\todo{Vorlesungen ergänzen}
+
+% Vorlesung vom 2007-06-27
+
+\section{Wavelets und Multiskalenanalysis}
+
+\begin{defini}
+  Ein Wavelet ist eine Funktion $\Psi\in L_{2}(\R)$, so dass die Familie
+  $\{\psi_{jk}\colon j,k\in \Z\}$ gegeben durch
+  \begin{gather*}
+    \psi_{jk}(x) = 2^{\nicefrac{j}{2}} \psi(2^{j}x-k)
+  \end{gather*}
+  eine Orthonormalbasis im Hilbertraum $L_{2}(\R)$ ist. Eine solche Basis
+  heißt \highl{Waveletbasis}.
+\end{defini}
+
+\begin{bsp}[Haarwavelet]
+  Das Haarwavelet aus 4.1.2 \todo{link einfügen} ist ein Wavelet.
+\end{bsp}
+
+\begin{defini}
+  Eine \highl{Multiskalenanalyse} ist eine Folge $(V_{j})_{j\in\Z}$ von
+  Teilräumen von $L_{2}(\R)$, so dass gilt
+  \begin{enumerate}
+    \item $\dotso, V_{-1}\subseteq V_{0}\subseteq V_{1}\dotso $
+   \item $\spn \bigcup_{j\in\Z} V_{j} =L_{2}(\R)$
+   \item $\bigcap_{j\in\Z} V_{j} =\{\emptyset\}$
+   \item $f(x)\in V_{j}\Leftrightarrow f(2^{-j}x)\in V_{0}$
+   \item $f(x) \in V_{0}\Leftrightarrow f(x-k)\in V_{0}$ für alle $k\in\Z$
+   \item Es existiert eine \highl{Skalierungsfunktion} $\Phi\in V_{0}$ so,
+    dass das System $\{\Phi(x-m)\colon m\in\Z\}$ eine Orthonormalbasis in
+    $V_{0}$ ist.
+  \end{enumerate}
+\end{defini}
+
+\begin{bsp}
+  Die Räume $L_{j}=\overline{\spn}\{1_{\Delta_{jk}}\colon k\in\Z\}= \{f\in
+  L_{2}(\R)\colon f\text{ konstant auf allen Intervallen } [k2^{-j},
+  (k+1)2^{-j}) \text{ für } k\in\Z\}$ aus 4.1.2 \todo{Link einfügen} formen
+  eine Multiskalenanalyse mit Skalierungsfunktion:
+  \begin{gather*}
+    \Phi=1_{\Delta_{0,0}}=1_{[0,1)}
+  \end{gather*}
+\end{bsp}
+
+Fakt: $T_{n}$ und $2^{\nicefrac{2}{s}}a_{s}$ sind Isometrien von $L_{2}(\R)$.
+Der Beweis erfolgt durch Variablensubstitution.
+
+\begin{bemerkON}
+  \begin{enumerate}
+    \item Die obigen Eigenschaften 1---3 bedeuten, dass man Funktionen aus
+    $L_{2}(\R)$ mit Funktionen aus $V_{j}$ approximieren kann. Für
+    $j\rightarrow\infty$ hat man Konvergenz in $L_{2}$.
+   \item Die Eigenschaften 4 und 5 bedeuten Invarianz der Räume $V_{j}$
+    gegenüber Translation und Dilatation. Dabei heißt 4 $V_{j}=a_{j}(V_{0})$
+    und 5 $V_{0}=T_{k}(V_{0})$ für $k\in \Z$.
+   \item Die sechste Eigenschaft bedeutet dann auch: Das System
+    $\{2^{\nicefrac{j}{2}} \Phi(2^{j}x-k)\colon k\in\Z\}$ ist eine Orthonormalbasis
+    von $V_{j}$.
+   \item Redundanz der Bedigungen: Aus der sechsten ergibt sich die fünfte
+    Bedingung und die dritte ist überflüssig. (Beweis erfolgt später)
+   \item
+    \begin{enumerate}
+      \item Teilräume $(V_{j})_{j\in\Z}$ sind Basisobjekte. Finde
+      Skalierungsfunktion $\Phi$
+     \item Start mit $\Phi$ und setze $V_{0}=\overline{\spn} \{\Phi(x-k),
+      k\in\Z\}$. Dann sind auch die $V_{j}$ definiert.
+    \end{enumerate}
+  \end{enumerate}
+\end{bemerkON}
+
+\begin{defini}
+  Eine Folge $(x_{n})$ in einem Hilbertraum $H$ ist eine \highl{Rieszfolge},
+  wenn es Konstanten $0<A\leq B$ gibt, so dass
+  \begin{gather*}
+    A\left(\sum_{n} \abs{a_{n}}^{2}\right)^{\nicefrac{1}{2}} \leq
+       \norm{\sum_{n} a_{n} x_{n} |H} \leq B\left(\sum_{n}
+       \abs{x_{n}}^{2}\right)^{\nicefrac{1}{2}}
+  \end{gather*}
+  für alle Folgen $(a_{n})$ von Skalaren gilt. Ist $\overline{\spn}
+  \{x_{n}\}=H$, so heißt $(x_{n})$ \highl{Rieszbasis}.
+\end{defini}
+
+\begin{bsp}
+  Ein Orthonormalsystem ist eine Rieszfolge mit $A=B=1$.
+\end{bsp}
+
+%satz 4.2.1
+\begin{satz}
+  Sei $(x_{n})_{n\in\Z}$ eine Rieszbasis in $H$. Dann existiert eine
+  Rieszbasis $(x_{n}^{*})$ von $H$ aus biorthogonalen Funktionalen, d.\,h.
+  \begin{gather*}
+    \langle x_{n}, x_{n}^{*}\rangle = \delta_{nm}=
+       \begin{cases}
+	 1 & n=m\\
+	 0 & \text{sonst}
+       \end{cases}
+  \end{gather*}
+  \begin{proof}
+    Nehmen $l_{2}(\Z), e_{n}=(\dotsc,0,1,0,\dotsc)$ Einheitsvektoren, $I\colon
+    l_{2}(\Z)\rightarrow H, I(e_{n})=x_{n}$. Die Abbildung $I$ ist ein
+    Isomorphismus. Setzen $x_{n}^{*}=(I^{-1})^{*}(e_{n})$. Dann ist auch
+    $(x_{n}^{*})$ einen Basis von $H$ und es gilt:
+    \begin{gather*}
+      \langle x_{n}, x_{n}^{*}\rangle= \langle I(e_{n}),
+	 (I^{-1})^{*}e_{m}\rangle = \langle I^{-1}I(e_{n}), (e_{m})\rangle= \delta_{nm}
+    \end{gather*}
+    Da $(I^{-1})^{*}$ ein Isomorphismus ist, ist $(x_{n}^{*})$ eine Rieszbasis.
+  \end{proof}
+\end{satz}
+
+\begin{folg}
+  Sei $(x_{n})$ Rieszbasis in $H$. Dann existiert $0<A\leq B$ mit
+  $A\norm{x}\leq (\sum_{n} \abs{\langle x,x_{n}\rangle}^{2})^{\nicefrac{1}{2}}$.
+  \begin{proof}
+    $x=\sum_{n} a_{n}x_{n}^{*}\Rightarrow a_{n}=\langle x,x_{n}\rangle
+    \Rightarrow (\sum_{n} \abs{\langle x,x_{n}\rangle}^{2})^{\nicefrac{1}{2}}
+    = (\sum_{n} \abs{a_{n}}^{2})^{\nicefrac{1}{2}}$.
+  \end{proof}
+\end{folg}
+
+%satz 4.2.2
+\begin{satz}
+  Sei $\Phi\in L_{2}(\R)$ und $0<A\leq B$. dann sind äquivalent:
+  \begin{enumerate}
+    \item Für jede Folge $(a_{n})_{n\in\Z}$ von Skalaren gilt:
+    \begin{gather*}
+      A\left(\sum_{n} \abs{a_{n}}^{2}\right)^{\nicefrac{1}{2}} \leq \left(
+	 \int_{-\infty}^{\infty} \abs{\sum_{n} a_{n}
+	 \Phi(x-n)}^{2}\,dx\right)^{\nicefrac{1}{2}} \leq B \left(\sum_{n}
+	 \abs{a_{n}}^{2}\right)^{\nicefrac{1}{2}}
+    \end{gather*}
+   \item Für fast alle $\xi\in\R$ gilt:
+    \begin{gather*}
+      \frac{A^{2}}{2\pi}\leq \sum_{k\in\Z} \abs{\hat{\Phi}(\xi+2\pi
+	 k)}^{2}\leq \frac{B^{2}}{2\pi}
+    \end{gather*}
+  \end{enumerate}
+  \begin{proof}
+    \begin{itemize}
+      \item["`2$\Rightarrow$1"'] Nach Satz 2.2.3 \todo{Link einfügen} gilt
+      \dots{}. Weiter haben wir Plancherel.
+      \begin{align*}
+	\norm{\FF(\sum_{n} a_{n}\Phi(x-n))}^{2} &=
+	   \left(\int_{-\infty}^{\infty} \abs{\FF(\sum_{n} a_{n}
+	   \Phi(x-n))}^{2}\,dx\right)^{\nicefrac{1}{2}}\\
+	&= \left(\int_{-\infty}^{\infty} \abs{\sum_{n} a_{n} e^{-in\xi}}^{2}
+	   \abs{\hat{\Phi} (\xi)}^{2}\,d\xi\right)^{\nicefrac{1}{2}}\\
+	&= \sum_{k\in\Z} \int_{2\pi l}^{2\pi(l+1)} \dotso\\
+	&= (\int_{0}^{2\pi} \abs{\sum_{n} a_{n} e^{-in\xi}}^{2} \sum_{l\in\Z}
+	   \abs{\hat{\Phi} (\xi+2\pi l)}^{2}\,d\xi
+      \end{align*}
+      \todo{Beweis nacharbeiten}
+     \item["`1$\Rightarrow$2"'] Sei $t>0$.
+      \begin{gather*}
+	A_{t} = \{ \xi\in[0,2\pi)\colon \sum_{k} \abs{\Phi (\xi+2\pi k)}^{2}>t\}
+      \end{gather*}
+      $A_{t}$ hat positives Lebesguemaß $\alpha>0$. Fourreihe $1_{A_{t}}(\xi)=
+      \sum_{n\in\Z} a_{n} e^{-in\xi}$.
+      \begin{align*}
+	\norm{\sum_{n\in\Z} a_{n} \Phi(x-n)|L_{2}}^{2} &= \int_{A_{t}}
+	   \sum_{k\in\Z} \abs{\hat{\Phi}(\xi+2\pi k)}^{2}\,d\xi>t\alpha\\
+	\Rightarrow \norm{\sum_{n\in\Z} a_{n} \Phi(x-n)|L_{2}} &\geq
+	   \sqrt{t\alpha} \geq \sqrt{2\pi t}
+	   (\sum_{n\in\Z}\abs{a_{n}}^{2})^{\nicefrac{1}{2}}\\
+	\sum_{n\in\Z} \abs{a_{n}}^{2} &= \frac{1}{2\pi} \int_{0}^{2\pi}
+	   \abs{1_{A_{t}}(x)}^{2}\,dx\\
+	&= \frac{1}{2\pi}\dotso
+      \end{align*}
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+\begin{bemerkON}
+  Die erste Bedingung bedeutet, dass das System $\{\Phi(x-n, n\in\Z\})$ eine
+  Rieszfolge ist, also eine Rieszbasis in seinem span ist.
+\end{bemerkON}
+
 \chapter{Übungsaufgaben}
 
 \begin{enumerate}
