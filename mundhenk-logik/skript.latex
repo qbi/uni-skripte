@@ -6045,10 +6045,7 @@ zeigen wir, dass die Funktion $p\colon\N\rightarrow \N$ mit
 \end{gather*}
 primitiv"=rekursiv ist.
 Die unendliche Folge von Primzahlen beginnt mit $2,3,5,7,11,13$.
-Die erste Primzahl ist also $2$, d.\,h.~$p(1)=2$.
-Da es keine nullte Primzahl gibt, die Funktion $p$ aber
-trotzdem auf $\N$ -- also auch für $0$ -- definiert sein soll,
-setzen wir einfach $p(0)=0$ fest.
+Die erste Primzahl ist also $2$, d.\,h.~$p(0)=2$.
 Aus dem (oder besser: einem) Beweis des Satzes,
 dass es unendlich viele Primzahlen gibt, folgt
 $p(n+1)\leq p(n)!+1$.
@@ -6058,7 +6055,7 @@ Dann ist $p(n+1)$ die kleinste Zahl $t\leq p(n)!+1$,
 die größer als $p(n)$ und eine Primzahl ist.
 Als einen ersten informellen Ansatz beschreiben wir die Funktion $p$ damit wie folgt.
 \begin{align*}
-  p(0) & = 0 \\
+  p(0) & = 2 \\
   p(n+1) & = \min_{t\leq p(n)!+1}
      \left[ \prim(t) \wedge t> p(n) \right]
 \end{align*}
@@ -6069,12 +6066,12 @@ Formaler definieren wir zunächst eine primitiv"=rekursive Funktion $h$ mit
 \end{gather*}
 und darüber die Funktion $q$ mit
 \begin{gather*}
-  q(y,m) = h(m, m!+1)
+  q(y,m) = h(m, m!+1) ~ .
 \end{gather*}
 Damit gilt schließlich
 \begin{align*}
-  p(0) & = 0 \\
-  p(n+1) & = q(n,p(n))
+  p(0) & = 2 \\
+  p(n+1) & = q(n,p(n)) ~ ~ .
 \end{align*}
 
 
@@ -6087,7 +6084,6 @@ durch natürliche Zahlen verwendet werden.
 Die Folge $a_{0}, a_{1},\dotsc,a_{n}$ mit $a_{n}\ne 0$ wird kodiert als
 $2^{a_{0}}\cdot 3^{a_{1}}\cdot 5^{a_{2}}\dotsm p_{n}^{a_{n}}$, wobei
 $p_{i}$ die $i$-te Primzahl ist ($p_{0}=2$).
-\help{Das deckt sich nicht mit der Definition von $p$ von oben.}
 Da die Zerlegung von natürlichen Zahlen in Primfaktoren eindeutig ist,
 lassen sich die einzelnen Elemente der Folge dekodieren. Dabei ist $dek(m,i)$
 die Potenz von $p_{i}$ in der Primfaktorenzerlegung von $m$; z.\,B. ist
@@ -6100,13 +6096,14 @@ benutzen wir für $dek(m,i)$ als vereinfachende Schreibweise $(m)_{i}$.
 
 Die Länge einer kodierten Folge lässt sich ebenfalls primitiv"=rekursiv
 berechnen. Dabei ist $lh(m)$ der größte Index $i$ einer Primzahl $p_{i}$ der
-Primfaktorenzerlegung von $m$; z.\,B. ist $lh(2^{3}\cdot 3^{7}\cdot 11^{8}) = 4$
+Primfaktorenzerlegung von $m$; z.\,B. ist $lh(2^{3}\cdot 3^{7}\cdot 11^{8}) = 2$.
 \begin{gather*}
   lh(m) = \sum_{j=1}^{m} (\exists i)_{\leq m} (p_{i}\mid m\wedge i\geq j)
 \end{gather*}
 Der Ausdruck $(\exists i)_{\leq m} (p_{i}\mid m\wedge i\geq j)$ ist dabei
 immer dann eins, wenn $m$ einen Primfaktor~$p_{i}$ mit dem Index $i\geq
-j$ hat, dies ist genau $lh(m)$"~mal der Fall.
+j$ hat.
+Dies ist genau f\"ur $j=1,2,\ldots,lh(m)$ der Fall.
 
 Die \emph{Konkatenation} von zwei kodierten Folgen $m = 2^{a_{0}}\cdot
 3^{a_{1}}\dotsm p_{k}^{a_{k}}$ und $q = 2^{b_{0}} \cdot 3^{b_{1}} \dotsm
@@ -6118,7 +6115,7 @@ p_{k+l+1}^{b_{l}}$.
      \prod_{i=0}^{lh(q)} (p_{lh(m)+1+i})^{b_{i}}
 \end{gather*}
 
-Wie man leicht sieht, ist die Konkatenation assoziativ
+Wie man leicht sieht, ist die Konkatenation assoziativ.
 \begin{multline*}
   (m*q) * r = \bigg( \prod_{i=0}^{ln(m)} p_{i}^{a_{i}} \cdot
      \prod_{i=0}^{lh(q)} (p_{lh(m)+1+i})^{b_{i}} \bigg) * r\\
@@ -6131,35 +6128,46 @@ Wie man leicht sieht, ist die Konkatenation assoziativ
      = m * (q*r)
 \end{multline*}
 
+Wir werden sp\"ater (wirklich?) auch Folgen von
+Funktionswerten kodieren.
+Dazu f\"uhren wir f\"ur jede Funktion $f:\N\rightarrow\N$
+eine Funktion $f\#:\N\rightarrow\N$ ein,
+so dass $f\#(n)$ die Kodierung von $f(0),f(1),\ldots,f(n-1)$ ist.
+
 \begin{defini}
-  Um später die allgemeine Rekursion einzuführen definieren wir
+  Sei $f\colon\N\rightarrow\N$ eine Funktion.
+  Dann ist $f\#\colon\N\rightarrow\N$ wie folgt definiert.
   \begin{gather*}
     f\#(y) = 2^{f(0)} \cdot 3^{f(1)}\dotsm p_{y-1}^{f(y-1)} =
        \prod_{i=0}^{y-1} p_{i}^{f(i)}
   \end{gather*}
-  für eine beliebige Funktion $f\colon\N\rightarrow\N$.
 \end{defini}
 
-Sei $h$ eine primitiv"=rekursive Funktion, so dass $f(n) = h(n, f\#(n))$,
-dann ist $f$ primitiv"=rekursiv. (Intention: Man kann bei der Rekursion auf
-beliebige Vorgängerwerte zurückgreifen)
-
 \begin{lemma}
-   $f\#$ ist primitiv"=rekursiv.
+   $f$ ist primitiv"=rekursiv genau dann, wenn
+   $f\#$ primitiv"=rekursiv ist.
 
   \begin{proof}
-    $f$ sei eine beliebige Funktion auf den natürlichen Zahlen.
+    $f$ sei eine primitiv"=rekursive Funktion auf den natürlichen Zahlen.
     \begin{align*}
       f\#(0) &= 1 &\text{(leeres Produkt)}\\
       f\#(n+1) & = f\#(n) \cdot p_{n}^{f(n)} = f\#(n) \cdot p_{n}^{h(n,
          f\#(n))}
     \end{align*}
     Also ist $f\#$ primitiv"=rekursiv.
+
+    Es gilt $f(n)=dek(f\#(n+1),lh(f\#(n+1)))$.
+    Falls $f\#$ primitiv"=rekursiv ist,
+    ist es $f$ also ebenfalls.
   \end{proof}
 \end{lemma}
 
-Da $f(n) = h(n, f\#(n))$, ist $f$ ebenfalls primitiv"=rekursiv.
-
+Damit l\"asst sich leicht nachweisen,
+dass die Fibonacci-Funktion $fib\colon\N\rightarrow\N$
+(mit $fib(0)=0$, $fib(1)=1$ und $fib(n+1)=fib(n+1)+fib(n)$)
+primitiv"=rekursiv ist.
+(Intention: Man kann bei der Rekursion auf
+beliebige Vorgängerwerte zurückgreifen)
 
 \subsection{Exkurs: Unbeschränkte Minimierung und rekursive Funktionen}
 
@@ -6217,14 +6225,13 @@ Ein bekanntes Beispiel ist die \emph{Ackermann"=Funktion}
 $A\colon\N^2\rightarrow\N$.
 Sie wächst stärker als jede primitiv"=rekursive Funktion.
 Allerdings ist es auch nicht ganz leicht zu zeigen,
-88dass die Ackermann"=Funktion rekursiv ist.
+dass die Ackermann"=Funktion rekursiv ist.
 
 \begin{center}
   \begin{tabular}{rcll}
-    $A(0,y)$ & $=$ & $1$ & für $y\geq 0$ \\
-    $A(1,0)$ & $=$ & $2$ & \\
-    $A(x,0)$ & $=$ & $x+2$ & für $x\geq 2$ \\
-    $A(x+1,y+1)$ & $=$ & $A(A(x,y+1),y)$ & für $x\geq 0$ und $y\geq 0$
+    $A(0,m)$ & $=$ & $m+1$ & für $y\geq 0$ \\
+    $A(n+1,0)$ & $=$ & $A(n,1)$ & \\
+    $A(n+1,m+1)$ & $=$ & $A(n,A(n+1,m))$ & für $n\geq 0$ und $m\geq 0$
   \end{tabular}
 \end{center}
 
