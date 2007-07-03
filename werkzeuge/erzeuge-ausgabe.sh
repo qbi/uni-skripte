@@ -51,7 +51,7 @@ fi
 
 for ext in ps pdf; do
     # Das Skript verwendet PSTricks. rubber muss aus dem PS das PDF erstellen.
-    if grep -q '^[^%]*\\usepackage.*{pst-' $src; then
+    if grep -Eq '^[^%]*\\usepackage.*{pst(-|ricks})' $src; then
         opt=--ps
     else
         opt=
