@@ -2798,7 +2798,117 @@ Homöomorphismus. Also gilt:
   wobei $\Phi\colon G\rightarrow\hat{\hat{G}}, (\Phi(y))(X)\colon= X(y)$ ein
   Gruppenisomorphismus und Homöomorphismus ist.
 \end{satz}
+
 \chapter{Wavelets}
+
+Die Entwicklung in Fourierreihen hat einen entscheidenden Nachteil. Die
+Basisfunktionen sind nicht lokalisiert, d.\,h. selbst für Funktionen, die
+"`sehr lokal"' sind, braucht man alle basisfunktionen und
+Fourierkoeffizienten, um $f$ zu rekonstruieren. Wavelets hingegen sind lokal
+und beheben diesen Nachteil. Daher sind sie für viele Anwendungen besser
+geeignet. Sie bieten schnellere Konvergenz und weniger Koeffizienten zur
+Rekonstruktion von Funktionen. Des Weiteren lassen sich auch schneller
+Algorithmen bauen.
+
+\section{Die Haarbasis in $L_{p}(\R)$}
+
+Diese ist ein Beispiel für eine Waveletbasis, die weit vor der formalen
+Einführung von Wavelets gefunden wurde.
+
+\begin{defini}
+  Das \highl{Haarwavelet} ist die Funktion $H\colon\R\rightarrow\R$ gegeben
+  durch
+  \begin{gather*}
+    H(x) =
+       \begin{cases}
+	 +1 & x\in[0,\nicefrac{1}{2})\\
+	 -1 & x\in[\nicefrac{1}{2}, 1)\\
+	 0 6 \text{sonst}
+       \end{cases}
+  \end{gather*}
+
+  Das \highl{Haarsystem} $\{H_{jk}\}_{j,k\in\Z}$ besteht aus den Translationen
+  und Dilatationen
+  \begin{gather*}
+    H_{jk}(x) \colon= 2^{\nicefrac{j}{2}}H(2^{j}x-k)
+  \end{gather*}
+  Der Träger von $H_{jk}$ ist das dyadische Intervall:
+  \begin{gather*}
+    \Delta_{jk} = [k2^{-j}, (k+1)2^{-j}]
+  \end{gather*}
+  Die Intervalle $\{\Delta_{jk}\colon k\in\Z\}$ bilden das $j$-te Level der
+  dyadischen Intervalle. $H_{jk}$ ist eine Haarfunktion aus dem $j$-ten Level.
+\end{defini}
+
+wichtige Eigenschaften:
+\begin{enumerate}
+ \item Zwei dyadische Intervalle haben folgende Lagemöglichkeiten: Entweder
+  überlappen sie sich nicht oder eines ist im anderen enthalten.
+ \item Falls ein dyadisches Intervall in einem anderen dyadischen Intervall
+  enthalten ist, so ist es entweder in der linken oder in der rechten Hälfte
+  enthalten.
+\end{enumerate}
+
+%satz 4.1.1
+\begin{satz}
+  Das Haarsystem ist ein orthogonales System in $L_{2}(\R)$.
+  \begin{proof}
+    \begin{enumerate}
+     \item $\norm{H_{jk}|L_{2}(\R)}^{2}= \int_{\R} \abs{H_{jk}(x)}^{2}\,dx=
+      \int_{\Delta_{jk}} 2^{j}\,dx= \abs{\Delta_{jk}}2^{j}=1$
+     \item $\langle H_{jk}, H_{j'k'}\rangle=
+      \int_{\Delta_{jk}\cap\Delta_{j'k'}} H_{jk}(x) H_{j'k'}(x)\,dx$
+      \begin{enumerate}[1. F{a}ll]
+       \item $\Delta_{j'k'}$ und $\Delta_{jk}$ überlappen sich nicht
+	$\Rightarrow\langle H_{jk}, H_{j'k'}\rangle=0$
+       \item $\Delta_{j'k'}\subsetneq\Delta_{jk}\Rightarrow \Delta_{j'k'}$ ist
+	entweder in der linken oder der rechten Hälfte. Dort ist $H_{jk}$
+	konstant $2^{\nicefrac{j}{2}}$ oder
+	$-2^{\nicefrac{j}{2}}\Rightarrow\langle H_{jk}, H_{j'k'}\rangle=
+	-2^{\nicefrac{j}{2}} \int_{\Delta_{j'k'}} H_{j'k'}(x)\,dx=0$
+      \end{enumerate}
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+%satz 4.1.2
+\begin{satz}
+  Das Haarsystem ist eine Orthonormalbasis in $L_{2}(\R)$.
+\end{satz}
+
+\begin{folg}
+  Jedes $f\in L_{2}(\R)$ lässt sich schreiben als
+  \begin{gather}
+    \label{eq:411}
+    f=\sum_{j\in\Z} \sum_{k\in\Z} \langle f,h_{jk}\rangle H_{jk}
+  \end{gather}
+  mit den Haar"=Wavelet"=Koeffizienten $\langle f,H_{jk}\rangle$. Diese reihe
+  ist absolut konvergent in $L_{2}(\R)$.
+\end{folg}
+
+Nun ergibt sich folgende Frage: Sei $H\in L_{p}(\R)$ für $1\leq p\infty$,
+d.\,h. die Haar"=Wavelet"=Koeffizienten $\langle f,H_{jk}\rangle= \int_{\R}
+f(x) H_{jk}(x)\,dx$ existieren für alle $j,k\in\Z, f\in L_{p}(\R)$.
+Konvergiert die Reihe \autoref{eq:411} für $f\in L_{p}$ in $L_{p}$ gegen $f$?
+Es zeigt sich, dass sie für $1<p<\infty$ sogar unbedingt konvergiert, d.\,h.
+in jeder Reihenfolge. Dies war der Grund für Haar, das System zu konstruieren.
+Jetzt betrachten wir nur die "`natürliche"' Reihenfolge.
+\begin{align*}
+  Q_{j}^{\mu} f &= \sum_{k\leq\mu} \langle f,H_{jk}\rangle H_{jk}
+     \qquad\mu\in\Z, j\in\Z\\
+  P_{r} f &= \sum_{j<r} \sum_{k\in\Z} \langle f,H_{jk}\rangle H_{jk}\qquad
+     r\in\Z
+\end{align*}
+
+%satz 4.1.3
+\begin{satz}
+  Sei $1<p<\infty$ und $f\in L_{p}(\R)$. Dann gilt $\lim_{j\rightarrow\infty}
+  P_{r}f\stackrel{L_{p}}{=} f$ und für jedes $r\in\Z$ gilt
+  \begin{gather*}
+    \lim_{\mu\rightarrow\infty} (P_{r}f+Q_{r}^{\mu}f)\stackrel{L_{p}}{=}
+       P_{r+1} f
+  \end{gather*}
+\end{satz}
 
 \todo{Vorlesungen ergänzen}
 
