@@ -3540,6 +3540,106 @@ k)}^{2})^{-\nicefrac{1}{2}}$, $\Phi(x)= \sum a_{n} N_{n}(x-k)$. Somit hat das
 Wavelet die Form $\psi(x)= \sum_{k\in\Z} \overline{a_{k}} (-1)^{k}
 \Phi(2x+n+1)$
 
+%Vorlesung vom 2007-07-13
+\chapter{Anwendungen der harmonischen Analysis}
+\section{Grundlegende Anwendungen für Wavelets}
+
+Wir wollen zwei konkrete Beispiele betrachten. Das ist zum einen die
+Datenkompression von Bildern und Tönen und zum anderen ein Rauschfilter.
+
+Wavelets wurden durch eine Funktion beschrieben. Daraus wurden Translationen
+und Dilatationen angewendet. Das Ganze soll eine Orthonormalbasis in
+$L_{2}(\R)$ werden. Weiter haben wir eine Multiskalenanalyse, welche eine
+Skalierungsfunktion beschreibt. Die Skalierungsfunktion übersetzt die Funktion
+aus $V_{0}$ in $V_{1}$. Die Skalierungsgleichung ist $\Phi(x)= 2\sum_{k\in\Z}
+a_{k} \Phi(2x-k)$. Das ist Ausdruck von $V_{0}\subseteq V_{1}$. Das übersetzt
+sich für die Fouriertransformation in $\hat{\Phi}(2\xi)= m_{\Phi}(\xi)
+\hat{\Phi}(\xi)$ mit $m_{\Phi}(\xi)= \sum a_{k} e^{-ik\xi}$. Bei den
+Ingenieuren heißt $m_{\Phi}$ \highl{Tiefpassfilter}. Das Wavelet kann man
+gewinnen durch $\hat{\psi}(2\xi)= \underbrace{e^{i\xi} \overline{m_{\Phi}
+(\xi+\pi)}}_{=\colon m_{\psi}(\xi)} \hat{\Phi}(\xi)$ mit $\psi(x)=
+2\sum_{k\in\Z} b_{k} \Phi(2x-k)$ und $m_{\psi}(\xi)= \sum b_{k} e^{-ik\xi}$.
+Dabei ist $b_{k} =(-1)^{k+1} a_{-k+1}$. $m_{\psi}$ wird auch als
+\highl{Hochpassfilter} bezeichnet.
+
+\paragraph{Momentenbedingungen}
+Es gilt, dass $\Phi$ kompakten Träger hat. Damit folgt, $\hat{\Phi}\in
+C^{\infty}$ und $m_{\phi}, m_{\psi}$ sind trigonometrische Polynome. Das
+impliziert, dass $m_{\Phi}(0)=1=m_{\psi}(0), \int\Phi=1, \int\psi=0$. Wir
+können jedes $f$ darstellen als $f=\sum_{j,k\in\Z} \langle
+f,\psi_{jk}\rangle\psi_{jk}$. Unser Wunsch ist, dass aus der Bedigung $f$
+glatt folgt, dass nur "`wenige"' Koeffizienten groß sind. Das impliziert aber
+$\int_{\R} x^{n} \psi(x)\,dx=0$ für $0\leq n\leq m$. Dies heißt
+\highl{Momentenbedingung} der Ordnung $n$. Das ist genau dann erfüllt, wenn
+$\sum_{k\in\Z} b_{k} k^{n}=0$.
+
+
+\paragraph{Interskalenbeziehungen}
+
+Wir haben $\langle f,\Phi_{jn}\rangle= \sqrt{2} \sum_{k\in\Z}
+\overline{a_{k-2n}} \times \langle f,\Phi_{j+1,k}\rangle$ und $\langle
+f,\psi_{jn}\rangle =\sqrt{2} \sum_{k\in\Z} \overline{b_{k-2n}} \langle
+f,\Phi_{j+1,k}\rangle$. Beide Formeln sind umgeschriebene
+Skalierungsgleichungen. Es gilt $\Phi(x-n)= 2\sum_{k\in\Z} a_{k}
+\Phi(2x-(2n+k))= 2\sum_{k\in\Z} a_{k-2n} \Phi(2x-k)$. Letzteres erhält man
+durch Indexverschiebung. Weiter will man ein $j$ dazu haben: $\Phi(2^{j}x-n)=
+2\sum_{k\in\Z} a_{k-2n} \Phi(2^{j+1} x-k)$ und es ergibt sich:
+$2^{\nicefrac{j}{2}} \Phi(2^{j}x-n)= \sqrt{2} \sum_{k\in\Z} a_{k-2n}
+2^{\nicefrac{j+1}{2}} \Phi(2^{j+1}x-k)$. Daraus folgt, $\Phi_{jn}(x)= \sqrt{2}
+\sum_{k\in\Z} a_{k2-n} \Phi_{j+1,k}(x)$. Warum ist dies nun gut anwendbar?
+
+\paragraph{Diskrete Wavelettransformation}
+
+Durch $\langle f,\Phi_{jk}\rangle$ erhalten wir den Mittelwert von $f$ im
+Intervall $[2^{-j}(x-k), 2^{-j}(x-k+1)]$. Sei $f_{jk}= \langle
+f,\Phi_{jk}\rangle$ und die $(f_{jk}\colon k\in\Z)=F_{j}$ sind die
+Koeffizienten in der Skala $j$. In der Praxis hat man eine Folge $f_{k}$
+gegeben. Das sind die Abtastwerte oder Samples. Wir interpretieren $f_{k}$ als
+Mittel einer stetigen Funktion $f$ in der Skala 0, d.\,h. $f_{k}=\langle
+f,\Phi_{0k}\rangle, F_{0}=(f_{k})$. Das Signal wird zerlegt in $F_{-1}=(\langle
+f, \Phi_{-1,k}\rangle)$ und $R_{-1}=(\langle f,\psi_{-1,k}\rangle)$. Danach
+wird $F_{-1}$ wieder zerlegt usw. Man kann das Ganze für $j>0$ so darstellen:
+Man jagt $F_{-j+1}$ durch den Tiefpassfilter $\overline{m_{\Phi}}$, geht eine
+Skala runter und erhält $F_{-j}$. Genauso macht man es mit den Hochpassfilter.
+
+In der Realität gibt es nur eine endliche Folge von $N=2^{M}$ Abtastwerten.
+Das wird periodisch fortgesetzt. Im ersten Schritt werden zwei Mittel durch
+eins ersetzt. Nach $N$ Schritten ist die Folge $F_{m}$ konstant. Damit
+erhalten wir $(R_{-1}, R_{-2},\dotsc, R_{-m}, F_{-m})$. Das sind insgesamt
+$2^{M-1}, 2^{M-2}, \dotsc,2^{0},1=2^{M}$ Werte. Aus diesen Werten kann man das
+Ausgangssignal rekontruieren: Wir starten mit $F_{-j}, R_{-j}$ und schicken
+das $F_{-j}$ durch $m_{\Phi}$ und skalieren das nach oben. Das $R_{-j}$ durch
+$m_{\psi}$ und skalieren das nach oben. Anschließend werden beide addiert und
+man erhält $F_{-j+1}$.
+
+\section{Die schnelle Fouriertransformation}
+
+Die Grundlage hierfür ist die Fouriertransformation auf $\Z_{n}=\Z/_{n\Z}$.
+Betrachten $\Z_{n}=\{0,1,\dotsc,n-1\}$. Dann ist
+$F_{n}\colon\C^{n}\rightarrow\C^{n}$ die Fouriermatrix. Es gilt
+$F_{n}=(\omega^{hk})_{h,k=0}^{n-1}$. Für $n=4$:
+$F_{4}=
+\begin{pmatrix}
+  1 & 1 & 1 & 1\\
+  1 & i & -1& -i\\
+  1 &-1 & 1 & -1\\
+  1 &-i & -1& i
+\end{pmatrix}, y=F_{n}x$ liefert die Fouriertransformation von $x$. Im naiven
+Ansatz benötigt man einen Aufwand von $\mathcal{O}(n^{2})$.
+
+Die \emph{schnelle} Fouriertransformation (FFT) hat eine Komplexität von
+$\mathcal{O}(n\log n)$. Damit das funktioniert, muss $n$ gerade (eigentlich
+einer Zweierpotenz) sein. Setzen $n=2m$ und $y'=(y_{0}, y_{2}, y_{4},\dotsc,
+y_{n-2})\in\C^{m}, y''=(y_{1}, y_{3}, y_{5},\dotsc, y_{n-1})\in\C^{m}$. Es ist
+$y_{k}'= y_{2k}= \sum_{k=0}^{n-1} \omega^{h(2k)} x_{k}$. Diese Summe wird in
+zwei Bestandteile geteilt: $y_{2k}= \sum_{h=0}^{m-1} \omega^{h(2k)} x_{k}+
+\sum_{h=0}^{m-1} \omega^{(h+m)2k} x_{h+m}= \sum_{h=0}^{m-1} (\omega^{2})^{hk}
+(x_{h}+x_{h+m})= \sum_{h=0}^{m-1} \tilde{\omega}^{hk} (x_{h}+x_{h+m})$. Somit
+ist $y'=F_{m}x'$ mit $x_{k}'= x_{h}+x_{h+m}$.
+
+
+
+
 \appendix
 
 \chapter{Übungsaufgaben}
