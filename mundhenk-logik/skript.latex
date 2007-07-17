@@ -23,7 +23,7 @@
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
 
-\documentclass[parskip=half-,ngerman,draft,twoside]{scrreprt}
+\documentclass[parskip=half*,ngerman,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
 \usepackage{makeidx}
@@ -44,6 +44,7 @@
 \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
 \usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
                                        % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{mathtools}
 
 \usepackage[thmmarks,hyperref,amsmath]{ntheorem} % für die Theorem-Umgebungen
                                                  % (satz, defini, bemerk)
@@ -188,10 +189,10 @@
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \newcommand*{\lcorner}[1]{\raisebox{-1mm}{$\llcorner$}#1\raisebox{-1mm}{$\lrcorner$}}
 \newcommand*{\ucorner}[2][]{#1\ulcorner\!#2#1\!\urcorner}
-\newcommand*{\floor}[2][]{#1\lfloor#2#1\rfloor}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
 
 % Das original Epsilon sieht nicht so toll aus
 \renewcommand*{\epsilon}{\varepsilon}
@@ -289,7 +290,6 @@
 \date{Semester: SS 2006}
 \maketitle
 
-\iffalse
 \clearpage
 \chapter*{Vorwort}
 
@@ -6329,7 +6329,7 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
   \begin{enumerate}
    \item $\alpha$ hat die freien Variablen $x_1,\dotsc,x_k,x_{k+1}$, und
    \item für alle $n_1,\dotsc,n_k,m\in\N$ gilt:
-    \begin{itemize}[(1)]
+    \begin{enumerate}[(1)]
      \item falls $f(n_1,\dotsc,n_k)=m$,
       dann $\Svdash \alpha[x_1/\overline{n_1},\dotsc,x_k/\overline{n_k},x_{k+1}/\overline{m}]$, und
      \item $\Svdash (\exists_1 x_{k+1}\quantsep \alpha[x_1/\overline{n_1},\dotsc,x_k/\overline{n_k}])$
@@ -6339,7 +6339,7 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
        (\forall x\quantsep \forall y \quantsep (\alpha\wedge\alpha[x/y])\rightarrow x=y)$.
       Es wird ausgedrückt, dass \textit{genau ein $x$} existiert, das die in $\alpha$ beschriebenen
       Eigenschaften besitzt.
-    \end{itemize}
+    \end{enumerate}
   \end{enumerate}
   $f$ heißt \emph{streng repräsentierbar}, falls Eigenschaft (2)
   durch die folgende Eigenschaft ersetzt werden kann:
@@ -6790,12 +6790,12 @@ die in $\mathrm{S}$ primitiv"=rekursiv sind.
 \item $Arg_T(x)=n$, falls $x$ GN von $f^n_j$ ist
 
   \begin{gather*}
-    Arg_T(x) = \left(\left\lfloor\frac{x\dminus 1}{8}\right\rfloor\right)_0
+    Arg_T(x) = \left(\floor*{\frac{x\dminus 1}{8}}\right)_0
   \end{gather*}
 \item $Arg_P(x)=n$, falls $x$ GN von $A^n_j$ ist
 
   \begin{gather*}
-    Arg_P(x) = \left(\left\lfloor\frac{x\dminus 3}{8}\right\rfloor\right)_0
+    Arg_P(x) = \left(\floor*{\frac{x\dminus 3}{8}}\right)_0
   \end{gather*}
 \end{itemize}
 
@@ -7508,7 +7508,6 @@ Der Beweis des Satzes geht analog zu den Beweisen der vorherigen Sätze.
 \clearpage
 \appendix
 
-\fi
 \chapter{Übungsaufgaben}
 
 \section{Blatt 1}
@@ -7764,52 +7763,23 @@ Beweisen Sie, dass die Nullfunktion (streng) repräsentierbar ist.
 \end{gather*}
 
 \subsection*{Aufgabe 2}
-Beweisen Sie, dass die Konstantenfunktion $C_{i}\colon\N\rightarrow\N$
-mit $C_{i}(n) =i$ (streng) repräsentierbar ist.
-\begin{gather*}
-  x_{1} = x_{1} \wedge \dotsb \wedge x_{k}=x_{k} \wedge x_{k+1} = \overline{m}
-\end{gather*}
-
-\begin{enumerate}[(1)]
- \item Für $C_{m}^{k}(n_{1},\dotsc,n_{k})= m$ gilt
-  $\Svdash (m_{1}=n_{1}\wedge\dotsb \wedge n_{k}=n_{k} \wedge
-  \overline{m}=\overline{m})$
- \item $\Svdash(\exists_{1} x_{k+1} ~
-  \overline{n_{1}}=\overline{n_{1}} \wedge\dotsb\wedge
-  \overline{n_{k}}=\overline{n_{k}} \wedge x_{k+1}=\overline{m}$
-\end{enumerate}
+Beweisen Sie, dass die Konstantenfunktion $C_{m}^{k}\colon\N^{k}\rightarrow\N$
+mit $C_{m}(n_{1},\dotsc,n_{k}) =m$ (streng) repräsentierbar ist.
 
 \subsection*{Aufgabe 3}
 Geben Sie Formeln zur Repräsentation der folgenden Funktionen an.
 \begin{gather*}
-  f(n) = \left\lfloor \frac{n}{2} \right\rfloor \\
-     f(n) = \begin{cases}
+  f_{1}(n) = \floor*{\frac{n}{2}} \\
+     f_{2}(n) = \begin{cases}
               n-1 & \text{falls $n$ ungerade}\\
               n+1 & \text{sonst}
             \end{cases}
-\end{gather*}
-
-\begin{gather*}
-  \overline{2}\cdot x_{2} = x_{1} \vee \overline{2}\cdot
-     x_{2}+\overline{1} = x_{1}\\[1ex]
-  \big((x_{2} + \overline{1} = x_{1}) \wedge (\exists z ~ x_{1}
-     = \overline{2}\cdot z+\overline{1})\big) \vee \big((x_{2} = x_{1} +
-     \overline{1}) \wedge (\exists z ~ x_{1} = \overline{2}\cdot
-     z)\big)
 \end{gather*}
 
 \section{Blatt 12}
 
 \subsection*{Aufgabe 1}
 Zeigen Sie, dass $x^y$ primitiv"=rekursiv ist.
-\begin{align*}
-  f_{pot}(a,0) &= 1 &&= N(Z^{(1)}(a))\\
-  f_{pot}(a,b+1) &= f_{pot}(a,b)\cdot a &&= h(b, f_{pot}(a,b), a)
-\end{align*}
-mit $h=(p,q,r) = f_{\mul}(U_{2}^{(3)}(p,q,r), U_{1}^{(3)}(p,q,r))$. Da
-$f_{\mul}$ primitiv"=rekursiv ist und $h$ durch Komposition aus
-primitiv"=rekursiven Funktionen entsteht ist auch $f_{pot}$
-primitiv"=rekursiv.
 
 \subsection*{Aufgabe 2}
 Zeigen Sie, dass die Fibonacci"=Funktion primitiv"=rekursiv ist.
@@ -7817,48 +7787,6 @@ Zeigen Sie, dass die Fibonacci"=Funktion primitiv"=rekursiv ist.
   fib(0) &= 0 \qquad fib(1) =1\\
   fib(n+2) &=fib(n+1)+fib(n)
 \end{align*}
-
-Das Problem ist, dass zur Berechnung von $fib(n)$
-sowohl auf $fib(n-1)$ als auch auf $fib(n-2)$ zurückgegriffen wird.
-Das erlaubt das Schema der Rekursion nicht direkt.
-Deswegen definieren wir zuerst eine Funktion,
-die zwei Zahlen zu einer Zahl kodiert,
-und die entsprechenden Dekodierungsfunktionen.
-Die Kodierungsfunktion $k$ ist primitiv"=rekursiv.
-\begin{gather*}
-k(a,b) = 2^a \cdot 3^b
-\end{gather*}
-$k$ ist injektiv, also
-gibt es die Dekodierungsfunktionen.
-\begin{align*}
-  d_0(n) &= a &\text{falls~}n=k(a,b)\\
-  d_1(n)&= b &\text{falls~}n=k(a,b)
-\end{align*}
-Falls $n$ nicht im Wertebereich von $k$ liegt,
-sind uns die Werte $d_0(n)$ und $d_1(n)$ egal.
-Die beiden Dekodierungsfunktionen sind ebenfalls primitiv"=rekursiv.
-\begin{align*}
-  d_0(n) &= \min_{i\leq n} \neg(2^{i+1} \mid n)\\
-  d_1(n) &= \min_{i\leq n} \neg(3^{i+1} \mid n)
-\end{align*}
-Der Einfachheit halber schreiben wir $(n)_0$ für $d_0(n)$,
-und $(n)_1$ für $d_1(n)$.
-
-Nun definieren wir eine Hilfsfunktion $f(n) = k(fib(n),fib(n+1))$,
-die zwei aufeinanderfolgende Fibonacci"~Zahlen kodiert.
-\begin{align*}
-  f(0) &= 3  &&= N(N(N(Z^{(0)})))\\
-  f(n+1) &= k(fib(n+1),fib(n+2)) = k((f(n))_{1},(f(n))_{0} + (f(n))_{1} = h(n, f(n))\\
-  h(a,b) &= f_{mult}\Big(f_{pow}(N(N(Z^{(2)}(a,b))), ( U_{2}^{(2)}(a,b)
-     )_{1}), f_{pow}(N(N(N(Z^{(2)}(a,b)))),
-     f_{\add} ( (U_{2}^{(2)}(a,b))_{0}, (U_{2}^{(2)}(a,b))_{1} ) ) \Big)
-\end{align*}
-Also ist $f$ primitiv"=rekursiv.
-Zum Abschluss müssen wir noch sagen,
-wie die Fibonacci"=Funktion definiert ist:
-\begin{gather*}
-  fin(n) = (f(n))_{0}
-\end{gather*}
 
 \chapter{Lösungen der Übungsaufgaben}
 
@@ -8065,54 +7993,8 @@ Für die Vollständigkeit von $\mathrm{L}'$ (d.\,h. für jede Tautologie $\phi$
 gilt: $\xvdash{\mathrm{L}'} \phi$) ist es also hinreichend,
 $\xvdash{\mathrm{L}'} A3$ zu zeigen.
 
-Leider haben wir keinen Weg gefunden, die Behauptung zu zeigen. Aber hier
-einige Ansätze:
-
-\begin{align*}
-  (1)\quad &\neg\beta \rightarrow \neg\alpha &\text{Hypothese}\\
-  (2)\quad &\neg\beta \rightarrow \alpha &\text{Hypothese}\\
-  (3)\quad &(\neg\beta\rightarrow\neg\alpha) \rightarrow
-     (\alpha\rightarrow\beta) & \text{(A3')}\\
-  (4)\quad &\alpha\rightarrow\beta &\text{MP 1,3}\\
-  (5)\quad &\text{\help{wie weiter?}}
-\end{align*}
-
-\begin{align*}
-  (1)\quad &\neg\beta \rightarrow \neg\alpha &\text{Hypothese}\\
-  (2)\quad &\neg\beta \rightarrow \alpha &\text{Hypothese}\\
-  (3)\quad &\big( (\neg\beta\rightarrow\neg\alpha) \rightarrow
-     (\alpha\rightarrow\beta)\big) \rightarrow\\
-  &\quad \big(
-     ((\neg\beta\rightarrow\neg\alpha) \rightarrow \alpha) \rightarrow
-     ((\neg\beta\rightarrow\neg\alpha) \rightarrow \beta)\big)&\text{(A2)}\\
-  (4)\quad &((\neg\beta\rightarrow\neg\alpha) \rightarrow \alpha) \rightarrow
-     ((\neg\beta\rightarrow\neg\alpha) \rightarrow \beta) &\text{MP (A3'),3}\\
-  &\dotso\\
-  ()\quad &(\neg\beta\rightarrow\neg\alpha) \rightarrow \beta &\text{MP ?,4}\\
-  ()\quad &\beta &\text{MP 1,?}
-\end{align*}
-
-Mit dem Deduktionstheorem ergibt sich die Behauptung.
-
-\begin{align*}
-  (1)\quad &\Big( (\neg\beta\rightarrow\neg\alpha) \rightarrow
-     \big((\alpha\rightarrow\beta) \rightarrow
-     ((\neg\beta\rightarrow\alpha)\rightarrow\beta)\big) \Big) \rightarrow\\
-  &\quad\Big( \big((\neg\beta\rightarrow\neg\alpha) \rightarrow
-     (\alpha\rightarrow\beta)\big) \rightarrow\\
-  &\quad\big((\neg\beta\rightarrow\neg\alpha)
-     \rightarrow ((\neg\beta\rightarrow\alpha)\rightarrow\beta)\big) \Big)
-     &\text{(A2)}\\
-  & \dotso\\
-  ()\quad &((\neg\beta\rightarrow\neg\alpha) \rightarrow
-     (\alpha\rightarrow\beta)) \rightarrow\\
-  &\quad((\neg\beta\rightarrow\neg\alpha)
-     \rightarrow ((\neg\beta\rightarrow\alpha)\rightarrow\beta))
-     &\text{MP ?, 1}\\
-  ()\quad &(\neg\beta\rightarrow\neg\alpha)
-     \rightarrow ((\neg\beta\rightarrow\alpha)\rightarrow\beta)
-     &\text{MP (A3'),?}
-\end{align*}
+\todo{Den Beweis aus \url{news:m6mo935o4bbe3kam8k8987nh4fq2j367lv@4ax.com}
+  übertragen}
 
 \section{Blatt 4}
 \subsection*{Aufgabe 1}
@@ -8574,46 +8456,50 @@ Wir zeigen $\Svdash x=0+x$ mittels Induktion über $x$
 
 \subsection*{Aufgabe 1}
 
-Repräsentation ist:
+Als Repräsentation verwenden wir die Formel
 \begin{gather*}
   x_{1} = x_{1} \wedge \dotsb \wedge x_{k}=x_{k} \wedge x_{k+1}=0
 \end{gather*}
 
-\begin{enumerate}[(1)]
+Nun sind zwei Dinge zu zeigen:
+\begin{enumerate}[(1)]    % in Anlehung an die Nummerierung in der Definition
  \item
-  Für $Z(n_{1},\dotsc,n_{k})=m=0$ gilt $\Svdash \overline{n_{1}} =
-  \overline{n_{2}}\wedge \overline{n_{2}}=\overline{n_{2}}\wedge \dotsb
+  Für $Z(n_{1},\dotsc,n_{k})=x_{k+1}=0$ gilt $\Svdash \overline{n_{1}} =
+  \overline{n_{1}}\wedge \overline{n_{2}}=\overline{n_{2}}\wedge \dotsb
   \wedge \overline{n_{k}}=\overline{n_{k}}\wedge 0=0$.
   \begin{align*}
-    (1)\quad & \overline{n_{1}} = \overline{n_{1}} & \text{\autoref{lemma-zahlen-elem}}\\
+    (1)\quad & \overline{n_{1}} = \overline{n_{1}}
+       &\text{\autoref{lemma-zahlen-elem}}\\
     \vdots\quad & \vdots\\
-    (k)\quad & \overline{n_{k}} = \overline{n_{k}}\\
-    (k+1)\quad & 0 = 0\\
-    (k+2)\quad & \overline{n_{1}} = \overline{n_{2}}\wedge
+    (k)\quad & \overline{n_{k}} = \overline{n_{k}}
+       &\text{\autoref{lemma-zahlen-elem}}\\
+    (k+1)\quad & 0 = 0 &\text{\autoref{lemma-zahlen-elem}}\\
+    (k+2)\quad & \overline{n_{1}} = \overline{n_{1}}\wedge
        \overline{n_{2}}=\overline{n_{2}}\wedge \dotsb
        \wedge \overline{n_{k}}=\overline{n_{k}}\wedge 0=0
        &\text{Konjunktionsregel}
   \end{align*}
 
- \item $\Svdash \exists_{1} x_{k+1}\quantsep \overline{n_{1}} \ne
-  \overline{n_{2}}\wedge \overline{n_{2}}\ne\overline{n_{2}}\wedge \dotsb
-  \wedge \overline{n_{k}}\ne\overline{n_{k}}\wedge x_{k+1}\ne0$
-
-  einfacher: $\Svdash \exists_{1}x_{k+1}\quantsep x_{k+1}=0$, d.\,h.
+ \item Als nächstes müssen wir
+  $\Svdash \exists_{1} x_{k+1}\quantsep \overline{n_{1}} =
+  \overline{n_{1}}\wedge \overline{n_{2}}=\overline{n_{2}}\wedge \dotsb
+  \wedge \overline{n_{k}}=\overline{n_{k}}\wedge x_{k+1}=0$
+  zeigen. Vereinfach ist dies $\Svdash \exists_{1} x_{k+1}\quantsep x_{k+1}=0$,
+  d.\,h.
   \begin{gather*}
     \Svdash (\exists x_{k+1}\quantsep x_{k+1} =0) \wedge (\forall x_{k+1}
-       \dotso \forall y\quantsep (x_{k+1} = 0\wedge y=0) \rightarrow x_{k+1}
-       = y)
+       \quantsep \forall y\quantsep (x_{k+1} = 0\wedge y=0) \rightarrow
+       x_{k+1} = y)
   \end{gather*}
 
   $(\exists x_{k+1}\quantsep x_{k+1} =0)$
   \begin{align*}
-    (1)\quad & 0=0 & \text{Lemma}\\
+    (1)\quad & 0=0 & \text{\autoref{lemma-zahlen-elem}}\\
     (2)\quad & \exists x_{1}\quantsep x_{k+1}=0 &\text{RE 4}
   \end{align*}
 
-  $(\forall x_{k+1} \dotso \forall y\quantsep (x_{k+1} = 0\wedge y=0)
-  \rightarrow x_{+1} = y)$
+  $(\forall x_{k+1}\quantsep \forall y\quantsep (x_{k+1} = 0\wedge y=0)
+  \rightarrow x_{k+1} = y)$
   \begin{align*}
     (1)\quad & x_{k+1} = 0\wedge y=0 &\text{Hypothese}\\
     (2)\quad & x_{k+1} = 0 &\text{Konjunktionsregel}\\
@@ -8622,6 +8508,122 @@ Repräsentation ist:
   \end{align*}
 \end{enumerate}
 
+\subsection*{Aufgabe 2}
+
+Als Repräsentation wählen wir
+\begin{gather*}
+  x_{1} = x_{1} \wedge \dotsb \wedge x_{k}=x_{k} \wedge x_{k+1} = \overline{m}
+\end{gather*}
+
+\begin{enumerate}[(1)]
+ \item Für $C_{m}^{k}(n_{1},\dotsc,n_{k})= m$ gilt
+  $\Svdash (m_{1}=n_{1}\wedge\dotsb \wedge n_{k}=n_{k} \wedge
+  \overline{m}=\overline{m})$. Der Beweis verläuft wie der Beweis bei
+  Aufgabe~1.
+
+ \item Als nächsten müssen wir wieder
+  $\Svdash \exists_{1} x_{k+1} \quantsep
+  \overline{n_{1}}=\overline{n_{1}} \wedge\dotsb\wedge
+  \overline{n_{k}}=\overline{n_{k}} \wedge x_{k+1}=\overline{m}$ zeigen. Die
+  Vereinfachung davon lautet $\Svdash \exists_{1} x_{k+1}\quantsep
+  x_{k+1}=\overline{m}$ und diese in der ausführlichen Schreibweise
+  \begin{gather*}
+    (\exists x_{k+1}\quantsep x_{k+1}=\overline{m}) \wedge
+       (\forall x_{k+1}\quantsep\forall y\quantsep (x_{k+1}=\overline{m}
+       \wedge y=\overline{m}) \rightarrow x_{k+1}=y)
+  \end{gather*}
+
+  Für die Formel $(\exists x_{k+1}\quantsep x_{k+1} =\overline{m})$ gilt:
+  \begin{align*}
+    (1)\quad & \overline{m}=\overline{m} & \text{\autoref{lemma-zahlen-elem}}\\
+    (2)\quad & \exists x_{1}\quantsep x_{k+1}=\overline{m} &\text{RE 4}
+  \end{align*}
+
+  $(\forall x_{k+1}\quantsep\forall y\quantsep (x_{k+1}=\overline{m}
+  \wedge y=\overline{m}) \rightarrow x_{k+1}=y)$
+  \begin{align*}
+    (1)\quad & x_{k+1} = \overline{m}\wedge y=\overline{m} &\text{Hypothese}\\
+    (2)\quad & x_{k+1} = \overline{m} &\text{Konjunktionsregel}\\
+    (3)\quad & y=\overline{m}&\text{Konjunktionsregel}\\
+    (4)\quad & x_{k+1} = y &\text{Transitiv. und Symm. von $=$}
+  \end{align*}
+\end{enumerate}
+
+\subsection*{Aufgabe 3}
+
+Eine Repäsentation für $f_{1}$ ist:
+\begin{gather*}
+  \overline{2}\cdot x_{2} = x_{1} \vee \overline{2}\cdot
+     x_{2}+\overline{1} = x_{1}
+\end{gather*}
+
+Eine Repäsentation für $f_{2}$ ist:
+\begin{gather*}
+  \big((x_{2} + \overline{1} = x_{1}) \wedge (\exists z\quantsep x_{1}
+     = \overline{2}\cdot z+\overline{1})\big) \vee \big((x_{2} = x_{1} +
+     \overline{1}) \wedge (\exists z\quantsep x_{1} = \overline{2}\cdot
+     z)\big)
+\end{gather*}
+
+\section{Blatt 12}
+
+\subsection*{Aufgabe 1}
+\begin{align*}
+  f_{pot}(a,0) &= 1 &&= N(Z^{(1)}(a))\\
+  f_{pot}(a,b+1) &= f_{pot}(a,b)\cdot a &&= h(b, f_{pot}(a,b), a)
+\end{align*}
+mit $h=(p,q,r) = f_{\mul}(U_{2}^{(3)}(p,q,r), U_{1}^{(3)}(p,q,r))$. Da
+$f_{\mul}$ primitiv"=rekursiv ist und $h$ durch Komposition aus
+primitiv"=rekursiven Funktionen entsteht ist auch $f_{pot}$
+primitiv"=rekursiv.
+
+\subsection*{Aufgabe 2}
+
+Das Problem ist, dass zur Berechnung von $fib(n)$
+sowohl auf $fib(n-1)$ als auch auf $fib(n-2)$ zurückgegriffen wird.
+Das erlaubt das Schema der Rekursion nicht direkt.
+Deswegen definieren wir zuerst eine Funktion,
+die zwei Zahlen zu einer Zahl kodiert,
+und die entsprechenden Dekodierungsfunktionen.
+Die Kodierungsfunktion $k$ ist primitiv"=rekursiv.
+\begin{gather*}
+k(a,b) = 2^a \cdot 3^b
+\end{gather*}
+$k$ ist injektiv, also
+gibt es die Dekodierungsfunktionen.
+\begin{align*}
+  d_0(n) &= a &\text{falls~}n=k(a,b)\\
+  d_1(n)&= b &\text{falls~}n=k(a,b)
+\end{align*}
+Falls $n$ nicht im Wertebereich von $k$ liegt,
+sind uns die Werte $d_0(n)$ und $d_1(n)$ egal.
+Die beiden Dekodierungsfunktionen sind ebenfalls primitiv"=rekursiv.
+\begin{align*}
+  d_0(n) &= \min_{i\leq n} \neg(2^{i+1} \mid n)\\
+  d_1(n) &= \min_{i\leq n} \neg(3^{i+1} \mid n)
+\end{align*}
+Der Einfachheit halber schreiben wir $(n)_0$ für $d_0(n)$,
+und $(n)_1$ für $d_1(n)$.
+
+Nun definieren wir eine Hilfsfunktion $f(n) = k(fib(n),fib(n+1))$,
+die zwei aufeinanderfolgende Fibonacci"~Zahlen kodiert.
+\begin{align*}
+  f(0) &= 3  &&= N(N(N(Z^{(0)})))\\
+  f(n+1) &= k(fib(n+1),fib(n+2))\\
+  &= k((f(n))_{1},(f(n))_{0} + (f(n))_{1}) &&= h(n, f(n))\\
+  h(a,b) &=
+     \mathmakebox[7cm][l]{\begin{aligned}[t]
+       f_{mult}\Big(&f_{pow}(N(N(Z^{(2)}(a,b))), ( U_{2}^{(2)}(a,b) )_{1}),\\
+       &f_{pow}(N(N(N(Z^{(2)}(a,b)))),
+          f_{\add} ( (U_{2}^{(2)}(a,b))_{0}, (U_{2}^{(2)}(a,b))_{1} ) ) \Big)
+     \end{aligned}}
+\end{align*}
+Also ist $f$ primitiv"=rekursiv.
+Zum Abschluss müssen wir noch sagen,
+wie die Fibonacci"=Funktion definiert ist:
+\begin{gather*}
+  fib(n) = (f(n))_{0}
+\end{gather*}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
