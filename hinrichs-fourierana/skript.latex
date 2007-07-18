@@ -3637,8 +3637,84 @@ zwei Bestandteile geteilt: $y_{2k}= \sum_{h=0}^{m-1} \omega^{h(2k)} x_{k}+
 (x_{h}+x_{h+m})= \sum_{h=0}^{m-1} \tilde{\omega}^{hk} (x_{h}+x_{h+m})$. Somit
 ist $y'=F_{m}x'$ mit $x_{k}'= x_{h}+x_{h+m}$.
 
+\todo{Beginn der Vorlesung vom 2007-07-18}
+%Vorlesung vom 2007-07-18
+
+\paragraph{Inverse Fouriertransformation}
+
+$F_{N}^{-1}=\frac{1}{n} F_{n}(\omega^{-1})= \frac{1}{n}
+(\omega^{-hk})_{h,k=0}^{n-1}$
+
+Wir bezeichnen die inverse schnelle Fouriertransformation mit IFFT.
+
+\paragraph{Polynommultiplikation}
+
+\begin{align*}
+  P(x) &= \sum_{k=0}^{r} a_{k} x^{k}\\
+  Q(x) &= \sum_{k=0}^{s} b_{k} x^{k}\\
+  R(x) &= P(x)Q(x)= \sum_{k=0}^{r+s} c_{k} x^{k}\\
+  c_{k} &= \sum_{i=0}^{k} a_{i} b_{k-i}
+\end{align*}
+Die Komplexität der obigen Operationen entspricht $O(n^{2})$, was zu langsam
+ist. $P(x)$ ist gegeben durch $(r+1)$"~Werte $P(x_{0}),\dotsc,P(x_{r})$. Diese
+Darstellung nennt man Stützstellendarstellung. Zur Berechnung von
+$R(x_{0}),\dotsc,R(x_{n})$ aus $P(x_{0}),\dotsc,P(x_{n}),
+Q(x_{0}),\dotsc,Q(x_{n})$ braucht man $O(m)$ Zeit. Wir wählen die Stützstellen
+komplex: $x_{k}=\omega^{k}$. Dabei ist $\omega$ eine primitive $n$-te
+Einheitswurzel mit $n>r+s$. Nun ist $y_{k}= P(x_{k})=P(\omega^{k})=\sum_{k=0}^{r}
+a_{k} \omega^{hk} = \sum_{k=0}^{n-1} a_{k} \omega^{hk}$ für $a_{k}=0$ für
+$k>r$. Wir erkennen die Fouriertransformation wieder. Es ist
+$y=(y_{0},y_{1},\dotsc, y_{n-1})=F_{n}(a), a=(a_{0}, a_{1},\dotsc, a_{n-1})$.
+
+Der Übergang von der Koeffizientendarstellung zur Stützstellendarstellung 
+braucht $O(n\log n)$ Zeit. Der folgende Algorithmus funktioniert:
+\begin{enumerate}
+ \item Wähle $n>r+s$
+ \item Füllen den Vektor $a=(a_{0},\dotsc, a_{r},0,\dotsc,0)$ mit Nullen auf.
+  Ebenso mit $b$.
+ \item Berechnung der Fouriertransformation der Reihen $y= F_{n}(a), z=F_{n}(b)$
+ \item Berechnung von $u=y\cdot z$ (komponentenweise)
+ \item Berechnung von $c=F_{n}^{-1}(u)$ mit der IFFT.
+\end{enumerate}
 
 
+\begin{bsp}
+  Sei $P(x)=x^{2}+4x-7, Q(x)= 2x-3$. Für $n=4$ ist $a=(-7,4,1,0),
+  b=(-3,2,0,0)$ und
+  \begin{gather*}
+    F_{4} =
+       \begin{pmatrix}
+	 1& 1& 1& 1\\
+	 1& i& -1& -i\\
+	 1& -1& 1& -1\\
+	 1& -i& -1& i
+       \end{pmatrix}\qquad
+       \frac{1}{4} F_{4}(-i)= \frac{1}{4}
+       \begin{pmatrix}
+	 1& 1& 1& 1\\
+	 1& -i& -1& i\\
+	 1& -1& 1& -1\\
+	 1& i& -1& -i
+       \end{pmatrix}
+  \end{gather*}
+  Es ergibt sich $y=F_{4}a=(-2, -8+4i, -10, -8-4i), z=F_{4}b=
+  (-1,-3+2i,-5,-3-2i)$ und $u$ erhält man durch $u=yz=(2, 16-28i, 50,
+  16+28i)$. $c=\nicefrac{1}{4} F_{4}^{-1}(-i)u=(21, -26,5,2)$. Also ergibt
+  sich das Polynom mit $R(x)= 2x^{3}+5x^{2}-26x+21$. 
+\end{bsp}
+
+\paragraph{Multiplikation großer Zahlen}
+
+Die Zahl 5637 wird beispielsweise als $5x^{2}+6x^{2}+3x+7=P(x)$ geschrieben,
+d.\,h. man wandelt die Zahl in ein Polynom um. Mit diesem Polynom wird dann
+die oben beschriebene schnelle Fouriertransformation durchgeführt. Auf diese
+Weise erreicht man ebenfalls eine Komplexität von $O(n\log n)$.
+
+\paragraph{Polynominterpolation}
+
+Wir haben eine Funktion $f$ gegeben. und suchen ein Polynom kleiner oder
+gleich $n$-ten Grades. Dieses muss an $n+1$ stellen mit der Funktion
+übereinstimmen. 
 
 \appendix
 
