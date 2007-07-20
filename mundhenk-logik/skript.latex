@@ -1,4 +1,38 @@
 % ToDo:
+%  * die Umdefinition von \emph sollte rückgängig gemacht werden und
+%    stattdessen sollte der Befehl \highl oder \Begriff verwendet werden
+%  * alle Stellen, die eigentlich \emph seien sollen, wo aber jetzt \textit
+%    verwendet wurde, sollen \emph werden
+%  * \xvdash sollte in etwas umbenannt werden, was seine Bedeutung
+%    wiederspiegelt, z.\,B. Folgerung
+%  * entsprechend sollten auch \Lvdash und \Svdash angepasst werden
+%  * es sollte ein Befehl \Theorie definiert werden, der die Schreibweise von
+%    Theorien festlegt, \newcommand*{\Theorie}[1]{\mathrm{#1}}
+%  * entsprechend sollten alle Theorien angepasst werden, \ThL für Theorie L
+%    usw.
+%  * es sollte ein Befehl für Belegungen geben
+%    \newcommand*{\Belegung}[1]{\mathcal{#1}}
+%  * entsprechend \BelA und \BelB als Kurzform für gängige Belegungen
+%  * eine Umgebung für Beweise sollte erstellt werden, damit 1. die Schreibung
+%    vereinfacht wird und die Beweise immer gleich aussehen -- Vorsicht, es
+%    gibt im ersten Kapitel einen "Nichtbeweis" mit Buchstaben statt Zahlen.
+%    \begin{beweis}
+%      \alpha & Hypothese\\
+%      \alpha \rightarrow (\beta \rightarrow \alpha) & Instanz von A1\\
+%    \end{beweis}
+%  * ein Befehl für Referenzen in Beweisschritten
+%    \newcommand*{\BewSchritt}[1]{(#1)}
+%  * eine Umgebung für Axiome definieren und einen Befehl für die
+%    Axiomreferenz \newcommand*{\Axiom}[1]{(#1)}
+%    \newcommand*{\Axiomlang}[1]{Axiom~(#1)}; damit sollte die Schreibweise
+%    einheitlich werden und man kann eine automatische Verknüpfung einbauen
+%    \newcommand*{\Axiom}[1]{\hyperref[#1]{(#1)}}
+%  * für die Quantoren in Formeln neue Befehle definieren, damit sicher
+%    gestellt wird, dass die Struktur einheitlich wird -- es gibt Stellen, an
+%    denen das Leerzeichen (~) vergessen wurde und \quantsep hilft da auch
+%    nicht; das würde auch die Probleme mit skript-check umgehen
+%    \newcommand*{\ExQuant}[2]{\exists#1~#2}
+%    \newcommand*{\AllQuant}[2]{\forall#1~#2}
 %  * überlegen, ob description global entfettet werden soll.
 %    % In der Doku zu paralist auf Seite 3 steht die Originaldefinition. Diese
 %    % hier entfettet die Punkte einer description
@@ -23,7 +57,7 @@
                           % oder solche, die man nicht in LaTeX verwenden
                           % soll -- l2tabu-Checker in LaTeX
 
-\documentclass[parskip=half*,ngerman,draft,twoside]{scrreprt}
+\documentclass[parskip=half*,english,ngerman,draft,twoside]{scrreprt}
 
 \usepackage{ifthen}
 \usepackage{makeidx}
@@ -117,6 +151,14 @@
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
 \renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\makeatletter
+% Damit \autoref den richtigen Namen findet
+% <news:slrnd8s9ce.403.joerg@alea.gnuu.de>
+\newcommand*{\saved@gather}{}
+\let\saved@gather\gather
+\def\gather{\@hyper@itemfalse\saved@gather}
+\makeatother
 
 \pagestyle{headings}
 
@@ -327,7 +369,7 @@
   haben, vielmals danken:
   \begin{itemize}
    \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
-    \texttt{<joerg@alea.gnuu.de>}} (2006)
+    \texttt{<joerg@alea.gnuu.de>}} (2006/07)
    \item \href{mailto:mundhenk@informatik.uni-jena.de}{Martin Mundhenk
     \texttt{<mundhenk@informatik.uni-jena.de>}} (2006)
   \end{itemize}
@@ -393,11 +435,11 @@ Ziel ist stets, zu untersuchen, ob diese beiden
 Begriffswelten übereinstimmen (\glqq{}Vollständigkeit und Korrektheit\grqq{}).
 
 Wir werden Aussagenlogik, Prädikatenlogik
-und Formale Zahlentheorie als grundlegende Logiken betrachten.
+und formale Zahlentheorie als grundlegende Logiken betrachten.
 Während die Ausdrucksmöglichkeiten der
 Sprachen von Aussagenlogik und Prädikatenlogik
 eher auf die rein logischen Dinge (was immer das heißen soll)
-beschränkt ist, kann man in der Formalen Zahlentheorie
+beschränkt ist, kann man in der formalen Zahlentheorie
 schon schöne Aussagen wie z.\,B.
 \glqq{}Es gibt unendlich viele Primzahlen.\grqq{} oder
 \glqq{}Es gibt unendlich viele Primzahlzwillinge\footnote{Ein
@@ -412,7 +454,7 @@ Gegenteil auch nicht beweisen.
 Für Aussagenlogik und Prädikatenlogik werden wir Axiome
 und Schlussregeln kennen lernen, mit denen
 unser Wahrheitsbegriff exakt dargestellt wird.
-Für die Formale Zahlentheorie ist das nicht möglich!
+Für die formale Zahlentheorie ist das nicht möglich!
 Der Unvollständigkeitssatz von Gödel sagt aus,
 dass es keine Möglichkeit zur Auswahl von Axiomen
 und Schlussregeln gibt (die bestimmte vernünftige Anforderungen erfüllen),
@@ -436,7 +478,7 @@ Aufgrund von Zeitmangel werden dazu nicht alle Zwischenschritte bewiesen.
 Aber man erhält einen guten Einblick in die Materie.
 
 Die Vorlesung richtet sich hauptsächlich nach dem Buch
-\glqq{}Introduction to mathematical logic\grqq{}
+\glqq{}\foreignlanguage{english}{Introduction to mathematical logic}\grqq{}
 von Elliott Mendelson\cite{Mendelson}.
 Die Vorlesung bei Prof.\,V.\,S.\,Cherniavsky an der TU~Braunschweig
 im Jahre 1983 nach einer früheren Auflage dieses Werkes ist
@@ -4067,8 +4109,7 @@ Die Verwendung der Regel~C unterliegt den folgenden Einschränkungen.
   Benutzung von Regel~C aus $\Gamma$ beweisbar. ($\Gamma\vdash\alpha$)
 \end{satz}
 
-\section{Vollständigkeit des Prädikatenkalküls
-  1.~Ordnung}
+\section{Vollständigkeit des Prädikatenkalküls 1.~Ordnung}
 
 Wir wollen zeigen, dass in jedem \emph{Prädikatenkalkül 1.~Ordnung}
 alle gültigen Formeln beweisbar sind
@@ -4327,7 +4368,6 @@ um die Konsistenz der um das Axiom $\alpha$ erweiterten Theorie zu beweisen.
     wenn $\neg \alpha$ in $K$ nicht beweisbar ist (d.\,h. $\not\xvdash{K} \neg \alpha$),
     dann ist $K'$ konsistent.
   \end{center}
-\end{lemma}
 
 \begin{proof}
   Wir beweisen das Lemma, indem wir zeigen:
@@ -4356,6 +4396,7 @@ um die Konsistenz der um das Axiom $\alpha$ erweiterten Theorie zu beweisen.
   Mit modus ponens folgt aus den letzten beiden Formeln
   $\xvdash{K} \neg \alpha$.
 \end{proof}
+\end{lemma}
 
 Die Menge aller Theoreme in $K'$ ist eine
 Obermenge der Menge aller Theoreme in $K$,
@@ -4401,25 +4442,24 @@ und jede konsistente Theorie lässt sich dazu erweitern.
   Sei $K$ eine konsistente Theorie.
   $\beta_1, \beta_2, \dotsc$ sei eine
   Aufzählung aller geschlossenen Formeln von $K$.
-  Wir definieren induktiv Theorien $J_0, J_1, J_2, \dotsc$,
+  Wir definieren induktiv Theorien $J_0, J_1, J_2, \dotsc$
   die Erweiterungen von $K$ sind.
-  \begin{enumerate}
-   \item $J_0=K$
-   \item $J_{i+1} = \begin{cases}
-     J_i, & \text{falls $\xvdash{J_i} \neg \beta_{i+1}$} \\
-     J_i + \{\beta_{i+1}\}, &\text{falls $\not\xvdash{J_i} \neg \beta_{i+1}$}
-   \end{cases}
-    $
-  \end{enumerate}
+  \begin{align*}
+    J_0 &= K\\
+    J_{i+1} &=
+       \begin{dcases*}
+         J_i, & falls $\xvdash{J_i} \neg \beta_{i+1}$ \\
+         J_i + \{\beta_{i+1}\}, & falls $\not\xvdash{J_i} \neg \beta_{i+1}$
+       \end{dcases*}
+  \end{align*}
   Für $J_i$ gilt also:
-  $\xvdash{J_i} \neg \beta_i$ (da $\xvdash{J_{i-1}} \neg \beta_{i}$)
+  $\xvdash{J_i} \neg \beta_i$ (da $\xvdash{J_{i-\mathmakebox[0pt][l]{1}}} \neg \beta_{i}$)
   oder
-  $\xvdash{J_i} \beta_i$ (da $\not\xvdash{J_{i-1}} \neg \beta_{i}$
+  $\xvdash{J_i} \beta_i$ (da $\not\xvdash{J_{i-\mathmakebox[0pt][l]{1}}} \neg \beta_{i}$
   und $\beta_i$ Axiom von $J_i$ ist).
+  Nach \autoref{lemma-kons-erweiterung} ist also jedes $J_i$ konsistent.
 
-  Nach \autoref{lemma-kons-erweiterung} ist jedes $J_i$ konsistent.
-
-  Definiere $K'$ als die Theorie, die alle Axiome aller $J_i$ enthält.
+  Wir definieren nun $K'$ als die Theorie, die alle Axiome aller $J_i$ enthält.
   Also ist $K'$ eine Erweiterung aller $J_i$
   und damit auch eine Erweiterung von $K=J_0$.
 
@@ -4435,7 +4475,7 @@ und jede konsistente Theorie lässt sich dazu erweitern.
   Nach obiger Bemerkung gilt $\xvdash{J_i} \neg \beta_i$
   oder $\xvdash{J_i} \beta_i$.
   Da $K'$ eine Erweiterung von $J_i$ ist,
-  folgt $\xvdash{K} \neg \beta_i$ oder $\xvdash{K} \beta_i$.
+  folgt $\xvdash{K'} \neg \beta_i$ oder $\xvdash{K'} \beta_i$.
 \end{proof}
 \end{satz}
 
@@ -4480,10 +4520,10 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
 
 \begin{defini}[T"~produktive Theorie]
   Eine Theorie $K$ heißt \emph{T"~produktiv} (\glqq{}scape goat\grqq{}, engl. Sündenbock),
-  falls für jede Formel $\alpha$ mit genau einer freien Variablen $x$ ein
+  falls für jede Formel~$\alpha$ mit genau einer freien Variablen $x$ ein
   variablenfreier Term $t$ existiert mit
   \begin{gather*}
-    \xvdash{K} (\exists x ~ \neg\alpha) \rightarrow \neg\alpha[x/t]
+    \xvdash{K} (\exists x\quantsep \neg\alpha) \rightarrow \neg\alpha[x/t]
   \end{gather*}
 \end{defini}
 
@@ -4492,18 +4532,18 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
   T"~produktiv ist und die Menge aller Terme in $K'$ ist abzählbar.
 
   \begin{proof}
-    $K'$ entsteht aus $K$ durch Hinzufügen von neuen Konstantensymbolen
-    $\{c_{1},c_{2},\dotsc\}$ und durch Hinzufügen neuer zusätzlicher
-    Axiome wie folgt. Sei $\alpha_{1},\alpha_{2},\dotsc$ eine Aufzählung
-    aller Formeln in $K'$ mit genau einer freien Variablen; $\alpha_{i}$
-    enthalte die Variablen $x_{j_{i}}$ frei. Sei $b_{1},b_{2},\dotsc$
+    $K'$ entsteht auf die folgenden Weise aus $K$ durch Hinzufügen von neuen
+    Konstantensymbolen $c_{1}$, $c_{2}$, \dots{} und neuen zusätzlichen
+    Axiomen. Sei $\alpha_{1}$, $\alpha_{2}$, \dots{} eine Aufzählung
+    aller Formeln in $K'$ mit genau einer freien Variablen; $x_{j_{i}}$ sei
+    die freie Variable in $\alpha_{i}$. Des weiteren sei $b_{1}$, $b_{2}$, \dots{}
     eine Aufzählung einer Teilmenge von $\{c_{1},c_{2},\dotsc\}$ so, dass
-    $b_{i}$ weder in $\alpha_{1},\dotsc,\alpha_{i-1}$ nicht in
+    $b_{i}$ weder in $\alpha_{1},\dotsc,\alpha_{i-1}$ noch in
     $b_{1},\dotsc,b_{i-1}$ vorkommt.
 
-    Definiere $\sigma_{k}=(\exists x_{j_{k}} ~ \neg\alpha)
+    Definiere $\sigma_{k}=(\exists x_{j_{k}} \quantsep \neg\alpha)
     \rightarrow\neg\alpha[x_{j_{k}}/b_{k}]$. $K'$ hat zusätzliche Axiome
-    $\sigma_{1},\sigma_{2},\dotsc$.
+    $\sigma_{1},\sigma_{2},\dotsc$
 
     Um zu zeigen, dass $K'$ konsistent ist, betrachten wir die Teiltheorien
     $K_{0},K_{1},K_{2},\dotsc$ mit
@@ -4527,15 +4567,15 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
       Tautologie $(\sigma_{n}\rightarrow\neg\sigma_{n})\rightarrow
       \neg\sigma_{n}$ folgt $\xvdash{K_{n-1}}\neg\sigma_{n}$, d.\,h.
       \begin{gather*}
-        \xvdash{K_{n-1}}\neg(\exists x_{j_{n}} ~ \neg\alpha)
+        \xvdash{K_{n-1}}\neg(\exists x_{j_{n}}\quantsep \neg\alpha)
            \rightarrow \neg\alpha[x_{j_{n}}/b_{n}]
       \end{gather*}
 
       Mit der Implikationsregel folgt
       \begin{gather*}
-        \xvdash{K_{n-1}} (\exists x_{j_{n}} ~
+        \xvdash{K_{n-1}} (\exists x_{j_{n}} \quantsep
            \neg\alpha)\quad\text{und}\quad
-           \xvdash{K_{n-1}} \neg\neg\alpha[x_{j_{n}}/b_{n}] ,
+           \xvdash{K_{n-1}} \neg\neg\alpha[x_{j_{n}}/b_{n}]
       \end{gather*}
       und mit der Negationsregel $\xvdash{K_{n-1}} \alpha[x_{j_{n}}/b_{n}]$.
 
@@ -4545,15 +4585,15 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
       die im Beweis sonst nicht vorkommt, und wir erhalten
       $\xvdash{K_{n-1}}\alpha[x_{j_{n}}/x']$.
 
-      Nach der Aufgabe 3 auf \hyperref[sec:uebung8]{Blatt~\ref*{sec:uebung8}} gilt
-      $\xvdash{K_{n-1}}(\forall x_{j_{n}} ~ \alpha) \leftrightarrow
-      (\forall x' ~ \alpha[x_{j_{n}}/x']$). Aus $\xvdash{K_{n-1}}
+      Nach der Aufgabe 3 auf \hyperref[sec:uebung8]{Blatt~8} gilt
+      $\xvdash{K_{n-1}}(\forall x_{j_{n}}\quantsep \alpha) \leftrightarrow
+      (\forall x'\quantsep \alpha[x_{j_{n}}/x']$). Aus $\xvdash{K_{n-1}}
       \alpha[x_{j_{n}}/x']$ folgt mit Generalisierung $\xvdash{K_{n-1}}
-      (\forall x' ~ \alpha[x_{j_{n}}/x'])$.
+      (\forall x'\quantsep \alpha[x_{j_{n}}/x'])$.
 
-      Mit Äquivalenzregel folgt $\xvdash{K_{n-1}}(\forall x_{j_{n}} ~
-      \alpha)$. Aus $\xvdash{K_{n-1}} (\exists x_{j_{n}} ~
-      \neg\alpha)$ folgt $\xvdash{K_{n-1}} \neg(\forall x_{j_{n}} ~
+      Mit Äquivalenzregel folgt $\xvdash{K_{n-1}}(\forall x_{j_{n}}\quantsep
+      \alpha)$. Aus $\xvdash{K_{n-1}} (\exists x_{j_{n}}\quantsep
+      \neg\alpha)$ folgt $\xvdash{K_{n-1}} \neg(\forall x_{j_{n}}\quantsep
       \alpha)$. Also ist $K_{n-1}$ nicht konsistent.
     \end{itemize}
   \end{proof}
@@ -4578,22 +4618,23 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
      \item Prädikatensymbole werden durch Beweisbarkeit interpretiert:
       \begin{gather*}
         (A^n_i)^{\cM}  =  \big\{(t_1,\dotsc,t_n)\in D^n \colon
-           \xvdash{J} A^n_i(t_1,\dotsc,t_n)\big\} \\
+           \xvdash{J} A^n_i(t_1,\dotsc,t_n)\big\}
       \end{gather*}
     \end{itemize}
+
     Wir zeigen, dass $\cM$ ein Modell von $J$ ist.
-    Dazu zeigen wir, dass für jede \textit{geschlossene} Formel $\alpha$ gilt:
-    aus $\Mmodels \alpha$ folgt $\xvdash{J} \alpha$.
-    (Eine nicht geschlossene Formel $\beta$ und deren Abschluss $\beta'$
+    Dazu zeigen wir, dass für jede \textit{geschlossene} Formel~$\alpha$ gilt:
+    $\Mmodels \alpha$ genau dann, wenn $\xvdash{J} \alpha$.
+    (Eine nicht geschlossene Formel~$\beta$ und deren Abschluss~$\beta'$
      haben die gleichen Eigenschaften in Bezug auf Gültigkeit und Beweisbarkeit.
-     Für jede Formel $\beta$ und deren Abschluss $\beta'$ gilt
+     Für jede Formel~$\beta$ und deren Abschluss~$\beta'$ gilt
     (1) $\Mmodels \beta$ gdw. $\Mmodels \beta'$ (wg. (E6)) und
     (2) $\xvdash{J} \beta$ gdw. $\xvdash{J} \beta'$ (wg. Gen und (RA4).)
     Der Beweis wird mittels Induktion über den Formelaufbau geführt,
     d.\,h. über die Anzahl der in der Formel vorkommenden Verknüpfungszeichen.
 
     Im Induktionsanfang betrachten wir geschlossene atomare Formeln $\alpha$
-    ohne Verknüpfungszeichen -- also ohne Quantoren.
+    ohne Verknüpfungszeichen -- also auch ohne Quantoren.
     Diese Formeln enthalten keine Variablensymbole.
     Es folgt direkt aus der Definition der Interpretation der
     Prädikatensymbole, dass $\Mmodels \alpha$ gdw. $\xvdash{J} \alpha$.
@@ -4604,142 +4645,143 @@ abzählbare Grundmenge hat (Satz von Löwenheim und Skolem, \autoref{satz-löwe-
     Im Induktionsschritt betrachten wir die drei Möglichkeiten,
     aus zwei Formeln $\alpha$ und $\beta$ eine Formel $\gamma$ mit einem zusätzlichen
     Verknüpfungszeichen zu konstruieren:
-    (1) $\gamma = (\neg \alpha)$, (2) $\gamma=(\alpha\rightarrow\beta)$
-    und (3) $\gamma = (\forall y~ \alpha)$.
+    \begin{faelle}
+     \item $\gamma = (\neg \alpha)$.
 
-    \textbf{Fall (1): $\gamma = (\neg \alpha)$.}
+      Es gilt
+      \begin{gather*}
+        \Mmodels \gamma
+           \quad\xLeftrightarrow{~(1)~}\quad
+           \not\Mmodels \alpha
+           \quad\xLeftrightarrow{~(2)~}\quad
+           \not\xvdash{J} \alpha
+           \quad\xLeftrightarrow{~(3)~}\quad
+           \xvdash{J} (\neg \alpha)
+           \quad\xLeftrightarrow{~(4)~}\quad
+           \xvdash{J} \gamma
+      \end{gather*}
+      Äquivalenz (1) folgt aus $\gamma = (\neg \alpha)$,
+      (2) folgt aus der Induktionsvoraussetzung,
+      (3) folgt aus der Abgeschlossenheit von $J$,
+      und (4) folgt wiederum aus $\gamma = (\neg \alpha)$.
 
-    Es gilt
-    \begin{gather*}
-      \Mmodels \gamma ~ \Leftrightarrow_{(1)} ~
-         \not\Mmodels \alpha
-         ~ \Leftrightarrow_{(2)} ~
-         \not\xvdash{J} \alpha
-         ~ \Leftrightarrow_{(3)} ~
-         \xvdash{J} (\neg \alpha)
-         ~ \Leftrightarrow_{(4)} ~
-         \xvdash{J} \gamma
-    \end{gather*}
-    Äquivalenz (1) folgt aus $\gamma = (\neg \alpha)$,
-    (2) folgt aus der Induktionsvoraussetzung,
-    (3) folgt aus der Abgeschlossenheit von $J$,
-    und (4) folgt wiederum aus $\gamma = (\neg \alpha)$.
+     \item $\gamma = (\alpha\rightarrow \beta)$.
 
-    \textbf{Fall (2): $\gamma = (\alpha\rightarrow \beta)$.}
+      Es gilt
+      \begin{multline*}
+        \not\Mmodels \gamma
+           \quad\xLeftrightarrow{~(1)~}\quad
+           \Mmodels \alpha \text{~und~} \not\Mmodels \beta
+           \quad\xLeftrightarrow{~(2)~}\quad\\
+           \xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta
+           \quad\xLeftrightarrow{~(3)~}\quad
+           \xvdash{J} (\neg \gamma)
+           \quad\xLeftrightarrow{~(4)~}\quad
+           \not\xvdash{J} \gamma
+      \end{multline*}
 
-    Es gilt
-    \begin{gather*}
-      \not\Mmodels \gamma
-         ~ \Leftrightarrow_{(1)} ~
-         \Mmodels \alpha \text{~und~} \not\Mmodels \beta
-         ~ \Leftrightarrow_{(2)} ~
-         \xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta
-         ~ \Leftrightarrow_{(3)} ~
-         \xvdash{J} (\neg \gamma)
-         ~ \Leftrightarrow_{(4)} ~
-         \not\xvdash{J} \gamma
-    \end{gather*}
+      Die Äquivalenzen (1), (2) und (4) sind einfach.
+      (1) ist Eigenschaft (E4) der grundlegenden Eigenschaften
+      von Formeln und Interpretationen,
+      (2) folgt aus der Induktionsvoraussetzung,
+      und (4)  folgt aus der Abgeschlossenheit von $J$.
 
-    Die Äquivalenzen (1), (2) und (4) sind einfach.
-    (1) ist Eigenschaft (E4) der grundlegenden Eigenschaften
-    von Formeln und Interpretationen,
-    (2) folgt aus der Induktionsvoraussetzung,
-    und (4)  folgt aus der Abgeschlossenheit von $J$.
+      Für die Äquivalenz (3) betrachten wir beide Richtungen getrennt
+      voneinander.
+      Aus $\xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta$
+      folgt zuerst $\xvdash{J} \neg\beta$ aus der Abgeschlossenheit von $J$.
+      Mit der Tautologie $\alpha\rightarrow(\neg \beta \rightarrow\neg(\alpha\rightarrow\beta))$
+      und modus ponens ergibt sich $\xvdash{J} \neg(\alpha\rightarrow\beta)$,
+      also $\xvdash{J} (\neg \gamma)$.
 
-    Für Äquivalenz (3) betrachten wir beide Richtungen getrennt.
-    Aus ~$\xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta$~
-    folgt zuerst $\xvdash{J} \neg\beta$ aus der Abgeschlossenheit von $J$.
-    Mit der Tautologie $\alpha\rightarrow(\neg \beta \rightarrow\neg(\alpha\rightarrow\beta))$
-    und modus ponens ergibt sich $\xvdash{J} \neg(\alpha\rightarrow\beta)$,
-    also $\xvdash{J} (\neg \gamma)$.
+      Die andere Implikation
+      $\xvdash{J} \neg(\alpha\rightarrow\beta)$ $\Rightarrow$
+      $\xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta$
+      folgt direkt aus der Implikationsregel.
 
-    Die andere Implikation  ~
-    $\xvdash{J} \neg(\alpha\rightarrow\beta) \Rightarrow
-    \xvdash{J} \alpha \text{~und~} \not\xvdash{J} \beta$
-    ~
-    folgt direkt aus der Implikationsregel.
+     \item $\gamma = (\forall y\quantsep \alpha)$.
 
-    \textbf{Fall (3): $\gamma = (\forall y ~\alpha)$.}
+      Das ist der etwas schwierigere Fall.
 
-    Das ist der etwas schwierigere Fall.
+      Zuerst betrachten wir den Fall, dass $\alpha$ geschlossen ist.
+      Dann gilt
+      \begin{gather*}
+        \Mmodels (\forall y\quantsep\alpha)
+           \quad\xLeftrightarrow{~(1)~}\quad
+           \Mmodels \alpha
+           \quad\xLeftrightarrow{~(2)~}\quad
+           \xvdash{J} \alpha
+           \quad\xLeftrightarrow{~(3)~}\quad
+           \xvdash{J} (\forall y\quantsep \alpha)
+      \end{gather*}
+      Äquivalenz (1) ist die grundlegende Eigenschaft (E6) von Formeln
+      und Interpretationen.
+      Äquivalenz (2) folgt aus der Induktionsvoraussetzung,
+      da $\alpha$ eine geschlossene Formel ist.
+      Äquivalenz (3) folgt aus der Generalisierung bzw. Axiom (A4),
+      da $\alpha[y/t]=\alpha$ ($y$ kommt in $\alpha$ nicht frei vor).
 
-    Zuerst betrachten wir den Fall, dass $\alpha$ geschlossen ist.
-    Dann gilt
-    \begin{gather*}
-      \Mmodels (\forall y~\alpha)
-         ~ \Leftrightarrow_{(1)} ~
-         \Mmodels \alpha
-         ~ \Leftrightarrow_{(2)} ~
-         \xvdash{J} \alpha
-         ~ \Leftrightarrow_{(3)} ~
-         \xvdash{J} (\forall y ~\alpha)
-    \end{gather*}
-    Äquivalenz (1) ist die grundlegende Eigenschaft (E6) von Formeln
-    und Interpretationen.
-    Äquivalenz (2) folgt aus der Induktionsvoraussetzung,
-    da $\alpha$ eine geschlossene Formel ist.
-    Äquivalenz (3) folgt aus der Generalisierung bzw. Axiom (A4),
-    da $\alpha[y/t]=\alpha$ ($y$ kommt in $\alpha$ nicht frei vor).
+      Nun zum Fall, dass $\alpha$ keine geschlossene Formel ist.
+      Dann ist $y$ die einzige freie Variable in $\alpha$.
+      Also ist $\neg(\forall y\quantsep\alpha) \rightarrow \neg\alpha[y/b_i]$
+      ein Axiom von $J$.
+      Es gelten folgende Äquivalenzen.
+      \begin{align*}
+        \Mmodels (\forall y\quantsep \alpha)
+           & \xLeftrightarrow{~(1)~}
+           \text{für jede Variablenbelegung $s\in\Sigma_{\cM}$ gilt: $s$ erfüllt $\alpha$} \\
+        & \xLeftrightarrow{~(2)~}
+           \text{für jeden variablenfreien Term $t$ gilt:~} \Mmodels \alpha[y/t] \\
+        & \xLeftrightarrow{~(3)~}
+           \text{für jeden variablenfreien Term $t$ gilt:~} \xvdash{J} \alpha[y/t]
+      \end{align*}
+      Äquivalenz (3) folgt aus der Induktionsvoraussetzung.
+      Äquivalenz (1) folgt aus der semantischen Definition des Allquantors.
+      Äquivalenz (2) folgt aus der Definition von $\cM$.
+      Für Variablenbelegung $s$ ist $s(y)\in D$.
+      Da variablenfreie Terme durch sich selbst interpretiert werden,
+      gilt: $s$ erfüllt $\alpha$ genau dann, wenn $\Mmodels \alpha[y/s(y)]$.
+      Da $\{ s(y)\colon s\in\Sigma_{\cM} \} = D$
+      und $D$ die Menge aller variablenfreien Treme ist, folgt (2).
 
-    Nun zum Fall, dass $\alpha$ keine geschlossene Formel ist.
-    Dann ist $y$ die einzige freie Variable in $\alpha$.
-    Also ist $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/b_i]$
-    ein Axiom von $J$.
-    Es gelten folgende Äquivalenzen.
-    \begin{align*}
-      \Mmodels (\forall y ~ \alpha)
-      & \Leftrightarrow_{(1)}
-      \text{für jede Variablenbelegung $s\in\Sigma_{\cM}$ gilt: $s$ erfüllt $\alpha$} \\
-      & \Leftrightarrow_{(2)}
-      \text{für jeden variablenfreien Term $t$ gilt:~} \Mmodels \alpha[y/t] \\
-      & \Leftrightarrow_{(3)}
-      \text{für jeden variablenfreien Term $t$ gilt:~} \xvdash{J} \alpha[y/t]
-    \end{align*}
-    Äquivalenz (3) folgt aus der Induktionsvoraussetzung.
-    Äquivalenz (1) folgt aus der semantischen Definition des Allquantors.
-    Äquivalenz (2) folgt aus der Definition von $\cM$.
-    Für Variablenbelegung $s$ ist $s(y)\in D$.
-    Da variablenfreie Terme durch sich selbst interpretiert werden,
-    gilt: $s$ erfüllt $\alpha$ genau dann, wenn $\Mmodels \alpha[y/s(y)]$.
-    Da $\{ s(y) \mid s\in\Sigma_{\cM} \} = D$
-    und $D$ die Menge aller variablenfreien Treme ist, folgt (2).
+      Es bleibt noch folgende Äquivalenz zu zeigen:
+      \begin{gather}
+        \label{eq:3}
+        \text{für jeden variablenfreien Term $t$ gilt~} \xvdash{J} \alpha[y/t]
+           \quad\Leftrightarrow\quad
+           \xvdash{J} (\forall y\quantsep \alpha)
+      \end{gather}
+      Wir zeigen die beiden Implikationsrichtungen der Äquivalenz getrennt.
 
-    Es bleibt noch folgende Äquivalenz ($\star$) zu zeigen:
-    \begin{gather*}
-      \text{für jeden variablenfreien Term $t$ gilt~} \xvdash{J} \alpha[y/t]
-         ~ ~ \Leftrightarrow ~ ~
-         \xvdash{J} (\forall y ~ \alpha)
-    \end{gather*}
-    Wir zeigen die beiden Implikationsrichtungen von ($\star$) getrennt.
+      Aus $\xvdash{J} (\forall y\quantsep \alpha)$ folgt
+      $\xvdash{J} \alpha[y/t]$ für jeden variablenfreien Term $t$
+      mittels Axiom A4 und modus ponens.
 
-    Aus $\xvdash{J} (\forall y~ \alpha)$ folgt
-    $\xvdash{J} \alpha[y/t]$ für jeden variablenfreien Term $t$
-    mittels Axiom A4 und modus ponens.
+      Die andere Implikationsrichtung zerlegen wir in folgende Teile.
 
-    Die andere Implikationsrichtung zerlegen wir in folgende Teile.
+      $
+      \begin{array}{cclc}
+        \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \xvdash{J} \alpha[y/t]} & (1) \\
+        \rule{20mm}{0mm} & \Rightarrow &
+        \text{für jeden variablenfreien Term $t$ gilt:~} \not\xvdash{J} \neg\alpha[y/t] & (2) \\
+        & \Rightarrow &
+        \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\xvdash{J} \neg\alpha[y/a_j] & (3) \\
+        & \Rightarrow & \not\xvdash{J} \neg(\forall y\quantsep \alpha) & (4) \\
+        & \Rightarrow & \xvdash{J} (\forall y\quantsep \alpha) & (5)
+      \end{array}
+      $
 
-    $
-    \begin{array}{cclc}
-      \multicolumn{3}{l}{\text{für jeden variablenfreien Term $t$ gilt:~} \xvdash{J} \alpha[y/t]} & (1) \\
-      \rule{20mm}{0mm} & \Rightarrow &
-      \text{für jeden variablenfreien Term $t$ gilt:~} \not\xvdash{J} \neg\alpha[y/t] & (2) \\
-      & \Rightarrow &
-      \text{für jedes Konstantensymbol $a_j$ gilt:~} \not\xvdash{J} \neg\alpha[y/a_j] & (3) \\
-      & \Rightarrow & \not\xvdash{J} \neg(\forall y ~ \alpha) & (4) \\
-      & \Rightarrow & \xvdash{J} (\forall y ~ \alpha) & (5)
-    \end{array}
-    $
+      Aus (1) folgt (2) wg.~der Konsistenz von $J$.
+      Aus (2) folgt (3), da jedes Konstantensymbol ein variablenfreier Term ist.
+      Aus dem Axiom
+      $\neg(\forall y\quantsep\alpha) \rightarrow \neg\alpha[y/a_i]$
+      und $\xvdash{J} \neg(\forall y\quantsep \alpha)$ folgt $\xvdash{J} \neg\alpha[y/a_i]$.
+      Also folgt die Negation von (3) aus der Negation von (4).
+      Damit folgt (4) aus (3).
+      Die Abgeschlossenheit von $J$ führt schließlich zu (5).
 
-    Aus (1) folgt (2) wg.~der Konsistenz von $J$.
-    Aus (2) folgt (3), da jedes Konstantensymbol ein variablenfreier Term ist.
-    Aus dem Axiom
-    $\neg(\forall y~\alpha) \rightarrow \neg\alpha[y/a_i]$
-    und $\xvdash{J} \neg(\forall y ~ \alpha)$ folgt $\xvdash{J} \neg\alpha[y/a_i]$.
-    Also folgt die Negation von (3) aus der Negation von (4).
-    Damit folgt (4) aus (3).
-    Die Abgeschlossenheit von $J$ führt schließlich zu (5).
-
-    Damit ist ($\star$) bewiesen und der Beweis des Lemmas abgeschlossen.
+      Damit ist \autoref{eq:3} bewiesen und der Beweis ist abgeschlossen.
+    \end{faelle}
   \end{proof}
 \end{satz}
 
@@ -4790,15 +4832,12 @@ auch tatsächlich bewiesen werden können.
 Zum Abschluss dieses Kapitels fassen wir
 \autoref{satz-vollstPK} und \autoref{satz-korrektheit-theorien-1.ordnung} zusammen.
 
-\begin{korol}[Korrektheit und Vollständigkeit des Prädikatenkalküls 1.~Ordnung]
+\begin{korol}[Korrektheit und Vollständigkeit des Prädikatenkalk. 1.~Ord.]
 Sei $K$ ein Prädikatenkalkül 1.~Ordnung.
 Dann gilt für jede Formel $\alpha$ von $K$:
-
-{\centering
-
-$\alpha$ ist gültig genau dann, wenn $\alpha$ in $K$ beweisbar ist.
-
-}
+  \begin{center}
+    $\alpha$ ist genau dann gültig, wenn $\alpha$ in $K$ beweisbar ist.
+  \end{center}
 \end{korol}
 
 Diese Korrektheit und Vollständigkeit ist genau das, was man
@@ -5044,7 +5083,7 @@ Assoziativität -- können wir auch in der Theorie~$\ThS$ beweisen.
     \begin{align*}
       (1)\quad & t+0=t & \text{(S5')}\\
       (2)\quad & (t+0=t) \rightarrow ((t+0=t)\rightarrow(t=t)) & \text{(S1')}\\
-      (3)\quad & (t+0=t)\rightarrow(t=t) & \text{MP~ 1,2}\\
+      (3)\quad & (t+0=t)\rightarrow(t=t) & \text{MP 1,2}\\
       (4)\quad & t=t & \text{MP 1,3}
     \end{align*}
 
