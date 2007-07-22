@@ -10,6 +10,8 @@
 %  * \xvdash sollte in etwas umbenannt werden, was seine Bedeutung
 %    wiederspiegelt, z.\,B. Folgerung
 %  * entsprechend sollten auch \Lvdash und \Svdash angepasst werden
+%  * es sollten auch noch Befehle für die Negation definiert werden, weil
+%    \not\xvdash nicht gut aussieht. \nxvdash
 %  * es sollte ein Befehl \Theorie definiert werden, der die Schreibweise von
 %    Theorien festlegt, \newcommand*{\Theorie}[1]{\mathrm{#1}}
 %  * entsprechend sollten alle Theorien angepasst werden, \ThL für Theorie L
@@ -328,6 +330,9 @@
 
 \SVN $LastChangedRevision$
 \SVN $LastChangedDate$
+
+% LaTeX trennt "daraus" als "dar-aus" ab
+\hyphenation{daraus}
 
 \begin{document}
 
@@ -5989,7 +5994,7 @@ beschrieben werden.
     gleich $1$ genau dann, wenn $P(x_1,\dotsc,x_k,t)$ für alle $t=0,1,2,\dotsc,k$ gilt.
     Also gilt
     \begin{align*}
-      (\forall t)_{\leq y} P(x_1,\dotsc,x_k,t)
+      (\forall t)_{\leq y}\quantsep P(x_1,\dotsc,x_k,t)
          & = \bigg(\Big[\prod_{t=0}^y P(x_1,\dotsc,x_k,t)\Big] = 1 \bigg) \\
       & = \prod_{t=0}^y P(x_1,\dotsc,x_k,t)
     \end{align*}
@@ -6388,8 +6393,6 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
         (2)\quad & \overline{n_{2}} < \overline{n_{1}} \vee
            \overline{n_{1}} = \overline{n_{2}} & \text{Disjunktionsregel}
       \end{align*}
-      \help{Wir hatten noch nie eine Konjunktionsregel. Unsere Formeln bestanden nur
-        aus Implikationen und Negationen}
 
      \item $n_{2}<n_{1}$
       \begin{align*}
@@ -6897,10 +6900,10 @@ einer Formel ist, und anderenfalls ist der Funktionswert $0$.
 Formeln werden aus atomaren Formeln zusammengesetzt,
 und atomare Formeln haben Terme als Bestandteile.
 Wir wollen eine primitiv"=rekursive Funktion angeben,
-die entscheidet, ob ein Zahl die Gödelnummer eines Termes ist.
+die entscheidet, ob eine Zahl die Gödelnummer eines Terms ist.
 Diese Funktion ist die charakteristishe Funktion der Menge
 \begin{gather*}
-  Trm=\{ n \mid \text{ $n$ ist GN eines Termes}\}
+  Trm=\{ n \mid \text{ $n$ ist GN eines Terms}\}
 \end{gather*}
 Terme sind induktiv aufgebaut.
 Die einfachsten Terme sind Konstanten- und Variablensymbole.
@@ -6921,29 +6924,29 @@ In diesem Beispiel ist
 \end{gather*}
 Sei $m=g(x_1, f_2^2(a_3,x_1), f^1_3(f^2_2(a_1,a_2),x_1,a_{13}))$
 die Kodierung der Zerlegung von $t$.
-Daraus lässt sich die Kodierung $c$ von $t$ gewinnen.
-Die Kodierung des Funktionssymbols von $t$ ist $(c)_0 (=g(f^3_5)$.
-Die Kodierung des ersten Termes der Zerlegung von $t$ ist $(m)_0 (=g(x_1))$,
-die Kodierungen des zweiten und dritten Termes der Zerlegung von $t$ sind
-$(m)_1 (=g(f_2^2(a_3,x_1)))$ und $(m)_2 (=g(f^1_3(f^2_2(a_1,a_2),x_1,a_{13})))$.
+Da\-raus lässt sich die Kodierung $c$ von $t$ gewinnen.
+Die Kodierung des Funktionssymbols von $t$ ist $(c)_0$ $(=g(f^3_5))$.
+Die Kodierung des ersten Terms der Zerlegung von $t$ ist $(m)_0$ $(=g(x_1))$,
+die Kodierungen des zweiten und dritten Terms der Zerlegung von $t$ sind
+$(m)_1$ $(=g(f_2^2(a_3,x_1)))$ und $(m)_2 (=g(f^1_3(f^2_2(a_1,a_2),x_1,a_{13})))$.
 Also gilt
 \begin{gather*}
-  t = (c)_0 * 2^3 * (m)_0 * 2^7 * (m)_1 * 2^7 * (m)_2 * 2^5
+  t = (c)_0 \cdot 2^3 \cdot (m)_0 \cdot 2^7 \cdot (m)_1 \cdot 2^7 \cdot (m)_2 \cdot 2^5
 \end{gather*}
-Formal drücken wir die Zerlegung eines Termes durch folgendes Prädikat aus.
+Formal drücken wir die Zerlegung eines Terms durch folgendes Prädikat aus.
 \vspace{1ex}
 
 $Zerl_T = \{ (x,w)\mid$\begin{tabular}[t]{ll}
-                       $x$ ist GN eines Termes $f^n_i(t_1,\dotsc,t_k)$ \\
+                       $x$ ist GN eines Terms $f^n_i(t_1,\dotsc,t_k)$ \\
          und $w=2^{g(t_1)} \cdot 3^{g(t_2)} \dotsm p_{n-1}^{g(t_n)}$ & $\}$
                \end{tabular}
 
 Dieses Prädikat ist primitiv"=rekursiv.
 \begin{gather*}
   Zerl_T(x,w) =
-     \big( x = (x)_0 * 2^3 *
-     \left(\prod_{i=0}^{Arg_T((x)_0)-2} \left(\left(w\right)_i * 2^7\right) \right)
-     * (w)_{Arg_T((x)_0)-1} * 2^5 \big)
+     \big( x = (x)_0 \cdot 2^3 \cdot
+     \left(\prod_{i=0}^{Arg_T((x)_0)-2} \left(\left(w\right)_i \cdot 2^7\right) \right)
+     \cdot (w)_{Arg_T((x)_0)-1} \cdot 2^5 \big)
 \end{gather*}
 
 Atomare Formeln können entsprechend in ihre Terme zerlegt werden.
@@ -6957,9 +6960,9 @@ $Zerl_A = \{ (x,w)\mid$\begin{tabular}[t]{ll}
 Dieses Prädikat ist primitiv"=rekursiv.
 \begin{gather*}
   Zerl_A(x,w) =
-     \big( x = (x)_0 * 2^3 *
-     \left(\prod_{i=0}^{Arg_P((x)_0)-2} \left(\left(w\right)_i * 2^7\right) \right)
-     * (w)_{Arg_P((x)_0)-1} * 2^5 \big)
+     \big( x = (x)_0 \cdot 2^3 \cdot
+     \left(\prod_{i=0}^{Arg_P((x)_0)-2} \left(\left(w\right)_i \cdot 2^7\right) \right)
+     \cdot (w)_{Arg_P((x)_0)-1} \cdot 2^5 \big)
 \end{gather*}
 
 Mit diesen Prädikaten können wir
@@ -6967,7 +6970,7 @@ einfach testen, ob eine Kodierung einen Term bzw. eine atomare Formel kodiert.
 Die folgenden Relationen sind primitiv"=rekursiv.
 
 \begin{itemize}
-\item $Trm=\{ n \mid \mbox{ $n$ ist GN eines Termes}\}$
+\item $Trm=\{ n \mid \mbox{ $n$ ist GN eines Terms}\}$
 
   \begin{multline*}
     Trm(n) = EIC(n) \vee EVb(n) \vee \\
@@ -6994,19 +6997,19 @@ sind primitiv"=rekursiv.
 \item $NegFml(x)=$ die GN der Formel $(\neg \alpha)$,
 falls $x$ die GN von Formel $\alpha$ ist
   \begin{gather*}
-    NegFml(x)  = 2^3 * 2^9 * x * 2^5
+    NegFml(x)  = 2^3 \cdot 2^9 \cdot x \cdot 2^5
   \end{gather*}
 
 \item $CondFml(x,y)=$ die GN der Formel $(\alpha\rightarrow \beta)$,
 falls $x$ und $y$ die GNn von $\alpha$ und $\beta$ sind
   \begin{gather*}
-    CondFml(x,y)  = 2^3 * x * 2^{11} * y * 2^5
+    CondFml(x,y)  = 2^3 \cdot x \cdot 2^{11} \cdot y \cdot 2^5
   \end{gather*}
 
 \item $GenFml(u,v)=$ die GN der Formel $(\forall x\quantsep \alpha)$,
 falls $u$ und $v$ die GNn von $\alpha$ und $x$ sind
   \begin{gather*}
-    GenFml(u,v)  = 2^3 * 2^{13} * 2^{v} * u * 2^5
+    GenFml(u,v)  = 2^3 \cdot 2^{13} \cdot 2^{v} \cdot u \cdot 2^5
   \end{gather*}
 
 \end{itemize}
@@ -7046,9 +7049,9 @@ $TrmSubst = \{ (x,y,u,v)\mid$\begin{tabular}[t]{p{0.6\textwidth}l}
                        dann entsteht der Term mit GN $x$ \\[-3ex] & $ \}$
                \end{tabular}
 
-Hier entspricht $y$ der Kodierung des Termes $\alpha$,
-$u$ der Kodierung der Variablen $x_i$ und $v$ der Kodierung des Termes $t$.
-$x$ ist dann die Kodierung des Termes $\alpha[x_i/t]$.
+Hier entspricht $y$ der Kodierung des Terms $\alpha$,
+$u$ der Kodierung der Variablen $x_i$ und $v$ der Kodierung des Terms $t$.
+$x$ ist dann die Kodierung des Terms $\alpha[x_i/t]$.
 Wir betrachten zuerst die zu unterscheidenden Fälle.
 \begin{enumerate}
 \item wenn $\alpha$ ein Konstantensymbol ist, dann ist $\alpha[x_i/t]=\alpha$
@@ -7177,7 +7180,7 @@ Sei $c_{\alpha}$ die Kodierung von $\alpha$.
 Die Diagonalfunktion berechnet aus der Kodierung von $\alpha$
 die Kodierung von $\alpha[x_1/\overline{c_{\alpha}}]$.
 Im ersten Schritt brauchen wir dazu noch eine Funktion,
-die aus der Zahl $m$ die Kodierung des Termes $\overline{m}$ berechnet.
+die aus der Zahl $m$ die Kodierung des Terms $\overline{m}$ berechnet.
 
 \begin{itemize}
 \item
@@ -7186,7 +7189,7 @@ $\mathit{Num}(m)=$ die GN von $\overline{m}$
 $
 \begin{array}{rcl}
 \mathit{Num}(0) & = & 2^{15} (=2^{g(a_1)}) \\
-\mathit{Num}(m+1) & = & 2^{49} * 2^3 * \mathit{Num}(m) * 2^5  ( = f^1_1(\overline{m}) )
+\mathit{Num}(m+1) & = & 2^{49} \cdot 2^3 \cdot \mathit{Num}(m) \cdot 2^5  ( = f^1_1(\overline{m}) )
 \end{array}
 $
 
@@ -7222,7 +7225,7 @@ sind primitiv"=rekursiv.
                         \end{tabular}
 
 $
-\mathit{MP}(x,y,z) = ( y= 2^3 * x * 2^{11} * z * 2^5) \wedge Fml(x) \wedge Fml(z)
+\mathit{MP}(x,y,z) = ( y= 2^3 \cdot x \cdot 2^{11} \cdot z \cdot 2^5) \wedge Fml(x) \wedge Fml(z)
 $
 
 \item $Gen=\{(x,y)\mid $\begin{tabular}[t]{ll} Ausdruck mit GN $y$ entsteht\\
@@ -7230,7 +7233,8 @@ $
                         \end{tabular}
 
 $
-Gen(x,y) =(\exists v)_{<y}\quantsep (EVb(v) \wedge y=2^3*2^{13}*v*x*2^5) \wedge Fml(x)
+Gen(x,y) =(\exists v)_{<y}\quantsep (EVb(v) \wedge y=2^3\cdot2^{13}\cdot
+  v\cdot x\cdot 2^5) \wedge Fml(x)
 $
 \end{itemize}
 
@@ -7262,9 +7266,9 @@ $\mathit{Prf}$ eine primitiv"=rekursive Relation ist
 \begin{multline*}
   \mathit{Prf}(y) = (\exists u)_{<y}(\exists v)_{<y}(\exists w)_{<y}(\exists z)_{<y}
   \big( y=2^w \wedge Ax(w) \big) \vee \\
-  \big( \mathit{Prf}(u) \wedge y=u*2^v \wedge Ax(v) \big) \vee \\
-  \big( (\mathit{Prf}(u) \wedge Fml((u)_w) \wedge y = u*2^v \wedge Gen((u)_w,v)\big) \vee \\
-  \big( \mathit{Prf}(u) \wedge Fml((u)_z \wedge Fml((u)_w)) \wedge y = u*2^v
+  \big( \mathit{Prf}(u) \wedge y=u\cdot2^v \wedge Ax(v) \big) \vee \\
+  \big( (\mathit{Prf}(u) \wedge Fml((u)_w) \wedge y = u\cdot2^v \wedge Gen((u)_w,v)\big) \vee \\
+  \big( \mathit{Prf}(u) \wedge Fml((u)_z \wedge Fml((u)_w)) \wedge y = u\cdot2^v
        \wedge \mathit{MP}((u)_z,(u)_w,v) \big)
 \end{multline*}
 
@@ -7333,7 +7337,7 @@ der Menge der Axiome von $\ThS$ und der primitiv"=rekursiven Funktionen in $\ThS
 Im Unvollständigkeitssatz von Gödel (\autoref{satz-unvollst})
 wird schließlich festgestellt, dass
 es in jeder konsistenten Theorie mit diesen Eigenschaften
-wahre und nicht beweisbare Formel gibt.
+wahre und nicht beweisbare Formeln gibt.
 
 
 Das geht indirekt über die Konstruktion
@@ -7440,7 +7444,7 @@ es gibt eine Formel $\gamma_0$ mit
 $\gamma_{0}$ ist also (beweisbar) äquivalent zu der Formel
 für die Aussage \glqq{}Keine Zahl ist die Gödelnummer eines
 Beweises der Formel mit Gödelnummer $\gamma_{0}$.\grqq{}
-oder etwas kompakter \glqq{}$\gamma_0$ ist nicht beweisbar.\grqq{}.
+oder etwas kompakter \glqq{}$\gamma_0$ ist nicht beweisbar.\grqq{}
 Wir zeigen, dass das eine wahre Aussage ist.
 
 \begin{satz}\label{satz-gamma0-nicht-beweisbar}
@@ -7534,7 +7538,7 @@ $\mathrm{S}$ ist $\omega$-konsistent, da die Standardinterpretation
 \end{satz}
 
 Da in $\mathrm{S}$
-weder $\gamma_0$ noch $\neg\gamma_0$ beweisbar,
+weder $\gamma_0$ noch $\neg\gamma_0$ beweisbar ist,
 kann man $\mathrm{S}$ durch Hinzunahme von $\gamma_0$ als
 zusätzliches Axiom konsistent zu einer Theorie $\mathrm{S}'$ erweitern
 (\autoref{lemma-kons-erweiterung}).
