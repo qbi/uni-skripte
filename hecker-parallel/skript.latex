@@ -2218,8 +2218,8 @@ Verbesserung gegenüber dem Seriellen darstellt.
 LCA steht für "lowest common ancestor" (jüngster gemeinsame Vorfahre) und bezieht
 sich auf den tiefsten Knoten in einem Binärbaum, der Vater der Teilbäume ist, 
 in denen die Knoten u und v vorkommen.
-Das Problem ist ein Preprocessing-Problem, welches die Anfrage LCA(u, v) möglichst
-schnell beantworten kann (man besteht auf $O(1)$ \Time).
+Das Problem ist ein Preprocessing-Problem, welches den Baum so vorbereitet, dass 
+die Anfrage LCA(u, v) möglichst schnell beantworten werden kann (man besteht auf $O(1)$ \Time).
 
 INPUT: Wurzelbaum T
 OUTPUT: Baum, für den einzelne LCA-Anfragen schnell beantwortet werden können
@@ -2231,12 +2231,63 @@ Man unterscheidet 2 Fälle, für die LCA-Anfragen trivial sind:
 \end{enumerate}
 
 \begin{description}
- \item[Achtung:] Der Algorithmus im Ja'Ja ist falsch!
- \item[Grund:] In der Praxis ist dieser Umstand lange nicht aufgefallen, da der Algorithmus
-   nur für den Spezialfall angewendet wird, für den er zufälligerweise richtig ist. Bisher
-   gab es wohl keine Neuauflage des Ja'Ja und es ist nicht bekannt, ob der Fehler an den
-   Autor bzw. den Verleger weitergereicht worden ist. Der Ansatz ist aber wohl brauchbar.
+ \item[Achtung:] Der Algorithmus im Ja'Ja ist falsch! In der Praxis ist dieser Umstand lange 
+   nicht aufgefallen, da der Algorithmus nur für den Spezialfall angewendet wird, für den er 
+   zufälligerweise richtig ist. Bisher gab es wohl keine Neuauflage des Ja'Ja und es ist nicht 
+   bekannt, ob der Fehler an den Autor bzw. den Verleger weitergereicht worden ist. Der Ansatz 
+   ist aber wohl brauchbar.
 \end{description}
+
+\begin{description}
+ \item[Algorithmus von Ja'Ja:] Der Algorithmus hat als INPUT zwei Knoten u und v, die entsprechend
+   ihrer INORDER-Nummer innerhalb des Baums bezeichnet sind. Laut Ja'Ja wird der $LCA(u,v)$ so
+   ermittelt, dass die Knotennummern (binär) von links nach rechts durchlaufen werden und an der
+   ersten sich unterscheidenden Stelle wird eine '1' gesetzt, der Rest ist '0'.
+ \item[Warum ist er falsch:] Man nehme zwei Knoten, deren Nummerierung $code(u)=1100$ und
+   $code(v)=1101$ ist. Da die Nummerierung wie erwähnt in INORDER erfolgt, ist $1100$ der Vater
+   von $1101$, jedoch würde der Ja'Ja-Algorithmus die letzte Stelle als die erste sich unterscheidende
+   Stelle erkennen, diese 1 setzen und den Wert $'1101'$ ausgeben; das ist falsch. Die Lösung des
+   Problems erfolgt mittels des Algorithmus von Spillner.
+\end{description}
+
+% Algorithmus von Spillner 
+
+\begin{algorithm}
+\KwIn{$u,v$}
+\KwOut{$LCA(u,v)$}
+\caption{Algorithmus von Spillner}
+\dontprintsemicolon
+  Berechne $k_{u}$, $k_{v}$: letzte '1' von links \;
+  Durchlaufe die Ziffern von u, v von links nach rechts \;
+    {Falls $k_{u}$ oder $k_{v}$ noch nicht erreicht, aber Ja'Ja hat Ergebnis, dann OUTPUT Ja'Ja \;
+    Falls vor k{u} erreicht, dann OUTPUT bis k_{u}, Rest '0'en \;
+    analog $k_{v}$ \;
+    }
+\end{algorithm}
+
+Vereinbarung: Sei v ein Knoten und l(v) das linkeste Vorkommen im Level- bzw. Eulerarray. Analog
+r(v) als rechtestes Vorkommen.
+
+\begin{lemma}
+  Sei T=(V,E) ein Wurzelbaum
+
+  Eulerarray A, Levelarray B, r(v) und l(v) seien definiert
+
+  seien u und v zwei verschiedene Knoten
+
+  Dann gilt:
+
+  \begin{enumerate}
+    \item u ist Vorfahre von v $\Leftrightarrow$ l(u) < l(v) < r(u)
+    \item u,v sind nicht direkt verwandt $\Leftrightarrow$ r(u) < l(v) oder r(v) < l(u)
+    \item falls r(u)<l(v), so ist LCA (u,v) der Knoten im Eulerarray mit minimalen Level
+          im Intervall [r(u), l(v)] im Levelarray
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+   (1) $\rightarrow$ Eulertour entspricht Tiefensuche, Beginn ist Wurzel ...
+\end{proof}
 
 Um das LCA-Problem zu lösen, wird es auf das Range-Minima-Problem zurückgeführt.
 
@@ -2328,7 +2379,12 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
   Die analogen Schranken gelten für LCA.
 \end{folger}
 
+\section{Das Range-Minima-Problem}
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Suchen, Mischen, Sortieren} % Kapitel 4
 \section{Suchen in einer sortierten Menge nach Kruskal}
