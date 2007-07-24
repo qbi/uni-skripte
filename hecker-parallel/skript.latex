@@ -2232,18 +2232,15 @@ Man unterscheidet 2 Fälle, für die LCA-Anfragen trivial sind:
 
 \begin{description}
  \item[Achtung:] Der Algorithmus im Ja'Ja ist falsch! In der Praxis ist dieser Umstand lange 
-   nicht aufgefallen, da der Algorithmus nur für den Spezialfall angewendet wird, für den er 
+   nicht aufgefallen, da der Algorithmus wohl nur für den Spezialfall angewendet wird, für den er 
    zufälligerweise richtig ist. Bisher gab es wohl keine Neuauflage des Ja'Ja und es ist nicht 
    bekannt, ob der Fehler an den Autor bzw. den Verleger weitergereicht worden ist. Der Ansatz 
    ist aber wohl brauchbar.
-\end{description}
-
-\begin{description}
  \item[Algorithmus von Ja'Ja:] Der Algorithmus hat als INPUT zwei Knoten u und v, die entsprechend
    ihrer INORDER-Nummer innerhalb des Baums bezeichnet sind. Laut Ja'Ja wird der $LCA(u,v)$ so
    ermittelt, dass die Knotennummern (binär) von links nach rechts durchlaufen werden und an der
    ersten sich unterscheidenden Stelle wird eine '1' gesetzt, der Rest ist '0'.
- \item[Warum ist er falsch:] Man nehme zwei Knoten, deren Nummerierung $code(u)=1100$ und
+ \item[Gegenbeispiel:] Man nehme zwei Knoten, deren Nummerierung $code(u)=1100$ und
    $code(v)=1101$ ist. Da die Nummerierung wie erwähnt in INORDER erfolgt, ist $1100$ der Vater
    von $1101$, jedoch würde der Ja'Ja-Algorithmus die letzte Stelle als die erste sich unterscheidende
    Stelle erkennen, diese 1 setzen und den Wert $'1101'$ ausgeben; das ist falsch. Die Lösung des
@@ -2258,23 +2255,20 @@ Man unterscheidet 2 Fälle, für die LCA-Anfragen trivial sind:
 \caption{Algorithmus von Spillner}
 \dontprintsemicolon
   Berechne $k_{u}$, $k_{v}$: letzte '1' von links \;
-  Durchlaufe die Ziffern von u, v von links nach rechts \;
-    {Falls $k_{u}$ oder $k_{v}$ noch nicht erreicht, aber Ja'Ja hat Ergebnis, dann OUTPUT Ja'Ja \;
+  \While {Durchlaufe die Ziffern von u, v von links nach rechts} {
+    Falls $k_{u}$ oder $k_{v}$ noch nicht erreicht, aber Ja'Ja hat Ergebnis, dann OUTPUT Ja'Ja \;
     Falls vor $k_{u}$ erreicht, dann OUTPUT bis $k_{u}$, Rest '0'en \;
     analog $k_{v}$ \;
-    }
+  }
 \end{algorithm}
 
 Vereinbarung: Sei v ein Knoten und l(v) das linkeste Vorkommen im Level- bzw. Eulerarray. Analog
 r(v) als rechtestes Vorkommen.
 
 \begin{lemma}
-  Sei T=(V,E) ein Wurzelbaum
-
-  Eulerarray A, Levelarray B, r(v) und l(v) seien definiert
-
-  seien u und v zwei verschiedene Knoten
-
+  Sei T=(V,E) ein Wurzelbaum \
+  Eulerarray A, Levelarray B, r(v) und l(v) seien definiert \
+  seien u und v zwei verschiedene Knoten \
   Dann gilt:
 
   \begin{enumerate}
@@ -2286,20 +2280,45 @@ r(v) als rechtestes Vorkommen.
 \end{lemma}
 
 \begin{proof}
-   (1) $\rightarrow$ Eulertour entspricht Tiefensuche, Beginn ist Wurzel ...
+   (1) $\rightarrow$ Eulertour entspricht Tiefensuche, Beginn ist Wurzel. \
+     Es folgt: u wird vor v besucht; ausserdem wird der ganze Teilbaum 
+     mit Wurzel v komplett durchsucht, bevor u ein letztes Mal besucht wird. \
+     $\leftarrow$ Annahme: u sein kein Vorfahre von v. Da l(u) < l(v), wird der 
+     Teilbaum mit Wurzel u komplett durchsucht, bevor v durchsucht wird $\rightarrow$ 
+     auch r(u) < l(u) $\rightarrow$ Widerspruch zu Voraussetzung! \
+   (2,3) Ähnlich.
 \end{proof}
 
-Um das LCA-Problem zu lösen, wird es auf das Range-Minima-Problem zurückgeführt.
+\begin{folger}
+  Ist Levelarray B bekannt und können wir das Range-Minima-Problem lösen, haben wir die LCA-Bestimmung
+  gelöst!
+\end{folger}
 
-B = $b_{1},\ldots,b_{n}=b_{2^{l}}$
-B = $b_{1},\ldots,b_{i},\ldots,b_{j},\ldots,b_{n}$
-\{$b_i,b_{i+1},\ldots,b_{j-1},b_{j}\}$
-Sei $v=LCA(b_{i},b_{j})$
+\section{Das Range-Minima-Problem}
+ 
+Wir beginnen mit der Bestimmung der Eulertour von T (setzen voraus, dass der 
+Baum in einer wohl-verarbeitbaren Form vorliegt) und erhalten sowohl das 
+Eulerarray A als auch das Levelarray B.
 
-LCA: v Teilbaum mit Knoten v enthält Blätter
+Zusätzlich kennen wir für jeden Knoten v l(v) und r(v) (linkestes und rechtestes 
+Vorkommen von v im Eulerarray).
+
+Zur Bestimmung des Range-Minimas reicht es nicht, die Minima der Blätter der
+Teilbäume in den Knoten zu speichern!
+
+\begin{defini}
+  Die Präfixminima eines Arrays $(c_{1}, \ldots, c_{m})$ sind die Werte
+  $(e_{1}, \ldots, e_{m})$ mit $e_{i} = min\{ c_{1}, \ldots, c_{i} \}$
+\end{defini}
+
+Idee: Speichere in jedem Knoten die Suffix- und Präfixminima
+
+- Sei $v=LCA(b_{i},b_{j})$
+
+- Allgemein: Teilbaum mit Knoten v enthält Blätter 
 \{$b_{r},\ldots,b_{i},\ldots,b_{j},\ldots,b_{s}\}$
 
-Teilung der Folge in linken und rechten Teil:
+- Teilung der Folge in linken und rechten Teil:
 \{$b_{r},\ldots,b_{i},\ldots,b_{p}\},\{b_{p+1},\ldots,b_{j},\ldots,b_{s}\}$
 
 Suchen: Minimum(Minumum(\{$b_{i},\ldots,b_{p}\})$,
@@ -2318,14 +2337,15 @@ ist ein Suffix-Minimum, Min($b_{p+1},\ldots,b_{j})$ ist ein Prefix-Minimum
    S(0,j) := B(j)\;
 }
 \For {h:=1 \KwTo log(n)} {
-  \For {j:=1 \KwTo n/$2^{h}$} {
+  \Forpar {j:=1 \KwTo n/$2^{h}$} {
   \tcc{h ist das Level von den Blättern an (h=0)}
   Merge(P(h-1,2j-1) mit P(h-1,2j) zu P(h,j)\;
+  Merge S analog
   }
 }
-Merge: Kopiere erstes Array und für alle Elemente des zweiten Arrays das
-Minimum des Elements und des letzten Elements des ersten Array ein;
 \end{algorithm}
+
+Entscheidend: wie funktioniert das mischen $\ldots$
 
 Analyse: \Time: $O(\log n)$
 \Work: $O(n\log n)$ ($O(n)$ pro Stufe)
@@ -2378,8 +2398,6 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 \begin{folger}
   Die analogen Schranken gelten für LCA.
 \end{folger}
-
-\section{Das Range-Minima-Problem}
 
 
 
