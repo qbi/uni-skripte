@@ -2711,7 +2711,7 @@ Zeit- und Aufwandsanalyse:\\
   \end{itemize}
 \end{bemerk}
 
-\section{SORT}
+\section{Sortieren}
 
 Baumparadigma
 Ansatz
@@ -2851,15 +2851,22 @@ das Element, was im Blatt $v$ gespeichert ist.
 
 \begin{defini}
   Sei $alt(v) = height(T) - level(v)$, wobei $level(v)$ als Abstand von $v$ zur Wurzel
-  definiert ist. \\
+  definiert ist.
 \end{defini}
 
 Die Liste, die in den internen Knoten $v$ gespeichert wird, wird in den Schritten $s$
-aktualisiert, wenn die Bedingung $alt(v) \leq s \leq 3alt(v)$ erfüllt ist.
+aktualisiert, wenn die Bedingung $alt(v) \leq s \leq 3alt(v)$ erfüllt ist. Ist dies der
+Fall, dann sprechen wir davon, dass $v$ in diesem Schritt $s$ aktiv ist. Der Algorithmus
+aktualisiert die Liste $L_{s}(v)$, so dass $v$ gefüllt wird, d.h. $L_{s}(v) = L(v)$ - wenn
+also $s \geq 3alt(v)$. Somit ist klar, dass nach $3height(T)$ Schritten der Wurzelknoten
+voll ist und die inneren Knoten die sortierten Listen enthalten.
+
+Bevor wir zum Algorithmus kommen, führen wir eine weitere Notation ein.
 
 \begin{defini}
+  Für einen beliebigen Knoten $x$:
   \begin{gather}
-    Sample(L_{s}[v]):=
+    Sample(L_{s}[x]):=
        \begin{cases}
          Raster_{4}(L_{s}[x])& s\leq3\cdot alt(x)\\
          Raster_{2}(L_{s}[x])& s=3\cdot alt(x)+1\\
@@ -2868,22 +2875,40 @@ aktualisiert, wenn die Bedingung $alt(v) \leq s \leq 3alt(v)$ erfüllt ist.
   \end{gather}
 \end{defini}
 
-Algo: R-Cole
-\begin{Verbatim}
-Ist v Blatt, so $L_{0}$[v] = Wert im Blatt
-v kein Blatt $L_{0}$[v]=$\emptyset$
-\end{Verbatim}
-INPUT: $\forall v:L_{s}[v]$ $v$ voll, wenn s$\geq$ 3 alt(v)
-OUTPUT: $\forall$ v: $L_{s+1}[v]$, v voll, wenn s+1$\geq$ 3alt(v)
-begin
-\begin{Verbatim}
-für alle aktiven Knoten pardo
-L'_{s+1}[w] = Sample($L_{s}[w])$
-L'_{s+1}[u] = Sample($L_{s}[u])$
-merge($L_{s+1}'[u], L'_{s+1}[w])$ zu $L_{s+1}[v]$
-\end{Verbatim}
+Also ist $Sample(L_{s}[x])$ die Teilliste bestehend aus jedem vierten Element von $L_{s}[x]$,
+bis es voll ist. Anschließend ist $Sample(L_{s}[x])$ die Teilliste aus jedem zweiten Element
+im Schritt $3alt(x)+1$ und schließlich die vollständige Liste im Schritt $3alt(x)+2$.
 
-% Hier fehlen zwei Vorlesungen
+\begin{algorithm}
+  \dontprintsemicolon
+  \caption{Algorithmus von Richard Cole}
+  \label{alg:rcole}
+  \KwIn{$\forall v:L_{s}[v]$ $v$ voll, wenn s$\geq$ 3 alt(v)}
+  \KwOut{$\forall$ v: $L_{s+1}[v]$, v voll, wenn s+1$\geq$ 3alt(v)}
+
+  \Forpar{$\forall$ aktiven Knoten $v$}{
+    L'_{s+1}[w] = Sample($L_{s}[w])$ \;
+    L'_{s+1}[u] = Sample($L_{s}[u])$ \;
+    Merge($L_{s+1}'[u], L'_{s+1}[w])$ zu $L_{s+1}[v]$ \;
+  }
+\end{algorithm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hier fehlen zwei Vorlesungen : Beweise zu R. Cole %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{description}
+ \item[Hinweis:]
+  es fehlen an dieser Stelle zwei Vorlesungen. Diese beinhalteten 180 Minuten
+  Beweise und Lemmas zum Richard-Cole-Algo und sind nicht Prüfungsrelevant. Es
+  reicht ein Verständnis dessen, was passiert. Natürlich absolut inoffiziell.
+  Es sei hiermit auf Ja'Ja (Seiten 164 ff) verwiesen.
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Selektion}
 
