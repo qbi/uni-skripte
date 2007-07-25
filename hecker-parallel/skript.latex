@@ -3013,6 +3013,10 @@ Prozessoren eine bessere Zeit liefern, so ist natürlich die Erhöhung der
 Prozessoranzahl das Mittel der Wahl. Der andere Weg ist einen anderen
 Algorithmus zu finden, der das Problem schneller löst.
 
+\begin{example}
+
+\end{example}
+
 \begin{defini}
   Die Menge~\highl{$\NC$}\footnote{$\NC$: Nick's class, nach seinem Erfinder
   Nick Pipenger benannt} ist die Klasse der Sprachen, die sich in
@@ -3061,6 +3065,15 @@ Algorithmus zu finden, der das Problem schneller löst.
   \end{proof}
 \end{satz}
 
+\begin{satz}
+  Wenn $L_{1}\preceq_{\NC}L_{2}$ und $L_{2}\preceq_{\NC}L_{3}$, dann ist auch
+  $L_{1}\preceq_{\NC}L_{3}$ (Transitivität).
+
+  \begin{proof}
+    Hintereinanderausführung zweier NC-berechenbarer Funktionen; trivial
+  \end{proof}
+\end{satz}
+
 \section{\texorpdfstring{$\PP$}{P}-vollständige Probleme}
 
 \subsection{Maximaler Fluss in einem Netzwerk}
@@ -3092,9 +3105,20 @@ f^{+}(t)$.
   \mathrm{val}(f)$.
 \end{defini}
 
-\todo{Es gab eine Grafik dazu. Einarbeiten.}
-\help{Warum ist das jetzt in $\PP\setminus\NC$? Eventuelle könnte man es als
-  lin.\,Op. schreiben, d.\,h. $maxFlusss\preceq_\NC linOp$}
+\begin{figure}
+  \centering
+  \input{figures/max-flow.pdf_t}
+  \caption{Max-Flow-Problem}
+  \label{fig:max-flow}
+\end{figure}
+
+Im Seriellen existieren Algorithmen mit $O(n^{3})$ TIME, die dieses Problem
+lösen, jedoch ist kein paralleler Algorithmus mit $O(log^{k} n)$ TIME bekannt,
+der mit polynomiell vielen Prozessoren auskommt. Es wird zudem angenommen,
+dass es einen solchen Algorithmus generell nicht gibt; einen Beweis dafür,
+dass Max-Flow nicht in NC liegt, hat bisher noch niemand erbracht.
+
+
 
 \subsection{Lineare Optimierungsprobleme}
 
@@ -3102,13 +3126,15 @@ f^{+}(t)$.
   Als ein \highl{lineares Optimierungsproblem} bezeichnet man die Aufgabe, zu
   einer gegebenen Matrix~$A\in\R^{n\times m}$ und zwei Vektoren $b\in\R^{m},
   c\in\R^{n}$ einen Vektor $x\in\R^{n}$ zu finden, so dass $c^{T}x$ maximal
-  ist, wobei $0\leq x$ und $Ax\leq b$ gilt.
+  ist, wobei $x_{i} \geq 0$ und $Ax \leq b$ gilt.
   \begin{gather*}
     \max\{ c^{T}x \colon Ax\leq b, 0 \leq x\}
   \end{gather*}
 \end{defini}
 
 \help{Warum ist das jetzt in $\PP\setminus\NC$?}
+
+
 
 \subsection{Das circuit value problem}
 
@@ -3135,14 +3161,21 @@ f^{+}(t)$.
   \end{gather*}
 \end{defini}
 
+
+\section{\texorpdfstring{$\PP$}{P}-Vollständigkeit von CVP}
+
 Um zu zeigen, dass das circuit value problem $\PP$-vollständig ist, muss man
-für jede beliebige Sprachen~$L\in\PP$ zeigen, dass sie sich auf $CVP$
-reduzieren lässt ($L\preceq_{NC}CVP$) und dass $CVP\in\PP$ liegt. Analog zum
-Beweis des Satz' von Cook über die $\NP$-Vollständigkeit des
-Erfüllbarkeitsproblems der Aussagenlogik~$SAT$ zeigen wir die
-$\NC$-Reduzierbarkeit und, dass $CVP\in\PP$ liegt, ist leicht einzusehen, da
-man den Ausgabewert des letzten Gatters einfach bestimmen kann, indem man alle
-Gatterausgaben bestimmt, also lässt sich $g_{n}=1$ in $O(n)$ entscheiden.
+für jede beliebige Sprache~$L\in\PP$ zeigen, dass sie sich auf $CVP$
+reduzieren lässt ($L\preceq_{NC}CVP$) und dass $CVP\in\PP$ liegt.
+
+\begin{description}
+  \item[Beweisskizze] $CVP \in \PP$? Klar, linear über die $g_{i}$ laufen und
+  mitrechnen; Entscheidung für $g_{n}=1$ in $O(n)$ TIME mit $O(n)$ WORK.
+\end{description}
+
+\begin{description}
+  \item[Behauptung] Sei $L \in \PP$ und $L \preceq_{\NC} CVP$
+\end{description}
 
 Da $L\in\PP$ liegt, gibt es eine Turingmaschine~$M$, die nach polynomiell
 vielen Schritten eine Eingabe~$w$ genau dann akzeptiert, wenn $w\in L$, indem
@@ -3153,14 +3186,16 @@ Eingabealphabet~$\Sigma\subset\Gamma$, der Zustandsmenge~$Q$, wobei $q_{1}\in
 Q$ der Startzustand ist, und der Zustandsüberführungsfunktion~$\delta\colon
 Q\times\Gamma\rightarrow Q\times\Gamma\times\{L,R\}$.
 
-Damit $L\preceq_{NC}CVP$ gilt, muss man einen $\NC$-berechenbaren Algorithmus
+\begin{description}
+  \item[Zu zeigen:] es existiert eine NC-berechenbare Funktion f: wenn $I_{L}$ ein
+    Input-Beispiel für L ist, so ist $f(I_{L})=I_{CVP}$ ein Input-Beispiel für CVP: \\
+    $I_{L} \in L \Rightleftarrow Wert(f(I_{L})) = Wert(I_{CVP}) = 1$
+\end{description}
+
+Damit muss man einen $\NC$-berechenbaren Algorithmus
 angeben, der für eine Turingmaschine~$M$ einen Schaltkreis~$c$ konstruiert,
 der genau dann durchschaltet ($g_{n}=1$), wenn $M$ die Eingabe akzeptiert.
 
-% jedes Wort~$w\in\Sigma^{*}$ einen
-% Schaltkreis~$c=\lrangle{g_{1},\dotsc, g_{n}}$ konstruiert, so dass
-% $CVP(c)=\chi_{L}(w)$ bzw. $g_{n}=1$ genau dann, wenn die Turingmaschine~$M$
-% die Eingabe~$w$ akzeptiert.
 
 % Der Algorithmus erzeugt für jeden Arbeitstakt~$t\in\{0,\dotsc,T(n)\}$ der
 % Turingmaschine polynomiell viele Gatter. Die Ausgabe des gesamten Schaltkreis'
@@ -3198,6 +3233,7 @@ Modellierung der Startkonfiguration ($t=0$) ist
               \end{cases}\\
   S(k,0) &= \begin{cases}1&k=1\\0&k>1\end{cases}
 \end{align*}
+
 Das letzte Gatter sei $g_{n} = C(1,1,T(n))$, d.\,h. $g_{n}$ ist genau dann
 eins, wenn die Turingmaschine nach $T(n)$~Schritten eine Eins in die erste
 Zelle geschrieben hat.
@@ -3219,7 +3255,21 @@ $t\in\{0,\dotsc,T(n)\}$.
 
 Mittels $\delta$ beschreiben wir $t\rightarrow t+1$
 
-\subsection{DFS (geordnete Tiefensuche)}
+\begin{description}
+  \item[induktiv] $\ldots$
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{DFS-Theorem (geordnete Tiefensuche)}
+
+\begin{description}
+  \item[Theorem:] DFS ist $\PP$-vollständig
+\end{description}
+
+\highl{INPUT} Digraph, Kanten markiert mit $1,2,3,\ldots$, Start s\\
+\highl{OUTPUT} Knotenfolge beginnend bei s entsprechend der DFS-
+Reihenfolge\\
 
 \todo{Der Abschnitt muss auch nochmal überarbeitet werden.}
 
