@@ -19,15 +19,6 @@
 %  * es sollte ein Befehl für Belegungen geben
 %    \newcommand*{\Belegung}[1]{\mathcal{#1}}
 %  * entsprechend \BelA und \BelB als Kurzform für gängige Belegungen
-%  * eine Umgebung für Beweise sollte erstellt werden, damit 1. die Schreibung
-%    vereinfacht wird und die Beweise immer gleich aussehen -- Vorsicht, es
-%    gibt im ersten Kapitel einen "Nichtbeweis" mit Buchstaben statt Zahlen.
-%    \begin{beweis}
-%      \alpha & Hypothese\\
-%      \alpha \rightarrow (\beta \rightarrow \alpha) & Instanz von A1\\
-%    \end{beweis}
-%  * ein Befehl für Referenzen in Beweisschritten
-%    \newcommand*{\BewSchritt}[1]{(#1)}
 %  * eine Umgebung für Axiome definieren und einen Befehl für die
 %    Axiomreferenz \newcommand*{\Axiom}[1]{(#1)}
 %    \newcommand*{\Axiomlang}[1]{Axiom~(#1)}; damit sollte die Schreibweise
@@ -114,6 +105,7 @@
 \usepackage{ragged2e}
 \usepackage{caption}
 \usepackage{booktabs}
+\usepackage{array}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -322,6 +314,33 @@
                       \addtolength{\itemindent}{-\leftmargin}%
                     }}%
              {\end{list}\addtocounter{falldepth}{-1}}
+
+% Im Folgengen wird eine Umgebung "Beweis" definitiert, die für alle formalen
+% Beweise verwendet werden soll. Die erste Spalte wird automatisch im
+% Mathemodus und die zweite im Textmodus gesetzt. Jeder Zeile wird eine
+% Zeilennummer vorangestellt, sofern die vorhergehenden Zeile nicht nach der
+% ersten Spalte umbrochen wurde.
+\newcounter{beweiszeile}
+\newboolean{folgezeile}
+\newenvironment*{Beweis}%
+  {\begin{center}%
+    \setcounter{beweiszeile}{0}%
+    \setboolean{folgezeile}{false}%
+    \renewcommand*{\arraystretch}{1.2}
+    \begin{tabular}[t]%
+      {@{\ifthenelse{\boolean{folgezeile}}%
+                    {\hspace{13mm}}%
+                    {\stepcounter{beweiszeile}%
+                      \makebox[8mm][r]{(\BwZeile{\thebeweiszeile})}%
+                    }\quad}%
+        >{$\displaystyle}l<{$\global\folgezeiletrue}@{\hspace{2.5cm}}r%
+        <{\global\folgezeilefalse}@{}%
+      }%
+  }%
+  {\end{tabular}\end{center}}
+% Dieser Befehl soll die Schreibweise in Bezügen auf Beweiszeilen
+% vereinheitlichen.
+\newcommand*{\BwZeile}[1]{\oldstylenums{#1}}
 
 \makeindex
 
@@ -1602,20 +1621,19 @@ In diesem Sinne erfüllt die Theorie $\mathrm{L}$ die Ansprüche an die Einfachh
   Wir werden in \autoref{al-Deduktionstheorem} sehen, dass man Folgerungen
   wie Ableitungsregeln benutzen kann.
 
-  \begin{align*}
-    (1)\quad & \alpha\rightarrow\beta & \text{Hypothese}\\
-    (2)\quad & \beta\rightarrow\gamma & \text{Hypothese}\\
-    (3)\quad & (\beta\rightarrow\gamma) \rightarrow
-       (\alpha\rightarrow(\beta\rightarrow\gamma)) &
-       \text{(A1)} \\
-    (4)\quad & \alpha\rightarrow(\beta\rightarrow\gamma) & \text{MP 2,3}\\
-    (5)\quad & (\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
+  \begin{Beweis}
+    \alpha\rightarrow\beta & Hypothese\\
+    \beta\rightarrow\gamma & Hypothese\\
+    (\beta\rightarrow\gamma) \rightarrow
+       (\alpha\rightarrow(\beta\rightarrow\gamma)) & (A1)\\
+    \alpha\rightarrow(\beta\rightarrow\gamma) & MP \BwZeile{2},\BwZeile{3}\\
+    (\alpha\rightarrow(\beta\rightarrow\gamma)) \rightarrow
        ( (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma))
-       & \text{(A2)} \\
-    (6)\quad & (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma)
-       & \text{MP 4,5} \\
-    (7)\quad & \alpha\rightarrow\gamma & \text{MP 1,6}
-  \end{align*}
+       & (A2) \\
+    (\alpha\rightarrow\beta) \rightarrow ( \alpha\rightarrow\gamma)
+       & MP \BwZeile{4},\BwZeile{5}\\
+    \alpha\rightarrow\gamma & MP \BwZeile{1},\BwZeile{6}
+  \end{Beweis}
 \end{bsp}
 
 Man kann auch zeigen, dass man aus widersprüchlichen Hypothesen jede beliebige
@@ -1625,22 +1643,18 @@ Folgerung ziehen kann.
   Für alle aussagenlogischen Formeln $\alpha$ und $\beta$ gilt $\neg\alpha,
   \alpha \Lvdash \beta$.
 \begin{proof}
-  \begin{align*}
-    (1)\quad & \alpha & \text{Hypothese} \\
-    (2)\quad & \neg \alpha & \text{Hypothese} \\
-    (3)\quad & \alpha \rightarrow (\neg\beta \rightarrow \alpha) &
-       \text{(A1)} \\
-    (4)\quad & \neg\beta \rightarrow \alpha & \text{MP 1,3} \displaybreak[0]\\
-    (5)\quad & \neg\alpha \rightarrow (\neg\beta \rightarrow \neg\alpha) &
-       \text{(A1)} \\
-    (6)\quad & \neg\beta \rightarrow \neg\alpha & \text{MP 2,5} \displaybreak[0]\\
-    (7)\quad & (\neg \beta \rightarrow \neg \alpha) \rightarrow
-       \big((\neg\beta \rightarrow \alpha) \rightarrow \beta\big) &
-       \text{(A3)} \\
-    (8)\quad & (\neg\beta \rightarrow \alpha) \rightarrow \beta &
-       \text{MP 6,7} \\
-    (9)\quad & \beta & \text{MP 4,8} \\
-  \end{align*}
+  \begin{Beweis}
+    \alpha & Hypothese\\
+    \neg \alpha & Hypothese\\
+    \alpha \rightarrow (\neg\beta \rightarrow \alpha) & (A1)\\
+    \neg\beta \rightarrow \alpha & MP \BwZeile{1},\BwZeile{3}\\
+    \neg\alpha \rightarrow (\neg\beta \rightarrow \neg\alpha) & (A1)\\
+    \neg\beta \rightarrow \neg\alpha & MP \BwZeile{2},\BwZeile{5}\\
+    (\neg \beta \rightarrow \neg \alpha) \rightarrow
+       \big((\neg\beta \rightarrow \alpha) \rightarrow \beta\big) & (A3)\\
+    (\neg\beta \rightarrow \alpha) \rightarrow \beta & MP \BwZeile{6},\BwZeile{7}\\
+    \beta & MP \BwZeile{4},\BwZeile{8}
+  \end{Beweis}
 \end{proof}
 \end{lemma}
 
@@ -1739,12 +1753,11 @@ Der Sinn des Deduktionstheorems ist seine Benutzung zur Vereinfachung von Beweis
           Dann gilt $\Gamma \Lvdash \beta$. Mit Axiom~(A1)
           $\beta \rightarrow (\alpha\rightarrow\beta)$ und modus ponens folgt
           $\Gamma \Lvdash \alpha \rightarrow\beta$.
-          \begin{align*}
-            (1)\quad &\beta&\text{Hypothese}\\
-            (2)\quad &\beta\rightarrow(\alpha\rightarrow\beta)
-               &\text{(A1)}\\
-            (3)\quad &\alpha\rightarrow\beta &\text{MP 1,2}
-          \end{align*}
+          \begin{Beweis}
+            \beta & Hypothese\\
+            \beta\rightarrow(\alpha\rightarrow\beta) & (A1)\\
+            \alpha\rightarrow\beta & MP \BwZeile{1},\BwZeile{2}
+          \end{Beweis}
 
          \item $\beta=\alpha$. Dann ist $\alpha\rightarrow\beta =
           \beta\rightarrow\beta$.
@@ -1796,13 +1809,13 @@ Beweis des folgenden Lemmas verwenden.
 \begin{proof}
   Wir beweisen zuerst
      $\alpha \rightarrow (\beta\rightarrow\gamma), \beta,\alpha \Lvdash \gamma$.
-  \begin{align*}
-    (1)\quad &\alpha \rightarrow(\beta\rightarrow\gamma)&\text{Hypothese}\\
-    (2)\quad &\beta &\text{Hypothese}\\
-    (3)\quad &\alpha &\text{Hypothese}\\
-    (4)\quad &\beta\rightarrow\gamma &\text{MP 3,1}\\
-    (5)\quad &\gamma &\text{MP 2,4}\\
-  \end{align*}
+  \begin{Beweis}
+    \alpha \rightarrow(\beta\rightarrow\gamma)& Hypothese\\
+    \beta & Hypothese\\
+    \alpha & Hypothese\\
+    \beta\rightarrow\gamma & MP \BwZeile{3},\BwZeile{1}\\
+    \gamma & MP \BwZeile{2},\BwZeile{4}\\
+  \end{Beweis}
   Damit ist $\alpha \rightarrow (\beta\rightarrow\gamma), \beta,\alpha \Lvdash \gamma$
   bewiesen.
   Mit dem Deduktionstheorem folgt dann $\alpha\rightarrow(\beta\rightarrow
@@ -1832,18 +1845,16 @@ und Folgerungen benutzen.
 \begin{lemma}\label{lem:2}
 Für jede aussagenlogische Formel $\beta$ gilt $\Lvdash \neg\neg \beta \rightarrow\beta$.
   \begin{proof}
-    \begin{align*}
-      (1)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow \big( (\neg\beta
-         \rightarrow\neg\beta) \rightarrow \beta \big)
-         &\text{(A3)}\\
-      (2)\quad &\neg\beta \rightarrow \neg\beta&\text{\autoref{lem:0}}\\
-      (3)\quad &(\neg\beta \rightarrow \neg\neg\beta) \rightarrow \beta
-         &\text{aus 1,2 mit \autoref{lem:1}}\\
-      (4)\quad &\neg\neg\beta \rightarrow (\neg\beta \rightarrow \neg\neg\beta)
-         &\text{(A1)}\\
-      (5)\quad &\neg\neg \beta \rightarrow\beta &\text{aus 4, 3 mit
-         \autoref{bsp:2}}
-    \end{align*}
+    \begin{Beweis}
+      (\neg\beta \rightarrow \neg\neg\beta) \rightarrow \big( (\neg\beta
+         \rightarrow\neg\beta) \rightarrow \beta \big) & (A3)\\
+      \neg\beta \rightarrow \neg\beta& \autoref{lem:0}\\
+      (\neg\beta \rightarrow \neg\neg\beta) \rightarrow \beta
+         & aus \BwZeile{1},\BwZeile{2} mit \autoref{lem:1}\\
+      \neg\neg\beta \rightarrow (\neg\beta \rightarrow \neg\neg\beta) & (A1)\\
+      \neg\neg \beta \rightarrow\beta & aus \BwZeile{4}, \BwZeile{3} mit
+         \autoref{bsp:2}
+    \end{Beweis}
   \end{proof}
 \end{lemma}
 
@@ -1861,19 +1872,17 @@ Folgt mit dem Deduktionstheorem aus \autoref{lem:01}.
 \begin{lemma}\label{lem:3}
   $\Lvdash \beta \rightarrow \neg\neg\beta$
   \begin{proof}
-    \begin{align*}
-      (1)\quad & (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
+    \begin{Beweis}
+      (\neg\neg\neg \beta\rightarrow \neg\beta)\rightarrow
          \big((\neg\neg\neg\beta\rightarrow\beta)\rightarrow \neg\neg\beta\big) &
-         \text{(A3)}\\
-      (2)\quad & \neg\neg\neg\beta \rightarrow \neg\beta &
-         \text{\autoref{lem:2}}\\
-      (3)\quad & (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
-         \neg\neg\beta &\text{MP 2,1}\\
-      (4)\quad & \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta)
-         &\text{(A1)}\\
-      (5)\quad & \beta \rightarrow \neg\neg\beta
-         &\text{\autoref{bsp:2} mit 4,3}
-    \end{align*}
+         (A3)\\
+      \neg\neg\neg\beta \rightarrow \neg\beta & \autoref{lem:2}\\
+      (\neg\neg\neg\beta\rightarrow\beta)\rightarrow
+         \neg\neg\beta & MP \BwZeile{2},\BwZeile{1}\\
+      \beta \rightarrow (\neg\neg\neg\beta \rightarrow \beta) & (A1)\\
+      \beta \rightarrow \neg\neg\beta
+         &\autoref{bsp:2} mit \BwZeile{4},\BwZeile{3}
+    \end{Beweis}
   \end{proof}
 \end{lemma}
 
@@ -1883,19 +1892,18 @@ Folgt mit dem Deduktionstheorem aus \autoref{lem:01}.
 
   \begin{proof}
     Wir zeigen zuerst $\alpha \rightarrow \beta\ \Lvdash\ \neg\beta\rightarrow\neg\alpha$.
-    \begin{align*}
-      (1)\quad & \alpha \rightarrow \beta & \text{Hypothese}\\
-      (2)\quad & \neg\neg\alpha \rightarrow \alpha & \text{\autoref{lem:2}} \\
-      (3)\quad & \neg\neg\alpha \rightarrow \beta
-         & \text{\autoref{bsp:2} mit 2,1}\\
-      (4)\quad & \beta \rightarrow \neg\neg\beta & \text{\autoref{lem:3}} \\
-      (5)\quad & \neg\neg\alpha \rightarrow \neg\neg \beta &
-         \text{\autoref{bsp:2} mit 3,4}\\
-      (6)\quad & (\neg\neg\alpha \rightarrow \neg\neg \beta) \rightarrow
-         (\neg\beta \rightarrow \neg \alpha) & \text{\autoref{enu:1} auf
-         Aufgabenblatt 2}\\
-      (7)\quad & \neg\beta \rightarrow \neg \alpha & \text{MP 5,6}
-    \end{align*}
+    \begin{Beweis}
+      \alpha \rightarrow \beta & Hypothese\\
+      \neg\neg\alpha \rightarrow \alpha & \autoref{lem:2}\\
+      \neg\neg\alpha \rightarrow \beta & \autoref{bsp:2} mit \BwZeile{2},\BwZeile{1}\\
+      \beta \rightarrow \neg\neg\beta & \autoref{lem:3}\\
+      \neg\neg\alpha \rightarrow \neg\neg \beta
+         & \autoref{bsp:2} mit \BwZeile{3},\BwZeile{4}\\
+      (\neg\neg\alpha \rightarrow \neg\neg \beta) \rightarrow
+         (\neg\beta \rightarrow \neg \alpha) & \autoref{enu:1} auf
+         Aufgabenblatt 2\\
+      \neg\beta \rightarrow \neg \alpha & MP \BwZeile{5},\BwZeile{6}
+    \end{Beweis}
     Das Lemma folgt durch Anwendung des Deduktionstheorems.
   \end{proof}
 \end{lemma}
@@ -1931,22 +1939,21 @@ Folgt mit dem Deduktionstheorem aus \autoref{lem:01}.
 \begin{proof}
   Wir zeigen zuerst
   $\alpha \rightarrow \beta, \neg \alpha \rightarrow \beta \Lvdash \beta$.
-  \begin{align*}
-    (1)\quad & \alpha \rightarrow \beta & \text{Hypothese} \\
-    (2)\quad & \neg \alpha \rightarrow \beta & \text{Hypothese} \\
-    (3)\quad & (\alpha \rightarrow \beta) \rightarrow (\neg
-       \beta\rightarrow\neg\alpha) & \text{\autoref{lem:5}} \\
-    (4)\quad & \neg \beta\rightarrow\neg\alpha & \text{MP 1,3} \\
-    (5)\quad & (\neg \alpha \rightarrow \beta) \rightarrow (\neg
-       \beta\rightarrow \neg\neg\alpha) & \text{\autoref{lem:5}} \\
-    (6)\quad & \neg \beta\rightarrow \neg\neg\alpha & \text{MP 2,5} \\
-    (7)\quad & (\neg \beta \rightarrow \neg\neg \alpha) \rightarrow
-       ((\neg\beta\rightarrow\neg\alpha) \rightarrow \beta) &
-       \text{(A3)}\\
-    (8)\quad & (\neg\beta\rightarrow\neg\alpha) \rightarrow \beta &
-       \text{MP 6,7} \\
-    (9)\quad & \beta & \text{MP 4,8}
-  \end{align*}
+  \begin{Beweis}
+    \alpha \rightarrow \beta & Hypothese\\
+    \neg \alpha \rightarrow \beta & Hypothese\\
+    (\alpha \rightarrow \beta) \rightarrow (\neg
+       \beta\rightarrow\neg\alpha) & \autoref{lem:5}\\
+    \neg \beta\rightarrow\neg\alpha & MP \BwZeile{1},\BwZeile{3}\\
+    (\neg \alpha \rightarrow \beta) \rightarrow (\neg
+       \beta\rightarrow \neg\neg\alpha) & \autoref{lem:5}\\
+    \neg \beta\rightarrow \neg\neg\alpha & MP \BwZeile{2},\BwZeile{5}\\
+    (\neg \beta \rightarrow \neg\neg \alpha) \rightarrow
+       ((\neg\beta\rightarrow\neg\alpha) \rightarrow \beta) & (A3)\\
+    (\neg\beta\rightarrow\neg\alpha) \rightarrow \beta &
+       MP \BwZeile{6},\BwZeile{7}\\
+    \beta & MP \BwZeile{4},\BwZeile{8}
+  \end{Beweis}
   Das Lemma folgt mittels Deduktionstheorem.
 \end{proof}
 \end{lemma}
@@ -2043,12 +2050,11 @@ Tautologie ist also eine Theorem von $\mathrm{L}$.
 
          \item Die Formel $\phi$ ist $falsch$ unter der Belegung $\cA$, also ist
           $\mathcal{A}(\alpha)=w$.
-          \begin{align*}
-            (1)\quad & \alpha & \text{IV}\\
-            (2)\quad & \alpha\rightarrow\neg\neg\alpha
-               &\text{\autoref{lem:3}}\\
-            (3)\quad & \neg\neg\alpha &\text{MP 1,2}
-          \end{align*}
+          \begin{Beweis}
+            \alpha & IV\\
+            \alpha\rightarrow\neg\neg\alpha &\autoref{lem:3}\\
+            \neg\neg\alpha &MP \BwZeile{1},\BwZeile{2}
+          \end{Beweis}
           Es gilt also $\cA \Lvdash \neg\neg\alpha = \phi_{\mathcal{A}}$.
         \end{faelle}
 
@@ -2057,15 +2063,15 @@ Tautologie ist also eine Theorem von $\mathrm{L}$.
          \item Unter der Belegung $\mathcal{A}$ hat $\phi$ den Wahrheitswert
           $\mathit{falsch}$. Dann muss
           gelten, dass $\mathcal{A}(\alpha)=w$ und $\mathcal{A}(\beta)=f$ ist.
-          \begin{align*}
-            (1)\quad & \alpha &\text{IV}\\
-            (2)\quad & \neg\beta &\text{IV}\\
-            (3)\quad & \alpha\rightarrow(\neg\beta\rightarrow
-               \neg(\alpha\rightarrow\beta)) &\text{\autoref{lem:6}}\\
-            (4)\quad & \neg\beta \rightarrow \neg(\alpha\rightarrow\beta)
-               &\text{MP 1,3}\\
-            (5)\quad & \neg(\alpha\rightarrow\beta) &\text{MP 2,4}
-          \end{align*}
+          \begin{Beweis}
+            \alpha & IV\\
+            \neg\beta &IV\\
+            \alpha\rightarrow(\neg\beta\rightarrow
+               \neg(\alpha\rightarrow\beta)) &\autoref{lem:6}\\
+            \neg\beta \rightarrow \neg(\alpha\rightarrow\beta)
+               &MP \BwZeile{1},\BwZeile{3}\\
+            \neg(\alpha\rightarrow\beta) &MP \BwZeile{2},\BwZeile{4}
+          \end{Beweis}
           Also gilt $\mathcal{A} \Lvdash
           \neg(\alpha\rightarrow\beta) = \phi_{\mathcal{A}}$.
 
@@ -2076,24 +2082,23 @@ Tautologie ist also eine Theorem von $\mathrm{L}$.
            \item Die Formel $\alpha$ ist $\mathit{falsch}$ unter der Belegung $\cA$.
             Nach Induktionsvorraussetzung gilt dann $\mathcal{A} \Lvdash
             \neg\alpha$.
-            \begin{align*}
-              (1)\quad & \neg\alpha &\text{IV}\\
-              (2)\quad & \neg\alpha \rightarrow (\alpha\rightarrow\beta)
-                 &\text{\autoref{lem:4}}\\
-              (3)\quad & \alpha\rightarrow\beta & \text{MP 1,3}
-            \end{align*}
+            \begin{Beweis}
+              \neg\alpha & IV\\
+              \neg\alpha \rightarrow (\alpha\rightarrow\beta)
+                 & \autoref{lem:4}\\
+              \alpha\rightarrow\beta & MP \BwZeile{1},\BwZeile{3}
+            \end{Beweis}
             Also gilt $\mathcal{A} \Lvdash \alpha\rightarrow\beta=
             \phi_{\mathcal{A}}$.
 
            \item Die Teilformel $\beta$ ist $wahr$ unter der Belegung
             $\mathcal{A}$. Nach Induktionsvorraussetzung gilt dann
             $\mathcal{A} \Lvdash \beta$.
-            \begin{align*}
-              (1)\quad & \beta &\text{IV}\\
-              (2)\quad & \beta\rightarrow(\alpha\rightarrow\beta) &
-                 \text{(A1)}\\
-              (3)\quad & \alpha\rightarrow\beta &\text{MP 1,2}
-            \end{align*}
+            \begin{Beweis}
+              \beta & IV\\
+              \beta\rightarrow(\alpha\rightarrow\beta) & (A1)\\
+              \alpha\rightarrow\beta & MP \BwZeile{1},\BwZeile{2}
+            \end{Beweis}
             Also gilt $\mathcal{A} \Lvdash
             \alpha\rightarrow\beta = \phi_{\mathcal{A}}$.
           \end{itemize}
@@ -3040,45 +3045,41 @@ die Klauselmenge eingefügt.
 \begin{bsp}
   Beweis der Unerfüllbarkeit von
   $S= \big\{ \{\neg A, B\}, \{\neg A, \neg B\}, \{A\}, \{A, \neg C\} \big\}$
-  \begin{align*}
-    (1)\quad & \{\Box\} & \text{Axiom} \\
-    (2)\quad & \{ \{ A \}, \{\neg A \} \}
-       & \text{(Res) auf (1)} \\
-    (3)\quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\} \}
-       & \text{(Res) auf (2)}  \\
-    (4) \quad & \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\}, \{A, \neg C\}  \} &
-       \text{(Einf) auf (3)}
-  \end{align*}
+  \begin{Beweis}
+    \{\Box\} & Axiom\\
+    \{ \{ A \}, \{\neg A \} \} & (Res) auf (1)\\
+    \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\} \} & (Res) auf (2)\\
+    \{ \{ A \}, \{ \neg A, B\}, \{\neg A, \neg B\}, \{A, \neg C\}  \} &
+       (Einf) auf (3)
+  \end{Beweis}
 \end{bsp}
 
 \begin{bsp}
   Beweis der Unerfüllbarkeit von $S$ aus \autoref{last-resolution},
 
   $S= \big\{ \{\neg B, C\}, \{A, B, C\}, \{A, \neg C\}, \{\neg A, B\}, \{\neg A, \neg B, \neg C\} \big\}$
-  \begin{align*}
-    (1)\quad & \{\Box\} & \text{Axiom} \\
-    (2)\quad & \{ \{ B\}, \{\neg B \} \}
-       & \text{(Res) für $B$ auf $\Box$ in (1)} \\
-    (3)\quad & \{ \{ B \}, \{ A \}, \{\neg A, \neg B\} \}
-       & \text{(Res) für $\neg A$ auf $\{\neg B\}$ in (2)}  \\
-    (4)\quad & \{ \{ \neg A, B \}, \{ A \}, \{\neg A, \neg B\} \}
-       & \text{(Res) für $\neg A$ auf $\{B\}$ in (3)}  \displaybreak[0]\\
-    (5)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B\} \}
-       & \text{(Res) für $\neg C$ auf $\{A\}$ in (4)}  \displaybreak[0]\\
-    (6)\quad & \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
-       & \text{(Res) f. $\neg C$ auf $\{\neg A, \neg B\}$ in (5)}  \displaybreak[0]\\
-    (7)\quad & \big\{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\},
-       & \text{(Res) für $B$ auf $\{C\}$ in (6)}  \\
-    &\quad  \{\neg A, \neg B, \neg C\} \big\}\\
-    (8)\quad & \big\{ \{ \neg A, B \}, \{\neg A, C\}, \{A, B, C\},
-       \{\neg B, C\},
-       & \text{(Res) für $A$ auf $\{B,C\}$ in (7)}  \\
-    &\quad  \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \big\}\\
-    (9)\quad & \big\{ \{ \neg A, B \}, \{A, B, C\},
-       \{\neg B, C\}, \{A, \neg C\},
-       & \text{(Res) für $B$ auf $\{\neg A, C\}$ in (8)}\\
-    &\quad \{\neg A, \neg B, \neg C\} \big\}
-  \end{align*}
+  \begin{Beweis}
+    \{\Box\} & Axiom\\
+    \{ \{ B\}, \{\neg B \} \}
+       & (Res) für $B$ auf $\Box$ in \BwZeile{1}\\
+    \{ \{ B \}, \{ A \}, \{\neg A, \neg B\} \}
+       & (Res) für $\neg A$ auf $\{\neg B\}$ in \BwZeile{2}\\
+    \{ \{ \neg A, B \}, \{ A \}, \{\neg A, \neg B\} \}
+       & (Res) für $\neg A$ auf $\{B\}$ in \BwZeile{3}\\
+    \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B\} \}
+       & (Res) für $\neg C$ auf $\{A\}$ in \BwZeile{4}\\
+    \{ \{ \neg A, B \}, \{C\}, \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \}
+       & (Res) f. $\neg C$ auf $\{\neg A, \neg B\}$ in \BwZeile{5}\\
+    \big\{ \{ \neg A, B \}, \{B, C\}, \{\neg B, C\}, \{A, \neg C\},\\
+    \{\neg A, \neg B, \neg C\} \big\}
+       & (Res) für $B$ auf $\{C\}$ in \BwZeile{6}\\
+    \big\{ \{ \neg A, B \}, \{\neg A, C\}, \{A, B, C\}, \{\neg B, C\}\\
+    \{A, \neg C\}, \{\neg A, \neg B, \neg C\} \big\}
+       & (Res) für $A$ auf $\{B,C\}$ in \BwZeile{7}\\
+    \big\{ \{ \neg A, B \}, \{A, B, C\}, \{\neg B, C\}, \{A, \neg C\},\\
+    \{\neg A, \neg B, \neg C\} \big\}
+       & (Res) für $B$ auf $\{\neg A, C\}$ in \BwZeile{8}
+  \end{Beweis}
 \end{bsp}
 
 Man kann (leicht) zeigen,
@@ -3721,13 +3722,13 @@ aller Theoreme von $\mathrm{K}$ ist.
 \begin{bsp}
   Ein Beweis für
   $\alpha, (\forall x_1 \quantsep\alpha)\rightarrow \beta \vdash (\forall x_1\quantsep \beta)$.
-  \begin{align*}
-    (1)\quad & \alpha & \text{Hypothese}\\
-    (2)\quad & (\forall x_1\quantsep \alpha) & \text{Gen 1}\\
-    (3)\quad & (\forall x_1\quantsep \alpha)\rightarrow \beta & \text{Hypothese}\\
-    (4)\quad & \beta & \text{MP 2, 3} \\
-    (5)\quad & (\forall x_1\quantsep \beta) & \text{Gen 4}
-  \end{align*}
+  \begin{Beweis}
+    \alpha & Hypothese\\
+    (\forall x_1\quantsep \alpha) & Gen \BwZeile{1}\\
+    (\forall x_1\quantsep \alpha)\rightarrow \beta & Hypothese\\
+    \beta & MP \BwZeile{2},\BwZeile{3}\\
+    (\forall x_1\quantsep \beta) & Gen \BwZeile{4}
+  \end{Beweis}
 \end{bsp}
 
 An diesem Beispiel sehen wir, dass sich das Deduktionstheorem für formale
@@ -3767,10 +3768,10 @@ ausschließlich gültige Formeln bewiesen werden können.
 Das alte Deduktionstheorem gilt \textit{nicht} für Theorien 1.~Ordnung.
 Betrachte dazu folgenden Beweis.
 %
-\begin{align*}
-  (1)\quad & A^1_1(x_1)                   & \text{Hypothese}\\
-  (2)\quad &( \forall x_{1}\quantsep A^1_1(x_1) ) & \text{Gen 1}
-\end{align*}
+\begin{Beweis}
+  A^1_1(x_1)                   & Hypothese\\
+  ( \forall x_{1}\quantsep A^1_1(x_1) ) & Gen \BwZeile{1}
+\end{Beweis}
 Mit dem alten Deduktionstheorem folgt:
 $\vdash A^1_1(x_1) \rightarrow(\forall x_{1}\quantsep A^1_1(x_1))$.
 Diese Formel ist aber nicht gültig!
@@ -3864,19 +3865,17 @@ wenn $\beta_{i}=(\forall x_{j}\quantsep \beta_{q})$ durch Anwendung
   Dafür zeigen wir zuerst
   $(\forall x_1 \quantsep(\forall x_2\quantsep\alpha) )\vdash
   (\forall x_2 \quantsep(\forall x_1\quantsep\alpha) )$:
-  \begin{align*}
-    (1)\quad & \forall x_1 \quantsep(\forall x_2\quantsep \alpha)
-       & \text{Hypothese}\\
-    (2)\quad & (\forall x_1\quantsep (\forall x_2\quantsep\alpha) )
+  \begin{Beweis}
+    \forall x_1 \quantsep(\forall x_2\quantsep \alpha) & Hypothese\\
+    (\forall x_1\quantsep (\forall x_2\quantsep\alpha) )
        \rightarrow (\forall x_2\quantsep\alpha) &
-       \text{(A4) mit $t=x_1$}\footnotemark\\
-    (3)\quad & (\forall x_2\quantsep\alpha) & \text{MP 1,2} \\
-    (4)\quad &  (\forall x_2\quantsep\alpha) \rightarrow \alpha
-       & \text{(A4) mit $t=x_2$} \\
-    (5)\quad & \alpha & \text{MP 3,4} \\
-    (6)\quad &  (\forall x_1\quantsep\alpha) & \text{Gen 5} \\
-    (7)\quad &  (\forall x_2 \quantsep(\forall x_1\quantsep\alpha)) & \text{Gen 6} \\
-  \end{align*}
+       (A4) mit $t=x_1$\footnotemark\\
+    (\forall x_2\quantsep\alpha) & MP \BwZeile{1},\BwZeile{2}\\
+    (\forall x_2\quantsep\alpha) \rightarrow \alpha & (A4) mit $t=x_2$\\
+    \alpha & MP \BwZeile{3},\BwZeile{4}\\
+    (\forall x_1\quantsep\alpha) & Gen \BwZeile{5}\\
+    (\forall x_2 \quantsep(\forall x_1\quantsep\alpha)) & Gen \BwZeile{6}
+  \end{Beweis}
   \footnotetext{Bem.: $(\forall x_2\quantsep\alpha)[x_1/x_1]=
     (\forall x_2\quantsep\alpha)$}
 
@@ -3925,11 +3924,11 @@ Regeln wird aus Platzgründen verzichtet.
 
 \begin{bsp}
   Zeige $\vdash (\forall x\quantsep \alpha) \rightarrow (\exists x\quantsep \alpha)$.
-  \begin{align*}
-    (1)\quad & (\forall x\quantsep \alpha) &\text{Hypothese}\\
-    (2)\quad &  \alpha[x/t] &\text{mit RA4}\\
-    (3)\quad & (\exists x\quantsep \alpha) &\text{mit RE4}
-  \end{align*}
+  \begin{Beweis}
+    (\forall x\quantsep \alpha) & Hypothese\\
+    \alpha[x/t] & mit RA4\\
+    (\exists x\quantsep \alpha) &mit RE4
+  \end{Beweis}
   Mit dem Deduktionstheorem folgt $\vdash (\forall x\quantsep \alpha)
   \rightarrow (\exists x\quantsep \alpha)$.
 \end{bsp}
@@ -3983,38 +3982,38 @@ Weitere Regeln (ohne Korrektheits"=Beweise):
 
     Die nächsten beiden Beweise für 4. und 5. unterscheiden sich nur im
     dritten Schritt. Daher sei hier nur 4. bewiesen.
-    \begin{align*}
-      (1)\quad& \alpha\leftrightarrow \beta& \text{Hypothese}\\
-      (2)\quad& \alpha& \text{Hypothese}\\
-      (3)\quad& \alpha\rightarrow\beta& \text{1. mit 1}\\
-      (4)\quad& \beta& \text{MP 2,3}
-    \end{align*}
+    \begin{Beweis}
+      \alpha\leftrightarrow \beta& Hypothese\\
+      \alpha& Hypothese\\
+      \alpha\rightarrow\beta& 1. mit \BwZeile{1}\\
+      \beta& MP \BwZeile{2},\BwZeile{3}
+    \end{Beweis}
 
     Die letzten beiden Beweise 6. und 7. sind wieder fast gleich. Daher sei
     nur 6. gezeigt.
-    \begin{align*}
-      (1)\quad& \alpha\leftrightarrow\beta& \text{Hypothese}\\
-      (2)\quad& \beta\rightarrow\alpha& \text{2. mit 1}\\
-      (3)\quad& (\beta\rightarrow\alpha) \rightarrow
-         (\neg\alpha\rightarrow\neg\beta)& \text{\autoref{lem:5}}\\
-      (4)\quad& \neg\alpha\rightarrow\neg\beta& \text{MP 2,3}\\
-      (5)\quad& \neg\alpha& \text{Hypothese}\\
-      (6)\quad& \neg\beta& \text{MP 5,4}
-    \end{align*}
+    \begin{Beweis}
+      \alpha\leftrightarrow\beta& Hypothese\\
+      \beta\rightarrow\alpha& 2. mit \BwZeile{1}\\
+      (\beta\rightarrow\alpha) \rightarrow
+         (\neg\alpha\rightarrow\neg\beta)& \autoref{lem:5}\\
+      \neg\alpha\rightarrow\neg\beta& MP \BwZeile{2},\BwZeile{3}\\
+      \neg\alpha& Hypothese\\
+      \neg\beta& MP \BwZeile{5},\BwZeile{4}
+    \end{Beweis}
   \end{proof}
 \end{lemma}
 
 \begin{bsp}
   Wir zeigen $\vdash (\forall x\quantsep \alpha\leftrightarrow\beta) \rightarrow (
   (\forall x\quantsep\alpha) \leftrightarrow (\forall x\quantsep\beta))$
-  \begin{align*}
-    (1)\quad &(\forall x\quantsep \alpha\leftrightarrow \beta) &\text{Hypothese}\\
-    (2)\quad &(\forall x\quantsep \alpha) &\text{Hypothese}\\
-    (3)\quad & \alpha\leftrightarrow\beta &\text{RA4 mit 1}\\
-    (4)\quad & \alpha &\text{RA4 mit 2}\\
-    (5)\quad & \beta &\text{Äquivalenzregel mit 3,4}\\
-    (6)\quad &\forall x\quantsep\beta&\text{Gen 5}
-  \end{align*}
+  \begin{Beweis}
+    (\forall x\quantsep \alpha\leftrightarrow \beta) & Hypothese\\
+    (\forall x\quantsep \alpha) & Hypothese\\
+    \alpha\leftrightarrow\beta & RA4 mit \BwZeile{1}\\
+    \alpha & RA4 mit \BwZeile{2}\\
+    \beta & Äquivalenzregel mit \BwZeile{3},\BwZeile{4}\\
+    \forall x\quantsep\beta& Gen \BwZeile{5}
+  \end{Beweis}
   Mit dem Deduktionstheorem folgt dann $(\forall x\quantsep \alpha\leftrightarrow\beta)
   \vdash ((\forall x\quantsep \alpha) \rightarrow (\forall x\quantsep \beta))$.
 
@@ -4087,14 +4086,14 @@ diskutiert werden.
   Wir beweisen $\vdash
   \big( (\exists x\quantsep A(x)) \wedge (\exists x\quantsep B(x)) \big) \rightarrow
   (\exists x\quantsep A(x) \rightarrow B(x))$.
-  \begin{align*}
-    (1)\quad & (\exists x\quantsep A(x)) \wedge(\exists x\quantsep B(x)) &\text{Hypothese}\\
-    (2)\quad &(\exists x\quantsep B(x)) &\text{Konj.Regel, 1}\\
-    (3)\quad & B(c) &\text{Regel C, 2}\\
-    (4)\quad & B(c) \rightarrow (A(c) \rightarrow B(c)) &\text{A1}\\
-    (5)\quad & A(c) \rightarrow B(c) &\text{MP 3,4}\\
-    (6)\quad & (\exists x\quantsep A(x)\rightarrow B(x)) &\text{RE4, 5}
-  \end{align*}
+  \begin{Beweis}
+    (\exists x\quantsep A(x)) \wedge(\exists x\quantsep B(x)) & Hypothese\\
+    (\exists x\quantsep B(x)) & Konj.Regel, \BwZeile{1}\\
+    B(c) & Regel C, \BwZeile{2}\\
+    B(c) \rightarrow (A(c) \rightarrow B(c)) & A1\\
+    A(c) \rightarrow B(c) & MP \BwZeile{3},\BwZeile{4}\\
+    (\exists x\quantsep A(x)\rightarrow B(x)) & RE4, \BwZeile{5}
+  \end{Beweis}
   Mit dem Deduktionstheorem folgt das Theorem.
 \end{bsp}
 
@@ -4107,13 +4106,13 @@ Die Verwendung der Regel~C unterliegt den folgenden Einschränkungen.
   {\itshape Wird kein neues Konstantensymbol eingeführt, können nicht gültige Formeln
   bewiesen werden.
 
-  \begin{align*}
-    (1)\quad & \exists x_1\quantsep  A^2_1(x_1, a_1) & \text{Hypothese} \\
-    (2)\quad & A^2_1(a_1, a_1) &
+  \begin{Beweis}
+    \exists x_1\quantsep  A^2_1(x_1, a_1) & Hypothese\\
+    A^2_1(a_1, a_1) &
        \parbox[t]{.4\linewidth}{\raggedleft falsche Anwendung der Regel C: $a_1$
          ist kein neues Konst.symbol}\\
-    (3)\quad & \exists x_1\quantsep A^2_1(x_1, x_1) &\text{Regel RE4}
-  \end{align*}
+    \exists x_1\quantsep A^2_1(x_1, x_1) & Regel RE4
+  \end{Beweis}
 
   Mit Deduktionstheorem könnte
   $(\exists x_1\quantsep A^2_1(x_1, a_1)) \rightarrow (\exists x_1\quantsep A^2_1(x_1, x_1))$
@@ -4125,15 +4124,15 @@ Die Verwendung der Regel~C unterliegt den folgenden Einschränkungen.
   {\itshape Bei Nichtbeachtung dieser Einschränkung können
   nicht gültige Formeln bewiesen werden.
 
-  \begin{align*}
-    (1)\quad & (\forall x_1 \quantsep (\exists x_2 \quantsep A^2_1(x_1, x_2))) & \text{Hypothese} \\
-    (2)\quad & (\exists x_2 \quantsep A^2_1(x_1, x_2)) & \text{RA4, 1} \\
-    (3)\quad & A^2_1(x_1,a_1) & \text{Regel C (korrekte Anwendung), 2} \\
-    (4)\quad & (\forall x_1 \quantsep A^2_1(x_1,a_1)) &
-       \parbox[t]{.4\linewidth}{Gen, 3 (Anwendung auf freie Var. aus 3, die
-       durch Regel C entstanden ist)} \\
-    (5)\quad & (\exists x_2 \quantsep (\forall x_1 \quantsep A^2_1(x_1,a_1))) & \text{RE4, 4}
-  \end{align*}
+  \begin{Beweis}
+    (\forall x_1 \quantsep (\exists x_2 \quantsep A^2_1(x_1, x_2))) & Hypothese\\
+    (\exists x_2 \quantsep A^2_1(x_1, x_2)) & RA4, \BwZeile{1}\\
+    A^2_1(x_1,a_1) & Regel C (korrekte Anwendung), \BwZeile{2}\\
+    (\forall x_1 \quantsep A^2_1(x_1,a_1)) &
+       \parbox[t]{.4\linewidth}{Gen, \BwZeile{3} (Anwendung auf freie Var. aus
+         \BwZeile{3}, die durch Regel C entstanden ist)} \\
+    (\exists x_2 \quantsep (\forall x_1 \quantsep A^2_1(x_1,a_1))) & RE4, \BwZeile{4}
+  \end{Beweis}
 
   Mit Deduktionstheorem könnte
   $(\forall x_1 \quantsep (\exists x_2 \quantsep A^2_1(x_1, x_2))) \rightarrow
@@ -5074,22 +5073,18 @@ Hier noch einmal die Axiome mit der eingängigeren Schreibweise:
     (S1'): für alle Terme $r,s,t$ gilt
     $\Svdash r=s \rightarrow (r=t \rightarrow s=t)$.
 
-    \begin{align*}
-      (1)\quad & x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3)
-         & \text{(S1)}\\
-      (2)\quad & (\forall x_1\quantsep x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3))
-         & \text{Gen, 1}\\
-      (3)\quad & r = x_2 \rightarrow (r=x_3 \rightarrow x_2=x_3)
-         & \text{RA4, 2}\displaybreak[0]\\
-      (4)\quad & (\forall x_2\quantsep r= x_2 \rightarrow (r=x_3 \rightarrow x_2=x_3))
-         & \text{Gen, 3}\\
-      (5)\quad & r = s \rightarrow (r=x_3 \rightarrow s=x_3)
-         & \text{RA4, 4}\displaybreak[0]\\
-      (6)\quad & (\forall x_3\quantsep r = s \rightarrow (r=x_3 \rightarrow s=x_3))
-         & \text{Gen, 5}\\
-      (7)\quad &  r = s \rightarrow (r=t \rightarrow s=t)
-         & \text{RA4, 6}
-    \end{align*}
+    \begin{Beweis}
+      x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3) & (S1)\\
+      (\forall x_1\quantsep x_1= x_2 \rightarrow (x_1=x_3 \rightarrow x_2=x_3))
+         & Gen \BwZeile{1}\\
+      r = x_2 \rightarrow (r=x_3 \rightarrow x_2=x_3) & RA4, \BwZeile{2}\\
+      (\forall x_2\quantsep r= x_2 \rightarrow (r=x_3 \rightarrow x_2=x_3))
+         & Gen \BwZeile{3}\\
+      r = s \rightarrow (r=x_3 \rightarrow s=x_3) & RA4, \BwZeile{4}\\
+      (\forall x_3\quantsep r = s \rightarrow (r=x_3 \rightarrow s=x_3))
+         & Gen \BwZeile{5}\\
+      r = s \rightarrow (r=t \rightarrow s=t) & RA4, \BwZeile{6}
+    \end{Beweis}
   \end{proof}
 \end{lemma}
 
@@ -5135,22 +5130,22 @@ Assoziativität~-- können wir auch in der Theorie~$\ThS$ beweisen.
     für die fehlenden Beweise gesehen werden können.
 
     Ein Beweis der Formel (a)
-    \begin{align*}
-      (1)\quad & t+0=t & \text{(S5')}\\
-      (2)\quad & (t+0=t) \rightarrow ((t+0=t)\rightarrow(t=t)) & \text{(S1')}\\
-      (3)\quad & (t+0=t)\rightarrow(t=t) & \text{MP 1,2}\\
-      (4)\quad & t=t & \text{MP 1,3}
-    \end{align*}
+    \begin{Beweis}
+      t+0=t & (S5')\\
+      (t+0=t) \rightarrow ((t+0=t)\rightarrow(t=t)) & (S1')\\
+      (t+0=t)\rightarrow(t=t) & MP \BwZeile{1},\BwZeile{2}\\
+      t=t & MP \BwZeile{1},\BwZeile{3}
+    \end{Beweis}
 
     Für die Formel (b) kann man $t=r\Svdash r=t$ beweisen woraus mit Hilfe des
     Deduktionstheorems die eigentliche Formel folgt.
-    \begin{align*}
-      (1)\quad & (t=r) \rightarrow((t=t) \rightarrow(r=t)) & \text{(S1')}\\
-      (2)\quad & t=r & \text{Hypothese} \\
-      (3)\quad & (t=t) \rightarrow (r=t) & \text{MP 2,1}\\
-      (4)\quad & t=t & \text{Teil (a)}\\
-      (5)\quad & r=t & \text{MP 5,4}
-    \end{align*}
+    \begin{Beweis}
+      (t=r) \rightarrow((t=t) \rightarrow(r=t)) & (S1')\\
+      t=r & Hypothese\\
+      (t=t) \rightarrow (r=t) & MP \BwZeile{2},\BwZeile{1}\\
+      t=t & Teil (a)\\
+      r=t & MP \BwZeile{5},\BwZeile{4}
+    \end{Beweis}
 
     Die Formel (e) $\Svdash x_{1}=x_{2} \rightarrow x_{1}+x_{3}=x_{2}+x_{3}$
     beweisen wir mittels Induktion über $x_{3}$.
@@ -5159,19 +5154,19 @@ Assoziativität~-- können wir auch in der Theorie~$\ThS$ beweisen.
     \begin{enumerate}
      \item Für den Induktionsanfang $\alpha(0)$ müssen wir $x_{1}=x_{2}
       \rightarrow x_{1}+0 = x_{2}+0$ zeigen
-      \begin{align*}
-        (1)\quad& x_{1}+0 =x_{1} &\text{S5}\\
-        (2)\quad& x_{2}+0 = x_{2} &\text{S5}\\
-        (3)\quad& x_{1} = x_{2} &\text{Hypothese}\\
-        (4)\quad& x_{1}+0 = x_{1} \rightarrow (x_{1} = x_{2} \rightarrow
-           x_{1}+0=x_{2}) &\text{(c) mit $t=x_{1}+0$}\\
-        (5)\quad& x_{1}+0 = x_{2} &\text{MP 1,3,4}\\
-        (6)\quad& x_{2}+0 = x_{2} \rightarrow x_{2}=x_{2}+0 &\text{(b)}\\
-        (7)\quad& x_{2} = x_{2}+0 &\text{MP 2,6}\\
-        (8)\quad& x_{1}+0 = x_{2} \rightarrow (x_{2}=x_{2}+0 \rightarrow
-           x_{1}+0 = x_{2}+0) &\text{(c)}\\
-        (9)\quad& x_{1} + 0 = x_{2}+0 &\text{MP 5,7,8}
-      \end{align*}
+      \begin{Beweis}
+        x_{1}+0 =x_{1} & S5\\
+        x_{2}+0 = x_{2} & S5\\
+        x_{1} = x_{2} & Hypothese\\
+        x_{1}+0 = x_{1} \rightarrow (x_{1} = x_{2} \rightarrow
+           x_{1}+0=x_{2}) & (c) mit $t=x_{1}+0$\\
+        x_{1}+0 = x_{2} & MP \BwZeile{1},\BwZeile{3},\BwZeile{4}\\
+        x_{2}+0 = x_{2} \rightarrow x_{2}=x_{2}+0 & (b)\\
+        x_{2} = x_{2}+0 & MP \BwZeile{2},\BwZeile{6}\\
+        x_{1}+0 = x_{2} \rightarrow (x_{2}=x_{2}+0 \rightarrow
+           x_{1}+0 = x_{2}+0) & (c)\\
+        x_{1} + 0 = x_{2}+0 &MP \BwZeile{5},\BwZeile{7},\BwZeile{8}
+      \end{Beweis}
       Mit dem Deduktionstheorem folgt $x_{1}=x_{2} \rightarrow x_{1}+0 =
       x_{2}+0$. Damit ist der Induktionsanfang $\alpha(0)$ bewiesen.
 
@@ -5181,22 +5176,21 @@ Assoziativität~-- können wir auch in der Theorie~$\ThS$ beweisen.
         (x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}) \rightarrow
            (x_{1}=x_{2} \rightarrow x_{1}+x_{3}' = x_{2}+x_{3}')
       \end{gather*}
-      \begin{align*}
-        (1)\quad& x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}
-           &\text{Hypothese}\\
-        (2)\quad& x_{1} = x_{2} &\text{Hypothese}\\
-        (3)\quad& x_{1}+x_{3} = x_{2}+x_{3} &\text{MP 1,2}\\
-        (4)\quad& x_{1}+x_{3} = x_{2}+x_{3} \rightarrow (x_{1}+x_{3})' =
-           (x_{2}+x_{3})' &\text{S2}\\
-        (5)\quad& (x_{1}+x_{3})' = (x_{2}+x_{3})' &\text{MP 3,4}\\
-        (6)\quad& x_{1} +x_{3}' = (x_{1}+x_{3})' &\text{S6 und (b)}\\
-        (7)\quad& x_{1}+x_{3}' = (x_{2}+x_{3})' &\text{(c), MP 5,6}\\
-        (8)\quad& x_{2}+x_{3}' = (x_{2}+x_{3}) &\text{S6}\\
-        (9)\quad& x_{2}+x_{3}' = (x_{2}+x_{3})' \rightarrow (x_{2}+x_{3})'
-           = x_{2} +x_{3}' &\text{(b)}\\
-        (10)\quad& (x_{2}+x_{3})' = x_{2}+x_{3}' &\text{MP 8,9}\\
-        (11)\quad& x_{1}+x_{3}' = x_{2}+x_{3}' &\text{(c), MP 7,10}
-      \end{align*}
+      \begin{Beweis}
+        x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3} & Hypothese\\
+        x_{1} = x_{2} & Hypothese\\
+        x_{1}+x_{3} = x_{2}+x_{3} & MP \BwZeile{1},\BwZeile{2}\\
+        x_{1}+x_{3} = x_{2}+x_{3} \rightarrow (x_{1}+x_{3})' =
+           (x_{2}+x_{3})' & S2\\
+        (x_{1}+x_{3})' = (x_{2}+x_{3})' & MP \BwZeile{3},\BwZeile{4}\\
+        x_{1} +x_{3}' = (x_{1}+x_{3})' & S6 und (b)\\
+        x_{1}+x_{3}' = (x_{2}+x_{3})' & (c), MP \BwZeile{5},\BwZeile{6}\\
+        x_{2}+x_{3}' = (x_{2}+x_{3}) & S6\\
+        x_{2}+x_{3}' = (x_{2}+x_{3})' \rightarrow (x_{2}+x_{3})'
+           = x_{2} +x_{3}' & (b)\\
+        (x_{2}+x_{3})' = x_{2}+x_{3}' & MP \BwZeile{8},\BwZeile{9}\\
+        x_{1}+x_{3}' = x_{2}+x_{3}' &(c), MP \BwZeile{7},\BwZeile{10}
+      \end{Beweis}
       Damit ist bewiesen:
       \begin{gather*}
         x_{1}=x_{2}, x_{1}=x_{2} \rightarrow x_{1}+x_{3} = x_{2}+x_{3}
@@ -5219,20 +5213,18 @@ Assoziativität~-- können wir auch in der Theorie~$\ThS$ beweisen.
 
     Bis jetzt haben wir $\Svdash\alpha(0)$ und $\Svdash (\forall
     x_{3}\quantsep \alpha(x_{3}) \rightarrow \alpha(x_{3}'))$ gezeigt.
-    \begin{align*}
-      (1)\quad & \alpha(0) &\\
-      (2)\quad & (\forall x_{3}\quantsep \alpha(x_{3}) \rightarrow
-         \alpha(x_{3}')) &\\
-      (3)\quad & \alpha(0) \rightarrow ((\forall x_{3}\quantsep
+    \begin{Beweis}
+      \alpha(0) &\\
+      (\forall x_{3}\quantsep \alpha(x_{3}) \rightarrow \alpha(x_{3}')) &\\
+      \alpha(0) \rightarrow ((\forall x_{3}\quantsep
          \alpha(x_{3}) \rightarrow \alpha(x_{3}')) \rightarrow (\forall
-         x_{3}\quantsep \alpha(x_{3}))) & \text{S9}\\
-      (4)\quad & (\forall x_{3}\quantsep
+         x_{3}\quantsep \alpha(x_{3}))) & S9\\
+      (\forall x_{3}\quantsep
          \alpha(x_{3}) \rightarrow \alpha(x_{3}')) \rightarrow (\forall
-         x_{3}\quantsep \alpha(x_{3})) & \text{MP 1,3}\\
-      (5)\quad &\forall x_{3}\quantsep \alpha(x_{3})
-         &\text{MP 3,4} \\
-      (6)\quad & \alpha(x_{3}) & \text{RA4 mit 5}
-    \end{align*}
+         x_{3}\quantsep \alpha(x_{3})) & MP \BwZeile{1},\BwZeile{3}\\
+      \forall x_{3}\quantsep \alpha(x_{3}) & MP \BwZeile{3},\BwZeile{4}\\
+      \alpha(x_{3}) & RA4 mit \BwZeile{5}
+    \end{Beweis}
     Es gilt also
     $\Svdash\alpha(x_{3}) = x_{1}=x_{2} \rightarrow x_{1}+x_{3}=x_{2}+x_{3}$.
   \end{proof}
@@ -5267,27 +5259,28 @@ $'$ war eine Abkürzung für $f_{1}^{1}$.
 
   \begin{proof}
     Der Beweis für die Addition mit $\overline{1}$:
-    \begin{align*}
-      (1)\quad & t+0 = t & \text{(S5')}\\
-      (2)\quad & t+0 = t \rightarrow (t+0)' = t'& \text{(S2')}\\
-      (3)\quad & (t+0)' = t' & \text{MP 1,2}\\
-      (4)\quad & t+0'=(t+0)' & \text{(S6')}\\
-      (5)\quad & t+0' = t'   & \text{\autoref{lemma-zahlen-elem}~(c) Trans. von $=$ mit 4,3}
-    \end{align*}
+    \begin{Beweis}
+      t+0 = t & (S5')\\
+      t+0 = t \rightarrow (t+0)' = t'& (S2')\\
+      (t+0)' = t' & MP \BwZeile{1},\BwZeile{2}\\
+      t+0'=(t+0)' & (S6')\\
+      t+0' = t'   & \autoref{lemma-zahlen-elem}~(c) Trans. von $=$ mit
+        \BwZeile{4},\BwZeile{3}
+    \end{Beweis}
 
     Der Beweis für die Multiplikation mit $\overline{1}$:
-    \begin{align*}
-      (1)\quad & t\cdot 0 = 0 & \text{(S7')}\\
-      (2)\quad & t\cdot0 = 0 \rightarrow t\cdot0+t = 0+t&
-         \text{\autoref{lemma-zahlen-elem}~(e)}\\
-      (3)\quad & t\cdot 0 + t = 0+t & \text{MP 1,2}\\
-      (4)\quad & t\cdot 0' = t\cdot 0 + t & \text{(S8')}\\
-      (5)\quad & t\cdot 0' = 0+t & \text{Trans. von $=$ mit 4,3}\\
-      (6)\quad & t = 0+t& \text{\autoref{lemma-zahlen-elem}~(f)}\\
-      (7)\quad & t\cdot0' = 0+t \rightarrow (t=0+t \rightarrow t\cdot 0'=t)
-         &\text{\autoref{lemma-zahlen-elem}~(d)}\\
-      (8)\quad & t\cdot 0' = t & \text{MP 5,6,7}
-    \end{align*}
+    \begin{Beweis}
+      t\cdot 0 = 0 & (S7')\\
+      t\cdot0 = 0 \rightarrow t\cdot0+t = 0+t&
+         \autoref{lemma-zahlen-elem}~(e)\\
+      t\cdot 0 + t = 0+t & MP \BwZeile{1},\BwZeile{2}\\
+      t\cdot 0' = t\cdot 0 + t & (S8')\\
+      t\cdot 0' = 0+t & Trans. von $=$ mit \BwZeile{4},\BwZeile{3}\\
+      t = 0+t& \autoref{lemma-zahlen-elem}~(f)\\
+      t\cdot0' = 0+t \rightarrow (t=0+t \rightarrow t\cdot 0'=t)
+         & \autoref{lemma-zahlen-elem}~(d)\\
+      t\cdot 0' = t & MP \BwZeile{5},\BwZeile{6},\BwZeile{7}
+    \end{Beweis}
   \end{proof}
 \end{lemma}
 
@@ -5324,7 +5317,7 @@ $'$ war eine Abkürzung für $f_{1}^{1}$.
           (3)\quad& \overline{1} \ne \overline{n-m}'& \text{MP 1,2}\\
           (4)\quad& \overline{1}\ne\overline{n-m+1} \rightarrow
              \overline{1}'\ne\overline{n-m+1}'& \text{Vorbem.}\\
-          (5)\quad& \overline{2}\ne \overline{n-m+2}& \text{MP, 3,4}\\
+          (5)\quad& \overline{2}\ne \overline{n-m+2}& \text{MP 3,4}\\
           \vdots\quad& \quad\vdots& \vdots\quad\\
           (2m)\quad& \overline{m-1}\ne\overline{n-1} \rightarrow
              \overline{m-1}' \ne\overline{n-1}'& \text{Vorbem.}\\
@@ -5343,13 +5336,13 @@ $'$ war eine Abkürzung für $f_{1}^{1}$.
       \end{faelle}
 
      \item Zuvor ein kurzer Beweis für $\Svdash t'+r = t+r'$
-      \begin{align*}
-        (1)\quad& t'+r = (t+r)'& \text{\autoref{lemma-zahlen-elem}~(g)}\\
-        (2)\quad& t+r' = (t+r)'& \text{(S6')}\\
-        (3)\quad& t'+r = (t+r)' \rightarrow (t+r' = (t+r)' \rightarrow t'+r =
-           t+r')& \text{\autoref{lemma-zahlen-elem}~(d)}\\
-        (4)\quad& t'+r = t+r'& \text{MP 1,2,3}
-      \end{align*}
+      \begin{Beweis}
+        t'+r = (t+r)'& \autoref{lemma-zahlen-elem}~(g)\\
+        t+r' = (t+r)'& (S6')\\
+        t'+r = (t+r)' \rightarrow (t+r' = (t+r)' \rightarrow t'+r =
+           t+r')& \autoref{lemma-zahlen-elem}~(d)\\
+        t'+r = t+r'& MP \BwZeile{1},\BwZeile{2},\BwZeile{3}
+      \end{Beweis}
 
       Damit können wir nun den eigentlichen Beweis antreten:
       \begin{align*}
@@ -6382,33 +6375,33 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
    \item $n_{1}<n_{2}$. Dann gibt es ein $b\in\N$ mit $n_1+b=n_2$.
     Es ist $\Svdash \exists z\quantsep z\ne0 \wedge\overline{n_{1}}+z=\overline{n_{2}}$
     zu beweisen
-    \begin{align*}
-      (1)\quad &\overline{n_{1}} + \overline{b} = \overline{n_{2}}
-         &  \text{\autoref{lemma-numerale1}(c)}\\
-      (2)\quad &\overline{b} \ne 0 &    \text{Axiom}\\
-      (3)\quad &\overline{b} \ne 0 \wedge
+    \begin{Beweis}
+      \overline{n_{1}} + \overline{b} = \overline{n_{2}}
+         & \autoref{lemma-numerale1}(c)\\
+      \overline{b} \ne 0 & Axiom\\
+      \overline{b} \ne 0 \wedge
          \overline{n_{1}} + \overline{b} = \overline{n_{2}}  &
          \text{Konjunktionsregel}\\
-      (4)\quad & \exists z\quantsep z\ne 0 \wedge \overline{n_{1}} + z = \overline{n_{2}}  &
-         \text{RE4}
-    \end{align*}
+      \exists z\quantsep z\ne 0 \wedge \overline{n_{1}} + z = \overline{n_{2}}  &
+         RE4
+    \end{Beweis}
 
    \item $n_{1}\not< n_{2}$. Es ist $\Svdash \neg(\exists z \quantsep z\ne 0
     \wedge \overline{n_{1}} + z = \overline{n_{2}})$ zu beweisen.
     \begin{faelle}
      \item $n_{1}=n_{2}$
-      \begin{align*}
-        (1)\quad & \overline{n_{1}} = \overline{n_{2}} &\text{Lemma}\\
-        (2)\quad & \overline{n_{2}} < \overline{n_{1}} \vee
-           \overline{n_{1}} = \overline{n_{2}} & \text{Disjunktionsregel}
-      \end{align*}
+      \begin{Beweis}
+        \overline{n_{1}} = \overline{n_{2}} & Lemma\\
+        \overline{n_{2}} < \overline{n_{1}} \vee
+           \overline{n_{1}} = \overline{n_{2}} & Disjunktionsregel
+      \end{Beweis}
 
      \item $n_{2}<n_{1}$
-      \begin{align*}
-        (1)\quad &\overline{n_{2}} < \overline{n_{1}} &\text{wie oben}\\
-        (2)\quad &\overline{n_{2}} < \overline{n_{1}} \vee
-           \overline{n_{1}} = \overline{n_{2}} & \text{Disjunktionsregel}
-      \end{align*}
+      \begin{Beweis}
+        \overline{n_{2}} < \overline{n_{1}} & wie oben\\
+        \overline{n_{2}} < \overline{n_{1}} \vee
+           \overline{n_{1}} = \overline{n_{2}} & Disjunktionsregel
+      \end{Beweis}
     \end{faelle}
 
     Also gilt: Wenn $n_{1}\not< n_{2}$, dann $\Svdash \overline{n_{2}}<
@@ -6465,10 +6458,10 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
     x_{1}+x_{2}=x_{4} \rightarrow x_{3}=x_{4})$.
 
     Erster Term:
-    \begin{align*}
-      (1)\quad & x_{1}+x_{2}= x_{1}+x_{2} &\text{Lemma}\\
-      (2)\quad & \exists x_{3}\quantsep x_{1}+x_{2}=x_{3} &\text{RE4}
-    \end{align*}
+    \begin{Beweis}
+      x_{1}+x_{2}= x_{1}+x_{2} & Lemma\\
+      \exists x_{3}\quantsep x_{1}+x_{2}=x_{3} &RE4
+    \end{Beweis}
 
     Der zweite Term folgt aus der Symmetrie und der Transitivität der
     Gleichheitsrelation.
@@ -6488,18 +6481,18 @@ ist eine Funktion $f\colon\N^k\rightarrow \N$.
    \item
     \begin{enumerate}
      \item $n=0$:
-      $\begin{array}[t]{lll}
-        (1) & 0=0 & \text{Lemma}\\
-        (2) & 0=0 \wedge 0=0 & \text{(1), Konjunktionsregel}\\
-        (3) & (0=0\wedge 0=0) \vee 0\ne0 &\text{(2), Disjunktionsregel}
-      \end{array}$
+      \begin{Beweis}
+        0=0 & Lemma\\
+        0=0 \wedge 0=0 & Konjunktionsregel mit \BwZeile{1}\\
+        (0=0\wedge 0=0) \vee 0\ne0 & Disjunktionsregel mit \BwZeile{2}
+      \end{Beweis}
 
      \item $n>0$:
-      $\begin{array}[t]{lll}
-        (1) & \overline{n} = \overline{n+1} & \text{Lemma}\\
-        (2) & (\overline{n}+0 \wedge \overline{n}=0) \vee
-           \overline{n} = \overline{n}' &\text{Disjunktionsregel}
-      \end{array}$
+      \begin{Beweis}
+        \overline{n} = \overline{n+1} & Lemma\\
+        (\overline{n}+0 \wedge \overline{n}=0) \vee
+           \overline{n} = \overline{n}' &Disjunktionsregel
+      \end{Beweis}
     \end{enumerate}
 
    \item zu zeigen ist noch  $\Svdash\exists_{1}
@@ -6527,14 +6520,12 @@ $(\exists x_1\quantsep x_1=0) \wedge (\forall x_1\quantsep \forall y\quantsep
 Der erste Teil $(\exists x_1\quantsep x_1=0)$
 folgt aus $\Svdash 0=0$ (\autoref{lemma-zahlen-elem}(a)) und Regel RE4.
 Für den zweiten Teil führen wir folgenden Beweis.
-$
-\begin{array}[t]{cll}
-  (1) & x_1=0 \wedge y=0 & \text{Hypothese} \\
-  (2) & x_1=0 & \text{(1), Konjunktionsregel} \\
-  (3) & y=0   & \text{(1), Konjunktionsregel} \\
-  (4) & x_1=y & \text{(2), (3), Trans. und Symm. von $=$} \\
-\end{array}
-$
+\begin{Beweis}[t]{cll}
+  x_1=0 \wedge y=0 & Hypothese\\
+  x_1=0 & Konjunktionsregel mit \BwZeile{1}\\
+  y=0   & Konjunktionsregel mit \BwZeile{1}\\
+  x_1=y & Trans. und Symm. von $=$ mit \BwZeile{2},\BwZeile{3}
+\end{Beweis}
 
 Daraus folgt mittels Deduktionstheorem und Generalisierung der zweite Teil.
 Mittels Konjunktionsregel fügen sich die beiden Teile
@@ -7387,29 +7378,29 @@ bezeichnet $\ucorner{\alpha}$ den Term $\overline{u}$.
     Wir zeigen $\Svdash\gamma \leftrightarrow \alpha[x_{2}/\ucorner{\gamma}]$:
     \begin{enumerate}
      \item $\Svdash\gamma \rightarrow \alpha[x_{2}/\ucorner{\gamma}]$:
-      \begin{align*}
-        (1)\quad& (\forall x_{2}\quantsep \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}]
-           \rightarrow \alpha) & \text{Hypothese $\gamma$}\\
-        (2)\quad& \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}, x_{2}/\ucorner{\gamma}]
-           \rightarrow \alpha[x_{2}/\ucorner{\gamma}] & \text{(1), RA 4}\\
-        (3)\quad& \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}, x_{2}/\ucorner{\gamma}]
-           &\text{$(\star)$} \\
-        (4)\quad& \alpha[x_{2}/\ucorner{\gamma}] &\text{MP (2), (3)}
-      \end{align*}
+      \begin{Beweis}
+        (\forall x_{2}\quantsep \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}]
+           \rightarrow \alpha) & Hypothese $\gamma$\\
+        \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}, x_{2}/\ucorner{\gamma}]
+           \rightarrow \alpha[x_{2}/\ucorner{\gamma}] & RA 4 mit \BwZeile{1}\\
+        \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}, x_{2}/\ucorner{\gamma}]
+           & $(\star)$\\
+        \alpha[x_{2}/\ucorner{\gamma}] &MP \BwZeile{2},\BwZeile{3}
+      \end{Beweis}
       Mit dem Deduktionstheorem folgt
         $\Svdash\gamma \rightarrow \alpha[x_{2}/\ucorner{\gamma}]$.
 
      \item $\Svdash \alpha[x_{2}/\ucorner{\gamma}] \rightarrow \gamma$:
-      \begin{align*}
-        (1)\quad& \alpha[x_{2}/\ucorner{\gamma}] & \text{Hypothese}\\
-        (2)\quad& \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}] &\text{Hypothese}\\
-        (3)\quad& \exists_{1} x_{2}\quantsep \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}]
-           &\text{da $\phi_{D_2}$ $D_2$ streng repräsentiert}\\
-        (4)\quad& \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}, x_{2}/\ucorner{\gamma}]
-           &\text{$(\star)$}\\
-        (5)\quad& x_{2}= \ucorner{\gamma} &\text{Eigenschaft von $=$, (3), (4)}\\
-        (6)\quad& \alpha & \text{(1), (5), Eigenschaft von $=$}
-      \end{align*}
+      \begin{Beweis}
+        \alpha[x_{2}/\ucorner{\gamma}] & Hypothese\\
+        \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}] & Hypothese\\
+        \exists_{1} x_{2}\quantsep \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}]
+           & da $\phi_{D_2}$ $D_2$ streng repräsentiert\\
+        \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}, x_{2}/\ucorner{\gamma}]
+           & $(\star)$\\
+        x_{2}= \ucorner{\gamma} & Eigenschaft von $=$, \BwZeile{3}, \BwZeile{4}\\
+        \alpha & Eigenschaft von $=$ mit \BwZeile{1},\BwZeile{5}
+      \end{Beweis}
 
       Damit ist gezeigt: $\alpha[x_{2}/\ucorner{\gamma}],
       \phi_{D_2}[x_{1}/\ucorner{\alpha_{2}}]\Svdash \alpha$.
@@ -7961,33 +7952,29 @@ Zeigen Sie, dass die Fibonacci"=Funktion primitiv"=rekursiv ist.
 \section{Blatt 2}
 \begin{enumerate}
  \item $\Lvdash (\neg \alpha \rightarrow\alpha) \rightarrow\alpha$
-  \begin{align*}
-    (1)\quad & \neg \alpha \rightarrow \neg \alpha
-       &\text{\autoref{bsp:1}}\\
-    (2)\quad & (\neg \alpha \rightarrow \neg \alpha) \rightarrow \big(
-       (\neg\alpha \rightarrow \alpha) \rightarrow \alpha\big)
-       &\text{(A3)}\\
-    (3)\quad & (\neg\alpha \rightarrow \alpha) \rightarrow \alpha
-       &\text{MP 1,2}
-  \end{align*}
+  \begin{Beweis}
+    \neg \alpha \rightarrow \neg \alpha & \autoref{bsp:1}\\
+    (\neg \alpha \rightarrow \neg \alpha) \rightarrow \big(
+       (\neg\alpha \rightarrow \alpha) \rightarrow \alpha\big) & (A3)\\
+    (\neg\alpha \rightarrow \alpha) \rightarrow \alpha
+       &MP \BwZeile{1},\BwZeile{2}
+  \end{Beweis}
 
  \item $\alpha\rightarrow(\beta\rightarrow\gamma) \Lvdash \beta
   \rightarrow(\alpha\rightarrow\gamma)$
 
-  \begin{align*}
-    (1)\quad & \alpha \rightarrow (\beta \rightarrow \gamma)
-       &\text{Hypothese}\\
-    (2)\quad & \beta &\text{Hypothese}\\
-    (3)\quad & \big( \alpha \rightarrow (\beta \rightarrow \gamma) \big)
+  \begin{Beweis}
+    \alpha \rightarrow (\beta \rightarrow \gamma) & Hypothese\\
+    \beta & Hypothese\\
+    \big( \alpha \rightarrow (\beta \rightarrow \gamma) \big)
        \rightarrow \big( (\alpha \rightarrow \beta) \rightarrow
-       (\alpha\rightarrow\gamma)\big) &\text{(A2)}\\
-    (4)\quad & (\alpha \rightarrow \beta) \rightarrow
-       (\alpha\rightarrow\gamma) &\text{MP 1,3}\\
-    (5)\quad & \beta \rightarrow (\alpha \rightarrow\beta)
-       &\text{(A1)}\\
-    (6)\quad & \alpha\rightarrow\beta &\text{MP 2,5}\\
-    (7)\quad & \alpha\rightarrow\gamma &\text{MP 7,4}
-  \end{align*}
+       (\alpha\rightarrow\gamma)\big) & (A2)\\
+    (\alpha \rightarrow \beta) \rightarrow
+       (\alpha\rightarrow\gamma) & MP \BwZeile{1},\BwZeile{3}\\
+    \beta \rightarrow (\alpha \rightarrow\beta) & (A1)\\
+    \alpha\rightarrow\beta & MP \BwZeile{2},\BwZeile{5}\\
+    \alpha\rightarrow\gamma &MP \BwZeile{7},\BwZeile{4}
+  \end{Beweis}
   Mit dem Deduktionstheorem ergibt aus $\alpha \rightarrow
   (\beta\rightarrow\gamma), \beta \vdash \alpha\rightarrow\gamma$ der
   eigentliche Beweis.
@@ -7997,18 +7984,17 @@ Zeigen Sie, dass die Fibonacci"=Funktion primitiv"=rekursiv ist.
 
   Wir beweisen zuerst
   $\neg\beta \rightarrow \neg\alpha, \alpha \Lvdash \beta$
-  \begin{align*}
-    (1)\quad & \neg\beta \rightarrow \neg\alpha &\text{Hypothese}\\
-    (2)\quad & \alpha &\text{Hypothese}\\
-    (3)\quad & (\neg\beta\rightarrow\neg\alpha) \rightarrow ((\neg\beta
-       \rightarrow \alpha) \rightarrow \beta) &\text{(A3)}\\
-    (4)\quad & (\neg\beta\rightarrow\alpha) \rightarrow \beta
-       &\text{MP 1,3}\\
-    (5)\quad & \alpha \rightarrow (\neg\beta\rightarrow\alpha)
-       &\text{(A1)}\\
-    (6)\quad & \neg\beta \rightarrow \alpha &\text{MP 2,5}\\
-    (7)\quad & \beta &\text{MP 6,4}
-  \end{align*}
+  \begin{Beweis}
+    \neg\beta \rightarrow \neg\alpha & Hypothese\\
+    \alpha & Hypothese\\
+    (\neg\beta\rightarrow\neg\alpha) \rightarrow ((\neg\beta
+       \rightarrow \alpha) \rightarrow \beta) & (A3)\\
+    (\neg\beta\rightarrow\alpha) \rightarrow \beta
+       & MP \BwZeile{1},\BwZeile{3}\\
+    \alpha \rightarrow (\neg\beta\rightarrow\alpha) & (A1)\\
+    \neg\beta \rightarrow \alpha & MP \BwZeile{2},\BwZeile{5}\\
+    \beta &MP \BwZeile{6},\BwZeile{4}
+  \end{Beweis}
 
   Durch zweimalige Anwendung des Deduktionstheorems ergibt sich
   $\Lvdash (\neg\beta\rightarrow\neg\alpha) \rightarrow
@@ -8029,21 +8015,19 @@ Zeigen Sie, dass die Fibonacci"=Funktion primitiv"=rekursiv ist.
   nicht $\Lvdash \alpha$.
 
  \item
-  \begin{align*}
-    (1)\quad & \alpha &\text{Hypothese}\\
-    (2)\quad & \neg\alpha & \text{Hypothese}\\
-    (3)\quad & \alpha \rightarrow (\neg\beta\rightarrow\alpha)
-       &\text{(A1)}\\
-    (4)\quad & \neg\alpha \rightarrow (\neg\beta \rightarrow\neg\alpha)
-       &\text{(A1)}\\
-    (5)\quad & \neg\beta \rightarrow \alpha &\text{MP 1,3}\\
-    (6)\quad & \neg\beta \rightarrow \neg\alpha &\text{MP 2,4}\\
-    (7)\quad & (\neg\beta \rightarrow \neg\alpha) \rightarrow ((\neg\beta
-       \rightarrow\alpha) \rightarrow \beta) &\text{(A3)}\\
-    (8)\quad & (\neg\beta \rightarrow \alpha) \rightarrow \beta &\text{MP
-       6,7}\\
-    (9)\quad & \beta & \text{MP 5,8}
-  \end{align*}
+  \begin{Beweis}
+    \alpha & Hypothese\\
+    \neg\alpha & Hypothese\\
+    \alpha \rightarrow (\neg\beta\rightarrow\alpha) & (A1)\\
+    \neg\alpha \rightarrow (\neg\beta \rightarrow\neg\alpha) & (A1)\\
+    \neg\beta \rightarrow \alpha & MP \BwZeile{1},\BwZeile{3}\\
+    \neg\beta \rightarrow \neg\alpha & MP \BwZeile{2},\BwZeile{4}\\
+    (\neg\beta \rightarrow \neg\alpha) \rightarrow ((\neg\beta
+       \rightarrow\alpha) \rightarrow \beta) & (A3)\\
+    (\neg\beta \rightarrow \alpha) \rightarrow \beta &
+       MP \BwZeile{6},\BwZeile{7}\\
+    \beta & MP \BwZeile{5},\BwZeile{8}
+  \end{Beweis}
 \end{enumerate}
 
 \section{Blatt 3}
@@ -8238,27 +8222,25 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
 
 \subsection*{Aufgabe 3}
 
-\begin{align*}
-  (1)\quad& (\forall x_{i}\quantsep \neg\alpha) \rightarrow \neg\alpha[x_{i}/t] & \text{(A4)}\\
-  (2)\quad& \big((\forall x_{i}\quantsep \neg\alpha) \rightarrow
+\begin{Beweis}
+  (\forall x_{i}\quantsep \neg\alpha) \rightarrow \neg\alpha[x_{i}/t] & (A4)\\
+  \big((\forall x_{i}\quantsep \neg\alpha) \rightarrow
      \neg\alpha[x_{i}/t]\big) \rightarrow (\alpha[x_{i}/t] \rightarrow
-     \neg(\forall x_{i}\quantsep \neg\alpha)) &\text{Inst. einer auss.log.
-     Taut.}\\
-  (3)\quad& \alpha[x_{i}/t] \rightarrow \neg (\forall x_{i}\quantsep \neg\alpha)
-     &\text{MP 1,2}\\
-  (4)\quad& \alpha[x_{i}/t] \rightarrow (\exists x_{i}\quantsep \alpha)
-                & \text{abk. Schreibweise mit $\exists$}
-\end{align*}
+     \neg(\forall x_{i}\quantsep \neg\alpha)) & Inst. einer auss.log. Taut.\\
+  \alpha[x_{i}/t] \rightarrow \neg (\forall x_{i}\quantsep \neg\alpha)
+     & MP \BwZeile{1},\BwZeile{2}\\
+  \alpha[x_{i}/t] \rightarrow (\exists x_{i}\quantsep \alpha)
+                & abk. Schreibweise mit $\exists$
+\end{Beweis}
 
 \subsection*{Aufgabe 4}
 
-\begin{align*}
-  (1)\quad & (\forall x_i\quantsep \alpha) \rightarrow \alpha[x_i/t] &\text{(A4)}\\
-  (2)\quad & \alpha[x_{i}/t] \rightarrow (\exists x_{i}\quantsep \alpha)
-     &\text{Aufgabe 3}\\
-  (3)\quad & (\forall x_{i}\quantsep \alpha) \rightarrow (\exists x_{i}\quantsep \alpha)
-     &\text{\autoref{bsp:2} 1,2}
-\end{align*}
+\begin{Beweis}
+  (\forall x_i\quantsep \alpha) \rightarrow \alpha[x_i/t] & (A4)\\
+  \alpha[x_{i}/t] \rightarrow (\exists x_{i}\quantsep \alpha) & Aufgabe 3\\
+  (\forall x_{i}\quantsep \alpha) \rightarrow (\exists x_{i}\quantsep \alpha)
+     &\autoref{bsp:2} \BwZeile{1},\BwZeile{2}
+\end{Beweis}
 
 \section{Blatt 7}
 
@@ -8266,20 +8248,20 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
  \item Beweisen wir die Aussage in zwei Teilen:
   \begin{faelle}
    \item zu zeigen: $\vdash \alpha \rightarrow (\forall x\quantsep \alpha)$
-    \begin{align*}
-      (1)\quad & \alpha &\text{Hypothese}\\
-      (2)\quad& (\forall x\quantsep \alpha) &\text{Gen 1}
-    \end{align*}
+    \begin{Beweis}
+      \alpha & Hypothese\\
+      (\forall x\quantsep \alpha) &Gen \BwZeile{1}
+    \end{Beweis}
     Damit ist gezeigt, dass $\alpha\vdash (\forall x \quantsep \alpha)$. Da
     $x$ nicht frei in $\alpha$ vorkommt, können wir das Deduktionstheorem
     anwenden und erhalten $\vdash \alpha \rightarrow (\forall x\quantsep
     \alpha)$.
 
    \item zu zeigen: $\vdash (\forall x\quantsep \alpha) \rightarrow \alpha$
-    \begin{align*}
-      (1)\quad & (\forall x\quantsep \alpha) \rightarrow
-         \underbrace{\alpha[x/t]}_{=\alpha} &\text{A4}
-    \end{align*}
+    \begin{Beweis}
+      (\forall x\quantsep \alpha) \rightarrow
+         \underbrace{\alpha[x/t]}_{=\alpha} &A4
+    \end{Beweis}
   Da $x$ in $\alpha$ nicht frei vorkommt, gilt $\alpha[x/t]=\alpha$.
   \end{faelle}
   Mit der Äquivalenzregel $\alpha\rightarrow\beta,
@@ -8289,19 +8271,19 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
  \item Zerlegen wir die Aussage wieder in zwei Teile:
   \begin{faelle}
    \item zu zeigen: $\vdash\alpha\rightarrow(\exists x \quantsep \alpha)$
-    \begin{align*}
-      (1)\quad& \alpha &\text{Hypothese}\\
-      (2)\quad& (\exists x \quantsep \alpha)
-         &\text{aus 1 mit RE4 (da $\alpha[x/t]=\alpha$)}
-    \end{align*}
+    \begin{Beweis}
+      \alpha & Hypothese\\
+      (\exists x \quantsep \alpha)
+         & aus \BwZeile{1} mit RE4 (da $\alpha[x/t]=\alpha$)
+    \end{Beweis}
     Mit dem Deduktionstheorem ergibt sich $\vdash \alpha
     \rightarrow(\exists x \quantsep \alpha)$.
 
    \item zu zeigen: $\vdash(\exists x \quantsep \alpha)\rightarrow\alpha$
-    \begin{align*}
-      (1)\quad& (\exists x \quantsep \alpha) &\text{Hypothese}\\
-      (2)\quad& \underbrace{\alpha[x/c]}_{=\alpha} &\text{aus 1  mit Regel C}
-    \end{align*}
+    \begin{Beweis}
+      (\exists x \quantsep \alpha) & Hypothese\\
+      \underbrace{\alpha[x/c]}_{=\alpha} &aus \BwZeile{1}  mit Regel C
+    \end{Beweis}
     Die Regel~C darf im zweiten Schritt angewendet werden, weil die
     Konstante~$c$ bisher nicht in $\alpha$ vorkommt, und da
     $\alpha[x/c]=\alpha$ kommt $c$ auch nicht in der zu beweisenden
@@ -8315,17 +8297,17 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
   \begin{faelle}
    \item zu zeigen: $\vdash(\alpha\rightarrow(\forall x \quantsep \beta))
     \rightarrow (\forall x \quantsep \alpha\rightarrow\beta)$
-    \begin{align*}
-      (1)\quad& (\exists x \quantsep \alpha \wedge \neg\beta) &\text{Hypothese}\\
-      (2)\quad& \underbrace{(\alpha \wedge \neg\beta)[x/c]}_{=\alpha
-         \wedge \neg\beta[c/t]} &\text{aus 1 mit Regel C}\\
-      (3)\quad& \alpha & \text{aus 2 mit Konjunktionsregel}\\
-      (4)\quad& \neg\beta[x/c] &\text{aus 2 mit Konjunktionsregel}\\
-      (5)\quad& (\exists x \quantsep \neg\beta) &\text{aus 4 mit RE4}\\
-      (6)\quad& \underbrace{\alpha \wedge (\exists x \quantsep \neg\beta)}_{\alpha
+    \begin{Beweis}
+      (\exists x \quantsep \alpha \wedge \neg\beta) & Hypothese\\
+      \underbrace{(\alpha \wedge \neg\beta)[x/c]}_{=\alpha
+         \wedge \neg\beta[c/t]} & aus \BwZeile{1} mit Regel C\\
+      \alpha & aus \BwZeile{2} mit Konjunktionsregel\\
+      \neg\beta[x/c] & aus \BwZeile{2} mit Konjunktionsregel\\
+      (\exists x \quantsep \neg\beta) & aus \BwZeile{4} mit RE4\\
+      \underbrace{\alpha \wedge (\exists x \quantsep \neg\beta)}_{\alpha
          \wedge \neg(\forall x\quantsep\beta) = \neg(\alpha \rightarrow (\forall
-         x \quantsep \beta))} & \text{aus 3 und 5 mit Konjunktionsregel}
-    \end{align*}
+         x \quantsep \beta))} & aus \BwZeile{3} und \BwZeile{5} mit Konjunktionsregel
+    \end{Beweis}
     Damit ist gezeigt: $\neg(\forall x \quantsep \alpha\rightarrow\beta) \vdash
     \neg(\alpha \rightarrow (\forall x \quantsep \beta))$. Mit Deduktionstheorem
     folgt: $\vdash\neg(\forall x \quantsep \alpha\rightarrow\beta) \rightarrow
@@ -8338,26 +8320,26 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
 
    \item zu zeigen: $\vdash (\forall x \quantsep \alpha\rightarrow\beta)
     \rightarrow (\alpha \rightarrow \forall x \quantsep \beta)$
-    \begin{align*}
-      (1)\quad& (\forall x \quantsep \alpha\rightarrow\beta)
-    \rightarrow (\alpha \rightarrow \forall x \quantsep \beta) &\text{(A5)}
-    \end{align*}
+    \begin{Beweis}
+      (\forall x \quantsep \alpha\rightarrow\beta)
+    \rightarrow (\alpha \rightarrow \forall x \quantsep \beta) &(A5)
+    \end{Beweis}
   \end{faelle}
 
  \item Zeigen wir die Aussage wieder in zwei Schritten:
   \begin{faelle}
    \item dazu zeigen wir zuerst: $\neg(\exists x\quantsep \beta\rightarrow\alpha)
     \rightarrow \neg((\exists x\quantsep \beta) \rightarrow \alpha)$
-    \begin{align*}
-      (1)\quad& \underbrace{\neg(\exists x\quantsep \beta\rightarrow\alpha)}
-         _{=(\forall x\quantsep  \beta\wedge \neg\alpha)} &\text{Hypothese}\\
-      (2)\quad& \beta[x/b] \wedge \neg \alpha &\text{aus 1 mit RA4}\\
-      (3)\quad& \beta[x/b] &\text{aus 2 mit Konjunktionsregel}\\
-      (4)\quad& \neg\alpha &\text{aus 2 mit Konjunktionsregel}\\
-      (5)\quad& (\exists x\quantsep \beta) &\text{aus 3 mit RE4}\\
-      (6)\quad& (\exists x\quantsep \beta) \wedge \neg\alpha
-         &\text{Konjunktionsregel}
-    \end{align*}
+    \begin{Beweis}
+      \underbrace{\neg(\exists x\quantsep \beta\rightarrow\alpha)}
+         _{=(\forall x\quantsep  \beta\wedge \neg\alpha)} & Hypothese\\
+      \beta[x/b] \wedge \neg \alpha & aus \BwZeile{1} mit RA4\\
+      \beta[x/b] & aus \BwZeile{2} mit Konjunktionsregel\\
+      \neg\alpha & aus \BwZeile{2} mit Konjunktionsregel\\
+      (\exists x\quantsep \beta) & aus \BwZeile{3} mit RE4\\
+      (\exists x\quantsep \beta) \wedge \neg\alpha
+         &Konjunktionsregel
+    \end{Beweis}
     Mit Deduktionstheorem folgt $\vdash\neg(\exists x\quantsep \beta\rightarrow
     \alpha) \rightarrow \neg((\exists x\quantsep\beta) \rightarrow \alpha)$
 
@@ -8375,14 +8357,14 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
 
 \begin{enumerate}
  \item
-  \begin{align*}
-    (1)\quad & (\exists x\quantsep(\forall y \quantsep\alpha)) & \text{Hypothese} \\
-    (2)\quad & (\forall y \quantsep \alpha[x/c])   & \text{Regel C mit 1} \\
-    (3)\quad & \underbrace{(\alpha[x/c])[y/y]}_{=\alpha[x/c]}   & \text{RA4 mit 2} \\
-    (4)\quad & (\exists x \quantsep \alpha) & \text{RE4 mit 3} \\
-    (5)\quad & (\forall y \quantsep (\exists x \quantsep \alpha))  &
-       \text{Gen 4}
-  \end{align*}
+  \begin{Beweis}
+    (\exists x\quantsep(\forall y \quantsep\alpha)) & Hypothese\\
+    (\forall y \quantsep \alpha[x/c])   & Regel C mit \BwZeile{1}\\
+    \underbrace{(\alpha[x/c])[y/y]}_{=\alpha[x/c]}   & RA4 mit \BwZeile{2}\\
+    (\exists x \quantsep \alpha) & RE4 mit \BwZeile{3}\\
+    (\forall y \quantsep (\exists x \quantsep \alpha))  &
+       Gen \BwZeile{4}
+  \end{Beweis}
   Die Generalisierung in Schritt (5) betrifft eine
   Variable, die in der durch Regel~C in Schritt (3) erhaltenen Formel
   nicht frei vorkommt und ebenfalls in der Hypothese nicht frei vorkommt.
@@ -8399,15 +8381,15 @@ $D=\{1,2,3\}$ macht die Interpretation $(A)^{\mathcal{M}} =\{2\},
 
 \subsection*{Aufgabe 2}
 
-\begin{align*}
-  (1)\quad &  (\exists x\quantsep \alpha\rightarrow\beta) & \text{Hypothese} \\
-  (2)\quad &   \underbrace{(\alpha\rightarrow\beta)[x/c]}
-     _{=\alpha[x/c] \rightarrow \beta[x/c]} & \text{Regel C mit 1} \\
-  (3)\quad &  (\forall x\quantsep \alpha)  & \text{Hypothese} \\
-  (4)\quad &  \alpha[x/c]  & \text{RA4 mit 3} \\
-  (5)\quad &  \beta[x/c]   & \text{MP 4,2} \\
-  (6)\quad &  (\exists x\quantsep \beta)   & \text{RE4 mit 5}
-\end{align*}
+\begin{Beweis}
+  (\exists x\quantsep \alpha\rightarrow\beta) & Hypothese\\
+  \underbrace{(\alpha\rightarrow\beta)[x/c]}
+     _{=\alpha[x/c] \rightarrow \beta[x/c]} & Regel C mit \BwZeile{1}\\
+  (\forall x\quantsep \alpha)  & Hypothese\\
+  \alpha[x/c]  & RA4 mit \BwZeile{3}\\
+  \beta[x/c]   & MP \BwZeile{4},\BwZeile{2}\\
+  (\exists x\quantsep \beta)   & RE4 mit \BwZeile{5}
+\end{Beweis}
 Hier ist wichtig, dass Schritt (2) vor Schritt (4) kommt.
 Die durch Regel~C eingeführte Konstante
 kann durch Regel RA4 in Schritt (4) wiederverwendet werden.
@@ -8418,19 +8400,19 @@ kann das Deduktionstheorem angewendet werden.
 
 Wir zeigen zuerst $\vdash (\forall x\quantsep\alpha) \rightarrow
 (\forall y\quantsep\alpha[x/y])$.
-\begin{align*}
-  (1)\quad & (\forall x \quantsep\alpha) & \text{Hypothese} \\
-  (2)\quad & \alpha[x/y] & \text{RA4 mit 1} \\
-  (3)\quad & (\forall y \quantsep\alpha[x/y]) & \text{Gen 2}
-\end{align*}
+\begin{Beweis}
+  (\forall x \quantsep\alpha) & Hypothese\\
+  \alpha[x/y] & RA4 mit \BwZeile{1}\\
+  (\forall y \quantsep\alpha[x/y]) & Gen \BwZeile{2}
+\end{Beweis}
 Schritt (2) ist korrekt, da $y$ frei für $x$ in $\alpha$ ist.
 Nun zeigen wir die Gültigkeit der umgekehrten Implikation
 $\vdash (\forall y \quantsep\alpha[x/y]) \rightarrow (\forall x \quantsep\alpha)$.
-\begin{align*}
-  (1)\quad & (\forall y \quantsep\alpha[x/y]) & \text{Hypothese} \\
-  (2)\quad & \underbrace{(\alpha[x/y])[y/x]}_{=\alpha} & \text{RA4 mit 1} \\
-  (3)\quad & (\forall x \quantsep\alpha) & \text{Gen 2}
-\end{align*}
+\begin{Beweis}
+  (\forall y \quantsep\alpha[x/y]) & Hypothese\\
+  \underbrace{(\alpha[x/y])[y/x]}_{=\alpha} & RA4 mit \BwZeile{1}\\
+  (\forall x \quantsep\alpha) & Gen \BwZeile{2}
+\end{Beweis}
 Schritt (2) ist korrekt, da $y$ in $\alpha$ nicht frei vorkommt.
 Alle freien Vorkommen von $y$ in $\alpha[x/y]$ sind also solche,
 die freie Vorkommen von $x$ in $\alpha$ ersetzt haben.
@@ -8522,24 +8504,24 @@ ist $\alpha$ nicht gültigt und folglich gilt $\not\vdash\alpha$.
 Wir zeigen $\Svdash x=0+x$ mittels Induktion über $x$
 \begin{mdescription}
  \item[IA:]
-  \begin{align*}
-    (1)\quad& 0+0 = 0&\text{(S5')}\\
-    (2)\quad& 0+0 = 0 \rightarrow 0=0+0&\text{(b)}\\
-    (3)\quad& 0=0+0 &\text{MP 1,2}
-  \end{align*}
+  \begin{Beweis}
+    0+0 = 0& (S5')\\
+    0+0 = 0 \rightarrow 0=0+0& (b)\\
+    0=0+0 &MP \BwZeile{1},\BwZeile{2}
+  \end{Beweis}
   Damit ist $\Svdash x=0+x$ bewiesen.
 
  \item[IS:] $x=0+x \rightarrow x'=0+x'$
-  \begin{align*}
-    (1)\quad& x=0+x & \text{Hypothese}\\
-    (2)\quad& x=0+x \rightarrow x' = (0+x)' &\text{(S2')}\\
-    (3)\quad& x' = (0+x)' &\text{MP 1,2}\\
-    (4)\quad& 0+x' = (0+x)' &\text{(S6')}\\
-    (5)\quad& x'=(0+x)' \rightarrow (0+x' = (0+x)' \rightarrow x' = 0+x')
-       &\text{(d)}\\
-    (6)\quad& 0+x' = (0+x)' \rightarrow x'=0+x' &\text{MP 3,5}\\
-    (7)\quad& x' = 0+x' &\text{MP 4,6}
-  \end{align*}
+  \begin{Beweis}
+    x=0+x & Hypothese\\
+    x=0+x \rightarrow x' = (0+x)' & (S2')\\
+    x' = (0+x)' & MP \BwZeile{1},\BwZeile{2}\\
+    0+x' = (0+x)' & (S6')\\
+    x'=(0+x)' \rightarrow (0+x' = (0+x)' \rightarrow x' = 0+x')
+       & (d)\\
+    0+x' = (0+x)' \rightarrow x'=0+x' & MP \BwZeile{3},\BwZeile{5}\\
+    x' = 0+x' &MP \BwZeile{4},\BwZeile{6}
+  \end{Beweis}
   Damit ist $x=0+x \Svdash x'=0+x'$ gezeigt. Mit dem Deduktionstheorem
   folgt $\Svdash x=0+x \rightarrow x'=0+x'$. Mit Generalisierung folgt
   $\Svdash \forall x\quantsep x=0+x \rightarrow x'=0+x'$.
@@ -8589,19 +8571,19 @@ Nun sind zwei Dinge zu zeigen:
   \end{gather*}
 
   $(\exists x_{k+1}\quantsep x_{k+1} =0)$
-  \begin{align*}
-    (1)\quad & 0=0 & \text{\autoref{lemma-zahlen-elem}}\\
-    (2)\quad & \exists x_{1}\quantsep x_{k+1}=0 &\text{RE 4}
-  \end{align*}
+  \begin{Beweis}
+    0=0 & \autoref{lemma-zahlen-elem}\\
+    \exists x_{1}\quantsep x_{k+1}=0 &RE 4
+  \end{Beweis}
 
   $(\forall x_{k+1}\quantsep \forall y\quantsep (x_{k+1} = 0\wedge y=0)
   \rightarrow x_{k+1} = y)$
-  \begin{align*}
-    (1)\quad & x_{k+1} = 0\wedge y=0 &\text{Hypothese}\\
-    (2)\quad & x_{k+1} = 0 &\text{Konjunktionsregel}\\
-    (3)\quad & y=0&\text{Konjunktionsregel}\\
-    (4)\quad & x_{k+1} = y &\text{Transitiv. und Symm. von $=$}
-  \end{align*}
+  \begin{Beweis}
+    x_{k+1} = 0\wedge y=0 & Hypothese\\
+    x_{k+1} = 0 & Konjunktionsregel\\
+    y=0& Konjunktionsregel\\
+    x_{k+1} = y &Transitiv. und Symm. von $=$
+  \end{Beweis}
 \end{enumerate}
 
 \subsection*{Aufgabe 2}
@@ -8630,19 +8612,19 @@ Als Repräsentation wählen wir
   \end{gather*}
 
   Für die Formel $(\exists x_{k+1}\quantsep x_{k+1} =\overline{m})$ gilt:
-  \begin{align*}
-    (1)\quad & \overline{m}=\overline{m} & \text{\autoref{lemma-zahlen-elem}}\\
-    (2)\quad & \exists x_{1}\quantsep x_{k+1}=\overline{m} &\text{RE 4}
-  \end{align*}
+  \begin{Beweis}
+    \overline{m}=\overline{m} & \autoref{lemma-zahlen-elem}\\
+    \exists x_{1}\quantsep x_{k+1}=\overline{m} &RE 4
+  \end{Beweis}
 
   $(\forall x_{k+1}\quantsep\forall y\quantsep (x_{k+1}=\overline{m}
   \wedge y=\overline{m}) \rightarrow x_{k+1}=y)$
-  \begin{align*}
-    (1)\quad & x_{k+1} = \overline{m}\wedge y=\overline{m} &\text{Hypothese}\\
-    (2)\quad & x_{k+1} = \overline{m} &\text{Konjunktionsregel}\\
-    (3)\quad & y=\overline{m}&\text{Konjunktionsregel}\\
-    (4)\quad & x_{k+1} = y &\text{Transitiv. und Symm. von $=$}
-  \end{align*}
+  \begin{Beweis}
+    x_{k+1} = \overline{m}\wedge y=\overline{m} & Hypothese\\
+    x_{k+1} = \overline{m} & Konjunktionsregel\\
+    y=\overline{m}& Konjunktionsregel\\
+    x_{k+1} = y &Transitiv. und Symm. von $=$
+  \end{Beweis}
 \end{enumerate}
 
 \subsection*{Aufgabe 3}
