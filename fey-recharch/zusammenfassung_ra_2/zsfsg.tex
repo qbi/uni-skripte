@@ -227,7 +227,7 @@ Dimensionen des Gerätes zu vermitteln. Schliesslich wird ein
 als Ausgangspunkt für den weiteren \emph{top-down-}Prozess verwendet
 wird.
 
-Auf der folgenden \textbf{Spezifikationebene} wird eine \emph{detaillierte}
+Auf der folgenden \textbf{Spezifikationsebene} wird eine \emph{detaillierte}
 Beschreibung des Systems vorgenommen, die als ein Vertrag zwischen dem
 Kunden und Systemarchitekt verstanden wird. Sie sollte ausformuliert
 sein, oder als mathematische Beschreibung, etwa durch  \texttt{UML-}Diagramme, Kontroll- und Datenflussgraphen (\texttt{CDFG}),
@@ -269,8 +269,8 @@ Fehler erstmals sichtbar.
 
 Die wichtigste Klasse eingebetteter Systeme stellen die sogenannten
 digitalen Signalprozessoren (\texttt{DSPs}) dar. Diese könnte man
-definieren als "`\emph{elektronische Systeme zur digitalen
-Signalverarbeitung}"'.
+als "`\emph{elektronische Systeme zur digitalen Signalverarbeitung}"'
+definieren.
 
 Wesentliches Charakteristikum von digitaler Signalverarbeitung ist
 die Anwendung \emph{mathematischer Operationen} auf
@@ -291,7 +291,7 @@ simplifiziert. Auch bei niedrigen Frequenzen sind analoge Filter zur
 Speicherung schwierig zu realisieren, digitale dagegen recht einfach.
 
 Eingesetzte Algorithmen drehen sich um \emph{Filterung im
-Frequenzbereich}, \emph{Frequenz-Zeit-Transformation} und
+Frequenzbereich}, \emph{Frequenz"=Zeit"=Transformation} und
 \emph{Korrelation}. Wesentliche Aufgaben umfassen \emph{iterative,
 numerische} Berechnungen mit Beachtung numerischer Präzision, eine durch
 Arrayzugriffe hohe Speicherbandbreite und natürlich
@@ -313,9 +313,9 @@ Spracherkennung oder Signalsynthese und v.\,m. Mit dem \texttt{LINGO} wurde
 ein graphisches Format zur Darstellung von \texttt{DSP-}bezogenen Formeln
 geschaffen.
 
-\subsection{Algorithmen für \texttt{DSPs}}
+\subsection{Algorithmen für digitale Signalprozessoren}
 
-In \texttt{DSPs} sind Algorithmen fest-verdrahtete, oder auch
+In digitalen Signalprozessoren sind Algorithmen fest verdrahtete, oder auch
 Firmwareimplementierungen zur Berechnung von \emph{Standardfunktionen},
 ohne die Multiplikation. Wichtige Algorithmen sind \emph{CORDIC-} und
 \emph{Bit-}Algorithmen. Ein wesentliches Ziel war die \emph{Vermeidung
@@ -329,7 +329,6 @@ Zu den angesprochenen \emph{Standardfunktionen} gehören trigonometrische
 Funktionen, Logarithmus- und Exponentialfunktionen, Quadratwurzelbildung
 und Division/Multiplikation. Die Berechnung ist grundsätzlich mit drei
 Verfahren realisierbar:
-
 \begin{enumerate}
 \item Reihenentwicklung
 \item Interpolationsverfahren
@@ -339,13 +338,164 @@ Verfahren realisierbar:
 
 \paragraph{Der \texttt{CORDIC-}Algorithmus} stellt ein solches
 Konvergenzverfahren dar, dass auf dem Prinzip der
-\emph{Koordinatentransformation} aufbaut. Der Vorteil gegenüber
-Reihenentwicklungen besteht in Berechnungen ohne Multiplikationen und
-der Beschränkung auf \emph{einfache} Operationen, wie Addition,
-Subtraktion und Schiebeoperationen. \texttt{CORDIC-}Prozessoren sollen eine
+\emph{Koordinatentransformation} aufbaut. Die Idee ist, aufwendige
+Multiplikationen, wie sie in den Reihenentwicklungen vorkommen, durch
+\emph{einfache} Operationen, wie Addition, Schiebeoperationen und Vergleiche
+zu ersetzen. \texttt{CORDIC-}Prozessoren sollen eine
 Möglichkeit schaffen mit ein und derselben Hardwarestruktur eine Menge
-von Standardfunktionen berechnen zu können. \todo{Cordic-Verfahren
-angucken!}
+von Standardfunktionen berechnen zu können.
+
+Der Ansatz des CORDIC-Verfahrens ist die Tatsache, dass man bei der Drehung
+des Vektors $(\begin{smallmatrix}1\\0\end{smallmatrix})$ um den
+Winkel~$\theta$ den Vektor
+$(\begin{smallmatrix}\cos\theta\\\sin\theta\end{smallmatrix})$ erhält -- also
+\todo{Bildchen malen}
+den Sinus und den Cosinus des Winkels~$\theta$. Diese Drehung kann man durch
+Teildrehungen nachvollziehen, deren Berechnung so gewählt ist, dass sie ohne
+Multiplikation bzw. nur mit Tabellenabfragen und Schiebeoperationen auskommt.
+
+Die allgemeine Beziehung für die Drehung eines Vektor
+$(\begin{smallmatrix}x\\y\end{smallmatrix})$ um einen Winkel~$\theta$ wird
+durch die \autoref{eq:1} beschrieben. Zur Vereinfachung beschreibt man diese
+mit nur einer Winkelfunktion; \autoref{eq:2}.
+
+\begin{align}\label{eq:1}
+  \begin{pmatrix}
+    x'\\y'
+  \end{pmatrix} &=
+     \begin{pmatrix}
+       \cos\theta& -\sin\theta\\
+       \sin\theta& \cos\theta
+     \end{pmatrix} \cdot
+     \begin{pmatrix}
+       x\\y
+     \end{pmatrix}\\
+  \label{eq:2}
+  &= \frac{1}{\sqrt{1+\tan^{2}\theta}} \cdot
+     \begin{pmatrix}
+       1& -\tan\theta\\
+       \tan\theta& 1
+     \end{pmatrix}
+     \begin{pmatrix}
+       x\\y
+     \end{pmatrix}
+\end{align}
+
+Die Drehung um den Winkel~$\theta$ zerlegt man in Drehungen um kleinere, fest
+vorgegebene Winkel~$\alpha_{i}$ ($i=0,\dotsc,n-1$), so dass $\theta$ eine
+Linearkombination der $\alpha_{i}$ ist; \autoref{eq:3}. Man beschreibt also
+die Drehung schrittweise um fest vorgegebene Winkel, wobei man in mathematisch
+negativer Richtung dreht, wenn man den Winkel~$\theta$ überschritten hat. Dies
+wird durch den Vorfaktor $\sigma_{i}$ gesteuert. Die $\alpha_{i}$ wählt man
+so, dass sich $\tan\alpha_{i} = 2^{-i}$ ergibt.
+
+\begin{gather}
+  \label{eq:3}
+  \theta = \sum_{i=0}^{n-1} \sigma_{i} \cdot \alpha_{i}
+     \qquad\text{wobei}\qquad
+     \sigma_{i} \in \{-1,1\}
+\end{gather}
+
+Für zwei Winkel $\beta$ und $\gamma$ gilt:
+\begin{align*}
+  \begin{pmatrix}
+    \cos(\beta+\gamma)& -\sin(\beta+\gamma)\\
+    \sin(\beta+\gamma)& \cos(\beta+\gamma)
+  \end{pmatrix}
+  ={}&  \begin{pmatrix}
+       \cos\beta& -\sin\beta\\
+       \sin\beta& \cos\beta
+     \end{pmatrix} \cdot
+     \begin{pmatrix}
+       \cos\gamma& -\sin\gamma\\
+       \sin\gamma& \cos\gamma
+     \end{pmatrix}\\
+  ={}&  \frac{1}{\sqrt{1+\tan^{2}\beta}} \cdot
+     \begin{pmatrix}
+       1& -\tan\beta\\
+       \tan\beta& 1
+     \end{pmatrix}\\
+  &\cdot \frac{1}{\sqrt{1+\tan^{2}\gamma}} \cdot
+     \begin{pmatrix}
+       1& -\tan\gamma\\
+       \tan\gamma& 1
+     \end{pmatrix}
+\end{align*}
+
+Verallgemeinert gilt also für die Drehung um einen zusammengesetzten
+Winkel~$\theta=\sum_{i=0}^{n-1} \sigma_{i}\alpha_{i}$ die \autoref{eq:4}. Da
+alle $\sigma_{i}\in\{-1,1\}$ sind und der Tangens symmetrisch zum
+Koordinatenursprung ist, gilt
+$\tan(\sigma_{i}\alpha_{i})=\sigma_{i}\tan\alpha_{i}$, und da die $\alpha_{i}$
+so gewählt sind, dass $\tan\alpha=2^{-i}$ gilt, kann man die \autoref{eq:4} zu
+\autoref{eq:5} umformen.
+
+\begin{align}
+  \label{eq:4}
+  \begin{pmatrix}
+    x'\\y'
+  \end{pmatrix}
+  &= \prod_{i=0}^{n-1}
+     \frac{1}{\sqrt{1+\tan^{2}(\sigma_{i}\alpha_{i})}} \cdot
+     \begin{pmatrix}
+       1& -\tan(\sigma_{i}\alpha_{i})\\
+       \tan(\sigma_{i}\alpha_{i})& 1
+     \end{pmatrix} \cdot
+     \begin{pmatrix}
+       x\\y
+     \end{pmatrix}\\
+  \label{eq:5}
+  % &= \underbrace{\prod_{i=0}^{n-1} \frac{1}{\sqrt{1+\tan^{2}\alpha_{i}}}}_{=K_{n}}
+  %    \cdot \prod_{i=0}^{n-1}
+  %    \begin{pmatrix}
+  %      1& -\sigma_{i}\tan\alpha_{i}\\
+  %      \tan\alpha_{i}& 1
+  %    \end{pmatrix} \cdot
+  %    \begin{pmatrix}
+  %      x\\y
+  %    \end{pmatrix}
+  &= \underbrace{\prod_{i=0}^{n-1} \frac{1}{\sqrt{1+2^{-2i}}}}_{=k}
+     \cdot \prod_{i=0}^{n-1}
+     \begin{pmatrix}
+       1& -\sigma_{i}2^{-i}\\
+       \sigma_{i}2^{-i}& 1
+     \end{pmatrix} \cdot
+     \begin{pmatrix}
+       x\\y
+     \end{pmatrix}
+\end{align}
+
+Den Vorfaktor~$k$ kann man im Voraus berechnen und als Konstante abspeichern,
+Da die Teilwinkel~$\alpha_{i}$ fest gewählt sind. Die Berechnung kann man
+jetzt mit folgender Iterationsvorschrift beschreiben:
+\begin{align*}
+  x_{i+1}&= x_{i} - \sigma_{i} 2^{-i} y_{i}\\
+  y_{i+1}&= y_{i} + \sigma_{i} 2^{-i} x_{i}
+\end{align*}
+
+Um die Drehrichtung -- also den Wert von $\sigma_{i}$ -- zu bestimmen, führt
+man eine Hilfsvariable~$z_{i}$ (\autoref{eq:6}) ein, die den noch zu drehenden
+Winkel misst. Ist dieser kleiner null -- wurde also zu weit gedreht --, muss
+die kommende Drehung in die mathematisch negativer Richtung erfolgen --
+$\sigma_{i}=-1$ --, andernfalls ist $\sigma_{i}=1$.
+
+\begin{align}
+  \label{eq:6}
+  z_{0} &= \theta\\
+  z_{i+1} &= z_{i} - \sigma_{i} \alpha_{i} = z_{i} - \sigma_{i} \arctan(2^{-i})
+\end{align}
+
+Das Vorgehen, bei dem man mit dem
+Vektor~$(\begin{smallmatrix}1\\0\end{smallmatrix})$ beginnt und die
+Hilfsvariable~$z_{i}$ auf null bringt, nennt man \textbf{Rotationsmodus}. Wenn
+man mit einem Vektor $(\begin{smallmatrix}x\\y\end{smallmatrix})$ beginnt und
+diesen "`auf die $x$"~Achse dreht"' -- formal bedeutet das, dass die
+$y$"~Komponente auf null gebracht wird --, kann man so die Länge des Vektors
+in der $x$"~Komponente und den Winkel zur $x$"~Achse in der $z$"~Komponente
+bestimmen. Dieser Ablauf wird \textbf{Vektormodus} genannt.
+
+\todo{Was über die Verallgemeinung auf lineares und hyperbolisches
+  Koordinatensystem schreiben.}
 
 \paragraph {Die Bitalgorithmen} stellen eine weitere Klasse von
 Konvergenzalgorithmen dar. Sie bauen auf der Erkenntnis auf, dass die
