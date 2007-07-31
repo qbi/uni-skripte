@@ -33,10 +33,12 @@ echo "I: $SKRIPT.tgz erzeugt"
 cd $SKRIPT
 if [ -r skript.latex ]; then
     src=skript.latex
+elif [ -r skript.ltx ]; then
+    src=skript.ltx
 elif [ -r skript.tex ]; then
     src=skript.tex
-elif [ "$(ls *.latex *.tex 2>/dev/null | wc -l)" -eq 1 ]; then
-    src=$(ls *.latex *.tex 2>/dev/null) || true
+elif [ "$(ls *.latex *.tex *.ltx 2>/dev/null | wc -l)" -eq 1 ]; then
+    src=$(ls *.latex *.tex *.ltx 2>/dev/null) || true
 else
     echo "F: Keine LaTeX-Datei im $SKRIPT gefunden"
     cd /
@@ -98,7 +100,7 @@ echo "I: Zusammenfassung: $(rubber-info --errors $src | wc -l) Fehler,\
 svnlook cat "$SKRIPTE_PFAD" werkzeuge/skript-check > $TMP/sc
 chmod +x $TMP/sc
 
-dateien=$(find . -type f -name .svn -prune -o -name \*tex \
+dateien=$(find . -type f -name .svn -prune -o -name \*tex -o -name \*.ltx \
                     -a -not -path "./$src")
 echo I: skript-check $src $dateien
 $TMP/sc $src $dateien
@@ -144,7 +146,7 @@ fi
 #
 # Hilferufe extrahieren
 #
-dateien=$(find . -type f -name .svn -prune -o -name \*tex)
+dateien=$(find . -type f -name .svn -prune -o -name \*tex -o -name \*.ltx)
 sed -n '/\\help{/ { =; s/.*\\help{//; :mark /}/!{ N; s/\n/ /; b mark; }; s/}.*//; p;}' \
   $dateien | sed 's/^/H: (/; s/$/) /; N; s/\n//;'
 
