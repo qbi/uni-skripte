@@ -100,7 +100,7 @@ echo "I: Zusammenfassung: $(rubber-info --errors $src | wc -l) Fehler,\
 svnlook cat "$SKRIPTE_PFAD" werkzeuge/skript-check > $TMP/sc
 chmod +x $TMP/sc
 
-dateien=$(find . -type f -name .svn -prune -o -name \*tex -o -name \*.ltx \
+dateien=$(find . -type f -name .svn -prune -o \( -name \*tex -o -name \*.ltx \) \
                     -a -not -path "./$src")
 echo I: skript-check $src $dateien
 $TMP/sc $src $dateien
