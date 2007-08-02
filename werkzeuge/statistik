@@ -2,7 +2,20 @@
 
 BEGIN
 {
-    $BOTS=qr/^(Googlebot-Image\/|htdig|egothor|(msn|schibstedsok|Seek|ps|IRL|Exa|e-SocietyRo|MJ12)bot)|(Yahoo! Slurp)|Googlebot|MAINSEEK_BOT|archive.org_bot|(ZyBorg|Exabot(-Images)?)\/|\(Twiceler|Exabot-Thumbnails/;
+    # Um Bots zu bestimmen:
+    #  sed '/^From /,/^$/d; /skripte/!d; /[Bb][Oo][Tt]/!d; s/^.*\] "[^"]*"[ 0-9"-]*//' \
+    #      old-logs | sort -u
+
+    # alle Bots, die am Anfang ihre Kennung stehen haben
+    $bots_beg=qr/(Exa|Google|IRL|MJ12|msn|ps|Seek|Snap)bot[\/-]|egothor|e-SocietyRobot|Twiceler/;
+    # alle Bots, die mit "Mozilla/5.0 (compatible;" beginnen
+    $bots_moz_comp=qr/ (archive.org_|Exa|Google)bot|MAINSEEK_BOT/;
+    # alle Bots, die mit "Mozilla/5.0 (" beginnen
+    $bots_moz=qr/compatible;($bots_moz_comp)|SnapPreviewBot|Twiceler-/;
+    # die anderen
+    $bots_misc=qr/Googlebot-Mobile|^Mozilla\/4.0 compatible ZyBorg|\(Exabot-Thumbnails\)$/;
+
+    $BOTS=qr/^($bots_beg)|^Mozilla\/5\.0 \(($bots_moz)|$bots_misc/;
     if ( defined($ARGV[1]) )
     {
         open ("-", "<", $ARGV[1]) or die "couldn't open logfile";
