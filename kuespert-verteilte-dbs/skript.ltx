@@ -55,6 +55,7 @@
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{acronym}
+\usepackage[weather]{ifsym}
 
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
@@ -93,6 +94,23 @@
   \expandafter\chapter{\csname prechap\roman{chapter}\endcsname}}
 
 \newcommand*{\betonung}[1]{\textsc{#1}}
+
+\newenvironment*{sqlblock}{}{}
+\newcommand*{\sql}[1]{#1}
+\newcommand*{\sqlattr}[1]{#1}
+\newcommand*{\sqlrel}[1]{\uppercase{#1}}
+\newcommand*{\sqlschl}[1]{#1}
+\newcommand*{\sqlreldef}[3]{\sqlrel{#1}(\sqlschl{#2}, \sqlattr{#3})}
+
+\newenvironment*{procontra}{\begin{itemize}}{\end{itemize}}
+% \newcommand*{\pro}{\item[$+$]}
+% \newcommand*{\contra}{\item[$-$]}
+% \newcommand*{\pro}{\item[\leftthumbsup]}         % aus dingbat
+% \newcommand*{\contra}{\item[\leftthumbsdown]}    % aus dingbat
+% \newcommand*{\pro}{\item[\smiley]}               % aus wasysym
+% \newcommand*{\contra}{\item[\frownie]}           % aus wasysym
+\newcommand*{\pro}{\item[\Sun]}                  % aus [weather]ifsym
+\newcommand*{\contra}{\item[\RainCloud]}         % aus [weather]ifsym
 
 \makeindex
 
@@ -160,7 +178,8 @@ verteilte Datenbanksystemen und Client"~/""Server"=Systeme? Welche "`Formen"'
 gibt es grob hinsichtlisch solcher Systeme und wie sind diese zu
 charakterisieren/""abzugrenzen? $\rightarrow$ Begriffe, Pros und Cons
 
-\predefchap{Datenspeicherung, "~verteilung, "~partitionierung (für globale
+\predefchap{Datenspeicherung, \texorpdfstring{"~}{-}verteilung,
+  \texorpdfstring{"~}{-}partitionierung (für globale
   Relationen in verteilten Datenbanksystemen)}
 
 \emph{Partitionierungs}begriff und \emph{Allokations}begriff,
@@ -423,6 +442,7 @@ Forderungen/""Ziele/""Probleme:
 \end{itemize}
 
 \section{Formen und Charakteristika verteilter Informationssysteme}
+\label{sec:formen-der-verteilung}
 
 \subsection{Räumliche Aspekte der Verteilung}
 
@@ -703,6 +723,546 @@ Beobachtungen/""Bemerkungen:
 \end{itemize}
 
 \nextchapter
+
+Inhaltsübersicht:
+\begin{itemize}
+ \item Formen verteiler Speicherung
+ \item Zerlegungsmöglichkeiten (globaler Relationen) und physische
+  Speicherung: Partitionierung und Allokation
+ \item Partitionierungsformen
+ \item Bestimmung geeigneter Partitionen
+ \item Physische Verteilung der Daten (Allokation)
+\end{itemize}
+
+\section{Vorbemerkungen}
+
+Ziele:
+\begin{itemize}
+ \item \emph{Datenverteilung} auf logischer Ebene (Partitionierung) und auf
+  physischer Ebene (Allokation)
+ \item ggf. unter Einführung von kontrollierter (!) Redundanz (Datenreplikation)
+ \item möglichst \betonung{transparent} realisiert aus Benutzerperspektive
+\end{itemize}
+(Gründe für jenen "`Aufstand"' wie bereits angesprochen:
+Erhoffte/""angestrebte Performance"=Vorteile, Verfügbarkeitsvorteile, evtl.
+Autonomievorteile; Erfordernisse nachträglicher Integration (Verteilung
+existiert \ldots{}))
+
+\subsection{Formen verteilter Speicherung (bereits angesprochen)}
+
+\begin{itemize}
+ \item Aufteilung an sich zusammengehöriger Daten und Speicherung dort, wo am
+  häufigsten benötigt (Partitionierung globaler Relationen) $\rightarrow$
+  \emph{Homogenität}
+
+ \item \emph{Heterogenität}: Unterschiedliche Repräsentation von Daten
+  derselben Art an verschiedenen Knoten:
+  \begin{itemize}
+   \item strukturelle Heterogenität: gleiche Bedeutung, aber verschieden
+    strukturiert
+   \item semantische Heterogenität: gleiche Bezeichnung, aber
+    unterschiedlicher Bedeutungsinhalt
+  \end{itemize}
+  (semantische Heterogenität ist der schlimmere, hinterhältigere Fall (schwer
+  zu erkennen und i.\,d.\,R. auch schwerer per Automatismus zu
+  beseitigen/""durch Abbildung zu berücksichtigen))
+
+ \item \emph{Redundanz}: Replikation zwecks Performance oder Verfügbarkeit
+\end{itemize}
+
+\section{Partitionierung und Allokation}
+\begin{description}
+ \item[Partitionierung:] (Prädikative) Beschreibung der Verteilung von Daten
+  auf logischer Ebene (Tabellenebene) $\rightarrow$ 1.~Verteilungsschritt
+
+ \item[Allokation:] Festlegung des Speicherorts für die Partitionen auf
+  physischer Ebene (Knoten, Table Spaces, \ldots{}) $\rightarrow$
+  2.~Verteilungsschritt
+\end{description}
+
+\subsection{Fälle und Zusammenspiel von Partitionierung und Allokation}
+\todo{Bild}
+
+\subsubsection{Bemerkungen/""Beobachtungen}
+\begin{itemize}
+ \item Relation~$R1$ wurde horizontal partitioniert
+ \item Partitionierung erfolgte vollständig (nichts wurde "`vergessen"', blieb
+  übrig)
+ \item Partitionierung erfolgte in disjunkte Teile, d.\,h. Partitionen
+  überlappen nicht (Konsequenz aus Vollständigkeit und Disjunktheit: Jedes
+  Tupel von $R1$ ist genau einer Partition zugeordnet)
+
+  Bei nichtdisjunkten Teilen -- überlappenden Partitionierungsprädikaten --
+  läge "`versteckte Redundanz"' vor (N.\,B.: Einige Produkte (Informix)
+  erlauben überlappende Partitionierungsprädikate, andere (Oracle) tun's nicht.)
+ \item Es wurden fünf Partitionen drei Knoten physisch zugeordnet (im
+  2.~Schritt). Partition $P_{12}$ und $P_{13}$ wurden dabei jeweils mehrfach
+  gespeichert, an verschiedene Knoten $\rightarrow$ Redundante Allokation
+\end{itemize}
+
+\subsubsection{Einschub} vgl. auch Vorlesung Archivierung in Datenbanksystemen
+\label{sec:vorl-arch}
+
+Partitionierung ggf. auch sinnvoll bei Vorhandensein nur \betonung{eines}
+Knotens! (auch das erlauben DB2, Oracle, Informix, \ldots{})!
+
+Warum/""Wie?
+\begin{itemize}
+ \item \emph{Table Space} übernimmt "`Rolle des Knotens"', d.\,h. Allokation
+  der Partition zu (verschiedenen) Table Spaces auf u.\,U. verschiedenen
+  Externspeichern (in Wahrheit wird ohnehin erst Table Space zugeordnet, auch
+  in obiger Abbildung, nicht nur einfach direkt Knoten)
+\end{itemize}
+
+Nutzen?
+\begin{itemize}
+ \item \emph{Parallele Suche} auf verschiedenen Partitionen/""Table Spaces
+  (Parallel Query Option) \emph{kann} Performance-Vorteil bieten
+ \item Ausblenden von Partitionen/""Einschränken der Suche auf bestimmte
+  Partitionen, \emph{kann} Performance-Vorteil bieten
+ \item \sql{DROP PARTITION} i.\,d.\,R. \emph{viel} schneller als \sql{DELETE},
+  \sql{DELETE}, \ldots{}
+ \item Administrationsvorteile
+\end{itemize}
+
+\hfill \dotfill{} Ende des Einschubs \dotfill{} \hfill
+
+\begin{itemize}
+ \item Begriff Fragment wird teils anstelle von Partition verwendet/""synonym
+  $\rightarrow$ Informix bspw. (fragment, fragmentation) $\rightarrow$ hier in
+  Vorlesung eher vermieden
+ \item Wir nehmen disjunkte Partitionierung an, schließen als "`versteckte
+  Redundanz"' aus!
+\end{itemize}
+
+\subsection{Horizantale Partitionierung}
+\label{sec:hori-part}
+
+\begin{itemize}
+ \item Aufteilung einer globalen Relation~$R$ in Teilrelationen
+  $R_{1},R_{2},\dotsc, R_{p}$ (mit gleichen Relationsschema), so dass gilt:
+  \begin{gather*}
+    R = \bigcup_{1,\dotsc,p} R_{i}
+  \end{gather*}
+  (Vollständigkeit steckt somit in der Definition bereits drin, Disjunktheit
+  wäre zusätzlich zu spezifizieren $\forall 1\leq i,j\leq p \wedge i\ne
+  j\colon R_{i}\cap R_{j}=\emptyset$)
+
+ \item Es werden stets ganze Tupel verteilt
+ \item Hinweis (DBMS"=Implementierungsperspektive): Teilrelationen aus
+  Benutzersicht transparent (idealerweise), aus Systemsicht kann eine
+  Teilrelation (intern) wie eine "`normale"' Relation gehandhabt werden
+  (vereinfacht Implementierung des Partitionierungskonzepts, keine
+  Sonderbehandlung von Teilrelationen bzw. Sonderbehandlung hält sich in
+  Grenzen).
+
+  Bsp.: Statistiken fpr Teilrelationen wie für Relationen (einfache,
+  genaue(re) Query Optimization), Sperrgranula Teilrelation etc.
+\end{itemize}
+
+\subsubsection{Partitionierungsbeispiele}
+
+Schema:
+\begin{sqlblock}
+  \sqlreldef{ANGEST}{PersNr}{AngName, Gehalt, AbtNr, Anschrift}\\
+  \sqlreldef{ABT}{AbtNr}{AbtName, Bereich, MgrPersNr, Budget}\\
+  \sqlreldef{Teile}{TeileNr}{TeileBez, LiefNr, Preis}\\
+  \sqlreldef{Lagerort}{TeileNr}{LagerNr}\\
+  \sqlreldef{Lieferant}{LiefNr}{LiefName, Stadt}
+\end{sqlblock}
+
+\begin{enumerate}
+ \item Intervall"~/""Bereichspartitionierung nach Primärschlüssel
+  \begin{sqlblock}
+    \sqlrel{Teile}$_{1}$ = SL$_{0\leq\sqlattr{TeileNr}<300}$ \sqlrel{Teile}\\
+    \sqlrel{Teile}$_{2}$ = SL$_{300\leq\sqlattr{TeileNr}<500}$ \sqlrel{Teile}\\
+    \sqlrel{Teile}$_{3}$ = SL$_{500\leq\sqlattr{TeileNr}<\infty}$ \sqlrel{Teile}
+  \end{sqlblock}
+  Vollständigkeit und Disjunktheit gegeben?
+
+ \item (Bereichs"~)""Partitionierung nach beliebigen Attribut
+  \begin{sqlblock}
+    \sqlrel{Lieferant}$_{1}$ = SL$_{\sqlattr{Stadt}='\text{Hamburg}'}$ \sqlrel{Lieferant}\\
+    \sqlrel{Lieferant}$_{2}$ = SL$_{\sqlattr{Stadt}='\text{Jena}'}$ \sqlrel{Lieferant}\\
+    \sqlrel{Lieferant}$_{3}$ = SL$_{\sqlattr{Stadt}\ne'\text{Hamburg}'\wedge
+      \sqlattr{Stadt}\ne'\text{Jena}'}$ \sqlrel{Lieferant}
+  \end{sqlblock}
+  Disjunktheit und Vollständigkeit? $\rightarrow$ \sqlrel{Lieferant}$_{3}$
+  übernimmt hier Rolle der Restpartition
+\end{enumerate}
+
+\subsubsection{Bemerkungen/""Verallgemeinerungen dazu:}
+\begin{itemize}
+ \item Bereichspartitionierung wichtiger (Spezial"~)""Fall der
+  Partitionierungsdefinition $\rightarrow$ in diesem Abschnitt ausschließlich
+  betrachtet
+
+ \item Gibt's noch einfachere Möglichkeiten einer Bereichsdefinition,
+  betrachtet etwas am Bsp.~a? Was wird minimal gebrauchst? "`\sqlattr{TeileNr};
+  300, 500"' also Partitionsattribut und Bereichsobergrenzen (außer bei
+  letztem Bereich) $\rightarrow$ i.\,w. Oracle"=Ansatz für Definition von
+  Bereichspartitionierung
+\end{itemize}
+
+\subsubsection{Vor- und Nachteile eines solchen "`minimalistischen"' Ansatz'?}
+
+\begin{itemize}
+ \item Disjunktheit und Vollständigkeit bei der Partitionierung automatisch
+  gegeben, es kann nicht vergessen werden oder versehentlich überlappen
+ \item Kompakte Katalogbeschreibung (Metadaten) fpr die Partitionen
+  $\rightarrow$ Speicher- und Effizienzvorteile (NB.: Oracle erlaubt
+  \emph{Zehntausende} von Partitionen für eine Tabelle! Die dann natürlich
+  nicht alle auf getrennte Knoten/""Table Spaces gelegt werden.)
+ \item Effiziente Bestimmung der betroffenen Partitionen beim \sql{INSERT}
+  oder \sql{update} (\sql{update} kann "`Umpositionierung"' von Tupeln
+  erfordern) $\rightarrow$ bei Zehntausenden von Partitionen und
+  "`beliebiger"' Bereichspartitionierung (à la Informix) ist
+  Partitionsbestimmung aufwändig
+\end{itemize}
+
+\subsection{Abgeleitete horizontale Partitionierung}
+
+Bisher betrachtet: Zerlegungsinformation für eine Relation~$X$ in dieser
+Relation selbst enthalten (Primärschlüssel der Relation, anderes Attribut der
+Relation, \ldots{}) $\rightarrow$ über Partitionierung (welches Tupel kommt in
+welche Partition?) konnte lokal entschieden werden, rein unter Betrachtung
+dieser Relation~$X$.
+
+Abgeleitete horizontale Partitionierung: Zerlegungsinformation für eine
+Relation~$X$ muss aus einer anderen Relation~$Y$ abgeleitet werden (weil das
+für die Zerlegung relevante Attribut sich in $Y$ befindet; Relation~$X$ und
+$Y$ stehen in Beziehung zueinander.)
+
+Betrachtet am Beispiel:
+\begin{sqlblock}
+  \sqlreldef{Teile}{TeileNr}{TeileBez, LiefNr, Preis}\\
+  \sqlreldef{Lagerort}{TeileNr}{LagerNr}
+\end{sqlblock}
+\sqlrel{Teile} soll entsprechend dem Lagerort der Teile partitioniert werden
+(d.\,h. gemäß dem Attribut \sqlattr{LagerNr} in der Relation
+\sqlrel{Lagerort}) $\rightarrow$ nicht mehr lokal entscheidbar (lokaler Blick)
+
+Bildliche Darstellung
+
+\noindent
+\begin{minipage}{.6\linewidth}
+  \centering
+  \sqlrel{Teile} (virtuelle, globale Relation)\\
+  \begin{tabular}{@{\vdots\quad}*{2}{c@{\quad\vdots\quad}}c@{\quad\vdots}}
+    \multicolumn{3}{@{}c@{}}{\dotfill}\\
+    \sqlattr{TeileNr}& \sqlattr{TeileBez}& \ldots{} \\
+    \multicolumn{3}{@{}c@{}}{\dotfill}\\
+    35181& Schraube M8x3& \ldots{} \\
+    38799& Mutter M8& \ldots{} \\
+    37244& Mutter M7& \ldots{} \\
+    42351& Bolzen B33& \ldots{} \\
+    43749& Schraube M4x6& \ldots{} \\
+    44812& Bolzen B27& \ldots{} \\
+    45438& Schraube M3,5x5& \ldots{} \\
+    \vdots& \vdots & \vdots\\
+    \multicolumn{3}{@{}c@{}}{\dotfill}
+  \end{tabular}
+\end{minipage}%
+\begin{minipage}{.4\linewidth}
+  \centering
+  \sqlrel{Lagerort}\\
+  \begin{tabular}{|c|c|}
+    \hline
+    \sqlattr{TeileNr}& \sqlattr{LagerNr}\\
+    35181& 3\\
+    38799& 1\\
+    37244& 3\\
+    42351& 2\\
+    43749& 2\\
+    44812& 1\\
+    45438& 1\\
+    \hline
+  \end{tabular}
+\end{minipage}
+
+\begin{tabular}{ccc}
+  \begin{tabular}[t]{|c|c|c|}
+    \hline
+    \sqlattr{TeileNr}& \sqlattr{TeileBez}& \ldots{} \\
+    \hline
+    38799& Mutter M8& \ldots{} \\
+    44812& Bolzen B27& \ldots{} \\
+    45438& Schraube M3,5x5& \ldots{} \\
+    \vdots& \vdots & \vdots\\
+    \hline
+  \end{tabular}
+     &
+  \begin{tabular}[t]{|c|c|c|}
+    \hline
+    \sqlattr{TeileNr}& \sqlattr{TeileBez}& \ldots{} \\
+    \hline
+    42351& Bolzen B33& \ldots{} \\
+    43749& Schraube M4x6& \ldots{} \\
+    \vdots& \vdots & \vdots\\
+    \hline
+  \end{tabular}
+     &
+  \begin{tabular}[t]{|c|c|c|}
+    \hline
+    \sqlattr{TeileNr}& \sqlattr{TeileBez}& \ldots{} \\
+    \hline
+    35181& Schraube M8x3& \ldots{} \\
+    37244& Mutter M7& \ldots{} \\
+    \vdots& \vdots & \vdots\\
+    \hline
+  \end{tabular}\\
+  \sqlrel{Teile}$_{1}$ ($\sqlattr{LagerNr}=1$)&
+  \sqlrel{Teile}$_{2}$ ($\sqlattr{LagerNr}=2$)&
+  \sqlrel{Teile}$_{3}$ ($\sqlattr{LagerNr}=3$)
+\end{tabular}
+\todo{Hier fehlen die Pfeile zwischen den Relationen}
+
+\subsubsection{Bemerkungen zur abgeleiteten horizontalen Partitionierung}
+
+Wann "`funktioniert"' dieser Ansatz? (welche Bedingung muss erfüllt sein?)
+Wurde obiges Beispiel willkürlich gewählt? Beziehung zwischen den betrachteten
+Relationen~$X$ und $Y$ wesentlich, d.\,h. am Beispiel, für ein Teil muss ein
+eindeutiger Lagerort existierren $\rightarrow$ hier gegeben wegen der Annahme,
+dass zu jedem \sqlrel{Teile}"~Tupel \emph{genau ein} korrespondierendes
+\sqlrel{Lagerort}"~Tupel existiert.
+
+Verallgemeinerbar?
+
+Referentielle Integritätsbedingung existiert
+\todo{Bild}
+partitioniert wird Relation~\sqlrel{X} nach Attribut~\sqlattr{D} in
+Relation~\sqlrel{Y}
+
+für jeden \sqlrel{X}"~Tupel existiert ein eindeutiger \sqlattr{D}"~Wert (in der
+Relation~\sqlrel{Y})
+
+Formale Beschreibung der Partitionierung (via Algebra"=Sprachausdruck):
+Benutze (der kompakten Schreibweise wegen) \emph{Semi"=Join"=Operator}
+\sql{R SJ$_{F}$ S := PJ$_{\{\text{Attr}(R)}\}$(R JN$_{F}$ S)}, d.\,h.
+Semi-Join ist eine Join, wo nur die Attribute des einen Join"=Operanten
+(Relation) im Join"=Ergebnis auftauchen (der zweite Operant wird nur zur
+Auswertung der Join"=Bedingung~$F$ herangezogen/""betrachtet) $\rightarrow$
+wichtiger Spezialfall des Joins.
+
+Auf unser Beispiel angewandt:
+\begin{sqlblock}
+  \sqlrel{Teile}$_{1}$ = \sqlrel{Teile} NSJ (SL $_{\sqlattr{LagerNr}=1}$
+    \sqlrel{Lagerort})\\
+  \sqlrel{Teile}$_{2}$ = \sqlrel{Teile} NSJ (SL $_{\sqlattr{LagerNr}=2}$
+    \sqlrel{Lagerort})\\
+  \sqlrel{Teile}$_{3}$ = \sqlrel{Teile} NSJ (SL $_{\sqlattr{LagerNr}=3}$
+    \sqlrel{Lagerort})
+\end{sqlblock}
+mit \sql{NSJ} als Natural"=Semi"=Join.
+
+\subsection{Alternativen zur Bereichspartitionierung}
+
+Bisher (horizontale) Bereichspartitionierung diskutiert, am Beispiel aus
+\autoref{sec:hori-part}
+
+\todo{Bild}
+
+Von DBMS"=Produkten darüber hinaus teils angeboten:
+\begin{enumerate}
+ \item \emph{Hash"=Partitionierung}
+  \begin{itemize}
+   \item Sei \sqlattr{A}~Attribut von Relation~\sqlrel{X} und seien
+    $a_{i}$~Attributwerte von \sqlattr{A}, so wird die Partition eines
+    Tupels~$t$ über $h(a_{i})$ mit der Hashfunktion~$h$ bestimmt.
+   \item $n$~Partitionen für Relation~\sqlrel{X} $\rightarrow$ $h$ bildet ab
+    in Wertebereich $[0,\dotsc,n-1]$
+   \item $h$ kann systembereitgestellt sein oder vom Benutzer/""Administrator
+    ggf. auf \sqlrel{X} zugeschnitten ($h_{\sqlrel{X}}$)
+  \end{itemize}
+
+  Vorteile/""Nachteile?
+  \begin{procontra}
+   \pro (Angestrebt) Gleichmäßige Verteilung von Tupeln über Partitionen, was
+    durch Bereichspartitionierung i.\,d.\,R. nicht erreicht werden
+    kann und soll.
+
+   \contra Zerstörung inhaltlicher Zusammenhangseigenschaften (die einzelne
+    Partition enthält "`heterogene Daten"')
+  \end{procontra}
+  $\rightarrow$ Anwendung weniger bei (geographisch) verteilten Datenbanken,
+  sondern im \emph{zentralisierten Fall}, zur Ausnutzung von Parallelität
+  (vgl. \autoref{sec:vorl-arch})
+
+ \item \emph{Round"=Robin"=Partitionierung}
+  \begin{itemize}
+   \item Verteilung der Tupel jeweils bei Einfügung "`reihum"' auf die
+    Partitionen, also nicht werteabhängig!
+  \end{itemize}
+
+  \begin{procontra}
+   \pro Gleichmäßige Verteilung von Tupeln
+   \pro Billig beim Insert, keine Metadaten etc benötigt
+   \contra Zerstörung inhaltlicher Zusammenhangseigenschaften
+   \contra Partition eines Tupels (bei Suche) nicht bestimmbar
+  \end{procontra}
+  $\rightarrow$ Anwendung wie bei Hashtabelle
+
+ \item \emph{Random"=Partitionierung}
+  \begin{itemize}
+   \item Zufällige Verteilung der Tupel auf die Partition, also nicht
+    werteabhängig
+  \end{itemize}
+
+  $\rightarrow$ entspricht den Pros und Cons der
+  Round-Robin"=Partitionierung, auch hinsichtlich des Anwendungsbereichs
+\end{enumerate}
+
+Zusammengefasst:
+\todo{Bild: Baum: "`horizontale Partitionierung"' $\rightarrow$
+  "`werteabhängig"' ($\rightarrow$ "`Bereichspartitionierung"' +
+  "`Hashpartitionierung"') + "`werteunabhängig"' ($\rightarrow$ Round"=Robin +
+  Random), unter Bereichspart: "`für (geografisch) verteilte Datenbanken,
+  unter die anderen eine Klammer mit "'für \glq{}sonstige\grq{}
+  Anwendungsbereiche (lokal verteilt \ldots{} vgl. \autoref{sec:formen-der-verteilung})}
+
+\subsection{Vertikale Partitionierung}
+
+\todo{Bild}
+
+\begin{itemize}
+ \item Realisierung über \emph{Projektionen} (im Unterschied zur
+  \emph{Selektion} im \autoref{sec:hori-part})
+  \begin{sqlblock}
+    \sqlrel{R}$_{1}$ := PJ$_{\{\sqlattr{PS, A, B, C}\}}$ \sqlrel{R}\\
+    \sqlrel{R}$_{2}$ := PJ$_{\{\sqlattr{PS, D, E}\}}$ \sqlrel{R}
+  \end{sqlblock}
+
+ \item "`Wiederherstellen"' der globalen Relation ("`Sicht"') durch
+  \emph{Natural"=Join} über die Partitionen
+ \item Hier angenommen: \emph{Disjunkte} Attributmenden zur
+  Redundanzvermeidung; kein "`Muss"' jedoch \help{da geht es bei mir auf der
+  Folie nicht weiter}
+
+ \item Ebenfalls angenommen: \emph{Primärschlüssel} als Bestandteil jeder
+  Partition (gestattet einfaches "`Wiederherstellen"' der globalen Relation
+  über Natural"=Join) kein "`Muss"' jedoch \help{jedoch was? Mitten im Satz
+  aufhören ist nicht nett}
+
+  [NB.: Falls Partitionen bei vertikaler Partitionierung \emph{nicht} den
+  Primärschlüssel enthalten sollen (etwa um auch diese Redundanz zu
+  vermeiden), so muss auf Verlustfreiheit der Zerlegung geachtet werden (vgl.
+  formale Grundlagen hierzu etwas in \cite[S.~49ff.]{dadam}): Originalrelation
+  lässt sich durch natürlichen Verbund der Teilrelation (Partitionen)
+  wiederhersellen, ohne dass Tupel "`verlorengegangen"' oder hinzugekommen
+  sind hierbei $\rightarrow$ \emph{nicht} jede Zerlegung einer Relation ist
+  verlustfrei in diesem Sinne! (ist eigentlich auch Aspekt der
+  Normalformlehre/""bei Normalisierung zu beachten, haben wir in DB~2 aber
+  ignoriert)]
+
+ \item Vertikale Partitionierung auch aus klassischen, zentralisieren
+  Datenbanksystemen bekannt und (implizit) benutzt: \emph{"`Abspaltung"' von
+  Large"=Object"=Attributen} (\acsp{LOB}, \acsp{CLOB}, \acsp{BLOB}, \ldots{})
+  mit Ablage i.\,d.\,R. in separaten Table Space (aus
+  implementierungstechnischen Gründen (Resttupel passt in eine Datenbankseite)
+  und Performance-Gründen) $\rightarrow$ Vermischung von Partitionierung und
+  Allokation
+\end{itemize}
+
+\subsection{Gemischte Partitionierung}
+
+Kombination der bisher vorgestellten Partitionierungsarten, also vertikal und
+(vor allem) horizontale Bereichspartitionierung.
+
+Beispiel:
+\begin{sqlblock}
+  \sqlreldef{angest}{PersNr}{AngName, Gehalt, AbtNr, Anschrift}\\
+  \sqlrel{angest}\textsubscript{vertraulich} := PJ$_{\{\sqlattr{PersNr,
+    Gehalt}\}}$ \sqlrel{ANest}\\
+  \sqlrel{angest}\textsubscript{öffentlich$_{1}$} :=
+    SL$_{\sqlattr{AbtNr}<300}$ PJ$_{\{\sqlattr{PersNr, AngName, AbtNr,
+    Anschrift}\}}$ \sqlrel{ANest}\\
+  \sqlrel{angest}\textsubscript{öffentlich$_{2}$} :=
+    SL$_{\sqlattr{AbtNr}\geq300}$ PJ$_{\{\sqlattr{PersNr, AngName, AbtNr,
+    Anschrift}\}}$ \sqlrel{ANest}
+\end{sqlblock}
+
+Ergebnis graphisch veranschaulicht: \todo{Bild} (hier nicht zu
+erkennen/""dargestellt: Schlüssel \sqlattr{PersNr} in allen Partitionsschemata
+enthalten $\rightarrow$ sonst Probleme mit Zuordnung zu entsprechenden Tupeln
+der globalen Relation, Duplikateleminierung (wobei wir ja wissen, dass
+Duplikateleminierung "`in Realität"' (SQL) nicht automatisch stattfindet im
+Gegensatz zur Relationenalgebra))
+
+\section{Physische Verteilung der Daten -- Allokation}
+
+Aspekte, die hierbei zu betrachten sind: Effizienz und Verfügbarkeit
+
+\begin{itemize}
+ \item Effizienz: Verteilung der Daten (auf Rechnerknoten, Table Spaces,
+  \ldots{}) so, dass Verarbeitungskosten (für Anfragen, Änderungen, \ldots{})
+  möglichst gering sind.
+
+  Bemerkungen hierzu/""Probleme hierbei:
+  \begin{itemize}
+   \item Was steht im Vordergrund, was ist zu berücksichtigen?
+    \begin{enumerate}
+     \item\label{enu:eff-gesk} \emph{Gesamtverarbeitungskosten} für eine gegebene Last (Workload)
+      --~Durchsatz als Optimierungsziel~-- und/oder
+     \item\label{enu:eff-grenz} vorgegebene \emph{Obergrenzen} für die Kosten (Dauer) bestimmter
+      einzelner Lastbestandteile
+    \end{enumerate}
+    $\rightarrow$ meist spielt beides eine Rolle
+
+   \item Beispeil:
+    \begin{itemize}
+     \item \autoref{enu:eff-gesk} Materialbuchungen, nachts, Batch"=Betrieb: nur
+      Gesamtverarbeitungskosten relevant
+     \item \autoref{enu:eff-gesk}+\autoref{enu:eff-grenz} Kontenbuchungen,
+      tags, Dialog"=Betrieb: Gesamtverarbeitungskosten relevant
+      ("`Resourcenverbrauch"') und keine Einzelbuchung soll länger als drei
+      Sekunden dauern (möglichst)
+     \item \autoref{enu:eff-grenz} Maschinensteuerung, Realzeit"=Betrieb: nur Zeitobergrenzen relevant
+      ("`harte"' Obergrenzen.)
+    \end{itemize}
+
+   \item Problem hierbei?
+    \begin{itemize}
+     \item Nur \autoref{enu:eff-gesk} allein gibt es kaum, d.\,h. DB"~Entwurf
+      (inkl. Verteilung/""Allokation) muss meist auch
+      \autoref{enu:eff-gesk}+\autoref{enu:eff-grenz} berücksichtigen
+
+      [Nebenbemerkung/""Einschub: Außer man legt \emph{separate}, redundante
+      Datenbank an für jeweilige spezifische Lastcharakteristika +
+      Anforderungen wie etwas für Date Warehouseing der Fall]
+
+     \item \autoref{enu:eff-grenz} lieben die Datenbänkler überhaupt nicht,
+      DBMS erlauben, insb. im Mehrbenutzerbetrieb, kein garantiertes Einhalten
+      \emph{harter} Zeitschranken für die Dauer von DB"~Anweisungen
+      $\rightarrow$ Locking
+    \end{itemize}
+  \end{itemize}
+
+  Was geht in Kosten alles ein?
+  \begin{itemize}
+   \item Lokale Verarbeitungskosten (I/O, CPU) auf einzelnen Knoten
+   \item Übertragungskosten
+  \end{itemize}
+
+ \item \emph{Verfügbarkeit}
+  \begin{itemize}
+   \item Durch Redundanz (Datenreplikation) $\rightarrow$ bei der Allokation!
+   \item \help{das fehlt auf meiner Kopie} Zusatzforderung, dass
+    Performance"=Einbuße bei Ausfall einzelner Knoten "`noch tolerierbar"' ist
+    (etwa, in dem Replikate \emph{nicht beliebig} (anderen) Knoten zugeordnet
+    werden, sondern solchen \emph{in der Nähe} oder solchen mit
+    \emph{ähnlichen Charakteristika} (Mainfraim vs. PC))
+  \end{itemize}
+\end{itemize}
+
+Es ist prinzipell möglich, ein \emph{mathematisches Modell} aufzustellen, zur
+\betonung{Bestimmung einer optimalen Allokation} \cite[S.~76ff.]{dadam}
+$\rightarrow$ praktisch irrelevant, wegen erforderlicher exakter Angaben zur
+DB, (vor allem) zur Lastbeschreibung, zu den Verarbeitungskosten, zu den
+Übertragungskosten etc. (detaillierte Lastbeschreibung ist \betonung{immer}
+ein Problem, muss bis auf Tupelebene, Verteilung über Partitionen etc.
+heruntergehen $\rightarrow$ Angaben liegen nicht vor, können nur abgeschätzt
+werden \help{das fehlt auf meiner Kopie} nicht stabil)
+
 \nextchapter
 \nextchapter
 
@@ -710,7 +1270,11 @@ Beobachtungen/""Bemerkungen:
 \clearpage
 \begin{acronym}
   \acro{OCC}{Optimistic Concurency Control}
+  \acro{LOB}{Large Object}
+  \acro{CLOB}{Character Large Object}
+  \acro{BLOB}{Binary Large Object}
 \end{acronym}
+
 \clearpage
 \pdfbookmark[0]{Index}{index}
 \printindex
