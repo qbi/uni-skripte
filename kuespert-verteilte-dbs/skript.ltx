@@ -1,0 +1,718 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[english,ngerman,draft,parskip=half*]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{acronym}
+
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+\newcounter{prechap}
+\newcommand*{\predefchap}[1]{%
+  \stepcounter{prechap}%
+  \expandafter\newcommand \csname prechap\roman{prechap}\endcsname{#1}%
+  \section*{\arabic{prechap}~#1}}
+\newcommand*{\nextchapter}{%
+  \expandafter\chapter{\csname prechap\roman{chapter}\endcsname}}
+
+\newcommand*{\betonung}[1]{\textsc{#1}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Verteilte Datenbanksystemen und Client"~/""Server"=Systeme}
+\author{Prof.\,Dr.\,Klaus Küspert}
+\date{Semester: SS 200X, WS 200X/0Y}
+\maketitle
+
+\clearpage
+\section*{Nutzungsbedingungen und Danksagungen}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \nolinkurl{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:joerg@alea.gnuu.de}{Jörg Sommer
+    \nolinkurl{<joerg@alea.gnuu.de>}} (2007)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\addchap{Geplante Vorlesungsgliederung/\texorpdfstring{"""~}{-}struktur}
+
+\predefchap{Einführung/""Motivation/""Historie}
+
+Wann und aus welchen Überlegungen heraus/""mit welcher Zielsetzung entstanden
+verteilte Datenbanksystemen und Client"~/""Server"=Systeme? Welche "`Formen"'
+gibt es grob hinsichtlisch solcher Systeme und wie sind diese zu
+charakterisieren/""abzugrenzen? $\rightarrow$ Begriffe, Pros und Cons
+
+\predefchap{Datenspeicherung, "~verteilung, "~partitionierung (für globale
+  Relationen in verteilten Datenbanksystemen)}
+
+\emph{Partitionierungs}begriff und \emph{Allokations}begriff,
+Partitionierungsformen (\emph{Wie} kann man Daten \emph{partitionieren} und
+Betrachtung einer Relation bzw. "`darüber hinaus"'? Welche
+\emph{Anforderungen} müssen Partitionierungen erfüllen? Wie bestimmt man
+geeignete Partionierungen?) \ldots{} Quantifizierungsbestrebungen!
+
+\predefchap{Schema"=Architekturen verteilter Datenbanksysteme}
+
+\begin{itemize}
+ \item Ausgehend von bekannter ANSI/""SPARC"=Architektur (3~Ebenen)
+  $\rightarrow$ wie sehen Architekturen verteilter Datenbanksystemen aus?
+
+ \item Unterscheidung u.\,a. zwischen \emph{lokalen} Schemata und
+  \emph{globalen} Schemata auf konzeptueller Ebene, Partitionierungseben,
+  Allokationsebene $\rightarrow$ Vielfalt von Möglichkeiten (Orthogonalität?)
+  deutet sich an
+
+ \item Darstelllung, Klassifikation, Bewertung
+\end{itemize}
+
+\predefchap{Anfragebearbeitung in verteilten Datenbanksystemen}
+
+\begin{itemize}
+ \item \emph{Basis:} Wissen zu
+  Relationenalgebra/""Äquivalenzumformungen/""Query Optimization aus DBS~1
+  (insb.)
+
+ \item What's new?
+  \begin{itemize}
+   \item Globale Anfragen $\rightarrow$ lokale Anfragen wegen Verteilung
+    (Zerlegung)
+   \item \emph{Übertragungs}kosten/-dauer als zusätzlicher Faktor
+   \item Join-Thematik bei verteilten Datenbanksystemen
+   \item \emph{Partitionierung}/""\emph{Allokation} $\rightarrow$ (noch) mehr
+    "`Stellschrauben"' bzw. \emph{vergrößerter Parameterraum} für den Query
+    Optimizer!
+  \end{itemize}
+\end{itemize}
+
+\predefchap{Transaktionen in verteilten Datenbanksystemen}
+
+\begin{itemize}
+ \item \emph{Basis:} Bekannte Transaktionseigenschaften (ACID),  Schedule,
+  Serialisierbarkeit, \ldots{}
+
+ \item What's new?
+  \begin{itemize}
+   \item \emph{Globale} Transaktionen $\rightarrow$ (lokale)
+    \emph{Teil}transaktionen
+   \item Sicherstellen von ACID auch bei verteilter Transaktionsausfführung
+    $\rightarrow$ \emph{Zwei"=Phasen"=Commit"=Protokoll} (two"~phase commit,
+    2PC): Abläufe und Realisierung"~/""Optimierungsfragen
+  \end{itemize}
+\end{itemize}
+
+\predefchap{Synchronisation in verteilten Datenbanksystemen}
+
+\begin{itemize}
+ \item \emph{Basis:} Synchronisation"~/""Sperrthematik aus DBS~1,
+  Zwei"=Phasen"=Sperrprotokoll (two"~phase locking, 2PL), \ac{OCC},
+  Deadlock"=Thematik
+
+ \item What's new?
+  \begin{itemize}
+   \item \emph{Verteilungs}implikationen globale Sperrtabelle versus lokale
+    (dezentrale) Sperrtabellen
+
+   \item \emph{Deadlock}"=Erkennung und "~Auflösung in Anbetracht von
+    Verteilung und globalen Anfragen (\foreignlanguage{english}{Distributed
+    Deadlock Detection})
+  \end{itemize}
+\end{itemize}
+
+\predefchap{Replikationsverfahren}
+
+\begin{itemize}
+ \item \emph{Basis:} ?? "`\foreignlanguage{english}{Replication considered
+  harmful}"'? $\rightarrow$ im nicht verteilten (zentralistischen) Fall
+
+  Replikation = bewußt, überlegt herbeigeführte Datenredundanz
+
+ \item Replikations\emph{verfahen} und u.\,a. Performance- und
+  Verfügbarkeitsaspekte hiervon
+\end{itemize}
+
+\ldots{}
+
+\addchap{Inhaltliche Bezüge zu Forschungsthemen am Lehrstuhl}
+
+\begin{itemize}
+ \item \emph{Partitionierung} von Daten (bei \emph{zentralisierten}
+  Datenbanksystemen)! SAP"~Projekte J.\,Nowitzky 1997--2001/02 Partitionierung
+  zur Unterstützung der Datanarchivierung sowie der Performance"=Steigerung
+  (u.\,a.) in Data Warehouses (Partitionierungsausschluss, Nutzung von
+  Parallelität) $\rightarrow$ Partitionierunsgedanke ist von verteilten
+  Datenbanksystemen in zentralisierte "`zurückgewandert"'!
+
+ \item \emph{Replikation} von Daten (bei \emph{mobilen} Datenbanksystemen)
+  Forschungsthema Ch.~Gollmick 2000--\ldots{} \emph{Mobile Datenbanken
+  enthalten fast ausschließlich nur replizierte Daten!!} Größere
+  Variabilität/""Dynamik als bei verteilten Datenbanksystemen durch
+  Lokationsabhängigkeit u.\,a.
+\end{itemize}
+
+\addchap{Literatur}
+
+\begin{thebibliography}{9}
+ \bibitem{dadam} Dadam, Peter: "`Verteilte Datenbanken und
+  Client/""Server"=Systeme -- Grundlagen, Konzepte und Realisierungen"',
+  Springer Berlin, Heidelberg, 1996
+
+ \bibitem{ceri} Ceri, Pelagatti, 1984
+
+ \bibitem{lang} Lang, Lockemann, 1995
+\end{thebibliography}
+
+\nextchapter
+
+\begin{itemize}
+ \item Forschung zu \emph{verteilten Datenbanksystemen} begann bereits
+  \emph{ab Mitte der 70er Jahre} $\rightarrow$ nur knapp zeitversetzt also zur
+  Forschung an relationaler Datenbanktechnologie überhaupt (Codd~1970)!
+  \ldots{} 5~Jahre ca.
+
+ \item Berühmte \emph{frühe Projekte} und Prototypen/""Systeme:
+  \begin{itemize}
+   \item \emph{System~R*} (verteiltes System~R, IBM San Jose)
+   \item \emph{Distributed Ingres} (Stonebraker, UC Berkeley)
+   \item VDN ("`Verteilte Datenbanken Nixdorf"') gemeinsam mit TU~Berlin
+    (R.\,Munz) $\rightarrow$ \ldots{} $\rightarrow$ Adabas~D (Software~AG)
+    bzw. SAP~DB heute Open Source \url{http://www.sapdb.org}
+   \item PORTEL (Uni Stuttgart)
+  \end{itemize}
+  \ldots{}
+
+  $\Rightarrow$ haben Eingang in heutige DBMS"=Produkte gefunden!!
+
+ \item \emph{Auslösende Momente für die Forschung} (zu jener Zeit):
+  \todo{Bild: Pfeile nach links und rechts, links: Trend zur Dezentralisierung
+    (I), über den Pfeil "`primär"' schreiben und Pfeil kräftiger, rechts:
+    Trend zu Integration (II)}
+
+  \begin{enumerate}[I.]
+   \item Dezentralisierung
+    \begin{itemize}
+     \item \emph{Betriebswirtschaftliche} Dezentralisierung (Teileinheiten,
+      Regionalzentren, Geschäftsstellen, \ldots{}) verbunden mit
+      IT"~Dezentralisierung und Verarbeitungskapazität "`vor Ort"'.
+
+     \item 70er/80er Jahre: Großrechner (auch) vor Ort; Bsp.: \emph{Großbanken
+      mit Regionalstruktur}
+
+     \item "`Ist für die Dresdner Bank \betonung{die} zentrale relationale
+      Datenbank in Frankfurt die bessere Lösung oder eine Verteilung über die
+      Standorte Hamburg/""Düsseldorf/""Frankfurt/\ldots{}??"'
+
+      (Natürlich) nicht trivial beantwortbar, sondern $f(\dotso)$:
+      \begin{itemize}
+       \item \emph{Workload"=Charakteristika} lokale versus globale Anteile
+        \begin{gather*}
+          \xleftarrow{\displaystyle\text{rein global}\hspace{2cm}} \text{???}
+             \xrightarrow{\hspace{2cm}\displaystyle\text{rein lokal}}
+        \end{gather*}
+
+        In der Extrempositionen würde man keine verteilte Datenbank einsetzen,
+        aber dazwischen vielleicht?
+
+       \item \emph{Leistungscharakteristika} des eingesetzten bzw,
+        vorgesehenen verteilten Datenbanksystems: Wie gut kommt es mit
+        verteilten Anfragen klar? (Optimizer!), Wie gut mit verteilenten
+        Datenbankänderungen (Tranksaktionsverwaltung) etc.?
+
+       \item \emph{Administrationsaspekte}: Mit Administration im verteilten
+        Fall verbundene Mehraufwendungen?
+
+       \item \emph{Verfügbarkeitsfragen} (Availability)
+      \end{itemize}
+
+      \ldots{} neue Möglichkeiten, neue Fragestellungen
+    \end{itemize}
+
+   \item Integration
+    \begin{itemize}
+     \item Einerseits als "`Gegenbewegung"' zur Dezentralisierung, Ausschlagen
+      des Pendels in andere Richtung (Industrietrends)
+
+     \item Aber auch unabhängig davon zu sehen: Durch Forderung von
+      \emph{integrierter Auswertbarkeit} (dezentral, unabhängig entstandene
+      Datenbestände)
+
+      Durch \emph{Firmenzusammenschlüsse/"""~kooperationen} (mit Einfluss auf
+      IT, etwa Hypo- und Vereinsbank), Daimler und Chrysler, \ldots{}
+
+      $\rightarrow$ \emph{bottom"~up}"~Herangehensweise im Gegensatz zu
+      \emph{top"~down} bei Dezentralisierung
+    \end{itemize}
+  \end{enumerate}
+\end{itemize}
+
+\section{Problemstellungen bei Dezentralisierung}
+
+Vom zentralen Datenhaltungsansatz zum verteilten.
+
+Forderungen/""Ziele:
+\begin{itemize}
+ \item (Weiterhin) \emph{Singel"=System"=Imag} (Verteilungstransparenz):
+  Existierende Anwendungen sollen von der erfolgten Dezentralisierung
+  möglichst nichts merken (Aspekt der Datenunabhängigkeit, der
+  \help{Soll das hier auch eine Datenmodellunabhängigkeit sein, so wie im
+    nächsten Abschnitt}
+  Ortsunabhängigkeit der Anwendungsprogramme als zusätzliche Forderung).
+
+  1~Rechnerknoten $\rightarrow$ $n$~Rechnerknoten: Anwendungen auf beliebigen
+  Rechnerknoten laufend sollen auf Daten(teil)bestände auf beliebigen
+  Rechnerknoten transparent zugreifen können inklusive (natürlich)
+  Gewährleistung von Transaktionseigenschaften (ACID) $\rightarrow$
+  Idealvorstellung
+
+ \item \emph{Performance}"=Steigerung und ggf. auch Steigerung der
+  \emph{Verfügbarkeit} (Availability). Wodurch??
+  \begin{itemize}
+   \item Hoher Anteil von \emph{lokalen} Anfragen hilfreich für Performance
+   \item \emph{Replikation} von Daten hilfreich/""nötig für Verfügbarkeit
+    (sonst eher gegenläufige Verfügbarkeitsveränderung zu erwarten \ldots{})
+
+    Vorteile beim Lesen, Nachteile beim Ändern
+  \end{itemize}
+\end{itemize}
+
+\section{Problemstellungen bei Integration}
+
+Von autonomen Datenhaltungslösungen (Einzelsysteme, "`Insellösungen"') zur --
+zumindest logisch -- integrierten Lösung.
+
+Forderungen/""Ziele/""Probleme:
+\begin{itemize}
+ \item Problemumfang stark abhängig von initial vorliegender Heterogenität
+  (der Ausgangslösungen):
+  \begin{itemize}
+   \item verschiedene Datenmodelle (relational, hierarchisch, netzwerk,
+    Dateien, \ldots{})
+   \item gleiches Datenmodell (etwas relational), aber verschiedene
+    DBMS"=Versteller (Produkte)
+   \item gleiches Datenmodell und gleiche Produkte, aber verschiedene Schemata
+    strukturell/""semantisch
+  \end{itemize}
+
+ \item \emph{Singel"=System"=Image} für neuentwickelte, auf der integrierten
+  Datenhaltungslösung beruhende Anwendungen: Orts- und
+  Datenmodellunabhängigkeit idealerweise (z.\,B. einheitlich relationale
+  Siche auf "`alles und über alles"')
+
+ \item (Weiterhin) Ablauffähigkeit für existierende (Alt"~)""Anwendungen auf
+  jeweils lokaler Datenhaltung (über bisherige Schnittstellen) $\rightarrow$
+  Beibehaltung der \emph{Autonomie} und \emph{Performance} idealerweise
+
+  nichttrivial!!
+\end{itemize}
+
+\section{Formen und Charakteristika verteilter Informationssysteme}
+
+\subsection{Räumliche Aspekte der Verteilung}
+
+\subsubsection{geographisch verteiltes Informationssystem}
+
+(klassisch auslösende Vorstellung bei verteilten Datenbanksystemen). Realität?
+
+\begin{itemize}
+ \item \emph{Große Distanz} zwischen den Rechnerknoten
+ \item wide area networt
+ \item \emph{Relativ teure, \textnormal{störanfällige} Verbindungen} ggf.
+  Verfügbarkeitsprobleme möglich $\rightarrow$ \emph{Kommunikationskosten}
+  spielen wesentliche Rolle
+
+ \item Hilfreich hier: \emph{Möglichst viel lokale Autonomie der Teilsysteme}
+  mit entsprechenden Workload"=Charakteristika
+
+ \item Beispiel: Verteilte Datenhaltung weltweit über
+  Produktionsstätten/""Geschäftsstellen eines Unternehmens hinweg
+  (Nebenbemerkung: \emph{Orthogonal} zur Erörterung Integration vs.
+  Dezentralisierung \help{das fehlt auf meiner Kopie})
+\end{itemize}
+
+\subsubsection{lokal verteiltes Informationssystem}
+
+(nicht der Klassiker unbedingt, aber heute oft bedeutender/""eher anzutreffen
+als geographisch verteilt)
+
+\begin{itemize}
+ \item \emph{geringe Distanz} zwischen den Rechnerknoten
+ \item local area network
+ \item \emph{Relativ schnelle, \textnormal{wenig störanfellige} Verbindung},
+  hohe Verfügbarkeit
+
+ \item Beispiel\cite{dadam}: \todo{Bild}
+
+ \item Kommunikation(skosten) auch hier natürlich ein Thema, aber weitaus
+  geringere Bedeutung als bei geographisch verteilten Systemen $\rightarrow$
+  Autonomie der Teilsysteme deshalb nicht so wesentlicher Faktor
+
+ \item Gründe für lokal verteilte Lösungen:
+  \begin{itemize}
+   \item historisch gewachsen, nachfolgende Integration
+   \item Performance"=Verteile (vielleicht \ldots{})!
+   \item Skalierbarkeitsvorteile (wenn im obigen Beispiel Anwendung $n+1$
+    hinzukommt)!
+   \item Verfügbarkeitsvorteile (bei Replikation)!
+  \end{itemize}
+\end{itemize}
+
+\subsection{Realisierungsebenen verteilter Informationssysteme}
+
+"`wo ist die Verteilung implementiert?"'
+\todo{Bild: Dreiteilung vDBMS, Anwendungen, Middleware}
+
+\subsubsection{verteiltes DBMS}
+Transparenz
+\todo{Bild}
+
+\subsubsection{Realisierung der Verteilung in den Anwendungen}
+\todo{Bild}
+
+\subsubsection{Realisierung der Verteilung in Middleware (Zusatzschicht)}
+
+Transparenz \todo{Bild}
+
+Bewertung:
+\begin{itemize}
+ \item vDBMS: "`reine Lehre"'
+ \item in Anwendung: problematisch
+ \item Middleware: \help{das fehlt auf meiner Kopie}
+\end{itemize}
+
+\subsection{Realisierungsformen verteilter DBMS}
+
+und ihre Abgrenzung/""Einordnung (umfasst auch solche Fälle, die nicht im
+"`engeren Sinne"' zu verteilten DBS zählen)
+
+M.\,a.\,W.: Welche (wichtigen) Möglichkeiten gibt es, mehr als einen Rechner
+(mehr als einen Prozess) zur DBMS"=Verarbeitung einzusetzen?
+\begin{enumerate}
+ \item Shared everything: gemeinsamer Hauptspeicher, gemeinsame Platten
+ \item Shared disk: nur gemeinsame Platten
+ \item Shared nothing: nicht gemeinsam
+\end{enumerate}
+
+$\rightarrow$ Klassifikation nach Grad der gemeinsamen Nutzung von Resourcen
+\ldots{} Grad der Kopplung (eng \ldots{} lose)
+
+\subsubsection{Shared-Everything-Architektur}
+
+\todo{Bild}
+
+\begin{itemize}
+ \item Unterstützt von übelichen DBMS à la Oracle, DB2, \ldots{}
+ \item Größte Nähe zum klassischen Ein"~Rechner-Ein"~Prozessor"=Szenarium
+ \item \emph{Skalierbarkeit} über Zahl der Prozessoren
+ \item Probleme/""Grenzen:
+  \begin{itemize}
+   \item Konflikte/""Engpässe bei zunehmender Zahl parallel (auf gleichen
+    Hauptspeicher) zugreifender Prozessoren!
+   \item Cache"=Koheränzprobleme!
+   \item \emph{wenig} Nutzen bzgl. Verfügbarkeit (Availability)!
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Shared"=Disk"=Architektur}
+
+\todo{Bild}
+\begin{itemize}
+ \item \emph{Komplette Rechner} wirken zusammen bei der DB"~Verteilung
+ \item Jeder einzelne Rechner darf mehrere CPUs (à la Fall a) oben) aufweisen
+  $\rightarrow$ Skaliebarkeit nun auf zwei Ebenen (Ausbau einzelner Rechner
+  und Ausbau des Rechner"=Clusters)!
+ \item großer Vorteil: von allen Rechnern alle Daten prinzipell erreichbar
+ \item Argumente für Einsatz:
+  \begin{itemize}
+   \item Skalierbarkeit
+   \item Hohe benötigte Gesamtverarbeitungsleistung
+   \item Verfügbarkeit (Availability)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Zur Verfügbarkeitsthematik:}
+\begin{itemize}
+ \item Hauptgrund für Einsatz von Shared"=Disk"=Architektur in der Praxis
+  (sagt (nicht nur) SAP)
+ \item Recher-Cluster kann -- mit reduzierter Performance -- weiterbetrieben
+  werden auch bei Vorhandensein von nur noch $n-1$, $n-2$, \ldots{} Rechnern
+  \begin{itemize}
+   \item "`Absturz"' einzelner Rechner
+   \item Wartung einzelner Rechner
+   \item auch ggf. Hinzufügen weiterer Rechner zum Cluster im laufenden
+    Betrieb! $\rightarrow$ $n+1$, $n+2$, \ldots{}
+  \end{itemize}
+
+ \item zu lösenden Probleme in dem Zusammenhang:
+  \begin{itemize}
+   \item Bei Absturz Betroffensein auf diesem Rechner laufender Transaktionen
+    (\emph{A}CI\emph{D}) $\rightarrow$ Wiederholung dieser (nur dieser)
+    Transaktion auf $n-1$ übriggebliebenen Rechnern
+   \item Lastverteilung (Load Balancing) anzupassen an veränderte
+    Konfiguration ($n-1$)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Zur Produktwelt}
+(Mindestens) zwei sehr bekannte Produktlösungen für Shared"=Disk"=Architektur:
+Oracle Parallel Server (OPS) -- heißt heute Oracle Real Application Cluster
+(RAC) -- und IBM DB2 für Parallel Sysplex Mainframe!
+
+\subparagraph{Eigenschaften der Oracle-Lösung}
+\begin{itemize}
+ \item Shared"=Disk"=Ansatz orthogonal zu Betriebssystemplattform (Unix,
+  Mainframe, \ldots{})
+ \item Oracle im Highend"=Bereich (Mainframe) wenig verbreitet
+\end{itemize}
+
+\subparagraph{Eigenschaften der DB2"~Lösung}
+\begin{itemize}
+ \item Mainframe-DB2 (z/OS, OS/390) only
+ \item Hardware"~/""Betriebssystemunterstützung für Kommunikation ($n+1$.
+  Rechner nur dafür)
+\end{itemize}
+
+\paragraph{Allgemein zu lösende Probleme beim Shared"=Disk"=Ansatz} (nur
+Problem, hier keine Lösungen)
+
+Oder: Warum nicht einfach "`normales"' DBMS verwendbar in
+Shared"=Disk"=Architektur?
+
+\begin{itemize}
+ \item Load balancing $\rightarrow$ Lastverteilung über $n$~Rechner
+  (Datenbanklast),
+
+  Affinity"=Based"=Routing (separate Systempuffer, Erzeilung von
+  Lokalitätsverhalten, Kenntnis von Transaktionstyp, aber: einzelne Rechner
+  trotzdem nicht zum Engpass werden lassen)
+
+ \item \emph{Konsistenzhaltung} Datenbanksystempuffer bei Datenänderungen
+  (DB"~Seite~$i$ kann sich gleichzeitig in mehreren Systempuffern befinden),
+  Verwaltungsproblem $\rightarrow$ buffer coherancy
+ \item \emph{Sperrproblematik} bei (jetzt) Vorhandensein mehrerer
+  Sperrtabellen $\rightarrow$ rechnerübergreifende Deadlocks \ldots{}
+ \item Logging/""Recovery \ldots{}
+\end{itemize}
+
+Beforscht seit 20~Jahren, Produkte auch fast so lang.
+
+\paragraph{Probleme/""Entsprechungen hiervon auch "`oberhalb"' des DBMS}
+
+Worum's geht? Anwendungebene hat u.\,U. vergleichbare Probleme zu lösen wie
+oben. Betrachte SAP System R/3 (mySAP.com) -- 3"~tier architecture:
+\begin{itemize}
+ \item Präsentationsebene (Presentation Server)
+ \item Anwendungsebene (Application Server)
+ \item Datenbankebene (Database Server)
+\end{itemize}
+$\rightarrow$ Database Server kann Shared"=Disk"=Ansatz nutzen (z.\,B. DB2
+Parallel Sysplex)
+\begin{itemize}[$\rightarrow$]
+ \item Skalierbarkeit, Performance, Verfügbarkeit
+ \item transparent aus Anwendungssicht
+\end{itemize}
+
+Problem: Gleiche Argumentation (Skalierbarkeit, Performance, Verfügbarkeit)
+auch auf Anwendungsebene $\rightarrow$ $n$ Application Server teilen sich
+Arbeit, puffern Daten, benötigen Load Balancing und Affinität, haben
+Konsistenzerhaltungsproblem. -- Berühmtes Beispiel, dass DB"~Probleme und
+"~Lösungen auch auf höherer Ebene wieder auftauchen.
+
+\subsubsection{Shared"=Nothing"=Architektur}
+\todo{Bild}
+
+\begin{itemize}
+ \item "`Richtiges"' vDBMS (wärend a) und b) nicht in jene Schublade gehören,
+  sondern eigene Schublade bilden (insb. b))
+
+ \item Hochgeschwindigkeitskommunikation bei lokaler Verteilung (LAN"~basierte
+  Kommunikation bspw.) $\rightarrow$ Ansatz gewähle für
+  Hochleistungstransaktionsverarbeitung und/oder Verfügbarkeit
+
+ \item Architekturell kein Unterschied zu geographischer
+  Verteilung/\glq{}langsamer\grq{} Kommunikation
+\end{itemize}
+
+\paragraph{Föderierte, verteilte Datenbanksysteme}
+\begin{itemize}
+ \item Ansatz vor allem gebräuchlich bei \emph{nachträglicher} Integration
+  bereits \emph{existierender}, bislang dezentral organisierter
+  Informationssysteme
+ \item inwiefern Föderation? \emph{Abgabe einiger}, aber \emph{nicht aller}
+  Zuständigkeiten/""Kompetenzen an eine übergeordnete Instanz
+ \item So auch beim föderierten, verteilten Ansatz: Existierende
+  Informationssystem bringen nicht alle ihre (bisherigen, lokalen) Daten in
+  globales Verbund ein, sondern nur jene, an denen ein globales Interesse
+  besteht/""wo man sich bzgl. des Einbringens verständigt hat $\rightarrow$
+  \emph{lokale} Daten (wie zuvor) und -- neu -- \emph{globale} Daten (die
+  \emph{lokal} gespeichert, aber \emph{global} verfügbar sind)
+
+ \item \emph{(Teil"~)""Autonomie der dezentralenen Systeme}, ihre lokalen
+  Daten betreffend und -- nur eingeschränkt -- die globalen
+\end{itemize}
+
+\paragraph{Schemaintegration bei föderierten, verteilten Datenbanksystemen}
+\todo{Bild}
+
+Beobachtungen/""Bemerkungen:
+\begin{itemize}
+ \item Bei Festlegung des globalen Schemas wird entschieden, welche Teile der
+  lokalen Schemata \emph{global sichtbar} sein sollen $\rightarrow$ siehe im
+  obigen Beispiel etwas $\text{Teile}_{1}$ (aus $\text{L"~DB}_{1}$) komplett,
+  $\text{Pers}_{2}$ (aus $\text{L"~DB}_{2}$) teilweise, Lief (aus
+  $\text{L"~DB}_{3}$) gar nicht (d.\,h. Lief bleibt rein in lokaler
+  Zuständigkeit, kein Einbringen in globalen Verbund)
+
+ \item Lokale Ausführungsautonomie wird somit nur teilweie aufgegeben
+  $\rightarrow$ Föderationsgedanke
+ \item Vertiefung: Stefan Conrad, Föderierte Datenbanksysteme: Konzepte der
+  Datenintegration. Springer"=Verlag, Berlin, 1997
+\end{itemize}
+
+\paragraph{Probleme beim föderierten Ansatz u.\,a. (bereits kurz angesprochen)}
+\begin{itemize}
+ \item Umfang der Abgabe lokaler Autonomie; betrifft nicht nur à la Bsp. oben
+  Datenumfang (Tabelle komplett, teilweise oder gar nicht), sinder natürlich
+  auch Rechte: Darf globales Ebene nur lesen oder gar viel mehr (Schema
+  ändern?)?
+
+ \item Probleme bei inhomogenen lokalen Schemata; Dateien, hierarchisch,
+  Netzwerk, relation
+ \item Anfrageoptionierung bei globalen Queries
+ \item Globale Transaktionen \ldots{}
+ \item Aber: Praktisch \emph{hochrelevantes} und interessantes Thema; erste
+  Produktlösungen à la \emph{IBM Data Joiner}, verschieden
+  \emph{Gateway-Lösungen} (die nicht in Reinkultur Föderationsgedanken
+  umsetzen), \ldots{}
+\end{itemize}
+
+\nextchapter
+\nextchapter
+\nextchapter
+
+\appendix
+\clearpage
+\begin{acronym}
+  \acro{OCC}{Optimistic Concurency Control}
+\end{acronym}
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
