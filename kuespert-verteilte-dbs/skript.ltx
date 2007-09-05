@@ -56,6 +56,7 @@
 \usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{acronym}
 \usepackage[weather]{ifsym}
+\usepackage{wasysym}
 
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
@@ -104,13 +105,17 @@
 
 \newenvironment*{procontra}{\begin{itemize}}{\end{itemize}}
 % \newcommand*{\pro}{\item[$+$]}
+% \newcommand*{\semipro}{\item[($+$)]}
 % \newcommand*{\contra}{\item[$-$]}
+% \newcommand*{\semicontra}{\item[($-$)]}
 % \newcommand*{\pro}{\item[\leftthumbsup]}         % aus dingbat
 % \newcommand*{\contra}{\item[\leftthumbsdown]}    % aus dingbat
 % \newcommand*{\pro}{\item[\smiley]}               % aus wasysym
 % \newcommand*{\contra}{\item[\frownie]}           % aus wasysym
 \newcommand*{\pro}{\item[\Sun]}                  % aus [weather]ifsym
+\newcommand*{\semipro}{\item[\SunCloud]}         % aus [weather]ifsym
 \newcommand*{\contra}{\item[\RainCloud]}         % aus [weather]ifsym
+\newcommand*{\semicontra}{\item[\Cloud]}         % aus [weather]ifsym
 
 \makeindex
 
@@ -224,14 +229,14 @@ geeignete Partionierungen?) \ldots{} Quantifizierungsbestrebungen!
 \predefchap{Transaktionen in verteilten Datenbanksystemen}
 
 \begin{itemize}
- \item \emph{Basis:} Bekannte Transaktionseigenschaften (ACID),  Schedule,
+ \item \emph{Basis:} Bekannte Transaktionseigenschaften (\ac{ACID}),  Schedule,
   Serialisierbarkeit, \ldots{}
 
  \item What's new?
   \begin{itemize}
    \item \emph{Globale} Transaktionen $\rightarrow$ (lokale)
     \emph{Teil}transaktionen
-   \item Sicherstellen von ACID auch bei verteilter Transaktionsausfführung
+   \item Sicherstellen von \ac{ACID} auch bei verteilter Transaktionsausfführung
     $\rightarrow$ \emph{Zwei"=Phasen"=Commit"=Protokoll} (two"~phase commit,
     2PC): Abläufe und Realisierung"~/""Optimierungsfragen
   \end{itemize}
@@ -285,8 +290,6 @@ geeignete Partionierungen?) \ldots{} Quantifizierungsbestrebungen!
   Variabilität/""Dynamik als bei verteilten Datenbanksystemen durch
   Lokationsabhängigkeit u.\,a.
 \end{itemize}
-
-\addchap{Literatur}
 
 \begin{thebibliography}{9}
  \bibitem{dadam} Dadam, Peter: "`Verteilte Datenbanken und
@@ -397,7 +400,7 @@ Forderungen/""Ziele:
   1~Rechnerknoten $\rightarrow$ $n$~Rechnerknoten: Anwendungen auf beliebigen
   Rechnerknoten laufend sollen auf Daten(teil)bestände auf beliebigen
   Rechnerknoten transparent zugreifen können inklusive (natürlich)
-  Gewährleistung von Transaktionseigenschaften (ACID) $\rightarrow$
+  Gewährleistung von Transaktionseigenschaften (\ac{ACID}) $\rightarrow$
   Idealvorstellung
 
  \item \emph{Performance}"=Steigerung und ggf. auch Steigerung der
@@ -1185,7 +1188,7 @@ Ergebnis graphisch veranschaulicht: \todo{Bild} (hier nicht zu
 erkennen/""dargestellt: Schlüssel \sqlattr{PersNr} in allen Partitionsschemata
 enthalten $\rightarrow$ sonst Probleme mit Zuordnung zu entsprechenden Tupeln
 der globalen Relation, Duplikateleminierung (wobei wir ja wissen, dass
-Duplikateleminierung "`in Realität"' (SQL) nicht automatisch stattfindet im
+Duplikateleminierung "`in Realität"' (\ac{SQL}) nicht automatisch stattfindet im
 Gegensatz zur Relationenalgebra))
 
 \section{Physische Verteilung der Daten -- Allokation}
@@ -1264,6 +1267,644 @@ heruntergehen $\rightarrow$ Angaben liegen nicht vor, können nur abgeschätzt
 werden \help{das fehlt auf meiner Kopie} nicht stabil)
 
 \nextchapter
+
+\section{Grundlagen/""Abgrenzung}
+
+\begin{itemize}
+ \item bekannt: Drei-Schema-Architektur nach ANSI/SPARC: externes Schema,
+  konzeptuelles Schema, internes Schema
+
+  \todo{Bild einfügen}
+
+  Ziele vor allem (DBS~1 \ldots{}) physische und logische Datenunabhängigkeit!
+  Relationale DBMS realisieren physische in hohem Maße, logische in maßen
+  (View"=Update"=Problem; Umgang mit Materializes Views noch in den Anfängen
+  (letztere in DB2/Oracle erst seit wenigen Jahren verfügbar))
+
+  Zusätzliche Forderungen (Ziele) der Schema-Architektur in vDBMS:
+  \begin{itemize}
+   \item Verteilungsunabhängigkeit: Anwendungsprogramm sieht die Verteilung
+    der Daten, inklusive der Partitionierung und Allokation, nicht. Ebenso
+    wenig die Replikation. $\Rightarrow$ Änderungen möglich (durch
+    Datenbankadministrator), ohne Anwendungsprogramm anpassen zu müssen!
+
+   \item Datenmodellunabhängigkeit: Anwendungsprogramm kann in einer
+    (einheitlichen) Anfragesprache operieren, unabhängig davon, auf welchem
+    Knoten die Daten abgelegt sind. Wann tritt dieses Problem/""diese
+    Forderung auf?
+
+    \todo{Bild einfügen}
+    $\Rightarrow$ globales Schema + DB"~Sprache soll "`verstecken"':
+    \begin{itemize}
+     \item Unterschiedliche lokale Datenmodelle, Anfragesprachen, strukturelle
+      + semantische Heterogenitäten
+     \item Partitionierung
+     \item Replikation
+     \item Allokation
+    \end{itemize}
+
+    Für Datenbankadministrator/""Query Processor erforderlich sind:
+    \begin{itemize}
+     \item Informationen über Partitionierung, Allokation, Replikation,
+      Kopien"=Aktualisierungs"=Strategie (wann, welche Reichenfolge, \ldots{})
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+Fallunterscheidung im Folgenden:
+\todo{Bild einfügen}
+
+\section{Homogene, präintegrierte Datenbanksysteme}
+\label{sec:hom-pr-int}
+
+Charakteristika: Datenbanksystem, das von vornherein als verteiltes
+Datenbanksystem (anstelle eines zentralen Datenbanksystems) realisiert wird
+$\rightarrow$ Grüne"=Wiese"=Ansatz
+\begin{itemize}[$\rightarrow$]
+ \item Keine Altlasten (Anwendungsprogramme, die bislang (auf lokalen
+  Datenbeständen) laufen und weiterhin laufen sollen)
+ \item (Top"~Down"~)""Datenbankentwurf: (E/R $\rightarrow$) globale Relationen
+  $\rightarrow$ Partitionen $\rightarrow$ Allokation
+ \item Homogene lokale Schemata (auch keine strukturellen/""semantischen
+  Heterogenitäten)
+\end{itemize}
+$\rightarrow$ einfachster und friedlichster Fall
+
+\subsection{Schema"=Grobarchitektur bei homogenen, präintegrierten
+  Datenbanksystemen}
+
+\todo{Bild einfügen: AP $\rightarrow$ globale externe Schemata $\rightarrow$
+  globales Schema (GKS, GPS, GAS) $\rightarrow$ lokales konzeptuelles Schema
+  $\rightarrow$ lokales internes Schema}
+
+\begin{itemize}
+ \item \ac{GKS} realisiert globale Außensicht
+ \item \ac{GPS} beschreibt die Partitionierung der Relationen des \ac{GKS}
+ \item \ac{GAS} beschreibt die physische Platzierung der Partitionen (also die
+  Allokation)
+\end{itemize}
+
+Was jeweils zu den verschiedenen Schemata dazugehört:
+\begin{itemize}
+ \item \ac{GKS}: Globaler Katalog
+  \begin{sqlblock}
+    \sqlreldef{ABT}{AbtNr}{AbtName, Bereich, MgrPersNr, Budget}
+  \end{sqlblock}
+
+ \item \ac{GPS}: Globales Partitionierungsschema
+  \begin{center}
+    \begin{tabular}{|c|c|}
+      \hline
+      \multicolumn{2}{|c|}{Globale Relationen}\\
+      \hline
+      Globale Relation& Defintion\\
+      \hline
+      \sqlrel{ABT}& \sql{\sqlrel{ABT1} UN \sqlrel{ABT2}}\\
+      \vdots& \vdots
+    \end{tabular}
+
+    \begin{tabular}{|c|c|c|c|}
+      \hline
+      \multicolumn{4}{|c|}{Partitionen}\\
+      \hline
+      Partition& Attribute& Globale Relation& Selektionsprädikat\\
+      \hline
+      \sqlrel{Abt1}& \sqlschl{AbtNr}, \sqlattr{AbtName, Bereich, MgrPersNr,
+         Budget}& \sqlrel{ABT}& \sql{\sqlattr{AbtNr}$\leq300$}\\
+      \sqlrel{Abt2}& \sqlschl{AbtNr}, \sqlattr{AbtName, Bereich, MgrPersNr,
+         Budget}& \sqlrel{ABT}& \sql{\sqlattr{AbtNr}$>300$}\\
+      \vdots& \vdots& \vdots& \vdots
+    \end{tabular}
+  \end{center}
+
+ \item \ac{GAS} Globales Allokationsschema
+  \begin{center}
+    \begin{tabular}{|*{4}{c|}}
+      \hline
+      \multicolumn{4}{|c|}{Allokationen}\\
+      \hline
+      Partition& Lokaler Name& Primärkopie& \ldots{} \\
+      \hline
+      \sqlrel{abt1}& \sqlrel{Abteilung@Knoten\_A}& Knoten\_A& \ldots{} \\
+      \sqlrel{abt2}& \sqlrel{Abteilung@Knoten\_C}& Knoten\_C& \ldots{} \\
+      \vdots& \vdots& \vdots& \vdots
+    \end{tabular}
+  \end{center}
+
+ \item lokales konzeptuelles Schema:
+  \begin{center}
+    \begin{tabular}{ccc}
+      \sql{\sqlrel{Abteilung}(\ldots{})}& & \sql{\sqlrel{Abteilung}(\ldots{})}\\
+      \vdots& & \vdots\\
+      Knoten~A& Knoten~B& Knoten~C
+    \end{tabular}
+  \end{center}
+\end{itemize}
+
+Hinweise:
+\begin{itemize}
+ \item Vereinfachte Darstelllung in obiger Abbildung, speziell Partitionen
+  würden im Katalog \glq{}real\grq{} sicher anders dargestellt werden
+  (Schemainformation, bei horizontaler Partitionierung, nur einmal -- bei
+  globaler Relation --, dafür Algebraausdrücke zur Ableitung der Partitionen
+  hieraus)
+ \item worauf muss der Optimizer Bezug nehmen beider Übersetzung einer
+  (globalen) Anfrage aus $AP_{Gi}$?
+  \begin{itemize}
+   \item Globales Schema (\ac{GKS}, \ac{GPS}, \ac{GAS})
+   \item lokalen Schemata (\ac{LKS}"~x, \ac{LIS}"~x) nur dort liegen die
+    Informationen über die lokale Speicherung (physische Realisierung,
+    Datenverteilung auf Table Spaces, Indexe, Performance"=Charakteristika bei
+    leistungsmäßig unterschiedlichen Knoten (CPU"~Geschwindingkeit, Caches,
+    Plattencharakteristika) $\rightarrow$ benötigt für Performance"=Vorhersage
+    (Kostenschätzung)) vor
+  \end{itemize}
+\end{itemize}
+
+\section{Heterogene, präintegrierte Systeme}
+\label{sec:het-pr-int}
+
+Charateristika:
+\begin{itemize}
+ \item von vornherein als verteiltes System (getrennte Datenverwaltung)
+  konzipiert
+ \item heterogene lokale Systeme zugrundeliegend
+\end{itemize}
+
+Warum handelt man sich solche Probleme (Heterogenität!) \glq{}freiwillig\grq{}
+ein/geht diesen Weg? $\rightarrow$ Systeme, wo unterschiedliche
+(Teil"~)""Aufgabestellungen innerhalb eines Gesamtsystems berücksichtigt
+werden müssen!
+
+Beispiel: \todo{Bild einfügen: CAD"~System mit Verwaltungsinformationen in
+einer DB und Geometriedaten in einer anderen DB}
+
+Gründe für diesen Ansatz:
+\begin{enumerate}
+ \item\label{enu:het-pr-int-grund1} historisch Gewachsen, etwa aus erweiterten
+  Anforderungen an ein CAD"~System heraus, zusätzliche Berücksichtigung
+  betriebswirtschaftlicher Anforderungen (Produktdaten, nicht technisch)
+
+ \item\label{enu:het-pr-int-grund2} System"~/""Datenaufteilung aus
+  Performance"=Überlegungen (Polygondaten u.\,U. kosteneffizienter direkt in
+  Dateien abgelegt als über Umweg über DBMS, auch in Ermangelung adäquater
+  DBMS"=Modelle- und "~Speicherkonstrukte $\rightarrow$ Objektrelationalität
+  als Lösung? $\rightarrow$ eNF\texttwosuperior{}"~artige Strukturen in
+  heutigen relationalen Produkten nur rudimentär vorhanden und mit
+  nichtadäquater Speicherung (\acp{LOB}, Side Tables))
+
+ \item System"~/""Datenaufteilung aus Modularisierungsüberlegungen (alles,
+  auch "`Spezialfälle"', wirklich in einem großem DBMS realisieren oder
+  modular abtrennen) [Bsp.: DB2 Text Extender hat (Text"~)""Index und
+  Indexverwaltung "`außerhalb"'. Gründe? \autoref{enu:het-pr-int-grund1},
+  \autoref{enu:het-pr-int-grund2}]
+\end{enumerate}
+
+\subsection{Exkurs: DB2 Text Extender}
+
+\todo{Bild einfügen}
+
+\begin{itemize}
+ \item Leichte Variation des obigen Ansatz: obige Sicht (Anwendung) "`spricht
+  nicht direkt"' mit zwei Datenhaltungssystemen, sondern -- in erweiterter
+  Sprache (\ac{UDF}"~Verwendung!) -- nur mit einem, dem DBMS (welches die
+  "`Verzweigung"' in das andere System unter der Decke erledigt)
+
+ \item Texte in \acp{CLOB} in den DB"~Tabellen (vertikal Partitioniert!),
+  Textindexe separat in Dateien
+
+ \item Wie funktioniert Textsuche?
+  \begin{itemize}
+   \item Per \ac{UDF}"~Verwendung in \ac{SQL}"~\ac{SFW}"~Ausdruck
+    \sql{CONTAINS (\ldots{})} mit Textspalte + Text Search Expression
+   \item DBMS kennt/""analysiert Text Search Expression nicht! (Syntax,
+    Semantik)
+   \item \ac{UDF} reicht Text Search Expression durch (verzweigt) an separate
+    Komponente Search Manager, dieser liefert Trefferliste zurück
+  \end{itemize}
+
+ \item Wie funktioniert Texteinfügung/"""~änderung/"""~löschung? Wo liegt das
+  Problem? Aktualisierung des separat liegenden Textindex!!
+  \begin{itemize}
+   \item Trigger"=Verwendung
+    (\sql{Insert}"~/""\sql{Update}"~/""\sql{Delete}"~Trigger)
+   \item Trigger rufen antsprechende Prozeduren auf, die in Search Manager
+    (Index Maintenance) verzweigen und dort Indexaktualisierungen vornehmen
+  \end{itemize}
+
+ \item Was \betonung{ist} der Text Extender (\help{Hier kann ich was auf
+  meiner Kopie nicht lesen} ein DB2 Extender allgemein)?
+  \begin{itemize}
+   \item Vordefinierte \acp{UDF}
+   \item Vordefinierte Trigger
+   \item Administrations"~/""Installationshilfmittel (Skripte)
+   \item Separater Search Manager
+  \end{itemize}
+  Alles paketiert = Extender
+
+  (gleiches Prinzip bei Oracle Cartridges und Informix Data Blades)
+  (andere bekannte Extender: Image Extender, Spatial Extender)
+\end{itemize}
+
+Vor- und Nachteile des Text"=Extender"=Ansatz'/""Separierung?
+\begin{procontra}
+ \pro "`Einfache"' und schnelle Integration verhandener Systeme -- DBMS
+  einerseits, Information"=Retrival"=System andererseits -- unter teilweiser
+  Beibehaltung der separaten Datenverwaltung
+
+ \pro Modularisierung; keine Erweiterung des DBMS nötig um Spezialindex (Text)
+  $\rightarrow$ keine Vermischung von allgemeiner DBMS"=Funktionalität
+  ("`universell nutzbarer"' Funktionen) und Spezialfunktionalität eines
+  bestimmten Anwendungsbereichs (hier: Text)
+
+ \semipro kein DBMS"=Overhead (Schichtenmodell \ldots{}) für Textindex
+
+ \contra Textindex außerhalb der Datenbank; problematisch in Bezug auf
+  Transaktionseigenschaften (\ac{ACID}), Locking, \ldots{} $\rightarrow$
+  Wiederanlauf im Fehlerfall (Crash, Externspeicherversagen, \ldots{})
+  skriptgestützt
+
+ \semicontra Schutzaspekt (gewisse Daten -- Textindex -- nicht unter
+  DBMS"=Kontrolle/"""~autorisierung) $\rightarrow$ in der Praxis durch
+  speziellen DB"~Server gelöst
+
+ \contra Problem bei Anfrageoptimierung, \ac{UDF} als Black Box (extern!) aus
+  Sicht des Optimizers; Selektivitätsabschätzung bei Textsuchprädikaten
+  $\rightarrow$ Defaults, Optimizer Hints
+\end{procontra}
+
+Resümee (dito \cite[S.~95]{dadam}): Vollständig integrierter Ansatz wäre
+vielleicht "`schöner"', eher der reinen Lehre entspechend, aber Tendenz geht
+eher zur Modularisierung, Andocken separater Datenhaltungs- und
+Spezialbausteine, aber unter einheitlicher Oberfläche (\ac{SQL} + \ac{UDF})
+$\rightarrow$ gegen die eierlegende Wollmilchsau
+
+\hfill\dotfill{} Ende des Exkurs' \dotfill{}\hfill
+
+Schemaarchitektur: Bei Ansatz à la \autoref{sec:het-pr-int} Schemaarchitektur
+im Prinzip à la \autoref{sec:hom-pr-int}, aber mit möglicherweise aufwendigem
+Mapping (Schema- und Sprachtransformationen zur Überbrückung der Heterogenität)
+
+\section{Postintegrierte Systeme}
+
+(Unterscheidung zwischen Homogenität und Heterogenität erst weiter unten)
+
+Ausgangspunkt allgemein: Nachträgliche Integration vorhandener Datenbanken zu
+einer verteilten Datenbank.
+
+Problem: Bisherige, lokal operierende Anwendungen können nicht einfach -- oder
+überhaupt nicht -- auf neues, globales Schema umgestellt werden ("`auf Ebene
+des globalen Schemas angehoben werden"') $\rightarrow$ ggf. schrittweise
+Umstellung (Anhebung), aber Aufwand, Performance"=Nachteile
+
+Sichtweise der lokalen Anwendungen: "`Stülpt rüber, was Ihr wollt, aber lasst
+uns in Ruhe/""unverändert weiter leben."' $\rightarrow$ hinsichtlich der
+Funktionalität, möglichst auch der Performance!
+
+Mögliche Herangehensweisen:
+\begin{enumerate}
+ \item voll integrierte lokale Datenbanken, alle lokalen Daten werden nur
+  global zur Verfügung gestellt
+
+  \todo{Bild einfügen}
+
+  Vorgehensweise:
+  \begin{enumerate}
+   \item Festlegung von KS"~neu, den neuen einheitlichen (globalen)
+    konzeptuellen Schemas
+   \item Transformationsanpassungen "`nach unten"', von KS"~neu auf die
+    vorhandenen internen Schemata IS-$i$ bzw. Modifikation des IS-$i$
+   \item Transformationsanpassungen "`nach oben"', Abbildungsanpassungen zur
+    "`Simulation"' der bisherigen $ES_{ij}$ auf dem neuen konzeptuellen Schema
+  \end{enumerate}
+
+  Bemerkungen/""Bewertung:
+  \begin{procontra}
+   \pro Anwendungen bleiben \emph{unbeeinfluss}, bekommen weiterhin ihre
+    externen Schemata $ES_{ij}$ dargeboten. ToDo: Anpassung der
+    View"=Definitionen!
+
+   \pro Anpassungen der internen Schemata, wenn nötig, unkritisch
+    (Datenunabhängigkeit, wie immer \ldots{})
+
+   \contra Performance"=Probleme, wenn die bisherigen $ES_{ij}$ u.\,U.
+    aufwendig "`simuliert"' werden müssen, um -- auch auf dem neuen
+    konzeptuellen Schema KS"~neu -- den Anwendungen ihre alte Umgebung
+    "`vorgaukeln"' zu können!!
+  \end{procontra}
+
+  Wann machen sich solche Performance"=Probleme besonders bemerkbar
+  (beispielsweise)? Bei großer Heterogenität der Ausgangssysteme, der KS-$i$,
+  der IS-$i$!!
+
+  Beispiele für große Heterogenität:
+  \begin{itemize}
+   \item Ausgangssysteme teils hierarchisch (\ac{IMS}), teils relational (KS-1,
+    KS-2). KS"~neu relational $\rightarrow$ aufwendige Abbildungen, um für
+    Anwendungen "`hierarchisch \glq{}on top of\grq{} rational"' zu simulieren
+
+    (ähnliches Problem auch bei Datenbankmigration: es gibt Ansätze (Praxis!),
+    um nach erfolgter Daten\emph{bank}migration (Bestand hierarchisch
+    $\rightarrow$ relational) bisherigen Altanwendungen weiter die Existenz der
+    hierarchisch Datenbank "`vorzugaukeln"': Umsetzung (Runtime"=Abbildung) von
+    \ac{DL/1}"~Calls auf \ac{SQL}"~Sprachanweisungen, performancemäßiges
+    Desaster!! aber es läuft \ldots{})
+
+   \item Ausgangssysteme sind bereits relational (KS-$i$), dito KS"~neu:
+    Ursprungstabelle (in KS-1 etwa) nun aber in vielleicht viel
+    umfangreicherer KS"~neu "`versteckt"' oder -- schlimmer -- dort aufgeteilt
+    über mehrere Tabellen etc
+
+   \item Umstellungsproblem: Übergang von KS-$i$ auf KS"~neu müsste zu
+    \emph{einem} Zeitpunkt geschehen ("`big bang"'), alle
+    Anpassungen/""Modifikationen $ES_{ij}$"~KS"~neu entsprechend verfügbar:
+    keine schrittweise Migration in neue, integrierte Welt möglich
+    $\rightarrow$ kaum praktisch durchführbar
+  \end{itemize}
+
+ \item partiell integrierte lokale Datenbanken
+  \begin{itemize}
+   \item nicht alle lokalen Daten (aus KS-$i$) werden global zur Verfügung
+    gestellt (in KS"~neu)
+   \item lokale Anwendungen dürfen weiterhin direkt auf lokalen Daten
+    operieren (ohne Umweg über KS"~neu, sozusagen "`nativ"' ohne "`Simulation"')
+  \end{itemize}
+
+  Was ist \betonung{neu} vor allem? $\rightarrow$ \ac{LRS} = Exportschemata
+
+  \todo{Bild von Folie 73 einfügen}
+
+  Zwei Aufgaben/""Ziele bei der \ac{LRS}"~Verwendung:
+  \begin{enumerate}
+   \item Legt fest, welcher Ausschnitt der lokalen Datenbank global zur
+    Verfügung gestellt werden soll (im einfachsten Fall, welche lokalen
+    Relationen "`globalisiert"' werden sollen, aber auch feinere Abstufungen
+    strukturell/""werteabhängig möglich)
+   \item Führt Vereinheitlichung durch: Unterschiedliche lokale strukturelle
+    Formen und Semantiken werden datenbankweit (knotenübergreifend),
+    einheitlich dargestellt! (Export berücksichtigt globel Vorgaben bzgl.
+    Struktur und Semantik)
+  \end{enumerate}
+  $\rightarrow$ Homogenisierung der (Darstellung der) lokalen Schemata!!
+
+  $\rightarrow$ Annäherung -- durch jenen Zwischenschritt -- an Situation
+  (Integrationsaufgabe) im präintegrierten homogenen Fall oben, erkauft durch
+  u.\,U. sehr aufwendige (rechenintensive) Transformationsregeln,
+  Update"=Probleme, \ldots{}
+
+  Weitere Hinweise/""Bemerkungen zum neuen Vorgehen:
+  \begin{itemize}
+   \item "`Langer Weg"' (sechs Kanten im obigen Graphen) zwischen $AP_{Gi}$
+    (globaler Anwendung) und Datenbestand, performancerelevant (s.\,o.) und mit
+    möglicherweise funktionalen Auswirkungen (Einschränkungen, Update"=Problematik)
+   \item \ac{LES} unverändert, lokale Anwendungen ($AP_{Ai}, AP_{Bj}$) dito
+   \item Lokale Exportschemata, lokale externe Schemata müssen natürlich nicht
+    disjunkt sein: ggf. kann gleicher Datenausschnitt global (mit global
+    angepasster Struktur und Semantik) und (weiterhin) lokal (zum "`Schutz"'
+    der vorhandenen Anwendungen/""Weiternutzung) zur Verfügung gestellt werden
+
+    $\rightarrow$ Disjunktheit macht Dinge jedoch einfacher, vor allem bei
+    Schemarevolution (also wenn die global und die lokal genutzten Ausschnitte
+    nicht überlappen)
+  \end{itemize}
+\end{enumerate}
+
+\subsection{Schemintegration}
+
+Aufgabe: Definition eines "`integrierenden"' globalen Schemas ausgehend von
+lokalen (konzeptuellen) Schemata, die unabhängig voneinander entstanden sind:
+\begin{itemize}
+ \item verschiedene Attributnamen (für gleiche Information)
+ \item verschiedene Wertebereiche
+ \item verschiedene strukturelle Repräsentation (Tabellenverteilung, \ac{LOB}
+  vs. Side Table etc.)
+ \item verschiedene Schlüsselsemantiken/""Wertevergabe, Primärschlüssel,
+  Schlüsselkandidaten, Fremdschlüssel betreffend
+ \item verschiedene Integritätsbedingungen
+ \item Widersprüche zwischen den Daten an verschiedenen Knoten
+\end{itemize}
+$\Rightarrow$ \betonung{nicht triviales} Problem
+\begin{itemize}
+ \item taucht ähnlich auch z.\,B. bei Data Warehousing auf (also nicht
+  \glq{}exotisch\grq{})
+ \item Vorgehensmodell für Schemaintegration gefordert
+\end{itemize}
+
+\subsubsection{4"~Phasen"=Vorgehensmodell für die Schemaintegration}
+
+Präintegration, Vergleichsphase, Vereinheitlichungsphase, Restrukturierungs-
+und Zusammenfassungsphase
+
+\begin{enumerate}
+ \item Präintegration
+  \begin{itemize}
+   \item Bestimmen/""Festlegen der zu integrierenden Schemaausschnitte (in
+    E/R"~Terminologie: Edity"=Typen, Beziehungstypen, \ldots{})
+   \item Festlegen der Vorgehensweise: binäre oder $n$"~stellige Integration
+    (Mehrschritt vs. Einzelschrittverfahren)
+
+    \todo{Bild einfügen}
+
+    Pros und Cons:
+    \begin{itemize}
+     \item Binäre Integration:
+      \begin{itemize}
+       \item erlaubt Vorgehen in kleinen Schritten (Arbeitseinheiten)
+       \item Führt nicht (oder nicht einfach) zum globalen Optimum: Frühe,
+        lokalgetroffenen Entwurfs-(Integrations"~)""Entscheidungen in
+        Schritt~$i$ erweisen sich u.\,U. in Schritt $j\gg i$ als ungünstig
+        $\rightarrow$ Nacharbeiten, Revidieren u.\,U.
+      \end{itemize}
+
+     \item $n$"~stellige Integration
+      \begin{itemize}
+       \item Komplexität des "`großen Schritts"'
+       \item Dann sinnvoll, wenn Ausgangsschemata $S_{i}$ \emph{stark
+        voneinander abweiche} (um sich erst einmal bzgl. des globalen
+        Zielschemas "`zusammenzuraufen"' und nicht einfach
+        "`kleinkleinloszuwurschteln"', wie bei binärer Integration die Gefahr
+        besteht bei lokaler, "`kurzsichtiger"' Betrachtungsweise)
+      \end{itemize}
+    \end{itemize}
+    $\rightarrow$ eventuell Verwendung von binärer und $n$"~stelliger Integration
+  \end{itemize}
+
+ \item Vergleichsphase
+  Vor allem: Auflösung von \emph{Namens-} und \emph{Strukturkonflikten} (für
+  die jeweils aktuell betrachteten Ausgangsschemata $S_{i}$)
+
+  Homonym- und Synonymproblem, Beispiel dafür \todo{Bild einfügen: E/R"~Schema}
+  Homonym: \betonung{Ein} Begriff mit \betonung{verschiedenen} Bedeutungen,
+  Synonym: \betonung{Verschieden} Begriffe für \betonung{einen} Sachverhalt
+
+  Was kann beim Erkennen von Homonymen und Synonymen helfen? $\rightarrow$
+  Betrachtung von Attributen, zugehörigen Beziehungstypen \ldots{} allgemein
+  des "`Kontexts"'
+
+  (im obigen Beispiel für Homonyme: Die beiden Entity"=Typen Ausstattung
+  besitzen mit hoher Wahrscheinlichkeit verschiedene Attributmengen bzgl.
+  Anzahl, Attributnamen $\rightarrow$ deutet auf Homonyme hin) $\rightarrow$
+  aber Vorsicht: Homonymproblem kann sich natürlich auf Ebene der Attribute
+  fortsetzen, d.\,h. (einige) Attribute heißen links und rechts möglicherweise
+  gleich, aber besitzen verschiedene Bedeutungen!
+
+  Tückisch bzgl. Synonymen: Kunde und Klient (im oben Beispiel für Synonyme)
+  werden mit hoher Wahrscheinlichkeit verschiedene Attributmengen aufweisen,
+  d.\,h. sie haben unterschiedliche (Schema"~)""Entwicklungen durchemacht
+  (d.\,h. Synonyme "`natürlich"' nicht immer sofort als solche erkennbar)
+
+  \paragraph{Weitere Inhalte der Vergleichsphase:}
+  \begin{itemize}
+   \item "`Verhältnis"' der $S_{i}$ zueinander:
+    \begin{itemize}
+     \item äquivalent?
+     \item überlappend?
+     \item disjunkt?
+     \item enthalten ($S_{i}$ in $S_{j}$)?
+    \end{itemize}
+
+   \item Konfliktarten auf Strukturebene (Schema):
+    \begin{itemize}
+     \item Typkonflikte (Modellierung als Attribut oder Entity-Typ)
+      \help{fällt auch "`virtuelles (berechnetes) vs. echtes Attribut"' mit in
+        diese Kategorie?}
+     \item Beziehungskonflikte (1:n oder n:m)
+     \item Schlüsselkonflikte (unterschiedliche Primärschlüssel)
+     \item Verhaltenskonflikte (kaskadiertes Löschen oder "`manuelles"'
+      Löschen)
+    \end{itemize}
+
+   \item Konflikte auf Instanzebene (Ausprägung, Daten)
+    \begin{itemize}
+     \item Ambiguitätsprobleme
+      \begin{itemize}
+       \item Mehrfachspeicherung derselben Entities -- mit unterschiedlichem
+        Schlüsselwert -- in verschiedenen lokalen Datenbanken
+       \item Verwendung desselben Schlüsselwerts für verschiedene Entities (in
+        verschiedenen lokalen Datenbanken)
+
+        \todo{Tabelle einfügen}
+      \end{itemize}
+    \end{itemize}
+
+   \item Funktionale Konflikte: Nicht alle (potentiell möglichen) Operationen
+    gegen das globale Datenmodell lassen sich in semantisch äquivalente
+    Operationen gegen die lokalen Datenmodelle umsetzten. Problem woher
+    bekannt? $\rightarrow$ View"=Update"=Problematik
+
+    Lösung? Reduzierter Funktionsumfang auf globaler Ebene, etwas nur lesender
+    Zugriff auf Teile des Bestands [Beliebige Operationen wird man auf
+    globaler Ebene ohnehin nicht zulassen wollen/""können, etwa \ac{DDL}?]
+  \end{itemize}
+
+ \item Vereinheitlichungsphase: Konfliktauflösungs, d.\,h.
+  "`(Fehler"~)""Behandlung"' für die in der zweiten Phase erkannten Konflikte
+  und Probleme, u.\,a.:
+  \begin{itemize}
+   \item \emph{Namenskonflikte}: Auflösbar durch geeignete \emph{Umbenennung}
+    (bzw. geeigenete Abbildungen, dess es erfolgt natürlich \emph{kein}
+    Eingriff in die vorhandenen \emph{lokalen} Schemata/""Datenbanken); etwa
+    Namenserweiterungen bei Homonymen (Attributname)
+
+   \item \emph{Strukturkonflikte}: \emph{Umformungen} etwa zwischen
+    Entity"=Typen und Attributen (Abbildungen!), etwa wenn ein (lokales)
+    Attribut global als Entity-Typ gesehen werden soll etc. (oder in mehreren
+    Tabellen gespeicherte Daten einer lokalen Datenbank global als "`nested
+    table"' (NF\texttwosuperior{}"~artig) $\rightarrow$ Probleme à la
+    View"=Update"=Problematik $\rightarrow$ nur lesender Zugriff)
+
+   \item Ambiguitätsprobleme (auf Instanzebene): (Schlüsselproblematik (Was
+    sind globale Schlüssel?) im Zusammenhang mit Integration)
+
+    Lösungsvarianten: Einführung neuer, global einheitlicher Schlüssel oder
+    globale Verwendung von erweiterten lokalen Schlüsseln
+    \begin{enumerate}
+     \item Einführung neuer, global einheitlicher Schlüssel
+      \todo{Tabelle einfügen}
+
+      Bemerkungen hierzu:
+      \begin{itemize}
+       \item Hier Schlüssel"=Umsetzungsteil integriert in globale Tabelle
+        (separate, "`reine"' Schlüssel"=Umsetzungstablle wäre auch denkbar)
+       \item Umsetzungsteil sollte "`verborgen"' werden vor globalen
+        Anwendungen (letzten beiden Spalten von \sqlrel{GlobLiefTab})
+       \item Problematisch (natürlich) bei Änderungen aller Art:
+        \begin{enumerate}
+         \item ABC"~Firma wird -- durch globale Anwendung -- umbenannt in
+          ABZeh-Firma $\rightarrow$ Änderung entsprechend auf Knoten~A und B
+         \item ABTse"=Firma wird -- durch globale Anwendung -- neu eingefügt:
+          Wohin damit? Auf Knoten A oder B oder beide?
+         \item Lokale Anwendung auf Knoten~A benennt ABC"~Firma um in
+          ABChe"=Firma: Fortan zwei separate Tupel -- ABC"~Firma und
+          ABChe"=Firma -- auf globaler Ebene? \lightning{}\lightning{}
+
+          (kein "`neues"' Problem (durch Integration hinzugekommen), sondern
+          ohnehin durch redundante Datenspeicherung A/B gegeben)
+        \end{enumerate}
+      \end{itemize}
+
+     \item globale Verwendung von erweiterten lokalen Schlüsseln
+      \todo{Tabelle einfügen}
+
+      Bemerkungen hierzu:
+      \begin{itemize}
+       \item \emph{Ortstransparenz} aufgeweicht (Knoten-ID auf globaler Ebene
+        sichtbar)
+       \item Eigentlich gar keine separate Umsetzungstabelle (wärend sie im
+        vorherigen Fall zumindest in Frage käme) $\rightarrow$ nur (virtuelle)
+        Schlüsselerweiterung (im vorherigen Fall muss Umsetzungstabelle
+        physisch existieren)
+       \item Mehr Tupel als im vorherigen Fall $\rightarrow$ aber ja nur
+        virtuell
+       \item Änderungsprobleme?
+      \end{itemize}
+    \end{enumerate}
+  \end{itemize}
+
+ \item Restrukturierungs- und Zusammenfassungsphase
+  \begin{itemize}
+   \item Endgültige Festlegung des \emph{globalen} konzeptuellen Schemas
+    $\rightarrow$ bestimmt Vorgaben für die lokalen Repräsentationsschemata
+    \begin{itemize}
+     \item Was muss in den jeweiligen \ac{LRS} enthalten sein?
+      (Ausschnittsbildeung?)
+     \item Was muss durch die jeweiligen \ac{LRS} an Vereinheitlicung
+      geschehen?
+    \end{itemize}
+
+   \item Festlegung der \emph{Abbildungen} ("`Implementierung"' derselben),
+    durch \ac{SQL}"~Sprachausdrücke
+
+   \item Ziele hierbei:
+    \begin{itemize}
+     \item Vollständigkeit (globales Schema enthält alle -- gewünschten --
+      Informationen aller Teilschemata)
+     \item Minimalität/""Redundanzfreiheit
+     \item Vollständigkeit
+    \end{itemize}
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{Zusammenfassung hiervon (Thema Schemaintegration)}
+
+\begin{itemize}
+ \item \emph{Aufwendiger}, mehrstufiger Prozess bei postintegriertem Ansatz
+  \todo{Verweis auf den Abschnitt einfügen}
+
+ \item Nur \emph{teilweise} automatisierbar (etwas \emph{Vergleichsphase} (2)
+  durch Werkzeuge unterstützbar bzw. bei Vorhandensein eines globalen Data
+  Dictionary (globaler Datenkatalog) im Unternehmen; dieser existiert u.\,U.
+  in Teilen schon unabhängig davon, ob Integration angestrebt wird)
+
+ \item Betrifft Schema- und Datenebene (Instanzen)
+
+ \item \emph{Integritätsbedingungen} der lokalen Systeme zu berücksichtigen
+  ("`globale Integritätsbedingungen"' ableiten?) bzw. -- schlimmer noch --
+  Integritätsbedingungen, die in lokalen Anwendungen verborgen sind
+
+ \item \betonung{Nichtsdestotrotz}: Beschrittener Weg!
+\end{itemize}
+
 \nextchapter
 
 \appendix
@@ -1273,6 +1914,22 @@ werden \help{das fehlt auf meiner Kopie} nicht stabil)
   \acro{LOB}{Large Object}
   \acro{CLOB}{Character Large Object}
   \acro{BLOB}{Binary Large Object}
+  \acro{GKS}{Globales konzeptuelles Schema}
+  \acro{GPS}{Globales Partitionierungsschema}
+  \acro{GAS}{Globales Allokationsschema}
+  \acro{LKS}{Lokales konzeptuelles Schema}
+  \acro{LIS}{Lokales internes Schema}
+  \acro{UDF}{\help{Was ist UDF? Was heißt das?}}
+  \acro{SQL}{Structured Query Language}
+  \acro{SFW}{\sql{Select}"~\sql{From}"~\sql{Where} \acroextra{Klausel im \ac{SQL}}}
+  \acro{ACID}{Atomarity, Consistency, Isolation, Durability
+    \acroextra{\betonung{die} Eigenschaft von Transaktionen}}
+  \acro{IMS}{\help{Was heißt IMS?}\acroextra{Datenbank von IBM}}
+  \acro{DL/1}{Data Language 1 \acroextra{\ac{DML} für \ac{IMS}}}
+  \acro{DML}{Data Modelling Language}
+  \acro{LRS}{Lokale Repräsentationsschemata}
+  \acro{LES}{Lokale externe Schemata}
+  \acro{DDL}{Data Definition Language}
 \end{acronym}
 
 \clearpage
