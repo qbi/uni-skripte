@@ -1,8 +1,4 @@
 % Einige zusätzliche Informationen für rubber
-%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
-% rubber: clean $base.thm
-%  rubber soll nach Änderungen an der Datei nochmal bauen
-% rubber: watch $base.thm
 % rubber: makeidx.tool      xindy
 % rubber: makeidx.language  german-din
 % rubber: makeidx.modules   indexstyle.xdy
@@ -1906,6 +1902,175 @@ und Zusammenfassungsphase
 \end{itemize}
 
 \nextchapter
+
+\section{Allgemeines/""Grundlagen}
+
+Bekanntes aus DBS~1/2 u.\,a.:
+\begin{itemize}
+ \item Algebraausdrücke als formale Grundlage der internen Darstellung von
+  (\ac{SLQ}-)""Sprachanweisungen sowie als
+  Ausführungs"~/""Optimierungsgrundlage (vgl. insb. DBS~1 Kapitel~6.3)
+ \item Reale Repräsentation hiervon in DBMS: Operatorbäume/""Query"=Graphen
+  $\rightarrow$ Ausführungsplan
+ \item Auf dieser Basis: Äquivalenztransformationen der Algebraausdrücke
+  (berühmte 26~Regeln aus DS~1) $\rightarrow$ Query Rewrite (durch das
+  DBMS/""den Optimizer)
+ \item Rule-base Optimization vs. cost"=based Optimization
+ \item heutige DBMS"=Produkte arbeiten alle (?) mit cost"=based Optimization
+ \item Grundlage/""Kostenmaß? Geschätzte (vorhergesagte) Ausführungskosten auf
+  Basis von I/O"~Kosten (Anzahl der I/O"~Operationen) (plus CPU"~Kosten)
+ \item "`Datenbasis"' des Optimizers: Datenbankkatalog = Schemadaten +
+  Statistikdaten; beides ja "`Daten über Daten"', also Metadaten
+ \item Probleme der Optimierung:
+  \begin{itemize}
+   \item Statistikdaten nie in allen Fällen detailiert genug bzw. aktuell
+    genug für eine "`perfekte"' Kostenvorhersage bzw. auch nicht umfassend
+    genug (Beispiele!), auch weil natürlich \# Statistikdaten $\ll$ \# Daten
+    sein soll! (und nicht umgekehrt ;-)
+  \end{itemize}
+
+ \item "`Vorhersagen sind schwierig, insbesondere wenn sie die Zukunft
+  betreffen"' \ldots{}
+  \begin{itemize}
+   \item (genaue) I/O"~Kostenvorhersage (Pufferung, Caching,
+    "`Buffer-Hit-Ratio"') \ldots{} vor allem bei
+    \begin{itemize}
+     \item Mehrbenutzerbetrieb (parallele Anfragen)
+     \item Multi"=Query"=Fall (serielle Anfragen)
+    \end{itemize}
+   \item (genaue) CPU"~Kostenvorhersage (Pfadlängenberechnung durch Optimizer?
+    \lightning{}) quasi unmöglich $\rightarrow$ Ersatzmaße, etwa Anzahl
+    bestimmter Subsystemaufrufe im DBMS (berechneter Wert)
+  \end{itemize}
+
+ \item Vorhersageaufwand (Kosten für die Optimierung) Lösungen:
+  \begin{itemize}
+   \item Verwendung (Benutzer, \emph{Administrator}!) verschiedener
+    Optimization Levels (à la DB2)
+   \item keine vollständige Enumeration (kein komplettes Durchrechnen aller
+    möglichen (äquivalenten) Ausführungspläne, sondern "`intelligents
+    Abschneiden"' mit bekannten Techniken der heuristischen Optimierung)
+  \end{itemize}
+\end{itemize}
+
+Resümee: \betonung{Alle} genannten Probleme (klassischer, zentralisierter
+DBMS) treten \betonung{natürlich} auch im verteilten Fall auf und diese sogar
+\betonung{verschärft}/mit zusätzlichen Lösungsanforderungen!
+
+$\rightarrow$ Forderung nach Bestimmung \betonung{des} "`global optimalen"'
+Ausführungsplans wird relaxiert wegen zu hohen Brechnungsaufwands, zu
+erwartenden zu genauen Eingabedaten für die Berechnung (denn: Lösungsraum bei
+Optimierung in verteilten Datenbanksystemen ist nochmal wesentlich größer als
+bei zentralisierten (Beispiel?), Problem der Datengenauigkeit (Statistiken)
+ist verschärft (wegen eventueller Heterogenität der Knoten-DBS, Autonomie,
+\ldots{}), Übertragungskosten, \ldots{})
+
+Unterscheidung zwischen globaler Optimierung und lokaler Optimierung.
+
+Vorgehen "`im Großen"'
+\begin{itemize}
+ \item Analyse und Zerlegung einer globalen Anfrage (die also Daten an
+  mehreren Knoten tangiert) in lokale Anfragen, Versuch dabei insbesondere,
+  Zwischenergebnisse bzw. zu übertragende Tupelmengen möglichst klein zu
+  halten (Heuristik! Hängt in wahrheit natürlich von Übertragungsraten und
+  "~geschwindigkeit ab, Verhältnis zwischen Übertragungsgeschwindigkeit
+  einerseits und I/O- und CPU"~Geschwindigkeit andererseits)
+
+ \item Lokale Anfragen werden lokal ("`vor Ort"') optimiert (und natürlich
+  ausgeführt)
+
+  $\rightarrow$ Es gibt i.\,d.\,R. nicht \betonung{den} globalen Optimizer,
+  der in seine Kalkulation alle, auch lokal vorliegene Informationen
+  einzubeziehen versucht ("`Herkules"=Aufgabe"')
+
+ \item Erkennen überflüssiger Teilaufgaben im verteilten Fall noch wichtiger
+  als im zentralen!! (warum?)
+\end{itemize}
+
+\section{Transformation von globalen Anfragen in lokale}
+
+Situation: Relation~\sqlrel{R} existiert nicht physisch "`am Stück"', sondern
+nur virtuell: Teile der Relation (Partitionen) liegen physisch auf
+verschiedenen Knoten der teilten Datenbank
+
+Anfrage wird nun gegen \sqlrel{R} gestellt (impliziert also eine globale
+Anfrage)
+
+Möglichkeiten der Anfrageausführung (prinzipiell):
+\begin{itemize}
+ \item mit Materialisierung von \sqlrel{R}
+  \begin{procontra}
+   \pro einfach zu implementieren
+   \semicontra (meist) zu kostspielig (insbesondere wenn für Anfrageausführung
+    gar nicht "`ganz \sqlrel{R}"' gebraucht wird)
+  \end{procontra}
+
+ \item ohne Materialisierung von \sqlrel{R}
+  \begin{procontra}
+   \contra erfordert Transformation der globalen Anfrage in lokale
+    ausführbare Teilanfragen
+   \semipro \help{Das kann ich bei mir nicht lesen}
+  \end{procontra}
+\end{itemize}
+
+Voraussetzungen für Anfragetransformationen:
+\begin{itemize}
+ \item Formales Regelwerk für Transformationen $\rightarrow$
+  Äquivalenztransformationen vorhanden
+ \item Formale Beschreibung (algebraische Spezifikation) der Abbildungen
+  zwsichen globaler Relation auf Partitionen
+\end{itemize}
+$\rightarrow$ gestattet dann insgesamt algebraische Substitution
+
+Beispiel: Relation \sqlrel{Teile} sei partitioniert
+\begin{sqlblock}
+  \sqlrel{Teile}$_{1}$ = SL$_{0\leq\sqlattr{TeileNr}<300}$ \sqlrel{Teile}\\
+  \sqlrel{Teile}$_{2}$ = SL$_{300\leq\sqlattr{TeileNr}<500}$ \sqlrel{Teile}\\
+  \sqlrel{Teile}$_{3}$ = SL$_{500\leq\sqlattr{TeileNr}<\infty}$ \sqlrel{Teile}
+\end{sqlblock}
+$\rightarrow$ \sql{\sqlrel{Teile} := \sqlrel{Teile}$_{1}$ UN
+\sqlrel{Teile}$_{2}$ UN \sqlrel{Teile}$_{3}$}
+
+Anfrage: \sql{Q1 := SL$_{\sqlattr{Preis}>700}$ \sqlrel{Teile}}
+
+Mögliche Herangehensweise:
+\begin{itemize}
+ \item Einsetzen: \sql{Q1' := SL$_{\sqlattr{Preis}>700}$ (\sqlrel{Teile}$_{1}$
+  UN \sqlrel{Teile}$_{2}$ UN \sqlrel{Teile}$_{3}$)}
+
+ \item Ausmultiplizieren (Regel aus der Menge der zulässigen
+  Äquivalenztransformationen) \sql{Q1'' := SL$_{\sqlattr{Preis}>700}$
+  \sqlrel{Teile}$_{1}$ UN SL$_{\sqlattr{Preis}>700}$ \sqlrel{Teile}$_{2}$
+  UN SL$_{\sqlattr{Preis}>700}$ \sqlrel{Teile}$_{3}$}
+\end{itemize}
+
+In \emph{Operatorbaumschreibweise} (und damit nahe an tatsächlicher interner
+Repräsentation im DBMS Query Processor): \todo{Bild einfügen}
+
+Bemerkungen hierzu:
+\begin{itemize}
+ \item \sql{Q1'} und \sql{Q1''} beziehen sich nicht mehr auf (virtuelle)
+  Relation \sqlrel{Teile}, sondern auf Basis"=Relationen (Partitionen)
+  \sqlrel{Teile}$_{1,2,3}$ $\rightarrow$ physische Relationen
+  ("`Relationsteile"')
+ \item \sql{Q1'} und \sql{Q1''} enthalten -- verteilte Datenbank! --
+  Freiheitgrade:
+  \begin{itemize}
+   \item Wo (an welchem Knoten) werdei die Vereinigungsoperationen ausgeführt?
+   \item Wo (an welchem Knoten) die Selektionen?
+  \end{itemize}
+\end{itemize}
+
+Für den Ausführungsplan müssen derartige Festlegungen getroffen werden mit
+eventuell folgendem Ergebnis: \todo{Bild einfügen}
+
+\betonung{Ob} es so gemacht wird, entscheidet der globale Optimizer
+(berücksichtigt, wie erwähnt, Übertragungskosten (vielleicht sind Verbindungen
+B"~A, C"~A, D"~A unterschiedlich schnell?), Knotenleistungscharakteristika etc.)
+
+Frage: Könnte es eventuell noch "`ganz anders"' gehen? Benötigt man wirklich
+die Knoten B,C,D alle? $\rightarrow$ nur, wenn alle drei wirklich potentiell
+zum Ergebnis beitragen können
 
 \appendix
 \clearpage
