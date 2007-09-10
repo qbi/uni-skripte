@@ -109,6 +109,11 @@ if [ -e ${src%.*}.idx ] && ! [ -e ${src%.*}.idx ]; then
     echo "W: die Indexdatei ${src%.*}.idx existiert, ist aber leer."
 fi
 
+if [ -e missfont.log ]; then
+    echo "F: TeX hat die Datei missfont.log erstellt"
+    cat missfont.log
+fi
+
 rubber --clean --pdf --inplace $src
 rubber --clean --ps --inplace $src
 
