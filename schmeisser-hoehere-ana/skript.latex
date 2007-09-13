@@ -18,8 +18,11 @@
 %  * den Text mehr ausbauen, damit Tex die Möglichkeit zum Umbruch
 %    bekommt. Innerhalb von Matheumgebungen kann Tex keine richtige
 %    Stelle für einen Umbruch finden. Daher ist Text immer besser!
+%  * Fortlaufende Nummerierung der Umgebungen. Die getrennte Nummerierung hat
+%    den Nachteil, dass man beim Suchen nur an einer passenden Umgebung
+%    entscheiden kann, ob man weiter vor oder weiter hinten suchen soll.
 
-\documentclass[halfparskip*,german,draft,twoside]{scrreprt}
+\documentclass[halfparskip*,ngerman,draft,twoside]{scrreprt}
 
 \usepackage[l2tabu,orthodox]{nag}
 \usepackage{ifthen}
@@ -30,7 +33,7 @@
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
 
 \usepackage[latin1]{inputenc}
-\usepackage{ngerman}
+\usepackage{babel}
 
 \usepackage[T1]{fontenc}
 \usepackage{mathptmx}
@@ -117,11 +120,20 @@
 \newcommand*{\Z}{\mathbb{Z}}
 \newcommand*{\K}{\mathbb{K}}
 \newcommand*{\linOp}{\mathscr{L}}  % \mathcal{L}
-\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
-\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+\newcommand*{\help}[1]{\ifthenelse{\boolean{mmode}}{\text{\help{#1}}}%
+                                  {\textcolor{green}{help: #1}}}
+\newcommand*{\todo}[1]{\ifthenelse{\boolean{mmode}}{\text{\todo{#1}}}%
+                                  {\textcolor{red}{todo: #1}}}
 
-\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
-\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\sprod}{\langle}{\rangle}
+
+\newcommand*{\gdw}[1]{\ifthenelse{\boolean{mmode}}{\Leftrightarrow}%
+                          {genau dann\ifthenelse{\equal{#1}{}}{}{ #1}, wenn}}
+\newcommand*{\gdwdef}[1]{\ifthenelse{\boolean{mmode}}{:\Leftrightarrow}%
+       {genau dann\ifthenelse{\equal{#1}{}}{}{ #1}, wenn\textsubscript{def}}}
+\newcommand*{\impliziert}{\Rightarrow}
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
@@ -139,7 +151,6 @@
 \newcommand*{\fue}{\ifthenelse{\boolean{mmode}}%
                              {\text{f.\,ü.}}{f.\,ü.\xspace}}
 \newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
-\newcommand*{\sprod}[1]{\langle #1 \rangle}
 
 \renewcommand*{\epsilon}{\varepsilon}
 \renewcommand*{\phi}{\varphi}
@@ -576,10 +587,10 @@
   Für einen normierten Vektorraum $(E, \norm{\cdot})$ (oder allgemein einen
   metrischen Raum) gilt:
   \begin{enumerate}
-   \item\label{en1} der Teilraum $M\subset E$ heißt genau dann \highl{dicht}
-    in $E$, wenn es zu jedem $x\in E$ eine Folge $(x_{j})_{j}\subset M$ gibt,
+   \item\label{en1} der Teilraum $M\subset E$ heißt \gdwdef{\highl{dicht} in $E$}
+    es zu jedem $x\in E$ eine Folge $(x_{j})_{j}\subset M$ gibt,
     deren Grenzwert in $E$ liegt: $x_{j} \rightarrow x \in E$.
-   \item $E$ heißt genau dann \highl{separabel}, wenn es eine
+   \item $E$ heißt \gdwdef{\highl{separabel}} es eine
     abzählbare und dichte Teilmenge in $E$ gibt.
   \end{enumerate}
 \end{defini}
@@ -905,54 +916,55 @@ x\in U \exists r>0\colon K_{r}(x)\subset U$
 
 \begin{defini}
   \label{def:praekompakt}
-  $(X,d)$ metrischer Raum
-
-  $A\subset X$ heißt \highl{präkompakt} $:\Longleftrightarrow$ jede
-  Folge in $A$ besitzt eine konvergente Teilfolge (deren Häufungspunkt
-  nicht in $A$ liegen muss).
+  $(X,d)$ sei ein metrischer Raum. Eine Teilmenge $A\subset X$ heißt
+  \gdwdef{\highl{präkompakt}} jede Folge in $A$ eine konvergente Teilfolge
+  besitzt (deren Häufungspunkt nicht in $A$ liegen muss).
 \end{defini}
 
 \begin{folger}
   \begin{enumerate}
-   \item $A$ kompakt $\Longleftrightarrow$ $A$ präkompakt und
-    abgeschlossen
-   \item $A$ präkompakt $\Longrightarrow$ $A$ beschränkt
+   \item Eine Teilmenge $A$ ist \gdw{\highl{kompakt}} sie präkompakt und
+    abgeschlossen ist.
+   \item Wenn eine Teilmenge $A$ präkompakt ist, dann sie auch beschränkt.
   \end{enumerate}
 \end{folger}
 
 \begin{defini}
-  $\epsilon>0, B\subset X$ heißt
-  \highl[epsilon-Netz@$\epsilon$-Netz]{$\epsilon$-Netz} für
-  $A\subset X$ $:\Longleftrightarrow$ $A\subset \bigcup_{x\in B}
-  K_{\epsilon}(x)$
+  Für ein gegebenes $\epsilon>0$, bezeichnet man die Menge $B\subset X$
+  als \highl{$\epsilon$"~Netz} von $A\subset X$ \gdwdef{}
+  \begin{gather*}
+    A\subset \bigcup_{x\in B}  K_{\epsilon}(x)
+  \end{gather*}
 \end{defini}
 
 \begin{satz}\label{satz:1.1.3/2}
-  $(X,d)$ vollständiger metrischer Raum
-
-  Dann gilt: $A\subset X$ präkompakt $\Longleftrightarrow \forall
-  \epsilon>0 \exists$ für $A$ ein endliches $\epsilon$-Netz.
+  Für einen vollständig, metrischen Raum $(X,d)$ gilt:
+  $A\subset X$ ist \gdw{präkompakt} für alle $\epsilon>0$ ein
+  endliches $\epsilon$-Netz für $A$ existiert.
 
   \begin{proof}
     \begin{description}
-     \item["`$\Rightarrow$"'] Es sei $A$ präkompakt.
+     \item["`$\impliziert$"'] Wir zeigen die umgekehrte
+      Aussage\footnote{$A\impliziert B$ ist semantisch äquivalent zu $\neg
+      B\impliziert\neg A$}, also dass unter der Prämisse, dass es ein
+      $\epsilon>0$ gibt, für das kein endliches $\epsilon$"~Netz in $A$
+      existiert, $A$ nicht präkompakt ist.
 
-      Ann: $\exists \epsilon \wedge \nexists$ endliches
-      $\epsilon_{0}$-Netz für $A$.
+      Dazu konstruieren wir eine Folge $(x_{j})_{j\in\N}\subset A$, für die
+      jeweils zwei Gleider $x_{k}$ und $x_{j}$ (mit $k\ne j$) einen Abstand
+      $d(x_{j},x_{k})>\epsilon_{0}$ haben. Keine Teilfolge diese Folge kann
+      also konvergieren und somit ist $A$ nicht präkompakt.
 
-      Es sei $x_{1}\in A \Longrightarrow \exists x_{2}\in A$ mit
-      $d(x_{1},x_{2})>\epsilon_{0}$
+      Für $\epsilon_{0}>0$ existiere kein $\epsilon_{0}$"~Netz (Prämisse),
+      d.\,h. man kann zu einen Punkt~$x_{1}\in A$ einen Punkt~$x_{2}\in A$
+      finden, der nicht zum $\epsilon_{0}$"~Netz gehört. Die Punkte haben also
+      den Abstand $d(x_{1},x_{2})>\epsilon_{0}$. Ebenso existiert ein
+      $x_{3}\in A$, für das $d(x_{1},x_{3})>\epsilon_{0}$ und
+      $d(x_{2},x_{3})>\epsilon_{0}$. Dies lässt sich beliebig fortsetzen zu
+      der Folge $(x_{j})_{j}$.
 
-      $x_{1},x_{2}\in A \Longrightarrow \exists x_{3}\in A$ mit
-      $d(x_{1},x_{3})>\epsilon_{0} \wedge d(x_{2},x_{3})>\epsilon_{0}$
-      usw.
-      $x_{1},\ldots,x_{j-1}\in A \Longrightarrow \exists x_{j}\in A\colon
-      d(x_{k}, x_{j}) >\epsilon_{0}\quad \forall k=1,\ldots,j-1$
+      \help{Warum existiert $x_{3}$?}
 
-      $\Longrightarrow$ $\exists$ Folge $(x_{j})_{j\in\N}\subset A\colon
-      d(x_{j}, x_{k})>\epsilon_{0}\quad\forall j,k$ $\Longrightarrow$
-      $(x_{j})\subset A$ hat keine konv. Teilf. -- Widerspruch zur
-      Vorraussetzung
      \item["`$\Leftarrow$"'] Es sei $M\subset A$ unendliche Menge.
 
       Für jedes $\epsilon$ wird $M$ durch endlich viele
@@ -10097,7 +10109,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
       f(\phi) &= \int_{-\infty}^{\infty} e^{x}\sin e^{x} \phi(x)\,dx\\
       &= \int_{-\infty}^{\infty} (\cos e^{x})'\phi(x)\,dx\\
       &= -\int_{-\infty}^{\infty} \cos e^{x} \phi'(\phi)\,dx&&\text{mit
-         partieller Integration}\help{\phi ist Testfunktion und damit auf
+         partieller Integration}\help{$\phi$ ist Testfunktion und damit auf
          dem Rand 0 -- irgendwie wichtig}
     \end{align*}
 
@@ -10934,7 +10946,7 @@ $g\in S(\R^{3})$ $\Rightarrow$
 \begin{align*}
   (T\ast g)(x) &= T_{y}(g(x-y))\\
   &= \sqrt{\frac{\pi}{2}} \frac{1}{t} \int_{\abs{y-x}=t}
-     g(y)\,dS_{y}}
+     g(y)\,dS_{y}
 \end{align*}
 
 \begin{satz}[Lösung von \eqref{eq:44}]
