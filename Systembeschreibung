@@ -1,0 +1,56 @@
+Diese Datei ist eine kurze Beschreibung des Systems rund um die Skripte.
+
+Verwendete Resourcen:
+· TeX Live (ca. 1GB)
+· Perl (für skript-check)
+· rubber, Xindy (zum Bauen der Dokumente)
+· PHP für die Web‐Seiten
+· E‐Mail (Commit‐Meldungen, Ausgabe des Übersetzungslaufs, Formularmeldungen
+  über die Web‐Seite)
+· ein Verzeichnis, das zum Austausch zwischen den SVN‐Hooks und dem Web
+  dient (ca. 100 MB)
+· Cron‐Job für wöchentliche Statistiken des Webs, sendet E‐Mail an die
+  Mailingliste
+
+Web:
+· zur Zeit wird PHP für die Web‐Seiten verwendet
+· benötigen Zugriff auf das Verzeichnis mit den Dokumenten
+· Index wird basierend auf den Inhalt der Datei available_skripte erzeugt;
+  diese wird von SVN hooks (neue Skripte eintragen, alte löschen) und von Hand
+  (Namen des Dozenten und der Vorlesung eintragen) bearbeitet
+· Fehlermeldungen, die über das Web‐Formular kommen, werden per E‐Mail an die
+  Mailingliste im URZ weitergeleitet
+
+SVN‐Hooks:
+· pre-commit
+  + schreibt alle Ausgaben in eine Datei in /tmp
+  + prüft auf nichtleere Commit‐Beschreibungen
+  + prüft, dass nur Änderungen an einem Unterverzeichnis (=einem Skript)
+    gemacht werden
+
+· post-comit
+  + schreibt alle Ausgaben in eine Datei in /tmp
+  + für Skripte wird werkzeuge/erzeuge-ausgabe.sh aus dem SVN geholt und
+    das Skript übersetzt, die Ausgabe wird per E‐Mail an die
+    Commit‐Mailingliste gesandt
+  + bei Änderungen an der Web‐Seite (Dateien in web/) werden die
+    entsprechenden Dateien verändert
+  + für alle Commits wird im Web‐Verzeichnis die Datei $skript.Changelog
+    aktualisiert
+  + überträgt alle erzeugten Dateien dem Benutzer joergs mit Hilfe des
+    Programms give_away, damit nur dessen Quota belastet wird
+
+vom post-commit‐Hook genutzte Skripte:
+· erzeuge-ausgabe.sh
+  + Shell‐Skript
+  + macht einen Checkout in /tmp
+  + übersetzt PS und PDF mit rubber
+  + kopiert die Ausgaben ins Web
+  + erstellt tar.gz mit und ohne den Zwischendateien im Web
+  + führt einfache Qualitätsprüfungen
+  + holt skript-check aus dem SVN und lässt es über die LaTeX‐Dateien
+    laufen
+
+· skript-check
+  + Perl‐Skript
+  + prüft den LaTeX‐Code
