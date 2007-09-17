@@ -128,6 +128,7 @@
 \newcommand*{\Z}{\mathbb{Z}}
 \newcommand*{\K}{\mathbb{K}}
 \newcommand*{\linOp}{\mathscr{L}}  % \mathcal{L}
+\newcommand*{\vIntOp}{\mathcal{K}}          % Volterascher Integraloperator
 \newcommand*{\help}[1]{\ifthenelse{\boolean{mmode}}{\text{\help{#1}}}%
                                   {\textcolor{green}{help: #1}}}
 \newcommand*{\todo}[1]{\ifthenelse{\boolean{mmode}}{\text{\todo{#1}}}%
@@ -4235,10 +4236,11 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
 \end{bemerk}
 
 \begin{lemma}
+  \label{lem:1.4.4/1}
   $E$ ist ein Banachraum und es existiere $S := \sum_{j=0}^{\infty} A^{j}\in
-  \mathcal{L(E)}$.
+  \linOp{L}(E)$.
 
-  Dann $\exists (I-A)^{-1}=S$.
+  Dann $\exists (I-A)^{-1}=S\in\linOp(E)$.
 
   \begin{proof}
     Es gilt: $SA = \Bigl(\sum_{j=0}^{\infty} A^{j}\Bigr) A =
@@ -4259,10 +4261,22 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
     ersterem folgt $I-A$ ist injektiv, aus dem zweiten folgt $I-A$ ist
     surjektiv. Daraus folgt wiederrum, dass $(I-A)^{-1}$ existiert und
     gleich $S\in\linOp(E)$ ist.
+
+    \begin{description}
+     \item[Frage] Wann konvergiert $\sum_{j=0}^{\infty} A^{j}$?
+      \begin{enumerate}
+       \item $\sum \norm{A^{j}} \leq \sum \norm{A}^{j} <\infty$, falls
+        $\norm{A}<1$ $\Rightarrow$ $\exists\sum A^{j}$
+       \item Wurzelkriterium:
+        $\exists\lim_{j\rightarrow\infty} \norm{A^{j}}^{\frac{1}{j}} = \alpha
+        < 1$ $\Rightarrow$ Konvergenz oder $\alpha>1$ $\Rightarrow$ Divergenz.
+      \end{enumerate}
+    \end{description}
   \end{proof}
 \end{lemma}
 
 \begin{lemma}
+  \label{lem:1.4.4/2}
   $a_{j}\geq 0$. Es gelte:
   \begin{gather}\label{eq:19}
     a_{j+k} \leq a_{j}a_{k}\qquad \forall j,k
@@ -4271,7 +4285,8 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
   \inf_{j} \sqrt[j]{a_{j}}$
 
   \begin{proof}
-    Es sei $a := \inf_{j} \sqrt[j]{a_{j}}$. Dann $\exists k\in\N\colon a \leq
+    Es sei $a := \inf_{j} \sqrt[j]{a_{j}}$ (existiert, da $\sqrt[j]{a_{j}}\geq0$).
+    Dann $\exists k\in\N\colon a \leq
     \sqrt[k]{a_{k}} < a+\epsilon$ $(\epsilon>0)$ $\Longrightarrow$ $a_{k}
     < (a+\epsilon)^{k}$
 
@@ -4293,6 +4308,239 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
     $\epsilon\rightarrow 0$ $\Longrightarrow$ a=$\lim_{j\rightarrow\infty}\sqrt[j]{a_{j}}$
   \end{proof}
 \end{lemma}
+
+\begin{lemma}
+  $A\in\linOp(E)$. Dann existiert
+  \begin{gather*}
+    \lim_{j\rightarrow\infty} \norm{A^{j}}^{\frac{1}{j}}
+       = \inf_{j} \norm{A^{j}}^{\frac{1}{j}}
+       \leq \norm{A}
+  \end{gather*}
+
+  \begin{proof}
+    Verwende \autoref{lem:1.4.4/2} mit $a_{j}=\norm{A^{j}}$.
+  \end{proof}
+\end{lemma}
+
+\begin{defini}
+  $A\in\linOp(E)$.
+  \begin{gather*}
+    r(A) :=\lim_{j\rightarrow\infty} \sqrt[j]{\norm{A^{j}}}
+  \end{gather*}
+  heißt \highl{Spektralradius} von $A$. ($r(A)\leq\norm{A}$)
+\end{defini}
+
+\begin{satz}
+  $E$ Banachraum, $A\in\linOp(E)$
+  \begin{enumerate}
+   \item $\abs{\lambda}>r(A)$ $\Rightarrow$ $\exists (A-\lambda
+    I)^{-1}\in\linOp(E)$ und es gilt:
+    \begin{gather*}
+      (\lambda I-A)^{-1} = \sum_{j=0}^{\infty} \frac{A^{j}}{\lambda^{j+1}}
+         \qquad \text{(\highl{Neumann'sche Reihe})}
+    \end{gather*}
+    Es gilt: $\norm{(\lambda I-A)^{-1}} \leq
+    \frac{1}{\abs{\lambda}-\norm{A}}$, falls $\abs{\lambda}> \norm{A}$.
+
+   \item Die Neumannsche Reihe konvergiert \gdw{in $\linOp(E)$}
+    $\abs{\lambda}>r(A)$ ist.
+  \end{enumerate}
+
+  \begin{proof}
+    $\lambda I-A = \lambda(I-\frac{1}{\lambda}A)$ $\Rightarrow$
+    $(\lambda I -A)^{-1} = \frac{1}{\lambda}(I-\frac{1}{\lambda}A)^{-1}$
+
+    Es ist $r(\frac{1}{\lambda}A) = \frac{1}{\abs{\lambda}}r(A) < 1$
+    $\Rightarrow$ $\exists\lim_{j\rightarrow\infty}
+    \sqrt[j]{\norm{(\frac{1}{\lambda}A)^{j}}} < 1$
+
+    \autoref{lem:1.4.4/1} $\Rightarrow$ $\exists (I-\frac{1}{\lambda}A)^{-1} =
+    \sum_{j=0}^{\infty} \frac{A^{j}}{\lambda^{j}}\in\linOp(E)$
+    $\Longrightarrow$ (1)
+
+    zu (2) zeigen: $\exists\sum_{j=0}^{\infty} \frac{A^{j}}{\lambda^{j+1}}$
+    $\Rightarrow$ $r(A)<\abs{\lambda}$
+    $\Rightarrow$ $\norm{\frac{A^{j}}{\lambda^{j}}} \rightarrow 0$
+    $\Rightarrow$ $\forall j\geq j_{0}$ ist $\norm{\frac{A^{j}}{\lambda^{j}}}
+    < 1$
+    $\Rightarrow$ $\frac{1}{\abs{\lambda}} (\norm{A^{j}}^{\frac{1}{j}})<1$
+
+    $\Rightarrow$ $\frac{1}{\abs{\lambda}}\inf_{j} \norm{A^{j}}^{\frac{1}{j}}<1$
+
+    mit \autoref{lem:1.4.4/2} $\Rightarrow$ $\frac{1}{\abs{\lambda}}\lim_{j}
+    \norm{A^{j}}^{\frac{1}{j}}<1$
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  möglich: $\exists (A-\lambda I)^{-1}\in\linOp$, aber Neumannsche Reihe
+  divergent.
+
+  \begin{center}
+    \input{bem1-4-4-3.pdf_t}
+  \end{center}
+  \begin{itemize}
+   \item $\exists\lambda\in S_{A}$ mit $\abs{\lambda} = r(A)$ (Beweis:
+    \cite[S.~255]{Werner})
+   \item $S_{A}$ kompakt, $M_{A}$ offen (Übungen)
+  \end{itemize}
+\end{bemerk}
+
+\subsection{Volterrasche Integralgleichungen}
+
+Betrachten: $\Omega=(a,b)\subset\R$ beschränkt, $K(x,y)\colon[a,b]\times[a,b]
+\rightarrow \C$ Lebesgue"=messbar mit $K\in L_{\infty}([a,b]\times[a,b])$ und
+$K(x,y)=0$ für $x<y$.
+
+\begin{center}
+  \input{sec1-4-5.pdf_t}
+\end{center}
+
+\begin{defini}
+  $\vIntOp$ heißt \highl{Volterra'scher Integraloperator}
+  \begin{gather*}
+    \vIntOp f(x) := \int_{a}^{x} K(x,y)f(y)\,dy \qquad\text{für $x\in[a,b]$}
+  \end{gather*}
+\end{defini}
+
+\begin{bemerk}
+  $K\in L_{\infty}([a,b]\times[a,b]) \subset L_{2}([a,b]\times[a,b])$
+  $\Rightarrow$ spezieller (Fredholmscher) Integraloperator. Aus Satz 1.5.3/3
+  \help{oder soll das 1.\,4.3/3 sein?} \todo{link} folgt: $\vIntOp\colon
+  L_{2}\rightarrow L_{2}$ kompakt. Außerdem $0\in S_{\vIntOp}$.
+\end{bemerk}
+
+\begin{satz}
+  \begin{enumerate}
+   \item $K\in L_{\infty}([a,b]\times[a,b]), K(x,y) =0$ für $x<y$. Dann
+    \begin{itemize}
+     \item $\vIntOp\colon L_{2}([a,b]) \rightarrow L_{2}([a,b])$ kompakt
+     \item $S_{\vIntOp}=\{0\}$
+     \item Die Integralgleichung $\lambda f-\vIntOp f=g$ besitzt für
+      $\lambda\ne$0 und $g\in L_{2}([a,b])$ genau eine Lösung $f\in
+      L_{2}([a,b])$. Diese lässt sich mit Hilfe der Neumannschen Reihe
+      berechnen und konvergiert in $L_{2}$.
+    \end{itemize}
+
+   \item $K\colon[a,b]\times[a,b] \rightarrow C$ sei stetig auf
+    $D=\{(x,y)\colon a \leq x\leq b, a\leq y\leq x\}$ und $K(x,y)=0$ für
+    $x<y$. Dann:
+    \begin{itemize}
+     \item $\vIntOp\colon C([a,b]) \rightarrow C([a,b])$ kompakt
+     \item $S_{\vIntOp}=\{0\}$
+     \item $\lambda f-\vIntOp f=g$ besitzt für jedes $g\in C([a,b])$ genau
+      eine Lösung $f\in C([a,b])$. Diese lässt sich mit Hilfe der Neumannschen
+      Reihe (konvergent in $C([a,b])$) berechnen.
+    \end{itemize}
+  \end{enumerate}
+
+  \begin{proof}
+    \begin{schritte}
+     \item $\vIntOp\colon C([a,b]) \rightarrow C([a,b])$ kompakt.
+      \begin{align*}
+        \abs{\vIntOp f(x') -\vIntOp f(x)}
+           &\leq \int_{a}^{x} \abs{\underbrace{K(x',y) -
+           K(x,y)}_{\leq\epsilon\text{~für~}\abs{x-x'}\leq\delta_{0}(\epsilon)}}
+           \abs{f(y)}\,dy
+           + \int_{x}^{x'} \abs{\underbrace{K(x',y)}_{\leq\norm{K}_{\infty}}}
+           \abs{f(y)}\,dy\\
+        & \epsilon(b-a)\norm{f}_{\infty} + \abs{x-x'} \norm{K}_{\infty}
+           \norm{f}_{8}\\
+        & c\epsilon\norm{f}_{\infty}\quad\text{für~} \abs{x-x'} \leq\delta(\epsilon)
+      \end{align*}
+      $\Rightarrow$ $\{\vIntOp f\colon\norm{f}_{C}\leq1\} \subset C([a,b])$
+      präkompakt. $\norm{\vIntOp}_{C\rightarrow C} \leq
+      (b-a)\norm{K(x,y)}_{\infty}$
+
+     \item $\vIntOp\colon L_{2}\rightarrow L_{2}$ z.\,z.
+      Spektralradius~$r(\vIntOp) =0$ oder $\vIntOp\colon C\rightarrow C$
+      z.\,z. Spektralradius~$r(\vIntOp)=\lim_{j\rightarrow\infty}
+      \sqrt[j]{\norm{\vIntOp^{j}}}$
+      \begin{align*}
+        (\vIntOp^{2}f)(x)
+           &= \int_{a}^{x} \big(\int_{a}^{y} K(y,z) f(z)\,dz\big) K(x,y)\,dy\\
+        &= \int_{a}^{x} \underbrace{\big(\int_{z}^{x} K(y,z)
+           k(x,y)\,dy\big)}_{=: K_{2}(x,z)} f(z)\,dz &\text{mit Fubini}
+      \end{align*}
+      Iteration $\Rightarrow$
+      \begin{gather*}
+        (\vIntOp^{j}f)(x) = \vIntOp(\vIntOp^{j-1}f)(x)
+           = \int_{a}^{x} \underbrace{\big(\int_{z}^{x} K_{j-1}(x,y)
+           K(y,z)\,dy\big)}_{=: K_{j}(x,z)} f(z)\,dz
+      \end{gather*}
+
+      Es sei $m :=\norm{K(x,y)}_{\infty}$. Dann: (Induktion)
+      \begin{enumerate}
+       \item $\abs{K_{2}(x,z)}\leq \abs{x-z} m^{2}$
+       \item Sei $\abs{K_{j}(x,z)} \leq \abs{x-z}^{j-1}
+        \cdot\frac{m^{j}}{(j-1)!}$ $\Rightarrow$ $\abs{K_{j+1}(x,z)} \leq
+        \abs{x-z}^{j} \frac{m^{j+1}}{j!}$
+      \end{enumerate}
+
+      \begin{proof}
+        o.\,B.\,d.\,A. $z<x$
+        \begin{gather*}
+          \abs{K_{j+1}} (x,z)
+             \leq \int_{z}^{x} \abs{K_{j}(x,y)}
+             \underbrace{\abs{K(y,z)}}_{\leq m}\,dy
+             \leq \frac{m^{j+1}}{(j-1)!} \int_{z}^{x} (x-y)^{j}\,dy \leq
+             \frac{m^{j+1}}{j!} (x-z)^{j+1}
+        \end{gather*}
+      \end{proof}
+      $\Rightarrow$
+      \begin{align*}
+        \abs{\vIntOp^{j}f(x)}
+           &\leq \int_{a}^{x} \abs{K_{j}(x,y)} \abs{f(y)}\,dy &f\in C([a,b])\\
+        &\leq \frac{m^{j}}{(j-1)!} \int_{a}^{x} (x-y)^{j-1}\,dy \norm{f}_{\infty}\\
+        &\leq \frac{m^{j}}{j!} (x-a)^{j} \norm{f}_{\infty}
+           \leq \frac{m^{j}(b-a)^{j}}{j!} \norm{f}_{\infty}
+      \end{align*}
+      $\Rightarrow$ $\norm{\vIntOp^{j}}_{C\rightarrow C} \leq
+      \frac{m^{j}(b-a)^{j}}{j!}$ $\Rightarrow$ $r(\vIntOp)\leq m(b-a) \lim
+      \frac{1}{\sqrt[j]{j}!} = 0$
+
+      $f\in L_{2}([a,b])$ $\Rightarrow$
+      \begin{align*}
+        \abs{\vIntOp^{j}f(x)}^{2}
+           &\leq \int_{a}^{x} \abs{K_{j}(x,y)}^{2}\,dy \norm{f}^{2}_{2}&
+           \text{Hölder}\\
+        &\leq \frac{m^{2j}}{((j-1)!)^{2}} \int_{a}^{x} (x-y)^{2j-2}\,dy
+           \norm{f}_{2}^{2}\\
+        &\leq \frac{m^{2j}}{((j-1)!)^{2}} \frac{(x-a)^{2j-1}}{2j-1}
+           \norm{f}_{2}^{2}
+      \end{align*}
+
+      \begin{align*}
+        \Rightarrow \norm{\vIntOp^{j}f}_{2}^{2}
+           &\leq \frac{m^{2j}}{((j-1)!)^{2}} \frac{1}{2j-1} \int_{a}^{b}
+           (x-a)^{2j-1}\,dx \norm{f}_{2}^{2}\\
+        \Rightarrow \norm{\vIntOp^{j}f}_{2}
+           &\leq \frac{m^{j}}{j!}
+           \frac{(b-a)^{j}}{\sqrt{\underbrace{2j(2j-1)}_{\geq j^{2}}}}
+           \norm{f}_{2}\\
+        \Rightarrow \norm{\vIntOp^{j}}_{L_{2}\rightarrow L_{2}}
+           &\leq \frac{m^{j}}{(j-1)!} \cdot\frac{(b-a)^{j}}{j}
+      \end{align*}
+      $\Rightarrow$ $r(\vIntOp) \leq m(b-a)\frac{1}{\lim \sqrt[j]{j!}} =0$
+    \end{schritte}
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  $(\vIntOp f)(X) = \int_{0}^{x}f(y)\,dy$, $f\in C([0,1])$
+  \begin{enumerate}
+   \item Dann: $\vIntOp\colon C([0,1]) \rightarrow C([0,1])$ injektiv (HDI
+    \help{Was heißt das?}) $R(\vIntOp)\subset C([0,1])$ echt, da $(\vIntOp
+    f)(0)=0$
+
+   \item $(\lambda I-\vIntOp)^{-1} g(x) = \sum_{j=0}^{\infty}
+    \frac{1}{\lambda^{j+1}} \vIntOp^{j} g(x) = \sum_{j=0}^{\infty}
+    \frac{1}{\lambda^{j+1}} \int_{0}^{x} K_{j}(x,y)g(y)\,dy = \dotsb$
+    ($\vIntOp_{0}=I$) Summe und Integral vertauschen, falls gleichmäßig
+    konvergent $\dotsb = \frac{1}{\lambda} g(x) + \int_{0}^{x}
+    \big(\sum_{j=1}^{\infty} \frac{K_{j}(x,y)}{\lambda^{j+1}}\big) g(y)\,dy$
+  \end{enumerate}
+\end{bemerk}
 
 \chapter{Operatoren im Hilbertraum}
 \section{Hilberträume}
