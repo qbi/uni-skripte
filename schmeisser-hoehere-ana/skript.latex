@@ -144,6 +144,7 @@
 \newcommand*{\gdwdef}[1]{\ifthenelse{\boolean{mmode}}{:\Leftrightarrow}%
        {genau dann\ifthenelse{\equal{#1}{}}{}{ #1}, wenn\textsubscript{def}}}
 \newcommand*{\impliziert}{\Rightarrow}
+\newcommand*{\beschr}[1]{\big|_{#1}}  % Beschränkung auf #1
 
 % Zum Markieren von wichtigen Begriffen. Diese sollen hervorgehoben
 % und in den Index aufgenommen werden.
@@ -4113,7 +4114,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
   Einbettung"')
 \end{bsp}
 
-\begin{satz}[Integraloperatoren]
+\begin{satz}[Integraloperatoren]\label{satz:int-op}
   $\Omega\subset \R^{n}$ offen und beschränkt. Betrachten:
   $(\mathcal{K}f)(x) := \int_{\Omega} K(x,y)f(y)\,dy\quad x\in\Omega$
   \begin{enumerate}
@@ -4332,7 +4333,7 @@ Funktion $f\in L_{p}(\R^{n})\ (1\leq p\leq \infty)$ als
   heißt \highl{Spektralradius} von $A$. ($r(A)\leq\norm{A}$)
 \end{defini}
 
-\begin{satz}
+\begin{satz}\label{satz:1.4.4}
   $E$ Banachraum, $A\in\linOp(E)$
   \begin{enumerate}
    \item $\abs{\lambda}>r(A)$ $\Rightarrow$ $\exists (A-\lambda
@@ -5964,7 +5965,7 @@ mit Vielfachheit~$n$} $\dim N(A-\lambda I)=n$, $n$ Eigenvektor zu $\lambda$
 \gdw{} $u\ne0\quad Au=\lambda u$, $\lambda$ Eigenwert $\Rightarrow$
 $\lambda\in S_{A}$
 
-\begin{satz}
+\begin{satz}\label{satz:2.3.2}
   Ist $A\in\linOp(H)$ kompakt und $\dim H=\infty$, dann gelten folgenden
   Aussagen:
   \begin{enumerate}
@@ -6048,179 +6049,266 @@ $\lambda\in S_{A}$
   \end{proof}
 \end{satz}
 
-\help{Hier fehlen zwei Vorlesungen}
+\subsection{Spektraldarstellung kompakter selbstadjungierter Operatoren}
+\label{sec:2.3.3}
 
-$A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
-\sum_{j=1}^{\infty} \lambda_{j}\sprod{x, x_{j}} x_{j}$
+Betrachen $A\in\linOp(H)$ kompakt, $A^{*}=A$.
 
-\begin{schritte}
- \item $\exists \infty$-viele Eigenwerte
+wissen: \autoref{satz:2.3.2} $\Rightarrow$ $S_{A} = \{0\}\cup \{
+\text{Eigenwerte endlicher Vielfachheit}\}$ höchstens abzählbar unendlich
+viele, dann 0 einziger Häufungspunkt.
 
-  -Lemma- $\Rightarrow$ $\exists$ Eigenwert $\lambda_{1}\in \R$ mit
-  $\abs{\lambda_{1}} = \sup_{\norm{x}=1} \abs{\sprod{Ax, x}}$ wählen
-  Eigenvektor $x_{1}\in N(A-\lambda_{1}I), \norm{x_{1}}=1$
+weiterhin: \autoref{satz:1.4.4} $A\in\linOp(H)$ $\Rightarrow$ $S_{A}\subset
+\{\lambda\in\C\colon \abs{\lambda}\leq r(A)\}$ Spektralradium
+$r(A)=\lim_{j\rightarrow\infty} \sqrt[j]{\norm{A}^{j}} \leq\norm{A}$
 
-  Setzen: $H_{2} := \{x\in H\colon \sprod{x, x_{1}} = 0\}$ und
-  betrachten $A\big|_{H_{2}} \colon H_{2} \rightarrow H_{2}$, denn $\sprod{Ax,
-  x_{1}} =^{A=A^{\ast}} \sprod{x, Ax_{1}} = \lambda_{1} \sprod{x, x_{1}} = 0$ ist kompakt und selbstadjungiert
+\autoref{satz:2.2.1/3} $A\in\linOp(H), A=A^{*}$ $\Rightarrow$
+\begin{gather*}
+  \norm{A} = \sup_{\norm{x}=1} \abs{\sprod{Ax,x}}
+\end{gather*}
 
-  Lemm $\Rightarrow$ $\exists$ Eigenwert $\lambda_{2}$ mit $\abs{\lambda_{2}}
-  = \sup_{\norm{x}=1, x\in H_{2}} \abs{\sprod{Ax, x} } =
-  \norm{A}_{\linOp(H_{2})} = \abs{\lambda_{1}}$
+\begin{lemma}\label{lem:4}
+  $H$ Hilbertraum
+  \begin{enumerate}
+   \item $A\in\linOp(H), A=A^{*}$ $\Rightarrow$ Eigenwerte sind reell,
+    Eigenvektoren zu verschiedenen Eigenwerten stehen senkrecht aufeinander
 
-  wählen Eigenvektor $x_{2} (\norm{x_{2}}=1) \in N(A-\lambda_{2}I)\cap H_{2}
-  \Rightarrow \sprod{x_{2}, x_{1}} = 0$
-
-  setzen: $H_{3} := \{x\in H_{2}\colon \sprod{x, x_{2}} = 0\} = \{ x\in
-  H\colon \sprod{x,x_{1}} = \sprod{x, x_{2}} = 0 \}$
-  \ldots Iterieren \ldots
-  $H_{n} := \{ x\in H_{n-1} \colon \sprod{x, x_{n-1}} = 0\} = \{ x\in
-  H\colon \sprod{x,x_{j}} = 0 (j=1,\ldots,n-1)\}$
-
-  $\lambda_{k}$ Eigenwerte von $A$, $A x_{k} = \lambda_{k} x_{k}$ wobei
-  $x_{k}\in H_{k} (k=1,\ldots,n)$
-
-  $\abs{\lambda_{k}} = \sup_{\norm{x}=1, x\in H_{k}} \abs{\sprod{Ax, x}} =
-  \norm{A}_{\linOp(H_{k})} (k=1,\ldots,n)$ $\Longrightarrow$
-  $(x_{j})_{j}$ ist ONS, $H=H_{1} \supset H_{2} \supset H_{3} \supset
-  \ldots \supset H_{n} \supset \ldots$
-
-  Annahme: $H_{n} = \{0\} \Longrightarrow \forall x\in H \Rightarrow
-  \sprod{x, x_{j}} = 0 (j=1,\ldots,n-1) \Longleftrightarrow x=0$
-  $\Longrightarrow$ $\{ x_{1},\ldots,x_{n-1} \}$ ONB in $H$
-  $\Longrightarrow$ $\dim H < \infty$
-
-  $\Longrightarrow$ $\exists \infty$-viele Eigenwerte: $\abs{\lambda_{1}}
-  \geq \abs{\lambda_{2}} \geq \ldots \geq \abs{\lambda_{n}} \geq \abs{\lambda_{n-1}}
-  \geq \ldots \xrightarrow{n\rightarrow\infty} 0$ nach
-  \autoref{satz:2.3.2/2} und \autoref{satz:2.3.2/1}
-
- \item $x \in H$ $\Rightarrow$ $Ax = \sum_{j=1}^{\infty} \lambda_{j}
-  \sprod{x, x_{j}} x_{j}$ wobei $(\lambda_{j}), (x_{j})$ wie aus
-  Schritt~1.
-
-  Es gilt: $\norm{Ax- \sum_{j=1}^{n} \lambda_{j}\sprod{x, x_{j}}
-  x_{j}}^{2} = \norm{A \underbrace{(x-\sum_{j=1}^{n} \sprod{x, x_{j}}
-  x_{j})}_{\in H_{n+1}, \text{da senkrecht auf $H_{n}: \sprod{x -
-  \sum_{j=1}^{n} \sprod{x,x_j}, x_{k}}=0 $}}} \leq
-  \norm{A}^{2}_{\linOp(H_{n+1})} \norm{x-\sum_{j=1}^{n} \sprod{x, x_{j}}
-  x_{j}}^{2}$
-
-  $=^{Lemma} \abs{\lambda_{n+1}}^{2} ( \norm{x}^{2} - \sum_{j=1}^{n}
-  \abs{\sprod{x,x_{j}}}^{2}) \leq \abs{\lambda_{n+1}} \norm{x}^{2}
-  \xrightarrow{n\rightarrow0} 0$ nach Schritt~1
- \item Ann.: $\exists$ Eigenwert $\lambda\ne0, \lambda \ne \lambda
-  (\forall j\in \N)$. Sei $x$ Eigenvektor: $Ax= \lambda x, x\ne0$
-  $\Longrightarrow$ $x= \frac1{\lambda} Ax =^{2.Schritt}
-  \sum_{j=1}^{\infty} \frac{\lambda_{j}}{\lambda} \sprod{x, x_{j}}
-  x_{j} \Rightarrow \sprod{x, x_{k}} = \frac{\lambda_{j}}{\lambda}
-  \sprod{x, x_{k}} \Rightarrow \sprod{x, x_{k}} =0
-  (\forall k) $
-
-  $\Rightarrow$ $x=0$ Widerspruch zu der Annahme x sei Eigenwert
-
- \item 0 keine Eigenwert $\Rightarrow$  $(x_{j})_{j}$ ONB
-  Es sei $x\in H$ $\Rightarrow ^{(x_{j}) ONB}$ $\sum_{j=1}^{\infty}
-  \abs{\sprod{x, x_{j}}}^{2} < \infty$ (Beselsche Ungleichung
-  \autoref{eq:bessel})
-
-  $\Rightarrow$ $s_{n} = \sum_{j=1}^{n} \sprod{x, x_{j}} x_{j}$
-  bilden Cauchyfolge in $H$
-
-  $H$ vollständig $\Rightarrow$ $\exists$ $y\in H$ mit $y=
-  \sum_{j=1}^{\infty} \sprod{x, x_{j}} x_{j}$
-  $\Rightarrow$ $Ay = \sum_{j=1}^{\infty} \lambda_{j} \sprod{x,x_{j}}
-  x_{j} \Longrightarrow^{2.Schritt} Ax = Ay \Rightarrow
-  A(x-y) = 0 \xrightarrow{0 kein EW} x=y$
-\end{schritte}
-
-\begin{bemerk}
-  $(A-\lambda I)x=y, A\in \linOp(H)$ kompakt, $A=A^{\ast}, y\in H,
-  \lambda \ne 0$
-
-  Annahme: $(\lambda_{j})$ EW, $(x_{j})_{j}$ EV, ONS $\Rightarrow$ $Ax =
-  \sum_{j=1}^{\infty} \lambda_{j} \sprod{x, x_{j}} x_{j}$
-  $\Leftrightarrow$ $\sum_{j=1}^{\infty} \lambda_{j} \sprod{x, x_{j}}
-  x_{j} - \lambda x = y$ $\Leftrightarrow$ $ x = -\frac1{\lambda}
-  y + \frac{1}{\lambda} \sum_{j=1}^{\infty} \lambda_{j} \sprod{x, x_{j}}
-  x_{j}$
-  $\Rightarrow$ $\sprod{x, x_{k}} = -\frac{1}{\lambda} \sprod{y, y_{k}} +
-  \frac1{\lambda} \lambda_{k} \sprod{x, x_{k}} (k\in\N)$
-
-  $\lambda \ne \lambda_{k} \Rightarrow \sprod{x, x_{k}}
-  (1-\frac{\lambda_{k}}{\lambda}) = -1 \frac1{\lambda} \sprod{y,y_{k}}
-  \Rightarrow \sprod{x, x_{k}}$
-\end{bemerk}
-
-\begin{satz}[Hilbert'sche Methode]
-  $H$ Hilbertraum, $A\linOp(H)$ kompakt und selbstadjungiert,
-  $\lambda \ne 0$. Es seien $(\lambda_{j})_{j}$ Eigenwerte und
-  $(x_{j})_{j}$ das ONS von Eigenvektoren aus -Satz-1-\todo{ref ergänzen}
-
-  Dann gilt: Die Gleichung $(A-\lambda I) x=y$ ist genau dann lösbar,
-  wenn $\lambda \perp N(A-\lambda I)$. Durch
-  \begin{gather}\label{eq:444}
-    x = -\frac1{\lambda} y - \frac1{\lambda}
-    \sum_{\lambda_{j}\ne\lambda}
-    \frac{\lambda_{j}}{\lambda-\lambda_{j}} \sprod{y, x_{j}}
-    x_{j}
-  \end{gather}
-  ist eine Lösung von $(A-\lambda I)x=y$ gegeben.
-
-  Sämtliche Lösungen sind durch $x+N(A-\lambda I)$ gegeben.
+   \item $A\in\linOp(H)$ kompakt, $A=A^{*}$ $\Rightarrow$ es existiert ein
+    Eigenwert~$\lambda$ mit $\abs{\lambda}=\norm{A}=\sup_{\norm{x}=1}
+    \abs{\sprod{Ax,x}}$
+  \end{enumerate}
 
   \begin{proof}
-    Reihe in \autoref{eq:444} ist konvergent:
+    \begin{enumerate}
+     \item $\lambda\sprod{x,x}=\sprod{Ax,x} =^{A=A^{*}} \sprod{x,Ax} =
+      \overline{\lambda}\sprod{x,x}$ $\Rightarrow$ $\lambda=\overline{\lambda}$
+
+      $Ax= \lambda x$ und $Ay=\mu y, \mu\ne\lambda$ $\Rightarrow$
+      $\lambda\sprod{x,y}=\sprod{Ax,y}=\sprod{x,Ay}=\mu\sprod{x,y}$
+      $\Rightarrow$ $\sprod{x,y}=0$
+
+     \item $\alpha:=\sup_{\norm{x}=1} \abs{\sprod{Ax,x}}$ $\Rightarrow$
+      $\exists (x_{n})_{n}, \norm{x_{n}}=1$ mit $\abs{\sprod{Ax_{n},x_{n}}}
+      \rightarrow \alpha$
+
+      $A$ kompakt und $\sprod{Ax_{n},x_{n}}$ beschränkt $\Rightarrow$
+      o.\,B.\,d.\,A. $Ax_{n}\rightarrow\tilde{x}\in H$ (sonst Teilfolge),
+      $\sprod{Ax_{n},x_{n}}\rightarrow\lambda$ $\abs{\lambda}=\alpha$
+
+      $\Rightarrow$
+      \begin{gather*}
+        0\leq\norm{Ax_{n}-\lambda x_{n}}^{2}
+           = \underbrace{\norm{Ax_{n}}^{2}}_{\leq(\norm{A}\norm{x_{n})^{2}}
+           \leq\alpha^{2} =\lambda^{2}}
+           - 2 \lambda \sprod{Ax_{n},x_{n}} + \lambda^{2}
+           \leq 2\lambda^{2} - 2\lambda\sprod{Ax_{n},x_{n}}
+           \xrightarrow{n\rightarrow\infty} 0
+      \end{gather*}
+
+      Außerdem: $\lambda x_{n} = Ax_{n} - (\underbrace{A-\lambda
+      I}_{\rightarrow0})x_{n} \rightarrow \tilde{x}$
+
+      $\Rightarrow$ $x_{n}\rightarrow\frac{\tilde{x}}{\lambda} = x$
+
+      $A\in\linOp(H)$ $\Rightarrow$ $Ax_{n} \rightarrow Ax
+      =^{\tilde{x}=\lambda x} \lambda x$
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+\begin{satz}\label{satz:2.3.3/1}
+  $H$ Hilbertraum $\dim=\infty$, $A\in\linOp(H)$ kompakt und $A^{*}=A$. Dann
+  gilt:
+  \begin{enumerate}
+   \item Das Spektrum besteht aus 0 und abzählbar unendlich vielen reellen
+    Eigenwerten endlicher Vielfachheit, die sich in 0 häufen.
+
+   \item Es sei $(\lambda_{j})_{j}$ eine Folge aller Eigenwerte, geordnet nach
+    Vielfachheit und der Größe der Beträge:
     \begin{gather*}
-      s_{n} = \sum_{j=1, \lambda_{j}\ne\lambda}^{n}
-      \frac{\lambda_{j}}{\lambda-\lambda_{j}} \sprod{y, x_{j}}
-         x_{j}
+      \abs{\lambda_{1}} \geq \abs{\lambda_{2}} \geq \dotsb\geq
+         \abs{\lambda_{j}} \geq \dotsb \rightarrow 0
+    \end{gather*}
+    Dann existiert ein ONS von Eigenvektoren $(x_{n})_{n=1}^{\infty}$ mit
+    \begin{enumerate}
+     \item $Ax_{j} = \lambda_{j}x_{j}$ und
+     \item ist $H_{n}:= \{x\in H\colon\sprod{x,x_{j}}=0 \forall x_{j},
+      j=1,\dotsc,n-1\}$ so gilt:
+      \begin{gather*}
+        \abs{\lambda_{n}}
+           = \sup_{\substack{x\in H_{n}\\\norm{x}=1}} \abs{\sprod{Ax,x}}
+           = \norm{A}_{\linOp(H_{n})}
+      \end{gather*}
+    \end{enumerate}
+
+   \item Für alle $x\in H$ gilt (Spektraldarstellung):
+    \begin{gather*}
+      Ax = \sum_{n=1}^{\infty} \lambda_{n}\sprod{x,x_{n}} x_{n}
     \end{gather*}
 
-    $\Rightarrow$
+   \item Ist $\lambda=0$ kein Eigenwert, so ist $(x_{n})_{n}$ eine ONB in $H$.
+    Insbesondere ist dann $H$ separabel.
+  \end{enumerate}
+
+  \begin{proof}
+    \begin{schritte}
+     \item es existieren abzählbar unendlich viele Eigenwerte, \autoref{lem:4}
+      $\Rightarrow$ es existiert eine Eigenwert $\lambda_{1}$ mit
+      $\abs{\lambda_{1}} = \sup_{\substack{x\in H\\\norm{x}=1}}
+      \abs{\sprod{Ax,x}}$ wählen zugehörigen Eigenvektor~$v_{1}\in
+      N(A-\lambda_{1}I)$ mit $\norm{v_{1}}=1$
+
+      setzen $H_{2}:=\{x\in H\colon\sprod{x,v_{1}}=0\}$ und betrachten
+      $A\beschr{H_{2}}\colon H_{2}\rightarrow H_{2}$, denn $\sprod{Ax,
+      v_{1}} = \sprod{x,Av_{1}} = \sprod{x,\lambda_{1}x_{1}}$ $\Rightarrow$
+      $\forall x\in H_{2}\colon Ax\in H_{2}$
+
+      $A\beschr{H_{2}}$ ist kompakt und selbstadjungiert.
+
+      \autoref{lem:4} $\Rightarrow$ $\exists$ Eigenwert $\lambda_{2}$ mit
+      $\abs{\lambda_{2}} = \sup_{\substack{x\in H_{2}\\\norm{x}=1}}
+      \abs{\sprod{Ax,x}} \leq\abs{\lambda_{1}}$
+
+      wählen $v_{2}\in N(A-\lambda_{2}I)\cap H_{2}$ $\Rightarrow$, setzen
+      $H_{3}:=\{x\in H_{2}\colon \sprod{x,v_{2}}=0\}$ $\sprod{v_{2},v_{1}}=0$
+
+      \ldots{} Iterieren \ldots{}
+
+      $H_{n}:=\{x\in H_{n-1}\colon \sprod{x,v_{n-1}=0}\} = \{x\in H\colon
+      \sprod{x,v_{k}}=0, k=1,\dotsc,n-1\}$, $\lambda_{k}$ Eigenwert zu
+      Eigenvektor $v_{k}\in H_{k}$, $\abs{\lambda_{k}} = \sup_{\substack{x\in
+      H_{k}\\\norm{x}=1}} \abs{\sprod{Ax,x}}$, $\norm{v_{k}}=1$
+
+      $\Rightarrow$ ONS $(v_{k})_{k}$, $H=H_{1}\supset H_{2} \supset H_{3}
+      \supset \dotsb \supset H_{k} \supset \dotsb$
+
+      Anm.: $H_{n}=\{0\}$ $\Rightarrow$ $\forall x\colon \sprod{x,v_{k}}=0$
+      für $k=1,\dotsc,n$ $\Rightarrow$ $x=0$ $\Rightarrow$ $(v_{k})_{k=1}^{n}$
+      ONB in $H$ $\Rightarrow$ $\dim H<\infty$ Widerspruch
+
+      Aus \autoref{enu:6} und \autoref{enu:7} in \autoref{satz:2.3.2} folgt:
+      $\abs{\lambda_{n}} \xrightarrow{n\rightarrow\infty} 0$
+
+     \item Spektraldarstellung $(\lambda_{k})_{k}$ aus 1.~Schritt, auch
+      $(v_{k})_{k}$
+      \begin{align*}
+        \norm{Ax - \sum_{k=1}^{n} \lambda_{k}\sprod{x,v_{k}}v_{k}}^{2}
+           &= \norm{A - \underbrace{\big(x-\sum_{k=1}^{n}\sprod{x,v_{k}}
+           v_{k}\big)}_{\in H_{n+1}, \text{~da~}\perp H_{n}}}^{2}\\
+        & \leq \underbrace{\norm{A}^{2}_{\linOp(H_{n+1})}}
+           _{=\abs{\lambda_{n+1}\text{~nach \autoref{satz:2.2.1/3}}}}
+           \norm{x- \sum_{k=1}^{n}\sprod{x,v_{k}} v_{k}}^{2}\\
+        &\leq \abs{\lambda_{n+1}} \big(\norm{x}^{2} - \sum_{k=1}^{n}
+           \abs{\sprod{x,v_{k}}v_{k}}^{2}\big) \leq \abs{\lambda_{n+1}}
+           \norm{x}^{2} \xrightarrow{n\rightarrow\infty} 0\quad\text{nach
+           1.~Schritt}
+      \end{align*}
+
+     \item Annahme: Es existiert der Eigenwert $\lambda\ne0,
+      \lambda\ne\lambda_{k} \forall k$ mit $Av=\lambda v, v\ne0$
+
+      $\Rightarrow$ $\lambda v = Av =
+      \sum_{k=1}^{\infty}\lambda_{k}\sprod{v,v_{k}} v_{k}$ $\Rightarrow$
+      $\lambda\sprod{v,v_{k}} = \lambda_{j}\sprod{v,v_{j}}$ $\Rightarrow$
+      $\sprod{v,v_{j}}=0 \forall j$ $\Rightarrow$ $\lambda v=Av=0$
+      $\Rightarrow$ Widerspruch zu $v\ne0$
+
+     \item $\lambda=0$ kein Eigenwert, $x\in H$, $(v_{k})_{k=1}^{\infty}$ ONS
+      aus 1.~Schritt
+      \begin{align*}
+        &\Rightarrow \sum_{k=1}^{\infty} \abs{\sprod{x,v_{k}}}^{2} < \infty
+           &\text{nach Besselscher Ungleichung \autoref{satz:2.1.3/1}}\\
+        &\Rightarrow s_{n} := \sum_{k=1}^{n} \sprod{x,v_{k}} v_{k}
+           &\text{ist Cauchyfolge}\\
+        &\Rightarrow \exists y\in H, \sum_{k=1}^{\infty} \sprod{x,v_{k}} v_{k}
+           =y\\
+        &\Rightarrow Ay = \sum_{k=1}^{\infty} \lambda_{k} \sprod{x,v_{k}}
+           v_{k} =Ax &\text{nach 2.~Schritt}\\
+        &\Rightarrow A(x-y) = 0 \Rightarrow x=y &\text{da 0 kein Eigenwert}\\
+        &\Rightarrow x=\sum_{k=1}^{\infty} \sprod{x,v_{k}} v_{k} \Rightarrow
+           (v_{k})_{k} \text{~ist ONB in $H$}
+      \end{align*}
+    \end{schritte}
+  \end{proof}
+\end{satz}
+
+Anwendung: $A\in\linOp(H)$ kompakt und selbstadjungiert, $y\in H$,
+$\lambda\ne0$, gesucht $x$ mit $(A-\lambda I) x=y$
+\begin{align*}
+  &\Leftrightarrow \sum \lambda_{j} \sprod{x,x_{j}} -\lambda x = y\\
+  &\Leftrightarrow x = -\frac{1}{\lambda} y + \frac{1}{\lambda}
+     \sum_{j=1}^{\infty} \lambda_{j} \sprod{x,x_{j}} x_{j}\\
+  &\Rightarrow \sprod{x,x_{k}} = -\frac{1}{\lambda} \sprod{y,x_{k}} +
+     \frac{1}{\lambda} \lambda_{k} \sprod{x,x_{k}}\\
+  &\Rightarrow \sprod{x,x_{k}} (1-\frac{\lambda_{k}}{\lambda}) =
+     -\frac{1}{\lambda} \sprod{y,x_{k}}\\
+  &\Rightarrow \sprod{x,x_{k}} = -\frac{1}{\lambda-\lambda_{k}} \sprod{y,x_{k}},
+     \text{~falls $\lambda\ne\lambda_{k}$}
+\end{align*}
+$\lambda=\lambda_{k}$ $\Rightarrow$ $\sprod{y,x_{k}}=0$
+
+\begin{satz}[Hilbertsche Methode]\label{satz:2.3.3/2}
+  $H$ Hilbertraum, $A\in\linOp(H)$ kompakt und selbstadjungiert,
+  $\lambda\ne0$. Es seien $(\lambda_{j})_{j=1}^{\infty}$ Eigenwerte und
+  $(x_{j})_{j}$ ONS von Eigenvektoren wie in \autoref{satz:2.3.3/1}.
+  $\Rightarrow$ Die Gleichung $(A-\lambda I) x=y$ ist genau dann lösbar, wenn
+  $y\perp N(A-\lambda I)$. Durch
+  \begin{gather}\label{eq:444}
+    x= -\frac{1}{\lambda} y - \frac{1}{\lambda} \sum_{\lambda_{j}\ne\lambda}
+       \frac{\lambda_{j}}{\lambda-\lambda_{j}} \sprod{y,x_{j}} x_{j}
+  \end{gather}
+  wird eine Lösung beschrieben. Sämtliche Lösungen sind durch $x+N(A-\lambda
+  I)$ gegeben.
+
+  \begin{proof}
+    \autoref{eq:444} sinnvoll, da Reihe konvergent:
+    \begin{gather*}
+      s_{n} = \sum_{\substack{j=1\\\lambda_{j}\ne\lambda}}^{n}
+         \frac{\lambda_{j}}{\lambda-\lambda_{j}} \sprod{y,x_{j}} x_{j},
+         \lambda_{j} \rightarrow 0\\
+      \Rightarrow \norm{s_{n}-s_{m}}^{2} = \sum_{j=m+1}^{n}
+         \abs{\frac{\lambda_{j}}{\lambda-\lambda_{j}}}^{2}
+         \abs{\sprod{y,x_{j}}}^{2}
+         \leq c \sum_{j=m+1}^{n} \abs{\sprod{y,x_{j}}}^{2} \rightarrow 0
+         \text{nach Besselscher Ungleichung}
+    \end{gather*}
+    $n>m\geq n_{0}$
+
+    $H$ vollständig $\Rightarrow$ $s_{n} \rightarrow s\in H$. Sei $x$ wie in
+    \autoref{eq:444} $\Rightarrow$
     \begin{align*}
-      \norm{s_{n}-s_{m}}^{2} &=
-         \norm{\sum_{j=m+1}^{n}\frac{\lambda_{j}}{\lambda-\lambda_{j}}
-         \sprod{y, x_{j}} x_{j}}^{2}\\
-      n > m > m_{0}\qquad &= \sum_{j=m+1}^{n}
-         \abs[\Big]{\frac{\lambda_{j}}{\lambda-\lambda_{j}}}^{2} \abs{\sprod{y,
-         x_{j}}}^{2} \leq c \sum_{j=m+1}^{n} \abs{\sprod{y,x_{j}}}^{2}
-         \xrightarrow{m,n\rightarrow\infty} 0
-         (Beselsche Ungleichung)
+      (A-\lambda I) x &=
+         -\frac{1}{\lambda}(A-\lambda I)y - \frac{1}{\lambda}
+         \sum_{\lambda_{j}\ne\lambda} \frac{\lambda_{j}}{\lambda-\lambda_{j}}
+         \sprod{y,x_{j}} \underbrace{(A-\lambda
+         I)x_{j}}_{=(\lambda_{j}-\lambda)x_{j}}\\
+      &= y-\frac{1}{\lambda} Ay + \frac{1}{\lambda}
+         \underbrace{\sum_{\lambda_{j}\ne\lambda} \lambda_{j}\sprod{y,x_{j}}
+           x_{j}}_{=Ay\text{~nach \autoref{satz:2.3.3/1}, falls $\lambda$ kein
+         Eigenwert}}
     \end{align*}
-    $\Rightarrow$ $s_{n} \rightarrow s\in H$
+    $\Rightarrow$ $(A-\lambda I)x=y$, falls $\lambda$ kein Eigenwert, dann
+    eindeutig lösbar.
 
-    Es sei $x$ wie in \autoref{eq:444} $\Rightarrow$ $(A-\lambda I)x =
-    -\frac1{\lambda} (A-\lambda I) y - \frac1{\lambda}
-    \sum_{\lambda_{j}\ne\lambda} \sprod{y, x_{j}}
-    (\lambda_{j}-\lambda) x_{j} (da Ax_{j} = \lambda_{j} x_{j}) =
-    -\frac1{\lambda} Ay + y + \frac1{\lambda} \sum_{\lambda_{j} \ne
-    \lambda} \lambda_{j} \sprod{y, x_{j}} x_{j}$
-
-    \begin{faelle}
-     \item $\lambda$ kein Eigenwert $\Rightarrow$ $\sum_{\lambda_{j} \ne
-      \lambda} \lambda_{j} \sprod{y, x_{j}} x_{j} = Ay$ nach
-      -Satz-1-\todo{ref ergänzen} $\Rightarrow$ $(A-\lambda I)x =y$
-     \item $\lambda$ Eigenwer, $y\perp N(A-\lambda I)$ (notwendig nach
-      Fredholscher Alternative)
-
-      -Satz-1-\todo{ref ergänzen} $\Rightarrow$ $Ay = \sum_{j=1}^{\infty} \lambda_{j}
-      \sprod{y, x_{j}} x_{j} = \sum_{\lambda_{j} \ne \lambda}
-      \lambda_{j} \sprod{y, x_{j}} x_{j}$, da $y \perp x_{j}$ für
-      $x_{j}\in N(A-\lambda I)$
-
-      $\Longrightarrow$ $(A-\lambda I) x =y$
-    \end{faelle}
+    $\lambda$ Eigenwert, $\lambda\perp N(A-\lambda I)$ (notwendig nach
+    \autoref{satz:2.3.1}, Fredholmsche Alternative) $\Rightarrow$
+    \begin{gather*}
+      Ay = \sum_{j=1}^{\infty} \lambda_{j}\sprod{y,x_{j}} x_{j}
+         = \sum_{\lambda_{j}\ne\lambda} \lambda_{j}\sprod{y,x_{j}} x_{j}
+    \end{gather*}
+    da $y\perp x_{j}$ für $x_{j}\in N(A-\lambda I)$
   \end{proof}
 \end{satz}
 
 \begin{bemerk}
-  Integraloperatoren: $\mathcal{K}f(x) := \int_{\Omega} k(x,y) f(y)\,dy$
-  ($x\in\Omega\subset\R^{n}$ beschränkt und offen)
-
-  $k\in L_{2}(\Omega\times \Omega)=H, k(x,y) = \overline{k(x,y)}$ \fue
-  $\Rightarrow$ $\mathcal{K} H\rightarrow H$ kompakt,
-  $\mathcal{K}=\mathcal{K}^{\ast}$
+  Integraloperatoren mit symmetrischen Kern $k(x,y)= \overline{k(y,x)}, k\in
+  L_{2}(\Omega\times \Omega)$ $\Rightarrow$
+  \begin{gather*}
+    \vIntOp f(x) = \int_{\Omega} k(x,y) f(y)\,dy \qquad (x\in\Omega)
+  \end{gather*}
+  ($x\in\Omega\subset \R^{n}$ beschränkt und offen)
+  $\vIntOp\in\linOp(H)$ kompakt und selbstadjungiert. Eigenwerte und
+  Eigenvektoren $\Rightarrow$ Lösung nach \autoref{satz:2.3.3/2}
 \end{bemerk}
 
 \begin{bemerk}
@@ -6230,10 +6318,15 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
 
 \begin{bsp}
   $Af(x) := xf(x)$ mit $x\in [0,1], f\in L_{2}([0,1]) = H$
+
+  $A\in \linOp(H), \norm{A} \leq 1, A=A^{\ast}, S_{A}\subset[-1,1]$
   \begin{itemize}
-   \item $A\in \linOp(H), \norm{A} \leq 1, A=A^{\ast}, \lambda \notin
+   \item $\lambda \notin
     [0,1] \Longrightarrow \exists (A-\lambda I)^{-1}\in \linOp(H)
     \Rightarrow \lambda \in M_{A}$
+    \begin{gather*}
+      (A-\lambda I)^{-1} g = \frac{1}{t-\lambda} g(t)\qquad t\in[0,1]
+    \end{gather*}
    \item Da $\lambda\in [0,1]$, ist $\lambda \in S_{A}$ und
     kein Eigenwert von $A$. Denn aus $Af = \lambda f$ folgt $xf(x) = \lambda
     f(x)\ \fue$ und somit ist
@@ -6242,9 +6335,34 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
       f(x) = 0\ \fue
     \end{gather*}
 
-
     $S_{A} = [0,1]$
+
+   \item $\lambda\in[0,1]$ $\Rightarrow$ $\lambda\in S_{A}$, o.\,B.\,d.\,A.
+    $\epsilon>0$, so dass $[\lambda,\lambda+\epsilon] \subset[0,1]$ (sonst
+    $[\lambda-\epsilon,\lambda]$)
+    \begin{gather*}
+      f_{\epsilon} (x) :=
+         \begin{cases}
+           \frac{1}{\sqrt{\epsilon}}& t\in[\lambda,\lambda+\epsilon]\\
+           0& t\notin[\lambda,\lambda+\epsilon]
+         \end{cases}
+    \end{gather*}
+    $\Rightarrow$ $\norm{f_{\epsilon}(x)}_{2}=1$
+
+    $(A-\lambda E) f_{\epsilon} = (t-\lambda) f_{\epsilon}$, $(A-\lambda I)$
+    injektiv, da $\lambda$ kein Eigenwert $R(A-\lambda I) \subsetneq H$
+
+    \begin{gather*}
+      \norm{(A-\lambda E)f_{\epsilon}}^{2}
+         = \frac{1}{\epsilon} \int_{\lambda}^{\lambda+\epsilon}
+         (t-\lambda)^{2}\,dt
+         = \frac{\epsilon^{2}}{3} \xrightarrow{\epsilon\rightarrow0} 0
+    \end{gather*}
+    $\Rightarrow$ $(A-\lambda I)$ nicht beschränkt
   \end{itemize}
+
+  später: $[0,1]=C_{A}$ stetiges Spektrum, $(f_{\frac{1}{j}})_{j}$ Weylsche
+  Folge für $\lambda$
 \end{bsp}
 
 \subsection{Normaldarstellung kompakter Operatoren}
@@ -6276,7 +6394,7 @@ $A\in \mathcal{L}$ kompakt, $A = A^{\ast}, \dim H = \infty, Ax =
     $\lambda$ EW $\Rightarrow$ $\lambda x =Ax$ (mit $\norm{x}=1$)
     $\Rightarrow$ $\lambda = \lambda\sprod{x,x} = \sprod{Ax,x} \geq 0$
 
-    -Satz-2.3.3/1-\todo{ref ergänzen} $\Rightarrow$ $Ax = \sum_{k=1}^{\infty} \lambda_{k}
+    \autoref{satz:2.3.3/1} $\Rightarrow$ $Ax = \sum_{k=1}^{\infty} \lambda_{k}
     \sprod{x, x_{k}} x_{k}$ mit $\lambda_{k}\rightarrow0,
     \lambda_{k+1}\leq\lambda_{k}$
 
@@ -6812,9 +6930,9 @@ Konvergenz
   \end{enumerate}
 \end{defini}
 
-\begin{satz}\label{satz:3.2.2/2}
+\begin{satz}\label{satz:3.2.1/2}
   Für einen vollständigen metrischen Raum $(X,d)$ ist jede nichtleere
-  offene Kugel von 2.\,Kategorie.
+  offene Kugel von 2.~Kategorie.
 
   \begin{proof}
     $\Omega\subset X$ offen, $\Omega\ne\emptyset$
@@ -6842,7 +6960,7 @@ Konvergenz
     (indirekt) Ann.: $x\in X$ und $\exists \epsilon > 0, K_{\epsilon}(x)$
     enthält keinen Punkt aus $X\setminus M$ $\Longrightarrow$
     $K_{\epsilon}(x)\subset M \Longrightarrow K_{\epsilon}(x)$ ist mager
-    (1.\,Kategorie) $\Longrightarrow$ Widerspruch zu \autoref{satz:3.2.2/2}
+    (1.\,Kategorie) $\Longrightarrow$ Widerspruch zu \autoref{satz:3.2.1/2}
   \end{proof}
 \end{folger}
 
@@ -7658,7 +7776,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   \end{proof}
 \end{satz}
 
-\begin{satz}[Fortsetzungssatz von Hahn-Banach]
+\begin{satz}[Fortsetzungssatz von Hahn-Banach]\label{satz:fsetz-hahn-banach}
   $X$ ist ein normierter Vektorraum über $\K$, $Y \subset X$ Teilraum
   (ausgestattet mit der Norm in $X$), $f\colon Y\rightarrow\K$ lineares und beschränktes
   Funktional ($f\in Y'$).
@@ -7681,7 +7799,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   \end{proof}
 \end{satz}
 
-\begin{folger}
+\begin{folger}\label{fol:3.3.2/1}
   $X$ normierter Vektorraum, $x_{0}\in X$, $x_{0}\ne0$, Dann kann man
   immer ein Funktional $F$ konstruieren, mit $f\in X'$ mit $\norm{f}_{X'}=1$
   und $f(x_{0})= \norm{x_{0}}$. Insbesondere ist der Dualraum $X'$ nicht
@@ -7695,7 +7813,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
     $\Longrightarrow$ $f\in Y'$, $f(x_{0})= \norm{x_{0}}, \abs{f(\lambda x_{0})}
     = \abs{\lambda} \norm{x_{0}} = \norm{\lambda x_{0}}$ $\Rightarrow$ $\norm{f}_{Y'}=1$
 
-    Satz 3\todo{link ergänzen} $\Longrightarrow$ $\exists F\in X'\ldots$
+    \autoref{satz:fsetz-hahn-banach} $\Longrightarrow$ $\exists F\in X'\ldots$
   \end{proof}
 \end{folger}
 
@@ -7703,7 +7821,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   $X$ Prä-Hilbertraum $\Longrightarrow$ Hahn-Banach\todo{link} wird nicht
   benötigt
 
-  z.\,B. Folgerung 1\todo{link} $x\in X$ $f(x) := \sprod{x,
+  z.\,B. \autoref{fol:3.3.2/1} $x\in X$ $f(x) := \sprod{x,
   \frac{x_{0}}{\norm{x_{0}}}} \Longrightarrow f(x_{0}) = \norm{x_{0}}, f\in X',
   \norm{f}_{X'}=1$, denn $\abs{f(x)}\leq \norm{x}$
 \end{bemerk}
@@ -7716,7 +7834,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
     $\sup_{\norm{f}_{X'}\leq 1} \abs{f(x)} \leq \norm{x}$ nach Definition von $f$
     aus $X'$
 
-    Umkehrung folgt aus Folgerung 1\todo{link}
+    Umkehrung folgt aus \autoref{fol:3.3.2/1}
   \end{proof}
 \end{folger}
 
@@ -7740,12 +7858,12 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   $P\colon X\rightarrow U$ mit $\norm{P}\leq \dim U$ $\Longrightarrow$ $X=U\oplus
   N(P)$
 
-  Beweis im Buch von Werner\todo{link} S.\,162
+  Beweis im Buch von Werner\cite[S.\,162]{Werner}
 \end{folger}
 
 \subsection{Trennungssätze}
 
-\begin{satz}
+\begin{satz}\label{satz:3.3.3/1}
   $Y\subset X$ Teilraum, $X$ normierter Vektorraum, $x_{0}\in X$,
   $d=\inf_{y\in Y} \norm{y-x_{0}}>0$
 
@@ -7774,7 +7892,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
     f(x_{0}-y_{j}) \leq \norm{f}_{U'} \norm{x_{0}-y_{j}}
     \xrightarrow{j\rightarrow\infty} \norm{f}_{U'} \geq \frac{1}{d}$
 
-    Satz 3/3.3.2\todo{link} $\Longrightarrow$ $\exists F\in X'$  auf
+    \autoref{satz:fsetz-hahn-banach} $\Longrightarrow$ $\exists F\in X'$  auf
     $F\big|_{U}=f$ und $\norm{F}_{X'} = \norm{f}_{U'} = \frac{1}{d}$.
   \end{proof}
 \end{satz}
@@ -7793,7 +7911,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   \help{was war das Problem?}\todo{Bild: zwei Mengen A,B ohne Schnittmenge}
 \end{defini}
 
-\begin{satz}
+\begin{satz}\label{satz:3.3.3/2}
   $X$ reeller Vektorraum, $M\ne\emptyset$ konvex und $P\colon X \rightarrow
   \R$ sublinear
 
@@ -7813,8 +7931,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
       $\Longrightarrow$ $-p(-x) + tI \leq p(x+ty) - p(ty) + tI = p(x+ty)
       + t(I-p(y)) \leq p(x+ty)$ nach Konstruktion $\Rightarrow$ $-p(-x)
       \leq p(x+ty) - tI$ $\Longrightarrow$ $q(x) \geq -p(-x) >-\infty$
-     \item Außerdem ist $q$ sublinear, wie im Beweis von Lemma
-      2/3.3.1\todo{link}
+     \item Außerdem ist $q$ sublinear, wie im Beweis von \autoref{lem:3.3.1/2}
 
       Der Ausschnitt, in dem die Konvexität gebraucht wird:
       $q(x+z) \leq q(x) + q(z)$ benutzt Konvexität. $\epsilon>0$ $\exists
@@ -7829,7 +7946,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
         &\geq q(x+z)
       \end{align*}
 
-      Satz 3.3.1\todo{link} $\Rightarrow$ $\exists f\colon X\rightarrow\R$
+      \autoref{satz:3.3.1/1} $\Rightarrow$ $\exists f\colon X\rightarrow\R$
       linear mit $f\leq q \leq p$ $x\in M \Rightarrow f(-x) \leq q(-x)
       \leq p(-x+x) - I \leq I$ $\Longrightarrow$ $I\leq f(x)$, da linear
     \end{itemize}
@@ -7848,7 +7965,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
     $M=A-B =\{ a-b\colon a\in A, b\in B\}$ ist konvex (ist bekannt).
     Betrachten $p(x) := \norm{x}$ sublinear
 
-    Satz 2\todo{link} $\Longrightarrow$ $\exists f\colon X\rightarrow\R$ linear
+    \autoref{satz:3.3.3/2} $\Longrightarrow$ $\exists f\colon X\rightarrow\R$ linear
     mit $f\leq p$ und $\inf_{x\in (A-B)} \norm{x} = \inf_{x\in (A-B)} f(x)$
 
     $\Longrightarrow$ $f(x) \leq \norm{x} \forall x\in X$ und weil $f$ eine
@@ -7875,7 +7992,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   y}_{H_{2}} = \sprod{x, A^{\ast}y}, \forall x\in H_{1}, y\in H_{2}$
   $\norm{A^{\ast}}_{H_{2}\rightarrow H_{1}} = \norm{A}_{H_{1}\rightarrow H_{2}}$
 
-  nach Satz 2.3.1\todo{link} $\Longrightarrow$ $A$ kompakt
+  nach \autoref{satz:2.3.1} $\Longrightarrow$ $A$ kompakt
   $\Longleftrightarrow$ $A^{\ast}$ kompakt
 
   Interpretation: $\sprod{Ax, y} = \sprod{x, A^{\ast}y}, y=g\in H_{2}',
@@ -7917,8 +8034,8 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
       $\forall x\in X$
      \item[(2)$\Rightarrow$(1)] Annahme: $\overline{D(A)}\ne X$
       $\Longrightarrow$ $\exists x_{0}\in X, x_{0}\notin \overline{D(A)},
-      d=\dist(x_{0}, \overline{D(A)})>0$ $\Longrightarrow$ nach Satz
-      3.3.3/1\todo{link} $\exists\phi\in X'$ mit $\phi(x_{0})=1, \phi(x)
+      d=\dist(x_{0}, \overline{D(A)})>0$ $\Longrightarrow$ nach
+      \autoref{satz:3.3.3/1} $\exists\phi\in X'$ mit $\phi(x_{0})=1, \phi(x)
       = 0$ auf $\overline{D(A)}$, $\norm{\phi}_{X'}=\frac{1}{d}$
 
       Es sei $f\in X'\colon \sprod{Ax, g} = \sprod{x, f}, x\in D(A)$
@@ -7928,7 +8045,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   \end{proof}
 \end{lemma}
 
-\begin{defini}
+\begin{defini}\label{def:3.3.4/1}
   $X,Y,A$ wie in \autoref{lem:3.3.4/1}, $D(A)$ dicht in $X$
   \begin{align*}
     D(A') &:= \{g\in Y'\colon \exists f\in X' \forall x\in D(A)\colon \sprod{Ax, g}
@@ -7942,7 +8059,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   $A' \colon D(A') \rightarrow X'$ ist linear und abgeschlossen
 
   \begin{proof}
-    Linearität leicht zu sehen. Mithilfe der Definition\todo{link} und
+    Linearität leicht zu sehen. Mithilfe der \autoref{def:3.3.4/1} und
     des \autoref{lem:3.3.4/1} ist leicht zu sehen $D(A')\subset Y$ Teilraum
 
     Abgeschlossenheit: $g_{j}\in D(A), g_{j}\rightarrow g\in Y'$ und
@@ -7980,7 +8097,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
     $\Longrightarrow$ $A'\in\linOp(Y', X')$ mit
     $\norm{A'}_{Y'\rightarrow X'} \leq \norm{A}_{X\rightarrow Y}$
 
-    Umkehrung: nach Folgerung 3.3.2/1\todo{link} (Hahn-Banach) gilt: Für
+    Umkehrung: nach \autoref{fol:3.3.2/1} (Hahn-Banach) gilt: Für
     $Ax\in Y, Ax\ne0$ existiert ein $g\in Y'$ mit $\norm{g}_{Y'} = 1,
     \sprod{Ax, g} = \norm{Ax}_{Y}$
 
@@ -7996,7 +8113,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   \end{proof}
 \end{satz}
 
-\begin{satz}
+\begin{satz}\label{satz:3.3.4/3}
   $X,Y$ normierte Vekorräume, $A\colon X \rightarrow Y$ kompakt.
 
   Dann $A'\colon Y'\rightarrow X'$ ist ebenfalls kompakt.
@@ -8031,7 +8148,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
       \end{gather*}
     \end{enumerate}
 
-    Satz 1.2.2/3\todo{link} (Arzela-Ascoli) $\Rightarrow$ $(g_{j})$
+    \autoref{satz:arzela} (Arzela-Ascoli) $\Rightarrow$ $(g_{j})$
     präkompakt in $C(\overline{V}, \K)$ $\Longrightarrow$ $\exists$
     konvergente Teilfolge $(g_{j_{k}})$
 
@@ -8061,7 +8178,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   \end{itemize}
 \end{defini}
 
-\begin{lemma}
+\begin{lemma}\label{lem:3.3.4/2}
   \begin{enumerate}
    \item $x\in X$. Setzen $\sprod{f, x''} := \sprod{x,f}$ für alle $f\in
     X'$, $J(x) := x'', J\colon X\rightarrow X''$
@@ -8083,8 +8200,8 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   Y$ kompakt
 
   \begin{proof}
-    Satz 3\todo{link} $\Longrightarrow$ $A''\colon X'' \rightarrow Y''$ ist
-    kompakt, Lemma 2\todo{link} $\Longrightarrow$ $A''\big|_{X} = A\colon
+    \autoref{satz:3.3.4/3} $\Longrightarrow$ $A''\colon X'' \rightarrow Y''$ ist
+    kompakt, \autoref{lem:3.3.4/2} $\Longrightarrow$ $A''\big|_{X} = A\colon
     X\rightarrow Y \subset Y''$ auf $Y\colon \norm{y}_{Y} = \norm{y}_{Y''}$
 
     $Y$ vollständig $\Longrightarrow$ $Y$ abgeschlossener Teilraum
@@ -8166,7 +8283,7 @@ $K\colon H\rightarrow H$ kompakt \autoref{sec:2.3.1} $\Longrightarrow$
   \end{proof}
 \end{satz}
 
-\begin{lemma}[Beste Approximation]
+\begin{lemma}[Beste Approximation]\label{lem:4.1.1/1}
   (vergleiche mit \autoref{lem:2.1.2/1}) In einem normierter Vektorraum $X$
   und einem endlichdimensionalen Teilraum $U$ ($\Rightarrow$ abgeschlossen). Dann:
   $\forall x\in X\exists u\in U$, so dass
@@ -8188,7 +8305,7 @@ $K\colon H\rightarrow H$ kompakt \autoref{sec:2.3.1} $\Longrightarrow$
   \end{proof}
 \end{lemma}
 
-\begin{satz}
+\begin{satz}\label{satz:4.1.1/2}
   $X$ normierter Vektorraum, $K\colon X\rightarrow X$ kompakt. Dann $R(I-K)$
   ist abgeschlossen Teilraum von $X$.
 
@@ -8200,8 +8317,8 @@ $K\colon H\rightarrow H$ kompakt \autoref{sec:2.3.1} $\Longrightarrow$
       Es existiert eine Folge $(x_{j})_{j}\subset X$ mit $Ax_{j}
       \rightarrow y$, da $y$ im Abschluss von $X$ liegt.
 
-      Satz1\todo{link} $\Longrightarrow$ $N(A)$ endlichdimensional,
-      Lemma1\todo{link} $\Longrightarrow$ $\exists u_{j}\in N(A)$ mit der
+      \autoref{satz:4.1.1/1} $\Longrightarrow$ $N(A)$ endlichdimensional,
+      \autoref{lem:4.1.1/1} $\Longrightarrow$ $\exists u_{j}\in N(A)$ mit der
       Eigenschaft, dass $\norm{x_{j}-u_{j}} = \inf_{v\in N(A)}
       \norm{x_{j}-v}$ $\forall j\in \N$
 
@@ -8293,8 +8410,8 @@ Betrachten: $n\in \N, K\colon X\rightarrow X$ kompakt
 \end{align*}
 mit $K_{n}\colon X\rightarrow X$ kompakt
 
-Satz 1\todo{link} $\Longrightarrow$ $\dim N(A^{n})<\infty\ \forall n$
-Satz 2\todo{link} $\Longrightarrow$ $R(A^{n})$ abgeschlossen $\forall n$
+\autoref{satz:4.1.1/1} $\Longrightarrow$ $\dim N(A^{n})<\infty\ \forall n$
+\autoref{satz:4.1.1/2} $\Longrightarrow$ $R(A^{n})$ abgeschlossen $\forall n$
 
 Es gilt: $\{0\} = N(A^{0})\subset N(A) \subset N(A^{2}) \subset \ldots
 N(A^{n})\subset N(A^{n+1}) \subset \ldots$\\
@@ -8325,13 +8442,15 @@ A^{n}(Ax)\in R(A^{n})$.
       N(A^{2}) \subsetneq \ldots  \subsetneq N(A^{n}) \subsetneq
       N(A^{n+1}) \subsetneq \ldots$
 
-      Satz 1\todo{link} $\Longrightarrow$ $N(A^{n})$ endlichdimensional
+      \autoref{satz:4.1.1/1} $\Longrightarrow$ $N(A^{n})$ endlichdimensional
       $\Longrightarrow$ $N(A^{n})\subsetneq N(A^{n+1})$ abgeschlossen
 
-      Lemma 2\todo{link} mit $U=N(A^{n})$ und $X=N(A^{n+1})$
+      \autoref{lem:4.1.1/2} mit $U=N(A^{n})$ und $X=N(A^{n+1})$
       $\Longrightarrow$ $\exists x_{n}\in N(A^{n+1})$ mit $\norm{x_{n}} =1$
-      und $\norm{x_{n}-u}\geq \frac{1}{2}$ $(\forall u\in N(A^{n}))$
-      (*)\todo{gather}
+      und
+      \begin{gather}\label{eq:448}
+        \norm{x_{n}-u}\geq \frac{1}{2} \qquad(\forall u\in N(A^{n}))
+      \end{gather}
 
       Für $n>m$ gilt: $Kx_{n}-Kx_{m} =
       x_{n}-\underbrace{(x_{m}+Ax_{n}-Ax_{m})}_{x} = x_{n}-x$ wobei
@@ -8339,7 +8458,7 @@ A^{n}(Ax)\in R(A^{n})$.
       \underbrace{A^{n+1}x_{n}}_{=0} - \underbrace{A^{n+1} x_{m}}_{=0} =
       0, x\in N(A^{n})$
 
-      (*)\todo{link} $\Longrightarrow$ $\frac{1}{2} \leq \norm{x_{n} -n}
+      \autoref{eq:448} $\Longrightarrow$ $\frac{1}{2} \leq \norm{x_{n} -n}
       = \norm{Kx_{n} - Kx_{m}} \Longrightarrow (Kx_{n})_{n}$ hat keine
       konvergente Teilfolge $\Rightarrow$ Widerspruch zu $K$ kompakt und
       $\norm{x_{n}}=1$
@@ -8359,11 +8478,13 @@ A^{n}(Ax)\in R(A^{n})$.
       $\exists k$ mit $R(A^{k+1}) = R(A^{k}):$\\
       Annahme: $\forall n\colon R(A^{n+1})\subsetneq R(A^{n})$
 
-      Satz 2\todo{link} $\Longrightarrow$ $R(A^{n+1})$ abgeschlossen.
-      Lemma 2\todo{link} mit $U=R(A^{n+1})$ und $X=R(A^{n})$
+      \autoref{satz:4.1.1/2} $\Longrightarrow$ $R(A^{n+1})$ abgeschlossen.
+      \autoref{lem:4.1.1/2} mit $U=R(A^{n+1})$ und $X=R(A^{n})$
       $\Longrightarrow$ $\exists y_{n}\in R(A^{n})$ mit $\norm{y_{n}}=1$
-      und $\norm{y_{n}-v} \geq \frac{1}{2} \forall x\in R(A^{n+1})$
-      (**)\todo{equa}
+      und
+      \begin{gather}\label{eq:449}
+        \norm{y_{n}-v} \geq \frac{1}{2} \forall x\in R(A^{n+1})
+      \end{gather}
 
       Für $m>n$ gilt: $Ky_{n} - Ky_{m} = y_{n} -
       \underbrace{(y_{m}+Ay_{n}-Ay_{m})}_{=:y} = y_{n}-y$ wobei: $y=
@@ -8371,7 +8492,7 @@ A^{n}(Ax)\in R(A^{n})$.
       A^{n+1}\underbrace{(A^{m-n-1}x_{m} + x_{n} - A^{m-n} x_{m})}_{=
       x\in X}\in R(A^{n+1})$
 
-      (**)\todo{link} $\Longrightarrow$ $\frac{1}{2} \leq \norm{y_{n}-y}
+      \autoref{eq:449} $\Longrightarrow$ $\frac{1}{2} \leq \norm{y_{n}-y}
       = \norm{Ky_{n}-Ky_{m}} \forall n\ne m \Longrightarrow
       (Ky_{n})_{n}$ hat keine konvergente Teilfolge $\Longrightarrow$
       Widerspruch zu $K$ kompakt, $\norm{y_{n}}=1$
@@ -8456,7 +8577,7 @@ A^{n}(Ax)\in R(A^{n})$.
   \end{proof}
 \end{folger}
 
-\begin{satz}
+\begin{satz}\label{satz:4.1.1/4}
   In einem normierten Vektorraum $X$ mit einem kompakten Operator
   $K\colon X\rightarrow X$ gilt:
   \begin{enumerate}
@@ -8504,7 +8625,7 @@ A^{n}(Ax)\in R(A^{n})$.
 \end{satz}
 
 \begin{folger}
-  Satz4\todo{link} gilt auch für $T-K$, wobei
+  \autoref{satz:4.1.1/4} gilt auch für $T-K$, wobei
   \begin{align*}
     T &\colon X\rightarrow Y\in\linOp(X,Y)\\
     T^{-1} &\colon Y\rightarrow X\in\linOp(Y,X)\\
@@ -8683,13 +8804,13 @@ Orthogonales Komplement: $U^{\perp} = \{v\in H\colon \forall u\in U\colon
   \end{enumerate}
 \end{defini}
 
-\begin{bsp}
+\begin{bsp}\label{bsp:4.2.1/1}
   $X$ normiertet Vektorraum, $X^{+} := X'$ (dualer Raum), $\sprod{x, f}
   := f(x)$ $\Longrightarrow$ $(X,X^{+})$ Dualsystem
 
   \begin{proof}
     Für $x\ne0$ wissen wir: $\exists f\in X'$  mit $f(x) =
-    \norm{x}\ne0$ (Hahn-Banach Folg 3.3.2/1\todo{link})
+    \norm{x}\ne0$ (Hahn-Banach \autoref{fol:3.3.2/1})
   \end{proof}
 \end{bsp}
 
@@ -8768,19 +8889,19 @@ Orthogonales Komplement: $U^{\perp} = \{v\in H\colon \forall u\in U\colon
 \end{bemerk}
 
 \begin{bsp}
-  $X,Y$ normierte Vektorräume, $(X, X'), (Y, Y')$ Dualsysteme (wie in Bsp
-  1\todo{link}), $A\colon X\rightarrow Y$, $A'\colon Y' \rightarrow X'$ dualer
+  $X,Y$ normierte Vektorräume, $(X, X'), (Y, Y')$ Dualsysteme (wie in
+  \autoref{bsp:4.2.1/1}), $A\colon X\rightarrow Y$, $A'\colon Y' \rightarrow X'$ dualer
   Operator $\Longrightarrow$ $A,A'$ konjungierte Operatoren ($A$ kompakt
   $\Rightarrow$ $A'$ kompakt)
 \end{bsp}
 
 \begin{bsp}
-  $X =Y= X^{+} = Y^{+} = C(\overline{\Omega})$ (wie in Bsp2\todo{link})
+  $X =Y= X^{+} = Y^{+} = C(\overline{\Omega})$ (wie in \autoref{bsp:4.2.1/2})
   \begin{gather*}
     (\mathcal{K}f)(x) := \int_{\Omega} K(x,y) f(y)\,dy\qquad f\in X
   \end{gather*}
   $\Longrightarrow$ $\mathcal{K}\colon X\rightarrow X$ kompakt mit $K(x,y) \in
-  C(\overline{\Omega}\times \overline{\Omega})$ (Staz 1.4.3/3\todo{link})
+  C(\overline{\Omega}\times \overline{\Omega})$ (\autoref{satz:int-op})
 
   \begin{align*}
     \sprod{\mathcal{K}f,g} &= \int_{\Omega}(\int_{\Omega}
@@ -10879,11 +11000,14 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
          \underbrace{\int_{\R^{n}} e^{-\frac{\abs{y}^{2}}{2}}} _{=
            (2\pi)^{\frac{n}{2}}}\,dy = \phi(x)(2\pi)^{\frac{n}{2}}
     \end{align*}
-    $\Longrightarrow$ $\phi(x) = (2\pi)^{-\frac{n}{2}} \int_{\R^{n}}
-    (F\phi) (\xi) e^{ix\xi}\,d\xi$ $\forall x\in\R^{n}$ \todo{(**)}
+    $\Longrightarrow$
+    \begin{gather}\label{eq:47}
+      \phi(x) = (2\pi)^{-\frac{n}{2}} \int_{\R^{n}} (F\phi) (\xi)
+         e^{ix\xi}\,d\xi \qquad \forall x\in\R^{n}
+    \end{gather}
 
     $\Longrightarrow$ $F$ ist injektiv und surjektiv, $F^{-1}$ durch
-    (**)\todo{link} gegeben
+    \autoref{eq:47} gegeben
   \end{proof}
 \end{satz}
 
@@ -10895,7 +11019,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \begin{align*}
     (FT)(\phi) &:= T(F\phi)&&\phi\in S(\R^{n})
   \end{align*}
-  $FT$ Fouriertransformation
+  $FT$ \highl{Fouriertransformation}
 \end{defini}
 
 \begin{bemerk}
@@ -10905,39 +11029,39 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     $\Longrightarrow$ $FT\in S'(\R^{n})$
    \item $f\in L_{1}(\R^{n}) \Rightarrow T_{f}(\phi) = \int_{\R^{n}}
     f(x)\phi(x)\,dx, T_{f}\in S'(\R^{n})$
-    \begin{align*}
+    \begin{align}
       (FT_{f})(\phi) &= T_{f}(F\phi) = \int_{\R^{n}}
          f(\xi)(F\phi)(\xi)\,d\xi = \int_{\R^{n}}
          f(\xi)\bigl((2\pi)^{-\frac{n}{2}} \int_{\R^{n}} \phi(x)
-         e^{-ix\xi}\,dx\bigr)\,d\xi\\
+         e^{-ix\xi}\,dx\bigr)\,d\xi\notag\\
       &=^{\text{\autoref{satz:fubini}}} \int_{\R^{n}} \bigl(
          \underbrace{(2\pi)^{-\frac{n}{2}} \int_{\R^{n}} f(\xi)
            e^{-ix\xi}\,d\xi}_{\in L_{\infty}(\R^{n})} \bigr)\phi(x)\,dx
-         \todo{(*)}
-    \end{align*}
+         \label{eq:46}
+    \end{align}
     $f\in L_{1}(\R^{n}) \Rightarrow$ $FT_{f} = Ff$ ist reguläre
     Distribution und kann mit der Funktion
-    \begin{gather}\label{eq:39}
+    \begin{gather}\label{eq:45}
       (2\pi)^{-\frac{n}{2}} \int_{\R^{n}} f(x)e^{-ix\xi}\,dx
     \end{gather}
-    indentifiziert werden. Vereinbarung $(Ff)(\xi) =$\autoref{eq:39} für
+    indentifiziert werden. Vereinbarung $(Ff)(\xi) =$\autoref{eq:45} für
     $\xi\in\R^{n}$
 
-    Aus \todo{link:(*)} folgt weiterhin
+    Aus \autoref{eq:46} folgt weiterhin
     $\norm{Ff}_{\infty} \leq (2\pi)^{-\frac{n}{2}} \norm{f}_{1}$ und $F$
-    ist eine beschränkte Abbildung $F: L_{1} \rightarrow L_{\infty}$.
+    ist eine beschränkte Abbildung $F\colon L_{1} \rightarrow L_{\infty}$.
   \end{enumerate}
 \end{bemerk}
 
 \begin{satz}
   \begin{enumerate}
-   \item $F:S'(\R^{n}) \rightarrow S'(\R^{n})$ ist linear, stetig und
+   \item $F\colon S'(\R^{n}) \rightarrow S'(\R^{n})$ ist linear, stetig und
     bijektiv
    \item Für $F^{-1}$ gilt
     \begin{align*}
       (F^{-1}T)(\phi) &= T(F^{-1}\phi) = (FT)(-\cdot)&&\phi\in S(\R^{n})
     \end{align*}
-    $F^{-1}: S'(\R^{n}) \rightarrow S'(\R^{n})$ ist linear, stetig und
+    $F^{-1}\colon S'(\R^{n}) \rightarrow S'(\R^{n})$ ist linear, stetig und
     bijektiv
   \end{enumerate}
 
