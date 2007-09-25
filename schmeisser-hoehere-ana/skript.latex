@@ -62,6 +62,26 @@
 \makeatletter
 % setzt / als Trenner zwischen Abschnitt und Satznummer
 \def\@thmcountersep{/}
+% Anpassung, damit ntheorem in der Satzübersicht genügend Platz für die
+% Satznummer und den Namen lässt; einfach aus ntheorem.sty kopiert und
+% den dritten Parameter von \@dottedtocline vergrößert
+\def\thm@@thmline@name#1#2#3#4#5{%
+     \ifx\\#5\\%
+         \@dottedtocline{-2}{0em}{3.5em}%
+             {#1 \protect\numberline{#2}#3}%
+             {#4}
+     \else
+         \ifHy@linktocpage\relax\relax
+             \@dottedtocline{-2}{0em}{3.8em}%
+                 {#1 \protect\numberline{#2}#3}%
+                 {\hyper@linkstart{link}{#5}{#4}\hyper@linkend}%
+         \else
+             \@dottedtocline{-2}{0em}{3.8em}%
+                 {\hyper@linkstart{link}{#5}%
+                   {#1 \protect\numberline{#2}#3}\hyper@linkend}%
+                 {#4}%
+         \fi
+     \fi}
 \makeatother
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
@@ -1972,6 +1992,7 @@ $(X,d)$ metr. Raum, $(E, \norm{\cdot})$ Banachraum, $(B(X,E),
 \end{bemerk}
 
 \subsection{Räume differenzierbarer Funktionen}
+\label{sec:1.2.3}
 
 \begin{defini}
   $\Omega\subset \R^{n}$ offen, $m\in \N_{0}, \K=\R$ oder $\C$
@@ -4895,7 +4916,6 @@ $K(x,y)=0$ für $x<y$.
 
 \begin{satz}[Riesz-Fréchet]\label{satz:riesz}
   $H$ Hilbertraum. Dann gilt:
-
   \begin{gather*}
     T\in H' \Longleftrightarrow \exists y\in H, \forall x\in H\colon T(x) =
     \sprod{x,y}
@@ -7987,7 +8007,7 @@ Summe von $N(P)$ und $R(P)$ schreiben ($X=N(P) \oplus R(P)$).
   x\in H$, $y$ ist eindeutig bestimmt, $H'\cong H$
 
   Adjungierter Operator: $A\in \linOp(H_{1}, H_{2})$, $H_{1}$ und
-  $H_{2}$ Hilbertraum $\Longleftrightarrow$ (nach Satz 2.2.1\todo{link})
+  $H_{2}$ Hilbertraum $\Rightarrow$ (nach \autoref{satz:2.2.1/1})
   $\exists A^{\ast}\in\linOp(H_{2}, H_{1})$ mit $\sprod{Ax,
   y}_{H_{2}} = \sprod{x, A^{\ast}y}, \forall x\in H_{1}, y\in H_{2}$
   $\norm{A^{\ast}}_{H_{2}\rightarrow H_{1}} = \norm{A}_{H_{1}\rightarrow H_{2}}$
@@ -9334,10 +9354,16 @@ bisher haben wir folgende Situationen behandelt:
   schwach singulär (oder in $L_{2}(\Omega\times\Omega)$)
 
   Dann gilt für $\mu\in\C, \mu\ne0$:
-  Entweder: Die homogenen Integralgleichungen $f(x)-\mu \int_{\Omega}
-  K(x,y) f(y)\,dy =0$ und die entsprechenden konjugierten Operatoren
-  $u(x)-\mu \int_{\Omega} K(y,x) u(y)\,dy =0$ (*) \todo{f und u mit einem
-  Label} haben in
+  Entweder: Die homogenen Integralgleichungen
+  \begin{gather}\label{eq:22}
+    \begin{split}
+      f(x)-\mu \int_{\Omega} K(x,y) f(y)\,dy &=0\\
+      \intertext{und die entsprechenden konjugierten Operatoren}
+      u(x)-\mu \int_{\Omega} K(y,x) u(y)\,dy &=0
+    \end{split}
+  \end{gather}
+  \todo{Das intertext muss raus, dann stehen die Gleichungen auch in der Mitte}
+  haben in
   $C(\overline{\Omega})$ (bzw. $L_{2}(\Omega)$) nur die triviale Lösung
   $f=u=0$. Dann sind die inhomogenen Integralgleichungen
   \begin{gather}\label{eq:32}
@@ -9349,7 +9375,7 @@ bisher haben wir folgende Situationen behandelt:
   für alle $g,v\in C(\overline{\Omega})$ (bzw. $L_{2}(\Omega)$) eindeutig
   lösbar.
 
-  Oder (zu entweder): Die homogenen Integralgleichungen (*)\todo{link}
+  Oder (zu entweder): Die homogenen Integralgleichungen (\autoref{eq:22})
   besitzen die gleiche Anzahl linear unabhängiger Lösungen
   $\{f_{1},\ldots,f_{n}\}, \{u_{1},\ldots,u_{n}\}$ in
   $C(\overline{\Omega})$ (bzw. $L_{2}(\Omega)$). Dann sind die
@@ -9418,7 +9444,7 @@ keine Punktweise Aussage mehr (für $f$) $\Longrightarrow$ $u$
 \section{\texorpdfstring{$D(\Omega)\times D'(\Omega)$}{D(Omega)xD'(Omega)}}
 \subsection{Definitionen und Beispiele}
 $\Omega\subset\R^{n}$ Gebiet, $C_{0}^{\infty}(\Omega)$ wie in
-1.2.3\todo{link}
+\autoref{sec:1.2.3}
 
 \begin{defini}[Konvergenz in $C_{0}^{\infty}(\Omega)$]
   Seien $\phi_{j}, j\in\N$ und $\phi\in C_{0}^{\infty}$ Dann konvergiert
@@ -9488,7 +9514,7 @@ $\Omega\subset\R^{n}$ Gebiet, $C_{0}^{\infty}(\Omega)$ wie in
 
 \subsection{Träger einer Distribution und Lokalisationsprinzip}
 
-Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
+\autoref{satz:1.2.3/2}: $\Omega\subset\R^{n}$ offen, $K\subset
 \Omega$ kompakt: $\exists\phi\in C_{0}^{\infty}(\R^{n})$
 \begin{itemize}
  \item $0\leq \phi(x) \leq 1$, $x\in \Omega$
@@ -9496,7 +9522,7 @@ Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
  \item $\supp \phi \subset \Omega$
 \end{itemize}
 
-\begin{lemma}[Zerlegung der Einheit]
+\begin{lemma}[Zerlegung der Einheit]\label{lem:5.1.2/1}
   Sei $\Gamma\subset\R^{n}$ kompakt und $K_{j}, j=1,\ldots,m$ offene
   Mengen mit $\Gamma\subset\bigcup_{j=1}^{m} K_{j}$. Dann gibt es
   $\phi_{j}\in D(K_{j}), j=1,\ldots,m$, so dass gilt:
@@ -9510,8 +9536,10 @@ Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
 
     \begin{schritte}
      \item zeigen $\exists\delta_{0}, 0 < \delta_{0} < 1
-      \forall\delta>\delta_{0}$, $\Gamma\subset\bigcup_{j=1}^{m}
-      K_{j}^{\delta}$ (*)\todo{eq}
+      \forall\delta>\delta_{0}$,
+      \begin{gather}\label{eq:39}
+        \Gamma\subset\bigcup_{j=1}^{m} K_{j}^{\delta}
+      \end{gather}
 
       Ann.: $\exists\delta_{k},
       \delta_{k}\xrightarrow{k\rightarrow\infty}1$ $\exists
@@ -9522,7 +9550,7 @@ Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
       (eventuell Teilfolge)
 
       $P\subset \bigcup_{j=1}^{m}K_{j} \xrightarrow{\obda} z\in K_{1}
-      \Longrightarrow^{K_{1} offen} \exists k_{0} \forall k > k_{0}:
+      \Longrightarrow^{K_{1} \text{~offen}} \exists k_{0} \forall k > k_{0}:
       z_{k}\in K_{1} \Longrightarrow^{\delta_{k}\rightarrow1} \exists
       l_{0} \forall l>l_{0} \exists k_{0}' \forall k> k_{0}': z_{k}\in
       K_{1}^{\delta_{l}} \Longrightarrow \exists k_{0}', l_{0} \forall k
@@ -9541,16 +9569,16 @@ Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
       \Gamma$ kompakt
 
       $\Gamma\subset\bigcup_{j=1}^{m} K_{j} \xrightarrow{\obda}z\in
-      K_{1}$ $\Longrightarrow^{K_{1} offen}$ $\exists K_{1}\colon \forall k >
+      K_{1}$ $\Longrightarrow^{K_{1} \text{~offen}}$ $\exists K_{1}\colon \forall k >
       k_{1}\colon z_{k}\in K_{1}\subset \bigcup_{j=1}^{m}K_{j}$
-      $\Longrightarrow$ widerspruch
+      $\Longrightarrow$ Widerspruch
 
       d.\,h. $\exists h_{0}>0 \exists \delta_{0}< 1 \forall h < h_{0}\forall
       \delta > \delta_{0}\colon$
       \begin{gather*}
         \gamma_{0} \subset \bigcup_{j=1}^{m} K_{j}^{\delta}
       \end{gather*}
-     \item wenden Satz 2 aus 1.2.3\todo{link} an auf
+     \item wenden \autoref{satz:1.2.3/2} an auf
       \begin{itemize}
        \item $\Omega = K_{j}, K = \overline{K_{j}^{\delta}},
         j=1,\ldots,m$ $\exists$ $\psi_{j}\in D(K_{j}), 0\leq \psi_{j}
@@ -9609,21 +9637,24 @@ Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
   \begin{proof}
     \begin{description}
      \item["`$\Rightarrow$"'] klar
-     \item["`$\Leftarrow$"'] wissen $\forall x\in \Omega \exists U(x)\colon
-      (T_{1})_{U(x)} = (T_{2})_{U(x)}$ (**)\todo{eq}
+     \item["`$\Leftarrow$"'] wissen, dass für alle $x\in \Omega$ ein $U(x)$
+      existiert, so dass
+      \begin{gather}\label{eq:40}
+        (T_{1})_{U(x)} = (T_{2})_{U(x)}
+      \end{gather}
 
       z.\,z.: $T_{1}(\phi) = T_{2}(\phi) \forall \phi \in D(\Omega)$ Sei
       $\phi\in D(\Omega)$ $\Longrightarrow$ $\supp \phi = K \subset
       \Omega, K$ kompakt $\Longrightarrow$ $\exists$ $(x_{k})_{k=1}^{m}:
       K\subset \bigcup_{j=1}^{m}U(x_{k})$
 
-      Lemma 1\todo{link} anwenden mit $\Gamma = K$ $K_{j} = U(x_{j})$
+      \autoref{lem:5.1.2/1} anwenden mit $\Gamma = K$ $K_{j} = U(x_{j})$
       $\Longrightarrow$ $\exists\phi_{j}\in D(U(x_{j})), 0\leq \phi_{j}
       \leq 1, \forall x\in K\colon \sum_{j=1}^{m} \phi_{j}(x) =1$
 
       $T_{1}(\phi) = T_{1}( \sum_{j=1}^{m} \phi_{j}\phi) = \sum_{j=1}^{m}
       T_{1}(\underbrace{\phi_{j}\phi}_{\in D(U(x_{j}))}) = \sum_{j=1}^{m}
-      (T_{1})_{U(x_{j})(\phi_{j}\phi)} =^{(**)\todo{link}} =
+      (T_{1})_{U(x_{j})(\phi_{j}\phi)} =^{\text{\autoref{eq:40}}} =
       \sum_{j=1}^{m} (T_{2})_{U(x_{j})} (\phi_{j}\phi)  = T_{2}(
       \sum_{j=1}^{m} \phi_{j}\phi) = T_{2}(\phi)$
     \end{description}
@@ -9647,7 +9678,7 @@ Satz 2 in 1.2.3\todo{link}: $\Omega\subset\R^{n}$ offen, $K\subset
   T_{j}, j\in \N$
 
   \begin{proof}
-    siehe Wlodimirow\todo{link}
+    siehe Wlodimirow\todo{link}\help{Das Buch kenne ich nicht}
   \end{proof}
 \end{satz}
 
@@ -9705,7 +9736,7 @@ Nulldistribution: $T\in D'(\Omega)$ mit $T(\phi) = 0$, $\phi\in D(\Omega)$
     $\Longrightarrow$ Widerspruch
    \item $\delta_{a}\in D'(\Omega), a\in \Omega$
 
-    $\supp \delta_{a} = \{a\}, z.\,z.  \forall \epsilon > 0 \forall \phi\in
+    $\supp \delta_{a} = \{a\}$, z.\,z. $\forall \epsilon > 0 \forall \phi\in
     D(\Omega\cap K_{\epsilon}(a)): \delta_{a}(\phi) = \phi(a)$ ungleich
     der Nulldistribution
 
@@ -9931,7 +9962,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{proof}
 \end{satz}
 
-\begin{bsp}
+\begin{bsp}\label{bsp:4}
   Heavyside-Funktion (lokal integrierbar und Distribution in $\R$)
   \begin{gather*}
     H(x) = \begin{cases}1&x\geq0\\0&x<0\end{cases}
@@ -9960,7 +9991,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \begin{gather*}
     f'_{D} = f'_{kl} + \sum_{k=1}^{n} y_{k}\delta_{a_{k}}
   \end{gather*}
-  Analog vorherigen Beispiel\todo{link}
+  Analog \autoref{bsp:4}
 \end{bsp}
 
 \begin{bemerk}
@@ -10020,7 +10051,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
 \end{bemerk}
 
 %marke
-\begin{bemerk}[Gliedweise Differentation]
+\begin{bemerk}[Gliedweise Differentation]\label{bem:6}
   \begin{gather*}
     \sum_{k=0}^{\infty} T_{k} =_{D'} T \Longrightarrow
     \sum_{k=0}^{\infty} D^{\alpha} T_{k} =_{D'} D^{\alpha} T
@@ -10047,7 +10078,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     $\sum_{k\ne0} \frac{a_{k}}{{(ik)^{m+2}}}e^{ikx}$ ist gleichmäßig
     konvergent in $\R$
 
-    nach Bemerkung über gl.Dif\todo{link} $\Rightarrow$ $D^{m+2}$
+    nach \autoref{bem:6} $\Rightarrow$ $D^{m+2}$
     gliedweise:
     \begin{gather*}
       \sum_{k\ne0} D^{m+2} \bigl(\frac{a_{k}}{(ik)^{m+2}}e^{ikx}\bigr)
@@ -10056,7 +10087,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{proof}
 \end{bemerk}
 
-\begin{satz}
+\begin{satz}\label{satz:9}
   $-\infty\leq a<b\leq\infty, k\in\N$
 
   $T\in D'\bigl((a,b)\bigr)$ mit $D^{(k)}T=0$ $\Longrightarrow$ $T$ ist
@@ -10090,7 +10121,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
 
 \subsection{Distributionen mit kompakten Träger}
 
-\begin{lemma}
+\begin{lemma}\label{lem:6}
   Eine beliebige Distribution $T\in D'(\Omega)$ kann auch wie folgt
   charakterisiert werden:
   \begin{enumerate}
@@ -10133,7 +10164,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{proof}
 \end{lemma}
 
-\begin{lemma}
+\begin{lemma}\label{lem:5}
   $T\in D'(\Omega), \supp T=\mathcal{K}\subset\Omega$ kompakt.
 
   Es sei $\eta\in D(\Omega)$ mit $\eta(x)=1$ auf einer Umgebung von
@@ -10155,7 +10186,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{proof}
 \end{lemma}
 
-\begin{satz}
+\begin{satz}\label{satz:6}
   $T\in D'(\Omega), \supp T\subset \Omega$ kompakt. Dann $\exists c>0
   \exists m\subset\N_{0}$, so dass
   \begin{gather*}
@@ -10163,13 +10194,13 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     \abs{D^{\alpha}\phi(x)}\qquad\forall\phi\in D(\Omega)
   \end{gather*}
 
-  im gegensatz zu lemma 1 hängen die Konstanten nicht von $\mathcal{K}$ ab.
+  im Gegensatz zu \autoref{lem:6} hängen die Konstanten nicht von $\mathcal{K}$ ab.
   \begin{proof}
     $\supp T=\mathcal{K}\subset\Omega$ kompakt. Es sei $\eta(x)$ wie in
-    Lemma 2\todo{link} mit $\supp \eta = U$. $\mathcal{K}$ ist so
+    \autoref{lem:5} mit $\supp \eta = U$. $\mathcal{K}$ ist so
     beschaffen, dass $\mathcal{K}\subset U^{0}\subset U\subset\Omega$.
 
-    Nach Lemma 1\todo{link} mit $U$ anstelle von $\mathcal{K}$
+    Nach \autoref{lem:6} mit $U$ anstelle von $\mathcal{K}$
     $\Rightarrow$ $\exists c\exists m\in\N_{0}$ mit $\abs{T(\psi)}\leq
     c\sup \sum_{\abs{\alpha}\leq m} \abs{D^{\alpha}\psi(x)}$
     $\forall\psi\in D(\Omega)$ mit $\supp \psi\subset U$
@@ -10177,7 +10208,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     Wenn $\phi$ ein beliebiges Element von $D(\Omega)$ ist, dann ist
     natürlich der Träger $\supp \eta\phi\subset U$
 
-    $\Longrightarrow$ mit Lemma 2\todo{link}
+    $\Longrightarrow$ mit \autoref{lem:5}
     \begin{gather*}
       \abs{T(\phi)} = \abs{T(\eta\phi)} \leq c\sup_{x\in\Omega}
       \sum_{\abs{\alpha}\leq m} \abs{D^{\alpha}(\eta\phi)(x)} \leq^{(+)}
@@ -10201,7 +10232,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \begin{proof}
     \obda: $a=0$, d.\,h. $0\in\Omega$
 
-    Satz1\todo{link} $\Rightarrow$ $\exists c \exists m\in\N_{0}
+    \autoref{satz:6} $\Rightarrow$ $\exists c \exists m\in\N_{0}
     \forall\phi\in D(\Omega): \abs{T(\phi)} \leq c \sup_{x\in\Omega}
     \sum_{\abs{\alpha}\leq m} \abs{D^{\alpha}\phi(x)}$ (*)\todo{eq}
 
@@ -10474,7 +10505,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{enumerate}
 \end{bemerk}
 
-\begin{lemma}
+\begin{lemma}\label{lem:7}
   \begin{enumerate}
    \item $\phi_{j} \xrightarrow[D]{} \phi$ $\Longrightarrow$ $\phi_{j}
     \xrightarrow[S]{} \phi$
@@ -10599,7 +10630,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{proof}
 \end{satz}
 
-\begin{satz}
+\begin{satz}\label{satz:7}
   \begin{enumerate}
    \item $T\in S'(\R^{n}) \Longleftrightarrow$
     \begin{enumerate}
@@ -10641,7 +10672,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
 
 \subsubsection{Operationen mit Distributionen}
 
-\begin{defini}
+\begin{defini}\label{def:3}
   $T\in S'(\R^{n}), \phi\in S(\R^{n})$
   \begin{enumerate}
    \item $(D^{\alpha}T)(\phi) := (-1)^{\abs{\alpha}} T(D^{\alpha}\phi),
@@ -10665,11 +10696,11 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     T\in S'(\R^{n})$\\
     $T_{j} \rightarrow T$ in $S'$ $\Rightarrow$ $D^{\alpha} T_{j}
     \rightarrow D^{\alpha} T$ in $S'$
-   \item $a(x)\in C^{\infty}$ wie in Def 2\todo{link} $\Rightarrow$
+   \item $a(x)\in C^{\infty}$ wie in \autoref{def:3} $\Rightarrow$
     $aT\in S'(\R^{n})$\\
     $T_{j} \rightarrow T$ in $S'$ $\Longrightarrow$ $aT_{j} \rightarrow
     aT$ in $S'$
-   \item $A, b$ wie in Def 2\todo{link} $\Rightarrow$ $T(A\cdot+b)\in
+   \item $A, b$ wie in \autoref{def:3} $\Rightarrow$ $T(A\cdot+b)\in
     S'(\R^{n})$\\
     $T_{j}\rightarrow T$ in $S'$ $\Rightarrow$ $T_{j}(A\cdot+b)
     \rightarrow T(A\cdot+b)$
@@ -10690,7 +10721,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
            \eqref{eq:hoelder-int} mit }\frac{1}{p}+\frac{1}{p'} =1\\
         &\leq c \norm{f}_{p} \norm{\phi}_{k,0}&&\text{mit} k>\frac{n}{p'}+1
       \end{align*}
-      Mithilfe von Satz 2\todo{link} folgt daraus, dass $f\in S'(\R^{n})$
+      Mithilfe von \autoref{satz:7} folgt daraus, dass $f\in S'(\R^{n})$
     \end{proof}
    \item Ist $f$ ein messbares Fuktional und $c,m$ mit $\abs{f(x)} \leq
     c(1+\abs{x}^{m})$ existieren, dann ist
@@ -10743,7 +10774,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     $\Longrightarrow$ $f$ ist langsam wachsend, d.\,h. es gilt Punkt (4)
 
     \begin{proof}
-      $f\in S'(\R^{n})$, nach Satz 2\todo{link} $\Rightarrow$ $\exists
+      $f\in S'(\R^{n})$, nach \autoref{satz:7} $\Rightarrow$ $\exists
       k,l\in\N_{0}$ mit
       \begin{gather}\label{eq:38}
         \abs{f(\phi)} \leq c\norm{\phi}_{k,l}
@@ -10763,7 +10794,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
         \abs{\underbrace{D^{\alpha}(\eta_{j}(x))(1+\abs{x}^{k})^{-1}}
           _{c_{1}(1+\abs{x}^{k})^{-1}}} \leq c_{2}\qquad \forall x,j
       \end{multline*}
-      Lemma von Fatou\todo{link im ersten Semester suchen} $\Rightarrow$
+      \autoref{satz:faton-lemma} $\Rightarrow$
       $\exists \int_{\R^{n}}f(x)(1+\abs{x}^{k})^{-1}\,dx \leq c_{2}$
     \end{proof}
   \end{enumerate}
@@ -10792,7 +10823,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   $\phi\in L_{1}(\R^{n})$.
 \end{bemerk}
 
-\begin{lemma}
+\begin{lemma}\label{lem:9}
   \begin{align*}
     F(e^{-\frac{\abs{x}^{2}}{2}}) = e^{-\frac{\abs{\xi}^{2}}{2}}&&
        (\xi\in\R^{n})
@@ -10831,7 +10862,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   \end{proof}
 \end{lemma}
 
-\begin{lemma}[Einige Eigenschaften der Fouriertransformation]
+\begin{lemma}[Einige Eigenschaften der Fouriertransformation]\label{lem:8}
   $\phi\in S(\R^{n})$
   \begin{enumerate}
    \item $\alpha\in\N_{0}^{n}$ $\Rightarrow$ $D^{\alpha}(F\phi)\in
@@ -10913,9 +10944,9 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
         \leq c \norm{D^{\alpha}(x^{\beta\phi(x)})}_{n+1,0}\\
         \intertext{Da Multiplikation und Differentation eine stetige Abbilgung in
            $S(\R^{n})$ ist, können wir folgende Abschätzung machen:}
-        \leq^{nach \todo{lemma5.2.1/1}} c_{2}
+        \leq^{\text{nach \autoref{lem:7}}} c_{2}
            \norm{x^{\beta}\phi(x)}_{n+1,\abs{\alpha}}\\
-        \leq^{nach \todo{lemma5.2.1/1}} c_{3}
+        \leq^{\text{nach \autoref{lem:7}}} c_{3}
            \norm{\phi}_{n+1+\abs{\beta},\abs{\alpha}}\\
         \intertext{$\alpha$ habe höchstens die Länge $\abs{\alpha}\leq k$
           und $\beta$ höchstens $\abs{\beta}\leq l$}
@@ -10982,9 +11013,9 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     \end{gather*}
 
     \begin{align*}
-      (F\psi)(z) =^{\todo{Lemma2}} \epsilon^{-n} (
+      (F\psi)(z) =^{\text{\autoref{lem:8}}} \epsilon^{-n} (
          F(e^{-\frac{\abs{\xi}}{2}})(\frac{z}{\epsilon})
-         =^{\todo{lemma1}} \epsilon^{-n}
+         =^{\text{\autoref{lem:9}}} \epsilon^{-n}
          e^{-\frac{\abs{z}^{2}}{2\epsilon^{2}}}
     \end{align*}
 
@@ -11013,6 +11044,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
 
 \subsection{Die Fouriertransformation in
   \texorpdfstring{$S'(\R^{n})$}{S'(Rn)}}
+\label{sec:fourier-trans}
 
 \begin{defini}
   $T\in S'(\R^{n})$
@@ -11179,7 +11211,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
   Polynom (oder: $\supp FT=\{0\}$ $\Rightarrow$ $T$ ist ein Polynom)
 
   \begin{proof}
-    Nach \todo{Satz 5.1.4/2} $\Rightarrow$ $T = \sum_{\abs{\alpha}\leq m}
+    Nach \autoref{satz:9} $\Rightarrow$ $T = \sum_{\abs{\alpha}\leq m}
     c_{\alpha} D^{\alpha} \delta$ $\Longrightarrow$
     \begin{gather*}
       FT = \sum_{\abs{\alpha}\leq m} c_{\alpha} F(D^{\alpha}\delta) =
@@ -11208,7 +11240,7 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
       \abs{(Ff)(\xi^{k}) - Ff(\xi)} \leq (2\pi)^{-\frac{n}{2}}
          \int_{\R^{n}} \abs{f(x) e^{-ix\xi^{k}} -e^{-ix\xi}}\,dx < \epsilon
     \end{align*}
-    Nach dem Satz von Lebesgue\todo{link}, kann der Limes in das Integral
+    Nach dem \autoref{satz:lebesgue}, kann der Limes in das Integral
     gezogen werden und für hinreichend großes $k$ geht
     $\abs{e^{-ix\xi^{k}} -e^{-ix\xi}} \rightarrow 0$
 
@@ -11221,8 +11253,8 @@ $D'(\Omega), \Omega\subset \R^{n}$ Gebiet
     \end{align*}
     für $\abs{\xi}>R$
 
-    Alle anderer Eigenschaften wurde bereits im vorhergehenden Abschnitt
-    gezeigt\todo{link}
+    Alle anderer Eigenschaften wurde bereits im \autoref{sec:fourier-trans}
+    gezeigt.
   \end{proof}
 \end{satz}
 
