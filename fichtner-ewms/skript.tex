@@ -2348,7 +2348,7 @@ gezogen werden.
   \emph{ohne} Zurücklegen $(k\leq n)$\\
   $A_{k,n}^{oWmR}\colon=\{[\omega_1,\ldots,\omega_k]| \{\omega_1,\ldots,
   \omega_k\}\in \{1,\ldots,n\}\}=n(n-1)(n-2)\ldots (n-k+1)\Rightarrow
-  \A^{oWmR}_{k,n}=  \frac{n!}{(n-k)!}$\\
+  \#A^{oWmR}_{k,n}=  \frac{n!}{(n-k)!}$\\
   Für den Spezialfall $k=n$ folgt dann: $\#A=n!$. Dies entspricht den
   Permutationen von $\{1,\dotsc,n\}$.
 \item Auswahl \emph{ohne} Berücksichtigung der Reihenfolge und
@@ -2459,7 +2459,7 @@ ist ein Wahrscheinlichkeitsmaß auf $[\R,\FB]$.
   \item $P(\{[\omega_1,\ldots,\omega_n]\}) =P(\times_{i=1}^{n} \{\omega_{i}\})
     = (p\delta_1+ (1-p) \delta_0)^{n\times} (\times_{i=1}^n \{\omega_i\})=
     \prod_{i=1}^n (p\delta_1+ (1-p)\delta_0)(\{\omega_i\})= \prod_{i=1}^{n}
-    (p\delta_{1}(\{\omega_{i}\})+(1-p)\delta_{0}(\{\omega_{i}\})= \prod_{i=1}^n
+    (p\delta_{1})(\{\omega_{i}\})+(1-p)\delta_{0}(\{\omega_{i}\})= \prod_{i=1}^n
     p^{\omega_i} (1-p)^{1-\omega_i}= p^{\sum \omega_i} (1-p)^{n-\sum
       \omega_i}$
   \end{enumerate}
@@ -2644,7 +2644,9 @@ Wahrscheinlichkeitsraum ist.
   \item Nach der Definition ist klar, dass $P(A|B)\geq 0$
     gilt. Weiterhin ist $A\cap B\subseteq B$. Nach der Monotonie von
     $P$ folgt damit, dass $P(A\cap B)\leq P(B)$. Durch Umstellen
-    erhält man nun $\frac{P(A\cap B)}{P(B)}\leq 1$.
+    erhält man nun $\frac{P(A\cap B)}{P(B)}\leq 1$. Es ist klar, dass
+    $P(\emptyset|B)=\frac{P(\emptyset\cap B)}{P(B)}=\frac{P(\emptyset)}{P(B)}
+    = 0$ ist.
   \item $P(\Omega|B)=\frac{P(B)}{P(B)}=1=P(B|B)$
   \item Seien die $(A_i)$ aus $\CF$ paarweise disjunkt. Dann sind auch
     $(A_i\cap B)$ paarweise disjunkt und es folgt,
@@ -2656,10 +2658,17 @@ Wahrscheinlichkeitsraum ist.
 \end{proof}
 \end{satz}
 
+\begin{remark}
+  Durch $A\rightarrow P(A|B)$ ist ein Wahrscheinlichkeitsmaß auf
+  $[\Omega,\CF]$ gegeben. Man bezeichnet $P(\cdot|B)$ als \highl{bedingte
+  Verteilung} unter der Bedingung $B$.
+\end{remark}
+
 \begin{satz}[Formel bzw. Satz über die totale Wahrscheinlichkeit]
 \label{satz:totalWahr}
   Sei $(B_i)_{i\in I}$ eine abzählbar messbare Zerlegung von
-  $\Omega$. Dann gilt:
+  $\Omega$, d.\,h. $B_{i}\in\CF, i\in I$ abzählbar, $B_{i}\cap
+  B_{j}=\emptyset$ für $i\neq j, \bigcup B_{i}=\Omega$. Dann gilt:
 \[P(A)=\sum_{i\in I} P(A|B_i)P(B_i)\qquad A\in\CF, P(B_i)>0\]
 \begin{proof}
   \begin{align*}
@@ -2708,27 +2717,39 @@ Wahrscheinlichkeitsraum ist.
   \end{itemize}
 \end{beispiel}
 
-\todo{Informationsübertragungsmodell ausgelassen}
+\paragraph{Informationsübertragungsmodell}
+
+Seien $S_{1}=S_{2}=S$ ein endliches Alphabet. $S_{1}$ bezeichnet das Alphabet
+des Senders, $S_{2}$ das des Empfängers. Es ist $\CF=\FP(\Omega)$ und $\Omega=
+S_{1}\times S_{2}=S\times S= \{[s_{1}, s_{2}]| s_{1}, s_{2}\in S\}$. $A_{s}$
+entspricht dem Ereignis, dass $S$ empfangen und $B_{s}$ das $S$ gesendet wird.
+Dabei ist $s\in S$. Weiter ist $A_{s_{2}}=S\times\{s_{2}\}$,
+$B_{s_{1}}=\{s_{1}\}\times S$, $A_{s_{2}}\cap B_{s_{1}}=\{[s_{1}, s_{2}]\}$
+und $q(s_{1}, s_{2})\colon= P(A_{s_{2}}|B_{s_{1}})$. Die Wahrscheinlichkeit
+$p_{s_{1}}$ bezeichnet die a"~priori"=Wahrscheinlichkeit $P(B_{s_{1}})$. Damit
+folgt, $P(A_{s_{2}})=\sum_{s_{1}\in S} P(A_{s_{2}}|B_{s_{1}})P(B_{s_{1}})=
+\sum_{s_{1}\in S} p_{s_{1}} q(s_{1},s_{2})$. Ideal ist
+$q(s_{1},s_{2})=\delta_{s_{1}, s_{2}}$.
 
 \section{Lebensdauerverteilungen}
 
 Im folgenden gilt immer: $\Omega=\R_+ =(0, +\infty), \CF=\FB\cap\R_+ =
-\{A\subseteq \R_+| A\in\FB\}$
+\{A\cap \R_+| A\in\FB\}$
 
 \begin{definition}
-  Ein Wahrscheinlichkeitsmaß auf $[\Omega, \CF]$ heißt
+  Ein Wahrscheinlichkeitsmaß $Q$ auf $[\Omega, \CF]$ heißt
   \highl{Lebensdauerverteilung}.
   \begin{itemize}
   \item Sei $Q=\sum_{i=1}^\infty q_i \delta_i$ ($Q$ ist bezüglich des
     Zählmaßes absolut stetig.). Dann heißt
-    \[r_Q(i) \colon= \frac{q_i}{\sum_{j=i}^\infty q_{i} \delta_{i}} \qquad i=1,2, \ldots\]
-    \help{Ist die Formel oben korrekt?}
-    \highl{Sterberate} von $Q$.
-  \item Sei $Q=\ell f$ mit $F\geq 0, \int fd\ell =1$ ($Q$ ist absolut
+    \[r_Q(i) \colon= \frac{q_i}{\sum_{j\geq i}^\infty q_{i}} \qquad
+    q_{i}\geq0, \sum q_{i}=1,  i=1,2, \ldots\]
+    \highl{Sterberate} von $Q$ zum Zeitpunkt $i$.
+  \item Sei $Q=\ell f$ mit $f\geq 0, \int fd\ell =1$ ($Q$ ist absolut
     stetig mit Dichte $f$.). Dann heißt
-    \[r_Q(x) \colon= \frac{f(x)}{\int_{[x,a)} f(y)\ell (dy)} \qquad
+    \[r_Q(x) \colon= \frac{f(x)}{\int_{[x,\infty)} f(y)\ell (dy)} \qquad
       x\in\R_+\]
-    \highl{Sterberate} vom $Q$.
+    \highl{Sterberate} vom $Q$ zur Zeit $x\in\R_{+}$.
   \end{itemize}
 \end{definition}
 
@@ -2743,8 +2764,9 @@ Im folgenden gilt immer: $\Omega=\R_+ =(0, +\infty), \CF=\FB\cap\R_+ =
   \end{enumerate}
 \begin{proof}
   \begin{enumerate}[(a)]
-  \item $Q(\{i\}|\{j\geq i\})= \frac{Q(\{i\}\cap \{j\geq
-      i\})}{Q(\{j\geq i\})}= \frac{Q(\{i\})}{\sum_{j\geq i} Q(\{j\})}=
+  \item $Q(\{i\}|\{i, i+1,\dotsc\})= \frac{Q(\{i\}\cap
+    \{i,i+1,\dotsc\})}{Q(\{i, i+1,\dotsc\})}=
+    \frac{Q(\{i\})}{Q(\{i,i+1,\dotsc\})}= \frac{Q(\{i\})}{\sum_{j\geq i} Q(\{j\})}=
     \frac{q_i}{\sum_{j\geq i} q_j}= r_Q (i)$
   \item $Q([x,x+\Delta)|[x,+\infty))= \frac{Q([x,x+\Delta)\cap [x,
       +\infty))}{Q([x, +\infty))}= \frac{Q([x, x+\Delta))}{Q(x,
@@ -2772,7 +2794,22 @@ Im folgenden gilt immer: $\Omega=\R_+ =(0, +\infty), \CF=\FB\cap\R_+ =
   \end{enumerate}
 \end{beispiel}
 
-\todo{Zwei Beispiele weggelassen.}
+\begin{beispiel}
+  \begin{enumerate}
+   \item Sei $Q=G_{p}=(1-p) \sum_{i=1}^{\infty} p^{i-1}\delta_{i}\Rightarrow
+    r_{Q}(i)=1-p$ für $i=1,2,\dotsc$.
+   \item Sei $Q=\Ex_{\lambda}=\ell f_{\lambda}$ mit
+    $f_{\lambda}=\begin{cases}0 & x\leq0\\ \lambda e^{-\lambda x} &
+		   x>0\end{cases}$. Dabei ist $\lambda>0$ gegeben. Sei
+    $F(x)=\Ex_{\lambda}((-\infty, x))=\Ex([0,x))= \int_{[0,x)} f_{\lambda}(y)
+    \ell(dy)=\int_{0}^{x} f(x)\,dy$. $F$ ist Verteilungsfunktion zu
+    $Q\rightarrow \int_{[x,+\infty)} f(y)\ell(dy)=1-Fx)\Rightarrow r_{Q}(x)=
+    \frac{f(x)}{1-F(x)}$. Es ist $Q=\Ex_{\lambda}\rightarrow
+    F(x)=1-e^{-\lambda x}\Rightarrow r_{Q}(x)= \frac{\lambda e^{-\lambda
+    x}}{e^{-\lambda x}}=\lambda$. Also hängt die Sterberate nicht vom
+    augenblicklichen Alter ab.
+  \end{enumerate}
+\end{beispiel}
 
 \paragraph{Typisches Verhalten der Sterberate $r_Q$}
 
@@ -2796,7 +2833,7 @@ Wahrscheinlichkeitsraum ist.
 
 \begin{remark}
   \begin{enumerate}
-  \item Sei $P(B)>0\Rightarrow A,B$ unabhängig $\Leftrightarrow P(A|B)
+  \item Sei $P(B)>0$. Dann gilt $A,B$ unabhängig $\Leftrightarrow P(A|B)
     =P(A)$. Denn $P(A)=P(A|B)=\frac{P(A\cap B)}{P(B)}\Leftrightarrow
     P(A)P(B)=P(A\cap B)$
   \item Sei $P(B)=0\Rightarrow A,B$ unabhängig für beliebige
@@ -2845,18 +2882,21 @@ Wahrscheinlichkeitsraum ist.
     P(A_2) P(A_3)$ folgt im allgemeinen nicht, dass $\FA$ vollständig
     unabhängig ist.
   \item $\FA$ ist genau dann vollständig unabhängig, wenn $\forall
-    \{A_1, \ldots, A_n\}\subseteq A$ gilt: $A_1, \bigcap_{k=2}^n A_k$
+    \{A_1, \ldots, A_n\}\subseteq \FA$ gilt: $A_1, \bigcap_{k=2}^n A_k$
     unabhängig. Beweisidee: Die betrachtete Unabhängigkeit heißt:
-    $P(A_1\cap \bigcap_{k=2}^n A_k)=P(A_1)P(\bigcup_{k=2}^n A_k)$.
+    $P(A_1\cap \bigcap_{k=2}^n A_k)= \prod_{j=1}^{n} P(A_{j})=
+    P(A_1)P(\bigcap_{k=2}^n A_k)$. Die andere Richtung wird durch vollständige
+    Induktion gezeigt: $k=2 \xrightarrow{n=1} P(A_{1}\cap
+    A_{2})=P(A_{1})P(A_{2})$.
   \item $\FA$ ist genau dann vollständig unabhängig, wenn $\forall
-    \{A_1, \ldots, A_n\}\subseteq A$ gilt, dass $\{A_1, \ldots, A_n\}$
+    \{A_1, \ldots, A_n\}\subseteq \FA$ gilt, dass $\{A_1, \ldots, A_n\}$
     vollständig unabhängig. Dabei werden keine beliebigen Systeme
     betrachtet, sondern wir beschränken uns auf abzählbare Mengen
   \end{enumerate}
 \end{remark}
 
 \begin{beispiel}
-  Sei $A\in\CF, P(A)\notin\{0,1\}$. Setzen $A_1=A_2=A, A_3=\emptyset
+  Sei $A\in\CF, 0<P(A)<1$. Setzen $A_1=A_2=A, A_3=\emptyset
   \Rightarrow P(A_1\cap A_2\cap A_3)= P(A_1)P(A_2)P(A_3)=0$. Aber
   $P(A_1\cap A_2)=P(A)\neq (P(A))^2=P(A_1)\cdot P(A_2)$
 \end{beispiel}
@@ -2877,19 +2917,25 @@ Wahrscheinlichkeitsraum ist.
   Sei $(A_i)_{i=1}^\infty$ vollständig unabhängig und
   $\sum_{i=1}^\infty P(A_i)=+\infty$. Dann gilt:
   \[P\left(\bigcap_{n=1}^\infty \bigcup_{i\geq n} A_i\right)=1\]
+  Interpretation: $\omega\in\bigcap_{n=1}^{\infty}\bigcup_{i\geq n}
+  A_{i}\Leftrightarrow \omega\in\bigcup_{i\geq n} A_{i}$ für $n=1,2,\dotsc
+  \Leftrightarrow \#\{i| \omega\in A_{i}\}=+\infty\Rightarrow
+  \bigcap_{n=1}^{\infty} \bigcup_{i\geq n} A_{i}$ entspricht dass unendlich
+  viele Ereignisse $A_{i}$ eintreten.
 \begin{proof}
   Es genügt zu zeigen, dass $P((\bigcap_{n=1}^\infty \bigcup_{i\geq n}
   A_i)^c) =0$. Es ist klar, dass $P((\bigcap_{n=1}^\infty \bigcup_{i\geq n}
-  A_i)^c) = P(\bigcup_{n\geq 1} \bigcap_{i\geq n} A_i^c)\leq
-  \sum_{n\geq 1} P(\bigcup_{i\geq n} A_i^c)$. Damit genügt zu zeigen,
-  dass $P(\bigcup_{i\geq n} A_i^c)=0= \bigcup_{k=n}^\infty
-  \bigcup_{i=n}^k A_i^c\Rightarrow P(\bigcup_{i\geq n} A_i^c)=
-  P(\bigcup_{k=n}^\infty \bigcup_{i=n}^k A_i^c)$.  Wegen der
-  Stetigkeit von oben ist $\lim_{k\rightarrow\infty} P(\bigcup_{i=n}^k
+  A_i)^c) = P(\bigcup_{n= 1}^{\infty} \bigcap_{i\geq n} A_i^c)\leq
+  \sum_{n= 1}^{\infty} P(\bigcap_{i\geq n} A_i^c)$. Damit genügt zu zeigen,
+  dass $P(\bigcap_{i\geq n} A_i^c)=0= P(\bigcap_{k=n}^\infty
+  \bigcap_{i=n}^k A_i^c)\Rightarrow P(\bigcap_{i\geq n} A_i^c)=
+  P(\bigcap_{k=n}^\infty \bigcap_{i=n}^k A_i^c)$.  Wegen der
+  Stetigkeit von oben ist $\lim_{k\rightarrow\infty} P(\bigcap_{i=n}^k
   A_i^c)$. Da $A_i$ unabhängig ist, ist auch $A_i^c$ unabhängig. Daraus
   folgt, dass $\lim_{k\rightarrow\infty} \prod_{i=n}^k P(A_i^c)=
-  \lim_{k\rightarrow\infty} \prod_{i=n}^k (1-P(A_i))$. Somit genügt es
-  noch zeigen, dass $\sum_{i=n}^\infty
+  \lim_{k\rightarrow\infty} \prod_{i=n}^k (1-P(A_i))=0$. Somit genügt es
+  noch zeigen, dass $\ln (\prod_{i=n}^{k} (1-P(A_{i}))= \sum_{i=n}^{\infty}
+  \ln(1-P(A_{i}))= -\infty= \sum_{i=n}^\infty
   -\ln(1-P(A_i))=+\infty$. Weiterhin wissen wir, dass $\sum
   P(A_i)=+\infty$. Somit muss nur noch gezeigt werden, dass
   $-\ln(1-P(A_i))\geq P(A_i)$. Wir haben allgemein somit die
@@ -2917,19 +2963,17 @@ Wahrscheinlichkeitsraum ist.
 \begin{satz}
   Sei $(A_i)_{i=1}^\infty$ eine Folge aus $\CF$ mit $\sum_{i\geq 1}
   P(A_i)< +\infty$. Dann gilt
-  \[P\left(\bigcup_{n\geq 1} \bigcap_{i\geq n} A_i\right) =0\]
+  \[P\left(\bigcap_{n= 1}^{\infty} \bigcup_{i\geq n} A_i\right) =0\]
+  Hierbei wurde die Unabhängigkeit \emph{nicht} vorausgesetzt.
 \begin{proof}
-  Trivialerweise ist: $\bigcup_{n\geq 1} \bigcap_{i\geq n}
-  A_i\subseteq \bigcap_{i\geq k} A_i$.
-  \begin{align*}
-    &\Rightarrow 0\leq P\left(\bigcup\bigcap A_i\right)\leq
-    P\left(\bigcap_{i\geq k} A_i\right)\\
-    &\Rightarrow 0\leq P\left(\bigcup\bigcap A_i\right)\leq
-    \lim_{k\rightarrow\infty} P\left(\bigcup_{i\geq k} A_i\right)\\
-    P\left(\bigcup_{i\geq k} A_i\right) &\leq \sum_{i\geq k} P(A_i)
-    \xrightarrow{k\rightarrow\infty} 0
-  \end{align*}
-  Beim letzten Schritt wurde die Subadditivität ausgenutzt.
+  Trivialerweise ist: $\bigcap_{n\geq 1} \bigcup_{i\geq n}
+  A_i\subseteq \bigcup_{i\geq k} A_i$ und $0\leq P(\bigcap\bigcup A_{i})\leq
+  P(\bigcup_{i\geq k} A_{i})$ für $k=1,2,\dotsc$. Es genügt zu zeigen, dass
+  $\lim_{k\rightarrow\infty} P(\bigcup_{i\geq k}A_{i})=0$ ist. 
+  Es ist, $P(\bigcup_{i\geq k} A_i) \leq \sum_{i\geq k} P(A_i)
+    \xrightarrow{k\rightarrow\infty} 0$ und es reicht zu zeigen, dass
+  $\lim_{k\rightarrow\infty} \sum_{i\geq k} P(A_{i})=0$. Das folgt aber aus
+  $\sum_{i\geq k} P(A_{i})<+\infty$.
 \end{proof}
 \end{satz}
 
@@ -2937,7 +2981,7 @@ Wahrscheinlichkeitsraum ist.
   Aus den obigen beiden Sätzen kann folgende Folgerung gemacht
   werden: Sei $(A_i)_{i=1}^\infty$ vollständig unabhängig. Dann gelten:
   \begin{inparaenum}[a)]
-  \item $P(\bigcap_{n\geq 1} \bigcup_{i\geq n} A_i)\in \{0,1\}$ ($0,1$-Gesetz)
+  \item $P(\bigcap_{n= 1}^{\infty} \bigcup_{i\geq n} A_i)\in \{0,1\}$ ($0,1$-Gesetz)
   \item $P(\bigcap_{n\geq 1} \bigcup_{i\geq n} A_i)\Leftrightarrow
     P(A_i) =+\infty$ (Lemma von Borel-Cantelli)
   \end{inparaenum}
