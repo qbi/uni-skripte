@@ -1,0 +1,477 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Darstellungstheorie}
+\author{bei Prof.\,Dr.\,Burkhard KÃ¼lshammer}
+\date{Semester: WS 2007/08}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \nolinkurl{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Person \nolinkurl{<email>}} (Jahr)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+
+\todo{Vorlesung vom 2007-10-22}
+\chapter{Erstes Kapitel}
+
+%satz 1.5
+\begin{satz}[lifting idempotents]\label{satz:15}
+  Suppose that $I$ is a idempotent ideal of an $F$"~Algebra $A$ and let
+  $\epsilon$ be an idempotent in $A/_{I}$. Then there is an idempotent $e$ in
+  $A$ such that $\epsilon=e+I$.
+  \begin{proof}
+    Let $n\in\N$ such that $I^{n}=0$ and let $a\in A$ such that
+    $\epsilon=a+I$. Then
+    \begin{align*}
+      1 &= (1-a+a)^{2n}= \sum_{k=0}^{2n} \binom{2n}{k} (1-a)^{k} a^{2n-k}
+    \end{align*}
+    Let $e\colon= \sum_{k=0}^{n} \binom{2n}{k} (1-a)^{k} a^{2n-k}$, so that
+    $1-e= \sum_{l=n+1}^{2n} \binom{2n}{l} (1-a)^{l} a^{2n-l}$. Then $a(1-a)+I=
+    \epsilon(1-\epsilon)=0$, so $a(1-a)\in I$ and $e(1-e)= \sum_{k=0}^{n}
+    \sum_{l=n+1}^{2n} \binom{2n}{k} \binom{2n}{l} (1-a)^{k}
+    \underbrace{a^{2n-k} (1-a)^{l}}_{\in I^{n}=0} a^{2n-l}=0$. Thus $e=e^{2}$.
+    Moreover, $e+I= \sum_{k=0}^{n} \binom{2n}{k} \underbrace{(1-a)^{k}
+    a^{2n-k}}_{\in I \text{ for } k\neq 0}+I=
+    a^{2n}+I=\epsilon^{2n}=\epsilon$.
+  \end{proof}
+\end{satz}
+
+\begin{bemerkON}
+  Let $e\in A$ be en idempotent. Then $eAe$ is an $F$"~algebra with identity
+  element $e$, so it's \emph{not} a subalgebra. Moreover, \[\Rad(eAe)=
+  e\Rad(A)e;\] for $e\Rad(A)e$ is certainly a nilpotent ideal of $eAe$, so
+  $e\Rad(A)e\subseteq\Rad(eAe)=I$. On the other hand, $(AIA)^{n}= AIAI\dotso
+  IA= AeIeAeI\dotso eIeA= AeI^{n}eA=0$ for some $n\in\N$. Thus $AIA$ is a
+  nilpotent ideal of $A$, so $i\subseteq AIA\subseteq\Rad(A)$ and
+  $I=eIe\subseteq e\Rad(A)e$.
+\end{bemerkON}
+
+%def 1.6
+\begin{defini}
+  Idempotents $e,f$ in an $F$"~algebra $A$ such that $ef=0=fe$ are called
+  \highl{orthogonal}.
+\end{defini}
+
+\begin{bemerkON}
+  In this case, $(e+f)^{2}=e^{2}+ef+fe+f^{2}= e+f$, so $e+f$ is an idempotent.
+\end{bemerkON}
+
+\begin{bsp}
+  For $n\in\N, \begin{pmatrix}1 & 0 & \dotso & 0\\
+		 0\\
+		 \vdots\\
+		 0\end{pmatrix}, \begin{pmatrix}0 & 0 & \dotso & 0\\
+				   0 & 1 & 0 & 0\\
+				   \vdots\\
+				   0\end{pmatrix}$ etc. are pairwise
+  orthogonal idempotents in $F^{n\times n}$, with sum $1_{n}$.
+\end{bsp}
+
+%satz 1.6
+\begin{satz}[Orthogonalizing idempotents]\label{satz:16}
+  Let $I$ be a nilpotent ideal of an $F$"~algebra $A$, and let $e_{1},\dotsc,
+  e_{n}$ be idempotents in $A$ such that $e_{1}+\dotsb+ e_{n}+I=1+I$ and
+  $e_{i}e_{j}+I=0$ for all $i\neq j$. Then $u\colon= e_{1}+\dotsb+ e_{n}\in
+  U(A)$, and $u^{-1}e_{1},\dotsc, u^{-1}e_{n}$ are pairwise orthogonal
+  idempotents in $A$ such that $u^{-1}e_{1}+\dotsb+ u^{-1}e_{n}=1$ and
+  $u^{-1}e_{i}+I=e_{i}+I$ for $i=1,\dotsc,n$.
+  \begin{proof}
+    Let $n\in\N$ such that $I^{n}=0$. Then $x\colon=u-1\in I$, so
+    \begin{align*}
+      (1+x)(1-x+x^{2}-x^{3}+\dotsb+ (-1)^{n} x^{n}) &= 1+(-1)^{n} x^{n+1} =1\\
+      (1-x+x^{2}+\dotsb+ (-1)^{n}x^{n})(1+x) &= 1
+    \end{align*}
+    Thus $u=1+x\in U(A)$ and
+    \begin{align*}
+      u^{-1}e_{i}+I &= (1-x+x^{2}+\dotsb+ (-1)^{n}x^{n})e_{i}+I= e_{i}+I\qquad
+	 i=1,\dotsc,n\\
+      u^{-1}e_{1}+\dotsb+ u^{-1}e_{n} &= u^{-1}(e_{1}+\dotsb+ e_{n})=u^{-1}u=1
+    \end{align*}
+    It suffices to show that $A=Ae_{1}\oplus\dotso \oplus Ae_{n}$; for then
+    \begin{align*}
+      u^{-1}e_{i} &= u^{-1}e_{i}\cdot1= \underbrace{u^{-1}e_{i}\cdot
+	 u^{-1}e_{1}}_{\in Ae_{1}}+\dotsb+ \underbrace{u^{-1}e_{i}\cdot
+	 u^{-1}e_{n}}_{\in Ae_{n}}\qquad i=1,\dotsc,n
+    \end{align*}
+    Comparing components we see that $u^{-1}e_{i}=u^{-1}e_{i}\cdot
+    u^{-1}e_{i}$ and $u^{-1}e_{i}\cdot u^{-1}e_{j}=0$ for all $i\neq j$.
+
+    It remains to show that $A=Ae_{i}\oplus\dotso \oplus Ae_{n}$. If $a\in A$,
+    then $a=a1=au^{-1}e_{1}+\dotsb+ au^{-1}e_{n}\in Ae_{1}+\dotsb+ Ae_{n}$.
+    Thus $A=Ae_{1}+\dotsb+ Ae_{n}$, and it suffices to show that the sum is
+    direct. We assume the contrary and choose a nonempty subset
+    $A\subseteq\{1,\dotsc,n\}$ and elements $x_{j}\in Ae_{j}\setminus\{0\}$
+    such that $\sum_{j\in J} x_{j}=0$. Let $k\in J$ be arbitrary. Then
+    $x_{k}=-\sum_{k\neq j\in J} x_{j}= -\sum_{k\neq j\in J} x_{j} e_{j}$. Thus
+    $x_{k}=x_{k}e_{k}= -\sum_{k\neq j\in J} x_{j}e_{j}e_{k}$. Taking the
+    difference we obtain that $\sum_{k\neq j\in J} x_{j}(1-e_{j}e_{k})=0$. For
+    $k\neq j\in J$ we have $e_{j}e_{k}\in I$, so
+    $1=(1-e_{j}e_{k})(1-e_{j}e_{k}+(e_{j}e_{k})^{2}+\dotsb+ (e_{j}e_{k})^{n})=
+    (1+e_{j}e_{k}+ (e_{j}e_{k})^{2}+\dotsb+ (e_{j}e_{k})^{n})(1-e_{j}e_{k})$.
+    Thus $uj:=1-e_{j}e_{k}\in U(A)$ and $y_{j}\colon=x_{j}u_{j}\neq0$.
+    Moreover, $y_{j}=x_{j}u_{j}= x_{j}u_{j}\cdot u^{-1}e_{j}u_{j}\in
+    Au^{-1}e_{j}u_{j}$ and $u^{-1}_{j}e_{j}e_{j}+I=e_{j}+I$. Thus the
+    idempotents $u^{-1}_{1}e_{1}u_{1},\dotsc, u_{n}^{-1}e_{n}u_{n}$ also
+    satisfy the hypothesis of the theorem. So we have idempotents
+    $e_{1}',\dotsc,e_{n}'$ in $A$ satisfying the hypothesis of the theorem, a
+    subset $J'\subseteq J$ such that $\abs{J'}=\abs{J}-1$ and elements
+    $x_{j}'\infty Ae_{j}'\setminus\{0\}$ such that $\sum_{j\in J} x_{j}'=0$.
+    Now we continue by induction. At the end we have idempotents
+    $e_{1}^{*},\dotsc,e_{n}^{*}$ satisfying the hypothesis of the theorem and
+    an element $k\in J$ and an element $x_{l}^{*}\in Ae_{l}^{*}\setminus\{0\}$
+    such that $x_{l}^{*}=0$, which is impossible.
+    \end{proof}
+\end{satz}
+
+%satz 1.7
+\begin{satz}[Lifting orthogonal idempotents]
+  Let $I$ be a nilpotent ideal of an $F$"~algebra $A$, and let
+  $\epsilon_{1},\dotsc,\epsilon_{n}$ be pairwise orthogonal idempotents in
+  $A/_{I}$ such that $\epsilon_{1}+\dotsb+\epsilon_{n}=1$. Then there are
+  pairwise orthogonal idempotents $e_{1},\dotsc, e_{n}$ in $A$ such that
+  $e_{1}+\dotsb+ e_{n}=1$ and $\epsilon_{i}=\epsilon_{i}+I$ for $i=1,\dotsc,n$.
+  \begin{proof}
+    By \autoref{satz:15}, there are idempotents $f_{1},\dotsc, f_{n}\in A$
+    such that $\epsilon_{i}=f_{i}+I$ for $i=1,\dotsc,n$. Then $f_{1}+\dotsb+
+    f_{n}+I= \epsilon_{1}+\dotsb+\epsilon_{n}=1_{A}+I$ and
+    $f_{i}f_{j}+I=\epsilon_{i}\epsilon_{j}=0+I$ for alle $i\neq j$. By
+    \autoref{satz:16}, we have $u\colon= f_{1}+\dotsb+ f_{n}\in U(A)$, and
+    $e_{1}=u^{-1}f_{1},\dotsc, e_{n}\colon= u^{-1}f_{n}$ are pairwise
+    orthogonal idempotents in $A$ such that $e_{1}+\dotsb+ e_{n}=1$ and
+    $e_{i}+I= f_{i}+I=\epsilon_{i}$.
+  \end{proof}
+\end{satz}
+
+\chapter{Modules}
+
+Let $F$ algebraic closed field and $A$ an $F$"~algebra.
+
+% def. 2.1
+\begin{defini}
+  An $A$"~module is a finite"=dimensional $F$"~vector spce $M$, together with
+  a multiplication $A\times M\rightarrow M$ satisfying:
+  \begin{enumerate}
+   \item $(a+b)m=am+bm$
+   \item a(m+n)=am+an$$
+   \item $(ab)m=a(bm)$
+   \item $(\alpha 1_{A})m=\alpha m$
+  \end{enumerate}
+  for $a,b\in A, m,n\in M, \alpha\in F$.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item The \highl{zero module} 0.
+   \item The \highl{regular module} $A$.
+   \item The \highl{direct product} $M_{1}\times\dotso \times M_{n}$ of
+    $A$"~modules $M_{1},\dotsc, M_{n}$, via $a(m_{1},\dotsc, m_{n})\colon=
+    (am_{1},\dotsc, am_{n})$ for $a\in A, m_{1}\in M_{1},\dotsc, m_{n}\in
+    M_{n}$.
+  \end{enumerate}
+\end{bsp}
+
+% def 2.2
+\begin{defini}
+  An $F$"~linear map $f\colon M\rightarrow N$ between $A$"~modules $M,N$ such
+  that $f(am)=af(m)$ for $a\in A, m\in M$ ist called an
+  $A$"~\highl{homomorphism}. Then $A$"~\highl{monomorphisms}, \dots{},
+  $A$"~\highl{automorphisms} are defined as usual.
+\end{defini}
+
+\begin{bemerkON}
+  \begin{enumerate}
+   \item Let $f,g\colon M\rightarrow N$ be $A$"~homomorpisms and $\alpha\in
+    F$. Then $f+g\colon M\rightarrow N, m\mapsto f(m)+g(m)$, and $\alpha
+    f\colon M\rightarrow N, m\mapsto\alpha f(m)$ are $A$"~homomorpisms. Also,
+    the zero map $M\rightarrow N, m\mapsto0$ is an $A$"~homomorpism. Thus
+    $\Hom_{A}(M,N)\colon= \{f\colon M\rightarrow N| f \text{ is }
+    A\text{-homomorpism}\}$ is a $F$"~subspace of $\Hom_{F}(M,N)$.
+   \item Let $L,M,N$ be $A$"~modules and $f\in\Hom_{A}(L,M),
+    g\in\Hom_{A}(M,N)$. Then $g\circ f\in\Hom_{A}(L,N)$. Moreover,
+    $g\circ(f_{1}+f_{2})= (g\circ f_{1})+g\circ f_{2})$ and
+    $(g_{1}+g_{2})\circ f= (g_{1}\circ f)+(g_{2}\circ f)$ and $\alpha(g\circ
+    f)= (\alpha g)\circ f=g\circ(\alpha f)$ for $f, f_{1},
+    f_{2}\in\Hom_{A}(L,M), g,g_{1}, g_{2}\in\Hom_{A}(M,N), \alpha \in F$.
+    Also $f\colon M\rightarrow M, m\mapsto m$ is an $A$"~automorphism. Thus
+    $E\colon=\End_{A}(M)\colon= \Hom_{A}(M,M)$ is an $F$"~algebra, the
+    \highl{endomorphism algebra} of $M$. Finally, $M$ becomes an $E$"~module
+    via $f\cdot m\colon=f(m)$ for $f\in E, m\in M$.
+   \item $\Aut_{A}(M)\colon=U(\End_{A}(M))$ is called the \highl{automorphism
+    group} of $M$.
+   \item We call $A$"~modules $M,N$ \highl{isomorphic} and write $M~_{A}N$
+    \todo{verbessern} or $M~N$ if there exists an $A$"~isomorphism $g\colon
+    M\rightarrow N$. Then $~_{A}$ is an equivalnce relation.
+  \end{enumerate}
+\end{bemerkON}
+
+% def 2.3
+\begin{defini}
+  A \highl{submodule} of an $A$"~module $M$ is a subspace $N\subseteq M$ such
+  that $an\in N$ for $a\in A, n\in N$. We write $N\geq M$.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item 0 and $M$ are always submodules of $M$.
+   \item If $N, N'\leq M$, then $N\cap N', N+N'\leq M$.
+   \item Let $M,M'$ be $A$"~modules, let $f\in\Hom_{A}(M,M')$ and let $N\geq
+    M, N'\geq M'$. Then $f(N)\geq M', f^{-1}(N')\geq M$, in particular,
+    $\ker(f)=f^{-1}(0)=\{m\in M\colon f(m)=0\}\leq M$ and
+    $\Im(f)=f(M)=\{f(m)\colon m\in M\}\leq M'$.
+  \end{enumerate}
+\end{bsp}
+
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{mathmode} Math mode von Herbert Voss,\\
+  \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+ \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
