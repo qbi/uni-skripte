@@ -1,0 +1,434 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% rubber: makeidx.modules   indexstyle.xdy
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{nicefrac}
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Definition für Xindy für die Trennung der einzelnen Abschnitte im
+% Index. siehe auch die Datei indexstyle.xdy
+\newcommand*{\indexsection}{\minisec}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Algebra I}
+\author{Prof.\,Dr.\,Klaus Haberland}
+\date{Semester: WS 2007/08}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \nolinkurl{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Person \nolinkurl{<email>}} (Jahr)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter*{Einleitung}
+
+Die Vorlesung könnte auch \textsc{Galois}"~Theorie heißen.
+
+\todo{Kurzbio von Galois}
+
+\todo{Bild von Galois einbinden}
+
+Inhalte der Vorlesung:
+\begin{enumerate}
+ \item Auflösung algebraischer Gleichungen: $x^{2}+px+q=0\colon
+  x_{1,2}=-\nicefrac{p}{2}\pm\sqrt{\nicefrac{p^{2}}{4}-q}$. In der Renaissance
+  hat man festgestellt, dass es für $n=3,4$ ähnliche Formeln gibt. Anfang des
+  16.\,Jahrhunderts kamen \textsc{Delferro} und \textsc{Ferrari} auf die
+  richtige Idee. Die Lösnugen sind durch Radikale bestimmt. Ab dem Grad~5 gibt
+  es solche Formeln nicht mehr. Der Beweis erfolgte durch \textsc{Abel}
+  (1802--1829) und \textsc{Galois} (1811--1832).
+ \item Geometrische Konstruktionsprobleme (mit Zirkel und Lineal): Einige
+  klassiche Probleme sind u.\,a.:
+  \begin{enumerate}
+   \item Das \textsc{Deli}sche Problem: Man konstruiere die Seitenlänge eines
+    Würfels (Kubus) mit doppeltem Volumen. Ist nicht möglich.
+   \item Trisektion eines Winkels: Man konstruiere zu einem Winkel $\Theta$
+    den Winkel $\nicefrac{1}{3}\Theta$. Geht für die meisten Winkel nicht.
+   \item Quadratur des Kreises: Man konstruiere zu einem vorgegebenen Kreis
+    ein Quadrat mit demselben Flächeninhalt. Geht nicht.
+   \item Welche regelmäßigen $n$"~Ecke lassen sich konstruieren?
+  \end{enumerate}
+\end{enumerate}
+
+\chapter{Gruppen}
+
+"`Sie können mich ja mit Papierbällchen bewerfen, wenn Ihnen das zu trivial ist."'
+
+\section{Gruppen und ihre Abbildungen}
+
+Sei $S$ eine nichtleere Menge und $m\colon S\times S\rightarrow S,
+(x,y)\mapsto m(x,y)$ eine Abbildung. Man schreibt gern $xy$ oder $x\cdot y$
+statt $m(x,y)$. Die Abbildung $m$ heißt \highl{assoziativ}, wenn das folgende
+Diagramm kommutativ ist:
+                      1*m
+$s\times S\times S \longrightarrow S\times S$
+|m*1                                     |m
+|             m
+$S\times S\longrightarrow S$
+
+Mit anderen Worten: $x(yz)=(xy)z$.
+
+\begin{bemerk}
+  Man kann also in längeren Produkten alle Klammern weglassen.
+
+  Die deutsche Sprache ist nicht assoziativ: Urinstinkt.
+\end{bemerk}
+
+\begin{defini}
+  Eine nichtleere Menge mit assoziativer Multiplikation heißt
+  \highl{Halbgruppe}.
+\end{defini}
+
+\begin{bsp}
+  \begin{itemize}
+   \item $\N$ mit der Addition oder Multiplikation.
+  \end{itemize}
+\end{bsp}
+
+Wir verabreden folgende Bezeichnungen:
+\begin{itemize}
+ \item $\N=\{0,1,2,\dotsc\}$
+ \item $\Z=\{\dotsc,-2,-1,0,1,2,\dotsc\}$
+ \item $\Q, \R, \C, \H, \O$. Im Buch "`Zahlen"' (Ebbinghaus) werden diese
+  Mengen gut eingeführt.
+\end{itemize}
+
+\begin{defini}
+  Ein Element $e\in S$ heißt \highl{neutrales Element}, wenn gilt $ex=xe=x$
+  für alle $x\in S$.
+\end{defini}
+
+\begin{bemerk}
+  $e$ ist eindeutig. (ÜA)
+\end{bemerk}
+
+\begin{defini}
+  Eine Halbgruppe $S$ mit neutralem Element $e$ heißt \highl{Gruppe}, wenn gilt:
+  \begin{gather*}
+   \forall x\in S\,\exists y\in S\colon xy=yx=e
+  \end{gather*}
+\end{defini}
+
+\begin{bemerk}
+  $y$ ist eindeutig und heißt das zu $x$ \highl{inverse Element}. Die
+  Bezeichnung ist $x^{-1}$.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Die triviale Gruppe $\{e\}$.
+   \item $\Z$ mit der Addition $+$
+   \item $\Q, \R, \C$ mit der Addition oder $\Q^{*}, \R^{*}, \C^{*}$ mit der
+    Multiplikation.
+   \item Ein \highl{Körper} ist ene nichtleere Menge $K$ mit zwei Operationen, die man
+    traditionell Addition und Multiplikation nennt:
+    \begin{enumerate}
+     \item $K$ ist mit der Addition eine kommutative Gruppe.
+     \item $K^{*}=K\setminus\{0\}$ ist mit der Multiplikation eine kommutative Gruppe.
+     \item Distributivität: $x(y+z)=xy+xz$.
+    \end{enumerate}
+   \item Permutationsgruppen: Sei $X$ eine Menge und $S(X)$ sind alle
+    Bijektionen $X\rightarrow X$. Das neutrale Element ist die Identität. Für
+    die Anzahl der Elemente $\geq3$ ist die Gruppe \emph{nicht} kommutativ.
+   \item Matrizengruppen: $\GL(n, \R), \SL(n,\C), \GL(n,\C), \SL(n,\C),
+    \F_{2}=\{0,1\}, \GL(n,\F_{2}), \abs{\GL(2,\F_{2})}=6, \abs{\GL(n,
+    \F_{2})}= (2^{n}-1)(2^{n}-2)(2^{n}-4)\dotso (2^{n}-2^{n-1}), \O(n),
+    \U(n)$. Die letzten beiden sind die orthogonalen ($A^{T}A=I$) und unitären
+    Matrizen. Diese Gruppen sind kompakt.
+   \item Arithmetische Gruppen: $\GL(n,\Z)=\{g\in\GL(n,\R)\colon g_{ij}\in\Z,
+    \det g=\pm 1\}$ und $\SL(n,\Z)= \{g\in\GL(n, \Z)\colon \det g=1\}$.
+    $\SL(2,\Z)\ni \begin{pmatrix}0 & -1 \\ 1 & 0\end{pmatrix},
+    \begin{pmatrix}1 & 1\\ 0 & 1\end{pmatrix}, \begin{pmatrix}1 & 1\\ 0 &
+						 1\end{pmatrix}^{m}=
+    \begin{pmatrix}1 & m\\ 0 & 1\end{pmatrix}$.
+   \item Symmetriegruppen: $D=[-1,1]^{3}\subseteq\R,
+    \Sym(D)=\{g\in\SO(3)\colon gD=D\}$
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Seien $G, H$ zwei Gruppen, eine Abbildung $f\colon G\rightarrow H$ heißt
+  \highl{Homomorphismus}, wenn gilt:
+  \begin{gather*}
+   f(xy)=f(x)f(y)\qquad\forall x,y\in G
+  \end{gather*}
+\end{defini}
+
+\begin{bemerk}
+  Eine Kategorie besteht aus Objekten und Morphismen. Sind $X,Y$ zwei Objekte,
+  so ist die Menge ihrer Morphismen definiert: $\Hom(X,Y)$. Für $X,Y,Z$ hat
+  man die Hintereinanderausführung:
+  $\Hom(X,Y)\times\Hom(Y,Z)\rightarrow\Hom(X,Z)$. Diese ist assoziativ und es
+  existiert für jedes Objekt eine Identität.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $\Ens$ \todo{mit Unterstrich} ist Kategorie aller Mengen und
+    $\Hom(X,Y)$ sind alle Abbildungen $X\rightarrow Y$.
+   \item Sei $K$ ein Körper. Man bezeichnet mit $\Vec_{K}$ die Vektorräume
+    über $K$. Dann sind $\Hom(V,W)$ die linearen Abbildungen $V\rightarrow W$.
+   \item Sei $\Top$ die Kategorie der metrischen Räume. Dann sind $\Hom(X,Y)$
+    alle stetigen Abbildungen.
+   \item $\Gr$ die Kategorie der Gruppen und $\Hom(G,H)$ alle Homomorphismen
+    $G\rightarrow H$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $f\colon G\rightarrow H$. Dann gilt $f(e_{G})=e_{H}$, denn
+    $f(e_{G}e_{G})=f(e_{G})=f(e_{G})f(e_{G})$.
+   \item $f(x-^{1})=f(x)^{-1}$.
+  \end{enumerate}
+\end{bemerk}
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{lang} \textsc{Lang}. Algebra.
+
+ \bibitem{waerden} \textsc{van der Waerden}. Algebra.
+
+  \bibitem{artin} \textsc{Artin, Emil}. Algebra.
+ \bibitem{artinmic} \textsc{Artin, Michael}. Algebra.
+ \bibitem{bosch} \textsc{Bosch}. Algebra. Springer 1993.
+ \bibitem{bourbaki} \textsc{Bourbaki}. Algebre Chap I--IX.
+ \bibitem{schaffa} \textsc{Schaffarewitsch}. Osnownuie ponjatija algebre.
+  \todo{kyrillisch}
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
