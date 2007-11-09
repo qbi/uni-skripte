@@ -954,9 +954,9 @@ label(btex
          &\mbox{Lemma}\\
       (10) & \neg\neg (\neg A\rightarrow B)\rightarrow
          \neg(A \rightarrow \neg(\neg A\rightarrow B))
-         &\mbox{MP 1,3}\\
+         &\mbox{MP 1,9}\\
       (11) &  \neg(A \rightarrow \neg(\neg A\rightarrow B))
-         &\mbox{MP 2,4}
+         &\mbox{MP 5,10}
       \end{array}
   etex, unter(unter(unter(p[6]))) +(19,0)*le) ;
 draw punter(punter(p[5])) -- p[6] ;
