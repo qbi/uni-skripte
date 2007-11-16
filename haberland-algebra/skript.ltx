@@ -88,11 +88,14 @@
 
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zurückgesetzt
+\newtheorem{satzMN}{Satz}[chapter]
 \newtheorem{satz}{Satz}[chapter]
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{folg}{Folgerung}[chapter]
+\newtheorem{lem}{Lemma}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -130,7 +133,8 @@
 \newcommand*{\F}{\mathbb{F}}
 \newcommand*{\U}{\mathbb{U}}
 \newcommand*{\PP}{\mathbb{P}}
-\newcommand*{\ggt}{\operatorname{ggT}}  %ggT ist ein Operator
+\newcommand*{\ggt}{\operatorname{ggT}}
+\newcommand*{\kgv}{\operatorname{kgV}}
 
 % Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
@@ -156,17 +160,6 @@
 % Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
 \newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
 
-% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
-% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
-% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
-% sondern \Leftrightarrow.
-\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw\mspace{8mu}}%
-			       {$gdw$\xspace}}
-\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
-			       {$gdw_{def}$\xspace}}
-
 % Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
@@ -179,27 +172,22 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-\newenvironment*{mdescription}%
-                {\renewcommand*{\descriptionlabel}[1]%
- 			       {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		{\end{description}}
-
 \DeclareMathOperator{\GL}{GL}
 \DeclareMathOperator{\SL}{SL}
 \DeclareMathOperator{\Sym}{Sym}
 \DeclareMathOperator{\Hom}{Hom}
-\DeclareMathOperator{\Ens}{Ens}
-\DeclareMathOperator{\Topo}{Top}
-\DeclareMathOperator{\Gr}{Gr}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Ens}{\underline{Ens}}
+\DeclareMathOperator{\Topo}{\underline{Top}}
+\DeclareMathOperator{\Gr}{\underline{Gr}}
 \DeclareMathOperator{\SO}{SO}
-\DeclareMathOperator{\VEC}{Vec}
+\DeclareMathOperator{\VEC}{\underline{Vec}}
 \DeclareMathOperator{\sgn}{sgn}
 \DeclareMathOperator{\card}{card}
 \DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\rg}{rk}
+\DeclareMathOperator{\diag}{diag}
 
 \makeindex
 
@@ -297,7 +285,7 @@ Inhalte der Vorlesung:
   x_{1,2}=-\nicefrac{p}{2}\pm\sqrt{\nicefrac{p^{2}}{4}-q}$. In der Renaissance
   hat man festgestellt, dass es für $n=3,4$ ähnliche Formeln gibt. Anfang des
   16.\,Jahrhunderts kamen \textsc{Delferro} und \textsc{Ferrari} auf die
-  richtige Idee. Die Lösnugen sind durch Radikale bestimmt. Ab dem Grad~5 gibt
+  richtige Idee. Die Lösungen sind durch Radikale bestimmt. Ab dem Grad~5 gibt
   es solche Formeln nicht mehr. Der Beweis erfolgte durch \textsc{Abel}
   (1802--1829) und \textsc{Galois} (1811--1832).
  \item Geometrische Konstruktionsprobleme (mit Zirkel und Lineal): Einige
@@ -352,7 +340,7 @@ Wir verabreden folgende Bezeichnungen:
 \begin{itemize}
  \item $\N=\{0,1,2,\dotsc\}$
  \item $\Z=\{\dotsc,-2,-1,0,1,2,\dotsc\}$
- \item $\Q, \R, \C, \MH, \MO$. Im Buch "`Zahlen"' (Ebbinghaus) werden diese
+ \item $\Q, \R, \C, \MH, \MO$. In \cite{ebb} werden diese
   Mengen gut eingeführt.
 \end{itemize}
 
@@ -383,17 +371,17 @@ Wir verabreden folgende Bezeichnungen:
    \item $\Z$ mit der Addition $+$
    \item $\Q, \R, \C$ mit der Addition oder $\Q^{*}, \R^{*}, \C^{*}$ mit der
     Multiplikation.
-   \item Ein \highl{Körper} ist ene nichtleere Menge $K$ mit zwei Operationen, die man
+   \item Ein \highl{Körper} ist eine nichtleere Menge $K$ mit zwei Operationen, die man
     traditionell Addition und Multiplikation nennt:
     \begin{enumerate}
      \item $K$ ist mit der Addition eine kommutative Gruppe.
      \item $K^{*}=K\setminus\{0\}$ ist mit der Multiplikation eine kommutative Gruppe.
-     \item Distributivität: $x(y+z)=xy+xz$.
+     \item Distributivität: $x(y+z)=xy+xz$ mit $x,y,z\in K$.
     \end{enumerate}
    \item Permutationsgruppen: Sei $X$ eine Menge und $S(X)$ sind alle
     Bijektionen $X\rightarrow X$. Das neutrale Element ist die Identität. Für
     die Anzahl der Elemente $\geq3$ ist die Gruppe \emph{nicht} kommutativ.
-   \item Matrizengruppen: $\GL(n, \R), \SL(n,\C), \GL(n,\C), \SL(n,\C),
+   \item Matrizengruppen: $\GL(n, \R), \SL(n,\R), \GL(n,\C), \SL(n,\C),
     \F_{2}=\{0,1\}, \GL(n,\F_{2}), \abs{\GL(2,\F_{2})}=6, \abs{\GL(n,
     \F_{2})}= (2^{n}-1)(2^{n}-2)(2^{n}-4)\dotso (2^{n}-2^{n-1}), \MO(n),
     \U(n)$. Die letzten beiden sind die orthogonalen ($A^{T}A=I$) und unitären
@@ -427,7 +415,7 @@ Wir verabreden folgende Bezeichnungen:
 
 \begin{bsp}
   \begin{enumerate}
-   \item $\Ens$ \todo{mit Unterstrich} ist Kategorie aller Mengen und
+   \item $\Ens$ ist Kategorie aller Mengen und
     $\Hom(X,Y)$ sind alle Abbildungen $X\rightarrow Y$.
    \item Sei $K$ ein Körper. Man bezeichnet mit $\VEC_{K}$ die Vektorräume
     über $K$. Dann sind $\Hom(V,W)$ die linearen Abbildungen $V\rightarrow W$.
@@ -442,7 +430,7 @@ Wir verabreden folgende Bezeichnungen:
   \begin{enumerate}
    \item $f\colon G\rightarrow H$. Dann gilt $f(e_{G})=e_{H}$, denn
     $f(e_{G}e_{G})=f(e_{G})=f(e_{G})f(e_{G})$.
-   \item $f(x-^{1})=f(x)^{-1}$.
+   \item $f(x^{-1})=f(x)^{-1}$.
   \end{enumerate}
 \end{bemerk}
 
@@ -508,10 +496,10 @@ Wir verabreden folgende Bezeichnungen:
     \begin{pmatrix}
       0 & -1\\
       1 &0
-    \end{pmatrix}\right\rangle=\SL(2,\Z)$. Es ist $\abs{\begin{pmatrix}0 &-1\\
+    \end{pmatrix}\right\rangle=\SL(2,\Z)$. Es ist $\abs[\bigg]{\begin{pmatrix}0 &-1\\
 							  1
 							  &0\end{pmatrix}}=4$
-    und $\abs{\begin{pmatrix}1 & 1\\ 0 & 1\end{pmatrix}}=\infty$.
+    und $\abs[\bigg]{\begin{pmatrix}1 & 1\\ 0 & 1\end{pmatrix}}=\infty$.
    \item $
     \begin{pmatrix}
       0 & -1\\
@@ -781,7 +769,7 @@ Dies sind die einfachsten Gruppen.
   \begin{enumerate}
    \item \todo{Beweis ergänzen}
    \item trivial
-   \item Sei $\abs{G} = p \in \P, x \in G, x \neq 1, \langle x\rangle= G$.
+   \item Sei $\abs{G} = p \in \PP, x \in G, x \neq 1, \langle x\rangle= G$.
     Dann ist $\langle x\rangle$ Untergruppe der Ordnung $\geq 2$.
     \begin{enumerate}[1. F{a}ll]
      \item Sei $G =\Z, H \subseteq \Z, H \neq \{0\}$ und $a = \min \{b \in H
@@ -1208,7 +1196,655 @@ Multiplikation auf $G/_{H}$ mit $(xH)(yH)\coloneqq xyH$.
   $H=\{0,2,4\}, K=\{0,3\}$.
 \end{bsp}
 
+%Vorlesung vom 2007-11-09
+\section{Endliche abelsche Gruppen}
 
+Beispielsweise $A=\Z/_{m_{1}\Z}\oplus\Z/_{m_{2}\Z}\oplus\dotso
+\oplus\Z/_{m_{i}\Z}$ für $m_{j}\in\Z$. Wir zeigen: Das sind alle bis auf
+Isomorphie.
+
+\begin{fakt}
+  Sei $A$ endliche abelsche Gruppe, $n=(A\colon1), g=\kgv\{\ord(a)\colon a\in
+  A\}$. Dann haben $n$ und $g$ denselben Primteiler.
+  \begin{proof}
+    $g$ teilt $n$: ist trivial. Sei $x_{1},\dotsc, x_{k}\in A$ ein
+    Erzeugendensystem $\Rightarrow\Z^{k}\rightarrow A, (m_{1},\dotsc,
+    m_{k})\mapsto\sum m_{j}x_{j}$ ist ein surjektiver Homomorphismus. Im Kern
+    liegt jedes $gm, m\in\Z^{k}$. Also erhält man surjektiver Homomorphismus
+    $(\Z/_{g\Z})^{k}\rightarrow A$. Es folgt $n$ teilt $g^{k}$.
+  \end{proof}
+\end{fakt}
+
+\begin{folg}
+  Haben in $A$ alle Elemente $p$"~Potenzordnung für eine Primzahl $p$, so hat
+  auch $A$ $p$"~Potenzordnung.
+\end{folg}
+
+\begin{fakt}
+  Sei $A$ eine abelsche Gruppe der Ordnung $m\cdot n$ mit $\ggt(m,n)=1,
+  A_{m}=\{a\in A\colon ma=0\}, A_{n}=\{a\in A\colon na=0\}$. Dann ist $A$
+  isomorph zu $A_{m}\oplus A_{n}$ und $(A_{m}\colon1)=m, (A_{n}\colon1)=n$.
+  \begin{proof}
+    Wir haben Homomorphismus $A_{m}\oplus A_{n}\rightarrow A, (a,b)\mapsto
+    a+b$. Der Kern der Abbildung ist 0, denn $a+b=0\Rightarrow a\in A_{m}\cap
+    A_{n}\colon\exists r,s\in\Z\colon rm+sn=1$. Also ist $a=1\cdot a=
+    rma+sna=0$. Die Surjektivität zeigt man wie folgt: Sei $a\in A$ beliebig.
+    Es ist $a=rma+sna, na\in A_{m}, ma\in A_{n}$.
+
+    Haben $m$ und $(A_{m}\colon1)$ denselben Primteiler, dito für $n$ und
+    $(A_{n}\colon1)$. Weiter gilt $m\cdot n=(A_{m}\colon1)(A_{n}\colon1)$
+  \end{proof}
+\end{fakt}
+
+\begin{folg}
+  $A\cong\oplus A(p)$, wobei $A(p)$ die Untergruppe der Elemente von
+  $p$"~Potenzordnung ist, $p\in\PP$, $p$ durchläuft die Primteiler der
+  Gruppenordnung. Die Zerlegung ist kanonisch.
+\end{folg}
+
+\begin{folg}[Chinesischer Restsatz]
+  Sei $m\in\N$ mit $m=m_{1}\cdot\dotso \cdot m_{n}$ und $\ggt(m_{i}, m_{j})=1$
+  für alle $i\neq j$. Dann hat man einen kanonischen Isomorphismus:
+  \begin{gather*}
+    \Z/_{m\Z}\rightarrow\bigoplus_{i=1}^{n} \Z/_{m\Z}
+  \end{gather*}
+  Klassische Formulierung:
+  \begin{align*}
+    x &\equiv x_{1}\pmod{m_{1}}\\
+    \vdots & \vdots\\
+    x &\equiv x_{n}\pmod{m_{n}}
+  \end{align*}
+  hat genau eine Lösung $x\pmod{m}$.
+\end{folg}
+
+%satz 4
+\begin{satzMN}
+  Jede endliche abelsche $p$"~Gruppe (Gruppe von $p$"~Potenzordnung) ist
+  isomorph zu einer Gruppe der Form
+  \begin{gather*}
+    \bigoplus_{i=1}^{n} \Z/_{p^{r_{i}}\Z}
+  \end{gather*}
+  Dabei sind $n$ und $(r_{1},\dotsc, r_{n})$ eindeutig bis auf Reihenfolge
+  bestimmt. Man sagt: $A$ hat den Typ $(p^{r_{1}},\dotsc, p^{r_{n}})$.
+  \begin{proof}
+    Der Beweis erfolgt per Induktion über die Gruppenordnung:
+    $(A\colon1)=p\Rightarrow A\cong\Z/_{p\Z}$. Induktionsschritt: Wir bilden
+    die folgende Abbildung: $A\rightarrow A, a\mapsto pa$ ist ein
+    Homomorphismus. Der Kern ist $A_{p}$ und das Bild ist $pA$. Der Kern ist
+    nichttrivial, denn $A_{p}\neq0\Rightarrow$ existiert $a\in A$ der Ordnung
+    größer 1, $\card(a)=p^{r}\Rightarrow p^{r-1}a$ hat Ordnung $p$. Somit ist
+    die Ordnung $(pA\colon1)<(A\colon1)$, also können wir diese nach
+    Induktionsvoraussetzung zerlegen: $pA\cong\bigoplus_{i=1}^{n}
+    \Z/_{p^{s_{i}}\Z}$. Seien $b_{1},\dotsc, b_{n}$ Urbilder von
+    $(1+p^{s_{1}}\Z, 0,\dotsc,0),\dotsc,(0,0,\dotsc,0,1+p^{s_{n}}\Z)$. Seien
+    $a_{1},\dotsc, a_{n}$ Urbilder in $A$. Die $b_{i}$ haben Ordnung
+    $p^{s_{i}}$, also $\ord(a_{i})=p^{s_{i}+1}$. Sei $r_{i}=s_{i}+1$. Dann
+    gilt $r_{i}\geq2$. Die Elemente $p^{s_{i}}a_{i}$ liegen im Kern $A_{p}$.
+    Das ist ein endlich"=dimensionaler Vektorraum über $\F_{p}$. Die Elemente
+    $p^{s_{i}}a_{i}$ spannen einen Teilraum auf. Wir wählen den komplementären
+    Raum und in diesem eine Basis $v_{1},\dotsc, v_{n}$. Wir konstruieren
+    einen Isomorphismus $\bigoplus_{i=1}^{n} \Z/_{p^{r_{i}}\Z}\oplus
+    (\Z/_{p\Z})^{m}\rightarrow A$
+
+    Vorbemerkungen:
+    \begin{enumerate}
+     \item $\ord(a_{i})= p^{r_{i}}= p^{s_{i}+1}, \ord(v_{j})=p$
+     \item Sei $a\in A$ beliebig. Dann ist $pa=\sum m_{i}b_{i}\Rightarrow
+      a-\sum m_{i}a_{i}\in V_{p}\Rightarrow a=\sum_{i=1}^{n} m_{i}a_{i}+
+      \sum_{j=1}^{m} n_{j}v_{j}$
+    \end{enumerate}
+    Also surjektiver Homomorphismus $\Z^{n}\oplus\Z^{m}\rightarrow A$ durch
+    $(e_{i},0)\mapsto a_{i}, (0,e_{j})\mapsto v_{j}$.
+
+    Wir berechnen den Kern: Sei $\sum m_{i}a_{i}+\sum n_{j}v_{j}=0$ in
+    $A\Rightarrow \sum pm_{i}a_{i}=0\sum m_{i}b_{i}$. Es folgt, $m_{i}b_{i}=0$
+    und $m_{i}= k_{i} p^{s_{i}}$. Mit der Ausgangsgleichung ergibt sich: $\sum
+    k_{i} p^{s_{i}}a_{i}+\sum n_{j}v_{j}=0$. Es sind $p^{s_{i}}a_{i}$ und
+    $v_{j}$ eine Basis. Damit folgt: alle $n_{j}$ sind durch $p$ teilbar und
+    alle $k_{i}$ sind durch $p$ teilbar. Somit gilt:
+    \begin{gather*}
+      \ker\subseteq\bigoplus_{i=1}^{n} p^{r_{i}}\Z\oplus\bigoplus_{j=1}^{m} p\Z
+    \end{gather*}
+    Die umgekehrte Inklusion ist trivial. Damit haben wir den
+    Induktionsschritt vollzogen: $A\cong\oplus \Z/_{p^{r_{i}}\Z}
+    \oplus\bigoplus_{j=1}^{m} \Z/_{p\Z}$.
+
+    Es fehlt noch die Eindeutigkeit: Sei $A\cong\bigoplus_{i=1}^{n}
+    \Z/_{p^{r_{i}}\Z}\Rightarrow A_{p}\cong(\Z/_{p\Z})^{n}$. Es ist $n$ die
+    Dimension von $A_{p}$. Damit folgt, dass $n$ eindeutig bestimmt ist und
+    $pA\cong\bigoplus_{r_{i}\geq1} \Z/_{p^{r_{i}-1}\Z}$. Nach
+    Induktionsvoraussetzung sind die Zahlen $r_{i}-1$ für $r_{i}>1$ eindeutig
+    bestimmt. Wegen $(A\colon1)=p^{\sum r_{i}}$ ist auch die Anzahl der
+    $r_{1}=1$ eindeutig bestimmt.
+  \end{proof}
+\end{satzMN}
+
+\begin{bsp}
+  Abelsche Gruppen der Ordnung 2007: $2007\colon9=223$. Also gibt es:
+  $\Z/_{9\Z}\oplus\Z/_{223\Z}, \Z/_{3\Z}\oplus\Z/_{3\Z}\oplus\Z/_{223 \Z}$.
+\end{bsp}
+
+\paragraph{Interludium -- Die Anzahl der Isotypen abelscher Gruppen von
+  Primpotenzordnung}
+Diese Anzahl für den Exponenten $n$ bezeichnet man mit $p(n)$
+\highl{Partition}en von $n$, d.\,h. $p(n)$ ist die Anzahl von Darstellungen
+von $n$ als Summe positiver natürlicher Zahlen ohne Beachtung der Reihenfolge.
+Denn $A$ der Ordnung $l^{n}$ hat den Typ $(l^{r_{1}},\dotsc, l^{r_{k}})$ mit
+$n=r_{1}+\dotsb+ r_{k}$. Es ist $p\colon\N^{*}\rightarrow\N^{*}$. Diese
+Abbildung ist in der Zahlentheorie von Bedeutung und hat schon Euler
+beschäftigt.
+
+\begin{tabular}{c|c}
+  $n$ & p(n)\\
+  1 & 1\\
+  2 & 2\\
+  3 & 3\\
+  4 & 5\\
+  5 & 7\\
+  6 & 11\\
+  7 & 15\\
+  8 & 22\\
+  9 & 30\\
+  10 & 42\\
+  100 & 190\,567\,292\\
+  200 & 3\,972\,999\,029\,388
+\end{tabular}
+
+\begin{lem}
+  Es ist $p(n)=\card\{x\in\N^{\infty}\colon x_{1}+2x_{2}+3x_{3}+\dotsb=n\}$.
+  \begin{proof}
+    $p(n)=\card\{r\in\N^{\infty}\colon1\leq r_{1}\leq r_{2}\leq\dotsb,
+    r_{1}+r_{2}+\dotsb+ =n\}=\Lambda, \Omega=\{x\in\N^{\infty}\colon
+    x_{1}+2x_{2}+ 3x_{3}+\dotsb=n\}, \omega\colon\Omega\rightarrow\Lambda,
+    x\mapsto(\underbrace{1,\dotsc,1}_{x_{1}},
+    \underbrace{2,\dotsc,2}_{x_{2}},\dotsc), \alpha\colon\Lambda\rightarrow
+    \Omega, r\mapsto x, x_{i}=$ Anzahl der $r_{i}=i$.
+  \end{proof}
+\end{lem}
+
+\begin{folg}
+  \begin{gather*}
+    1+\sum_{n=1}^{\infty} p(n)T^{n}= \prod_{n=1}^{\infty} (1-T^{n})^{-1}
+  \end{gather*}
+  \begin{proof}
+    \begin{align*}
+      \prod_{n=1}^{\infty} (1-T^{n})^{-1} &=
+	 (1+T+T^{2}+\dotsb)(1+T^{2}+T^{4}+\dotsb)= \sum_{n=1}^{\infty}
+	 T^{x_{1}+ 2x_{2}+ 3x_{3}+\dotsb}
+    \end{align*}
+  \end{proof}
+\end{folg}
+
+\begin{satz}[\textsc{Hardy}, \textsc{Ramanujan}]
+  \begin{gather*}
+    p(n)= \frac{1}{4\sqrt{3}} \frac{1}{n-\nicefrac{1}{24}} e^{\pi
+       \sqrt{\nicefrac{2}{3}} \sqrt{n-\nicefrac{1}{24}}} + o\left(\frac{e^{\pi
+       \sqrt{\nicefrac{2}{3}}
+       \sqrt{n-\nicefrac{1}{24}}}}{(n-\nicefrac{1}{24})^{\nicefrac{3}{2}}}\right)\\
+    p(n)= \frac{1}{\pi\sqrt{2}} \sum_{q=1}^{\infty}
+       A_{q}(n)q^{\nicefrac{1}{2}} \frac{d}{dn}\left(
+       \frac{\sinh(\pi\sqrt{\nicefrac{2}{3}}
+       \sqrt{n-\nicefrac{1}{24}})}{\sqrt{n-\nicefrac{1}{24}}}\right)\\
+    A_{q}(n)= \sum_{p\mod q} \rho_{p,q}e^{-2\pi
+       i(n-\nicefrac{1}{24})\nicefrac{p}{q}}\\
+    \rho_{p,q}= \omega_{p,q} e^{\nicefrac{\pi i}{p} -\nicefrac{\pi i\alpha}{12q}}\\
+    \alpha=\frac{2\pi}{q} (n-\nicefrac{1}{24})\\
+    \omega_{p,q}= 24\text{ Einheitswurzel}
+  \end{gather*}
+  Nachzulesen ist das in \cite{chan} und \cite{andrews}.
+\end{satz}
+
+\section{Endlich erzeugte abelsche Gruppen}
+
+\begin{defini}
+  Eine abelsche Gruppe $A$ heißt \highl{endlich erzeugt}, genau dann wenn $A$
+  endlich erzeugt ist. Weiter heißt $A$ \highl{frei}, wenn $A$ eine Basis
+  besitzt (genau dann wenn $A$ isomorph zu $\Z^{n}$ ist).
+
+  Basis heißt, wenn jedes Element eindeutig als Linearkombination der $x_{i}$
+  darstellbar ist.
+\end{defini}
+
+\begin{fakt}
+  \begin{enumerate}
+   \item $\Z^{m}\cong\Z^{n}\Leftrightarrow m=n$
+   \item Jede Untergruppe einer endlich erzeugten abelschen Gruppe ist frei.
+   \item Ist $A$ endlich erzeugt und torsionsfrei (Alle Elemente ungleich 0
+    haben unendliche Ordnung), dann ist $A$ frei.
+  \end{enumerate}
+  %Vorlesung vom 2007-11-14
+  \begin{proof}
+    \begin{enumerate}
+     \item Sei $\phi\colon\Z^{m}\rightarrow\Z^{n}$ ein Isomorphismus, $p\in
+      \PP, \Z^{m}\xrightarrow{\phi}\Z^{n}\xrightarrow{\text{kan.}}
+      (\Z/_{p\Z})^{n}$. Dieser Homomorphismus ist surjektiv und induziert
+      einen Isomorphismus $\overline{\phi}\colon(\Z/_{p\Z})^{m}\rightarrow
+      (\Z/_{p\Z})^{n}$. Das ist ein Isomorphismus von Vektorraum $\F_{p}$.
+      Somit ist $m=n$. Weiter ist $\phi(px)=p\phi(x)\mapsto0$ in
+      $(\Z/_{p\Z})^{n}\Rightarrow\overline{\phi}\colon
+      (\Z/_{p\Z})^{m}\rightarrow (\Z/_{m\Z})^{n}$. Die Abbildung
+      $\overline{\phi}$ ist injektiv:
+      $\overline{\phi}(\overline{x})=0\Rightarrow$ für Urbild $x\in\Z^{m}$ von
+      $\overline{x}$ ist $\phi(x)\in p\Z^{n}\Rightarrow x=py,
+      y\in\Z^{m}\Rightarrow\overline{x} =0$.
+     \item genügt zu zeigen: $A\subseteq\Z^{n}\Rightarrow A$ frei. Induktion
+      über $n$: $n=1, A\subseteq\Z\Rightarrow A=0$ oder $A=m\Z$ für ein
+      $m\geq1$, also $A$ frei. Nun folgt der Induktionsschritt:
+      $\phi\colon\Z^{n}\rightarrow\Z, (m_{1},\dotsc, m_{n})\mapsto m_{n},
+      \phi(A)=\overline{A}\Rightarrow\overline{A}=m\Z$ mit $m\geq1$ oder
+      $\overline{A}=0$. Im letzten Fall ist $A\subseteq\Z^{n-1}\times0$ und
+      wir sind fertig.
+
+      Sei also $\overline{A}=m\Z$ mit $m\geq1, A_{0}\coloneqq
+      A\cap\Z^{n-1}\times0$. Das $A_{0}$ hat nach Induktionsvoraussetzung eine
+      Basis $x_{1},\dotsc, x_{r}$. Sei $x$ Urbild von $m$ unter $\phi$. Wir
+      zeigen, $x_{1},\dotsc, x_{r},x$ ist eine Basis von $A$. Sei dazu $a\in
+      A, \phi(a)=rm, r\in\Z\Rightarrow \phi(a-rx)=0\Rightarrow a-rx\in A_{0}
+      \Rightarrow a-rx=\sum \lambda_{i}x_{i}$ mit $\lambda_{i}\in\Z$.  Mithin
+      erzeugen diese Elemente die Gruppe $A$.
+
+      Sei $\sum\lambda_{i} x_{i}+rx=0, r_{i},r\in\Z$. Auf diese Gleichung
+      wenden wir das $\phi$ an: $rm=0\Rightarrow r=0\Rightarrow r_{i}=0$ für
+      alle $i$. Damit folgt die lineare Unabhängigkeit.
+     \item Sei $x_{1},\dotsc, x_{n}$ ein Erzeugendensystem von $A$,
+      $x_{1},\dotsc, x_{m}$ eine maxmiale lineare unabhängige Teilmenge. Für
+      $j>m$ existieren also $m_{j}\in\Z, m_{ij}\in\Z, i=1,\dotsc,m$, so dass
+      $m_{j}x_{j}+ \sum_{i=1}^{m} m_{ij}x_{i}=0$ in $A$. Die $x_{1},\dotsc,
+      x_{m}$ erzeugen die freie abelsche Gruppe $B\subseteq A$. Die $m_{j}$
+      sind alle ungleich 0. Sei $M$ ein Vielfaches aller $m_{j}\in\Z$. Dann
+      gilt: $Mx_{j}\in B, j=m+1,\dotsc,n$. Damit folgt: $MA\subseteq B$. Die
+      Multiplikation mit $M$ verursacht einen Isomorphismus $A\rightarrow MA$.
+      Nach dem zweiten Punkt ist $A$ also frei.
+    \end{enumerate}
+  \end{proof}
+\end{fakt}
+
+\begin{folg}
+  Sei $A$ endlich erzeugt und frei. Dann folgt, $A\cong\Z^{n}$ mit einer
+  eindeutig bestimmten Zahl $n\in\N$. Die Zahl $n$ heißt der \highl{Rang} von
+  $A$.
+\end{folg}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $\rg(A\oplus B)=\rg(A)+ \rg(B)$
+   \item $\rg(A\otimes B)=\rg(A)\cdot\rg(B)$. Dabei ist $\otimes$ das
+    Tensorprodukt.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{fakt}
+  Sei $A$ endlich erzeugt und frei, $B\subseteq A$ eine Untergruppe. Dann gilt:
+  \begin{enumerate}
+   \item $\rg(B)\leq\rg(A)$
+   \item $\rg(B)=\rg(A)\Leftrightarrow(A\colon B)$ endlich
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}
+     \item Der Beweis folgt aus dem Beweis des vorigen Fakts.
+     \item Sei $(A\colon B)$ endlich. Dann existiert $M\in\Z, M\neq0$ so, dass
+      $MA\subseteq B$ gilt: $A/_{B}$ endlich. Wähle $M$ so, dass
+      $M(A/_{B})=0$. Weiter gilt: $MB\cong B\Rightarrow\rg(B)=\rg(A)$.
+
+      Sei o.\,B.\,d.\,A. $A=\Z^{n}, B\subseteq\Z^{n}$ vom Rang $n$,
+      $x_{1},\dotsc, x_{n}$ eine Basis von $A$ und $y_{1},\dotsc, y_{n}$ eine
+      Basis von $B$. Dann lässt $y_{i}$ schreiben als: $y_{i}= \sum_{j=1}^{n}
+      a_{ij}x_{j}, a_{ij}\in\Z$. Sei $M=(a_{ij})\in M(n,n,\Z)$. Sowohl die
+      $x_{i}$ wie auch die $y_{i}$ bilden eine Basis von $\Q^{n}$:
+      $\sum_{i=1}^{n} \alpha_{i}x_{i}=0$ mit $\alpha_{i}\in\Q\Rightarrow N$
+      Hauptnenner der $\alpha_{i}\Rightarrow\sum(N\alpha_{i})
+      x_{i}=0\Rightarrow N\alpha_{i}=0\Rightarrow\alpha_{i}=0$. Also ist $M$
+      invertierbar und die Determinante von $M$ ist ungleich 0. Es folgt:
+      $\det M\cdot x_{i}=\sum b_{ij}y_{j}$ für $b_{ij}\in\Z$ und $\det M\cdot
+      A\subseteq B$. Somit ist die Faktorgruppe $A/_{B}$ eine Faktorgruppe der
+      endlichen Gruppe $A/_{\det M\cdot A}$.
+    \end{enumerate}
+  \end{proof}
+\end{fakt}
+
+\begin{fakt}
+  Sei $A$ endlich erzeugt und abelsch und $A_{\text{tor}}$ die Menge der
+  Elemente endlicher Ordnung. Dann ist $A_{\text{tor}}$ eine endliche
+  Untergruppe in $A$ und $A/_{A_{\text{tor}}}$ ist frei.
+  \begin{proof}
+    Sei $\overline{a}\in A/_{A_{\text{tor}}}$ und $m\overline{a}=0$ für ein
+    $m\geq1$. Weiter sei $A$ Urbild von $\overline{a}\Rightarrow ma\in
+    A_{\text{tor}}\Rightarrow\exists n\geq1\colon mna=0\Rightarrow a\in
+    A_{\text{tor}}\Rightarrow\overline{a}=0$. Also
+    $A/_{A_{\text{tor}}}\cong\Z^{n}, \overline{x}_{1},\dotsc,\overline{x}_{n}$
+    eine Basis. Wähle Urbilder $x_{1},\dotsc, x_{n}$ aus $A$. Diese sind Basis
+    einer freien Untergruppe $B$ in $A$: $\sum_{i=1}^{n}
+    m_{i}x_{i}=0\Rightarrow \sum_{i=1}^{n} m_{i}\overline{x}_{i}=0$ in
+    $A/_{A_{\text{tor}}}\Rightarrow m_{i}=0$. Damit folgt
+    $A=A_{\text{tor}}\oplus B$: Sei $A\in A, \overline{a}$ Bild in
+    $A/_{A_{\text{tor}}}, \overline{a}=\sum_{i=1}^{n}
+    m_{i}\overline{x}_{i}\Rightarrow a-\sum_{i=1}^{n} m_{i}x_{i}\in
+    A_{\text{tor}}\Rightarrow a=a_{t}+ \sum_{i=1}^{n} m_{i} x_{i}\in
+    A_{\text{tor}}+B$.
+
+    Eindeutigkeit: $a_{t}+b=a_{t}'+b'. a_{t}, a_{t}'\in A_{\text{tor}},
+    b,b'\in B\Rightarrow b'-b\in A_{\text{tor}}\Rightarrow b'=b$, da $B$
+    torsionsfrei. Somit folgt $a_{t}=a_{t}'$. Somit ist $A/_{B}\cong
+    A_{\text{tor}}\Rightarrow A_{\text{tor}}$ endlich erzeugte abelsche
+    Torsionsgruppe und damit endlich.
+  \end{proof}
+\end{fakt}
+
+%satz 5
+\begin{satzMN}
+  Sei $A$ endlich erzeugte abelsche Gruppe. Dann existiert eine freie abelsche
+  Gruppe $B\subseteq A$, so dass $A=B\oplus A_{\text{tor}}$ ist. Also
+  $A\cong\Z^{n}\oplus A_{\text{tor}}$.
+\end{satzMN}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $n$ heißt \highl{Rang} von $A$.
+   \item $B$ ist nicht eindeutig bestimmt, $A_{\text{tor}}$ schon.
+  \end{enumerate}
+\end{bemerk}
+
+\paragraph{Ein böses Beispiel}
+Sei $A=\Q$ mit der Addition als Verknüpfung. Wir stellen fest, dass $A$ nicht
+endlich erzeugt ist: $x_{1},\dotsc, x_{n}\in\Q$ erzeugen Untergruppe mit
+beschränkten Nennern. $\Q$ ist torsionsfrei: $m\alpha=0, \alpha\in\Q, m\in\Z,
+m\geq1\Rightarrow\alpha=0$. $\Q$ ist nicht frei: Sind $\alpha, \beta\in\Q$
+Teilnehmer einer Basis, müsste gelten: $m\alpha+n\beta=0\Rightarrow m=n=0,
+m,n\in\Z$. Wir können jedoch schreiben:
+$m\alpha+n\beta=0\Rightarrow\frac{m}{n}= -\frac{\beta}{\alpha}$ hat $\Z$ viele
+Lösungen in $m,n$.
+
+\section{Konjugation}
+Im folgenden betrachten wir nicht"=kommutative Operationen.
+
+\begin{defini}
+  Sei $G$ eine Gruppe, $s\in G$. Die Abbildung:
+  \begin{gather*}
+    \sigma_{s}\colon G\rightarrow G, x\mapsto sxs^{-1}
+  \end{gather*}
+  heißt \highl{Konjugation} mit $s$.
+\end{defini}
+
+\begin{bemerk}
+  Die Menge $\Aut(G)=\{\sigma\colon G\rightarrow G\colon \sigma \text{
+  Automorphismus}\}$ ist eine Gruppe.
+\end{bemerk}
+
+\begin{fakt}
+  \begin{enumerate}
+   \item Alle $\sigma_{s}, s\in G$ sind Automorphismen.
+   \item Die Abbildung $G\rightarrow\Aut(G), s\mapsto\sigma_{s}$ ist ein
+    Homomorphismus.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}
+     \item $\sigma_{s}(xy)=s(xy)s^{-1}=(sxs^{-1})(sys^{-1})=\sigma_{s}(x)\sigma_{s}(y)$.
+      Weiter ist $\sigma_{s}\sigma_{s}^{-1}=\iota\colon
+      \sigma_{s}\sigma_{s}^{-1}(x)= \sigma_{s}(s^{-1}xs)=s(s^{-1}xs)s^{-1}=x$
+     \item zu zeigen: $\sigma_{s}\sigma_{t}=\sigma_{st}$\\
+      $\sigma_{s}\sigma_{t}(x)= s\sigma_{t}(x)s^{-1}= stxt^{-1}s^{-1}$ und
+      $\sigma_{st}=stx(st)^{-1}$
+    \end{enumerate}
+  \end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Die $\sigma_{s}$ heißen \highl[Automorphismen|innere]{innere Automorphismen}
+  von $G$.
+\end{bemerk}
+
+\begin{defini}
+  Der Kern des Homomorphismus $G\rightarrow\Aut(G)$ heißt das \highl{Zentrum}
+  von $G$. Also:
+  \begin{gather*}
+    C(G)= \{s\in G\colon sxs^{-1}=x\Leftrightarrow sx=xs\}
+  \end{gather*}
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $C(G)=G\Leftrightarrow G$ abelsch.
+   \item $C(S_{n})=\{\iota\}$ für $n\geq3$. Denn sei $\sigma\in C(S_{n}),
+    \sigma(1,a)\sigma^{-1}= (\sigma(1), \sigma(a))=(1,a)$. Also entweder
+    $\sigma(1)=1, \sigma(a)=a$ oder $\sigma(1)=a, \sigma(a)=1$ für alle
+    $a\geq2$. Damit folgt, dass $\sigma=\iota$.
+   \item $C(\GL(n,\R))=\R^{*}\cdot I$. Denn die Matrix $E_{ij}$ hat nur an der
+    $ij$"~ten Stelle eine 1, sonst 0. In $AE_{ij}$ steht in der $j$"~ten
+    Spalte die $i$"~te Spalte von $A$ und in $E_{ij}A$ steht in der $i$"~ten
+    Zeile die $j$"~te Zeile von $A$. Weiter ist $E_{ij}E_{kl}=\delta_{jk}
+    E_{il}$ und $I+E_{ij}\in\GL(n,\R), A(I+E_{ij})=(I+E_{ij})A\Leftrightarrow
+    AE_{ij}=E_{ij}A$. Wir schreiben $A=\sum_{k,l} a_{kl} E_{kl}, AE_{ij}=
+    \sum_{k,l} a_{kl}E_{kl}E_{ij}= \sum_{k,l} a_{ki} E_{kj}, E_{ij}A=
+    \sum_{k,l} a_{kl} E_{ij}E_{kl}= \sum_{l} a_{jl} E_{il}$. Für $i\neq j$
+    folgt: $a_{ki}=0$ für alle $k\neq i$ und $a_{lj}=0$ für alle $l\neq j$.
+    Weiter folgt: $a_{ii}=a_{jj}$. Der Beweis hängt nicht von den reellen
+    Zahlen ab und funktioniert über jedem Körper.
+  \end{enumerate}
+\end{bsp}
+
+% Vorlesung vom 2007-11-16
+
+\begin{defini}
+  Die Gruppenelemente $x,y\in G$ heißen \highl{konjugiert}, falls sie
+  konjugiert sind: $\exists s\in G\colon sxs^{-1}\in=y$
+\end{defini}
+
+\begin{fakt}
+  \begin{enumerate}
+   \item Konjugierte Elemente haben dieselbe Ordnung.
+   \item Konjugiert sein, ist eine Äquivalenzrelation. Denn $y=sxs^{-1},
+    z=tyt^{-1}\Rightarrow z=tsxs^{-1}t^{-1}$.
+   \item $G$ zerfällt in
+    disjunkte Summen seiner Äquivalenzklassen. Diese nennt man
+    \highl{Konjugationsklassen}.
+  \end{enumerate}
+\end{fakt}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $G$ abelsch $\Rightarrow$ jedes Element ist seine Konjugationsklasse.
+   \item Sei $G=S_{n}$. Der \highl{Typ} einer Permutation $\sigma$ ist
+    $(a_{1},a_{2},\dotsc)$, wobei $a_{r}$ die Anzahl der Zyklen der Länge $r$
+    in der kanonischen Zerlegung ist.
+  \end{enumerate}
+\end{bsp}
+
+\begin{fakt}
+  Zwei Elemente aus $S_{n}$ sind genau dann konjugiert, wenn sie denselben Typ
+  haben.
+  \begin{proof}
+    Sei $\sigma=(b_{1},\dotsc, b_{m})$ ein Zyklus und $\tau\in S_{n}$. Dann
+    ist $\tau\sigma\tau^{-1}= (\tau(b_{1}),\dotsc,\tau(b_{m}))\Rightarrow
+    \sigma$ konjugiert zu $\sigma'$. Damit folgt, dass beide denselben Typ
+    haben. Haben nun $\sigma$ und $\sigma'$ denselben Typ, so existiert ein
+    $\tau$, welches jedem Zyklus aus $\sigma$ zu einem gleichlangen Zyklus aus
+    $\sigma'$ transportiert.
+  \end{proof}
+\end{fakt}
+
+\begin{folg}
+  Die Anzahl der Konjugationsklassen ist $p(n)$, die Anzahl der Partitionen.
+\end{folg}
+
+\begin{bsp}
+  Sei $n=5$:
+  \begin{tabular}{l|l|l}
+    Typ & Repräsentant & Anzahl der Perm.-klassen\\
+    (5,0,\dots{}) & $\iota$ & 1\\
+    (3,1,0,\dots{}) & (1,2) & 10\\
+    (2,0,1,0,\dots{}) & (1,2,3) & 20\\
+    (1,2,0,\dots{}) & (1,2)(2,3) & 15\\
+    (1,0,0,1,0,\dots{}) & (1,2,3,4) & 30\\
+    (0,1,1,0,\dots{}) & (1,2)(3,4,5) & 20\\
+    (0,0,0,0,1,0,\dots{}) & (1,2,3,4,5) & 24
+  \end{tabular}
+\end{bsp}
+
+\begin{bsp}
+  Sei $G=\GL(2,\C), A\in G, \mu, \lambda\in\C^{*}$ ihre Eigenwerte. Ist
+  $\lambda\neq\mu$, so existiert eine Eigenbasis. Also ist $A$ konjugiert zu $
+  \begin{pmatrix}
+    \lambda & 0\\
+    0 & \mu
+  \end{pmatrix}$. Also für alle Paare $(\lambda,
+  \mu)\in\C^{*}\times\C^{*}\setminus \diag(\C^{*})$ Konjugationsklasse
+  $c(\lambda,\mu)$. Außer der Relation $c(\lambda,\mu)=c(\mu,\lambda)$ sind
+  die Klassen verschieden. Sei nun $\lambda=\mu$.
+  \begin{enumerate}[1. F{a}ll]
+   \item Es existiert eine Eigenbasis. Dann ist $A$ konjugiert zu $
+    \begin{pmatrix}
+      \lambda & 0\\
+      0 & \lambda 
+    \end{pmatrix}$. Also sogar gleich. Damit gibt es einelementige
+    Konjugationsklassen $c(\lambda), \lambda\in\C^{*}$.
+   \item Es gibt keine Eigenbasis. Aber es existiert ein Eigenvektor zu
+    $\lambda$. Damit folgt: $A$ ist konjugiert zu $
+    \begin{pmatrix}
+      \lambda & \rho\\
+      0 & \lambda
+    \end{pmatrix}, \rho\neq0$.
+    \begin{gather*}
+      \begin{pmatrix}
+	\alpha & 0\\
+	0 & 1
+      \end{pmatrix}
+	 \begin{pmatrix}
+	   \lambda & \rho\\
+	   0 & \lambda
+	 \end{pmatrix}
+	 \begin{pmatrix}
+	   \alpha^{-1} & 0\\
+	   0 & 1
+	 \end{pmatrix}=
+	 \begin{pmatrix}
+	   \alpha\lambda & \alpha\rho\\
+	   0 & \lambda
+	 \end{pmatrix}
+	 \begin{pmatrix}
+	   \alpha^{-1} & 0 \\
+	   0 & 1
+	 \end{pmatrix}=
+	 \begin{pmatrix}
+	   \lambda & \alpha\rho\\
+	   0 & \lambda
+	 \end{pmatrix}
+    \end{gather*}
+    Somit ist $\alpha=\rho^{-1}$ und $A$ ist konjugiert zu $
+    \begin{pmatrix}
+      \lambda & 1\\
+      0 & \lambda
+    \end{pmatrix}$. Also ist die Konjugationsklasse die Jordansche Normalform
+    $J(\lambda)$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  In $\GL(2, \R)$ gbt es zusätzlich die Klassen: $r
+  \begin{pmatrix}
+    \cos\phi & \sin\phi\\
+    -\sin\phi & \cos\phi
+  \end{pmatrix}, r\neq0$.
+\end{bemerk}
+
+\begin{defini}
+  Die \highl{Aktion} oder \highl{Wirkung} einer Gruppe auf einer Menge: sei
+  $G$ eine Gruppe und $X$ eine Menge mit $G\times X\rightarrow X, (s,x)\mapsto
+  sx$ und den Eigenschaften:
+  \begin{enumerate}[(i)]
+   \item $s(tx)=(st)x$
+   \item $1x=x$
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  Jedes $s\in G$ verursacht Bijketion $X\rightarrow X$: $s^{-1}$ verursacht
+  inverse Abbildung. auf $X$.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $S_{n}$ operiert auf $\{1,2,\dotsc,n\}$.
+   \item $\O(n)$ operiert auf $\R^{n}$ und auf $S^{n-1}$ ($n-1$"~dimensionale
+    Sphäre, $S^{d}=\{x\in\R^{d+1}\colon\norm{x}=1\}$).
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Es operiere $G$ auf $X$ und $x\in X$. Dann heißt $Gx=\{sx\colon s\in G\}$
+  \highl{Bahn} oder \highl{Orbit} von $X$.
+
+  Der \highl{Stabilisator} von $x$ ist $G_{x}=\{s\in G\colon sx=x\}$.
+\end{defini}
+
+\begin{fakt}
+  \begin{enumerate}[(i)]
+   \item $X$ zerfällt in disjunkte Vereinigung seiner Bahnen.
+   \item Ist $G$ endlich, so gilt: $\card Gx=(G\colon G_{x})$.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(i)]
+     \item Sei $z\in Gx\cap Gy$, also $z=sx=ty$. Dann folgt
+      $y=t^{-1}sx\Rightarrow y\in Gx\Rightarrow Gy\subseteq Gx$. Aus
+      Symmetriegründen folgt: $Gx=Gy$.
+     \item Wir definieren eine Abbildung $G\rightarrow Gx$ durch $s\mapsto
+      sx$. Jedes Element einer linken Nebenklasse des Stabilisators $G_{x}$
+      hat dasselbe Bild: $tG_{x}\mapsto tx$. Also erhalten wir
+      $G/G_{x}\rightarrow Gx$. Diese Abbildung ist surjektiv und wir zeigen,
+      dass sie auch injektiv ist. Sei $sx=tx\Rightarrow t^{-1}sx=x\Rightarrow
+      t^{-1}s\in G_{x}\Rightarrow s\in tG_{x}\Rightarrow sG_{x}=tG_{x}$.
+    \end{enumerate}
+  \end{proof}
+\end{fakt}
+
+\begin{defini}
+  Besitzt $G$ auf $X$ nur eine Bahn, so heißt die Aktion \highl{transitiv}.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $S_{n}$ operiert auf $\{1,2,\dotsc,n\}$ und ist transitiv.
+   \item $\GL(n,\R)$ operiert auf $\R^{n}$ und ist fast transitiv. Denn es
+    gibt zwei Bahnen: $\{0\}, \R^{n}\setminus\{0\}$.
+   \item $\O(n)$ operiert auf $\R^{n}$ nicht transitiv. Die Bahnen sind die
+    Sphären einschließlich $\{0\}$.
+  \end{enumerate}
+\end{bsp}
+
+\paragraph{Konjugierte Untergruppen}
+\begin{defini}
+Seien $H_{1}, H_{2}$ Untergruppen von $G$. Dann heißen sie genau dann
+konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
+\end{defini}
+
+\begin{fakt}
+  \begin{enumerate}[(i)]
+   \item Konjugierte Untergruppen sind isomorph.
+   \item $H$ ist nur zu sich selbst konjugiert, $H$ heißt
+    \highl{Normalteiler}.
+   \item Konjugiert sein ist eine Äquivalenzrelation auf der Menge der
+    Untergruppen.
+  \end{enumerate}
+\end{fakt}
+
+\section{Das \textsc{Sylow}"~Paket}
+
+\begin{defini}
+  Sei $G$ eine endliche Gruppe und $p\in\PP, \abs{G}=p^{n}\cdot q,
+  \ggt(p,q)=1$. Jede Untergruppe $H\subseteq G$ mit Ordnung $p^{n}$ heißt
+  p-\highl{\textsc{Sylow}"~Gruppe} in $G$, d.\,h. $H$ hat $p$"~Potenzordnung
+  und $(G\colon H)$ ist prim zu $p$.
+\end{defini}
+
+\begin{bemerk}
+  Im abelschen Fall hatten wir gesehen, dass es stets
+  $p$"~\textsc{Sylow}"~Gruppen gibt. Diese sind sogar eindeutig.
+\end{bemerk}
+
+%satz 6
+\begin{satzMN}
+  Jede endliche Gruppe besitzt für jede Primzahl $p$ wenigstens eine
+  $p$"~\textsc{Sylow}"~Gruppe.
+\end{satzMN}
 
 \clearpage
 \appendix
@@ -1223,6 +1859,10 @@ Multiplikation auf $G/_{H}$ mit $(xH)(yH)\coloneqq xyH$.
  \bibitem{bourbaki} \textsc{Bourbaki}. Algebre Chap I--IX.
  \bibitem{schaffa} \textsc{Schaffarewitsch}. Osnownuie ponjatija algebre.
   \todo{kyrillisch}
+ \bibitem{ebb} \textsc{Ebbinghaus}, \textsc{Hermes}, \textsc{Hirzebruch}.
+  Zahlen
+ \bibitem{chan} \textsc{Chandrasekharan}. Arithemtic functions
+ \bibitem{andrews} \textsc{Andrews}. Partitions
 \end{thebibliography}
 
 \clearpage
