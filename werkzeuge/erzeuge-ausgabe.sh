@@ -135,7 +135,8 @@ done
 
 # Wir sollten immer zu den Dateien die Quellen im SVN ablegen und rubber
 # daraus dann die Bilder bauen lassen
-dateien=$(find . -type f -name .svn -prune -o -name \*.ps -o -name \*.pdf)
+dateien=$(find . -type f -name .svn -prune -o -name \*.ps -o -name \*.eps \
+  -o -name \*.pdf)
 if [ -n "$dateien" ]; then
     echo "W: Dateien in unüblichen Quellformat" $dateien
 fi
