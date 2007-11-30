@@ -24,15 +24,12 @@
 % \usepackage[final]{graphicx}  % Für Grafiken
 \usepackage{xcolor}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
-
 \usepackage[latin1]{inputenc}
-\usepackage{babel}
-% \usepackage{nicefrac}
-% \usepackage{tabularx}
-
-\usepackage{lmodern}		% Latin Modern
+%\usepackage{lmodern}		% Latin Modern
 % \usepackage{type1ec}           % cm-super
-\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage[OT2, T1]{fontenc}        % T1-Schriften notwendig für PDFs
+                                     % OT2 fuer kyrillische Zeichen
+\usepackage[russian,ngerman]{babel}
 \usepackage{textcomp}           % wird benötigt, damit der \textbullet
                                 % für itemize in lmodern gefunden wird.
 
@@ -65,6 +62,7 @@
 \usepackage[final]{graphicx}
 \usepackage{txfonts}
 \usepackage[all]{xy}
+\usepackage{wasysym}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -1846,6 +1844,410 @@ konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
   Jede endliche Gruppe besitzt für jede Primzahl $p$ wenigstens eine
   $p$"~\textsc{Sylow}"~Gruppe.
 \end{satzMN}
+
+\todo{Vorlesung vom .. und ..}
+
+\chapter{Ringe}
+
+%Vorlesung vom 2007-11-28
+\begin{fakt}
+  Seien $\a, \b$ Ideale in $A$. Dann ist
+  \begin{gather*}
+    \a\b\coloneqq\{\sum_{i=1}^{r} a_{i}b_{i}\colon a_{i}\in\a, b_{i}\in\b,
+       r\in\N^{*}\}
+  \end{gather*}
+  wieder ein Ideal in $A$.
+\end{fakt}
+
+\begin{bemerk}
+  Im Allgemeinen ist $\{ab\colon a\in\a, b\in\b\}$ kein Ideal.
+\end{bemerk}
+
+\begin{bsp}
+  Sei $A=\Z$. Dann ist $(m)(n)=(mn), (m)+(n)=(d)$. Dabei ist $d=\ggt(m,n)$.
+  Weiter ist $(m)\cap(n)=(g)$ mit $(g)=\kgv(m,n)$.
+\end{bsp}
+
+\begin{bemerk}
+  Der Durchschnitt von Idealen ist stets ein Ideal. Es gilt, $\a\b\subseteq
+  \a\cap\b$. Im Allgemeinen herrscht keine Gleichheit.
+\end{bemerk}
+
+\paragraph{Der Faktorring nach einem Ideal}
+Sei $\a\subseteq A$ ein Ideal, $\a\neq A$ und $A/_{\a}$ die Faktorgruppe
+bezüglich $+$. Wir prägen $A/_{\a}$ eine Multiplikation auf via
+\begin{gather*}
+  (x+\a)(y+\a)\coloneqq xy+\a
+\end{gather*}
+
+\begin{fakt}
+  \begin{enumerate}[(i)]
+   \item Mit diesem Fakt wird $A/_{\a}$ zu einem kommutativen Ring mit 1.
+   \item Die kanonische Abbildung $A\rightarrow A/_{\a}$ ist surjektiver
+    Ringhomomorphismus. Der Kern ist $\a$.
+  \end{enumerate}
+  \begin{proof}
+    Korrektheit der Definition: Sei $x+\a=x'+\a, y+\a=y'+\a$. Dann folgt:
+    $x'=x+a, y'=y+a$ mit $a\in\a, b\in\b$. Es ist $x'y'=
+    (x+a)(y+b)=xy+\underbrace{ay+ bx+ab}_{\in\a}$.
+
+    Die Assoziativität ist, wie auch die Distributivität und die
+    Kommutativität klar. Das Einselement ist $1+\a$. Damit ist der erste Punkt
+    des Fakts abgeschlossen.
+
+    Der zweite Punkt ist aber auch klar. Die Multiplikation verträgt sich
+    wegen der Definition und auch 1 wird wieder auf 1 abgebildet.
+  \end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Es ist $\Z/_{m\Z}=\Z/_{(m)}$ der Restklassenring modulo $m$. Falls $m$ eine
+  Primzahl ist, ist das sogar ein Körper: Sei $x\in\Z/_{(p)}\setminus\{0\}$
+  mit $p\in\PP$. Betrachte $1x,2x,\dotsc,(p-1)x$. Diese sind alle verschieden.
+  Also tritt die 1 auf. (\textsc{Dirichlet}scher Schubfachschluss)
+
+  Man schreibt in der Regel $\F_{p}= \Z/_{(p)}$. Insbesondere haben wir
+  $\F_{2}= \{0,1\}$.
+\end{bemerk}
+
+% satz1
+\begin{satzMN}[Homomorphiessatz]
+  Sei $f\colon A\rightarrow B$ ein Ringhomomorphismus und $\a=\ker(f)$. Dann
+  existiert genau ein Homomorphismus $f_{*}\colon A/_{\a}\rightarrow B$,
+  welcher das folgende Diagramm kommutativ ergänzt:
+      \begin{gather*}
+    \begin{xy}
+      \xymatrix{
+      A \ar[rr]^{f} \ar[rd]_{\text{kan}} & & B\ar@{<.}[dl]^{f_{*}}\\
+      & A/_{\a} &
+	}
+    \end{xy}
+  \end{gather*}
+  vulgarisiert: Ring durch Kern gleich Bild.
+  \begin{proof}
+    Für die unterliegenden additiven Gruppen ist der Satz bereits bewiesen.
+    \todo{Link einfügen} Nun ist noch zu zeigen: $f_{*}$ ist
+    Ringhomomorphismus: $f_{*}(x+\a)=f(x)$. Somit ist $f_{*}((x+\a)(y+\a))=
+    f_{*}(xy+\a)=f(xy)$ und $f_{*}(x+\a)f_{*}(y+\a)=f(x)f(y)= f(xy)$.
+  \end{proof}
+\end{satzMN}
+
+\begin{fakt}
+  Sei $f\colon A\rightarrow B$ ein Ringhomomorphismus.
+  \begin{enumerate}[(i)]
+   \item Sei $\a\subseteq A$ ein Ideal. Dann ist $f(\a)$ ein Ideal in $f(A)$.
+    Denn sei $a\in\a\Rightarrow f(a)\in f(\a), x\in f(A)\Rightarrow x=f(y),
+    y\in A, f(a)f(y)= f(ay)\in f(\a)$.
+   \item Sei $\b\subseteq B$ ein Ideal. Dann ist $f^{-1}(b)$ ein Ideal in $A$.
+    Denn sei $x\in A, y\in f^{-1}(b)\Rightarrow f(y)\in \b\Rightarrow f(x)f(y)=
+    f(xy)\in\b\Rightarrow xy\in f^{-1}(\b)$
+  \end{enumerate}
+\end{fakt}
+
+\begin{bsp}
+  Die Abbildung $f\colon\Z\rightarrow\Q$ zeigt, dass $f(\a)$ im Allgemeinen
+  kein Ideal in $B$ ist.
+\end{bsp}
+
+\begin{bemerk}
+  Die beiden Isomorphiesätze sind ÜA.
+\end{bemerk}
+
+\section{Spezielle Klassen von Ringen und Idealen}
+
+Folgender "`Defekt"' ist möglich: $x\neq y\neq0$ mit $x,y\in A$. Aber es gilt
+$xy=0$.
+
+\begin{defini}
+  Dann heißen $x,y$ \highl{Nullteiler}. Ein Ring heißt \highl{integer} oder
+  \highl{Integritätsbereich}, wenn es keine Nullteiler gibt, d.\,h.
+  $xy=0\Rightarrow x=0$ oder $y=0$.
+\end{defini}
+
+\begin{fakt}
+  Sei $m\in\Z, m\neq0,1,-1$. Dann ist $\Z/_{(m)}$ genau dann integer, wenn $m$
+  eine Primzahl ist.
+  \begin{proof}
+    Ist $m=\pm p$ mit $p\in\PP$, so ist $\Z/_{(m)}=\F_{p}$ ein Körper. Diese
+    sind immer integer. Ist $m=a\cdot b$ mit $a\neq\pm1\neq b$, so sind
+    $a+(m)\neq0 \neq b+(m)$ in $\Z/_{(m)}$.
+  \end{proof}
+\end{fakt}
+
+\begin{defini}
+  \begin{enumerate}
+   \item Ein Ideal $\g\subseteq A$ mit $\g\neq A$ heißt \highl{Primideal},
+    wenn $A/_{\g}$ integer ist.
+   \item Ein Ideal $\m\subseteq A$ mit $\m\neq A$ heißt
+    \highl[Ideal!maximales]{maximales Ideal}, wenn $\m$ maximal ist und
+    $\m\subseteq\a\subseteq A \Rightarrow\a=\m$ oder $\a=A$.
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Ein Ideal $\g\subseteq A$ ist prim, genau dann, wenn $\forall x,y\in
+    A\colon xy\in\g\Rightarrow x\in\g$ oder $y\in\g$.
+   \item Sei $A=\Z$. Die Primideale sind genau $(p)$ mit $p\in\PP$ und $(0)$.
+    Dabei sind die Ideale $(p)$ maximal.
+   \item Das von der 0 erzeugte Hauptideale ist genau dann ein Primideal, wenn
+    $A$ integer ist.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{fakt}
+  Jedes maximale Ideal ist ein Primideal.
+  \begin{proof}
+    Sei $\m\in A$ ein maximales Ideal und $xy\in\m$ mit $x\notin\m$. Wir
+    bilden das Ideal $(x)+\m$. Es gilt natürlich: $\m\subseteq (x)+\m\subseteq
+    A$ und $(x)+\m\neq\m$. Also ist $(x)+\m=A\Rightarrow1=ax+b$ mit $a\in A,
+    b\in\m$. Weiter folgt $y=axy+by\in\m$.
+  \end{proof}
+\end{fakt}
+
+\begin{fakt}
+  Es ist $\m\subseteq A$ maximales Ideal, genau dann, wenn $A/_{\m}$ ein
+  Körper ist.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $A\rightarrow A/_{\m},
+      x\mapsto\overline{x}$. Sei $\overline{x}\in A/_{\m}$ mit
+      $\overline{x}\neq0$ und suchen Inverses bezüglich Multiplikation. Sei
+      dazu $x\in A$ ein Repräsentant von $\overline{x}$. Dann gilt
+      $x\notin\m$. Wie oben folgt, $(x)+\m=A$. Also $1=ax+b$ mit $a\in\a, b\in
+      \m\Rightarrow\overline{1}=\overline{a}\overline{x}$.
+     \item["`$\Leftarrow$"'] Sei $A/_{\m}$ ein Körper und $\a$ ein Ideal mit
+      $\m\subseteq\a\subseteq A$. Weiter sei $\a\neq\m$. Dann ist
+      $\overline{x}\neq\overline{0}$ in $A/_{\m}$. Also existiert $y\in A$ mit
+      $\overline{x}\cdot\overline{y}= \overline{1}$. Das heißt $xy= 1+u$ mit
+      $u\in\m$. Folglich $1=xy-u\in\a$. Das zeigt, $\a=A$.
+    \end{itemize}
+  \end{proof}
+\end{fakt}
+
+\begin{fakt}
+  Sei $f\colon A\rightarrow B$ ein Homomorphismus von Ringen und $\g'\subseteq
+  B$ prim. Dann ist $\g= f^{-1(\g')}$ auch prim.
+  \begin{proof}
+    Sei $xy\in \g$. Dann folgt: $f(xy)\in\g'\Rightarrow
+    f(x)f(y)\in\g'\Rightarrow f(x)\in\g'$ oder $f(y)\in\g'\Rightarrow x\in\g$
+    oder $y\in\g$.
+  \end{proof}
+\end{fakt}
+
+\begin{fakt}
+  Sei $f\colon A\rightarrow B$ ein surjektiver Homomorphismus und
+  $\m'\subseteq B$ maximal. Dann ist $\m=f^{-1}(\m')$ maximales Ideal in $A$.
+  \begin{proof}
+    Sei $A\xrightarrow{f} B \xrightarrow{\text{kan}} B/_{\m'}$. Der Kern dieses
+    Homomorphismus ist $\m=f^{-1}(\m')$. Also erhält man aus dem
+    Homomorphiessatz einen Isomorphismus: $f_{*}\colon A/_{\m}\rightarrow
+    B/_{\m'}$. Damit ist auch $A/_{\m}$ ein Körper.
+  \end{proof}
+\end{fakt}
+
+\emph{Achtung}: Die homomorphen Bilder primer (maximaler) Ideale sind im
+Allgemeinen nicht prim (maximal), selbst für surjektive Homomorphismen.
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Sei $\a=(0)\subseteq\Z$. Dies ist ein Primideal. Aber das Bild von
+    $\a$ in $\Z/_{(m)}$ ist nur dann ein Primideal, wenn $m=\pm p$ mit
+    $p\in\PP$.
+   \item Sei $\a=(p)\subseteq\Z$ mit $p\in\PP$. Dies ist maximal. Das Bild von
+    $\a$ in $\Z/_{(m)}$ ist der ganze Ring, falls $p\nmid m$
+    \todo{Zeichen einfügen}. Ist also kein maximales Ideal. Man beachte:
+    $\Z\rightarrow\Z/_{(m)}$ ist surjektiv.
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  Der Mathematiker \textsc{Grothendieck} hat ein Gebiet der Mathematik neu
+  gegründet. Dies war die algebraische Geometrie. Die publizierten Papiere
+  heißen EGA (Elemente der algebraischen Geometrie) und SGA (Seminare zur
+  algebraischen Geometrie).
+
+  Er hat u.\,a. das Spektrum von Ringen betrachtet.
+\end{bemerk}
+
+\begin{bemerk}
+  Jede Primzahl teilt eine der folgenden Zahlen: $9, 99, 999, \dotsc$.
+\end{bemerk}
+
+%Vorlesung vom 2007-11-30
+
+\section{Beispiele von Ringen}
+
+\begin{enumerate}
+ \item Die Mutter aller Ringe: $\Z$ mit den Einheiten $\{1,-1\}$, den
+  Primidealen $(0), (p)$ mit $p\in\PP$ und den maximalen Idealen $(p)$. Man
+  kann zeigen: $\F_{p}^{*}$ ist zyklisch.
+
+  \emph{Hauptsatz der elementaren Arithmetik}: Jede ganze Zahl ungleich 0 ist
+  eindeutig darstellbar als Produkt aus einer Einheit und endlich vielen
+  Primzahlen.
+ \item Die ganzen \textsc{Gauss}schen Zahlen: $\Z[i]=\{a+bi\colon
+  a,b\in\Z\}$. Der Ring ist integer, da er in $\C$ liegt. Die \highl{Norm}
+  $N\colon\Z[i]\rightarrow\Z, a+bi\mapsto a^{2}+b^{2}=(a+bi)(\overline{a+bi})$
+  ist Einheit in $\Z[i]$, so auch $N(x)$ in $\Z$. Mithin ist
+  $N(x)=a^{2}+b^{2}=\pm1\Rightarrow\Z[i]^{*}=\{1,-1,i,-i\}$.
+
+  Wir zeigen $\Z[i]$ ist ein Hauptidealring:\\
+  Sei $m\in\Z[i], m\neq0$. Dann existieren für alle $x\in\Z[i]$ solche
+  $a\in\Z[i]$ und $r\in\Z[i]$, so dass $x=am+r$ mit $0\leq N(r)<N(m)$.
+  \begin{proof}
+    Äquivalente Formulierung: $\forall x\in\Z[i]\,\exists a\in\Z[i]\colon
+    \abs{\nicefrac{x}{m} -a}^{2}<1$.\\
+    Die Zahl $\nicefrac{x}{m}$ liegt auf dem Rand oder innerhalb wenigstens
+    eines Quadrates der Form (Ecken sind $b, b+i, b+1, b+1+i$ \todo{zeichnen})
+    mit $b\in\Z[i]$. Der maximal mögliche Abstand zum nächsten Gitterpunkt aus
+    $\Z[i]$ ist $\nicefrac{1}{2}\sqrt{2}<1$.
+  \end{proof}
+  \begin{fakt}
+    $\Z[i]$ ist ein Hauptidealring.
+    \begin{proof}
+      Sei $0\neq\a\subseteq\Z[i]$ ein Ideal, $m\neq0$ ein Element aus $\a$ mit
+      minimaler Norm. Weiter sei $x\in\a$ beliebig nach der oben bewiesenen
+      Behauptung ist $x=am+r$ mit $0\leq N(r)<N(m)\Rightarrow r\in
+      \a\Rightarrow N(r)=0\Rightarrow r=0\Rightarrow\a=(m)$.
+    \end{proof}
+  \end{fakt}
+ \item $A=\Z[\sqrt{-5}]= \{a+b\sqrt{-5}\colon a,b\in\Z\}$.\\
+  $A$ ist integer. Die Einheiten sind $\pm1$, denn $N(a+b\sqrt{-5})=\pm1=
+  a^{2}+ 5b^{2}$. Man bezeichnet $\pi\in A$ als \highl{Primzahl}, wenn gilt:
+  \begin{enumerate}
+   \item $\pi$ ist ungleich 0 und keine Einheit.
+   \item Aus $\pi=xy$ mit $x,y\in A$ folgt, $x=\pm1$ oder $y=\pm1$.
+  \end{enumerate}
+  Beispiele für solche Primzahlen sind $3,7,4+\sqrt{-5}, 4-\sqrt{-5}$. Denn
+  $3=xy\Rightarrow9=N(x)N(y)$. Damit folgt, $N(x)=1, N(y)=9$ oder
+  $N(x)=N(y)=3$. Im ersten Fall folgt $x=\pm1$ und im zweiten Fall
+  $a^{2}+5b^{2}=3$. Diese Gleichung hat keine ganzzahligen Lösungen. Für 7 ist
+  der Schluss gleich. Für $4+\sqrt{-5}$ ist $N(4\pm\sqrt{-5})=21$. Dann ist
+  $4\pm\sqrt{-5}=xy$ mit $N(x)=3, N(y)=7$. Der Widerspruch lässt sich wie oben
+  herbei führen.
+
+  Wir haben 4 Primzahlen gefunden. Diese unterscheiden sich nicht nur um
+  Vorzeichen. Der Gag: $21=3\cdot7= (4+\sqrt{-5})(4-\sqrt{-5})$. Man kann
+  zeigen: Ist $\g=(3)+(4+\sqrt{-5}), \q=(3)+(4-\sqrt{-5}), \s=
+  (7)+(4+\sqrt{-5}), \t= (7)+(4-\sqrt{-5})$, so gilt: $(3)=\g\q, (7)=\s\t,
+  (4+\sqrt{-5})= \g\s, (4-\sqrt{-5})= \q\t, (21)= \g\q\s\t$.
+
+  Wir zeigen, $\g$ ist kein Hauptideal. Der Beweis erfolgt indirekt: $\g=(m),
+  m\in\Z[\sqrt{-5}]$. Dann folgt, alle Elemente aus $\g$ haben eine durch
+  $N(m)$ teilbare Norm. Also teilt $N(m)$ sowohl $N(3)=9$ als auch
+  $N(4+\sqrt{-5})\Rightarrow N(m)=1$ oder 3.
+
+  Sei nun $m=a+b\sqrt{-5}, N(m)= a^{2}+5b^{2}=3$\lightning{}. Sei
+  $N(m)=1\Rightarrow m=\pm1$, setzen $m=1$. Also $\g=A\Rightarrow1= 3x+
+  (4+\sqrt{-5})y$ für $x,y\in A$. Es folgt: $1=3(a+b\sqrt{-5})+
+  (4+\sqrt{-5})(c+d\sqrt{-5})$ mit $a,b,c,d\in\Z\Rightarrow1=
+  (3a+4c-5d)(3b+c+4d)\sqrt{-5}$. Also hat man zwei Gleichungen aus den ganzen
+  Zahlen: $1=3a+4c-5d, 0=3b+c+4d$. Die erste Gleichung wird mit 4 und die
+  zweite mit 5 multipliziert und dann addiert. Dann ergibt sich: $4=
+  12a+15b+21c$\lightning{}, denn 3 teilt die rechte, aber nicht die linke
+  Hälfte der Gleichung.
+\end{enumerate}
+
+\section{Zur Teilbarkeitslehre in Integritätsbereichen}
+
+Sei $A$ integer.
+\begin{defini}
+  Sei $a\in A$ mit $a\neq0$. Dann heißt $a$ \highl{Primelement} oder
+  \highl{irreduzibel}, wenn $a$ keine Einheit ist und aus $a=xy$ mit $x,y\in
+  A$ folgt, $x$ oder $y$ Einheit.
+\end{defini}
+
+\begin{fakt}
+  Sei $a\in A$ keine Einheit. Dann gilt: $(a)$ Primideal $\Rightarrow a$ ist
+  Primelement.
+  \begin{proof}
+    Sei $a=xy\Rightarrow xy\in(a)$. Also $x\in(a)$ oder $y\in(a)$ wegen $(a)$
+    prim. Somit z.\,B. $x=az$ mit $z\in A\Rightarrow a=xy=ayz\Rightarrow
+    yz=1\Rightarrow y$ Einheit.
+  \end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Die umgekehrte Implikation ist nicht richtig. Denn sei $A=\Z[\sqrt{-5}]$. Es
+  ist $4+\sqrt{-5}$ ein Primelement. Aber das erzeugte Hauptideal ist
+  \emph{kein} Primideal: $3\cdot7\in(4+\sqrt{-5}),
+  3\notin(4+\sqrt{-5})\notni7$. Denn die Elemente aus $(4+\sqrt{-5})$ haben
+  durch 21 teilbare Normen.
+\end{bemerk}
+
+\begin{defini}
+  Sei $A$ integer. Dann heißt $A$ \highl{faktoriell} oder
+  \highl{ZPE"~Ring}\footnote{Zerlegung in PrimElemente}, wenn jedes Element
+  ungleich 0 eine Zerlegung in Primelemente besitzt und diese bis auf
+  Reihenfolge und Einheiten eindeutig ist:
+  \begin{enumerate}[(i)]
+   \item $\forall a\in A, a\neq0\,\exists p_{1},\dotsc, p_{n}\in A$ prim,
+    $u\in A^{*}\colon a=up_{1}\cdot\dotso \cdot p_{n}$
+   \item $a=up_{1}\cdot\dotso \cdot p_{m}=vq_{1}\cdot\dotso \cdot q_{n}$ mit
+    $u,v\in A^{*}, p_{i}, q_{j}\in A$ prim $\Rightarrow m=n$ und es existiert
+    ein $\sigma\in S_{n}, u_{i}\in A^{*}$ mit $q_{i}=up_{\sigma(i)}$
+  \end{enumerate}
+\end{defini}
+
+%satz 2
+\begin{satzMN}
+  Ein integrer Hauptidealring ist faktoriell.
+  \begin{proof}
+    \begin{enumerate}
+     \item Existenz einer Zerlegung in Primelemente: Sei $\S\neq0$ die Menge
+      derjenigen Hauptideale, deren Erzeuger \emph{keine} Zerlegung in
+      Primelemente besitzen. Weiter sei
+      $(a_{1})\subseteq(a_{2})\subseteq\dotso$ eine aufsteigende Folge in
+      $\S$, $\a= \bigcup_{i=1}^{\infty} (a_{i})$ ein Ideal, also $\a= (a)$.
+      Wegen $a\in\a$ existiert ein Index $i_{0}$, so dass $a\in(a_{i_{0}})$.
+      Somit haben wir $\a\subseteq(a_{i_{0}})\subseteq\a$. Es folgt, dass jede
+      aufsteigende Folge in $\S$ stabilisiert sich und in $\S$ gibt es
+      maximale Elemente: Sei $(a_{1})\in\S$ nicht maximal $\Rightarrow\exists
+      (a_{2})\supsetneq(a_{1})$ usw. Also eine aufsteigende Kette, die sich nicht
+      stabilisiert. Sei $(a)\in\S$ maximales Element. Dann ist $(a)$ nicht
+      prim (wegen des obigen Faktes). Also $a=xy$ mit $x,y\in A$ und $x,y$
+      keine Einheiten. Es folgt, $(a)\subsetneq(x),
+      (a)\subsetneq(y)\Rightarrow(x), (y)\notin\S$. Aber $x,y$ haben eine
+      Darstellung als Produkt von Primelementen, also auch $a=xy$\lightning{}.
+      Mithin $\S\neq\emptyset$.
+     \item Eindeutigkeit: Sei $p\in A$ ein Primelement. Dann gilt $p\mid
+      ab\Rightarrow p\mid a$ oder $p\mid b$.
+      \begin{proof}
+	Sei $p\nmid a$. Dann müssen wir zeigen: $p\mid b$. Jeder gemeinsame
+	Teiler von $a$ und $p$ ist eine Einheit. Denn $p$ hat nur die Teiler
+	$1,p$ bis auf Einheiten und $p$ scheidet als Teiler von $a$ aus. Wir
+	betrachten $(a)+(p)=\{ax+py\colon x,y\in A\}$ und zeigen, dass es $A$
+	ist. Man kann schreiben: $(a)+(p)=(z)$ und es folgt, $z\mid a, z\mid
+	p\Rightarrow z\in A^{*}\Rightarrow(a)+(p)=A$. Also kann man schreiben:
+	$1=ax+py$ mit $x,y\in A$. Die Multiplikation mit $b$ liefert:
+	$b=abx+pby$. Damit ist $b$ durch $p$ teilbar.
+      \end{proof}
+      Nun folgt die Eindeutigkeit: $a=up_{1}\cdot\dotso \cdot p_{m}=
+      vq_{1}\cdot\dotso \cdot q_{n}$ wie oben. Es folgt, $p_{1}\mid
+      q_{1}\cdot\dotso \cdot q_{n}$ und  o.\,B.\,d.\,A. $p_{1}\mid
+      q_{1}\Rightarrow p_{1}=uq_{1}$. Wegen $u_{1}\in A^{*}$ folgt
+      $up_{2}\cdot\dotso \cdot p_{m}=v'q_{2}\cdot\dotso \cdot q_{n}$.
+    \end{enumerate}
+  \end{proof}
+\end{satzMN}
+
+\begin{bemerk}
+  Die Existenz oben war schwer zu zeigen. Es gibt ordentliche Ringe ohne
+  Primelementzerlegung. Sei $A$ der Ring der ganzen Funktionen auf $\C$. Die
+  Einheiten $A^{*}$ sind die ganzen Funktionen ohne Nullstellen. Man kann sich
+  überzeugen, dass die Primelemente wie folgt aussehen: $z-z_{0}$ für alle
+  $z_{0}$. Es ist klar, dass $\sin(z)$ kein Produkt einer Einheit und endlich
+  vieler Primelemente. Denn der Sinus hat unendlich viele Nullstellen.
+\end{bemerk}
+
+\begin{bsp}
+  Es sind $\Z, \Z[i]$ faktoriell und $\Z[\sqrt{-5}]$ nicht faktoriell.
+\end{bsp}
+
+
+
+
 
 \clearpage
 \appendix
