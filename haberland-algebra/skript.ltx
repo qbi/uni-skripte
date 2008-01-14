@@ -63,6 +63,7 @@
 \usepackage{txfonts}
 \usepackage[all]{xy}
 \usepackage{wasysym}
+\usepackage{xypic}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -120,17 +121,17 @@
 \renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
 \pagestyle{headings}
-
-\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\B}{\mathbb{B}}
 \newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
-\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
-\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
-\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
-\newcommand*{\MH}{\mathbb{H}}
-\newcommand*{\MO}{\mathbb{O}}
 \newcommand*{\F}{\mathbb{F}}
-\newcommand*{\UU}{\mathbb{U}}
+\newcommand*{\MH}{\mathbb{H}}
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\MO}{\mathbb{O}}
 \newcommand*{\PP}{\mathbb{P}}
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\UU}{\mathbb{U}}
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
 
 \newcommand*{\FS}{\mathfrak{S}}
 \newcommand*{\fa}{\mathfrak{a}}
@@ -198,6 +199,7 @@
 \DeclareMathOperator{\kgv}{kgV}
 \DeclareMathOperator{\bigO}{O}               % Groß-O-Notation O(n)
 \DeclareMathOperator{\chr}{char}            % Charakateristik
+\DeclareMathOperator{\Irr}{Irr}
 
 \makeindex
 
@@ -247,7 +249,8 @@
   Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
   haben, vielmals danken:
   \begin{itemize}
-   \item \href{mailto:email}{Person \nolinkurl{<email>}} (Jahr)
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2007/2008)
   \end{itemize}
 }
 
@@ -1113,6 +1116,7 @@ Multiplikation auf $G/_{H}$ mit $(xH)(yH)\coloneqq xyH$.
 
 %satz 3
 \begin{satz}[Isomorphiesätze]
+  \label{satz:3}
   \begin{enumerate}
    \item Seien $K\subseteq H$ zwei Normalteiler in $G$. Dann ist $H/_{K}$ ein
     Normalteiler in $G/_{K}$ und es gibt einen kanonischen Isomorphismus
@@ -1860,7 +1864,7 @@ konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
     besitzt $G/_{H}$ eine $p$"~\textsc{Sylow}"=Gruppe $K_{1}$.
 
     Sei $(G \colon 1) = p^{n \cdot q}$ wie oben $\Rightarrow (G/_{H} \colon
-    1) = p^{n - 1} q, (K_1 \colon 1) = p^{n - 1} \Rightarrow}$ Urbild $K$ von
+    1) = p^{n - 1} q, (K_1 \colon 1) = p^{n - 1} \Rightarrow$ Urbild $K$ von
     $K_{1}$ in $G$ hat Ordnung $p^n \Rightarrow K$ ist
     $p$"~\textsc{Sylow}"=Gruppe in $G$.
   \end{proof}
@@ -1935,7 +1939,8 @@ konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
   
   Ist $H$ eine $p$-\textsc{Sylow}-Gruppe, so folgt $H =
     \underline{P}'\Rightarrow H \in B$ ist die Bahn von
-    $\underline{P}\Rightarrow H$ konjugiert zu $\underline{P} und es folgt ii.
+    $\underline{P}\Rightarrow H$ konjugiert zu $\underline{P}$ und es folgt
+    (ii).
     Nimmt man $H = \underline{P}$, so ist die $H$-Bahn von $\underline{P}$
     einelementig und alle anderen $H$-Bahnen haben durch $p$ teilbare
     Ordnung:
@@ -1983,7 +1988,7 @@ konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
 
 \section{Endliche auflösbare Gruppen}
 
-\begin{definition}
+\begin{defini}
   Eine endliche Gruppe heißt \highl{auflösbar}, wenn sie eine
   \emph{Normalreihe} mit abelschen Faktoren besitzt:
   $\exists$ Folge von Untergruppen $(G_i)$, so dass gilt:
@@ -1994,7 +1999,7 @@ konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
     
     \item $G_i/_{G_{i + 1}}$ ist abelsch $\forall i$
   \end{enumerate}
-\end{definition}
+\end{defini}
 
 \begin{fakt}
   \begin{enumerate}
@@ -2005,170 +2010,254 @@ konjugiert, wenn $\exists s\in G\colon sH_{1}s^{-1}=H_{2}$.
     auflösbar $\Rightarrow G$ auflösbar.
   \end{enumerate}
   \begin{proof}
-  \begin{enumerate}  %%%WEITER
-    \item $G$ aufl\"osbar. $H$ Untergruppe. Setze $H_i = H \cap G_i$
+  \begin{enumerate}
+    \item Sei $G$ auflösbar und $H$ Untergruppe. Setze $H_i = H \cap G_i$. Wir
+    definieren (für einen Moment) $G=G_{i}, H=H\cap G_{i}, K=G_{i+1}$. Es ist
+    $K$ Normalteiler in $G$ und $H$ Untergruppe in $G$.  Also folgt nach
+    \autoref{satz:3}: $H \cap K$ ist Normalteiler  in $H$ und $H/_H \cap K
+    \rightarrow HK/_K \subseteq G/_K$. Damit folgt, $H_{i + 1}$ ist ein
+    Normalteiler in $H_i$ und $H_i/_{H_{i + 1}} \subset G_i/_{G_{i + 1}}$ ist
+    also abelsch.
     
-    Sei $G \overset{\tmop{df}}{=} G_i$ (nur f\"ur einen Moment), $H = H \cap
-    G_i$, $K = G_{i + 1}$. $K$ NT in $G$, $H$ Untergruppe in $G$, also
-    $\tmop{IsoSatz} :$ $H \cap K$ NT in $H$ und $H / H \cap K
-    \overset{\tmop{Iso}}{\rightarrow} HK / K \subseteq G / K$
+    Sei $H$ Normalteiler  in $G, G/_H = \overline{G_0} \supset \overline{G_1}
+    \supset \ldots \supset \overline{G_n} =\{1\}$. Nach Definition ist
+    $\overline{G_i}= G_i H/_H$. Die kanonischem Homomorphismen $G_i
+    \rightarrow \overline{G_i}$ sind surjektiv
+    und $\overline{G_{i + 1}}$ ist Normalteiler in $\overline{G_i}$. Es gilt, 
+    $\overline{G_i}/_{\overline{G_{i + 1}}} = (G_i H/_H)/_{(G_{i + 1}/_H)}
+    \simeq G_i H/_{G_{i + 1} H}$. Die $G_i H/_{G_{i + 1} H}$ sind das
+    surjektive Bild von $G_i/_{G_{i + 1}}$. Also ist $H$ abelsch.
     
-    $\Rightarrow H_{i + 1}$ ist NT in $H_i$ und $H_i / H_{i + 1} \subset G_i /
-    G_{i + 1}$, ist also abelsch.
+    \item Sei $H = H_0 \supset H_1 \supset \ldots \supset H_m =\{1\}$ und
+    $G/_H = \overline{G_0} \supset \overline{G_1} \supset \ldots \supset
+    \overline{G_n} =\{1\}$. Es ist $G = G_0 \supset G_1 \supset \ldots \supset
+    G_{n - 1} \supset G_n = H = H_0 \supset H_1 \supset \ldots \supset H_m
+    =\{1\}$ mit $G_i$ Urbild von $\overline{G_i}$ unter $G \rightarrow G/_H$.
     
-    Sei $H$ NT in G, $G / H = \overline{G_0} \supset \overline{G_1} \supset
-    \ldots \supset \overline{G_n} =\{1\}$
-    
-    $\overline{G_i}  \overset{\tmop{df}}{=} G_i H / H$.
-    
-    Die kanonischem Hom. $G_i \longrightarrow \overline{G_i}$ sind surjektiv
-    und $\overline{G_{i +^{} 1}}$ ist NT in $\overline{G_i}$.
-    
-    $\overline{G_i} / \overline{G_{i + 1}} = (G_i H / H) / (G_{i + 1} / H)
-    \tilde{=} G_i H / G_{i + 1} H$
-    
-    $G_i H / G_{i + 1} H$ ist suj. Bild von $G_i / G_{i + 1}$, $H$ also
-    abelsch.
-    
-    \item $H = H_0 \supset H_1 \supset \ldots \supset H_m =\{1\}$
-    
-    $G / H = \overline{G_0} \supset \overline{G_1} \supset \ldots \supset
-    \overline{G_n} =\{1\}$.
-    
-    $G = G_0 \supset G_1 \supset \ldots \supset G_{n - 1} \supset G_n = H =
-    H_0 \supset H_1 \supset \ldots \supset H_m =\{1\}$
-    
-    mit $G_i$= Urbild von $\overline{G_i}$ unter $G \rightarrow G / H.$
-    
-    Dann ist $G_{i + 1}$ ein NT in $G_i$ und $\underbrace{\overline{G_i} /
-    \overline{G_{i + 1}}}_{\tmop{abelsch}} = (G_i / H) / (G_{i + 1} / H)
-    \tilde{=}  \underbrace{G_i / G_{i + 1}}_{\Rightarrow \tmop{abelsch}}$
+    Dann ist $G_{i + 1}$ ein Normalteiler in $G_i$ und
+    $\underbrace{\overline{G_i}/_{\overline{G_{i + 1}}}}_{\text{abelsch}} =
+    (G_i/_H)/_{(G_{i + 1}/_H)}\simeq \underbrace{G_i/_{G_{i +
+    1}}}_{\Rightarrow \text{abelsch}}$.
   \end{enumerate}
 \end{proof}
 \end{fakt}
 
-
-\begin{theorem}
-  Jede $p$-Gruppe ist aufl\"osbar.
-\end{theorem}
-
-\begin{proof}
-  $(G : 1) = p^n$, Induktion \"uber $n $. $n = 1$ $\Rightarrow G$ abelsch.
-  $\tmop{Cent} (G)$ ist nichttrivial $\Rightarrow$ $\tmop{Cent} (G)$
-  aufl\"osbar. $G / \tmop{Cent} (G)$ hat kleinere Ordnung , ist auch
-  aufl\"osbar.
+\begin{fakt}
+  Jede $p$-Gruppe ist auflösbar.
+  \begin{proof}
+  Sei $(G\colon 1) = p^n$ und wir führen den Beweis per Induktion über $n$.
+    Für den Fall $n = 1$ folgt, dass $G$ abelsch ist. Wenn das Zentrum von $G$
+    nichttrivial ist, ist es auch auflösbar und falls $G/_{\text{Cent} (G)}$
+    kleinere Ordnung hat, ist es auch auflösbar.
 \end{proof}
+\end{fakt}
 
 \begin{bsp}
-  {\tmdummy}
-  
   \begin{enumerate}
-    \item $S_3 \supset A_3 \supset \{\tmop{Id}\} \Rightarrow S_3$ aufl\"osbar
+    \item $S_3 \supset A_3 \supset \{\iota\} \Rightarrow S_3$ auflösbar.
     
-    \item $S_4 \supset A_4 \supset V \supset \{\tmop{Id}\}$
+    \item Sei $S_4 \supset A_4 \supset V \supset \{\iota\}$. Dann ist $V$ die
+    \textsc{Klein}sche Vierergruppe:  $V =\{\iota, (1, 2) (3, 4), (1, 3) (2,
+    4), (1, 4) (2, 3)\}$ und $V$ ist Normalteiler in $S_4\Rightarrow S_4$
+    auflösbar.
     
-    $V =\{\tmop{Id}, (1, 2) (3, 4), (1, 3) (2, 4), (1, 4) (2, 3)\}$ (Kleinsche
-    Vierergruppe)
+    \item Satz von \textsc{Feit} und \textsc{Thompson}: Jede Gruppe ungerade
+    Ordnung ist auflösbar.
     
-    $V$ ist sogar NT in $S_4$. $\Rightarrow S_4$ aufl\"osbar
-    
-    \item Satz von FEIT\&THOMPSON
-    
-    Jede Gruppe ungerade Ordnung ist aufl\"osbar.
-    
-    \item $\tmop{GL} (2, \mathbbm{F}_p)$ ist nicht aufl\"osbar f\"ur $p
-    \geqslant 5$, jedoch aufl\"osbar f\"ur $p = 2, 3$.
+    \item $\GL(2, \F_p)$ ist nicht auflösbar für $p\geq 5$, jedoch auflösbar
+    für $p = 2, 3$.
   \end{enumerate}
 \end{bsp}
 
-\begin{theorem}
-  (Galois)
-  
-  F\"ur $n \geqslant 5$ ist $A_n$ einfach, d.h. besitzt nur die beiden
-  trivialen NT. Insbesondere sind die $A_n$ also nicht aufl\"osbar.
-\end{theorem}
-
+\begin{satz}[Galois]
+  Für $n \geq 5$ ist $A_n$ einfach, d.\,h. besitzt nur die beiden
+  trivialen Normalteiler. Insbesondere sind die $A_n$ also nicht auflösbar.
 \begin{proof}
-  
-  
-  \begin{lemma}
-    Wenn ein NT $N \subset A_n$ einen 3-Zyklus enth\"alt, dann ist $N = A_n$.
-    
+  \begin{fakt}
+    Wenn ein Normalteiler $N \subset A_n$ einen 3-Zyklus enthält, dann ist $N
+    = A_n$.    
     \begin{proof}
-      o.B.d.A. $(1, 2, 3) \in N, \Rightarrow (1, 3, 2) \in N$
-      
-      Sei $\sigma = (1, 2) (3, k), k \geqslant 4$ $\sigma \in A_n$ $\sigma (1,
-      3, 2) \sigma^{- 1} = (1, 2, k) \in N$
-      
-      Diese 3-Zyklen erzeugen $A_n$, siehe (weit) oben.
+      Sei o.\,B.\,d.\,A.  $(1, 2, 3) \in N, \Rightarrow (1, 3, 2) \in N$.
+      Weiter sei $\sigma = (1, 2) (3, k), k \geq 4,\sigma \in A_n, \sigma (1,
+      3, 2) \sigma^{- 1} = (1, 2, k) \in N$.      
+      Diese 3-Zyklen erzeugen $A_n$, siehe (weit) oben. \todo{Link einfügen}
     \end{proof}
-  \end{lemma}
+  \end{fakt}
   
-  Wir w\"ahlen in $N \subseteq A_n, N$ $\tmop{NT} \neq \{\tmop{Id}\}$ eine
-  Element $\neq \tmop{Id}$ mit maximaler Anzahl an Fixpunkten. Wir zeigen,
-  dass $\tau$ ein 3-Zyklus ist.
-  
-  1. Fall: $\tau$ Permutiert genau 4 Zahlen nichttrivial, l\"asst alle anderen
-  fest.
-  
-  Dann ist $o.B.d.A.$ $\tau = (1, 2) (3, 4)$ wg. $\tau \in A_n$
-  
-  Wg $n \geqslant 5$ ist $\sigma = (3, 4, 5) \in A_n .$ $\tau' = \sigma \tau
-  \sigma^{- 1} = (3, 4, 5) (1, 2) (3, 4) (3, 4, 5) = (1, 2) (4, 5)$
-  
-  $\Rightarrow \tau \cdot \tau' = (1, 2) (3, 4) (1, 2) (4, 5) = (3, 4, 5) \in
-  N$ Widerspruch zur Vorraussetzung \"uber die Maximalit\"at.
-  
-  2. Fall: $\tau$ permutiert mehr als $4$ Zahlen nichttrivial.
-  
-  Wir schreiben $\tau$ also Produkt disjunkter Zyklen, der l\"angste Zyklus
-  soll ganz links stehen.
-  
-  o.B.d.A. 3 Unterf\"alle:
-  \begin{enumerateroman}
-    \item $\tau = (1, 2, \ldots, r) \sigma_2 \ldots \sigma_m, r \geqslant 4$
+  Wir wählen in $N \subseteq A_n, N$ Normalteiler. Dabei ist $N$ ungleich der
+  identischen Abbildung ein Element mit maximaler Anzahl an Fixpunkten. Wir
+  zeigen,  dass $\tau$ ein 3-Zyklus ist.
+  \begin{enumerate}[1. F{a}ll]
+   \item $\tau$ permutiert genau 4 Zahlen nichttrivial und lässt alle anderen
+  fest.  Dann ist o.\,B.\,d.\,A. $\tau = (1, 2) (3, 4)$ wegen $\tau \in A_n$.  
+  Wegen $n \geq 5$ ist $\sigma = (3, 4, 5) \in A_n$ und $\tau' = \sigma \tau
+  \sigma^{- 1} = (3, 4, 5) (1, 2) (3, 4) (3, 4, 5) = (1, 2) (4, 5)$. Damit
+    folgt, $\tau \cdot \tau' = (1, 2) (3, 4) (1, 2) (4, 5) = (3, 4, 5) \in
+  N$. Dies ist ein Widerspruch zur Vorraussetzung über die Maximalität.
+   \item $\tau$ permutiert mehr als $4$ Zahlen nichttrivial.  
+  Wir schreiben $\tau$ als Produkt disjunkter Zyklen, der längste Zyklus
+  soll ganz links stehen. Es gibt o.\,B.\,d.\,A. drei Unterfälle:
+  \begin{enumerate}
+    \item $\tau = (1, 2, \ldots, r) \sigma_2 \ldots \sigma_m, r \geq 4$
     
     \item $\tau = (1, 2, 3) \sigma_2 \ldots \sigma_m, \sigma_2 = (4, 5)$ oder
     $(4, 5, 6)$.
     
     \item $\tau = (1, 2) (3, 4) (5, 6) \ldots (2 m - 1, 2 m)$
-  \end{enumerateroman}
-  Wir konjugieren $\tau$ mit $\sigma = (2, 3, 4) : \tau_1 = \sigma \tau
+  \end{enumerate}
+  Wir konjugieren $\tau$ mit $\sigma = (2, 3, 4)\colon \tau_1 = \sigma \tau
   \sigma^{- 1} \in N$
-  \begin{enumerateroman}
+  \begin{enumerate}
     \item $\tau_1 = (2, 3, 4) (1, 2, \ldots, r) \sigma_2 \ldots \sigma_m (2,
-    3, 4) = (2, 3, 4) (1, 2, \ldots, r) (2, 3, 4) \sigma_2 \ldots \sigma_m$
-    
-    $= (1, 3, 4, 2, 5, \ldots, r) \sigma_2 \ldots \sigma_m$.
-    
-    $\tau_1 \tau^{- 1}$ l\"asst alle Zahlen $> 4$ fest. $\lightning$
+    3, 4) = (2, 3, 4) (1, 2, \ldots, r) (2, 3, 4) \sigma_2 \ldots \sigma_m
+    = (1, 3, 4, 2, 5, \ldots, r) \sigma_2 \ldots \sigma_m$. Das bedeutet,
+    $\tau_1 \tau^{- 1}$ lässt alle Zahlen größer als 4 fest. $\lightning$
     
     \item $\tau_1 = (2, 3, 4) (1, 2, 3) \sigma_2 \ldots (2, 4, 3) \sigma_3
     \ldots \sigma_m = (1, 2, 3) (2, 5, \ast) \sigma_3, \ldots, \sigma_m$.
-    
-    $\tau_1 \tau^{- 1}$ l\"asst alles au{\ss}er $1, 2, 3, 4, 5$ fix:
-    
+    Damit lässt $\tau_1 \tau^{- 1}$ alles außer $1, 2, 3, 4, 5$ fest: 
     $\tau_1 \tau^{- 1} = (1, 3, 4) (2, 5, 6) (1, 3, 2) (4, 6, 5) = (1, 3, 4)
-    (2, 5, 6) (4, 6, 5) (1, 3, 2) = (1, 4, 2, 3, 5)$
-    
-    $\tau_1 \tau^{- 1} = (1, 3, 4) (2, 5) (1, 3, 2) (4, 5)$
-    
-    Wegen der Minimalit\"at von $\tau$ darf $\tau$ auch nur 5 Zahlen bewegen.
-    
-    $\Rightarrow \tau = (1, 2, 3) (4, 5)$ $\lightning$ (da nicht in $A_n)$
+    (2, 5, 6) (4, 6, 5) (1, 3, 2) = (1, 4, 2, 3, 5)$. Also     
+    $\tau_1 \tau^{- 1} = (1, 3, 4) (2, 5) (1, 3, 2) (4, 5)$.
+    Wegen der Minimalität von $\tau$ darf $\tau$ auch nur 5~Zahlen bewegen.
+    Also folgt, $\tau = (1, 2, 3) (4, 5)$ $\lightning$ (da nicht in $A_n$).
     
     \item $\tau_1 = (2, 3, 4) (1, 2) (3, 4) (2, 4, 3) \sigma_3 \ldots \sigma_m
-    = (1, 3) (2, 4) \sigma_4 \ldots s_m$
-    
+    = (1, 3) (2, 4) \sigma_4 \ldots s_m$. Also    
     $\tau_1 \tau^{- 1} = (1, 3) (2, 4) \sigma_3 \ldots \sigma_m (1, 2) (3, 4)
     \sigma_3 \ldots \sigma_m = (1, 4) (2, 3)$ $\lightning$
-  \end{enumerateroman}
+  \end{enumerate}
+  \end{enumerate}
 \end{proof}
-
-
-\todo{Vorlesung vom .. und ..}
+\end{satz}
 
 \chapter{Ringe}
+
+Motto: Weiche, Wotan, weiche.
+
+\section{Ringe und ihre Homomorphismen}
+
+\begin{defini}
+  Ein \highl{Ring} ist eine nichtleere Menge $A$ mit zwei Operationen $+$
+  und $\cdot$, so dass:
+  \begin{enumerate}
+    \item $A$ mit $+$ eine abelsche Gruppe ist,
+    
+    \item die Multiplikation assoziativ ist und
+    
+    \item zwei Distributivgesetze gelten:
+    \begin{gather*}
+      (x + y) z = xz + yz \qquad x (y + z) = xy + xz
+    \end{gather*}
+  \end{enumerate}
+  Der Ring $A$ heißt \highl{kommutativ}, wenn für alle $x,y\in A$ gilt:  $xy =
+  yx$. Wenn ein neutrales Element für die Multiplikation existiert, heißt der
+  Ring \highl{Ring mit 1}.
+\end{defini}
+
+\begin{bemerk}
+  In dieser Vorlesung betrachten wir nur kommutative Ringe mit 1.
+\end{bemerk}
+
+\begin{defini}
+  Wir definieren $A^{\ast}$ als die Menge der multiplikativ invertierbaren
+  Elemente.
+\end{defini}
+
+\begin{fakt}
+  $A^{\ast}$ ist abelsche Gruppe.
+\end{fakt}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Die einfachsten Ringe sind die Körper.
+   \item Die Mutter aller Ringe: $\Z$.
+    
+    \item Sei $M$ eine glatte Mannigfaltigkeit oder offene Teilmenge in
+    $\R^n$. Dann sind  $C (M, \R),  C^n (M, \R),  C^{\infty} (M, \R)$ Ringe.
+    
+    \item Sei $A = L^1 (\R^n, \B, d \lambda)$ mit der Faltung: $(f \ast g) (x)
+    = \int_{\R^{n}} f (y) g (x - y)\,d \lambda (y)$.    
+    Damit wird $A$ zu kommutativem Ring, allerdings ohne 1.
+    
+    \item Reelle und komplexe Polynome
+    
+    \item Die ganzen \textsc{Gauss}schen Zahlen: $\Z[i] =\{a + bi\colon a, b
+    \in \Z\}$
+    
+    \item Sei $\Z[\sqrt{2}] =\{a + b \sqrt{2}\colon a, b \in \Z\}$.    
+    Dieser Ring hat $\infty$ viele Einheiten:    
+    $\varepsilon = 3 + 2 \sqrt{2}$ ist Einheit: $(3 + 2 \sqrt{2}) (3 - 2
+    \sqrt{2}) = 1$. Jedes $\varepsilon^m$ mit $m \in \Z$ ist Einheit.
+  \end{enumerate}
+%    Ein Ring $A$ ist K\"orper $\Leftrightarrow A^{\ast} = A \backslash
+%    \{0\}$.
+\end{bsp}
+
+\begin{defini}
+  Seien $A, B$ Ringe, $f\colon A \rightarrow B$ heißt
+  \highl{Ringhomomorphismus}, wenn gilt:
+  \begin{enumerate}
+    \item $f (a + b) = f (a) + f (b)$
+    
+    \item $f (ab) = f (a) f (b)$
+    
+    \item $f (1) = 1$
+  \end{enumerate}
+  Natürlich gilt $f (0) = 0$ automatisch.
+\end{defini}
+
+\subsection{Ideal}
+Wir wollen nun die Eigenschaften der Kerne von Homomorphismen betrachten.
+Hierzu sei $f\colon A \rightarrow B$ ein Homomorphismus und $\fa= \ker (f)$.
+Dann ist:
+\begin{enumerate}
+  \item $x, y \in \fa \Rightarrow x \pm y \in \fa$
+  
+  \item $x \in \fa, y \in \fa \Rightarrow xy \in \fa$
+\end{enumerate}
+
+\begin{defini}
+  Ein $\fa \subset A$ heißt \highl{Ideal}, falls gilt:
+  \begin{enumerate}
+    \item $\fa$ ist Untergruppe bezüglich Addition und
+    \item $x \in \fa, y \in \fa \Rightarrow xy \in \fa$.
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  Für uns sind Ideale im allgemeinen keine Ringe, da meist $1 \notin
+  \fa$ ist.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+    \item Die trivialen Ideale: $\{0\}, A$.
+    
+    \item Sei $A =\Z$. Für jede ganze Zahl $m \in \Z$ ist $(m)\coloneqq m\Z$
+    ein Ideal. Es ist $(a) = (b) \Leftrightarrow b = \pm a$. 
+    
+    Sei $\fa \neq (0)$ ein Ideal in $\Z$ und $m$ die kleinste positive ganze
+    Zahl in $\fa\Rightarrow (m)=\fa\colon a \in \fa, a = qm + r, 0 \leq r < m,
+    q \in \Z\Rightarrow r \in \fa \Rightarrow r = 0$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Sei $A$ ein Ring, $a \in A$. Dann heißt $(a) = a \cdot A$ \highl{Hauptideal}.
+\end{defini}
+
+\begin{bemerk}
+  In $\Z$ ist jedes Ideal ein Hauptideal. Diese heißen
+  \highl{Hauptidealring}e.  
+  Es gilt: $(a) = (b) \Leftarrow b = \varepsilon a$ mit $\varepsilon \in
+  A^{\ast}$
+\end{bemerk}
+
+\subsection{Operationen mit Idealen}
+
+Seien $\fa, \fb \subseteq A$ Ideale. Dann definieren wir die Addition:
+$\fa+\fb\coloneqq\{a + b\colon a \in \fa, b \in \fb\}$
 
 %Vorlesung vom 2007-11-28
 \begin{fakt}
@@ -2566,7 +2655,250 @@ Sei $A$ integer.
   Es sind $\Z, \Z[i]$ faktoriell und $\Z[\sqrt{-5}]$ nicht faktoriell.
 \end{bsp}
 
-\todo{Vorlesung vom 2007-12-05}
+\section{Quotientenkörper}
+
+\begin{fakt}
+  Sei $A$ ein integrer Ring. Dann existiert ein Körper $K$ und eine
+  Einlagerung (injektiver Homomorphismus) $j\colon A \rightarrow K$ mit der
+  folgenden Universalitätseigenschaft: Für jeden injektiven Homomorphismus
+  $i\colon A \rightarrow L$ für einen Körper $L$ gibt es genau einen
+  Homomorphismus $\varphi\colon K \rightarrow L$, welcher das folgende
+  Diagramm kommutativ macht:
+  $\begin{xy}
+     \xymatrix{
+     A \ar[r]^{j} \ar[d]_{i}& K \ar[dl]^{\phi}\\
+     L & \\}
+     \end{xy}$
+  Der Körper $K$ ist bis auf Isomorphismie eindeutig bestimmt und heißt
+  \highl{Quotientenkörper} von $A\colon K = \text{Qk} (A)$.
+\begin{proof}
+  Die Eindeutigkeit folgt ganz formal:
+  Seien $j_1, j_2\colon A \rightarrow K_1, K_2$ zwei solche universelle
+  Körper. Man erhält:
+  \begin{gather*}
+    \begin{xy}
+      \xymatrix{ A \ar[r]^{j_{1}} \ar[d]_{j_{2}} & K_{1} \ar@<.4ex>[dl]_{\phi_{2}}\\
+	K_{2} \ar@<.4ex>[ur]_{\phi_{1}}}
+    \end{xy}\qquad\text{und}\qquad
+       \begin{xy}
+	 \xymatrix{A \ar[r]^{j_{1}} \ar[d]_{j_{1}}& K_{1} \ar[dl]^{\phi_{1}\circ\phi_{2}}\\
+	   L_{1}
+	   }
+       \end{xy}
+  \end{gather*}
+  wegen $\varphi_2 \circ j_2 = j_1$ und $\varphi_1 \circ j_1 = j_2\Rightarrow
+  \varphi_2 \circ \varphi_1 \circ j_1 = j_1$. Weiter folgt aus der
+  Eindeutigkeit $\varphi_2 \circ \varphi_1 = \iota_{K_1}$ und
+  analog $\varphi_1 \circ \varphi_2 = \iota_{K_2}$.
+
+  Für den Nachweis der Existenz  bilden wir alle Paare $(a, b)$ mit $a \in A,
+  b \in A\setminus\{0\}$ und definieren eine Äquivalenzrelation:  
+  $(a, b) \sim (a', b') \coloneqq ab' = a' b$.
+  
+  Die Äquivalenzklasse von $(a, b)$ bezeichnen wir mit $a / b$. Die Klassen
+  bilden eine Menge $K$.
+  
+  Sei nun $a / b + c / d \coloneqq (ad + bc) / bd, a / b \cdot c /
+  d \coloneqq ac / bd$. Es ist die Korrektheit (Repräsentantenunabhängigkeit)
+  der Operationen, $K$ ist ein Körper, die Injektion $j\colon A\rightarrow K$
+  sowie die Universalität zu zeigen.
+  \begin{description}
+    \item[Korrektheit] Seien $a' / b' = a / b, c' / d' = c / d\Rightarrow a' b
+    = ab', c' d = cd'$. Zu zeigen ist:
+    \begin{align*}
+      (a' d' + b' c') / b' d' &= (ad + bc) / bd \Leftrightarrow (a' d' + b'
+	 c') / bd = (ad + bc) b' d\\
+      &\Leftrightarrow a' bdd' + bb' c' d = ab' dd' + bb' cd'\\
+      a' c' / b' d' &= ac / bd \Leftrightarrow a' bc' d = acb' d'
+    \end{align*}
+    \item[$K$ ist Körper] Für den Beweis lassen wir den Nachweis der
+    Assoziativität und der Distributivität weg. Es gilt,    
+    $0 = 0 / 1, 1 = 1 / 1, a / b \neq 0 \Leftrightarrow a \neq 0$. Das    
+    Inverse zu $a / b \neq 0$ ist $b / a$. Also ist $K$ ein Körper.
+    
+    \item[Injektion] Sei $j\colon A \rightarrow K, a \mapsto a / 1$.
+    Dies ist ein Ringhomomorphismus:    
+    $j (a \pm b) = (a \pm b) / 1 = a / 1 \pm b / 1 = j (a) \pm j (b)$ sowie    
+    $j (ab) = ab / 1 = a / 1 \cdot b / 1 = j (a) \cdot j (b)$ und weiter    
+    $j (1) = 1 / 1 = 1$ in $K$. Für die    
+    Injektivität gilt: $j (a) = 0\Rightarrow a / 1 = 0 / 1 \Rightarrow a =
+    0$.
+    
+    \item[Universalität] Sei $i\colon A \rightarrow L$ Ringhomomorphismus,
+    injektiv und $L$ ein Körper. Wir definieren $\varphi\colon K \rightarrow
+    L$ durch $\varphi (a / b)\coloneq  i (a) (i (b))^{- 1}$. Dann ist    
+    $\varphi$ ein Homomorphismus: $\varphi (a / b + c / d) = \varphi ((ad +
+    bc) / bd)= i (ad + bc) i (bd)^{- 1}= (i (a) i (d) + i (b) i (c)) (i (b) i
+    (d))^{- 1} = i (a) i (b)^{- 1} + i  (c) i (d)^{- 1}= \varphi (a / b) +
+    \varphi (c / d)$. Analog zeigt man dies für die Multiplikation und weiter
+    ist $f (1) = \varphi (1 / 1) = i (1) (i (1))^{- 1} = 1$.
+    
+    Das Diagramm
+      $\begin{xy}
+     \xymatrix{
+     A \ar[r]^{j} \ar[d]_{i}& K \ar[dl]^{\phi}\\
+     L & \\}
+     \end{xy}$
+    ist kommutativ, denn
+    $\varphi j (a) = \varphi (a / 1) = i (a) (i (1))^{- 1} = i (a)$.
+    
+    Fazit: Es existiert ein solches $\varphi$.
+  \end{description}
+
+  Die Eindeutigkeit zeigen wir wie folgt: Sei $\psi\colon K \rightarrow L$ ein
+  weiterer Homomorphismus, für den gilt: $\psi \circ j = i$. Also $\psi \circ
+  j (1) = \varphi \circ j (a)$ für alle $a \in A$. Mithin ist $\psi (a / 1) =
+  \varphi (a / 1)$. Die $\varphi, \psi$ sind Ringhomomorphismen. Damit folgt
+  für alle $a\in A\setminus\{0\}\colon\varphi (1 / a) = \psi (1 / a)
+  \Rightarrow \varphi (b / a) = \psi (b / a) \Rightarrow \varphi = \psi$.
+\end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Körperhomomorphismen sind injektiv.
+  Vulgarisierte Variante: $K$ ist der kleinste Körper, welcher $A$ umfasst.
+\end{bemerk}
+
+\begin{bsp}
+  Sei $A =\Z[i]$, der Quotientenkörper von $\Z[i]$ ist $Q (i)
+  =\{\alpha + \beta i\colon \alpha, \beta \in \Q\}$. Das sieht man durch
+  $(a + bi) / (c + di) \mapsto \frac{(a + bi) (c - di)}{c^2 + d^2}$.
+\end{bsp}
+
+\section{Polynomringe}
+
+Polynome in der Analysis: $P\colon \R \rightarrow \R$ mit $P(x)=
+\sum_{n=0}^{\infty}  a_n x^n$, wobei $a_n = 0$ für fast alle
+$n$. Die Addition der Polynome erfolgt durch Addition der Koeffizienten und
+die Multiplikation ist wie folgt definiert: Seien $P = \sum a_n x^n, Q = \sum
+b_n x^n$. Dann gilt: $P \cdot Q = \sum c_n
+x^n$ mit $c_n = \sum_{k+l=n} a_k b_l$. Analog definiert man für
+trigonometrische Polynome: 
+$P (t) = \sum a_n e^{2 \pi int}$ mit $P\colon \R \rightarrow \C$.
+
+\begin{defini}[Polynom in einer Unbestimmten über einem Ring in $A$]
+  \begin{align*}
+    A[X]\coloneqq \{a\colon \N \rightarrow A,  a \text{ hat
+  endl. Träger } \Leftrightarrow a (n) = 0 \text{ für fast alle} a\}
+  \end{align*}
+  Die $a (n)$ sind die Koeff des Polynoms. Es ist  
+  $(a + b) (n) \coloneqq a (n) + b (n), (a \cdot b) (b) \coloneqq \sum_{k+l=n}
+   a(k) \cdot b(l)$.
+\end{defini}
+
+\begin{fakt}
+\begin{enumerate}
+  \item Mit diesen Operationen wird $A [x]$ zu einem Ring.
+  
+  \item $j\colon A \rightarrow A [x],  \alpha \mapsto a, a(0) = \alpha, a(n)
+  =0$ für alle  $n \geq 1$ ist injektiver Ringhomomorphismus.
+\end{enumerate}
+\begin{proof}
+  ÜA
+\end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Wir produzieren eine psychologisch günstigere Schreibweise:
+  Sei $e_n\colon \N \rightarrow A$ mit $e_n(m) = \delta_{mn}$. Dann gilt $e_m
+  \cdot e_n = e_{m + n}$. Insbesondere $e_n = e_1^n$.  
+  Wir schreiben $X$ statt $e_1$, dann ist $e_1^n = X^n$.
+  
+  Also lässt sich jedes Polynom $a\colon \N \rightarrow A$ eindeutig als
+  darstellen $\sum_{n=0}^{\infty} a (n) X^n$.
+\end{bemerk}
+
+\begin{defini}
+  $A[X_1, \ldots, X_n] \coloneqqf A[X_1, \ldots, X_{n - 1}] [X_n]$
+\end{defini}
+
+\begin{bemerk}
+  Man sieht sofort: Jedes Element aus $A [X_1, \ldots, X_n]$ hat eindeutige
+  Darstellung als $a = \sum a (m_1, \ldots, m_n) X^{m_1}_1 \cdots X_n^{m_n}$.
+  Es ist
+  $a \in A [X_1, \ldots, X_n] \Leftrightarrow a\colon \N^n \rightarrow A$
+  mit endlichem Träger.
+\end{bemerk}
+
+\begin{defini}
+  Der \highl[Grad!Polynom]{Grad} eines Polynoms ungleich 0  
+  ist folgende Abbildung:
+  \begin{gather*}
+    \deg\colon A[X_1, \ldots, X_n] \setminus \{0\} \rightarrow \N
+  \end{gather*}
+  \begin{enumerate}
+    \item $\deg (X_1^{m_1}\cdot\dotso  \cdot X_n^{m_n}) = m_1 + \ldots + m_n$,
+    
+    \item $\deg (\sum_{m\in\N^{n}} a(m) X_1^{m_1}\cdot\dotso \cdot X_n^{m_n})
+    = \max\{\deg(X_1^{m_1}\cdot\dotso \cdot X_n^{m_n}\colon a(m) \neq 0)\}$.
+  \end{enumerate}
+\end{defini}
+
+\begin{fakt}
+  Sei $A$ integer, $f, g \in A[X] \setminus \{0\}$. Dann gilt: $\deg (f \cdot
+  g) = \deg (f) + \deg (g)$.
+\begin{proof}
+  Sei $f = a_0 + a_1 X + \ldots + a_m X^m, a_m \neq 0, g = b_0 + b_1 X + \ldots
+  + b_n X^n, b_n \neq 0$. Dann folgt, $f \cdot g$ hat als Term von höchstem
+  Grad $a_m b_n X^{m + n}$ und $a_m b_n \neq 0$ da $A$ integer.
+\end{proof}
+\end{fakt}
+
+\begin{fakt}
+  Mit $A$ sind auch $A [X], A [X_1, \ldots, X_m]$ integer.
+\end{fakt}
+
+\begin{bemerk}
+  Jedes Polynom $P \in A [X_1, \ldots, X_n]$ verursacht die Abbildung:
+  \begin{gather*}
+    f_p\colon A \times \ldots \times A \rightarrow A\times\dotso \times A,
+       (a_1, \ldots, a_n) \mapsto p(a_1, \ldots, a_n) = \sum a (m) a_1^{m_1}
+       \cdots a_n^{m_n}
+  \end{gather*}
+  \help{Ist die Gleichung korrekt?}
+  Man hat also die Abbildung:  
+  $A [X_1, \ldots, X_n] \rightarrow \text{Maps} (A^n, A)$.  
+  Verschiedene Polynome können durchaus dieselbe Abbildung verursachen:  
+  $A =\F_p =\Z/_{(p)}, f, g \in \F_p[T]$ mit  
+  $f = 0, g = T^p - T$. Beide verursachen die Abbildung: $\F_p
+  \rightarrow \F_p\colon \alpha \mapsto 0$ für alle $\alpha \in \F_p$ mit
+  $\alpha^p = \alpha$.
+\end{bemerk}
+
+\section{Teilbarkeitslehre für Polynome in einer Unbestimmten}
+
+\begin{satz}[Division mit Rest]
+  Sei $A$ ein Ring und $f, g \in A[X] \setminus \{0\}$. Der höchste
+  Koeffizient von $g$ soll eine Einheit in $A$ sein. Dann existieren Polynome
+  $q, r \in A[X]$, so dass
+  \begin{enumerate}[(i)]
+    \item $f = qg + r$
+    
+    \item $\deg (r) < \deg (g)$ oder $r = 0$.
+  \end{enumerate}
+  \begin{proof}
+    Sei $f = a_0 + a_1 X + \ldots + a_n X^n_{}, a_n \neq 0, g = b_0 + b_1 X +
+    \ldots + b_d X^d, b_d \neq 0$ sowie $b_d \in A^{\ast}$.
+
+    Die trivialen Fälle sind $n = 0, d = 0 \Rightarrow r = 0, q = a_0 b_0^{-
+    1}$ und $n = 0, d > 0 \Rightarrow r = f, q = 0$.
+
+    Es sei also alles gezeigt für Polynome $f$ vom Grad kleiner $n$ und $g$
+    werde fixiert. Dann ist (i) und (ii) erfüllt für $\deg (f) < \deg (g)$
+    durch $q = 0, r = f$. Sei also $\deg (f) \geq \deg (g)$. Dann gilt,  
+    $f(X) = a_n b^{- 1}_d X^{n - d} \cdot g(X) + f_1(X)$ mit $\deg (f_1) <\deg
+    (f) = n$. Nach der Induktionsvoraussetzung folgt: $f(X) = a_n b^{- 1}_d
+    X^{n - d} \cdot g(X) + q_1 (X) \cdot g (X) + r (X)$ mit $r = 0$ oder $\deg
+    (r) < \deg (g)$.
+\end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Diese Division mit Rest ist eindeutig. Denn sei $f = q_1 g + r_1 = q_2 g +
+  r_2$ wie oben. Dann folgt,  
+  $(q_1 - q_2) g = r_2 - r_1$. Der Grad rechts ist kleiner $\deg (g)$ (oder
+  $r_1 = r_2$). Der Grad links ist $\geq \deg (g)$ (oder $= 0$).
+\end{bemerk}
 
 % Vorlesung vom 2007-12-07
 \begin{folg}
@@ -3014,6 +3346,26 @@ Wir hatten für Ringhomomorphismen verlangt $f(1)=1$.
 \begin{fakt}
   Der Primkörper eines Körpers ist entweder isomorph zu $\Q$ oder zu einem
   endlichen Körper $\F_{p}$ mit $p\in\PP$.
+  \begin{proof}
+    Man hat stets einen Homomorphismus $\varphi\colon \Z \rightarrow K,  1
+    \mapsto 1$.
+    \begin{enumerate}[1. F{a}ll]
+    \item $\varphi$ ist injektiv. Nach dem Satz über Quotientenkörper
+      \todo{Link einfügen} besitzt $\varphi$ eine eindeutig bestimmte
+      Fortsetzung zu einem Hom. $\varphi\colon \Q\rightarrow K$.
+
+      Sei $L \subseteq K$ Unterkörper. Dann hat $\Z$ unter $\varphi$
+      sein Bild in $L$, also $\varphi (\Q) \subseteq L\Rightarrow\varphi (\Q)$
+      ist der kleinste Teilkörper von $K$.
+    
+    \item $\varphi$ ist nicht injektiv.
+    Dann ist der Kern ein Primideal in $\Z$, d.\,h. $\ker(\varphi) = (p) =
+      p\Z$ mit $p \in \PP$. Nach dem Homomorphiessatz \todo{Link einfügen}
+      erhalten wir die Injektion $\varphi_{\ast}\colon \Z/_{(p)} \rightarrow
+      K$. Das Bild von $\varphi_{\ast}$ ist der kleinste Teilkörper in $K$
+      (wie oben), $\Z/_{(p)} =\F_p$.
+  \end{enumerate}
+\end{proof}
 \end{fakt}
 
 \begin{defini}
@@ -3021,6 +3373,421 @@ Wir hatten für Ringhomomorphismen verlangt $f(1)=1$.
   \highl{Charakteristik} von 0. Man schreibt $\chr(K)=0$. Wenn der Primkörper zu
   einem endlichen Körper $\F_{p}$ isomorph ist, gilt $\chr(K)=p$.
 \end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+    \item $\Q, \R, \C$ haben  die $\chr = 0$.
+    
+    \item $\chr(\F_p) = p$, aber auch die Quotientenkörper von
+    $\F_p [X_1, \ldots, X_n]$.
+  \end{enumerate}
+\end{bsp}
+
+\section{Endliche und algebraische Erweiterungen}
+
+Ist $E/_F$ eine Körpererweiterung, so ist $E$ ein Vektorraum über $F$.
+
+\begin{defini}
+  Der \highl[Grad!Körpererweiterung]{Grad der Körpererweiterung} $E/_F$ ist
+  $[E\colon F]\coloneqq \dim_{F} E$. Ist $E/_F$ endlich, so heißt auch
+  die Erweiterung endlich.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+    \item $[\C\colon \R] = 2, [\R\colon \Q] = c (= \infty)$ \help{Stimmt das?}
+    
+    \item $[E\colon F] = 1 \Leftrightarrow E = F$
+    
+    \item $[\Q(i)\colon Q] = 2$ mit $Q(i) = \text{Qk}(\Z[i])
+    =\{\alpha + \beta i\colon \alpha, \beta \in \Q\}$
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Sei $E/_F$ Körpererweiterung, $\alpha \in E$. Dann heißt $\alpha$
+  \highl{algebraisch} über $F$, wenn ein $n\geq1$ und $a_{i}\in F$ (nicht alle
+  gleich 0) existieren, so dass $a_0 + a_1 \alpha + \ldots + a_n
+  \alpha^n = 0$.
+\end{defini}
+
+\begin{bsp}
+  Sei $\C/_\Q$ und $\overline{\Q}$ alle $\alpha \in \C$, die algebraisch über
+  $\Q$ sind. Dann ist $\overline{\Q}$ ist abzählbar. Man bezeichnet $z \in \C$
+  als \highl{tanszendent}, falls es nicht algebraisch über $\Q$ ist.
+\end{bsp}
+
+\begin{bemerk}
+  Der Homomorphismus $F[X] \rightarrow E, P \mapsto P(\alpha)$ habe einen
+  nichttrivialen Kern.
+  Dann ist der Kern ein Primideal in $F[X]$, wird also erzeugt durch ein
+  irreduzibles Polynom. Setzt man voraus, dass der höchste Koeffizient 1 ist,
+  so ist dieses Polynom eindeutig bestimmt. Also kommen wir zu folgendem Fakt:
+\end{bemerk}
+
+\begin{fakt}
+  Sei $E/_F$ eine Körperwerweiterung, $a \in E$ algebraisch. Dann existiert
+  ein eindeutig bestimmtes irreduzibles Polynom aus $F[X]$ mit höchstem
+  Koeffizienten 1, welches $\alpha$ zur Wurzel hat. Es heißt
+  \highl[Polynom!irreduzibles]{irreduzibles Polynom} von $\alpha$ (bzgl $F$).
+  Wir bezeichnen es mit $\Irr(X,\alpha, F)$.
+\end{fakt}
+
+\begin{bsp}
+  \begin{enumerate}
+    \item $\C/_\R, \Irr(X, i, \R) = X^2 + 1$
+    
+    \item $\R/_\Q, \Irr(X, \sqrt[3]{2}, \Q)= X^3 - 2$
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}
+  Eine Körpererweiterung $E/_F$ heißt
+  \highl{Körpererweiterung!algebraische]{algebraisch}, wenn jedes Element aus
+  $E$ ist algebraisch in $F$ ist.
+\end{defini}
+
+\begin{fakt}
+  Jede endliche Körpererweiterung ist algebraisch.
+  \begin{proof}
+    Sei $[E\colon F] = n, \alpha \in E$. Dann sind $1, \alpha, \ldots,
+    \alpha^n$ alle $F$-linear abhängig, also existieren $a_0, a_1, \ldots,
+    a_n\in F$ (nicht alle 0), so dass $a_0 + a_1 \alpha + \ldots + a_n
+    \alpha^n = 0$.
+\end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Wir haben sogar mehr beweisen: $\forall \alpha \in E\colon \deg (\Irr(X,
+  \alpha, F)) \leq [E\colon F]$
+\end{bemerk}
+
+\begin{satz}[Turmsatz für endliche Erweiterungen]
+  Seien $E/_F, F/_K$ endliche Erweiterungen. Dann ist auch $E/_K$ endlich
+  und es gilt:
+  \begin{gather*}
+    [E\colon K] = [E\colon F] \cdot [F\colon K]
+  \end{gather*}
+  \begin{proof}
+  Sei $\alpha_1, \ldots, \alpha_n$ ein $F$-Basis von $E$ und $\beta_1, \ldots,
+  \beta_n$ eine $K$-Basis von $F$. Wir zeigen, dass die Elemente $a_i b_j$
+  eine $K$-Basis von $E$ bilden.
+
+    \begin{itemize}
+     \item[Erzeugendensystem] Sei $\gamma \in E$. Dann existieren $a_1,
+      \ldots, a_m \in F$, so dass $\gamma = a_1 \alpha_1 + \ldots + a_m
+      \alpha_m$. Weiter existieren $b_{i j} \in K$ mit $a_i = b_{i 1} \beta_1
+      + \ldots + b_{i n} \beta_n$. Einsetzen zeigt: $\gamma$ ist
+      $K$-Linearkombination der $\alpha_i \beta_j$.
+     \item[Lienare Unabhängigkeit] Sei $\sum c_{i j} \alpha_i \beta_j = 0$ mit
+      $c_{i j} \in K$. Dann folgt, $\sum_{i=1}^{n}
+      \underbrace{\left(\sum_{j=1}^{n} c_{ij} \beta_{j}\right)}_{\in F}
+      \alpha_{i} \Rightarrow \sum_{j=1}^{n} c_{ij} b_{j}=0\,\forall
+      i\Rightarrow c_{ij}=0$.
+    \end{itemize}
+\end{proof}
+\end{satz}
+
+\begin{defini}
+  Sei $E/_K$ eine Körpererweiterung und $\alpha \in E$. Dann ist $K(\alpha)$
+  der kleinste $\alpha$ umfassende Teilkörper. Man sagt, $K(\alpha)$ entsteht
+  durch \highl{Adjunktion} von $\alpha$ zu $K$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+    \item Die Bezeichnungen $\Q(i), \R(i), \Q(\sqrt{2})$ haben nun
+    nichformalen Sinn.
+    
+    \item Solch ein kleinster Teilkörper existiert. Man nehme den
+    Durchschnitt aller $K$ und $\alpha$ umfassender Teilkörper in $E$.
+    
+    \item Milde Verallgemeinerung: $S \subseteq E$ Teilmenge, $K (S)$ analog.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{satz}[Adjunktion algebraischer Elemente]  
+  Sei $E/_K$ eine Körpererweiterung und $\alpha \in E$ algebraisch. Weiter sei
+  $p(X) =  \Irr(X, \alpha, K)$.
+  \begin{enumerate}[(i)]
+    \item $K (\alpha)$ ist isomorph zu $K[X]/_{(p(X))}$.
+    
+    \item $[K (\alpha)\colon K] = \deg (p (X))$
+    
+    \item $K (\alpha) = \left\{\sum_{i=0}^{n-1} a_i\alpha^i\colon a_i \in K
+    \right\}, n = \deg (p(X))$.
+  \end{enumerate}
+  \begin{proof}
+    Wir sahen schon: $K[X] \rightarrow E, f \mapsto f (\alpha)$ induziert
+    injektiven Ringhomomorphismus. Nach dem Homomorphiessatz \todo{Link
+    einfügen} gilt $K[X]/_{(p(X))} \rightarrow E$ und da $(p(X))$ ein 
+    maximales Ideal ist, ist  $K[X]/_{(p(X))}$ ein Körper. Sein Bild ist
+    Teilkörper in $E$, welcher $K$ und $\alpha$ umfasst. Also enthält er
+    $K(\alpha)$.
+
+    Andererseits ist das Bild von $K[X]$ in $K(\alpha)$ enthalten. Mithin
+    entsteht ein Isomorphismus $K[X]/_{(p(X))} \rightarrow K(X)$.
+  
+    Sei $\deg(\Irr (X, \alpha, K)) = n$. Wir zeigen, dass $1, \alpha, \ldots,
+    \alpha^{n - 1}$ linear unabhängig sind: $\sum_{j=0}^{n-1} a_j \alpha^j =
+    0$ für  $a_j \in K$. Sei $g(X) = \sum a_j X^j$. Dann ist $g(\alpha) = 0
+    \Rightarrow p$ teilt $g\lightning$. Somit $[K(\alpha)\colon K] \geq n$.
+
+    Wir zeigen nun, dass die $1, \alpha, \ldots, \alpha^{n - 1}$ den
+    Vektorraum $K(\alpha)$ über $K$ erzeugen: Jedes Element aus $K(\alpha)$
+    hat eine (nicht eindeutige) Darstellung $\varphi(\alpha)$ für ein $f \in
+    K[X]$. Die Division mit Rest in $K[X]$ zeigt: $f = qp + r$ mit $r = 0$
+    oder $\deg (r) < n\Rightarrow f(\alpha) = r(\alpha)$.
+\end{proof}
+\end{satz}
+
+\begin{folg}
+  Sei $E/_K$ eine Körpererweiterung und $\alpha_1, \ldots, \alpha_n \in E$
+  algebraisch. Dann ist $K(\alpha_1, \ldots, \alpha_n)/_K$ endlich.
+  \begin{proof}
+  Sei $K(\alpha_1, \ldots, \alpha_n) \supset K(\alpha_1, \ldots, \alpha_{n -
+    1}) \supset \ldots \supset K(\alpha_1) \supset K$. Jede einzelne
+    Erweiterung ist endlich, also auch $K(\alpha_1, \ldots, \alpha_n)/_K$.
+\end{proof}
+\end{folg}
+
+\begin{folg}
+  Mit $\alpha, \beta$ algebraisch, sind auch $\alpha \pm \beta, \alpha \beta$
+  und $\alpha^{- 1}$ algebraisch.
+  \begin{proof}
+  Sie liegen in $K(\alpha, \beta)$.
+\end{proof}
+\end{folg}
+
+\begin{bemerk}
+  Es gibt keine vernünftigen Formeln für $\Irr(x, \alpha \pm \beta,
+  K), \Irr(X, \alpha \beta, K)$ in Termen von $\Irr(X, \alpha,
+  K), \Irr(X, \beta, K)$, wohl aber für $\Irr(X, \alpha^{-1}, K)$.
+\end{bemerk}
+
+\begin{defini}
+  Sei $K/_k$ \help{stimmt das k hier?} eine Körpererw, $k \subset E, F \subset
+  K$ Zwischenkörper. Das \highl{Kompositum} von $E, F$ ist der kleinste
+  Teilkörper in $K$, welcher $E$ und $F$ umfasst. Bezeichnung $E \cdot F$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+    \item $E \cdot F = E (F) = F (E)$ (Adjunktion)
+    
+    \item Analogie: Untergruppen und Zwischenkörper
+  \end{enumerate}
+\end{bemerk}
+
+\begin{satz}[Turmsatz für algebraische Erweiterungen]
+  \begin{enumerate}[(i)]
+    \item Seien $E/_{F/_K}$ Körpererweiterungen. Dann ist $E/_K$ genau dann
+    algebraisch, wenn $E/_F, F/_K$ algebraisch sind.
+    
+    \item Sind $E/_K, F/_K$ algebraisch, so auch $E \cdot F/_K$.
+    
+    \item Ist $E/_K$ algebraisch und $L/_K$ beliebig, so ist $EL/_L$
+    algebraisch.
+  \end{enumerate}
+  \begin{proof}
+  \begin{enumerate}[(i)]
+    \item Ist $E/_K$ algebraisch, so erst recht $E/_F$ und $F/_K$.    
+    Seien $E/_F$ und $F/_K$ algebraisch und $\alpha \in E$. Dann existiert
+    $a_0, a_1, \ldots, a_n \in F$, nicht alle gleich 0, so dass $a_0 + a_1
+    \alpha + \ldots + a_n \alpha^n = 0$.
+    
+    Sei $F_0\coloneqq K(a_0, a_1, \ldots, a_n)$. Dann ist $F_0/_K$ sogar
+    endlich und $\alpha$ algebraisch über $F_0$. Also ist $F_0(\alpha)/_K$
+    auch endlich. Somit ist $\alpha$ algebraisch über $K$.
+    \begin{fakt}
+      Sei $L/_K$ eine Körpererweiterung, $S \in L$ Teilmenge aus algebraischen
+      Elementen. Dann ist $K(S)/_K$ algebraisch.
+      \begin{proof}
+        Sei $K(S) = \bigcup_{T\in S, \text{endlich}} K(T)$.        
+        Die Inklusion $\supset$ ist trivial.        
+        Andererseits ist $\bigcup K(T)$ ein Körper. Denn $x, y \in \bigcup
+	K(T)\Rightarrow x \in K(T_1), y \in K(T_2)\Rightarrow x, y \in K(T_1
+	\cup T_2) \Rightarrow x \pm y, xy, x^{- 1} \in K (T_1 \cup T_2)$. Also
+	ist $\bigcup_{T} K(T)$ ein Körper, welcher $S$ umfasst. Damit folgt
+	die andere Inklusion.
+        
+        Sei $\alpha \in K(S)\Rightarrow\exists T \in S$ endlich mit
+        $\alpha \in K (T)$. Da $K(T)/_K$ endlich ist, folgt $\alpha$
+	algebraisch über $K$.
+      \end{proof}
+    \end{fakt}
+    
+    \item $E \cdot F = E(F), F/_K$ algebraisch $\Rightarrow E(F)/_K$
+    algebraisch.
+    
+    \item $EL = L(E)$, alle Elemente aus $E$ sind algebraisch, also erst
+    recht $L$, also $L(E)/_L$ algebraisch nach dem Fakt.
+  \end{enumerate}
+\end{proof}
+\end{satz}
+
+\begin{bemerk}
+  \begin{enumerate}
+    \item Es gilt $E/_K, F/_K$ endlich $\Rightarrow EF/_K$ endlich
+    
+    \item Es gilt sogar $[EF\colon K] \leq [E\colon K] [F\colon K]$.
+    
+    \item $E \cdot F$ hat nur Sinn, wenn beide in einem gemeinsamen
+    Oberkörper liegen.
+  \end{enumerate}
+\end{bemerk}
+
+\section{Der algebraische Abschluss eines Körpers}
+
+Der Körper $\C$ der komplexen Zahlen hat folgende Eigenschaft:
+Für jedes (nicht konstante) Polynom $f \in \C[X] \setminus
+\C$ gibt es eine Zerlegung nichtkonstante Faktoren: $f(X) = c \prod_{i=1}^{d}
+(X - z_i)$ mit $d = \deg (f)$.
+
+%(Fundamentalsatz der Algebra: Ist Satz der Analysis)
+
+%D.h. Jedes über $\C$ algebraische Element liegt schon in
+%$\C$.
+
+\begin{defini}
+  Ein Körper $K$ heißt genau dann \highl[Körper!algebraisch
+  abgeschlossen]{algebraisch abgeschlossen}, wenn jedes über $K$ algebraische
+  Element schon in $K$ liegt bzw. wenn jedes Polynom aus $K[X]$ in  lineare
+  Faktoren zerfällt.
+\end{defini}
+
+\begin{satz}
+  \begin{enumerate}
+    \item Für jeden Körper $K$ existiert eine algebraisch abgeschlossene
+    Erweiterung $\overline{K}/_K$, welche algebraisch in $K$ ist.
+    
+    \item Diese ist bis auf $K$-Isomorphie eindeutig bestimmt: Sind
+    $\overline{K_1}/_K$ und $\overline{K_2}/_K$ zwei solche Erweiterungen,
+    so existiert ein Isomorphismus $\tau\colon \overline{K_1} \rightarrow
+    \overline{K_2}$ mit $\tau/_K= \iota$.
+  \end{enumerate}
+\end{satz}
+
+\begin{defini}
+  Man nennt solche $\overline{K}$ (etwas lax) den
+  \highl[Abschluss!algebraischer]{algebraischen Abschluss}
+  von $K$.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+    \item Der algebraische Abschluss von $\R$ ist $\C$.
+    
+    \item $\C$ ist \emph{nicht} der algebraische Abschluss von
+    $\Q$, aber $\overline{\Q} =\{z \in \C\colon z \text{ algebraisch in }
+    \Q\}$. Klar: $\overline{\Q}/_\Q$ algebraisch, ist $z \in \C$ algebraisch,
+    so nach dem Turmsatz auch über  $\Q$, also aus $\overline{\Q}$.
+    $\overline{\Q}$ enthält viele interessante Elemente: z.\,B.
+    $\sqrt[2008]{2}$, $\sin (\pi / 2008)$
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  Um \textsc{Zorn}s Lemma zu vermeiden, betrachten wir nur den Fall, dass $K$
+  abzählbar ist.
+\end{bemerk}
+
+\begin{proof}%%%WEITER
+  Erster Schritt:
+  
+  \begin{theorem}
+    Sei $K$ ein Körper (muss hier noch nicht abzählbar sein) und $f \in K
+    [X] \backslash K$. Dann exisitert Erweiterung $E / K$, in welcher $f$ eine
+    Wurzel besitzt.
+    
+    \begin{proof}
+      o.B.d.A. $f = p - \tmop{irreduzibel}$ über K.
+      
+      Kanon Hom.: $\sigma : K [X] \rightarrow K [X] / (p) = F =
+      \text{Körper}$
+      
+      Die Einschränkungen auf $K$:
+      
+      $\sigma : K \rightarrow F$ ist injektiv. und $p^{\sigma} \in \sigma (K)
+      [X]$ hat in $F$ die Wurzel $X + (p)$.
+      
+      Sei $S$ eine Menge derselben Mächtigkeit wie $F \backslash \sigma
+      (K)$. Wir setzen $\sigma : K \rightarrow F$ fort zu einer Bijektion
+      $\tau : K \cup S \rightarrow F$ und transportieren die Körperstruktur
+      von $F$ nach $E = K \cup S$ durch $x + y \overset{\tmop{df}}{=} \tau^{-
+      1} (\tau x + \tau y), x \cdot y = \tau^{- 1} (\tau x \tau y)$.
+      
+      Dann ist $E$ Oberkörper von K und $p$ hat die Wurzel $\tau^{- 1} (X +
+      (p)) \in E$
+    \end{proof}
+  \end{theorem}
+  
+  \begin{corollary}
+    Sei $f \in K [X] \backslash K$, dann existiert endliche Erweiterung $E /
+    K$ sd. $f$ in $E [X]$ in linearfaktoren zerfällt.
+    
+    \begin{proof}
+      Induktion über $\deg (f)$ $\deg (f) = 1$ ist klar. Sei $F / K$
+      Erweiterung wie oben mit $\alpha \in E$ $f (\alpha) = 0$, o.B.d.A. $F /
+      K$ endlich.: ersetze $F$ durch $K (\alpha)$ Es folgt: $f (X) = (X -
+      \alpha) g (X)$, IV
+    \end{proof}
+  \end{corollary}
+  
+  Erster Teil von Satz oben. $K$ sei abzählbar.
+  
+  Sei $\Phi =\{p_1, p_2, \ldots\}$ alle Irreduzieblen Polynome aus $K [X]$.
+  Sei $E_0 = K$ und $E_1 = K (p_1)$=endliche Erw. von $K$, s.d. $p_1$ in
+  linearfaktoren zerfällt, $E_2 = E_1 (p_2)$ u.s.w. $\Rightarrow F
+  \overset{\tmop{df}}{=}  \underset{n = 1}{\overset{\infty}{\bigcup}} E_n$.
+  
+  Dann gilt:
+  \begin{enumerateroman}
+    \item $F$ ist ein Körper
+    
+    \item $F$ ist abzählbar
+    
+    \item Jedes Polynom $f \in K [X] \backslash K$ zerfällt in $F [X]$ in
+    lineare Faktoren,
+    
+    \item $F / K$ ist algebraisch
+  \end{enumerateroman}
+  Nun dasselbe nochmal mit $F$ statt $K$
+  
+  $F_0 = K$, $F_1 = F$, $F_{n + 1}$=Erweiterung von $F_n$ mit den folgenden
+  Eigenschaften:
+  \begin{enumerateroman}
+    \item $F_{n + 1}$ abzählbar,
+    
+    \item $F_{n + 1} / F_n$ abgebraisch,
+    
+    \item Jedes Polynom $f \in F_n [X] \backslash F_n$ zerfällt in $F_{n +
+    1} [X]$ in Linearfaktoren.
+  \end{enumerateroman}
+  Sei nun $F_{\infty} = \underset{n}{\bigcup} F_n$, dann gilt:
+  \begin{enumerateroman}
+    \item $F_{\infty}$ inst abzählbar,
+    
+    \item $F_{\infty} / K$ algebraisch,
+    
+    \item Jedes Polynom $f \in F_{\infty} [X] \backslash F_{\infty}$
+    Zerfällt in Linearfaktoren:
+    
+    $f \in F_N [X] \backslash F_N$ $\Rightarrow f$ zerfällt in $F_{N + 1}
+    [X]$ linear.
+  \end{enumerateroman}
+  \begin{bemerk}
+    {\tmdummy}
+    
+    \begin{enumeratenumeric}
+      \item Wir haben zusätzlich gezeigt: Der algebraische Abschluss
+      abzählbarer Körper ist abzählbar.
+      
+      \item Der allgemeine Fall analog durch transfinite Induktion.
+    \end{enumeratenumeric}
+  \end{bemerk}
+  
+  Wir kommen nun zur Eindeutigkeit:
 
 \todo{Vorlesung vom 2007-12-19}
 
