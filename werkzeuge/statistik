@@ -57,14 +57,16 @@ END
 
 next if ($_ eq "\n");
 
-unless (/([\d.]*) - - \[([^\]]*)\] "([A-Z]*) ([^ ]*) HTTP\/1\.\d" (\d*) (\d*|-) "(.*)" "(.*)"/)
+unless (/([\d.]*) - - \[([^\]]*)\] "([A-Z]*) (.*) HTTP\/1\.\d" (\d*) (\d*|-)(.*)$/)
 {
     print "could not parse line $.: $_\n";
     next;
 }
 
-my ($ip, $date, $method, $url, $ret_code, $size, $referer, $agent) =
-    ($1, $2, $3, $4, $5, $6, $7, $8);
+my ($ip, $date, $method, $url, $ret_code, $size) = ($1, $2, $3, $4, $5, $6);
+
+my ($referer, $agent) = ($7 eq "") ? ("<unknown>", "<unknown>") :
+  $7 =~ /"(.*)" "(.*)"/;
 
 $FIRST_DATE = $date unless ( defined $FIRST_DATE );
 $LAST_DATE = $date;
