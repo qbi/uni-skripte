@@ -23,6 +23,7 @@ BEGIN
     our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS, $FIRST_DATE, $LAST_DATE);
     our (%PS_ACCESS, %PS_UNI_ACCESS, %PS_GOOGLE_ACCESS);
     our (%TGZ_ACCESS, %TGZ_UNI_ACCESS, %TGZ_GOOGLE_ACCESS);
+    our ($ALL_ACCESS, $ALL_UNI_ACCESS, $ALL_GOOGLE_ACCESS) = (0, 0, 0);
 }
 END
 {
@@ -53,6 +54,11 @@ END
           (defined $TGZ_UNI_ACCESS{$_})?$TGZ_UNI_ACCESS{$_}:0,
           (defined $TGZ_GOOGLE_ACCESS{$_})?$TGZ_GOOGLE_ACCESS{$_}:0;
     }
+
+    printf "\nZugriffe auf alle Seiten\n".
+      "Von überall: %6d\n".
+      "Aus der Uni: %6d\n".
+      "Über Google: %6d\n", $ALL_ACCESS, $ALL_UNI_ACCESS, $ALL_GOOGLE_ACCESS;
 }
 
 next if ($_ eq "\n");
@@ -76,6 +82,10 @@ next unless ($url =~ /\/(~|%7[Ee])joergs\/skripte\// and $method eq "GET" and
 
 next if ($agent =~ /$BOTS/);
 print "bot line: $_\n" if ($agent =~ /bot|spider/i);
+
+++$ALL_ACCESS;
+++$ALL_UNI_ACCESS if ($ip =~ /^141\.35\./);
+++$ALL_GOOGLE_ACCESS if ($referer =~ /^http:\/\/www\.google/);
 
 if ($url =~ /\/([^\/]*)\.pdf$/)
 {
