@@ -83,13 +83,19 @@
   \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
 }
 
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
 % Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
 \newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
 \newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
-
 
 \makeindex
 
@@ -713,114 +719,129 @@ nach dem Komma. Also gilt:
 \end{theorem}
 
 \chapter{Konvergenz}
+\todo{evtl. etwas zum Inhalt des Kapitels schreiben}
 \section{Metrische Räume}
 
 \begin{definition}
-  $\emptyset \neq X$ Menge. Eine Abbildung $d\colon X \times X \rightarrow
-  [0,\infty [$ heißt \highl{Metrik}
-  (\highl{Abstand}) auf $X$ : $\Leftrightarrow$
-  \begin{enumerate}
-  \item[(M1)] $d(x,y)= 0 \Leftrightarrow x=y$ (Definitheit)
-  \item[(M2)] $\forall x,y \in X \colon d(x,y)=d(y,x)$ (Symmetrie)
-  \item[(M3)] $\forall x,y,z \in X \colon d(x,y) \leq d(x,z)+d(z,y)$
-    (Dreiecksungleichung)
+  Sei $X$ eine nichtleere Menge oder formal $X\neq\emptyset$. Eine Abbildung
+  $d\colon X \times X \rightarrow [0,\infty [$ heißt \highl{Metrik} oder
+  \highl{Abstand} auf $X$, wenn folgende drei Eigenschaften erfüllt sind:
+  \begin{enumerate}[(M1)]
+  \item $d(x,y)= 0 \Leftrightarrow x=y$ (\highl{Definitheit})
+  \item $\forall x,y \in X \colon d(x,y)=d(y,x)$ (\highl{Symmetrie})
+  \item $\forall x,y,z \in X \colon d(x,y) \leq d(x,z)+d(z,y)$
+    (\highl{Dreiecksungleichung})
   \end{enumerate}
-  Das Paar $(X,d)$ heißt \highl[Raum!metrischer]{metrischer
-    Raum}.
+  Das Paar $(X,d)$  heißt \highl[Raum!metrischer]{metrischer Raum}.
 \end{definition}
 
 \begin{beispiel}
 \begin{enumerate}
-\item $(\R,d)\quad d(x,y) \coloneqq |x-y|$\\
-  Nachweis der Eigenschaften:
-  \begin{enumerate}
-  \item[(M1)] $d(x,y)=|x-y|=0 \Leftrightarrow x=y$
-  \item[(M2)] $d(x,y)=|x-y|=|-(x-y)|=|y-x|=d(y,x)$
-  \item[(M3)] $d(x,y)=|x-y|=|(x-z)+(z-y)|\leq
-    |x-z|+|z-y|=d(x,z)+d(z,y)$
+\item Sei $(\R,d)$ der metrische Raum der reellen Zahlen mit der
+  Betragsmetrik: $d(x,y) := \abs{x-y}$. Die drei Eigenschaften lassen sich
+  einfach nachweisen.
+  \begin{enumerate}[(M1)]
+  \item $d(x,y)=\abs{x-y}=0 \Leftrightarrow x=y$
+  \item $d(x,y)=\abs{x-y}=\abs{-(x-y)}=\abs{y-x}=d(y,x)$
+  \item $d(x,y)=\abs{x-y}=\abs{(x-z)+(z-y)}\leq
+    \abs{x-z}+\abs{z-y}=d(x,z)+d(z,y)$
   \end{enumerate}
-\item $(\R^n,d) \qquad \R^n=\R \times \cdots \times
-  \R \coloneqq \{x=(\xi_{1}, \ldots ,\xi_{n})\colon\xi_{i} \in \R\}$\\
-  $x=(\xi_{1},\xi_{2},\ldots ,\xi_{n}) \quad
-  y=(\eta_{1},\eta_{2},\ldots
-  ,\eta_{n}) \in \R^n$\\
-  euklidischer Abstand:
-  \[d(x,y)=\sqrt{\left( \sum_{i=1}^n |\xi_{i}-\eta_{i}|^2 \right)}\]
+\item Die reellen Zahlen in der $n$"~ten Dimension bilden mit dem euklidischen
+  Abstand einen metrischen Raum $(\R^n,d)$. Dabei ist $\R^n=\R \times \cdots
+  \times \R \coloneqq \{x=(\xi_{1}, \ldots ,\xi_{n})\colon\xi_{i} \in \R\},
+  x=(\xi_{1},\xi_{2},\ldots ,\xi_{n})$ und $y=(\eta_{1},\eta_{2},\ldots
+  ,\eta_{n}) \in \R^n$. Der \highl[Abstand!euklidischer]{euklidischer Abstand}
+  ist wie folgt definiert:
+  \[d(x,y)=\sqrt{\left( \sum_{i=1}^n \abs{\xi_{i}-\eta_{i}}^2 \right)}\]
   Nachweis der Eigenschaften:
-  \begin{enumerate}
-  \item[(M1)] $d(x,y)=0 \Leftrightarrow
-    \xi_{1}=\eta_{1},\xi_{2}=\eta_{2}, \ldots ,\xi_{n}=\eta_{n}
-    \Leftrightarrow x=y$
-  \item[(M2)] $d(x,y)=d(y,x) \qquad
-    (|\xi_{i}-\eta_{i}|=|\eta_{i}-\xi_{i}|)$
-  \item[(M3)] Verwendung der Ungleichung:
-    \[\sqrt{\sum_{i=1}^n |a_i + b_i |^2} \leq \sqrt{\sum_{i=1}^n |a_i |^2} +
-    \sqrt{\sum_{i=1}^n |b_i |^2}\]
+  \begin{enumerate}[(M1)]
+  \item $d(x,y)=0 \Leftrightarrow \xi_{1}=\eta_{1},\xi_{2}=\eta_{2}, \ldots
+    ,\xi_{n}=\eta_{n} \Leftrightarrow x=y$
+  \item Man sieht sofort, dass gilt $d(x,y)=d(y,x)$. Denn jeder Summand
+    besteht aus der Betragsfunktion. Hier hatten wir bereits gezeigt, dass die
+    Eigenschaft (M2) gilt.
+  \item Zum Nachweis der Dreiecksungleichung verwenden wir folgende
+    Ungleichung:
+    \[\sqrt{\sum_{i=1}^n \abs{a_i + b_i}^2} \leq \sqrt{\sum_{i=1}^n
+    \abs{a_i}^2} + \sqrt{\sum_{i=1}^n \abs{b_i}^2}\]
+    Sei $x= (\xi_1 ,\ldots , \xi_n), y= (\eta_1 ,\ldots ,\eta_n)$ und $z=
+    (\zeta_1 ,\ldots ,\zeta_n)$. Wir setzen $a_i \coloneqq \xi_i -\zeta_i,
+    b_i\coloneqq\zeta_i -\eta_i$. Damit ist $a_i +b_i= \xi_i -\eta_i$ und
+    weiter ergibt sich:
     \begin{align*}
-      x &= (\xi_1 ,\ldots , \xi_n ) & y &= (\eta_1 ,\ldots ,\eta_n ) &
-      z &=(\zeta_1 ,\ldots ,\zeta_n )\\
-      a_i &=\xi_i -\zeta_i & b_i &=\zeta_i -\eta_i & a_i +b_1 &= \xi_i
-      -\eta_i
-    \end{align*}
-    \begin{align*}
-      d(x,y) & = \sqrt{\sum_{i=1}^n |\xi_i -\eta_i |^2}\\
-      & = \sqrt{\sum_{i=1}^n |a_i +b_i|^2} \leq \sqrt{\sum_{i=1}^n
-        |a_i |^2} + \sqrt{\sum_{i=1}^n |b_i |^2}\\
-      & = \sqrt{\sum_{i=1}^n |\xi_i -\zeta_i |^2} +
-      \sqrt{\sum_{i=1}^n |\zeta_i -\eta_i |^2}\\
+      d(x,y) & = \sqrt{\sum_{i=1}^n \abs{\xi_i -\eta_i}^2} =
+	 \sqrt{\sum_{i=1}^n \abs{a_i +b_i}^2}\\
+      &\leq \sqrt{\sum_{i=1}^n \abs{a_i}^2} + \sqrt{\sum_{i=1}^n \abs{b_i}^2}
+	 = \sqrt{\sum_{i=1}^n \abs{\xi_i -\zeta_i}^2} + \sqrt{\sum_{i=1}^n
+	 \abs{\zeta_i -\eta_i}^2}\\
       & = d(x,z)+d(y,z)
     \end{align*}
-    Es gelten folgende Ungleichungen:
+
+    Die folgenden Ungleichungen sind für die weiteren Beweise und für das
+    allgemeine Verständnis der Analysis sehr wichtig. Sie werden uns im
+    Verlauf dieser Vorlesung sowie auch in weiteren Vorlesungen immer wieder
+    begegnen.
     \begin{description}
-    \item[Cauchy-Schwartzsche Ungleichung]
-      \[\forall n \in \N \forall a_1 ,\ldots ,a_n \in \R
-      b_n \in \R \colon \left|\sum_{i=1}^n a_i b_i \right| \leq
-      \sqrt{\sum_{i=1}^n a_i^2}\sqrt{\sum_{i=1}^n a_i^2}\]
-      \textit{Beweis}: Sei $xy \leq
-      \nicefrac{x^2}{2}+\nicefrac{y^2}{2}$ mit $\forall x,y \geq
-      0$. Dann ist $0 \leq (x-y)^2 = x^2-2xy+y^2$. O.\,B.\,d.\,A.
-      seien $A\coloneqq\sqrt{\sum_{i=1}^n |a_i |^2}>0$ und
-      $B\coloneqq\sqrt{\sum_{i=1}^n |b_i |^2}>0$.\\
-      Wir setzen $x_i \coloneqq \nicefrac{|a_i|}{A}$ und  $y_i
-      \coloneqq\frac{|b_i|}{B}$.  Dann ist:
+    \item[Cauchy-Schwartzsche Ungleichung] \todo{Es wäre sinnvoll, einige
+      Daten aus dem Leben der beiden Mathematiker mit zu erfassen.}
+      Für alle $n\in\N$ und alle $a_1 ,\ldots ,a_n \in \R$ sowie
+      $b_{1},\dotsc, ,b_n \in \R$
+      gilt:
+      \begin{gather*}
+	\abs[\bigg]{\sum_{i=1}^n a_i b_i} \leq \sqrt{\sum_{i=1}^n a_i^2}
+	   \sqrt{\sum_{i=1}^n a_i^2}
+      \end{gather*}
+      \begin{proof}
+	Sei $xy \leq\nicefrac{x^2}{2}+\nicefrac{y^2}{2}$ für alle $x,y \geq
+	0$. Dann folgt, $2xy\leq x^{2}+y^{2}\Rightarrow0 \leq = x^2-2xy+y^2=
+	(x-y)^{2}$. Seien o.\,B.\,d.\,A. $A\coloneqq\sqrt{\sum_{i=1}^n
+	\abs{a_i}^2}>0$ und $B\coloneqq\sqrt{\sum_{i=1}^n \abs{b_i}^2}>0$. Wir
+	setzen $x_i \coloneqq \nicefrac{\abs{a_i}}{A}$ und  $y_i
+	\coloneqq\frac{\abs{b_i}}{B}$.  Dann ist:
       \begin{align*}
-        \frac{1}{AB}\left|\sum_{i=1}^n a_i b_i\right| & \leq
-        \frac{1}{AB}\sum_{i=1}^n |a_i ||b_i |
-        = \sum_{i=1}^n \frac{|a_i|}{A} \frac{|b_i|}{B} \leq
-        \sum_{i=1}^n x_i y_i\\
-        & \leq \sum_{i=1}^n \left(\frac{x_i^2}{2}+\frac{y_i^2}{2}\right)
-        = \frac{1}{2}\left(\sum_{i=1}^n x_i^2 + \sum_{i=1}^n y_i^2\right)
-        = \frac{1}{2} \left( \sum_{i=1}^n \frac{|a_i|^2}{A^2} +
-          \sum_{i=1}^n \frac{|b_i|^2}{B^2}\right)\\
-        & = \frac{1}{2} \left( \frac{1}{A^2} \sum_{i=1}^n |a_i|^2 +
-          \frac{1}{B^2} \sum_{i=1}^n |b_i|^2\right)
-        = \frac{1}{2} \left( \frac{A^2}{A^2} + \frac{B^2}{B^2} \right)\\
-        & = 1
+        \frac{1}{AB}\abs[\bigg]{\sum_{i=1}^n a_i b_i} &\leq
+	   \frac{1}{AB}\sum_{i=1}^n \abs{a_i}\abs{b_i} = \sum_{i=1}^n
+	   \frac{\abs{a_i}}{A} \frac{\abs{b_i}}{B} = \sum_{i=1}^n x_i y_i
+	   \leq \sum_{i=1}^n \left(\frac{x_i^2}{2}+\frac{y_i^2}{2}\right)\\
+	&= \frac{1}{2}\left(\sum_{i=1}^n x_i^2 + \sum_{i=1}^n y_i^2\right) =
+	   \frac{1}{2} \left( \sum_{i=1}^n \frac{\abs{a_i}^2}{A^2} +
+	   \sum_{i=1}^n \frac{\abs{b_i}^2}{B^2}\right)\\
+        & = \frac{1}{2} \left( \frac{1}{A^2} \sum_{i=1}^n \abs{a_i}^2 +
+	   \frac{1}{B^2} \sum_{i=1}^n \abs{b_i}^2\right) = \frac{1}{2} \left(
+	   \frac{A^2}{A^2} + \frac{B^2}{B^2} \right)  = 1
       \end{align*}
-    \item[Minkowskische Ungleichung]
-      \[\sqrt{\sum_{i=1}^n |a_i + b_i |^2} \leq \sqrt{\sum_{i=1}^n |a_i |^2} +
-      \sqrt{\sum_{i=1}^n |b_i |^2}\]
-      \textit{Beweis}: O.\,B.\,d.\,A. sei $\sum_{i=1}^n |a_i +b_i|^2 > 0$
+	Wir haben also $\frac{1}{AB}\abs{\sum_{i=1}^{n} a_{i}
+	b_{i}\leq1}\Rightarrow \abs{\sum_{i=1}^{n}a_{i} b_{i}}\leq AB=
+	\sqrt{\sum\abs{a_{i}}} \sqrt{\sum\abs{b_{i}}}$.
+      \end{proof}
+    \item[Minkowskische Ungleichung] \todo{Details zu Minkowski}
+      \[\sqrt{\sum_{i=1}^n \abs{a_i + b_i}^2} \leq \sqrt{\sum_{i=1}^n
+      \abs{a_i}^2} + \sqrt{\sum_{i=1}^n \abs{b_i}^2}\]
+      \begin{proof}
+	Sei o.\,B.\,d.\,A. $\sum_{i=1}^n \abs{a_i +b_i}^2 > 0$.
       \begin{align*}
-        \sum_{i=1}^n |a_i +b_i|^2 & = \sum_{i=1}^n |a_i +b_i||a_i +b_i|
-        \leq \sum_{i=1}^n (|a_i|+|b_i|)|a_i +b_i|\\
-        & =  \sum_{i=1}^n |a_i||a_i +b_i| + \sum_{i=1}^n |b_i||a_i +b_i|\\
-        & \leq \sqrt{\sum_{i=1}^n |a_i|^2} \sqrt{\sum_{i=1}^n |a_i +b_i|^2} +
-        \sqrt{\sum_{i=1}^n |b_i|^2} \sqrt{\sum_{i=1}^n |a_i +b_i|^2}\\
-      & \Rightarrow \sqrt{\sum_{i=1}^n |a_i +b_i|^2} \leq
-      \sqrt{\sum_{i=1}^n |a_i|^2} + \sqrt{\sum_{i=1}^n |b_i|^2}
+        \sum_{i=1}^n \abs{a_i +b_i}^2 & = \sum_{i=1}^n \abs{a_i +b_i} \abs{a_i
+	   +b_i} \leq \sum_{i=1}^n (\abs{a_i}+ \abs{b_i}) \abs{a_i +b_i}\\
+        & = \sum_{i=1}^n \abs{a_i} \abs{a_i +b_i} + \sum_{i=1}^n \abs{b_i}
+	   \abs{a_i +b_i}\\
+        & \leq \sqrt{\sum_{i=1}^n \abs{a_i}^2} \sqrt{\sum_{i=1}^n \abs{a_i
+	   +b_i}^2} + \sqrt{\sum_{i=1}^n \abs{b_i}^2} \sqrt{\sum_{i=1}^n
+	   \abs{a_i +b_i}^2}\\
+	& \Rightarrow \sqrt{\sum_{i=1}^n \abs{a_i +b_i}^2} \leq
+	   \sqrt{\sum_{i=1}^n \abs{a_i}^2} + \sqrt{\sum_{i=1}^n \abs{b_i}^2}
       \end{align*}
-      \qed
+      \end{proof}
     \end{description}
   \end{enumerate}
-\item Maximummetrik:
-  \[d(x,y)\coloneqq \underset{1 \leq i \leq n}{\max}|\xi_{i}-\eta_{i}|\]
-\item Summenmetrik:
-  \[d(x,y) \coloneqq \sum_{i=1}^n |\xi_{i}-\eta_{i}|\]
+\item Maximummetrik: $d(x,y)\coloneqq \max_{1 \leq i \leq n}
+  \abs{\xi_{i}-\eta_{i}}$
+\item Summenmetrik: $d(x,y) \coloneqq \sum_{i=1}^n \abs{\xi_{i}-\eta_{i}}$
 \end{enumerate}
+  Der Nachweis der Metrikseigenschaften der letzten beiden bleibt dem Leser
+  als Übung überlassen.
 \end{beispiel}
 
-\subsubsection{Geometrische Interpretation von Metrik im $(\R^n,d)$}
+\subsubsection{Geometrische Interpretation der Metrik im $(\R^2,d)$}
 
 \setlength{\unitlength}{1cm}
 \begin{picture}(-10,2.5)
@@ -833,10 +854,17 @@ nach dem Komma. Also gilt:
 \put(0,0){\vector(0,1){2.5}}
 \end{picture}
 
-$x=(\xi_1 ,\xi_2) \qquad y=(\eta_1 ,\eta_2)$
-\[d(x,y)=\sqrt{\sum_{i=1}^2 |\xi_i -\eta_i |^2} = \sqrt{|\xi_1
-  -\eta_1|^2 + |\xi_2-\eta_2|^2}\] Dreiecksungleichung:
+Seien $x=(\xi_1 ,\xi_2), y=(\eta_1 ,\eta_2)$ zwei Punkte im $\R^{2}$. Dann ist
+$d(x,y)$ die Länge der Strecke zwischen beiden Punkten. Man kann sich die
+Punkte als diagonal gegenüberliegende Eckpunkte eines Vierecks vorstellen.
+Wenn dieses die Kantenlängen $a$ und $b$ hat, ergibt sich für die Länge nach
+dem Satz des Pythagoras: $a^{2}+b^{2}= (d(x,y))^{2}\Rightarrow d(x,y) =
+\sqrt{a^{2}+ b^{2}}$.
 
+Die Aussage der Dreiecksungleichung ergibt sich aus der untenstehenden
+Abbildung. Sie besagt, dass sich der Abstand zwischen den Punkten $x$ und $y$
+verlängert oder bestenfalls gleich bleibt, wenn man die Strecke von $x$ nach
+$y$ mit einem "`Umweg"' vermisst: $d(x,y) \leq d(x,z)+d(z,y)$
 \begin{picture}(0,3)
 \put(8,1){\line(-1,0){5}}
 \put(3,1){\line(1,1){2}}
@@ -851,20 +879,17 @@ $x=(\xi_1 ,\xi_2) \qquad y=(\eta_1 ,\eta_2)$
 \put(3.1,2.1){d(x,z)}
 \end{picture}
 
-\[d(x,y) \leq d(x,z)+d(z,y)\]
-
 \begin{definition}[Kugel]
   Sei $(X,d)$ ein metrischer Raum mit $a \in X$ und $r \geq 0$. Dann
   ist
   \[B_r(a) \coloneqq \{x \in X \colon d(a,x) \leq r\}\]
-  eine \highl[Kugel!abgeschlossene]{abgeschlossene
-  Kugel} mit Mittelpunkt $a$ und Radius $r$
-  und
-  \[\overset{o}{B_r}(a) \coloneqq \{x \in X \colon d(a,x) < r\}\]
-  eine \emph{offene} Kugel\index{Kugel!offene} mit Mittelpunkt $a$ und
+  eine \highl[Kugel!abgeschlossene]{abgeschlossene Kugel} mit Mittelpunkt $a$
+  und Radius $r$ sowie 
+  \[\stackrel{\circ}{B_{r}}(a) \coloneqq \{x \in X \colon d(a,x) < r\}\]
+  eine \highl[Kugel!offene]{offene Kugel} mit Mittelpunkt $a$ und
   Radius $r$.
 \end{definition}
-geometrische Interpretation in $\R^2$: \[(a_1,a_2) \in \R^2 
+geometrische Interpretation in $\R^2$: \todo{ausführlicher formulieren} \[(a_1,a_2) \in \R^2 
 \qquad d(a,x)=\sqrt{|a_1-x_1|^2+|a_2-x_2|^2}\]
 \[B_r(a)=\{x \in \R^2 \colon d(a,x)=\sqrt{|a_1-x_1|^2+|a_2-x_2|^2} \leq r\}\]
 
@@ -1391,12 +1416,10 @@ Beispiel: $a_n=(-1)^n \quad \sup \{(-1)^k\colon k\geq n\}=1 \Rightarrow \lim \su
 $\inf\{(-1)^k\colon k\geq n\} \Rightarrow \lim \inf (-1)^n=-1$
 
 \begin{remark}
-Die Folge $b_n\coloneqq\sup \{a_k\colon k\geq n\}$ ist monoton fallend oder
-  $+\infty$. Die Folge $c_n\coloneqq\inf\{a_k\colon k\geq n\}$ ist monoton
-  wachsend oder $-\infty$. Daher existieren $\lim\sup a_n=\lim b_n$ und $\lim
-  \inf a_n=\lim c_n$ immer eigentlich oder uneigentlich, d.\,h. es gilt $\lim
-  \sup a_n \in \R$ oder $\lim \sup a_n=+\infty/-\infty$ und $\lim \inf a_n \in
-  \R$ oder $\lim \inf a_n=+\infty/-\infty$.
+Die Folge $b_n\coloneqq\sup \{a_k\colon k\geq n\}$ ist monoton fallend oder $+\infty$. Die Folge $c_n\coloneqq\inf\{a_k\colon k\geq n\}$ ist
+monoton wachsend oder $-\infty$. Daher existieren $\lim\sup a_n=\lim b_n$ und $\lim \inf a_n=\lim c_n$ immer eigentlich
+oder uneigentlich, d.\,h. es gilt $\lim \sup a_n \in \R$ oder $\lim \sup a_n=+\infty/-\infty$ und 
+$\lim \inf a_n \in \R$ oder $\lim \inf a_n=+\infty/-\infty$.
 \end{remark}
 
 \begin{theorem}
@@ -1526,7 +1549,7 @@ In $\R$ sind folgende Aussagen äquivalent:
         \item $\frac{a_1+b_1}{2}$ ist obere Schranke von $M$, so setzen wir
 	$a_2\coloneqq a_1, b_2\coloneqq\frac{a_1+b_1}{2}$
 	\item $\frac{a_1+b_1}{2}$ ist keine obere Schranke $\Rightarrow M \cap [\frac{a_1+b_1}{2},b_1]\neq \emptyset$
-	  Wählen $a_2 \in M \cap [\frac{a_1+b_1}{2},b_1]$ und $b_2\coloneqq  b_1$. In beiden Fällen gilt, dass $M\cap [a_2,b_2]
+	  Wählen $a_2 \in M \cap [\frac{a_1+b_1}{2},b_1]$ und $b_2\coloneqq b_1$. In beiden Fällen gilt, dass $M\cap [a_2,b_2]
 	  \neq \emptyset$ und $b_2-a_2\leq b_1-\frac{a_1+b_1}{2}=\frac{a_1-b_1}{2}$. Führen wir diese Prozedur fort, so
 	  erhalten wir Intervalle $[a_n,b_n]$ mit $a_n \in M$ und $b_n$ obere Schranke von $M$.\\
 	  $b_n-a_n\leq \frac{a_{n-1}+b_{n-1}}{2}\leq \cdots \leq (\frac{1}{2})^{n-1}(b_1-a_1)\Rightarrow I_n=[a_n,b_n]$
@@ -1571,11 +1594,11 @@ Sei $(X,d)$ ein metrischer Raum
 \begin{definition}
 \label{def:reihe}
 Sei $(a_n) \subset \R$ eine reelle Zahlenfolge. Die Folge
-\[s_n\coloneqq \sum_{k=1}^n a_k \qquad a_k \in \N\] der
+\[s_n\coloneqq\sum_{k=1}^n a_k \qquad a_k \in \N\] der
 Partialsummen\index{Partialsumme} heißt
 \emph{Reihe\index{Reihe}}\footnote{Schreibweise: $\sum_{n=1}^\infty
   (a_n), (\sum_{k=1}^n a_k)_{n\in \N}, \sum_{k=1}^\infty a_k$}.
-Konvergiert $(s_n)$, so heißt $\sum_{k=1}^\infty a_k\coloneqq \lim s_n$
+Konvergiert $(s_n)$, so heißt $\sum_{k=1}^\infty a_k\coloneqq\lim s_n$
 \emph{Summe\index{Reihe!Summe}} oder \emph{Wert\index{Summe!Wert}} der
 Reihe.
 \end{definition}
@@ -1667,11 +1690,11 @@ Reihe
   \end{enumerate}
   \item \textbf{Teleskopsummenkriterium\index{Teleskopsummenkrit.} / Verdichtungskriterium\index{Verdichtungskrit.}} 
     Seien $a_1\geq a_2\geq \ldots \geq a_n\geq 0$. Dann $\sum a_n$ konvergent $\Leftrightarrow \sum 2^n a_{2^n}$ konvergent
-  \item \textbf{Wurzelkriterium\index{Wurzelkrit.}} Sei $\alpha \coloneqq \overline{\lim}\sqrt[n]{|a_n|}$. Dann ist $\sum a_n$
+  \item \textbf{Wurzelkriterium\index{Wurzelkrit.}} Sei $\alpha \coloneqq\overline{\lim}\sqrt[n]{|a_n|}$. Dann ist $\sum a_n$
     konvergent für $\alpha <1$ und divergent für $\alpha >1$. Für $\alpha=1$ existieren sowohl konvergente als auch
     divergente Reihen.
-  \item \textbf{Quotientenkriterium\index{Quotientenkrit.}} Seien $\underline{\beta}\coloneqq \underline{\lim}|\frac{a_{n+1}}{a_n}|,
-    \overline{\beta}\coloneqq \overline{\lim}|\frac{a_{n+1}}{a_n}|$. Dann folgt für $\overline{\beta}<1$, dass $\sum a_n$
+  \item \textbf{Quotientenkriterium\index{Quotientenkrit.}} Seien $\underline{\beta}\coloneqq\underline{\lim}|\frac{a_{n+1}}{a_n}|,
+    \overline{\beta}\coloneqq\overline{\lim}|\frac{a_{n+1}}{a_n}|$. Dann folgt für $\overline{\beta}<1$, dass $\sum a_n$
     konvergent ist und für $\underline{\beta}>1$, dass $\sum a_n$ divergent ist.
 \end{enumerate}
 \end{theorem}
@@ -1700,20 +1723,20 @@ Reihe
 	\varepsilon_0 \Rightarrow 1<\alpha-\varepsilon_0<\sqrt[n_k]{|a_{n_k}|}\Rightarrow 1<|a_{n_k}|$ für $k\geq k_0$
 	Daraus folgt, dass $a_{n_k}$ nicht gegen 0 streben. Daher strebt auch $a_n$ nicht gegen 0. Nach \autoref{satz:konvkrit}
 	folgt, dass auch $\sum a_n$ divergiert.
-      \item Sei $\alpha =\overline{\lim}\sqrt[n]{|a_n|}<1$. Wähle $\beta \colon\alpha<\beta <1, b_n\coloneqq \sup\{\sqrt[k]{|a_k|}\colon k\geq n\}$
-        Für $b_n$ gilt $\lim b_n=\alpha$. Wähle $\varepsilon_0\colon\alpha+\varepsilon_0<\beta$. Dann existiert ein $n_0 \in \N
+      \item Sei $\alpha =\overline{\lim}\sqrt[n]{|a_n|}<1$. Wähle $\beta \colon\alpha<\beta <1, b_n\coloneqq\sup\{\sqrt[k]{|a_k|}\colon k\geq n\}$
+        Für $b_n$ gilt $\lim b_n=\alpha$. Wähle $\varepsilon_0\colon\alpha+\varepsilon_0<\beta$. Dann existiert ein $n_0 \in \N \ 
 	\forall n\geq n_0\colon\alpha -b_n|<\varepsilon_0$. Somit ist $-\varepsilon_0<\alpha -b_n<\varepsilon_0$ für $n\geq n_0
 	\Rightarrow b_n<\alpha +\varepsilon_0$ für $n\geq n_0$. Insobesondere gilt für $n=n_0\colon b_{n_0}<\alpha +\varepsilon_0<
 	\beta$, d.\,h. $\sqrt[k]{|a_k|}\leq b_{n_0}<\beta \quad \forall k\geq n_0 \Rightarrow |a_k|<\beta^k, k\geq n_0
 	\stackrel{\beta <1}{\Rightarrow} \sum \beta^k$ ist konvergent $\stackrel{(2)}{\Rightarrow} \sum |a_n|$ konvergent.
 	Diese Summe ist sogar absolut konvergent.
     \end{enumerate}
-  \item $\overline{\beta}\coloneqq \overline{\lim}|\frac{a_{n+1}}{a_n}|<1 \Rightarrow \sum a_n$ konvergent\\
-    $\underline{\beta}\coloneqq \underline{\lim}|\frac{a_{n+1}}{a_n}|>1 \Rightarrow \sum a_n$ divergent\\
+  \item $\overline{\beta}\coloneqq\overline{\lim}|\frac{a_{n+1}}{a_n}|<1 \Rightarrow \sum a_n$ konvergent\\
+    $\underline{\beta}\coloneqq\underline{\lim}|\frac{a_{n+1}}{a_n}|>1 \Rightarrow \sum a_n$ divergent\\
     $\underline{\lim}_n|\frac{a_{n+1}}{a_n}|\leq \underline{\lim}_n \sqrt[n]{|a_n|}\leq \overline{\lim}_n \sqrt[n]{|a_n|}
     \leq \overline{\lim}_n |\frac{a_{n+1}}{a_n}|$\\
-    $b_1\coloneqq \sup \{|a_k|\colon k\geq 1\}\geq |a_1|$\\
-    $b_n\coloneqq \sup \{|\frac{a_{k+1}}{a_k}|\colon k\geq n\}\geq \frac{a_n}{a_{n-1}}|, n\geq 2$\\
+    $b_1\coloneqq\sup \{|a_k|\colon k\geq 1\}\geq |a_1|$\\
+    $b_n\coloneqq\sup \{|\frac{a_{k+1}}{a_k}|\colon k\geq n\}\geq \frac{a_n}{a_{n-1}}|, n\geq 2$\\
     $\overline{\lim}|\frac{a_{n+1}}{a_n}|=\lim b_n$. Dann:\\
     $\sqrt[n]{|a_n|}=\sqrt[n]{|a_1|\cdot \frac{|a_2|}{|a_1|}\cdot \frac{|a_3|}{|a_2|}\cdot \ldots \cdot 
     \frac{|a_{n-1}|}{|a_{n-2}|}\cdot \frac{|a_n|}{|a_{n-1}|}} \leq \sqrt[n]{b_1b_2\ldots b_n}\leq 
@@ -1784,7 +1807,7 @@ Sei $\varepsilon>0$. Dann existiert ein $n_0, n_1 \in \N \colon
   |s_{2n}-s| & \leq & \varepsilon \text{ für } n\geq n_0\\
   |s_{2n+1}-s| &< & \varepsilon \text{ für } n\geq n_1
 \end{array}$\\
-Für $N\coloneqq \max\{2n_0,2n_1+1\}$ gilt: $|s_n-s|<\varepsilon$ für $n\geq N$, d.\,h. $\lim s_n=s$
+Für $N\coloneqq\max\{2n_0,2n_1+1\}$ gilt: $|s_n-s|<\varepsilon$ für $n\geq N$, d.\,h. $\lim s_n=s$
 \qed
 
 \textbf{Beispiel} 
@@ -1813,7 +1836,7 @@ eine \emph{Umordnung\index{Umordnung}} der Reihe $\sum_{k=1}^\infty a_k$.
 Seien $c_n\geq 0$ und $\sum_{n=1}^\infty c_n$ konvergent. Dann gilt $\forall \pi \colon\N\rightarrow \N$ bijektiv
 $\Rightarrow \sum_{k=1}^\infty c_{\pi(k)}$ konvergent und es gilt $\sum_{k=1}^\infty c_k=\sum_{k=1}^\infty c_{\pi(k)}$
 \end{theorem}
-\textbf{Beweis}: Sei $n \in \N, M\coloneqq \max\{\pi(1),\ldots ,\pi(n)\}$\\
+\textbf{Beweis}: Sei $n \in \N, M\coloneqq\max\{\pi(1),\ldots ,\pi(n)\}$\\
 Dann ist $n\leq M$ und es gilt $\sum_{k=1}^n c_{\pi(k)}\leq \sum_{k=1}^M c_k\leq \sum_{k=1}^\infty c_k<\infty 
 \stackrel{c_k\geq 0}{\Rightarrow} \sum_{k=1}^\infty c_{\pi(k)}\leq \sum_{k=1}^\infty c_k$\\
 Obige Aussage auf $\sum_1^\infty c_k=\sum_1^\infty c_{\pi^{-1}(\pi(k))}\leq \sum_1^\infty c_{\pi(k)} \Rightarrow
@@ -1829,8 +1852,8 @@ Ferner gilt: $\sum_{k=1}^\infty a_{\pi(k)}=\sum_{k=1}^\infty a_k \qquad \forall 
 \begin{itemize}
   \item["`$\Rightarrow$"'] Sei $\sum a_n$ absolut konvergent.
     $\begin{array}{rcl}
-      0\leq a_n^+\coloneqq \max\{a_n,0\} & = & \frac{|a_n|+a_n}{2}\leq |a_n|\\
-      0\leq a_n^-\coloneqq \min\{a_n,0\} & = & \frac{|a_n|-a_n}{2}\leq |a_n|
+      0\leq a_n^+\coloneqq\max\{a_n,0\} & = & \frac{|a_n|+a_n}{2}\leq |a_n|\\
+      0\leq a_n^-\coloneqq\min\{a_n,0\} & = & \frac{|a_n|-a_n}{2}\leq |a_n|
     \end{array}$\\
     $\stackrel{\text{Maj.-krit.}}{\Rightarrow} \sum a_n^+, \sum a_n^-$ konvergent\\
     $\stackrel{\text{\autoref{satz:umordnung}}}{\Rightarrow} \sum_1^\infty \sum_1^\infty a_{\pi(k)}^+=\sum_1^\infty a_k^+,
@@ -1845,7 +1868,7 @@ Ferner gilt: $\sum_{k=1}^\infty a_{\pi(k)}=\sum_{k=1}^\infty a_k \qquad \forall 
     \end{array}\right\}\Rightarrow \sum a_k^+=\infty, \sum a_k^-=\infty$\\
     Sei $(a_{\varphi_+(k)})$ Teilfolge aller $a_k>0$ ($a_k\leq 0$ streichen) und $(a_{\varphi_-(k)})$ Teilfolge aller
     $a_k\leq 0$ ($a_k>0$ streichen)\\
-    $s_n^±\coloneqq \sum_{k=1}^n a_k^±, t_n^±\coloneqq \sum_{k=1}^n a_{\varphi_±(k)}$\\
+    $s_n^±\coloneqq\sum_{k=1}^n a_k^±, t_n^±\coloneqq\sum_{k=1}^n a_{\varphi_±(k)}$\\
     $s_n^+\leq t_n^+$ (da $t_n^+$ nur positiv, bei $s_n^+$ kann auch die 0 enthalten sein)\\
     $s_n^-=-t_n^- \Rightarrow \lim_{n\rightarrow \infty}=\sum_1^\infty a_{\varphi_+(k)}=\infty, \lim_{n\rightarrow \infty}
     t_n^-=\sum_1^\infty a_{\varphi_-(k)}=-\infty$ %weitere Beweisfolge mit einbauen
@@ -1912,7 +1935,8 @@ Seien $\sum a_n, \sum b_n$ absolut konvergent. Dann ist das Cauchyprodukt $\sum 
 spezielle Klammerung von $\sum c_n$ ist, gilt $\sum_{n=0}^\infty c_n=\sum_{n=0}^\infty d_n$ nach
 \autoref{satz:RechenregelReihe} Punkt 3.\qed
 
-\paragraph{Bemerkungen zum Cauchyprodukt} für $n\in \N\cup \{0\}$ sei $a_n\coloneqq b_n\coloneqq \frac{(-1)^n}{\sqrt{n+1}}$ und 
+\paragraph{Bemerkungen zum Cauchyprodukt} für $n\in \N\cup \{0\}$ sei
+$a_n\coloneqq b_n\coloneqq\frac{(-1)^n}{\sqrt{n+1}}$ und 
 $d_n=\sum_{k=0}^n a_kb_{n-k}$. Die Reihen $\sum a_n, \sum b_n$ konvergieren nach dem Leibnitzkriterium. Ihr 
 Cau\-chy\-pro\-dukt konvergiert nicht, denn 
 \begin{align*}
@@ -1930,7 +1954,7 @@ $\Rightarrow |d_n|$ konvergiert nicht gegen $0\Rightarrow d_n \not\rightarrow 0\
 folgt, dass auch $\sum c_n$ divergent ist.
 
 Ein Beispiel für das Cauchyprodukt ist die \emph{Exponentialreihe\index{Exponentialreihe}}:
-\[e^x \coloneqq  exp(x)\coloneqq \sum_{n=0}^\infty \frac{x^n}{n!}=1+x+\frac{x^2}{2}+\frac{x^3}{3!}+\cdots +\frac{x^n}{n!}\]
+\[e^x \coloneqq exp(x)\coloneqq\sum_{n=0}^\infty \frac{x^n}{n!}=1+x+\frac{x^2}{2}+\frac{x^3}{3!}+\cdots +\frac{x^n}{n!}\]
 Dann gilt $exp(x+y)=exp(x)\cdot exp(y)$.\\
 \textbf{Beweis}: $\sum_0^\infty \frac{x^n}{n!}$ ist nach dem Quotientenkriterium absolut konvergent für alle $x\in \R$
 \begin{align*}
@@ -2061,13 +2085,13 @@ zu jeder $\varepsilon$-Kugel $\stackrel{\circ}{B_{\varepsilon}}(f(a))$ existiert
 \end{itemize}
 \qed
 
-Beispiel: $f\colon\Q\rightarrow\R , f(x)\coloneqq \begin{cases}0 & x<\sqrt{2}\\1 & x>\sqrt{2}\end{cases}$\\
+Beispiel: $f\colon\Q\rightarrow\R , f(x)\coloneqq\begin{cases}0 & x<\sqrt{2}\\1 & x>\sqrt{2}\end{cases}$\\
 $f(x)$ ist stetig auf $\Q$.\\
 Beweis: Sei $a\in \Q$. Zeige $\lim_{x\rightarrow a} f(x)=f(a)$
 \begin{enumerate}[1. F{a}ll]
 \item Sei $a>\sqrt{2}$ und $(x_n)\subset \Q$, so dass $x_n\rightarrow a$.\\
   Setze $\varepsilon \coloneqq a-\sqrt{2}>0$. Für $\varepsilon$ gibt es ein
-  $n_0\in \N$, so dass $|x_n-a| <\varepsilon \forall n\geq
+  $n_0\in \N$, so dass $|x_n-a| <\varepsilon \ \forall n\geq
   n_0$. Ferner gilt $x_n>\sqrt{2}$ für $n\geq n_0$, denn $-\varepsilon
   <x_n-a<\varepsilon$ für $n\geq n_0 \Rightarrow
   \underbrace{a-\varepsilon}_{\sqrt{2}} <x_n
@@ -2157,7 +2181,7 @@ konvergent $\Rightarrow \lim x_n \in A$.\\
 \begin{itemize}
   \item["`$\Rightarrow$"'] Der Beweis erfolgt durch Kontraposition: Sei $A$ abgeschlossen\\
     Annahme: $\exists (x_n)\subset A\colon(x_n) \text{ konvergent} \Rightarrow \lim x_n \notin A$\\
-    $a\coloneqq \lim x_n$\\
+    $a\coloneqq\lim x_n$\\
     $\Rightarrow a \in X\backslash A$ offen, da $A$ nach Voraussetzung abgeschlossen.\\
     $\Rightarrow \exists \varepsilon >0 \stackrel{o}{B_{\varepsilon}}(a)\subset X\backslash A$\\
     Da $x_n$ gegen $a$ strebt, existiert ein $n_0\in \N$, so dass $d(x_n,a)<\varepsilon$ für $n\geq n_0$\\
@@ -2326,7 +2350,7 @@ $f$ nimmt auf $K$ ihr Minimum an.\\
 \textbf{Beweis}: Für Maximum: Nach \autoref{satz:beschr-abg} und \autoref{satz:gleichm-stetig} wissen wir: Die Tatsache, dass
 $f$ stetig ist, impliziert, dass $f(K)$ beschränkt ist.
 \begin{align*}
-  M\coloneqq \sup_{x\in K} f(x)\in\R & \Rightarrow \forall n \in \N \exists x_n\in K\colon f(x_n)\leq M\leq f(x_n)+\frac{1}{n}\\
+  M\coloneqq\sup_{x\in K} f(x)\in\R & \Rightarrow \forall n \in \N \ \exists x_n\in K\colon f(x_n)\leq M\leq f(x_n)+\frac{1}{n}\\
   & \stackrel{K\text{~kompakt}}{\Rightarrow} \exists \text{Teilfolge} (x_{n_k})\subset (x_n)\colon x_{n_k}\rightarrow p\in K\\
   & \stackrel{f\text{~stetig}}{\Rightarrow} f(p)=\lim_{K\rightarrow \infty} f(x_{n+k})=M
 \end{align*}
@@ -2361,20 +2385,20 @@ Sei $f\colon[a,b]\rightarrow \R$ stetig mit $f(a)<0$ und $f(b)>0$ (bzw. umgekehr
 \textbf{Beweis}: Zur Beweisführung wird die Intervall-Halbierungsmethode heran gezogen:
 Sei $f(a)<0$ und $f(b)>0$. Wir definieren induktiv $[a_n,b_n]\subset [a,b], n\in \N$
 \begin{enumerate}[(i)]
-  \item $[a_n,b_n]\subset [a_{n-1},b_{n-1}], n\geq 1, [a_0,b_0]\coloneqq [a,b]$
+  \item $[a_n,b_n]\subset [a_{n-1},b_{n-1}], n\geq 1, [a_0,b_0]\coloneqq[a,b]$
   \item $b_n-a_n=2^{-n}(b-a)$
   \item $f(a_n)\leq 0, f(b_n)\geq 0$
 \end{enumerate}
 Induktionsanfang: $[a_0,b_0]=[a,b]$\\
 Induktionsschritt: $n\rightarrow n+1$\\
-Sei $[a_n,b_n]$ bereits definiert und $m\coloneqq \frac{a_n+b_n}{2}$. Dann sind folgende zwei Fälle möglich:
+Sei $[a_n,b_n]$ bereits definiert und $m\coloneqq\frac{a_n+b_n}{2}$. Dann sind folgende zwei Fälle möglich:
 \begin{enumerate}[1. F{a}ll]
-  \item $f(m)\geq 0$ Dann ist $[a_{n+1},b_{n+1}]\coloneqq [a_n,m]\subset [a_n,b_n]$
+  \item $f(m)\geq 0$ Dann ist $[a_{n+1},b_{n+1}]\coloneqq[a_n,m]\subset [a_n,b_n]$
     \begin{enumerate}[(i)]
       \item $b_{n+1}-a_{n+1}=m-a_n=\frac{a_n+b_n}{2}-a_n=\frac{1}{2}(b_n-a_n)=\frac{1}{2}2^{-n}(b-a)=2^{-(n+1)}(b-a)$
       \item $f(a_{n+1})=f(a_n)\geq 0, f(b_{n+1})=f(m)\geq 0$
     \end{enumerate}
-  \item $f(m)<0$ Dann ist $[a_{n+1},b_{n+1}]\coloneqq [m,b_{n+1}]\subset [a_n,b_n]$
+  \item $f(m)<0$ Dann ist $[a_{n+1},b_{n+1}]\coloneqq[m,b_{n+1}]\subset [a_n,b_n]$
     \begin{enumerate}[(i)]
       \item $b_{n+1}-a_{n+1}=b_n-m=b_n-\frac{a_n+b_n}{2}=\frac{1}{2}(b_n-a_n)=\frac{1}{2}2^{-n}(b-a)=2^{-(n+1)}(b-a)$
       \item $f(a_{n+1})=f(m)\leq 0, f(b_{n+1})\geq 0$
@@ -2396,7 +2420,8 @@ $\left.\begin{array}{rcl}
 \begin{Folg}
 \textbf{2. Zwischenwertsatz} Sei $f\colon[a,b]\rightarrow\R$ und $c\in \R$ liegt zwischen $f(a)$ und $f(b)$. Dann existiert
 $p\in[a,b]\colon f(p)=c$.\\
-\textbf{Beweis} Sei $f(a)<c<f(b)$. Wir definieren eine Funktion $g\colon[a,b]\rightarrow \R$ durch $g(x)\coloneqq f(x)-c$. Die
+\textbf{Beweis} Sei $f(a)<c<f(b)$. Wir definieren eine Funktion
+  $g\colon[a,b]\rightarrow \R$ durch $g(x)\coloneqq f(x)-c$. Die
 Funktion $g$ ist stetig mit $g(a)=f(a)-c<0, g(b)=f(b)-c>0$. Dann folgt nach \autoref{satz:zws} $\exists p\in[a,b]
 \colon g(p)=f(p)-c=0\Rightarrow f(p)=c$
 \qed
@@ -2556,7 +2581,7 @@ k \text{ ungerade}\\\infty, a_0<0, k \text{ ungerade}\end{cases}\]
 
 \subsection{Exponential-, Logarithmus- und Potenzfunktionen}
 
-\[exp(x)\coloneqq \sum_{k=0}^\infty \frac{x^k}{k!}=1+x+\frac{x^2}{2}+\frac{x^3}{3!}+\frac{x^4}{4!}+\cdots\]
+\[exp(x)\coloneqq\sum_{k=0}^\infty \frac{x^k}{k!}=1+x+\frac{x^2}{2}+\frac{x^3}{3!}+\frac{x^4}{4!}+\cdots\]
 ist absolut konvergent für alle $x\in \R$. Somit definiert $exp\colon\R\rightarrow\R$ eine Funktion auf $\R$. Sie heißt
 \emph{Exponentialfunktion\index{Exponentialfunktion}}.
 
@@ -2612,7 +2637,7 @@ Für $exp\colon\R\rightarrow\R$ gelten folgende Eigenschaften:
     \textbf{$exp\colon\R\rightarrow ]0,\infty [$ bijektiv}\\
     Die Exponentialfunktion ist bijektiv, da sie streng monoton wachsend ist. Ferner gilt: $0<exp(x)<\infty$ für $x\in\R$
     (\autoref{satz:expEigenschaft})
-  \item $ln\coloneqq (exp)^{-1}; ]0,\infty [$ ist stetig und streng monoton wachsend auf jedem kompakten Intervall $[a,b]\subset ]0,
+  \item $ln\coloneqq(exp)^{-1}; ]0,\infty [$ ist stetig und streng monoton wachsend auf jedem kompakten Intervall $[a,b]\subset ]0,
     \infty [$ (nach \autoref{satz:reellInvFkt})
     und damit auch auf $]0,\infty [$\\
     $x_0<x_1 \Rightarrow f(x_0)<f(x_1)$\\
@@ -2623,7 +2648,7 @@ Für $exp\colon\R\rightarrow\R$ gelten folgende Eigenschaften:
 \subsection{Exponentialfunktion zur Basis \texorpdfstring{$a$}{a}}
 
 \begin{definition}
-\textbf{Exponentialfunktion zur Basis $a$} Sei $a>0, a\neq 1$. Dann heißt $exp_a \colon\R\rightarrow\R$ definiert durch $exp_a (x)\coloneqq 
+\textbf{Exponentialfunktion zur Basis $a$} Sei $a>0, a\neq 1$. Dann heißt $exp_a \colon\R\rightarrow\R$ definiert durch $exp_a (x)\coloneqq
 exp(x\ ln (a))$ \emph{Exponentialfunktion\index{Exponentialfunktion}} zur Basis $a$.
 \end{definition}
 
@@ -2668,7 +2693,7 @@ Für $a,b>0$ und $x,y\in \R$ gilt:
 
 Es gilt $exp_a \colon\R\rightarrow ]0,\infty [$ ist stetig und bijektiv für $a>0, a\neq 1$. Ferner: streng monoton wachsend
 für $a>1$ und streng monoton fallend für $a<1$.
-Die Umkehrfunktion $log_a\coloneqq (exp_a)^{-1}$ heißt \emph{Logarithmus\index{Logarithmus}} zur Basis $a$. Es gilt $log_a\colon
+Die Umkehrfunktion $log_a\coloneqq(exp_a)^{-1}$ heißt \emph{Logarithmus\index{Logarithmus}} zur Basis $a$. Es gilt $log_a\colon
 ]0,\infty [ \rightarrow \R$ ist stetig und streng monoton wachsend für $a>1$ und streng monoton fallend für $a<1$.\\
 \textbf{Beweis}: $\log_ax=\frac{ln(x)}{ln(a)}$\\
 $exp_alog_a(x)=exp(\frac{ln(x)}{ln(a)}\cdot ln (a))=exp (ln (x))=x$
@@ -2694,8 +2719,8 @@ $\C$ sei der Körper der komplexen Zahlen.
 \begin{align*}
   z_1 & = x_1+iy_1\\
   z_2 & = x_2+iy_2\\
-  z_1+z_2 & \coloneqq  (x_1+x_2)+i(y_1+y_2)\\
-  z_1z_2 & \coloneqq  (x_1x_2-y_1y_2)+i(x_1y_2+x_2y_1)\\
+  z_1+z_2 & \coloneqq (x_1+x_2)+i(y_1+y_2)\\
+  z_1z_2 & \coloneqq (x_1x_2-y_1y_2)+i(x_1y_2+x_2y_1)\\
   z_1=x_1+iy_1=z_2=x_2+iy_2 & \Leftrightarrow x_1=x_2, y_1=y_2, \Re z_1=\Re z_2, \Im z_1=\Im z_2
 \end{align*}
 
@@ -2736,10 +2761,10 @@ $\C$ sei der Körper der komplexen Zahlen.
 \end{theorem}
 
 \subsubsection{Reihen in $\C$}
-\[(z_n)\subset \C\quad s_n\coloneqq \sum_{k=0}^n z_k \quad \text{n-te Partialsumme\index{Partialsumme}}\]
-\[\sum_{k=0}^{\infty} z_k\coloneqq (s_n) \quad \text{Reihe\index{Reihe}}\]
+\[(z_n)\subset \C\quad s_n\coloneqq\sum_{k=0}^n z_k \quad \text{n-te Partialsumme\index{Partialsumme}}\]
+\[\sum_{k=0}^{\infty} z_k\coloneqq(s_n) \quad \text{Reihe\index{Reihe}}\]
 Für den Wert der Reihe gilt:
-\[\sum_{k=0}^{\infty} z_k\coloneqq \lim s_n \quad \text{falls }(s_n) \text{ konvergiert}\]
+\[\sum_{k=0}^{\infty} z_k\coloneqq\lim s_n \quad \text{falls }(s_n) \text{ konvergiert}\]
 Weiterhin gilt:
 \[\overline{\sum_{k=0}^{\infty} z_k}=\sum_{k=0}^\infty \overline{z_k}\]
 Beweis: $\overline{\lim s_n}=\overline{\lim\sum_{k=0}^\infty z_k}=\lim \overline{\sum_{k=0}^\infty
@@ -2752,7 +2777,7 @@ gleichen Aussagen wie für Reihen in $\R$.
 $\sum_{k=0}^\infty \frac{z^k}{k!}$ ist für jedes $z\in\C$ absolut konvergent, d.\,h. $\sum \frac{|z^k|}{k!}
 <\infty$.
 \begin{definition}
-\[e^z\coloneqq \text{exp}(z)=\sum_{k=0}^\infty \frac{z^k}{k!}\quad z\in\C\quad\text{exp}\colon\C\rightarrow\C\]
+\[e^z\coloneqq\text{exp}(z)=\sum_{k=0}^\infty \frac{z^k}{k!}\quad z\in\C\quad\text{exp}\colon\C\rightarrow\C\]
 \end{definition}
 
 Eigenschaften:
@@ -2781,8 +2806,8 @@ Eigenschaften:
 \begin{definition}
 Sei $x\in\R$. Dann gilt
 \begin{align*}
-\cos x & \coloneqq  \Re (e^{ix})\\
-\sin x & \coloneqq  \Im (e^{ix})
+\cos x & \coloneqq \Re (e^{ix})\\
+\sin x & \coloneqq \Im (e^{ix})
 \end{align*}
 $\cos$ heißt \emph{Kosinus\index{Kosinus}} und $\sin$ heißt \emph{Sinus\index{Sinus}}.
 \end{definition}
@@ -2812,7 +2837,7 @@ Seien $x,y\in\R$:
   \item $\left.\begin{array}{rcl}
     \cos \colon\R\rightarrow\R\\
     \sin \colon \R\rightarrow\R\end{array}\right\}$ stetig
-  \item Der Kosinus hat eine kleinste positive Nullstelle $a$ mit $1<a<2$. Man setzt $\pi\coloneqq 2a\Rightarrow
+  \item Der Kosinus hat eine kleinste positive Nullstelle $a$ mit $1<a<2$. Man setzt $\pi\coloneqq2a\Rightarrow
     \sin \frac{\pi}{2}=1$
     %Beweis aus Hefter einfuegen
   \item Kosinus und Sinus sind $2\pi$-periodisch:
@@ -2863,7 +2888,8 @@ existiert.\\
     $\lim_{x\rightarrow a}\frac{r(x)}{x-a}=0$\\
     $\Rightarrow \frac{f(x)-f(a)}{x-a}=c+\frac{r(x)}{x-a}$\\
     $\Rightarrow \lim_{x\rightarrow a} \frac{f(x)-f(a)}{x-a}=c$
-  \item["`$\Leftarrow$"'] Sei $\lim_{x\rightarrow a} \frac{f(x)-f(a)}{x-a}\coloneqq c$\\
+  \item["`$\Leftarrow$"'] Sei $\lim_{x\rightarrow a}
+  \frac{f(x)-f(a)}{x-a}\coloneqq c$\\
     $r(x)\coloneqq f(x)-f(a)-c(x-a)$\\
     Dann ist $f(x)=f(a)+c(x-a)+r(x)$ und $\frac{r(x)}{x-a}=
     \frac{f(x)-f(a)}{x-a}-c\stackrel{x\rightarrow a}{\rightarrow}c-c=0$
@@ -2968,7 +2994,7 @@ Beispiele:
   \begin{enumerate}[(1)]
     \item $f\colon D\rightarrow\R$ sei differenzierbar in $D$.\\
       Falls $f'\colon D\rightarrow\R$ in $x\in D$ differenzierbar ist, so
-      heißt $\frac{d^2 f}{dx^2}(x)=f''(x)\coloneqq (f')'(x)$ die zweite 
+      heißt $\frac{d^2 f}{dx^2}(x)=f''(x)\coloneqq(f')'(x)$ die zweite 
       Ableitung von $f$ an der Stelle $x$.
     \item Allgemein durch Induktion: $f\colon D\rightarrow\R$ heißt $k$-mal
       differenzierbar in $x\in D\perdef \exists \varepsilon>0
@@ -3003,8 +3029,8 @@ $f,g\colon D\rightarrow\R$ sind $n$-mal differenzierbar. Dann $(f\circ g)^{(n)}
   \forall\xi\in D\colon f(\xi)\leq f(x)\]
   Somit
   \begin{align*}
-    f'_+(x) & \coloneqq  & \lim_{\xi\searrow x}\frac{f(\xi)-f(x)}{\xi-x}\leq 0 \text{ da } f(\xi)\leq f(x)\\
-    f'_-(x) & \coloneqq  & \lim_{\xi\nearrow x}\frac{f(\xi)-f(x)}{\xi-x}\geq 0 \text{ da } f(\xi)\geq f(x)
+    f'_+(x) & \coloneqq & \lim_{\xi\searrow x}\frac{f(\xi)-f(x)}{\xi-x}\leq 0 \text{ da } f(\xi)\leq f(x)\\
+    f'_-(x) & \coloneqq & \lim_{\xi\nearrow x}\frac{f(\xi)-f(x)}{\xi-x}\geq 0 \text{ da } f(\xi)\geq f(x)
   \end{align*}
   Da $f$ in $x$ differenzierbar folgt, dass $f'_+(x)-f'_-(x)=0$
   \qed
@@ -3333,13 +3359,13 @@ zur Approximation von $f$ in der "`Nähe"' von $x_0$.
       \in I$ eine $n$-mal differenzierbare Funktion. Dann heißt:
       \[T_n(f;x_0)\colon\R\rightarrow\R\]
       definiert durch
-      \[T_n(f;x_0)\coloneqq \sum_{k=0}^n \frac{f^{(k)}(x_0)}{k!}(x-x_0)^k\]
+      \[T_n(f;x_0)\coloneqq\sum_{k=0}^n \frac{f^{(k)}(x_0)}{k!}(x-x_0)^k\]
       $n$-tes \emph{Taylorpolynom\index{Taylorpolynom}} von $f$ im
       Punkt $x_0$.
     \item Taylorreihe von $f$ in $x$ mit Entwicklungspunkt $x_0$\\
       Sei $f\colon I\rightarrow\R$ beliebig oft differenzierbar in $x\in I$.
       Dann heißt
-      \[T(f;x_0)(x)\coloneqq \sum_{k=0}^\infty \frac{f^{(k)}(x_0)}{k!}(x-x_0)^k\]
+      \[T(f;x_0)(x)\coloneqq\sum_{k=0}^\infty \frac{f^{(k)}(x_0)}{k!}(x-x_0)^k\]
       \emph{Taylorreihe\index{Taylorreihe}} von $f$ in $x$ mit
       Entwicklungspunkt $x_0$.
     \item Gilt für eine unendlich oft differenzierbare Funktion 
@@ -3388,7 +3414,7 @@ $\lim_{n\rightarrow\infty} R_n(x)=0$
   \[f(x)=\sum_{k=0}^n \frac{f^{(k)}(x_0)}{k!}(x-x_0)+R_n(x)\]
   (\emph{Taylorsche Formel\index{Formel!Taylorsche}})\\
   \textbf{Beweis}:
-  \[F(t)\coloneqq f(x)-\sum_{k=0}^n \frac{f^{(k)}(t)}{k!}(x-t)^k\qquad G(t)\coloneqq (x-t)^p\]
+  \[F(t)\coloneqq f(x)-\sum_{k=0}^n \frac{f^{(k)}(t)}{k!}(x-t)^k\qquad G(t)\coloneqq(x-t)^p\]
   Dann ist $F(x_0)-\underbrace{F(x)}_{=0}=R_n(x), G(x_0)-\underbrace{G(x)}_{=0}
   =(x-x_0)^p, F'(t)=-\sum_{k=0}^n \frac{f^{(k+1)}t}{k!}(x-t)^k +
   \sum_{k=1}^n \frac{f^{(k)}t}{k!}k(x-t)^{k-1}=-\frac{f^{(n+1)}(t)}{n!}
@@ -3515,7 +3541,7 @@ Folgerung: Für $1\leq y<\infty$ gilt:
   \widetilde{R_n}(y) &=& \left( \frac{\Theta_1}{2n+1}+\frac{\Theta_2}{2}(y+1) \right)
   \left( \frac{y-1}{y+1} \right)^{2n+1}\quad 0<\Theta_1,\Theta_2<1
 \end{align*}
-Beweis: Sei $1\leq y <\infty$ und $x\coloneqq \frac{y-1}{y+1}$. Es gilt $0\leq x<1$
+Beweis: Sei $1\leq y <\infty$ und $x\coloneqq\frac{y-1}{y+1}$. Es gilt $0\leq x<1$
 und $y=\frac{1+x}{1-x}$:
 \begin{align*}
   \ln(1+x) &=& \sum_{k=1}^{2n}\frac{(-1)^{k-1}}{k}x^k+R_{2n}(x)\\
@@ -3555,24 +3581,24 @@ dass man eine Fläche unterhalb einer Kurve berechnen möchte:
 
 Zur Untersuchung dieses Problems braucht man diverse Variablen:
 \begin{description}
-  \item[Zerlegung\index{Zerlegung}] $\ZZ\coloneqq \{I_1,\cdots,I_n\}$\\
-    $I_i\coloneqq [x_{i-1},x_i]$ mit $a=x_0<x_1<\cdots<x_n=b$
+  \item[Zerlegung\index{Zerlegung}] $\ZZ\coloneqq\{I_1,\cdots,I_n\}$\\
+    $I_i\coloneqq[x_{i-1},x_i]$ mit $a=x_0<x_1<\cdots<x_n=b$
   \item[Verfeinerung\index{Verfeinerung}] $\ZZ'\perdef\forall
     I'\in\ZZ'\,\exists I\in\ZZ\colon I'\subset I$\\
     Schreibweise: $\ZZ\prec\ZZ'$
   \item[Länge des Intervalls] $I=[c,d]\colon l(I)\coloneqq d-c$
-  \item[Durchmesser der Zerlegung] $d(\ZZ)\coloneqq \max\{l(I)\colon
+  \item[Durchmesser der Zerlegung] $d(\ZZ)\coloneqq\max\{l(I)\colon
     I\in\ZZ\}$
-  \item[Überlagerung von zwei Zerlegungen] $\ZZ\coloneqq \{I=I'\cap I''\colon
+  \item[Überlagerung von zwei Zerlegungen] $\ZZ\coloneqq\{I=I'\cap I''\colon
     I'\in\ZZ_1, I''\in\ZZ_2, l(I)>0\}$\\
     $\ZZ$ ist wieder eine Zerlegung und $\ZZ_1,\ZZ_2\prec\ZZ$\\
     Schreibweise: $\ZZ=\ZZ_1\vee\ZZ_2$
-  \item[Menge der beschränkten Funktionen] $B[a,b]\coloneqq \{f\colon
+  \item[Menge der beschränkten Funktionen] $B[a,b]\coloneqq\{f\colon
     [a,b]\rightarrow\R\colon f\text{ beschränkt}\}$
   \item[Infimum/Supremum\index{Infimum!Integration}\index{Supremum!Integration}]
     Sei $M\subset[a,b]$\\
-    \[\underline{f}(M)\coloneqq \inf\{f(x)\colon x\in M\}\]
-    \[\overline{f}(M)\coloneqq \sup\{f(x)\colon x\in M\}\]
+    \[\underline{f}(M)\coloneqq\inf\{f(x)\colon x\in M\}\]
+    \[\overline{f}(M)\coloneqq\sup\{f(x)\colon x\in M\}\]
   \item[Flächeninhalt]
     \emph{Untersumme\index{Untersumme}}:
     \[\underline{S}(f;\ZZ)=\sum_{I\in\ZZ}\underline{f}(I)l(I)\]
@@ -3613,9 +3639,9 @@ Zur Untersuchung dieses Problems braucht man diverse Variablen:
 
 \begin{definition}
   Sei $f$ eine beschränkte Funktion auf $[a,b]$. Dann heissen die Größen
-  \[\int_{\underline{a}}^b fdx \coloneqq  \sup_\ZZ \underline{S}(f;\ZZ)\]
+  \[\int_{\underline{a}}^b fdx \coloneqq \sup_\ZZ \underline{S}(f;\ZZ)\]
   und
-  \[\int_a^{\overline{b}} fdx \coloneqq  \inf_\ZZ \overline{S}(f;\ZZ)\]
+  \[\int_a^{\overline{b}} fdx \coloneqq \inf_\ZZ \overline{S}(f;\ZZ)\]
   wobei $\ZZ$ die Menge aller Zerlegungen von $[a,b]$ durchläuft, unteres
   und oberes \emph{Darbouxsches Integral\index{Integral!Darbouxsches}}.
 \end{definition}
@@ -3628,7 +3654,7 @@ Zur Untersuchung dieses Problems braucht man diverse Variablen:
 \end{remark}
 
 \begin{beispiel}
-$f(x)\coloneqq 
+$f(x)\coloneqq
 \begin{cases}
   1 & x\in [0,1], x \text{ irrational}\\
   0 & x\in [0,1], x \text{ rational}
@@ -3688,7 +3714,7 @@ heißt \emph{Auswahlfunktion\index{Auswahlfunktion}}. Sie ordnet jedem
 Intervall $I$ ein Element $\xi(I)$ des Intervalls zu.
 
 Zwischensumme:
-\[S(f;\ZZ;\xi)\coloneqq \sum_{I\in\ZZ} f(\xi(I)) l(I)\]
+\[S(f;\ZZ;\xi)\coloneqq\sum_{I\in\ZZ} f(\xi(I)) l(I)\]
 heißt \emph{Zwischensumme\index{Zwischensumme}} von $f$ mit der Zerlegung
 $\ZZ$ und der Auswahlfunktion $\xi\colon\ZZ\rightarrow[a,b]$.
 
@@ -3766,7 +3792,7 @@ Ein Beispiel zur numerischen Auswertung eines R-Integrals über ZWS ist die
 Funktion $f(x)=x^\alpha$.
 
 \subsection{Eigenschaften des R-Integrals}
-\[\RR[a,b]\coloneqq \{f\in B[a,b] | f \text{ ist R-integrierbar}\}\]
+\[\RR[a,b]\coloneqq\{f\in B[a,b] | f \text{ ist R-integrierbar}\}\]
 
 \begin{theorem}
   \begin{enumerate}
@@ -3794,8 +3820,8 @@ Funktion $f(x)=x^\alpha$.
 
 \begin{definition}
   Sei $f\in\RR[a,b]$ und $x_0\in[a,b]$. Dann heißt
-  \[F\colon[a,b]\rightarrow\R\text{ definiert durch } F(x)\coloneqq
-  \int_{x_0}^x fdx  x\in[a,b]\]
+  \[F\colon[a,b]\rightarrow\R\text{ definiert durch } F(x)\coloneqq\int_{x_0}^x fdx\,
+  x\in[a,b]\]
   \emph{unbestimmtes Integral\index{Integral!unbestimmtes}}.
 \end{definition}
 
