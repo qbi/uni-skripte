@@ -169,6 +169,34 @@
 
 \newcommand*{\indexsection}{\minisec}
 
+% Um ISBNs einheitlich mit Bindestrichen auszugeben
+\makeatletter
+\newcounter{isbnlength}
+\def\isbn@len#1{%
+  \ifx#1\relax%
+  \else%
+    \stepcounter{isbnlength}%
+    \expandafter\isbn@len%
+  \fi%
+}
+\def\isbn@ten#1#2#3#4#5#6#7#8#9{#1-#2#3#4#5#6-#7#8#9-}
+\def\isbn@thirteen#1#2#3{#1#2#3-\isbn@ten}
+\newcommand{\isbn}[1]{%
+  \setcounter{isbnlength}{0}%
+  \isbn@len#1\relax%
+  \ifthenelse{\value{isbnlength}=10}{\isbn@ten#1}{\isbn@thirteen#1}%
+}
+\makeatother
+
+% Zur Vereinheitlichung des Aussehens der Einträge im Literaturverzeichnis
+% \LitEintrag{Autor}{Titel}{Verlag Jahr}{ISBN}
+\newcommand*{\LitEintrag}[4]{#1: \emph{#2}, #3, ISBN:~\isbn{#4}}
+% wie \LitEintrag, aber fügt zusätzlich einen Verweis auf Google Books hinzu
+% \LitEintragGoogle{Autor}{Titel}{Verlag Jahr}{ISBN}
+\newcommand*{\LitEintragGoogle}[4]{%
+  \LitEintrag{#1}{#2}{#3}{#4}{}, \url{http://books.google.de/books?q=ISBN#4}%
+}
+
 % <news:1326938.k4GxBACWuN@ID-107054.user.dfncis.de>
 \newcommand*{\taglabel}[1]{%
   \refstepcounter{equation}\tag{\theequation}\label{#1}%
@@ -312,25 +340,52 @@
 
 \pdfbookmark[-1]{Literaturverzeichnis}{literaturverzeichnis}
 \begin{thebibliography}{99}
- \bibitem{Triebel} H.\,Triebel: Höhere Analysis, Harri Deutsch 1980 (empfohlen)
+  \raggedright
+ \bibitem{Triebel}
+  \LitEintrag{Hans Triebel}{Höhere Analysis}{Harri Deutsch 1980}%
+             {9783871445835} (empfohlen)
 
- \bibitem{Werner} Dirk Werner: Funktionalanalysis, Springer 2007,\\
-  \url{http://books.google.de/books?q=ISBN3540213813} (empfohlen)
+ \bibitem{Werner}
+  \LitEintragGoogle{Dirk Werner}{Funktionalanalysis}{Springer 2007}%
+                   {3540213813} (empfohlen)
 
- \bibitem{Schröder} H.\,Schröder: Funktionalanalysis, Harri Deutsch 2000
- \bibitem{Heuser} H.\,Heuser: Funktionalanalysis, Teubner 1992
- \bibitem{Hirzebruch} Hirzebruch, Scharlau: Einführung in die
-  Funktionalanalysis, B.\,I.\,Wissen"-schafts"-verlag Mannheim 1991 (für
-  2.~Semester)
- \bibitem{Appell} J.\,Appell, M.\,Väth: Elemente der Funktionalanalysis,
-  Vieweg, Wiesbaden 2005 (für 2.~Semester)
- \bibitem{Alt} Alt: lineare Funktionalanalysis, Springer
- \bibitem{Yosida} K.\,Yosida: Functional analysis, Springer
- \bibitem{Rudin} W.\,Rudin: Functional analysis, Mc~Craw Hill N.\,Y. 1990
- \bibitem{Kreyszig} E.\,Kreyszig Introduction functional analysis with
-  applications, Wiley 1978
- \bibitem{Read} M.\,Read, B.\,Simon: Methods of modern mathematical physics
-  I--IV, Academic Press 1972--78
+ \bibitem{Schröder}
+  \LitEintrag{Herbert Schröder}{Funktionalanalysis}{Harri Deutsch 2000}%
+             {3817116233}
+
+ \bibitem{Heuser}
+  \LitEintragGoogle{Harro Heuser}{Funktionalanalysis: Theorie und Anwendungen}%
+                   {Teubner 2006}{3835100262}
+
+ \bibitem{Hirzebruch}
+  \LitEintrag{Friedrich Hirzebruch, Winfried Scharlau}{Einführung in die
+    Funktionalanalysis}{Spektrum Akademischer Verlag 1971}%
+                   {3860254294} (für 2.~Semester)
+
+ \bibitem{Appell}
+  \LitEintragGoogle{Jürgen Appell, Martin Väth}{Elemente der Funktionalanalysis:
+    Vektorräume, Operatoren und Fixpunktsätze}{Vieweg 2005}{3528032227}
+  (für 2.~Semester)
+
+ \bibitem{Alt}
+  \LitEintragGoogle{Alt}{Lineare Funktionalanalysis: Eine
+    anwendungsorientierte Einführung}{Springer 2002}{3540439471}
+
+ \bibitem{Yosida}
+  \LitEintragGoogle{Kôsaku Yosida}{Functional analysis}{Springer 1995}%
+                   {3540586547}
+
+ \bibitem{Rudin}
+  \LitEintrag{Walter Rudin}{Functional analysis}{McGraw-Hill 1991}%
+             {0070542368}
+
+ \bibitem{Kreyszig}
+  \LitEintrag{Erwin Kreyszig}{Introductory Functional Analysis with
+    Applications}{Wiley 1989}{0471504599}
+
+ \bibitem{Reed}
+  \LitEintrag{Michael Reed, Barry Simon}{Methods of modern mathematical
+    physics: Functional Analysis}{Academic Press 1980}{0125850506}
 \end{thebibliography}
 
 \part{1.~Semester}
