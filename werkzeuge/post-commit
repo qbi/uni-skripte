@@ -54,9 +54,9 @@ export LANG=de_DE.UTF-8
 
 update_skript()
 {
+    local skript log tmp
     skript="$1"
     log=$WEB/"$skript".Build.log
-    set -u
     tmp=$(mktemp)
 
     svnlook cat /home/stud/md01/joergs/.svnroot/skripte \
@@ -64,7 +64,7 @@ update_skript()
     cd /
     rm --force "$log"
     nice -n 4 env -i PATH="/mnt/local/joergs/texlive/bin/i386-linux:/home/stud/md01/joergs/xindy/bin:$PATH" \
-      sh $tmp "$skript" "$WEB" > "$log" 2>&1
+      sh $tmp "$skript" "$WEB" > "$log" 2>&1 || true
     rm $tmp
 
     $give_away "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tgz
@@ -174,7 +174,7 @@ __EOF
         svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
         $give_away $WEB/"$skript".Changelog
 
-        update_skript "$skript" &
+        update_skript "$skript"
         ;;
     esac
 done
