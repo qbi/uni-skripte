@@ -41,7 +41,6 @@ WEB=/home/stud/md01/joergs/.www/skripte
 REPOS="$1"
 REV="$2"
 give_away=/home/stud/md01/joergs/give_away
-skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
 
 # Damit svnlook log und commit-email.pl die Ausgabe nicht verstümmeln
 export LANG=de_DE.UTF-8
@@ -68,31 +67,13 @@ update_skript()
       -- -f $(id -nu)@minet.uni-jena.de < $log
 }
 
+$give_away "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
+
+skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
+
 /home/stud/md01/joergs/commit-email.pl "$REPOS" "$REV" \
   -r skripte@listserv.uni-jena.de -s "[$skript]" -h minet.uni-jena.de \
   skripte-commit@listserv.uni-jena.de
-
-$give_away "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
-
-case "$skript" in
-  web)
-    rm -f $WEB/"$skript".Changelog $WEB/"$skript".Author $WEB/"$skript".Date
-    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
-    svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
-    svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
-
-    $give_away $WEB/"$skript".Changelog $WEB/"$skript".Author \
-        $WEB/"$skript".Date
-    ;;
-  *-*)
-    # create Changelog
-    rm -f $WEB/"$skript".Changelog
-    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
-    $give_away $WEB/"$skript".Changelog
-
-    update_skript "$skript" &
-    ;;
-esac
 
 svnlook changed "$REPOS" --revision "$REV" | while read action file; do
     : $action $file
@@ -128,3 +109,23 @@ svnlook changed "$REPOS" --revision "$REV" | while read action file; do
         ;;
     esac
 done
+
+case "$skript" in
+  web)
+    rm -f $WEB/"$skript".Changelog $WEB/"$skript".Author $WEB/"$skript".Date
+    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+    svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
+    svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
+
+    $give_away $WEB/"$skript".Changelog $WEB/"$skript".Author \
+        $WEB/"$skript".Date
+    ;;
+  *-*)
+    # create Changelog
+    rm -f $WEB/"$skript".Changelog
+    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+    $give_away $WEB/"$skript".Changelog
+
+    update_skript "$skript" &
+    ;;
+esac
