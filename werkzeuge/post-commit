@@ -1,6 +1,13 @@
 #!/bin/sh
 
-exec >/tmp/joergs-"$2".$$.post 2>&1
+if test -z "${DO_NOT_FORK:-}"
+then
+    export DO_NOT_FORK=yes
+    $0 "$@" >/tmp/joergs-"$2".$$.post 2>&1 </dev/null &
+    exit 0
+fi
+unset DO_NOT_FORK
+
 set -x
 
 set -e -u
