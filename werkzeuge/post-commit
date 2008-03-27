@@ -69,63 +69,110 @@ update_skript()
 
 $give_away "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
 
-skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
+sleep 300
+last_rev_number=$(svnlook history "$REPOS" | sed '3!d; s/ *//; s/ .*$//')
+if test "$REV" != "$last_rev_number"
+then
+    # Es gab in der Zwischenzeit weitere Commits. Wir machen nichts. Der
+    # letzte Commit übernimmt die Arbeit.
+    exit 0
+fi
 
-/home/stud/md01/joergs/commit-email.pl "$REPOS" "$REV" \
-  -r skripte@listserv.uni-jena.de -s "[$skript]" -h minet.uni-jena.de \
-  skripte-commit@listserv.uni-jena.de
+last_build_revision=$(cat "$WEB"/last_build_revision)
 
-svnlook changed "$REPOS" --revision "$REV" | while read action file; do
-    : $action $file
-    case "$file" in
-      web/*)
-        case "$action" in
-          [AU]*)
-            case "$file" in
-              */) mkdir "$WEB/$file";;
-              *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}"
-                $give_away "$WEB/${file#web/}"
+tmp_dir=$(mktemp -d)
+trap "rm -r $tmp_dir" EXIT
+
+for REV in $(seq $last_build_revision $last_rev_number)
+do
+    skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
+
+    /home/stud/md01/joergs/commit-email.pl "$REPOS" "$REV" \
+      -r skripte@listserv.uni-jena.de -s "[$skript]" -h minet.uni-jena.de \
+      -l "$tmp_dir/$skript.log"
+
+    svnlook changed "$REPOS" --revision "$REV" | while read action file; do
+        : $action $file
+        case "$file" in
+          web/*)
+            case "$action" in
+              [AU]*)
+                case "$file" in
+                  */) mkdir "$WEB/$file";;
+                  *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}"
+                    $give_away "$WEB/${file#web/}"
+                    ;;
+                esac
                 ;;
+              D*)
+                case "$file" in
+                  */) rmdir "$WEB/$file";;
+                  *) rm --force "$WEB/$file";;
+                esac
+                ;;
+    #          _U) ;; # SVN property update
             esac
             ;;
-          D*)
-            case "$file" in
-              */) rmdir "$WEB/$file";;
-              *) rm --force "$WEB/$file";;
+          */*/) ;; # dummy to case the case of a subdirectory
+          */)
+            # A Skript was added or deleted
+            case "$action" in
+              A*) echo "${file%/}" >> $WEB/available_skripte;;
+              D*) sed --in-place "/^${file%/}\>/d" $WEB/available_skripte
+                  rm -f $WEB/"${file%/}".*
+                  ;;
             esac
             ;;
-#          _U) ;; # SVN property update
         esac
+    done
+done
+
+for log in "$tmp_dir"/*
+do
+    skript=$(basename "$log" .log)
+
+    boundary='skripte--1234-abcd'
+    rev_range=$(grep '^New Revision: ' "$log" |
+      sed -n '1h; ${H; g; s/New Revision: //g; s/\n/:/; p;}')
+    REV="${rev_range#*:}"
+
+    sendmail -f $(id -nu)@minet.uni-jena.de \
+      skripte-commit@listserv.uni-jena.de <<__EOF
+To: skripte-commit@listserv.uni-jena.de
+From: $(id -nu)@minet.uni-jena.de
+Reply-To: skripte@listserv.uni-jena.de
+Subject: [$skript] r$rev_range -- diff
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="$boundary"
+Content-Disposition: inline
+
+$(LANG=C sed '/^To: $/,/^$/c--'"$boundary"'\n\
+Content-Type: text/plain; charset=UTF-8\n\
+Content-Transfer-Encoding: 8bit\n' "$log")
+--$boundary--
+__EOF
+
+    case "$skript" in
+      web)
+        rm -f $WEB/"$skript".Changelog $WEB/"$skript".Author $WEB/"$skript".Date
+        svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+        svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
+        svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
+
+        $give_away $WEB/"$skript".Changelog $WEB/"$skript".Author \
+            $WEB/"$skript".Date
         ;;
-      */*/) ;; # dummy to case the case of a subdirectory
-      */)
-        # A Skript was added or deleted
-        case "$action" in
-          A*) echo "${file%/}" >> $WEB/available_skripte;;
-          D*) sed --in-place "/^${file%/}\>/d" $WEB/available_skripte
-              rm -f $WEB/"${file%/}".*
-              ;;
-        esac
+      *-*)
+        # create Changelog
+        rm -f $WEB/"$skript".Changelog
+        svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+        $give_away $WEB/"$skript".Changelog
+
+        update_skript "$skript" &
         ;;
     esac
 done
 
-case "$skript" in
-  web)
-    rm -f $WEB/"$skript".Changelog $WEB/"$skript".Author $WEB/"$skript".Date
-    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
-    svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
-    svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
-
-    $give_away $WEB/"$skript".Changelog $WEB/"$skript".Author \
-        $WEB/"$skript".Date
-    ;;
-  *-*)
-    # create Changelog
-    rm -f $WEB/"$skript".Changelog
-    svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
-    $give_away $WEB/"$skript".Changelog
-
-    update_skript "$skript" &
-    ;;
-esac
+rm -f "$WEB"/last_build_revision
+echo $last_rev_number > "$WEB"/last_build_revision
+$give_away "$WEB"/last_build_revision
