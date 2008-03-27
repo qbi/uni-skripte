@@ -10,7 +10,7 @@ fi
 export LANG=C
 SKRIPT="$1"
 REPOS_PFAD=${REPOS:-/home/stud/md01/joergs/.svnroot/skripte}
-REPOS_URL=file://$SKRIPTE_PFAD/$SKRIPT
+REPOS_URL=file://$REPOS_PFAD/$SKRIPT
 WEB="$2"
 
 printf "I: "
