@@ -44,10 +44,14 @@ set -e -u
 # 
 # Here is an example hook script, for a Unix /bin/sh interpreter:
 
+COMMIT_MAIL_REPLYTO=skripte@listserv.uni-jena.de
+COMMIT_MAIL_TO=skripte-commit@listserv.uni-jena.de
+give_away=/home/stud/md01/joergs/give_away
+MAIL_FROM="$(id -nu)@minet.uni-jena.de"
 WEB=/home/stud/md01/joergs/.www/skripte
+
 REPOS="$1"
 REV="$2"
-give_away=/home/stud/md01/joergs/give_away
 
 # Damit svnlook log und commit-email.pl die Ausgabe nicht verstümmeln
 export LANG=de_DE.UTF-8
@@ -69,9 +73,9 @@ update_skript()
 
     $give_away "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tgz
 
-    mail -a "Reply-To: skripte@listserv.uni-jena.de" \
-      -s "[$skript] r$REV build" skripte-commit@listserv.uni-jena.de \
-      -- -f $(id -nu)@minet.uni-jena.de < $log
+    mail ${COMMIT_MAIL_REPLYTO:+-a "Reply-To: $COMMIT_MAIL_REPLYTO"} \
+      -s "[$skript] r$REV build" "$COMMIT_MAIL_TO" \
+      -- -f "$MAIL_FROM" < $log
 }
 
 $give_away "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
@@ -142,12 +146,11 @@ do
       sed -n '1h; ${H; g; s/New Revision: //g; s/\n/:/; p;}')
     REV="${rev_range#*:}"
 
-    sendmail -f $(id -nu)@minet.uni-jena.de \
-      skripte-commit@listserv.uni-jena.de <<__EOF
-To: skripte-commit@listserv.uni-jena.de
-From: $(id -nu)@minet.uni-jena.de
-Reply-To: skripte@listserv.uni-jena.de
-Subject: [$skript] r$rev_range -- diff
+    sendmail -f "$MAIL_FROM" "$COMMIT_MAIL_TO" <<__EOF
+To: $COMMIT_MAIL_TO
+From: $MAIL_FROM
+${COMMIT_MAIL_REPLYTO:+Reply-To: $COMMIT_MAIL_REPLYTO
+}Subject: [$skript] r$rev_range -- diff
 Mime-Version: 1.0
 Content-Type: multipart/mixed; boundary="$boundary"
 Content-Disposition: inline
