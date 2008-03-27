@@ -7,12 +7,10 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-joergs=/home/stud/md01/joergs
-
 export LANG=C
 SKRIPT="$1"
-SKRIPTE_PFAD=$joergs/.svnroot/skripte
-URL=file://$SKRIPTE_PFAD/$SKRIPT
+REPOS_PFAD=${REPOS:-/home/stud/md01/joergs/.svnroot/skripte}
+REPOS_URL=file://$SKRIPTE_PFAD/$SKRIPT
 WEB="$2"
 
 printf "I: "
@@ -22,7 +20,7 @@ TMP=$(mktemp -d)
 
 cd $TMP
 
-svn checkout $URL || exit
+svn checkout $REPOS_URL || exit
 
 # erstmal das alte wegräumen, weil wir u. U. kein Schreibrecht auf die
 # Datei haben, wenn sie von einem anderen Benutzer angelegt wurde
@@ -97,7 +95,7 @@ echo "I: Zusammenfassung: $(rubber-info --errors $src | wc -l) Fehler,\
 ( rubber-info --warnings $src | grep -E '(nag|onlyamsmath)';
   rubber-info --refs $src) | sed 's/^/W: /'
 
-svnlook cat "$SKRIPTE_PFAD" werkzeuge/skript-check > $TMP/sc
+svnlook cat "$REPOS_PFAD" werkzeuge/skript-check > $TMP/sc
 chmod +x $TMP/sc
 
 dateien=$(find . -type f -name .svn -prune -o \( -name \*tex -o -name \*.ltx \) \
