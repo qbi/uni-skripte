@@ -88,7 +88,7 @@
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{folg}{Folgerung}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -108,7 +108,7 @@
 \newcommand*{\bemerkautorefname}{Bemerkung}
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
-\newcommand*{\folgautorefname}{Folgerung}
+\newcommand*{\festlautorefname}{Festlegung}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -168,15 +168,6 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-\newenvironment*{mdescription}%
-                {\renewcommand*{\descriptionlabel}[1]%
- 			       {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		{\end{description}}
-
 % ein ordentliches :=
 % Lösung stammt aus der TeX-FAQ
   \mathchardef\ordinarycolon\mathcode`\:
@@ -185,6 +176,7 @@
     \gdef:{\mathrel{\mathop\ordinarycolon}}
   \endgroup
 
+\renewcommand*{\theenumi}{\roman{enumi}}
 \makeindex
 
 \SVN $LastChangedRevision$
@@ -377,6 +369,23 @@ Wir haben hier die geometrische Reihe angewendet, da $\abs{z} \in \R$ und
   für alle $\abs{z-a} < \delta$.
 \end{bemerk}
 
+\begin{satz}[Eigenschaften stetiger Funktionen]
+  \begin{enumerate}
+   \item Seien $f$ und $g$ in $a \in D_f \cap D_g$ stetig und $\alpha, \beta
+    \in \C$. Dann sind auch $\abs{f}, \alpha f + \beta g, f \cdot g$ und
+    $\frac{f}{g}$ (falls $g(a) \neq 0$) in $a$ stetig.
+   \item Sei $f$ in $a \in D_f$ und $g$ in $f(a) \in D_g$ stetig. Dann ist
+    auch $g \circ f$ in $a$ stetig.
+  \end{enumerate}
+  \begin{proof}
+    Hier sei auf den entsprechenden Satz im Reellen verwiesen. Der Beweis
+    läuft im Komplexen ganz analog.
+  \end{proof}
+\end{satz}
+
+\chapter{Differenzierung}
+
+
 \todo{Vorlesungen der ersten beiden Wochen ergänzen}
 
 % Vorlesung vom 2008-04-28
@@ -491,116 +500,6 @@ Wir haben hier die geometrische Reihe angewendet, da $\abs{z} \in \R$ und
 Sei $f$ holomorph ($f\in C^{1}(\Omega)$), $z(t)$ $C^{1}$"~differenzierbar mit
 $z(t)\in\Omega\Rightarrow\frac{d}{dt}f(z(t))=f'(z(t))\cdot z'(t)$.
 
-\todo{Vorlesung vom 2008-05-05}
-
-% Vorlesung vom 2008-05-19
-
-%Folg 2
-\begin{folg}[Grundformeln der Funktionentheorie]
-  \begin{gather*}
-    \int_{C_{r}(z_{0})} \frac{dz}{z-z_{0}}=2\pi i\qquad \int_{C_{r}(z_{0})}
-       (z-z_{0})^{n}\,dz=0\qquad n\in\Z\setminus\{-1\}
-  \end{gather*}
-  \begin{proof}
-    Es ist $z=z_{0}+re^{it}$ und es gilt, $z(t)=
-    \underbrace{x_{0}+iy_{0}}_{z_{0}} +r(\cos t+i\sin t)= x_{0}+r\cos
-    t+i(y_{0}+ r\sin t)=$. Damit ergibt sich $z'= -r\sin t+ir\cos t= r(-\sin
-    t+i\cos t)= ir(\cos t+i\sin t)$.
-    \begin{align*}
-      \int_{C_{r}(z_{0})} \underbrace{(z-z_{0})^{n}}_{f(z)}\,dz &=
-	 \int_{0}^{2\pi} (re^{it})^{n}ire^{it}\,dt= ir^{n+1}\int_{0}^{2\pi}
-	 e^{it(n+1)}\,dt\\
-      &= ir^{n+1}\int_{0}^{2\pi} (\cos(n+1)t+i\sin(n+1)t)\,dt=
-	 \begin{cases}
-	   0 & n+1\neq0\\
-	   2\pi i& n+1=0
-	 \end{cases}
-    \end{align*}
-  \end{proof}
-\end{folg}
-
-%satz 3
-\begin{satz}[Satz über Stammfunktionen]
-  \label{satz:3-stammfkt}
-  Sei $\Omega$ ein Gebiet und $f\colon\Omega\rightarrow\C$ stetig. Das
-  Kurvenintegral sei wegunabhängig, d.\,h. $\int_{\gamma} f(z)\,dz$ nur von
-  Anfangs- und Endpunkt abhängig. Wir setzen $F(z):= \int_{z_{0}}^{z}
-  f(w)\,dw= \int_{\gamma} f(w)\,dw$ und $\gamma$ ist der Weg von $z_{0}$ nach
-  $z$. Dann folgt, $F$ ist holomorph und Stammfunktion von $f$, d.\,h. $F'=f$.
-  \begin{proof}
-    Sei $F(x+iy)= U(x,y)+iV(x,y)\Rightarrow F=\int_{z_{0}}^{z} f(w)\,dw=
-    \int_{z_{0}}^{z} (u\,dx-v\,dy)+i\int_{z_{0}}^{z} (v\,dx+u\,dy)$. Es gilt,
-    dass beide rechten Integrale wegunabhängig sind. Damit ist $U$ die
-    Stammfunktion zu $(u,-v)$ und $V$ das zu $(v,u)\Rightarrow U_{x}=u,
-    U_{y}=-v, V_{x}=v, V_{y}=u\Rightarrow U,V\in C^{1}$ nach den
-    Cauchy-Riemannschen Differentialgleichungen. Damit ist $F$ holomorph und
-    $F'= U_{x}+iV_{x}= u+iv=f$.
-  \end{proof}
-\end{satz}
-
-%folg 3
-\begin{folg}\label{folg:3}
-  Sei$\Omega$ ein sternförmiges Gebiet (oder allgemeiner ein einfaches Gebiet,
-  d.\,h. $C^{2}$"~diffeomorphes Bild eines sternförmigen Gebiets), $f$
-  holomorph in $\Omega\Rightarrow f$ besitzt Stammfunktion $F$ in $\Omega$ und
-  $\int_{\gamma} f(z)\,dz=0$ für jeden geschlossenen Weg in $\Omega$.
-  \begin{proof}
-    Es erfüllt $f=u+iv$ die Cauchy"=Riemannschen Differentialgleichungen und
-    damit erfüllen die Vektorfelder $(u,-v)$ und $(v,u)$ die
-    Integrabilitätsbedingungen $[(P,Q)\colon P_{y}=Q_{x}]$. Wenn dann das
-    Gebiet sternförmig ist, dann folgt, $\int_{\gamma} f(z)\,dz= \int (u\,dx-
-    v\,dy) +i \int(v\,dx+u\,dy)$ wegunabhängig. Damit ist aber nach
-    \autoref{satz:3-stammfkt} eine Stammfunktion $F$ vorhanden.
-  \end{proof}
-\end{folg}
-
-%def 3
-\begin{defini}[Komplexer Logarithmus]
-  Sei $\Omega=\C\setminus\R_{-}= \{z=re^{i\phi}\colon r>0, -\pi<\phi<\pi\}$
-  eine geschlitzte Ebene. Diese Menge ist sternförmig. Weiter sei
-  $f(z)=\nicefrac{1}{z}$ in $\Omega$ holomorph. Nach der \autoref{folg:3}
-  existiert eine Stammfunktion $F$ in $\Omega$ mit $F(1)=0$:
-  \begin{gather*}
-    F(z)= \int_{z} \frac{dw}{w}= \int_{1}^{r} \frac{dt}{t}+ \int_{0}^{\phi}
-       \frac{ire^{it}}{re^{it}}\,dt=\log r+i\phi
-  \end{gather*}
-  Diese ist Stammfunktion zu $f$ und wir haben:
-  \begin{gather*}
-    \log z:= \int_{1}^{z}\frac{dw}{w}=\log r+i\phi\qquad z=re^{i\phi},
-       r>0, -\pi<\phi<\pi
-  \end{gather*}
-  Dies heißt \highl{Hauptzweig des Logarithmus}.
-\end{defini}
-
-\begin{bemerk}
-  \begin{enumerate}[a)]
-   \item $e^{\log z}=z, z\in\C\setminus\R_{-}$, denn $e^{\log re^{i\phi}}=
-    e^{\log r+i\phi}=re^{i\phi}$
-   \item $\log e^{w}=w$ für $\abs{\Im w}<\pi$.
-  \end{enumerate}
-\end{bemerk}
-
-%def 4
-\begin{defini}
-  Sei $\Omega$ ein einfaches Gebiet, $0\notin\Omega$ und $F$ holomorph in
-  $\Omega$. Dann heißt $F$ \highl{Zweig des Logarithmus}, wenn $e^{F(z)}=z$
-  mit $z\in\Omega$.
-\end{defini}
-
-%satz 4
-\begin{satz}
-  Zu jedem einfachen Gebiet $\Omega$ mit $0\notin\Omega$ gibt es unendlich
-  viele Zweige des Logarithmus. Sie unterscheiden sich um ganzzahlige
-  Vielfache von $2\pi i$.
-\end{satz}
-
-\begin{bemerk}
-  Sei $\Omega$ die geschlitzte Ebene. Dann hat $F(z)=\log z$ die Eigenschaft
-  $e^{F(z)}= e^{\log z}=z$. Also ist der Hauptzweig ein Zweig des Logarithmus.
-  Weiter sei $F(z)=\log z+2k\pi i\Rightarrow e^{F(z)}= e^{\log z2k\pi
-  i}\Rightarrow e^{\log z}e^{2k\pi i}= z$. Also ist das auch ein Zweig in der
-  geschlitzten Ebene.
-\end{bemerk}
 
 \clearpage
 \appendix
@@ -619,63 +518,23 @@ $z(t)\in\Omega\Rightarrow\frac{d}{dt}f(z(t))=f'(z(t))\cdot z'(t)$.
  \item \todo{hinzufügen}
  \item \todo{hinzufügen}
  \item \todo{hinzufügen}
- \item \todo{hinzufügen}\\  %12
-  $\sin nx= \sum_{k\in\N, 2k+1\leq
-  n}(-1)^{k}\binom{n}{2k+1}\cos^{n-2k-1}x\sin^{2k+1}x$ und $\cos
-  nx=\sum_{k\in\N, 2k\leq n} (-1)^{k}\binom{n}{2k} \cos^{n-2k}x \sin^{2k}x$.
-  Denn $\cos nx+i\sin nx=(\cos x+i\sin x)^{n}= \cos^{n}x
-  -\binom{n}{2}\cos^{n-2} x\sin^{2}x+\binom{n}{4}\cos^{n-4}x \sin^{4}x-\dotsb
-  + i(\binom{n}{1} \cos^{n-1} x\sin x -\binom{n}{3}\cos^{n-3}x\sin^{3}x
-  +\binom{n}{5} \cos^{n-5}x\sin^{5}x-\dotsb)\Rightarrow \cos nx, \sin nx$ wie
-  oben.
- \item \todo{hinzufügen}\\  %13
-  $\cos^{3}\phi= \nicefrac{1}{4} \cos3\phi+\nicefrac{3}{4} \cos\phi$, denn
-  $\cos 3x+i\sin3x= (\cos x+i\sin x)^{3}= \cos^{3}x-3\cos
-  x\underbrace{\sin^{2}x}_{1-\cos^{2}x}
-  +i(3\underbrace{\cos^{2}x}_{1-\sin^{2}x}\sin x-\sin^{3}x)= \cos^{3}x-3\cos
-  x+3\cos^{3}x +i(3\sin x-3\sin^{3}x-\sin^{3}x)= \underbrace{4\cos^{3}x-3\cos
-  x}_{\cos3x}+i(\underbrace{-4\sin^{3}x+3\sin
-  x}_{\sin3x})\Rightarrow$ Behauptung.
- \item \todo{hinzufügen}\\  %14
-  Wir gehen aus von
-  $\underbrace{(z+w)
-  (\underbrace{\overline{z}+\overline{w}}_{\overline{z+w}})}_{\abs{z+w}^{2}} +
-  (z-w)(\overline{z}-\overline{w})= \abs{z}^{2}+\abs{w}^{2}+ z\overline{w}+
-  \overline{z}w+ \abs{z}^{2}+ \abs{w}^{2}- z\overline{w}-\overline{z}=
-  2\abs{z}^{2}+ 2\abs{w}^{2}$
+ \item \todo{hinzufügen}
+ \item \todo{hinzufügen}
+ \item \todo{hinzufügen}
+ \item \todo{hinzufügen}
 
  \item Man drücke $\cos^{4} x$ und $\sin^{4} x$ durch Linearkombinationen von
-  $\cos kx$ und $\sin kx$ mit $k\in\N$ aus.\\
-  Ergebnis: $\cos^{4}x= \nicefrac{1}{8}(3+4\cos2x+\cos4x), \sin^{4}x=
-  \nicefrac{1}{8}(3-4\cos2x+\cos4x)$. Das letztere Ergebnis lässt sich wie
-  folgt berechnen: $\sin^{4}x= \cos^{4}(x-\nicefrac{\pi}{2})=
-  \nicefrac{1}{8}(3+4\cos(2x-\pi)+\cos(4x-2\pi))$
+  $\cos kx$ und $\sin kx$ mit $k\in\N$ aus.
  \item Zu gegebenem $u$ oder $v$ bestimme man $v$ oder $u$, so dass $w=u+iv$
   holomorph ist und die angegebene Anfangsbedingung ist:
   \begin{enumerate}[a)]
-   \item $v=\frac{y}{x^{2}+y^{2}}, w(2)=0$\\
-    $u=-\frac{x}{x^{2}+y^{2}}+\frac{1}{2}, w= \frac{1}{2}-\frac{1}{z}$, denn:
-    $v_{x}= -\frac{2xy}{(x^{2}+y^{2})^{2}}= -u_{y},
-    u=\int\frac{2xy}{(x^{2}+y^{2})^{2}}\,dy= -\frac{x}{x^{2}+y^{2}}+ g(x)$ und
-    $u_{x}= -\frac{x^{2}+y^{2}-2x^{2}}{(x^{2}+y^{2})^{2}}+ g'(x)=
-    \frac{x^{2}-y^{2}}{(x^{2}+y^{2})^{2}}+g'(x)= v_{y}=
-    \frac{x^{2}+y^{2}-2y^{2}}{(x^{2}+y^{2})^{2}}=
-    \frac{x^{2}-y^{2}}{(x^{2}+y^{2})^{2}}\Rightarrow g'(x)=0\Rightarrow
-    g=c\Rightarrow u=-\frac{x}{x^{2}+y^{2}}+c$. Das Einsetzen ergibt: $w(2)=
-    u(2,0)+iv(2,0)=0\Rightarrow u(2,0)=-\nicefrac{1}{2}+c=0\Rightarrow
-    c=\nicefrac{1}{2}$.
-    Also ist $u=-\frac{x}{x^{2}+y^{2}}+\frac{1}{2}$.
-   \item $u=e^{x}(x\cos y-y\sin y), w(0)=0$\\
-    Lösung: $v=e^{x}(x\sin y+y\cos y), w=ze^{z}$
+   \item $v=\frac{y}{x^{2}+y^{2}}, w(2)=0$
+   \item $u=e^{x}(x\cos y-y\sin y), w(0)=0$
   \end{enumerate}
  \item Drei aufeinanderfolgende Ecken eines Parallelogramms mögen in den
-  Punkten $z_{1}, z_{2}, z_{3}$ liegen. Man bestimme die Lage der vierten
-  Ecke.\\
-  Es ist $z_{4}= z_{1}-z_{2}+Z_{3}$. Lösung ergibt sich durch Aufzeichnen
-  sofort.
+  Punkten $z_{1}, z_{2}, z_{3}$ liegen. Man bestimme die Lage der vierten Ecke.
  \item $z_{0}$ und $z_{1}$ seien zwei benachbarte Ecken eines regelmäßigen
-  $n$"~Ecks. Wo liegt die folgende Ecke?\\
-  $z_{2}=z_{1}+(z_{1}-z_{0})e^{\nicefrac{i2\pi}{n}}$.
+  $n$"~Ecks. Wo liegt die folgende Ecke?
  \item Einem Kreis mit dem Radius $R$ und dem Mittelpunkt $c=a+ib$ sei ein
   regelmäßiges $n$"~Eck einbeschrieben. Eine der Ecken liege im Punkt $z_{0}=
   a+(b+R)i$. Wo liegen die übrigen Ecken?
