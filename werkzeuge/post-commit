@@ -148,6 +148,10 @@ do
     rev_range=$(grep '^New Revision: ' "$log" |
       sed -n '1h; ${H; g; s/New Revision: //g; s/\n/:/; p;}')
     REV="${rev_range#*:}"
+    if test "$rev_range" = "$REV:$REV"
+    then
+        rev_range=$REV
+    fi
 
     sendmail -f "$MAIL_FROM" "$COMMIT_MAIL_TO" <<__EOF
 To: $COMMIT_MAIL_TO
