@@ -89,7 +89,7 @@
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{folg}{Folgerung}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -109,7 +109,7 @@
 \newcommand*{\bemerkautorefname}{Bemerkung}
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
-\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\folgautorefname}{Folgerung}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -475,7 +475,7 @@ Man schreibt statt $f'(a)$ auch gerne $\frac{df}{dz}(a)$.
 \end{satz}
 
 % satz 4
-\begin{satz}
+\begin{satz}\label{satz:15}
   Die Funktion $f\colon z=x+iy\mapsto u(x,y)+iv(x,y)$ ist genau dann
   holomorph, wenn $u,v$ als
   reellwertige Funktionen auf $\Omega\subseteq\R^{2}$
@@ -668,6 +668,7 @@ Dann gilt,
 \end{satz}
 
 \begin{satz}[Zurückführung auf Kurvenintegrale im $\R^{2}$]
+  \label{satz:25}
   \begin{enumerate}
    \item Es gilt stets:
     \begin{gather*}
@@ -715,34 +716,65 @@ Dann gilt,
   Eine der wichtigsten Anomalien, sozusagen das Fundament, welches die
   Funktionentheorie überhaupt möglich macht, wird in diesen Formeln deutlich
   (auch wenn die Tragweite hier noch nicht erkennbar ist):
-\begin{align*}
-  \int_{C_r(z_0)} \frac{1}{z - z_0}\,dz &= 2\pi i\\
-  \int_{C_r(z_0)} (z - z_0)^n\,dz &= 0 \quad \forall n \in \Z \setminus \{-1\}
-\end{align*}
-
-  %% XXX weiter
-\subparagraph{Beweis 2.6.:}
-Sei $z = z_0 + re^{it}$ für $t \in [0,2 \pi]$ die Parametrisierung für $C_r(z_0)$.
-Damit gilt dann $\frac{dz}{dt} = ire^{it}$, woraus $dz = ire^{it} dt$ folgt. Damit berechnet man:
-\begin{equation*}
-	\begin{split}
-		\int_{C_r(z_0)} (z - z_0)^n dz & = \int^{2\pi}_{0} (re^{it})^n \cdot (ire^{it}) dt = ir^{n+1} \int^{2\pi}_{0} e^{it(n+1)} dt \\
-		                               & = ir^{n+1} \int^{2\pi}_{0} \cos((n+1)t) + i\sin((n+1)t) dt                                  \\
-		                               & = r^{n+1} \left(i \int^{2\pi}_{0} \cos((n+1)t) dt - \int^{2\pi}_{0} \sin((n+1)t) dt \right) \\
-	                                    & = \begin{cases}
-	                                    		0      & \text{falls} \quad n + 1 \neq 0 \\
-	                                    		2\pi i & \text{falls} \quad n + 1 = 0
-	                                    	\end{cases}
-	                                      = \begin{cases}
-	                                        	0      & \text{falls} \quad n \neq -1 \\
-	                                        	2\pi i & \text{falls} \quad n = -1
-	                                        \end{cases} \hspace{2.5cm} \blacksquare
-	\end{split}
-\end{equation*}
-
+  \begin{align*}
+    \int_{C_r(z_0)} \frac{1}{z - z_0}\,dz &= 2\pi i\\
+    \int_{C_r(z_0)} (z - z_0)^n\,dz &= 0 \quad \forall n \in \Z \setminus \{-1\}
+  \end{align*}
+  \begin{proof}
+    Sei $z = z_0 + re^{it}$ für $t \in [0,2 \pi]$ die Parametrisierung für
+    $C_r(z_0)$. Damit gilt dann $\frac{dz}{dt} = ire^{it}$, woraus $dz =
+    ire^{it} dt$ folgt. Damit berechnet man:
+    \begin{align*}
+      \int_{C_r(z_0)} (z - z_0)^n\,dz & = \int^{2\pi}_{0} (re^{it})^n \cdot
+	 (ire^{it})\,dt = ir^{n+1} \int^{2\pi}_{0} e^{it(n+1)}\,dt\\
+      & = ir^{n+1} \int^{2\pi}_{0} \cos((n+1)t) + i\sin((n+1)t)\,dt\\
+      & = r^{n+1} \left(i \int^{2\pi}_{0} \cos((n+1)t)\,dt - \int^{2\pi}_{0}
+	 \sin((n+1)t)\,dt \right) \\
+      & = \begin{cases}
+	    0  & n + 1 \neq 0 \\
+	    2\pi i &  n + 1 = 0
+	    \end{cases} =
+	 \begin{cases}
+	   0      &  n \neq -1 \\
+	   2\pi i &  n = -1
+	   \end{cases}
+    \end{align*}
+  \end{proof}
 \end{satz}
 
+\begin{satz}[Konstruktion einer Stammfunktion]
+  Die Funktion $f\colon\Omega \rightarrow \C$ sei stetig und das
+  Kurvenintegral wegunabhängig. Außerdem setzen wir:
+  \begin{gather*}
+    F(z) := \int^{z}_{z_0} f(w)\,dw = \int_{\gamma} f(w)\,dw
+  \end{gather*}
+  wobei $\gamma$ ein beliebiger Weg von $z_0$ nach $z$ ist. Dann ist $F$
+  holomorph und eine Stammfunktion zu $f$.
+  \begin{proof}
+    In jedem Fall gilt $F(x + iy) = U(x,y) + iV(x,y)$. Außerdem gilt aber nach
+    \autoref{satz:25}:
+    \begin{gather*}
+      F(z) := \int^{z}_{z_0} f(w)\,dw = \int^{z}_{z_0} (u(x,y)\,dx -
+	 v(x,y)\,dy) + i \int^{z}_{z_0} (v(x,y)\,dx + u(x,y)\,dy)
+    \end{gather*}
+    wobei $f(x + iy) = u(x,y) + iv(x,y)$ gelten soll. Damit haben wir:
+    \begin{gather*}
+      U(x,y) = \int^{z}_{z_0} (u(x,y)\,dx - v(x,y)\,dy) \qquad V(x,y) =
+	 \int^{z}_{z_0} (v(x,y)\,dx + u(x,y)\,dy)
+    \end{gather*}
+    Wegen der Wegunabhängigkeit der Kurvenintegrale folgt, dass $U$ bzw. $V$
+    Stammfunktionen zu den Vektorfeldern $(u,-v)$ und $(v,u)$ sein müssen.
+    Deshalb gilt: $U_x = u$, $U_y = -v$, $V_x = v$ und $V_y = u$. Woraus
+    unmittelbar $U_x = V_y$ sowie $U_y = -V_x$ folgt. Damit gelten die
+    Cauchy-Riemannschen Differentialgleichungen. Weiterhin sind $u$ und $v$
+    stetig vorausgesetzt, also auch $U_x, U_y, V_x$ und $V_y$ stetig. Daher
+    lässt sich \autoref{satz:15} anwenden und es gilt, dass $F$ holomorph ist.
+    Weiter gilt daher, dass $F'(z) = U_x + iV_x = u + iv = f$. Also ist $F$
+    auch Stammfunktion zu $f$.
+  \end{proof}
+\end{satz}
 
+%% XXX Weiter
 
 \todo{Vorlesung vom 2008-05-26}
 
@@ -774,7 +806,7 @@ $\Omega$ und $\gamma$ ein geschlossener Weg. Dann folgt:
 Dies ergibt sich aus Folgerung 3 in 16.2 \todo{Link einfügen}
 
 \begin{folg}
-  \autoref{eq:1} gilt auch für einfach gelagerten Weg $\gamma$, d.\,h.
+  Die \autoref{eq:1} gilt auch für einfach gelagerten Weg $\gamma$, d.\,h.
   $\gamma\subset\Omega'\subset\Omega$ mit $\Omega'$ einfach.
 \end{folg}
 
