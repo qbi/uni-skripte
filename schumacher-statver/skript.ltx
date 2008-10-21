@@ -1,0 +1,471 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{nicefrac}
+
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+\newcommand*{\SL}{\mathcal{L}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Statistische Verfahren}
+\author{Schumacher}
+\date{Semester: WS 2008/09}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://www.minet.uni-jena.de/~joergs/skripte/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://www.minet.uni-jena.de/~joergs/skripte/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://www.minet.uni-jena.de/~joergs/skripte/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \nolinkurl{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Person \nolinkurl{<email>}} (Jahr)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{EinfÃ¼hrung}
+
+Der Studierende soll ein GefÃ¼hl fÃ¼r die statistische Modellierung bekommen. Es
+sollen viele verschiedene Anwendungsgebiete gezeigt werden.
+
+Die Webseite zur Vorlesung ist \url{http://www.stochastik.uni-jena.de/} unter
+dem Stichpunkt "`Lehre"'. Derzeit ist dort eine Literaturliste zu finden.
+Wir werden in mit dem Statistikpaket GNU R beschÃ¤ftigen.
+
+\begin{bsp}[SchÃ¤tzung der GrÃ¶ÃŸe einer biologischen Population]
+  Tiere kann man im Gegensatz zum Menschen nicht einfach abzÃ¤hlen. Daher
+  werden hier statistische Verfahren benutzt. Beispielsweise wird hierfÃ¼r das
+  Fang"=Wiederfang"=Verfahren genutzt.
+
+  Wir haben eine Population der GrÃ¶ÃŸe $N$. In der ersten Fangperiode werden
+  Individuen markiert. Die Anzahl der markierten Individuen werde mit $m$
+  bezeichnet. In der zweiten Fangperiode werden Individuen gefangen. Die
+  Anzahl der gefangenen Individuen werde mit $c$ bezeichnet. Davon ist eine
+  Anzahl $r$ markiert.
+
+  Daraus kann man sich einen heuristischen SchÃ¤tzer fÃ¼r die PopulationsgrÃ¶ÃŸe
+  Ã¼berlegen. Es ist $\nicefrac{m}{N}\sim\nicefrac{r}{c}$.\todo{Etwa"=Zeichen
+  prÃ¼fen} Die Formel wird nach $N$ umgestellt und es ergibt sich $\hat{N}=
+  \frac{m\cdot c}{r}$. Der SchÃ¤tzer heiÃŸt \highl{Peterson"=Lincoln"=SchÃ¤tzer}.
+\end{bsp}
+
+\section{Statistische Modellierung}
+
+Wir nutzen ein Urnenmodell mit $N$~Kugeln. Davon sind $m$ rot und es werden
+$c$ Kugeln entnommen. Dabei ist $X$ die Anzahl der markierten Kugeln unter den
+$c$ entnommenen.
+
+Folgende Voraussetzungen mÃ¼ssen gegeben sein:
+\begin{itemize}
+ \item gute Durchmischung der Population
+ \item Ziehen mit ZurÃ¼cklegen, d.\,h. gefangene Tiere werden wieder zurÃ¼ck in
+  die Population gegeben
+ \item Population ist im Untersuchungszeitraum geschlossen (keine Ã„nderung der
+  GrÃ¶ÃŸe)
+ \item kein Verlust der Markierung
+\end{itemize}
+
+Es ist $X$ mit den Parametern $c$ und $p=\nicefrac{m}{N}$ binomialverteilt.
+Dann ist $P(X=r)= \binom{c}{r} (\nicefrac{m}{N})^{r}
+(1-\nicefrac{m}{N})^{c-r}$. Um das $N$ zu erhalten, verwenden wir die
+Maximum"=Likelihood"=Methode.
+
+\section{ParameterschÃ¤tzung}
+
+Wir fassen $P(X=r)$ als Funktion des unbekannten Parameters $N$ auf. Dies
+nennt sich \highl{Likelihood"=Funktion}: $\SL(N|r)= \binom{c}{r} (\nicefrac{m}{N})^{r}
+(1-\nicefrac{m}{N})^{c-r}$. Das Maximum der Likelihood"=Funktion bestimmen wir
+durch Ableitung nach $N$. Jedoch ist die Ableitung nicht unbedingt einfach.
+Ein leichterer Weg ist durch Ãœbergang zur Log"~Likelihood"=Funktion:
+$\ell(N|r)=\log\binom{c}{r}+r\log(m)-r\log N+(c-r)\log(N-m)-(c-r)\log N$. Die
+Ableitung ergibt: $\frac{\partial}{\partial N}\ell(N|r)= -\nicefrac{r}{N}+
+\frac{(c-r)}{N-m}-\frac{(c-r)}{N}= \frac{(c-r)}{N-m}-\frac{c}{N}=0$. Durch
+Umstellen ergibt sich $\hat{N}= \frac{m\cdot c}{r}$.
+
+Neben dem SchÃ¤tzer haben wir hier auch eine Aussage Ã¼ber die Verteilung
+erhalten: $\hat{N}= \frac{m\cdot c}{X}$. Vom $X$ wissen wir, dass es
+binomialverteilt ist. Somit ist $\hat{N}$ eine Zufallsvariable, deren
+Verteilung eine Transformation der Binomialverteilung ist. Darin liegt der
+Vorteil des statistischen Modells gegenÃ¼ber der obigen heuristischen Variante.
+
+Dadurch kÃ¶nnen wir prinzipiell statistische Eigenschaften des SchÃ¤tzers
+untersuchen, wie beispielsweise Erwartungstreue, Konfidenzintervalle.
+
+\section{Aussagen Ã¼ber die Verteilung von ParameterschÃ¤tzern}
+
+Die Aussagen sind nicht immer exakt, sondern in vielen FÃ¤llen asymptotisch.
+Wir betrachen allgemeine Aussagen zu Eigenschaften der
+Maximum"=Likelihood"=SchÃ¤tzer.
+
+Das obige Beispiel kann erweitert werden. So kann es mehr als zwei
+Fangperioden geben. Wie lassen sich nun drei Fangperioden statistisch
+modellieren? Dazu verwendet man "`Fanggeschichten"'. Dies sind Folgen von
+Nullen und Einsen, die jedes Individuum zugeordnet bekommt. Eine Geschichte
+von $111$ bedeutet, dass das Individuum in allen drei Perioden gefangen wurde.
+Ein Individuum mit der Markierung $001$ wurde nur in der letzten Periode
+gefangen. Insgesamt existieren acht solcher Fanggeschichten.
+
+\begin{align*}
+  111 &=X_{1}\\
+  110 &=X_{2}\\
+  101 &=X_{3}\\
+  011 &=X_{4}\\
+  100 &=X_{5}\\
+  010 &=X_{6}\\
+  001 &=X_{7}\\
+  000 &\text{unbekannt}
+\end{align*}
+
+Wir kennen die Variablen $X_{1},\dotsc, X_{7}$, fÃ¼r $X_{8}= N-(X_{1}+\dotsb+
+X_{7})$. Es gilt, $P((X_{1}=n_{1},\dotsc, X_{7}=n_{7}, X_{8}=n_{8}))=
+\frac{N!}{n_{1}!\cdot\dotso \cdot n_{8}!} q_{1}^{n_{1}} q_{2}^{n_{2}}\dotso
+q_{8}^{n_{8}}$. Dies bezeichnet man als \highl{Multinomialverteilung}. Dabei
+ist $q_{i}$ die Wahrscheinlichkeit, dass ein zufÃ¤llig gewÃ¤hltes Individuumm
+die Fanggeschichte $i$ hat. Die Likelihood"=Funktion dazu ist: $\SL(N,
+q_{1},\dotsc, q_{8}| n_{1},\dotsc, n_{7})= \frac{N!}{n_{1}!\cdot\dotso \cdot
+n_{7}! (N-n_{1}-\dotsb- n_{7})!} q_{1}^{n_{1}} q_{2}^{n_{2}}\dotso
+q_{7}^{n_{7}} q_{8}^{N-n_{1}-\dotsb- n_{7}}$. Hier haben wir nun mehr
+Parameter als Beobachtugen. Daher muss das Modell ein wenig reduziert werden.
+
+Es ist $q_{1}$ die Wahrscheinlichkeit, dass das Individuumm die Fanggeschichte
+$111$ hat. Wir nehmen an, dass $p$ die konstante Fangwahrscheinlichkeit fÃ¼r
+alle Individuen in allen Fangperioden ist. Dann ist $q_{1}=p\cdot p\cdot p=
+p^{3}, q_{2}= pp(1-p)=p^{2}(1-p), \dotsc$ und die Likelihood"=Funktion ist
+$\SL(N,p| n_{1},\dotsc, n_{7})= \frac{N!}{n_{1}!,\dotsc,n_{7}!
+(N-n_{1}-\dotsb- n_{7})!} p^{3n_{1}+2n_{2} +2n_{3} +2n_{4} +n_{5} +n_{6}
++n_{7}} (1-p)^{n_{2} +n_{3} +n_{4} +2n_{5} +2n_{6} +2n_{7} +3(N-n_{1}-\dotsb-
+n_{7})}$. HierfÃ¼r gibt es jedoch \emph{keine} analytische LÃ¶sung. Das Modell
+bezeichnet man als $M_{0}$.
+
+Zur VerschÃ¤rfung kann man die Annahme treffen, dass es drei unterschiedliche
+Fangwahrscheinlichkeiten, je nach Fangperiode, gibt. Dann ist $q_{1}=
+p_{1}p_{2}p_{3}, q_{2}= p_{1}p_{2}(1-p_{3}), q_{3}= p_{1}(1-p_{2})p_{3},
+\dotsc$ und die Likelihood"=Funktion ist $\SL(N,p_{1}, p_{2}, p_{3}|
+n_{1},\dotsc, n_{7})= \frac{N!}{n_{1}!,\dotsc,n_{7}!
+(N-n_{1}-\dotsb- n_{7})!} p_{1}^{n_{1}+n_{2}+n_{3}+n_{5}} (1-p_{1})^{n_{4}
++n_{6} +n_{7} +(N-n_{1}-\dotsb- n_{7})} p_{2}^{n_{1} +n_{2} +n_{4} +n_{6}}
+(1-p_{2})^{n_{3} +n_{5} +n_{7} +(N-n_{1}-\dotsb- n_{7})} p_{3}^{n_{1} +n_{3}
++n_{4} +n_{7}} (1-p_{3})^{n_{2} +n_{5} +n_{6} +(N-n_{1}-\dotsb- n_{7})}$. Das
+Modell bezeichnet man als $M_{t}$.
+
+Die Wahl des richtigen Modells steht an zentraler Stelle der statistischen
+Modellierung.
+
+\section{Test der Hypothesen}
+
+Zum Abschluss steht der Test der Hypothesen.
+
+\begin{satz}[Toller Satz]\label{satz:1}
+  Dies ist ein ganz toller und wichtiger Satz mit einer ganz einfachen
+  Formel
+  \begin{gather*}
+    a\cdot0=0
+  \end{gather*}
+
+  \begin{proof}
+    Daher müssen wir ihn auch beweisen:
+    \begin{align*}
+      a\cdot 0 &= a\cdot(1-1)\\
+      &= a-a&\text{durch ausmultiplizieren}\\
+      &= 0&\text{n.\,Definition d.\,Inversen d.\,Addition}
+    \end{align*}
+  \end{proof}
+\end{satz}
+
+Die Umgebung \texttt{proof} sollte immer innerhalb der Umgebung stehen, zu der
+der Beweis gehört. Das hat den Vorteil, dass man Umgebungen ohne Beweis z.\,B.
+mit $\scriptstyle\Box$ enden lassen kann, wärend Umgebungen mit Beweisen
+mit $\scriptstyle\blacksquare$ enden. Dadurch kann man im laufenden Text
+auch das Ende von Sätzen, Bemerkungen und dergleichen erkennen, was sonst
+schwer ist, da die gleiche Schrift sowohl innerhalb als auch außerhalb
+verwendet wird.
+% Man beachte die speziellen Anweisungen bei der theorem-Definition in der
+% Präampel
+
+\begin{bemerk}
+  Der ganz tolle und wichtige \autoref{satz:1} ist gar nicht so toll und
+  wichtig ist er schon gar nicht.
+\end{bemerk}
+
+\begin{bemerk}[Wichtiger Hinweis]
+  Aber merke: Keine \texttt{equation}-Umgebung mehr verwenden.
+  Stattdessen lieber \texttt{gather}. Siehe \url{news:d9bfko$fdp$1@news.BelWue.DE}
+  \href{ftp://cam.ctan.org/tex-archive/macros/latex/contrib/onlyamsmath/onlyamsmath.dvi}
+  {Dokumentation von onlyamsmath}
+  und einfach mal "`\texttt{texdoc amsldoc}"' aufrufen.
+
+  Auf \url{http://www.dante.de/CTAN/info/german/l2tabu/l2tabu.pdf} sind
+  weitere nützliche Hinweise zu finden.
+\end{bemerk}
+
+\begin{satz}[Verwendung von Grafiken]
+  Grafiken sollten prinzipell in einem Vektorformat erstellt werden. Dazu
+  eignet sich \texttt{xfig} sehr gut. Wird das Bild mit
+  \texttt{\textbackslash{}includegraphics\{bild\}} eingebunden, erstellt
+  \texttt{rubber} automatisch daraus die benötigte Datei
+  -- \texttt{bild.pdf} oder \texttt{bild.eps} -- für \LaTeX{}.
+
+  Für besondere Schriften (z.\,B. mathmatische Zeichen oder
+  Hoch-/Tiefstellen) kann man in \texttt{xfig} das "`Special Flag"' für
+  Text setzen und das Bild mit
+  \texttt{\textbackslash{}input\{bild.pdf\_t\}} einbinden. Damit wird die
+  Schrift direkt von \LaTeX{} erzeugt und man hat (fast) alle
+  Möglichkeiten, die \LaTeX{} bietet. \texttt{rubber} erkennt
+  selbstständig, welches Grafikformat benötigt wird und erzeugt
+  unabhängig vom Namen das Bild als PDF oder PS.
+\end{satz}
+
+\begin{festl}
+  Im Mathematikmodus drückt man mit einem Doppelpunkt \texttt{:} nicht
+  unbedingt das aus, was man will. Der Doppelpunk ist der
+  Divisionsoperator, wie er z.\,B. in "`$1:2 = 0\mathord{,}5$"'
+  \footnote{Da im Englischen das Komma der Trenner für die
+    Tausenderstelle ist man \texttt{\textbackslash{}mathord\{,\}} verwenden,
+    sonst stimmt der Abstand nicht: $0,5$ (ohne) statt $0\mathord{,}5$
+    (mit). Siehe
+    \href{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+    {Mathmode von Herbert Voss}\cite{mathmode} Abschnitt
+    "`11.4 Dot versus comma"'}
+  verwendet wird. Wenn man jedoch $f\colon \R\rightarrow\R$ oder
+  $\{a\colon a\in\N\cap\Q\}$ ausdrücken will, muss man \verb+\colon+
+  verwenden.
+
+  Der Unterschied zeigt sich u.\,a. im linken und rechten Abstand
+  $g:A\rightarrow B$ mit Doppelpunkt im Vergleich zu $g\colon
+  A\rightarrow B$ mit \verb+\colon+. Siehe
+  \href{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+  {Short Math Guide for \LaTeX{}}\cite{shmathguide}
+\end{festl}
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{mathmode} Math mode von Herbert Voss,\\
+  \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+ \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
