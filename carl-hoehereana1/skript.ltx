@@ -1,0 +1,349 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+% 
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+
+\usepackage{lmodern}		% Latin Modern
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{mathbb}
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+\newcommand*{\K}{\mathbb{K}}
+
+\DeclareMathOperator{\cl}{cl}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\author{Prof.\,Dr.\,Bernd Carl}
+\title{HÃ¶here Analysis}
+\date{Semester: WS 2008/09}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript fÃ¼r die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der FakultÃ¤t fÃ¼r Mathematik}
+  \href{http://uni-skripte.uni-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts fÃ¼r dessen Fehlerfreiheit. FÃ¼r etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  Ã¼bernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verÃ¤ndern oder auf anderen Medien verfÃ¼gbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trÃ¤gt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe kÃ¶nnte auf der Webseite des Projekts verfÃ¼gbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen fÃ¼r das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \nolinkurl{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfÃ¼gbar.
+
+  Hiermit mÃ¶chten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2008)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der SÃ¤tze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{SÃ¤tze}{satzlist}
+\section*{SÃ¤tze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{EinfÃ¼hrung}
+
+Die lineare Funktionalanalysis kann als WeiterfÃ¼hrung der linearen Algebra
+unter Einbeziehung von metrischen und topologischen Begriffen angesehen werden.
+
+Kurzer historischer Ãœberblick:
+\begin{itemize}
+ \item 1903---Fredhohm
+ \item 1905---Hilbert
+ \item 1908---Schmidt und Schur mit der Theorie linearer Integralgleichungen
+  (Geburtstunde)
+ \item 1918---Riesz
+ \item 1932---Banach und Steinhaus mit der systematischen Entwicklung der Funktionalanalysis
+ \item 1936---von Neumann
+ \item 1952---Schwartz mit Distributionentheorie
+ \item 1955---Grothendieck mit geometrischer Funktionalanalysis
+\end{itemize}
+
+Seien $X,Y$ normierte RÃ¤ume und $T\colon X\rightarrow Y$ ein linearer
+Operator. Ein Hauptproblem der Funktionalanalysis besteht darin, Gleichungen
+der Form $Tx=y$ mit gesuchtem $x$ zu lÃ¶sen. Man bezeichnet mit
+$N(T)\colon=\ker(T)\colon=\{x\in X\colon Tx=0\}$ den \highl{Nullraum} oder
+\highl{Kern} von $T$. Weiter ist $R(T)\colon=\{Tx\colon x\in X\}$ der
+\highl{Bildraum} oder \highl{Bild} von $T$.
+
+Wie ist die obige Situation in endlicher Dimension? Die Dimension von $X$ und
+$Y$ sind $<\infty$. Das Thema wurde bereits in der Vorlesung zur linearen
+Algebra behandelt. Man denke an lineare Abbildungen bzw. Matrizen. Die
+Gleichung $Tx=y$ ist lÃ¶sbar, falls $y\in R(T)$. Praktisch Ã¼berprÃ¼ft man, ob
+der Rang der Matrix $T$ mit dem Rang von $T$ erweitert um $y$ identisch ist.
+
+Wenn wir nun die Situation im unendlich"=dimensionalen betrachten, Ã¤ndert sich
+die Lage grundlegend. Die obige Bedingung ist fÃ¼r die Entscheidung, ob $y$ im
+Bildraum ist, nicht geeignet. Im unendlich-dimensionalen bedient mna sich
+einer dimensionslosen Charakterisierung der obigen Bedingung.
+
+Das soll zunÃ¤chst fÃ¼r endliche Matrizen $T\colon\K^{n}\rightarrow\K^{m}$
+erlÃ¤utert werden. Ist $T'$ die transponierte Matrix zu $T$, so gilt die
+folgende Charakterisierung:
+\begin{gather}
+  \label{eq:11}
+     R(T)= N(T')_{\perp}
+\end{gather}
+Dabei ist $N(T')_{\perp}\colon= \{y\in\K^{m}\colon\forall b\in
+N(T')\colon\langle y,b\rangle=0\}$ und $\langle\cdot,\cdot\rangle$ ist das
+Skalarprodukt in $\K^{m}$. Die Aussage aus \autoref{eq:11} besagt, dass die
+Gleichung $Tx=y$ lÃ¶sbar ist, falls die rechte Seite $y$ orthogonal zu allen
+LÃ¶sungen $b$ der homogenen Gleichung $T'b=0$ steht.
+
+FÃ¼r eine groÃŸe Klasse von linearen Operatoren gilt im unendlich-dimensionalen
+Fall eine analoge Bedingung. WÃ¤hrend im endlich"=dimensionalen Fall die
+LÃ¶sbarkeit von $Tx=y$ mit Mitteln der linearen Algebra entschieden werden
+kann, kommt im unendlich"=dimensionalen Fall noch die Analysis ins Spiel.
+
+Denn fÃ¼r stetige lineare Operatoren $T\colon X\rightarrow Y$ von einem
+Banachraum $X$ in einen Banachraum $Y$ gilt die Beziehung:
+\begin{gather}
+  \label{eq:12}
+     \cl R(T)=N(T')_{\perp}
+\end{gather}
+Dabei bezeichnet $\cl R(T)$ den Abschluss des Bildes $R(T)$ in $Y$ und
+$T'\colon Y'\rightarrow X'$ ist der so genannte duale Operator von $T$, der
+den dualen Banachraum $Y'$ in den dualen Banachraum $X'$ abbildet. Hier ist
+$N(T')_{\perp}\colon=\{y\in Y\colon\forall b\in N(T')\colon\langle
+y,b\rangle\colon=b(y)=0\}$. Die $b\colon Y\rightarrow\K$ sind lineare
+Funktionale und $T'b=0$.
+
+Die Beziehung aus \autoref{eq:12} impliziert, dass fÃ¼r einen stetigen linearen
+Operator $T\colon X\rightarrow Y$ mit abgeschlossenem Bild die Gleichung
+$Tx=y$ genau dann lÃ¶sbar ist, wenn fÃ¼r alle $b\in Y'$ mit $T'b=0$ die
+Beziehung $\langle y,b\rangle\colon=b(y)=0$ gilt. Insbesondere werden wir
+zeigen, dass fÃ¼r einen kompakten Operator $S\colon X\rightarrow X$ der
+Bildraum $R(T)$ von $T\colon=I-S$ abgeschlossen und die NullrÃ¤ume von $T$ bzw.
+$T'$ gilt $\dim N(T)=\dim N(T')<\infty$. Damit kann die allgemeine LÃ¶sung  von
+$Tx=y$ in der Form $x=x_{0}+\sum_{i=1}^{n} \alpha_{i}x_{i}$ mit $n=\dim N(T),
+\alpha_{1},\dotsc,\alpha_{n}\in\K$, wobei $x_{1},\dotsc, x_{n}$ linear
+unabhÃ¤ngige LÃ¶sungen der homogenen Gleichung $Tx=0$ und $x_{0}$ eine spezielle
+LÃ¶sung der inhomogenen Gleichung $Tx=y$ sind.
+
+Typische Operatoren, die in dieses Schema passen, sind Integraloperatoren der
+Form
+\begin{gather}
+  \label{eq:13}
+     x(s)-\int_{0}^{1} K(s,t)x(t)\,dt=y(s)\qquad s\in[0,1]
+\end{gather}
+wobei $y\colon[0,1]\rightarrow\R$ und $K\colon[0,1]\times[0,1]\rightarrow\R$
+gegebene stetige Funktionen sind. Gesucht ist eine LÃ¶sung $x$, die
+\autoref{eq:13} erfÃ¼llt.
+
+Die Integralgleichung \autoref{eq:13} kann als System unendlich vieler
+Gleichungen (fÃ¼r jedes $s\in[0,1]$ eine) mit unendlich vielen Unbekannten
+$x(s)$ mit $s\in[0,1]$ aufgefasst werden, die stetig "`zusammenpassen"'. Man
+definiert $S\colon C[0,1]\rightarrow C[0,1]$ durch $(Sx)(s) \colon=\int_{0}^{1}
+K(s,t) x(t)\,dt$ und $T\colon=I-S$.
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{werner04} D.\,Werner. Funktionalanalysis. Springer 2004
+
+ \bibitem{werner06}  D.\,Werner. EinfÃ¼hrung in die hÃ¶here Analysis. Springer
+  2006
+ \bibitem{rudin} W.\,Rudin. Functional Analysis. McGrw Hill 1991
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
