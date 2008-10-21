@@ -8,47 +8,20 @@ from ophelia.tool import metadata
 meta = metadata.MetaData()
 meta.bump_date(2008, 04, 07)
 
+scripts = []
+for line in sorted(open('./available_skripte')):
+    parts = line.strip().split('\t')
+    item = dict(id=parts[0])
+    if len(parts) >= 2:
+        item['name'] = parts[1]
+    else:
+        item['name'] = parts[0]
+    if len(parts) >= 3:
+        item['prof'] = parts[2]
+    scripts.append(item)
+
 <?xml?>
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' "http://www.w3.org/TR/html4/loose.dtd">
-
-<!--
-<?php
-function map_line($line)
-{
-    $dash_pos = strpos($line, '-');
-    $tab_pos = strpos($line, "\t");
-    return substr($line, $dash_pos+1, $tab_pos-1-$dash_pos) . '-' .
-      substr($line, 0, $dash_pos);
-}
-
-function list_skripte($link)
-{
-        $lines = array_map('rtrim', file('./available_skripte'));
-        $lines = array_combine(array_map('map_line', $lines), $lines);
-        ksort($lines);
-            $lines = array("web\tWebseite") + $lines;
-        foreach ($lines as $line)
-        {
-                $fields = preg_split("/\t+/", $line);
-                echo '<li>';
-                if (count($fields) >= 2)
-                {
-                        echo $fields[1];
-                        if (count($fields) == 3)
-                                echo ', ', $fields[2];
-                        echo ': ';
-                }
-                    if ( !empty($link) )
-                        echo '<a href="', $link, '?id=', $fields[0], '">';
-                    echo $fields[0];
-                    if ( !empty($link) )
-                     echo '</a>';
-                    echo "</li>\n";
-        }
-}
-?>
--->
-
 <html>
 
   <head>
@@ -93,24 +66,11 @@ function list_skripte($link)
             <div class='navheading'>
               Skripte
 
-<!--
-              <?php
-                $lines = array_map('rtrim', file('./available_skripte'));
-                $lines = array_combine(array_map('map_line', $lines), $lines);
-                ksort($lines);
-                foreach ($lines as $line)
-                {
-                    $fields = preg_split("/\t+/", $line);
-                  echo "<div class=\"navmenu\"><a href=\"./skripte.html?id=",
-                    $fields[0], "\">";
-                  if (count($fields) >= 2)
-                    echo $fields[1];
-                  else
-                    echo $fields[0];
-                  echo "</a></div>\n";
-                }
-              ?>
--->
+              <div class="navmenu" tal:repeat="item scripts">
+                <a tal:attributes="href string:./skripte.html?id=${item/id}"
+                   tal:content="structure item/name" />
+              </div>
+
             </div>
 
             <div class='navheading'>

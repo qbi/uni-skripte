@@ -1,28 +1,43 @@
-<!--
-<?php
-// set id, if not set in URL
-if (!$id) {
-	$id="SKRIPT";
-	echo "<h1>Allgemeine Anleitung</h1>
-	Im Folgenden steht $id f&uuml;r den Namen eines der Projekte für das jeweilige
-	Vorlesungsskript. Zur Zeit gibt es die folgenden:
-	<ul>";
-	list_skripte("skripte.html");
-        echo "</ul>";
-} else {
-	echo "<h1>Skript: $id</h1>";
-}
-?>
--->
+env = __request__.env
+if env.QUERY_STRING:
+    from cgi import parse_qs
+    query_params = parse_qs(env.QUERY_STRING)
+    script_id = query_params.get('id')
+    if script_id:
+        script_id = script_id[0]
+        script_id_given = script_id != ''
+
+<?xml?>
+<tal:heading condition="script_id">
+  <h1 tal:content="string:Skript: $script_id" />
+</tal:heading>
+<tal:heading condition="not script_id">
+  <h1>Allgemeine Anleitung</h1>
+
+  <p>
+    Im Folgenden steht SKRIPT f&uuml;r den Namen eines
+    der Projekte für das jeweilige Vorlesungsskript. Zur Zeit gibt es die
+    folgenden:
+  </p>
+
+  <ul>
+    <li class="navmenu" tal:repeat="item scripts">
+      <tal:name content="structure string:${item/name}" /><!--
+      --><tal:prof condition="exists:item/prof" content="structure string:, ${item/prof}" />:
+      <a tal:attributes="href string:./skripte.html?id=${item/id}"
+        tal:content="structure item/id" />
+    </li>
+  </ul>
+</tal:heading>
 
 <p>Für die Kommandozeile: Eine aktuelle Version von SVN selbst ist unter
 <a href="http://subversion.tigris.org/">http://subversion.tigris.org/</a> verfügbar.</p>
 
 Die erste lokale Kopie wird mit folgendem Befehl erstellt
 (<b><tt>FRZ-Login</tt> durch den Unix-Benutzernamen ersetzen!</b>):
-<!--
-<pre>svn checkout svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/<?php echo $id ?></pre>
--->
+
+<pre>svn checkout svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/<tal:id content="script_id" /></pre>
+
 Später wird die lokale Kopie mit folgendem Befehl aktualisiert (in dem lokalen Verzeichnis <tt>$id</tt>):
 <pre>svn update</pre>
 
