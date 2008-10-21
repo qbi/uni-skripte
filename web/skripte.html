@@ -8,7 +8,27 @@ if env.QUERY_STRING:
         script_id = script_id[0]
         script_id_given = script_id != ''
 
-if not script_id_given:
+if script_id_given:
+    import os.path
+    import re
+
+    filename = lambda type: '%s/%s%s' % (data_path_prefix, script_id, type)
+    exists_file = lambda type: os.path.exists( filename(type) )
+
+    if exists_file('.Changelog'):
+        changelog = open( filename('.Changelog') ).read().decode("UTF-8")
+
+    file_link_template = lambda type: '<a href="%s%s">%s%s</a>' % \
+      (script_id, type, script_id, type)
+
+    file_link = dict()
+    for i in ['ps', 'pdf', 'tgz']:
+        if exists_file('.' + i):
+            file_link[i] = file_link_template('.' + i)
+
+    if exists_file('-mit-grafiken.tgz'):
+        file_link['mgtgz'] = file_link_template('-mit-grafiken.tgz')
+else:
     script_id = 'SKRIPT'
 
 <?xml?>
@@ -40,82 +60,72 @@ Die erste lokale Kopie wird mit folgendem Befehl erstellt
 
 <pre>svn checkout svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/<tal:id content="script_id" /></pre>
 
-Später wird die lokale Kopie mit folgendem Befehl aktualisiert (in dem lokalen Verzeichnis <tt>$id</tt>):
+Später wird die lokale Kopie mit folgendem Befehl aktualisiert (in dem lokalen Verzeichnis <tt tal:content="script_id" />):
 <pre>svn update</pre>
 
-Eigene Änderungen können mit dem folgenden Befehl auf den Server übertragen werden (in dem lokalen Verzeichnis $id):
-<pre>svn commit</pre>";
+Eigene Änderungen können mit dem folgenden Befehl auf den Server übertragen werden (in dem lokalen Verzeichnis <tal:id content="script_id" />):
+<pre>svn commit</pre>
 
-if ($id=="SKRIPT") {
-	echo "<p>Windowsanleitung unter:
-	<a href='./windows.html'>
-	http://www.minet.uni-jena.de/~joergs/skripte/windows.html</a></p>";
-} else {
-	echo "<p>Windowsanleitung unter:
-	<a href='./windows.html?id=$id'>
-	http://www.minet.uni-jena.de/~joergs/skripte/windows.html</a></p>";
+<p tal:condition="not:script_id_given">
+  Die Windowsanleitung ist <a href="./windows.html">hier.</a>
+</p>
 
-	echo "<h2>Übersetzte Versionen</h2>
-	<ul>";
-        $filename="$id.ps";
-        if (file_exists($filename)) {
-          echo "<li><a href='$filename'>$filename</a></li>";
-        }
-        $filename="$id.pdf";
-        if (file_exists($filename)) {
-          echo "<li><a href='$filename'>$filename</a></li>";
-        }
-        echo "</ul>";
+<tal:text condition="script_id_given">
+  <p>
+    Die Windowsanleitung ist
+    <a tal:attributes="href string:./windows.html?${script_id}">hier.</a>
+  </p>
 
-	echo "<h2>Fehler im Skript gefunden?</h2>
-              <p>Das Projekt lebt von der Mithilfe aller. Solltest du im Skript
-               einen Fehler gefunden haben &ndash;&nbsp;egal ob Rechtschreib- oder
-               Satzfehler oder einen inhaltlichen Fehler&nbsp;&ndash;, dann melde
-               ihn uns. Ebenso sind wir an besseren Formulierungen und
-               Ergänzungen interessiert.</p>
+  <h2>Übersetzte Versionen</h2>
+  <ul>
+    <li tal:condition="exists:file_link/pdf"
+      tal:content="structure file_link/pdf" />
+    <li tal:condition="exists:file_link/ps"
+      tal:content="structure file_link/ps" />
+  </ul>
 
-              <p>Bitte mach so viele Angaben wie möglich:
-                <ul>
-                  <li>Welche Ausgabe des Skripts ist es? Steht im Vorwort auf
-                      Seite&nbsp;4.
-                  <li>Auf welcher Seite ist der Fehler?
-                  <li>Wo auf der Seite ist der Fehler? Oben, Mitte, unten?
-                  <li>Was ist falsch?
-                  <li>Gib auch 5&nbsp;Wörter vor und nach der Fehlerstelle an.
-                  <li>Deine E-Mailadresse um Dich nochmal fragen zu können.
-                </ul>
-                <form method=\"post\" action=\"mail.html\">
-                  <input type=\"hidden\" name=\"id\" value=\"$id\"/>
-                  <textarea name=\"body\" cols=\"60\" rows=\"10\"></textarea>
-                  <br>
-                  <input type=\"submit\" name=\"knopf\" value=\"Verwerfen\"/>
-                  <input type=\"submit\" name=\"knopf\" value=\"Absenden\"/>
-                  <input type=\"submit\" name=\"knopf\" value=\"Verwerfen\"/>
-                </form>
-              </p>";
+  <h2>Fehler im Skript gefunden?</h2>
+  <p>Das Projekt lebt von der Mithilfe aller. Solltest du im Skript
+   einen Fehler gefunden haben &ndash;&nbsp;egal ob Rechtschreib- oder
+   Satzfehler oder einen inhaltlichen Fehler&nbsp;&ndash;, dann melde
+   ihn uns. Ebenso sind wir an besseren Formulierungen und
+   Ergänzungen interessiert.</p>
 
-	echo "<h2>Die aktuellen Quellen</h2>";
-        $filename="$id.tgz";
-        if (file_exists($filename)) {
-          echo "<ul><li><a href='$filename'>$filename</a></li></ul>";
-        } else {
-          echo "Leider noch keine Quellen verfügbar. Informationen gibt es
-          unter <a href='mailto:skripte@listserv.uni-jena.de'>
-          skripte@listserv.uni-jena.de</a>";
-        }
-        $filename="$id-mit-grafiken.tgz";
-        if (file_exists($filename))
-          echo "<ul><li><a href='$filename'>$filename</a></li></ul>";
-}
-echo "<p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
-und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
-machen &ndash;&nbsp;damit ist auch viel geholfen!</p>";
+  <p>Bitte mach so viele Angaben wie möglich:</p>
+  <ul>
+    <li>Welche Ausgabe des Skripts ist es? Steht im Vorwort auf
+        Seite&nbsp;4.
+    <li>Auf welcher Seite ist der Fehler?
+    <li>Wo auf der Seite ist der Fehler? Oben, Mitte, unten?
+    <li>Was ist falsch?
+    <li>Gib auch 5&nbsp;Wörter vor und nach der Fehlerstelle an.
+    <li>Deine E-Mailadresse um Dich nochmal fragen zu können.
+  </ul>
+  <form method="post" action="mail.html">
+    <input type="hidden" name="id" tal:attributes="value string:${script_id}"/>
+    <textarea name="body" cols="60" rows="10"></textarea>
+    <br>
+    <input type="submit" name="knopf" value="Verwerfen"/>
+    <input type="submit" name="knopf" value="Absenden"/>
+    <input type="submit" name="knopf" value="Verwerfen"/>
+  </form>
 
-if ($id != "SKRIPT" && file_exists("$id.Changelog"))
-{
-    echo "<h2>Letzte Änderungen</h2>\n<pre>",
-      htmlentities(file_get_contents("$id.Changelog"), ENT_COMPAT, "UTF-8"),
-      "</pre>\n";
-}
-?>
--->
+  <h2>Die aktuellen Quellen</h2>
+  <ul>
+    <li tal:content="structure file_link/tgz | default">
+      Leider noch keine Quellen verfügbar. Informationen gibt es unter
+      <a href='mailto:skripte@listserv.uni-jena.de'>skripte@listserv.uni-jena.de</a>
+    </li>
+    <li tal:condition="exists:file_link/mgtgz"
+      tal:content="structure file_link/mgtgz" />
+  </ul>
+
+  <p>Es sind alle recht herzlich eingeladen, an den Dokumenten mitzuarbeiten
+  und wenn es nur ist, die Fehler darin zu suchen oder Vorschläge zu
+  machen &ndash;&nbsp;damit ist auch viel geholfen!</p>
+
+  <tal:changelog condition="exists:changelog">
+  <h2>Letzte Änderungen</h2>
+  <pre tal:content="changelog" />
+  </tal:changelog>
+</tal:text>
