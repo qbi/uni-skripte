@@ -1,3 +1,4 @@
+script_id_given = False
 env = __request__.env
 if env.QUERY_STRING:
     from cgi import parse_qs
@@ -7,15 +8,16 @@ if env.QUERY_STRING:
         script_id = script_id[0]
         script_id_given = script_id != ''
 
+if not script_id_given:
+    script_id = 'SKRIPT'
+
 <?xml?>
-<tal:heading condition="script_id">
-  <h1 tal:content="string:Skript: $script_id" />
-</tal:heading>
-<tal:heading condition="not script_id">
+<h1 tal:condition="script_id_given" tal:content="string:Skript: $script_id" />
+<tal:heading condition="not:script_id_given">
   <h1>Allgemeine Anleitung</h1>
 
   <p>
-    Im Folgenden steht SKRIPT f&uuml;r den Namen eines
+    Im Folgenden steht <tal:id content="script_id" /> f&uuml;r den Namen eines
     der Projekte für das jeweilige Vorlesungsskript. Zur Zeit gibt es die
     folgenden:
   </p>
