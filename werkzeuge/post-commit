@@ -48,7 +48,8 @@ COMMIT_MAIL_REPLYTO=uni-skripte@lug-jena.de
 COMMIT_MAIL_TO=uni-skripte-commit@lug-jena.de
 # give_away=/home/stud/md01/joergs/give_away
 MAIL_FROM="jo@lug-jena.de"
-WEB=/home/jo/www/uni-skripte/templates
+WEB_DATA=/home/jo/www/uni-skripte/static
+WEB_HTML=/home/jo/www/uni-skripte/templates
 
 REPOS="$1"
 REV="$2"
@@ -60,19 +61,20 @@ update_skript()
 {
     local skript log tmp
     skript="$1"
-    log=$WEB/"$skript".Build.log
+    log=$WEB_DATA/"$skript".Build.log
     tmp=$(mktemp)
 
     svnlook cat "$REPOS" werkzeuge/erzeuge-ausgabe.sh > $tmp
     cd /
     rm --force "$log"
     nice -n 4 env -i PATH="/home/jo/programme/bin:$PATH" \
-      sh $tmp "$skript" "$WEB" > "$log" 2>&1 || true
+      sh $tmp "$skript" "$WEB_DATA" > "$log" 2>&1 || true
     rm $tmp
 
     if test -n "${give_away:-}"
     then
-       "$give_away" "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tgz
+       "$give_away" "$log" "$WEB_DATA/$skript".pdf "$WEB_DATA/$skript".ps \
+         "$WEB_DATA/$skript".tgz
     fi
 
     mail ${COMMIT_MAIL_REPLYTO:+-a "Reply-To: $COMMIT_MAIL_REPLYTO"} \
@@ -94,7 +96,7 @@ then
     exit 0
 fi
 
-last_build_revision=$(cat "$WEB"/last_build_revision)
+last_build_revision=$(cat "$WEB_DATA"/last_build_revision)
 
 tmp_dir=$(mktemp -d)
 trap "rm -r $tmp_dir" EXIT
@@ -113,19 +115,23 @@ do
             case "$action" in
               [AU]*)
                 case "$file" in
-                  */) mkdir "$WEB/$file";;
-                  *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}"
+                  */)
+                    mkdir "$WEB_HTML/$file"
+                    ;;
+                  *)
+                    svn export --revision "$REV" file://"$REPOS/$file" \
+                      "$WEB_HTML/${file#web/}"
                     if test -n "${give_away:-}"
                     then
-                        "$give_away" "$WEB/${file#web/}"
+                        "$give_away" "$WEB_HTML/${file#web/}"
                     fi
                     ;;
                 esac
                 ;;
               D*)
                 case "$file" in
-                  */) rmdir "$WEB/$file";;
-                  *) rm --force "$WEB/$file";;
+                  */) rmdir "$WEB_HTML/$file";;
+                  *) rm --force "$WEB_HTML/$file";;
                 esac
                 ;;
     #          _U) ;; # SVN property update
@@ -135,10 +141,11 @@ do
           */)
             # A Skript was added or deleted
             case "$action" in
-              A*) echo "${file%/}" >> $WEB/available_skripte;;
-              D*) sed --in-place "/^${file%/}\>/d" $WEB/available_skripte
-                  rm -f $WEB/"${file%/}".*
-                  ;;
+              A*) echo "${file%/}" >> "$WEB_DATA"/available_skripte;;
+              D*)
+                sed --in-place "/^${file%/}\>/d" "$WEB_DATA"/available_skripte
+                rm -f "$WEB_DATA/${file%/}".*
+                ;;
             esac
             ;;
         esac
@@ -180,20 +187,20 @@ __EOF
 
     case "$skript" in
       web)
-        rm -f $WEB/"$skript".Changelog
-        svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+        rm -f "$WEB_HTML/$skript".Changelog
+        svnlook log "$REPOS" --revision "$REV" > "$WEB_HTML/$skript".Changelog
         if test -n "${give_away:-}"
         then
-            "$give_away" $WEB/"$skript".Changelog
+            "$give_away" "$WEB_HTML/$skript".Changelog
         fi
         ;;
       *-*)
         # create Changelog
-        rm -f $WEB/"$skript".Changelog
-        svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
+        rm -f "$WEB_DATA/$skript".Changelog
+        svnlook log "$REPOS" --revision "$REV" > "$WEB_DATA/$skript".Changelog
         if test -n "${give_away:-}"
         then
-            "$give_away" $WEB/"$skript".Changelog
+            "$give_away" "$WEB_DATA/$skript".Changelog
         fi
 
         update_skript "$skript"
@@ -201,9 +208,9 @@ __EOF
     esac
 done
 
-rm -f "$WEB"/last_build_revision
-echo $last_rev_number > "$WEB"/last_build_revision
+rm -f "$WEB_DATA"/last_build_revision
+echo $last_rev_number > "$WEB_DATA"/last_build_revision
 if test -n "${give_away:-}"
 then
-    "$give_away" "$WEB"/last_build_revision
+    "$give_away" "$WEB_DATA"/last_build_revision
 fi
