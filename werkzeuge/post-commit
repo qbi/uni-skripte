@@ -70,14 +70,20 @@ update_skript()
       sh $tmp "$skript" "$WEB" > "$log" 2>&1 || true
     rm $tmp
 
-    $give_away "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tgz
+    if test -n "${give_away:-}"
+    then
+       "$give_away" "$log" $WEB/"$skript".pdf $WEB/"$skript".ps $WEB/"$skript".tgz
+    fi
 
     mail ${COMMIT_MAIL_REPLYTO:+-a "Reply-To: $COMMIT_MAIL_REPLYTO"} \
       -s "[$skript] r$REV build" "$COMMIT_MAIL_TO" \
       -- -f "$MAIL_FROM" < $log
 }
 
-$give_away "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
+if test -n "${give_away:-}"
+then
+    "$give_away" "$REPOS/db/revprops/$REV" "$REPOS/db/revs/$REV"
+fi
 
 sleep 300
 last_rev_number=$(svnlook history "$REPOS" | sed '3!d; s/ *//; s/ .*$//')
@@ -109,7 +115,10 @@ do
                 case "$file" in
                   */) mkdir "$WEB/$file";;
                   *) svn export --revision "$REV" file://"$REPOS/$file" "$WEB/${file#web/}"
-                    $give_away "$WEB/${file#web/}"
+                    if test -n "${give_away:-}"
+                    then
+                        "$give_away" "$WEB/${file#web/}"
+                    fi
                     ;;
                 esac
                 ;;
@@ -176,14 +185,20 @@ __EOF
         svnlook author "$REPOS" --revision "$REV" > $WEB/"$skript".Author
         svnlook date "$REPOS" --revision "$REV" > $WEB/"$skript".Date
 
-        $give_away $WEB/"$skript".Changelog $WEB/"$skript".Author \
-            $WEB/"$skript".Date
+        if test -n "${give_away:-}"
+        then
+            "$give_away" $WEB/"$skript".Changelog $WEB/"$skript".Author \
+              $WEB/"$skript".Date
+        fi
         ;;
       *-*)
         # create Changelog
         rm -f $WEB/"$skript".Changelog
         svnlook log "$REPOS" --revision "$REV" > $WEB/"$skript".Changelog
-        $give_away $WEB/"$skript".Changelog
+        if test -n "${give_away:-}"
+        then
+            "$give_away" $WEB/"$skript".Changelog
+        fi
 
         update_skript "$skript"
         ;;
@@ -192,4 +207,7 @@ done
 
 rm -f "$WEB"/last_build_revision
 echo $last_rev_number > "$WEB"/last_build_revision
-$give_away "$WEB"/last_build_revision
+if test -n "${give_away:-}"
+then
+    "$give_away" "$WEB"/last_build_revision
+fi
