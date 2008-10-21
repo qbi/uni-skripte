@@ -1,0 +1,473 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: makeidx.tool      xindy
+% rubber: makeidx.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{makeidx}
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+
+\usepackage{lmodern}		% Latin Modern
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final]{microtype} % Verbesserung der Typographie
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{lem}{Lemma}[chapter]
+\newtheorem{folg}{Folgerung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+\newtheorem{bemerk}{Bemerkung}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\lemautorefname}{Lemma}
+\newcommand*{\folgautorefname}{Folgerung}
+
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
+% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+\newcommand*{\CT}{\mathcal{T}}
+\newcommand*{\FP}{\mathfrak{P}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Topologie}
+\author{Martina ZÃ¤hle}
+\date{Semester: WS 2008/09}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript fÃ¼r die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der FakultÃ¤t fÃ¼r Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts fÃ¼r dessen Fehlerfreiheit. FÃ¼r etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  Ã¼bernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verÃ¤ndern oder auf anderen Medien verfÃ¼gbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trÃ¤gt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe kÃ¶nnte auf der Webseite des Projekts verfÃ¼gbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen fÃ¼r das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:skripte@listserv.uni-jena.de}{Mailingliste
+  \nolinkurl{<skripte@listserv.uni-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfÃ¼gbar.
+
+  Hiermit mÃ¶chten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2008)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der SÃ¤tze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{SÃ¤tze}{satzlist}
+\section*{SÃ¤tze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{EinfÃ¼hrung}
+
+Das Ziel dieser Vorlesung ist die EinfÃ¼hrung der Grundlagen der
+mengentheoretischen Topologie. Diese wird auch als allgemeine Topologie
+bezeichnet. Im Gegensatz zu der Vorlesung steht die algebraische Topologie.
+
+Im zweiten Teil der Vorlesung werden Grundlagen zu Mannigfaltigkeiten gelehrt.
+Beide Gebiete sind sehr hilfreich fÃ¼r die Funktionalanalysis, die Stochastik,
+die Geometrie bzw. klassische Mechanik oder geometrische MaÃŸtheorie.
+
+\chapter{Topologie}
+
+%def 1.1
+\begin{defini}\label{def:11}
+  Eine \highl{Topologie} $\CT$ auf einer Menge $X\neq\emptyset$ ist ein System von
+  Teilmengen von $X$ mit:
+  \begin{enumerate}[(i)]
+   \item $\emptyset,X\in\CT$
+   \item $O_{i}\in\CT, i\in I\neq\emptyset\Rightarrow\bigcup_{i\in I}
+    O_{i}\in\CT$ (beliebige Vereinigungen offener Mengen sind wieder offen.)
+   \item $O_{i}\in\CT, i=1,\dotsc,n\Rightarrow\bigcap_{i=1}^{n} O_{i}\in\CT$
+    (endliche Durchschnitte offener Mengen sind offen.)
+  \end{enumerate}
+  Die Elemente von $\CT$ heiÃŸen \highl[Menge!offene]{offene Mengen} und
+  $(X,\CT)$ heiÃŸt \highl[Raum!topologischer]{topologischer Raum}.
+\end{defini}
+
+%bsp 1.2
+\begin{bsp}
+  \begin{enumerate}
+   \item Sei $(X,d)$ ein metrischer Raum. Dann kÃ¶nnen offene Mengen Ã¼ber die
+    Metrik $d$ definiert werden und man erhÃ¤lt einen topologischen Raum.
+   \item Sei $X\neq\emptyset$ und $\CT\colon=\{\emptyset,X\}$
+    (\highl[Topologie!triviale]{triviale Topologie})
+   \item Sei $X\neq\emptyset$ und $\CT\colon=\FP(X)$
+    (\highl[Topologie!diskrete]{diskrete Topologie})
+   \item Sei $X=\{a,b\}$. Dann ist $\CT\colon=\{\emptyset,a,\{a,b\}\}$ das
+    \highl[Punktepaar!verheftetes]{verheftete Punktepaar}.
+   \item Sei $X$ Ã¼berabzÃ¤hlbar. $\CT=\{G\subset X\colon
+    G^{c}\text{endlich}\}\cup\{\emptyset\}$
+    (\highl[Topologie!cofinite]{cofinite Topologie})
+   \item Ist folgendes System eine Topologie? Sei $X\neq\emptyset$ beliebig
+    und $p\in X$ beliebig und fest, $\CT\colon=\{\emptyset\}\cup\{G\subset
+    X\colon p\in G\}$.
+  \end{enumerate}
+\end{bsp}
+
+% def 1.3
+\begin{defini}
+  Es heiÃŸt $F\subset X$ \highl{abgeschlossen} in $(X,\CT)$, falls
+  $F^{c}\in\CT$. Es ist $\CT^{c}$ das System der abgeschlossenen Mengen von
+  $(X,\CT)$.
+\end{defini}
+
+\paragraph{Duale Eigenschaften von $\CT^{c}$}
+%lemma 1.4
+\begin{lem}
+  \begin{enumerate}[(i)]
+   \item $\emptyset, X, \in\CT^{c}$
+   \item Beliebige Durchschnitte abgeschlossener Mengen sind abgeschlossen.
+   \item Endliche Vereinigungen abgeschlossener Mengen sind abgeschlossen.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(i)]
+     \item klar
+     \item $(\bigcap_{i\in I} F_{i})^{c}= \bigcup_{i\in I}F_{i}^{c}$ offen
+     \item $(\bigcup_{i\in I_{0}} F_{i})^{c}= \bigcap_{i\in I_{0}} F_{i}^{c}$
+      offen mit $I_{0}\neq\emptyset$
+    \end{enumerate}
+  \end{proof}
+\end{lem}
+
+% def 1.5
+\begin{defini}
+  Sei $A\subset X$. Dann heiÃŸt $U\subset X$ \highl{Umgebung} von $A$
+  bezÃ¼glich $(X,\CT)$, falls es ein $U'\in\CT$ gibt, sodass $A\subset
+  U'\subset U$.
+\end{defini}
+
+\begin{bemerk}
+  Manchmal werden Umgebungen gleich als offen definiert. In dieser Vorlesung
+  wird der Schritt nicht vollzogen.
+
+  FÃ¼r $A\colon=\{x\}$ mit $x\in X$ schreibt man $U_{x}$ fÃ¼r $U$.
+
+  Der metrische Begriff der Umgebung ist "`feiner"' als der topologische. Dort
+  beinhaltet es auch LÃ¤ngemessung.
+\end{bemerk}
+
+%def 1.6
+\begin{defini}
+  Ein Punkt $x\in A\subset X$ heiÃŸt \highl[Punkt!innerer]{innerer Punkt} von
+  $A$ bezÃ¼glich $(X,\CT)$, falls eine Umgebung $U_{x}$ existiert mit
+  $U_{x}\subset A$.
+
+  Die Menge $A^{o}$\todo{Der Punkt muss Ã¼ber dem A stehen} aller inneren
+  Punkte von $A$ heiÃŸt \highl[Kern!offener]{offener Kern} oder \highl{Inneres}
+  von $A$.
+\end{defini}
+
+%def 1.7
+\begin{defini}
+  Ein Punkt $x\in X$ heiÃŸt \highl{BerÃ¼hrungspunkt} von $A$ bezÃ¼glich $\CT$,
+  falls jede Umgebung von $X$ einen nichtleeren Durchschnitt mit $A$ hat.
+
+  Die Menge $\overline{A}$ aller BerÃ¼hrungspunkte von $A$ heiÃŸt \highl{Abschluss} oder
+  \highl[HÃ¼lle!abgeschlossene]{abgeschlossene HÃ¼lle}.
+
+  Der \highl{Rand} ist wie folgt definiert: $\partial
+  A\colon=\overline{A}\cap\overline{A^{c}}$.
+\end{defini}
+
+%lemma 1.8
+\begin{lem}\label{lem:18}
+  \begin{enumerate}[(i)]
+   \item $A^{o}$\todo{o Ã¼ber A} offen
+   \item $\overline{A}$ abgeschlossen, $\overline{\overline{A}}= \overline{A}$
+   \item $A^{o}\subset A\subset A\cup\partial A=\overline{A}$
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(i)]
+     \item $\forall x\in A^{o} \exists U_{x}\in\CT$ \todo{o Ã¼ber A} mit
+      $U_{x}\subset A\Rightarrow A^{o} \subset\bigcup_{x\in A^{o}} U_{x}$. Nun
+      ist $U_{x}$ aber auch Umgebung fÃ¼r jedes $y\in U_{x}$. Somit ist $y\in
+      A^{o}$. Also ist $A^{o}=\bigcup_{x\in A^{o}}U_{x}$.
+     \item Wir zeigen $\overline{\overline{A}}=\overline{A}$. Klar ist, dass
+      $\overline{A}\subset\overline{\overline{A}}$. Sei
+      $x\in\overline{\overline{A}}\Rightarrow\forall U_{x}\in\CT\exists
+      y\in\overline{A}$ mit $y\in U_{x}$. Aber $U_{x}$ ist auch Umgebung von
+      $y\Rightarrow U_{x}\cap A\neq\emptyset\Rightarrow x\in\overline{A}$.
+      Also ist $\overline{\overline{A}}\subset\overline{A}$.
+
+      Nun ist noch zu zeigen: $\overline{A}\in\CT^{c}$. Der Punkt $x\in
+      \overline{A}^{c}=\overline{\overline{A}}^{c}$ ist kein BerÃ¼hrungspunkt
+      von $\overline{A}\Rightarrow\exists U_{x}\in\CT$ mit
+      $U_{x}\cap\overline{A}=\emptyset$, d.\,h.
+      $U_{x}\subset\overline{A}^{c}\Rightarrow \overline{A}^{c}=
+      \bigcup_{x\in\overline{A}^{c}} U_{x}\in\CT$ wegen \autoref{def:11}.
+     \item Es genÃ¼gt zu zeigen, $A\cup\partial A=\overline{A}$. Wir zeigen,
+      $\overline{A}\subset A\cup\partial A$. Der Rest ist klar. Sei
+      $x\in\overline{A}\Rightarrow\forall U_{x}\colon U_{x}\cap
+      A\neq\emptyset$. Nun hat man entweder $\exists U_{x}\colon U_{x}\cap
+      A\neq\emptyset$ und $U_{x}\cap A^{c}=\emptyset$, d.\,h. $U_{x}\subset
+      A$. Also $x\in A^{o}$. Oder es ist $\forall U_{x}\colon U_{x}\cap
+      A\neq\emptyset$ und $U_{x}\cap A^{c}\neq\emptyset$, dann $x\in\partial
+      A$. Also $\overline{A}\subset A\cup\partial A$.
+    \end{enumerate}
+  \end{proof}
+\end{lem}
+
+Ãœbung: $\overline{A}^{c}= (A^{c})^{o}, A\subset X, (A^{o})^{c}=\overline{A^{c}}$
+
+%folg 1.10
+\begin{folg}
+  \begin{enumerate}[(i)]
+   \item $A$ offen $\Leftrightarrow A=A^{o}$ (Charakterisierung)
+   \item $A$ abgeschlossen $\Leftrightarrow A=\overline{A}$
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(i)]
+     \item folgt aus Definitionen und \autoref{lem:18}
+     \item folgt aus dem obigen Punkt und der obigen Ãœbungsaufgabe
+    \end{enumerate}
+  \end{proof}
+\end{folg}
+
+%lemma 1.11
+\begin{lem}
+  \begin{enumerate}[(i)]
+   \item $A\subset B\Rightarrow\overline{A}\subset\overline{B}$
+   \item Sei $I\neq\emptyset$ beliebig. Dann ist $\bigcup_{i\in I}
+    \overline{A}_{i}\subset\overline{\bigcup_{i\in I} A_{i}}$ und
+    $\overline{\bigcap_{i\in I} A_{i}} \subset\bigcap_{i\in I}
+    \overline{A}_{i}$
+   \item $\bigcup_{i=1}^{n} \overline{A}_{i}= \overline{\bigcup_{i=1}^{n}
+    A_{i}}$. Eine analoge Aussage fÃ¼r Durchschnitte gilt nicht.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(i)]
+     \item folgt sofort aus der Definition des Abschlusses.
+     \item $\overline{A}_{i}\subset\overline{\bigcup_{j\in I} A_{j}}$ (folgt
+      aus obigem Punkt) fÃ¼r alle $i\in
+      I\Rightarrow\overline{A}_{i}\subset\overline{\bigcup_{j\in I} A_{j}}$.
+      Weiter ist $\bigcap_{i\in I} A_{i} \subset\bigcap_{i\in
+      I}\overline{A_{i}}\Rightarrow\overline{\bigcap_{i\in I} A_{i}}\subset
+      \bigcap_{i\in I} \overline{A_{i}}$
+     \item folgt aus dem untenstehenden dritten Punkt
+    \end{enumerate}
+  \end{proof}
+
+  \begin{enumerate}[(i)]
+   \item $A\subset B\Rightarrow A^{o}\subset B^{o}$
+   \item Sei $I\neq\emptyset$ beliebig. Dann ist $(\bigcap_{i\in I}
+    A_{i})^{o}\subset\bigcap_{i\in I} A^{o}_{i}, \bigcup_{i\in I}
+    A^{o}_{i}\subset (\bigcup_{i\in I} A_{i})^{o}$
+   \item $(\bigcap_{i=1}^{n} A_{i})^{o}= \bigcap_{i=1}^{n} A^{o}_{i}$.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[(i)]
+     \item folgt aus der Definition und der Ãœbungsaufgabe
+     \item folgt aus der Definition und der Ãœbungsaufgabe
+     \item $x\in\bigcap_{i=1}^{n} A_{o}_{i}\Rightarrow\bigcap_{i=1}^{n}
+      A^{o}_{i}$ ist eine Umgebung von $x$ in $\bigcap_{i=1}^{n} A_{i}$.
+      Daraus folgt, $x$ ist innerer Punkt von $\bigcap_{i=1}^{n} A_{i},
+      x\in(\bigcap_{i=1}^{n} A_{i})^{o}\Rightarrow \bigcap_{i=1}^{n} A^{o}_{i}
+      \subset (\bigcap_{i=1}^{n} A_{i})^{o}$. Umgekehrte Inklusion folgt aus
+      dem zweiten Punkt.
+    \end{enumerate}
+  \end{proof}
+\end{lem}
+
+
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{quere} \textsl{Boto von Querenburg}. Mengentheoretische Topologie.
+  Springer 1973.
+ \bibitem{schubert} \textsl{Horst Schubert}. Topologie. Teubner 1975.
+ \bibitem{rinow} \textsl{Willi Rinow}. Lehrbuch der Topologie. VEB Deutscher
+  Verlag der Wissenschaften 1975.
+ \bibitem{munkres} \textsl{Munkres}. Topology. PrenticeHall 1975.
+ \bibitem{meyer} \textsl{Karl"=Heinz Meyer}. Algebraische Topologie.
+  BirkhÃ¤user 1989.
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
