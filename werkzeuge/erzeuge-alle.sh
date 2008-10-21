@@ -2,10 +2,10 @@
 
 set -u
 
-: ${REPO:=/home/stud/md01/joergs/.svnroot/skripte}
-: ${WEB:=/home/stud/md01/joergs/.www/skripte}
-give_away=/home/stud/md01/joergs/give_away
-PATH="/mnt/local/joergs/texlive/bin/i386-linux:/home/stud/md01/joergs/xindy/bin:$PATH"
+: ${REPO:=/home/jo/svnrepo/uni-skripte}
+: ${WEB:=/home/jo/www/uni-skripte/static}
+# give_away=/home/stud/md01/joergs/give_away
+PATH="/home/jo/programme/bin:$PATH"
 
 tmp=$(mktemp)
 
