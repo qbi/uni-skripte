@@ -1,5 +1,7 @@
 <!-- $Id$ -->
+<!--
 <?php include('header.php'); ?>
+-->
 
 <table>
   <tr>
@@ -11,6 +13,7 @@
     <th align="center">TeX-Boxen</th>
     <th align="center">TeX-Referenzen</th>
   </tr>
+<!--
 <?php
 
 $lines = array_map('rtrim', file('./available_skripte'));
@@ -57,7 +60,11 @@ foreach ($lines as $line)
 
     echo "  </tr>\n";
 }
-echo "</table>\n";
+?>
+-->
+</table>
 
+<!--
 include('footer.php');
 ?>
+-->

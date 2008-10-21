@@ -1,4 +1,5 @@
 <!-- $Id$ -->
+<!--
 <?php
 include('header.php');
 
@@ -21,4 +22,5 @@ else
 
 include('footer.php');
 ?>
+-->
 

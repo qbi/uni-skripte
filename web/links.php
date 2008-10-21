@@ -1,5 +1,7 @@
 <!-- $Id$ -->
+<!--
 <?php include('header.php'); ?>
+-->
 
 <ul><li>
  <a href='http://www.dante.de'>
@@ -78,5 +80,7 @@ LaTeX - Fortgeschrittene Anwendungen</a></li>
     zu Subversion</li>
 </ul>
 
+<!--
 <?php include('footer.php'); ?>
+-->
 

@@ -1,5 +1,7 @@
 <!-- $Id$ -->
+<!--
 <?php include('header.php'); ?>
+-->
 
 <h1>Hinweise zur Form</h1>
 
@@ -82,4 +84,6 @@
    <a href='./vorlage/'>vorlage</a></li>
 </ul>
 
+<!--
 <?php include('footer.php'); ?>
+-->

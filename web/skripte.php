@@ -1,4 +1,5 @@
 <!-- $Id$ -->
+<!--
 <?php
 include('header.php');
 
@@ -101,3 +102,4 @@ if ($id != "SKRIPT" && file_exists("$id.Changelog"))
 
 include('footer.php');
 ?>
+-->

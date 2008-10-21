@@ -29,10 +29,12 @@
  	      </a>
  	      <small>
                Letzte inhaltliche Änderungen an den Seiten:
+<!---
 <?php
 echo trim( file_get_contents("web.Date") ),
   " [", trim( file_get_contents("web.Author") ), "]";
 ?>
+-->
 	      </small>
 	    </address>
 	  </td>

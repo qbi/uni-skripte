@@ -1,4 +1,5 @@
 <!-- $Id$ -->
+<!--
 <?php
 include('header.php');
 
@@ -15,6 +16,7 @@ if (!$id) {
 	<p>(Zur <a href='./windows.php'>allgemeinen Windowsanleitung</a>)</p>";
 }
 ?>
+-->
 
 <h2>direkte SVN-Unterstützung im Explorer (geht nicht in der Uni)</h2>
 <ol>
@@ -23,8 +25,11 @@ if (!$id) {
    <li>Die heruntergeladene Datei ausführen</li>
    <li>In den Ordner "Eigene Dateien" gehen und dort die rechte Maustaste
      klicken. "SVN Checkout" wählen und folgende Angaben machen:<br>
+<!--
      URL: <pre>svn+ssh://FRZ-Login@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/<?php echo $id; ?></pre>
+-->
      FRZ-Login ist <b>dein</b> Benutzername im FRZ!
+<!--
 <?php
    if ($id=="SKRIPT"){
    	echo "$id aus der obigen Liste auswählen (und in der URL ersetzen),
@@ -32,6 +37,7 @@ if (!$id) {
    	<pre>svn+ssh://peter3@ppc214.mipool.uni-jena.de/home/stud/md01/joergs/.svnroot/skripte/hecker-parallel</pre>";
    }
 ?>
+-->
      Achtung: Du musst Dein Passwort <b>dreimal</b> eingeben. Eine
      wiederholte Abfrage bedeutet also nicht, dass das Passwort falsch war.
    </li>
@@ -40,7 +46,9 @@ if (!$id) {
    <li>Ist alles gut gegangen -> weiter bei 8.</li>
    <li>Wenn es eine Fehlermeldung wegen fehlender Dateien gab und Du nicht
      weißt, wie diese erzeugen sollst, dann hole Dir die Datei
+<!--
 <?php echo "<a href=\"$id-mit-grafiken.tgz\">$id-mit-grafiken.tgz</a>"; ?>
+-->
      und entnehme dieser die fehlenden Dateien. -> weiter bei 5.
    </li>
    <li>fertig</li>
@@ -93,6 +101,7 @@ http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html</a>
    eingeben und dann das Unix-Passwort.</li>
    <li>Du siehst eine Kommandozeile.</li>
    <li>Gebe folgendes ein:
+<!--
    <pre>svn checkout file:///home/stud/md01/joergs/.svnroot/skripte/<?php echo $id; ?></pre>
 <?php
    if ($id=="SKRIPT") {
@@ -101,6 +110,7 @@ http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html</a>
    	<pre>file:///home/stud/md01/joergs/.svnroot/skripte/hecker-parallel</pre>";
    	}
 ?>
+-->
    </li>
    <li>Im Texnic-Center solltest du jetzt auf Laufwerk M: (das Laufwerk von
    paxp02f) ein Verzeichnis mit dem Namen des Skripts finden. Darin die
@@ -109,7 +119,9 @@ http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html</a>
    <li>Ist alles gut gegangen -> weiter bei 10.</li>
    <li>Wenn es eine Fehlermeldung wegen fehlender Dateien gab und Du nicht
      weißt, wie diese erzeugen sollst, dann hole Dir die Datei
+<!--
 <?php echo "<a href=\"$id-mit-grafiken.tgz\">$id-mit-grafiken.tgz</a>"; ?>
+-->
      und entnehme dieser die fehlenden Dateien. -> weiter bei 7.
    </li>
    <li>fertig</li>
@@ -118,8 +130,10 @@ http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html</a>
 Du willst deine Kopie auf den neusten Stand brigen?
 <ol><li>Putty starten und wie bei der Installation unter Punkt 2+3+4 verfahren.</li>
    <li>Den Befehl
+<!--
    <pre>cd <?php echo $id; ?></pre>
    eingeben. <?php echo $id; ?> ist der Verzeichnisname des Skripts.</li>
+-->
    <li>Dann den Befehl
    <pre>svn update eingeben</pre></li></ol>
 
@@ -143,8 +157,10 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
      + es fehlten die $$ um die P_n</pre></li>
    <li>Putty starten und wie bei der Installation unter Punkt 2+3+4 verfahren.</li>
    <li>Den Befehl
+<!--
    <pre>cd <?php echo $id; ?></pre>
    eingeben. <?php echo $id; ?> ist der Verzeichnisname des Skripts.</li>
+-->
    <li>Den Befehl
    <pre>svn diff | less</pre>
    eingeben und prüfen, ob deine Änderungen so seien sollen. Mit den
@@ -155,6 +171,8 @@ Du hast Änderungen gemacht und willst diese veröffentlichen?
    die Änderungen übertragen.</li>
 </ol>
 
+<!--
 <?php
 include('footer.php');
 ?>
+-->

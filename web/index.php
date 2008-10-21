@@ -1,5 +1,7 @@
 <!-- $Id$ -->
+<!--
 <?php include('header.php'); ?>
+-->
 
 <p>Das Projekt
 &bdquo;Vorlesungsskripte der Fakultät für Mathematik und Informatik&ldquo; ist eine Plattform
@@ -99,4 +101,6 @@ veröffentliche. Ich will kurz mal einige Gründe nennen:
   </li>
 </ul>
 
+<!--
 <?php include('footer.php'); ?>
+-->

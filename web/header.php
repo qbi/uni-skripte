@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' "http://www.w3.org/TR/html4/loose.dtd">
 <!-- $Id$ -->
 
+<!--
 <?php
 function map_line($line)
 {
@@ -36,6 +37,7 @@ function list_skripte($link)
 	}
 }
 ?>
+-->
 
 <html>
 
@@ -81,6 +83,7 @@ function list_skripte($link)
 	    <div class='navheading'>
               Skripte
 
+<!--
 	      <?php
 	        $lines = array_map('rtrim', file('./available_skripte'));
 	        $lines = array_combine(array_map('map_line', $lines), $lines);
@@ -97,6 +100,7 @@ function list_skripte($link)
                   echo "</a></div>\n";
                 }
               ?>
+-->
 	    </div>
 
 	    <div class='navheading'>

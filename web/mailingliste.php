@@ -1,5 +1,7 @@
 <!-- $Id$ -->
+<!--
 <?php include('header.php'); ?>
+-->
 
 <p>Diskussionen werden auf der Mailingliste <a
 href="mailto:skripte@listserv.uni-jena.de">skripte@listserv.uni-jena.de</a> geführt. Um
@@ -19,4 +21,6 @@ befindet sich hier: <a href="http://lc03.rz.uni-jena.de/pipermail/skripte/">
 <tt>http://lc03.rz.uni-jena.de/pipermail/skripte/</tt></a>
 </p>
 
+<!--
 <?php include('footer.php'); ?>
+-->

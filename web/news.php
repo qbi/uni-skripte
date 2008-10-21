@@ -1,4 +1,5 @@
 <!-- $Id$ -->
+<!--
 <?php
 include('header.php');
 
@@ -17,3 +18,4 @@ if (!$id) {
 
 include('footer.php');
 ?>
+-->
