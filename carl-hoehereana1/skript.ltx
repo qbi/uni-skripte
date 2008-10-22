@@ -54,6 +54,9 @@
 \usepackage{ellipsis}    % Korrektur f�r \dots
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
+\usepackage{nicefrac}
+\usepackage{accents}
+\usepackage{wasysym}
 
 % Damit auch die Zeichen im Mathemode in �berschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -82,6 +85,7 @@
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{lem}{Lemma}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -102,6 +106,7 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\lemautorefname}{Lemma}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -164,6 +169,8 @@
 \newcommand*{\K}{\mathbb{K}}
 
 \DeclareMathOperator{\cl}{cl}
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator{\card}{card}
 
 \makeindex
 
@@ -331,8 +338,181 @@ $x(s)$ mit $s\in[0,1]$ aufgefasst werden, die stetig "`zusammenpassen"'. Man
 definiert $S\colon C[0,1]\rightarrow C[0,1]$ durch $(Sx)(s) \colon=\int_{0}^{1}
 K(s,t) x(t)\,dt$ und $T\colon=I-S$.
 
+% Vorlesung vom 2008-10-22
+\begin{bsp}
+  Sei $T=
+  \begin{pmatrix}
+    1 & 1\\
+    2 & 1\\
+    0 & 1
+  \end{pmatrix}\colon\K^{2}\rightarrow\K^{3}$. Man untersuche die Lösbarkeit
+  der Gleichung $Tx=y$ bei vorgegebenem $y=\begin{pmatrix}\eta_{1}\\ \eta_{2}\\
+					     \eta_{3}\end{pmatrix}$. Gilt für
+  $y$ die Bedingung  $2\alpha\eta_{1}+ \alpha\eta_{2}+\alpha\eta_{3}=0$ für
+  alle $\alpha\in\K$, so ist die obige Gleichung lösbar.
+  \begin{proof}
+    Man benutze die \autoref{eq:11}. Ist $y\in N(T')_{\perp}$, d.\,h.
+    $\langle y,b\rangle=0$ für alle $b\in N(T')_{\perp}$, so ist die obige
+    Gleichung lösbar. Jetzt bestimmen wir den Nullraum. Dazu betrachten wir
+    die transponierte Matrix:
+    \begin{gather*}
+      T'=
+	 \begin{pmatrix}
+	   1 & 2 & 0\\
+	   1& 1& 1
+	 \end{pmatrix}\colon\K^{3}\rightarrow\K^{2}, b=
+	 \begin{pmatrix}
+	   b_{1}\\
+	   b_{2}\\
+	   b_{3}
+	 \end{pmatrix}
+    \end{gather*}
+    Dann ist $T'b=
+    \begin{pmatrix}
+      b_{1}+2b_{2}\\
+      b_{1}+b_{2}+b_{3}
+    \end{pmatrix}=
+    \begin{pmatrix}
+      0\\ 0
+    \end{pmatrix}$. Umstellen ergibt, $b_{2}=b_{3}, b_{1}=-2b_{2}=-2b_{3}$.
+    Dabei ist $b_{3}$ beliebig. Wir setzen $b_{3}=\alpha$. Nun gilt, $N(T')=
+    \{b=\begin{pmatrix}-2\alpha\\ \alpha\\ \alpha\end{pmatrix}\colon
+      \alpha\in\K\}$. Also $\langle y,b\rangle= -2\overline{\alpha}\eta_{1}+
+    \overline{\alpha}\eta_{2}+ \overline{\alpha}\eta_{3}$. Für den Fall
+    $\K=\R$ kann man den Überstrich weglassen.
+  \end{proof}
+  \emph{Spezialfall}: Sei $y=\begin{pmatrix}2\\ 3\\ 1\end{pmatrix}$. Dann hat
+  man $\langle y,b\rangle=-4\alpha+3\alpha+\alpha=0$ für alle $\alpha\in\R$.
+\end{bsp}
+
+\chapter{Normierte Räume}
+
+\section{Begriffe in Vektorräumen über $\K$}
+
+\begin{defini}
+  Sei $X$ ein Vektorraum über $\K$.
+  \begin{description}
+   \item[\highl{lineare Hülle}] Sei $\emptyset\neq M\subseteq
+    X$ eine Teilmenge und es ist:
+    \begin{gather*}
+      \spn(M)\colon=\left\{\sum_{i=1}^{n} \alpha_{i}x_{i}\colon \alpha_{i}\in\K,
+	 x_{i}\in M, n\in\N\right\}
+    \end{gather*}
+   \item[\highl{linear abhängig}] Die Vektoren $x_{1},\dotsc, x_{n}\in X$ heißen genau
+    dann \highl{linear abhängig}, wenn
+    $\exists\alpha_{1},\dotsc,\alpha_{n}\in\K\colon \sum_{i=1}^{n}
+    \abs{\alpha_{i}}>0\wedge \sum_{i=1}^{n} \alpha_{i}x_{i}=0$.
+
+    Eine Menge $\emptyset\neq M\subseteq X$ heißt \highl{linear unabhängig}
+    genau dann, wenn $\nexists A\subseteq M\colon\abs{A}<\infty$ und die
+    Elemente von $A$ sind linear abhängig.
+
+    \item[\highl{Basis}] Sei $M\subseteq X$ eine linear unabhängige Teilmenge von $X$ mit
+    $\spn(M)=X$. Dann heißt $M$ eine \highl{Basis} von $X$.
+   \item[\highl{endlich dimensional}] $X$ heißt genau dann \highl{endlich
+    dimensional}, wenn entweder $X=\{0\}$ oder $X$ hat eine endliche Basis.
+   \item[\highl{unendlich dimensional}] $X$ heißt genau dann \highl{unendlich
+    dimensional}, wenn $X$ nicht endlich dimensional ist.
+
+    \item[\highl{Dimension}] Man kann zeigen: Ist $\{0\}\subsetneq X$  endlich dimensional, dann haben
+    alle Basen die gleiche Anzahl von Elementen. Ist $B\subset X$ eine Basis
+    für $X$, dann heißt die Anzahl der Elemente von $B$ \highl{Dimension} von
+    $X$. Kurz $\dim X\colon=\card(B)=\abs{B}$. Konvention: $\dim\{0\}=0$.
+  \end{description}
+\end{defini}
+
+\section{Begriffe in normierten Räumen}
+
+Sei $X$ ein Vektorraum und $\norm{\cdot}\colon X\rightarrow[0,\infty)$ eine
+Norm auf $X$. Das Paar $[X, \norm{\cdot}]$ heißt
+\highl[Raum!normierter]{normierter Raum}. Man bezeichnet $B_{X}\colon=\{x\in
+X\colon\norm{x}\leq1\}$ als
+\highl[Einheitskugel!abgeschlossene]{abgeschlossene Einheitskugel} und
+$\accentset{o}{B}_{X}\colon=\{x\in X\colon\norm{x}<1\}$ als
+\highl[Einheitskugel!offene]{offene Einheitskugel}. Für $A,B\subset X$ ist
+$A+B\colon=\{a+b\colon a\in A,b\in B\}$ die \highl[Menge!Summe]{Summe zweier
+Mengen} und $B_{\epsilon}(x_{0})\colon= \{x\in
+X\colon\norm{x-x_{0}}\leq\epsilon\}= \{x_{0}\}+\epsilon B_{X}$
+\highl[$\epsilon$"~Kugel!abgeschlossene]{abgeschlossene $\epsilon$"~Kugel} mit
+Mittelpunkt $x_{0}$. Es ist $\accentset{o}{B}_{\epsilon}(x_{0})\colon= \{x\in
+X\colon\norm{x-x_{0}}<\epsilon\}= \{x_{0}\}+\epsilon B_{X}$
+\highl[$\epsilon$"~Kugel!offene]{offene $\epsilon$"~Kugel} mit
+Mittelpunkt $x_{0}$. Die Menge $M\subseteq X$ heißt genau dann
+\highl[Menge!offene]{offen}, wenn $\forall x\in M\exists\epsilon>0\colon
+B_{\epsilon}(x)\subset M$ und $M\subseteq X$ heißt
+\highl[Menge!abgeschlossene]{abgeschlossen}, wenn $X\setminus M$ offen ist.
+
+Eine Folge$(x_{n})\subset X$ heißt genau dann \highl{konvergent}, wenn
+$\exists x\in X\colon\lim x_{n}=x$, d.\,h. $\forall\epsilon>0\exists
+n_{\epsilon}\in\N\forall n\geq n_{\epsilon}\colon\norm{x_{n}-x}\leq\epsilon$.
+
+%lemma I.2.1
+\begin{lem}
+  Sei $X$ ein normierter Raum. Eine Teilmenge $M\subseteq X$ ist genau dann
+  abgeschlossen, wenn $\forall (x_{n})\subset M, (x_{n})$ konvergent in
+  $X\Rightarrow\lim x_{n}\in M$.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Der Beweis erfolgt durch Kontraposition. Sei $M$
+      abgeschlossen und es existiert ein $(x_{n})\subset M$ mit $a=\lim
+      x_{n}\in X, a\notin M$. Dann folgt: $a=X\setminus M$. Aber $X\setminus
+      M$ ist offen. Somit folgt $\exists n_{0}\in\N\,\forall n\geq n_{0}\colon
+      x_{n}\in B_{\epsilon}(a)\subset X\setminus M\Rightarrow a\in M$
+      \lightning{} Denn für $n\geq n_{0}\colon x_{n}\in X\setminus M$.
+     \item["`$\Leftarrow$"'] Angenommen für alle Folgen $(x_{n})\subset
+      M\colon\lim x_{n} \in X\Rightarrow\lim x_{n}\in M$ und $M$ nicht
+      abgeschlossen. Dann ist $X\setminus M$ nicht offen, d.\,h. $\exists a\in
+      X\setminus M\,\forall\epsilon>0\colon B_{\epsilon}(a)\cap
+      M\neq\emptyset$. Insbesondere gilt für $\epsilon_{n}=\nicefrac{1}{n}$
+      gibt es ein $(x_{n})\subset M\colon\norm{x_{n}-a}\leq\nicefrac{1}{n}$,
+      d.\,h. $\lim x_{n}=a$. Aber $a\in M$. \lightning{}
+    \end{itemize}
+  \end{proof}
+\end{lem}
+
+
+
 \clearpage
 \appendix
+
+\chapter{Übungsaufgaben}
+\section{Aufgaben zu normierten Räumen}
+
+Wir betrachten Folgenräume $l_{p}\colon=l_{p}(\K)\colon= \{x=(\xi_{1},
+\xi_{2},\dotsc)\colon \xi_{i}\in\K, \sum_{i=1}^{\infty}
+\abs{\xi_{i}}^{p}<\infty\}$ mit $0<p\leq\infty$ und
+$\norm{x}_{p}\colon=(\sum_{i=1}^{\infty} \abs{\xi_{i}}^{p})^{\nicefrac{1}{p}}$
+mit $0<p<\infty$. Weiter ist $l_{\infty}\colon=l_{\infty}(\K)\colon=\{x=
+(\xi_{1}, \xi_{2},\dotsc)\colon \xi_{i}\in\K, \sup_{1\leq i<\infty}
+\abs{\xi_{i}}<\infty\}$. Dann kann man folgende Norm festlegen:
+$\norm{x}_{\infty}\colon=\sup_{1\leq i<\infty} \abs{\xi_{i}}$. Seien
+$x=(\xi_{i}), y=(\eta_{i})$, so schreibt man $x\cdot y=(\xi_{i}\eta_{i}),
+x+y\colon=(\xi_{i}+\eta_{i})$ und $\lambda x\colon=(\lambda\xi_{i})$ für $\lambda\in\K$.
+\begin{enumerate}[{A}ufg{a}be 1]
+ \item Man zeige die folgenden Ungleichungen:
+  \begin{itemize}
+   \item \highl[Ungleichung!Höldersche]{Höldersche Ungleichung}: Seien $0<r,
+    p,q\leq\infty$. Dann gilt für $x\in l_{p}, y\in l_{p}$:
+    \begin{gather*}
+      \norm{x\cdot y}_{r}\leq \norm{x}_{p}\norm{y}_{q}\qquad\frac{1}{r}=
+	 \frac{1}{p}+ \frac{1}{q}
+    \end{gather*}
+   \item \highl[Ungleichung!Minkowskische]{Minkowskische Ungleichung}: Sei
+    $0<p\leq\infty$. Dann gilt für $x,y\in l_{p}$:
+    \begin{gather*}
+      \norm{x+y}_{p}\leq\max\{2^{\nicefrac{1}{p}-1}, 1\}(\norm{x}_{p}+
+	 \norm{y}_{p})
+    \end{gather*}
+  \end{itemize}
+ \item Man zeige: $l_{p}<l_{q}$ für $0<p<q\leq\infty$ und es gilt
+  $\norm{x}_{q}\leq\norm{x}_{p}$ für $x\in l_{p}$.
+ \item Man zeige, dass die Räume $[l_{p}, \norm{\cdot}_{p}]$ für $1\leq
+  p\leq\infty$ Banachräume sind.
+ \item Man zeige, dass $l_{p}$ für $1\leq p<\infty$ separabel und $l_{\infty}$
+  nicht separabel ist.
+\end{enumerate}
+
+
 \begin{thebibliography}{99}
  \bibitem{werner04} D.\,Werner. Funktionalanalysis. Springer 2004
 
