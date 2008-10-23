@@ -2,11 +2,13 @@
 \usepackage[ngerman]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
-\usepackage{amsmath,amsthm,times,amssymb,xspace,url,svn}
+\usepackage{amsmath,amsthm,times,amssymb,xspace,url,svn,color}
 
 \theoremstyle{definition}
 
 \newtheorem{defi}{Definition}
+\theoremstyle{remark}
+\newtheorem*{bsp}{Beispiel}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MATHE
@@ -199,15 +201,13 @@
 
 Parallele Algorithmen und Parallelisierung von Iterationsverfahren
 
-\section{Überblick}
-
 \paragraph{Warum?} \begin{itemize}
     \item Verfügbarkeit von Parallelrechnern (Dual-Core, \dots)
 \item Physikalische Grenzen
 \item Parallelität in vielen Anwendungen
 \end{itemize}
 
-\subsection{Modellproblem: Skalarprodukt von Vektoren}
+\section{Modellproblem: Skalarprodukt von Vektoren}
 
 Seien $x,y \in \bR^n$. Wir wollen berechnen: \[S = \langle x,y \rangle = \sum_{i=0}^{n-1}x_i y_i.\]
 
@@ -243,7 +243,7 @@ Gesamtaufwand im parallelen Verfahren: $\cO\left(\frac{n}{P} + \log P\right)$. F
 \item $n \approx P$: $\cO(\log N)$
 \end{itemize}
 
-\subsection{Kommunizierende sequentielle Prozesse}
+\section{Kommunizierende sequentielle Prozesse}
 
 \begin{defi}[Sequentieller Prozess]
 Abstraktion, Ausführen eines sequentiellen Programms. Jederzeit klarer Zustand. Genau ein Befehlszähler (PC, Programm Counter) und Variablen (Speicher, Register).
@@ -281,5 +281,130 @@ Starte alle.  Paralleles Programm terminiert, wenn alle Prozesse terminieren.
     \item Prozessen: Eigener Adressraum
 \item Threads: Gemeinsamer Adressraum, billiger
 \end{itemize}
+
+\minisec{Darstellung des Skalarproduktes in verschiedenen Modellen}
+
+\begin{bsp} Skalarprodukt mit $2$ Prozessen\\
+\verb|{ N=8; real X[N], Y[N], s=0;|\\
+\verb|   thread| $\pi_1$ \verb|{ real t=0;|\\
+\verb|      for i=0 ... N/2 -1|\\
+\verb|         t = t + X[i]*Y[i];|\\
+\verb|      s = s + t;}|\\
+\verb|   thread| $\pi_2$ \verb|{ real t=0;|\\
+\verb|      for i=N/2 ... N|\\
+\verb|         t = t + X[i]*Y[i];|\\
+\verb|      s = s + t;}|\\
+\verb|}|
+
+Es fehlt die Eingabe von \texttt{X} und \texttt{Y}. Ein Thema hier ist \textit{paralleles Lesen}. Fehler können beim \textit{parallelen Schreiben} auftreten. Was ist das Ergebnis beim parallelen Schreiben?
+
+Problem ist die Zeile "`\verb|s=s+t|"'.  
+\end{bsp}
+
+\section{Der kritische Abschnitt (Detailbetrachtung von \texttt{s=s+t})}
+
+\verb|THREAD| $\pi_1$\\
+\verb|1.1   LADE     s       IN R1|\\
+\verb|1.2   LADE     t       IN R2|\\
+\verb|1.3   ADDIERE  R1, R2| $\to$ \verb|NACH R3|\\
+\verb|1.4   SCHREIBE R3      NACH s|
+
+\verb|THREAD| $\pi_2$\\
+\verb|2.1   LADE     s       IN R1|\\
+\verb|2.2   LADE     t       IN R2|\\
+\verb|2.3   ADDIERE  R1, R2| $\to$ \verb|NACH R3|\\
+\verb|2.4   SCHREIBE R3      NACH s|
+
+Innerhalb eines Prozesses wird die Reihenfolge der Programmzeilen eingehalten.
+
+CSP: Hintereinanderausführung in jedem Thread.
+\begin{itemize}
+    \item In Thread $\pi_1$ wird Zeile 1 zuerst und Zeile 4 zuletzt ausgeführt
+\item Analog in Thread $\pi_2$
+\end{itemize}
+
+Aber wie sieht die relative Reihenfolge aus, wenn die Threads nicht Zeile für Zeile parallel laufen?
+
+Beispiele:
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Reihenfolge} & \textbf{Ergebnis}\\ \hline \hline
+1.1, 1.4, 2.1, 2.4 & $s=t_1 + t_2$\\
+2.1, 2.4, 1.1, 1.4 & $s= t_2 + t_2$ auch korrekt\\
+1.1, 2.1, 1.4, 2.4 & $s = t_2$ falsch\\
+1.1, 2.1, 2.1, 1.4 & $s=t_1$ falsch\\
+2.1, 1.1, 1.4, 2.4 & $s=t_2$ falsch\\
+2.1, 1.1, 2.4, 1.4 & $s=t_1$ falsch\\\hline
+\end{tabular}
+
+Benötigen einen Mechanismus, sodass die beiden Prozessoren aufeinander Rücksicht nehmen.
+
+\minisec{Lösung des Problems "`Kritische Abschnitte"' (critical region)}
+Mit gegenseitigem Ausschluss (mutual exclusion = "`MUTEX"')
+Schreibweise in CSP: Anweisung in eckige Klammern setzen: \verb|[s=s+t]|. Die Reihenfolge (auch im Konfliktfall) ist noch immer unbestimmt, diese brauchen wir auch nicht. Aber im Konfliktfall wird diese Operation nacheinander abgearbeitet.
+
+Es wird so ausgeführt: \verb|[1.1 1.4] [2.1 2.4]| oder \verb|[2.1 2.4] [1.1 1.4]|
+
+\section{Parametrisierte Form (single program -- multiple data, = "`SPMD"')}
+
+Häufig eine variable Zahl von Prozessen. Wir wollen eine Aufteilung gleichartiger Operationen. Wir wollen ein Programm für alle.
+
+\begin{bsp}
+Skalarprodukt mit $P$ Prozessoren
+
+\verb|{ int N, P; real X[N], Y[N], s=0;|\\
+\verb|   thread| $\pi$ \verb|(int p) {|\\
+\verb|      real t = 0;|\\
+\verb|      for i=| $N\cdot \frac{ p}{P}$ \verb|...| $\left( N \cdot \frac{p+1}{P} - 1 \right)$\\
+\verb|         t = t + X[i]*Y[i];|\\
+\verb|      [s = s + t;]}   // Kritischer Abschnitt|\\
+\verb|}|
+
+Jeder Prozess wird meinem anderen $p$ gestartet. Das Programm macht daraus die Verteilung der Operationen.
+
+Für diese Implementierung haben einen Aufwand von $\cO \left( \frac{N}{P} + P\right)$
+\end{bsp}
+
+\section{Verbesserung der Effizienz}
+
+Der kritische Abschnitt läuft sequentiell ab.
+
+Ziel ist es, den kritischen Abschnitt baumartig auszuführen, damit ein logarithmischer Aufwand entsteht. Auch ein Ziel ist es, dass der kritische Abschnitt nicht mehr kritisch ist.
+
+\textcolor{red}{TODO: BAUM EINFÜGEN}
+
+Wir brauchen eine globale Variable für Zwischenergebnisse \verb|S[p]| und für die Terminierung $\verb|flag[p]|.$
+
+Sei $P= 2^d$. Im Schritt $i \in \{0, \dots, d-1\}$ addiert
+\begin{center}
+Thread "`$l=\dots \underbrace{0\dots\dots 0}_{i+1 \text{ Nullen} }$"'
+\end{center}
+mit
+\begin{center}
+Thread "`$r=\dots 1 \underbrace{0\dots\dots 0}_{i \text{ Nullen}}$"'
+\end{center}
+(die vorderen Zifferen -- die "`\dots"' -- müssen gleich sein), der danach terminiert.
+
+\minisec{Skalarprodukt Baumkombination}
+\verb|{ int N, d, P=| $2^d$ \verb|; real X[N], y[N], s[P]=0;|\\
+\verb|  boolean flag[P] = false; // Initialisierung vor Start des|\\
+\verb|                           // ersten Threads|\\
+\verb|   thread | $\pi$ \verb|(int p){|\\
+\verb|      for i=| $N\cdot\frac{p}{P}$ \verb|...| $\left( N\cdot\frac{p+1}{P} - 1\right)$\\
+\verb|         S[p] = S[p] + X[i]*Y[i];|\\
+\verb|      for i = 0,...,d-1|\\
+\verb|         l = (p >> (i+1)) << (i+1); // lösche (i+1) Bits|\\
+\verb|         r = l +| $2^i$\\
+\verb|         if (p==r)|\\
+\verb|            flag[p]=true; end;|\\
+\verb|         if (p==l)|\\
+\verb|            while (flag[r] == false) // BUSY WAIT|\\
+\verb|               S[p] = s[p] + S[r];}|\\
+\verb|}|
+
+Ergebnis liegt am Ende in \verb|S[0]|. Alternativ zum Busy Wait kann man Synchronisation des OS verwenden.
+
+
+
 
 \end{document}
