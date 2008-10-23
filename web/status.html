@@ -3,18 +3,23 @@ import re
 
 filename = lambda script_id: '%s/%s.Build.log' % (data_path_prefix, script_id)
 
-exists = lambda script_id: os.path.exists(filename(script_id))
+all_results = []
+for script in scripts:
+    script_id = script['id']
+    if os.path.exists( filename(script_id) ):
+        result = [0] * 6
+        for line in open( filename(script_id) ):
+            if line.startswith('F:'):
+                result[0] += 1
+            elif line.startswith('W:'):
+                result[1] += 1
+            elif line.startswith('I: Zusammenfassung: '):
+                numbers = [int(item) for item in re.split('[^\\d]+', line) if item]
+                result[2:] = numbers
+    else:
+        result = None
 
-def stats(script_id):
-    result = [0] * 6
-    for line in open(filename(script_id)):
-        if line.startswith('F:'):
-            result[0] += 1
-        elif line.startswith('W:'):
-            result[1] += 1
-        elif line.startswith('I: Zusammenfassung: '):
-            numbers = [int(item) for item in re.split('[^\\d]+', line) if item]
-            result[2:] = numbers
+    all_results.append( dict(name=script_id, data=result) )
 
 <?xml?>
 <table>
@@ -30,13 +35,13 @@ def stats(script_id):
     </tr>
   </thead>
   <tbody>
-    <tr tal:repeat="item scripts">
-      <td tal:content="python:item[0]" />
-      <td tal:condition="python:exists(item[0])"
-          tal:repeat="entry python:stats(item[0])"
+    <tr tal:repeat="item all_results">
+      <td tal:content="item/name" />
+      <td tal:condition="item/data"
+          tal:repeat="entry item/data"
           tal:content="entry"
           tal:attributes="class python:entry and 'bad' or 'good'"/>
-      <td tal:condition="not:python:exists(item[0])"
+      <td tal:condition="not:item/data"
           colspan="6" class="bad_stat">Kein Log vorhanden</td>
     </tr>
   </tbody>
