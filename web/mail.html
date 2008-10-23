@@ -1,21 +1,59 @@
-<!--
-<?php
-// echo "<b>id=-$id- body=-$body- knopf=$knopf $HTTP_REFERER</b><br>";
-if ($id and $body and $knopf == Absenden)
-{
-    $id = trim($id);  // remove all newlines and something more that should
-                      // not be there to prevent cross site scripting in mails
-    mail("uni-skripte@lug-jena.de", "Fehler im Skript $id [Webmail]",
-         $body);
+mail_to = 'uni-skripte@lug-jena.de'
+mail_from = 'uni-skripte@lug-jena.de'
 
-    echo "Die E-Mail wurde an die ".
-      "<a href=\"http://wotan.thomas-lotze.de/cgi-bin/mailman/listinfo/uni-skripte\">".
-      "Mailingliste</a> gesandt und sollte dort mit etwas Verzögerung zu ".
-      "lesen sein. Vielen Dank für die Unterstützung.";
-}
-else
-  echo "Es gab Probleme beim Versand. Bitte wende Dich per E-Mail an die ".
-      "Mailingliste.";
-?>
--->
+from cgi import parse
+query_params = parse(__request__.env.apache_request, __request__.env)
 
+script_id = query_params.get('id')
+if script_id:
+    script_id = script_id[0]
+
+body = query_params.get('body')
+if body:
+    body = body[0]
+
+email_send = False
+if body and body != '' and script_id and script_id != '':
+    from email import Message, Charset
+    mail = Message.Message()
+    mail['To'] = mail_to
+    mail['From'] = mail_from
+    mail['Subject'] = 'Fehler im Skript %s [Webmail]' % script_id
+    mail.set_payload(body)
+    for char_set in ['UTF-8', 'latin1']:
+        try:
+            body = body.decode(char_set)
+            cs = Charset.Charset(char_set)
+            cs.body_encoding = Charset.QP
+            mail.set_charset(cs)
+            break
+        except UnicodeDecodeError:
+            None
+
+    mail = mail.as_string()
+
+    import os
+    pipe = os.popen("/usr/sbin/sendmail -f '%s' '%s'" %
+                    (mail_from, mail_to), "w")
+    pipe.write(mail)
+    pipe.close()
+    email_send = True
+
+<?xml?>
+<tal:verbose condition="nothing | default">
+  E-Mail: <pre tal:condition="exists:mail" tal:content="mail" />
+  Id: <pre tal:content="script_id" />
+  body: <pre tal:content="body" />
+  email_send: <pre tal:content="email_send" />
+</tal:verbose>
+
+<tal:send condition="email_send">
+  Die E-Mail wurde an die
+  <a href="http://wotan.thomas-lotze.de/cgi-bin/mailman/listinfo/uni-skripte"
+    >Mailingliste</a> gesandt und sollte dort mit etwas Verzögerung zu lesen
+  sein. Vielen Dank für die Unterstützung.
+</tal:send>
+<tal:notsend condition="not:email_send">
+  Es gab Probleme beim Versand. Bitte wende Dich per E-Mail an die Mailingliste
+  <a href="mailto:uni-skripte@lug-jena.de">uni-skripte@lug-jena.de</a>.
+</tal:notsend>
