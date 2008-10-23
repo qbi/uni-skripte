@@ -14,8 +14,8 @@ for script in scripts:
             elif line.startswith('W:'):
                 result[1] += 1
             elif line.startswith('I: Zusammenfassung: '):
-                numbers = [int(item) for item in re.split('[^\\d]+', line) if item]
-                result[2:] = numbers
+                result[2:] = re.findall('\\d+', line)
+        result[0:1] = [str(i) for i in result[0:1]]
     else:
         result = None
 
@@ -40,7 +40,7 @@ for script in scripts:
       <td tal:condition="item/data"
           tal:repeat="entry item/data"
           tal:content="entry"
-          tal:attributes="class python:entry and 'bad' or 'good'"/>
+          tal:attributes="class python:entry == '0' and 'good' or 'bad'"/>
       <td tal:condition="not:item/data"
           colspan="6" class="bad_stat">Kein Log vorhanden</td>
     </tr>
