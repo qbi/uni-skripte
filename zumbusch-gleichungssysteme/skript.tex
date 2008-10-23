@@ -3,7 +3,8 @@
 \usepackage[ngerman]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
-\usepackage{amsmath,amsthm,times,amssymb,xspace,url,svn,color,fixmath}
+\usepackage{amsmath,amsthm,amssymb,xspace,url,svn,color,fixmath,pifont,hyperref,booktabs,tikz}
+\usetikzlibrary{calc}
 
 \theoremstyle{definition}
 
@@ -175,12 +176,12 @@ Starte alle.  Paralleles Programm terminiert, wenn alle Prozesse terminieren.
 
 \begin{bsp} Skalarprodukt mit $2$ Prozessen\\
 \verb|{ N=8; real X[N], Y[N], s=0;|\\
-\verb|   thread| $\pi_1$ \verb|{ real t=0;|\\
-\verb|      for i=0 ... N/2 -1|\\
+\verb|   thread| $\pi_\mathtt{1}$ \verb|{ real t=0;|\\
+\verb|      for i=0 ...| $\mathtt{\left(\frac{N}{2} -1\right)}$\\
 \verb|         t = t + X[i]*Y[i];|\\
 \verb|      s = s + t;}|\\
-\verb|   thread| $\pi_2$ \verb|{ real t=0;|\\
-\verb|      for i=N/2 ... N|\\
+\verb|   thread| $\pi_\mathtt{2}$ \verb|{ real t=0;|\\
+\verb|      for i=| $\mathtt{\frac{N}{2}}$ \verb|... N|\\
 \verb|         t = t + X[i]*Y[i];|\\
 \verb|      s = s + t;}|\\
 \verb|}|
@@ -192,17 +193,20 @@ Problem ist die Zeile "`\verb|s=s+t|"'.
 
 \section{Der kritische Abschnitt (Detailbetrachtung von \texttt{s=s+t})}
 
-\verb|THREAD| $\pi_1$\\
-\verb|1.1   LADE     s       IN R1|\\
-\verb|1.2   LADE     t       IN R2|\\
-\verb|1.3   ADDIERE  R1, R2| $\to$ \verb|NACH R3|\\
-\verb|1.4   SCHREIBE R3      NACH s|
+(Die Zahlen in den Kreisen kennzeichnen Programmzeilen, auf die wir uns später wieder beziehen werden.)
 
-\verb|THREAD| $\pi_2$\\
-\verb|2.1   LADE     s       IN R1|\\
-\verb|2.2   LADE     t       IN R2|\\
-\verb|2.3   ADDIERE  R1, R2| $\to$ \verb|NACH R3|\\
-\verb|2.4   SCHREIBE R3      NACH s|
+\begin{tabbing}
+\ding{202}\verb|  |\= \verb|ADDIERE  R1, R2 NACH R3| XXXXXXXXXXX \= \ding{202}\verb|  |\= \verb|ADDIERE  R1, R2 NACH R3|\kill
+\verb|THREAD| $\pi_\mathtt{1}$ \> \> \verb|THREAD| $\pi_\mathtt{2}$\\
+\ding{202}\>\verb|LADE     s      IN   R1| \> \ding{204}\>\verb|LADE     s      IN   R1|\\
+\>\verb|LADE     t      IN   R2| \> \>\verb|LADE     t      IN   R2|\\
+\>\verb|ADDIERE  R1, R2 NACH R3| \>\>\verb|ADDIERE  R1, R2 NACH R3|\\
+\ding{203}\>\verb|SCHREIBE R3     NACH s| \> \ding{205}\>\verb|SCHREIBE R3     NACH s|\\
+\end{tabbing}
+
+
+
+
 
 Innerhalb eines Prozesses wird die Reihenfolge der Programmzeilen eingehalten.
 
@@ -215,16 +219,19 @@ CSP: Hintereinanderausführung in jedem Thread.
 Aber wie sieht die relative Reihenfolge aus, wenn die Threads nicht Zeile für Zeile parallel laufen?
 
 Beispiele:
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Reihenfolge} & \textbf{Ergebnis}\\ \hline \hline
-1.1, 1.4, 2.1, 2.4 & $s=t_1 + t_2$\\
-2.1, 2.4, 1.1, 1.4 & $s= t_2 + t_2$ auch korrekt\\
-1.1, 2.1, 1.4, 2.4 & $s = t_2$ falsch\\
-1.1, 2.1, 2.1, 1.4 & $s=t_1$ falsch\\
-2.1, 1.1, 1.4, 2.4 & $s=t_2$ falsch\\
-2.1, 1.1, 2.4, 1.4 & $s=t_1$ falsch\\\hline
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Reihenfolge} & \textbf{Ergebnis}\\ \midrule
+\ding{202} \ding{203} \ding{204} \ding{205} & $s=t_1 + t_2$\\
+\ding{204} \ding{205} \ding{202} \ding{203} & $s= t_2 + t_2$ auch korrekt\\
+\ding{202} \ding{204} \ding{203} \ding{205} & $s = t_2$ falsch\\
+\ding{202} \ding{204} \ding{205} \ding{203} & $s=t_1$ falsch\\
+\ding{204} \ding{202} \ding{203} \ding{205} & $s=t_2$ falsch\\
+\ding{204} \ding{202} \ding{205} \ding{203} & $s=t_1$ falsch\\\bottomrule
 \end{tabular}
+\end{center}
+
 
 Benötigen einen Mechanismus, sodass die beiden Prozessoren aufeinander Rücksicht nehmen.
 
@@ -232,19 +239,19 @@ Benötigen einen Mechanismus, sodass die beiden Prozessoren aufeinander Rücksicht
 Mit gegenseitigem Ausschluss (mutual exclusion = "`MUTEX"')
 Schreibweise in CSP: Anweisung in eckige Klammern setzen: \verb|[s=s+t]|. Die Reihenfolge (auch im Konfliktfall) ist noch immer unbestimmt, diese brauchen wir auch nicht. Aber im Konfliktfall wird diese Operation nacheinander abgearbeitet.
 
-Es wird so ausgeführt: \verb|[1.1 1.4] [2.1 2.4]| oder \verb|[2.1 2.4] [1.1 1.4]|
+Es wird so ausgeführt: [\ding{202} \ding{203}] [\ding{204} \ding{205}] oder [\ding{204} \ding{205}] [\ding{202} \ding{203}]
 
 \section{Parametrisierte Form (single program -- multiple data, = "`SPMD"')}
 
 Häufig eine variable Zahl von Prozessen. Wir wollen eine Aufteilung gleichartiger Operationen. Wir wollen ein Programm für alle.
 
 \begin{bsp}
-Skalarprodukt mit $P$ Prozessoren
+Skalarprodukt mit $P=$\texttt{Pr} Prozessoren
 
-\verb|{ int N, P; real X[N], Y[N], s=0;|\\
+\verb|{ int N, Pr; real X[N], Y[N], s=0;|\\
 \verb|   thread| $\pi$ \verb|(int p) {|\\
 \verb|      real t = 0;|\\
-\verb|      for i=| $N\cdot \frac{ p}{P}$ \verb|...| $\left( N \cdot \frac{p+1}{P} - 1 \right)$\\
+\verb|      for i=| $\mathtt{N\cdot \frac{p}{Pr}}$ \verb|...| $\mathtt{\left( N \cdot \frac{p+1}{Pr} - 1 \right)}$\\
 \verb|         t = t + X[i]*Y[i];|\\
 \verb|      [s = s + t;]}   // Kritischer Abschnitt|\\
 \verb|}|
@@ -260,11 +267,68 @@ Der kritische Abschnitt läuft sequentiell ab.
 
 Ziel ist es, den kritischen Abschnitt baumartig auszuführen, damit ein logarithmischer Aufwand entsteht. Auch ein Ziel ist es, dass der kritische Abschnitt nicht mehr kritisch ist.
 
-\textcolor{red}{TODO: BAUM EINFÜGEN}
+\begin{figure}[t!]
+\centering \begin{tikzpicture}
+\draw[->] (-2,0) -- (-1,0) (-1.5,0) -- (-1.5,-6.5);
+\draw (-1.5,-3) node[rotate=90,above] {Schritte};
+\draw (-1.5,-1) node[right] {1.};
+\draw (-1.5,-3) node[right] {2.};
+\draw (-1.5,-5) node[right] {3.};
+\draw (0,0) node[right] (a) {$S_0$};
+\draw (1,0) node[right] (b) {$S_1$};
+\draw (2,0) node[right] (c) {$S_2$};
+\draw (3,0) node[right] (d) {$S_3$};
+\draw (4,0) node[right] (e) {$S_4$};
+\draw (5,0) node[right] (f) {$S_5$};
+\draw (6,0) node[right] (g) {$S_6$};
+\draw (7,0) node[right] (h) {$S_7$};
+\draw (0,-2) node[right] (aa) {$S_0 + S_1$};
+\draw (2,-2) node[right] (bb) {$S_2 + S_3$};
+\draw (4,-2) node[right] (cc) {$S_4 + S_5$};
+\draw (6,-2) node[right] (dd) {$S_6 + S_7$};
+\draw (0,-4) node[right] (aaa) {$S_0 + S_1 + S_2 + S_3$};
+\draw (4,-4) node[right] (bbb) {$S_4 + S_5 + S_6 + S_7$};
+\draw (0,-6) node[right] (aaaa) {$S_0 + S_1 + S_2 + S_3+S_4 + S_5 + S_6 + S_7$};
+\draw[->] (a.south west) -- (aa.north west);
+\draw[->] (b.south west) -- ($(aa.north west)+(0.1,0)$);
+\draw[->] (c.south west) -- (bb.north west);
+\draw[->] (d.south west) -- ($(bb.north west)+(0.1,0)$);
+\draw[->] (e.south west) -- (cc.north west);
+\draw[->] (f.south west) -- ($(cc.north west)+(0.1,0)$);
+\draw[->] (g.south west) -- (dd.north west);
+\draw[->] (h.south west) -- ($(dd.north west)+(0.1,0)$);
+\draw[->] (aa.south west) -- (aaa.north west);
+\draw[->] (bb.south west) -- ($(aaa.north west)+(0.1,0)$);
+\draw[->] (cc.south west) -- (bbb.north west);
+\draw[->] (dd.south west) -- ($(bbb.north west)+(0.1,0)$);
+\draw[->] (aaa.south west) -- (aaaa.north west);
+\draw[->] (bbb.south west) -- ($(aaaa.north west)+(0.1,0)$);
+\draw (0,-.5) node[right,fill=black!20] {\tiny \sffamily 000};
+\draw (1,-.5) node[right,fill=black!20] {\tiny \sffamily 001};
+\draw (2,-.5) node[right,fill=black!20] {\tiny \sffamily 010};
+\draw (3,-.5) node[right,fill=black!20] {\tiny \sffamily 011};
+\draw (4,-.5) node[right,fill=black!20] {\tiny \sffamily 100};
+\draw (5,-.5) node[right,fill=black!20] {\tiny \sffamily 101};
+\draw (6,-.5) node[right,fill=black!20] {\tiny \sffamily 110};
+\draw (7,-.5) node[right,fill=black!20] {\tiny \sffamily 110};
+\draw (0,-2.5) node[right,fill=black!20] {\tiny \sffamily 000};
+\draw (2,-2.5) node[right,fill=black!20] {\tiny \sffamily 010};
+\draw (4,-2.5) node[right,fill=black!20] {\tiny \sffamily 100};
+\draw (6,-2.5) node[right,fill=black!20] {\tiny \sffamily 110};
+\draw (0,-4.5) node[right,fill=black!20] {\tiny \sffamily 000};
+\draw (4,-4.5) node[right,fill=black!20] {\tiny \sffamily 100};
+\draw (0,-6.5) node[right,fill=black!20] {\tiny \sffamily 000};
+\end{tikzpicture}
+\caption{Schema zu "`Skalarprodukt Baumkombination"'. \newline \tiny Die Pfeile kennzeichnen Warteabhängigkeiten zwischen Threads. Die Zahlen in den grauen Kästen sind die Binärdarstellungen der Zahl $p$ des aktivin Threads $p$.}
+
+\vspace{5mm}
+
+\hrule
+\end{figure}
 
 Wir brauchen eine globale Variable für Zwischenergebnisse \verb|S[p]| und für die Terminierung $\verb|flag[p]|.$
 
-Sei $P= 2^d$. Im Schritt $i \in \{0, \dots, d-1\}$ addiert
+Sei \texttt{Pr}$=P= 2^d$. Im Schritt $i \in \{0, \dots, d-1\}$ addiert
 \begin{center}
 Thread "`$l=\dots \underbrace{0\dots\dots 0}_{i+1 \text{ Nullen} }$"'
 \end{center}
@@ -275,20 +339,20 @@ Thread "`$r=\dots 1 \underbrace{0\dots\dots 0}_{i \text{ Nullen}}$"'
 (die vorderen Zifferen -- die "`\dots"' -- müssen gleich sein), der danach terminiert.
 
 \minisec{Skalarprodukt Baumkombination}
-\verb|{ int N, d, P=| $2^d$ \verb|; real X[N], y[N], s[P]=0;|\\
-\verb|  boolean flag[P] = false; // Initialisierung vor Start des|\\
+\verb|{ int N, d, Pr=| $\mathtt{2^d}$ \verb|; real X[N], y[N], s[Pr]=0;|\\
+\verb|  boolean flag[Pr] = false; // Initialisierung vor Start des|\\
 \verb|                           // ersten Threads|\\
 \verb|   thread | $\pi$ \verb|(int p){|\\
-\verb|      for i=| $N\cdot\frac{p}{P}$ \verb|...| $\left( N\cdot\frac{p+1}{P} - 1\right)$\\
+\verb|      for i=| $\mathtt{N\cdot\frac{p}{Pr}}$ \verb|...| $\mathtt{\left( N\cdot\frac{p+1}{Pr} - 1\right)}$\\
 \verb|         S[p] = S[p] + X[i]*Y[i];|\\
 \verb|      for i = 0,...,d-1|\\
 \verb|         l = (p >> (i+1)) << (i+1); // lösche (i+1) Bits|\\
-\verb|         r = l +| $2^i$\\
+\verb|         r = l +| $\mathtt{2^i}$ \verb|;|\\
 \verb|         if (p==r)|\\
 \verb|            flag[p]=true; end;|\\
 \verb|         if (p==l)|\\
 \verb|            while (flag[r] == false) // BUSY WAIT|\\
-\verb|               S[p] = s[p] + S[r];}|\\
+\verb|               S[p] = S[p] + S[r];}|\\
 \verb|}|
 
 Ergebnis liegt am Ende in \verb|S[0]|. Alternativ zum Busy Wait kann man Synchronisation des OS verwenden.
