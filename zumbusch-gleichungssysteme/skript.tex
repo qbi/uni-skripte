@@ -1,9 +1,20 @@
 \RequirePackage[l2tabu,orthodox]{nag}
-\documentclass[halfparskip,pointednumbers,smallheadings,headsepline,footsepline]{scrreprt}
+\documentclass[halfparskip,pointednumbers,twoside,openright,smallheadings,headsepline]{scrreprt}
 \usepackage[ngerman]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
-\usepackage{amsmath,amsthm,amssymb,xspace,url,svn,color,fixmath,pifont,hyperref,booktabs,tikz}
+\usepackage{amsmath,amsthm,amssymb,xspace,url,svn,color,fixmath,pifont,booktabs,tikz,scrpage2}
+\usepackage[colorlinks]{hyperref}
+\usepackage[	top=30mm,
+					bottom=20mm,
+					inner=30mm,
+					outer=20mm]{geometry}
+\clearscrheadfoot
+\automark[chapter]{chapter}
+\ihead[]{\normalfont\sffamily\headmark}
+\ohead[]{\normalfont\textsf{\textbf{\thepage}}}
+\renewcommand*{\chapterpagestyle}{scrheadings}
+
 \usetikzlibrary{calc}
 
 \theoremstyle{definition}
@@ -35,13 +46,11 @@
 \newcommand*{\kvmat}[1]{\ensuremath{\left|\begin{smallmatrix} #1 \end{smallmatrix}\right|}\xspace}
 \newcommand*{\kVmat}[1]{\ensuremath{\left\|\begin{smallmatrix} #1 \end{smallmatrix}\right\|}\xspace}
 
-\SVN $Revision$
-\SVN $Date$
 \SVN $LastChangedRevision$
 \SVN $LastChangedDate$
 
 \begin{document}
-\pagestyle{headings}
+\pagestyle{scrheadings}
 \title{Schnelle iterative Löser großer schwach besetzter linearer Gleichungssysteme}
 \author{Professor\,Dr.\,G. W. Zumbusch\\FSU Jena}
 \date{}
@@ -61,7 +70,7 @@
   machen, solange ein Verweis auf die Internetadresse des Projekts
   \url{http://uni-skripte.lug-jena.de/} enthalten ist.
 
-  Diese Ausgabe trägt die Versionsnummer~\SVNRevision{} und ist vom
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
   \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts
   verfügbar sein.
 
@@ -143,7 +152,7 @@ Abstraktion, Ausführen eines sequentiellen Programms. Jederzeit klarer Zustand. 
 Interagierende sequentielle Prozesse. Sinnvoll auf mehreren Prozessoren. Gegebenenfalls zyklisches Umschalten.
 \end{defi}
 
-\newpage\minisec{Vereinfachtes Muster eines parallelen Programms}
+\minisec{Vereinfachtes Muster eines parallelen Programms}
 
 \begin{verbatim}
 {
@@ -271,9 +280,9 @@ Ziel ist es, den kritischen Abschnitt baumartig auszuführen, damit ein logarithm
 \centering \begin{tikzpicture}
 \draw[->] (-2,0) -- (-1,0) (-1.5,0) -- (-1.5,-6.5);
 \draw (-1.5,-3) node[rotate=90,above] {Schritte};
-\draw (-1.5,-1) node[right] {1.};
-\draw (-1.5,-3) node[right] {2.};
-\draw (-1.5,-5) node[right] {3.};
+\draw (-1.5,-1) node[right] {0.};
+\draw (-1.5,-3) node[right] {1.};
+\draw (-1.5,-5) node[right] {2.};
 \draw (0,0) node[right] (a) {$S_0$};
 \draw (1,0) node[right] (b) {$S_1$};
 \draw (2,0) node[right] (c) {$S_2$};
@@ -319,7 +328,7 @@ Ziel ist es, den kritischen Abschnitt baumartig auszuführen, damit ein logarithm
 \draw (4,-4.5) node[right,fill=black!20] {\tiny \sffamily 100};
 \draw (0,-6.5) node[right,fill=black!20] {\tiny \sffamily 000};
 \end{tikzpicture}
-\caption{Schema zu "`Skalarprodukt Baumkombination"'. \newline \tiny Die Pfeile kennzeichnen Warteabhängigkeiten zwischen Threads. Die Zahlen in den grauen Kästen sind die Binärdarstellungen der Zahl $p$ des aktivin Threads $p$.}
+\caption{Schema zu "`Skalarprodukt Baumkombination"'. \newline \tiny Die Pfeile kennzeichnen Warteabhängigkeiten zwischen Threads. Die Zahlen in den grauen Kästen sind die Binärdarstellungen der Zahl $p$ des aktiven Threads $p$.}
 
 \vspace{5mm}
 
@@ -338,7 +347,7 @@ Thread "`$r=\dots 1 \underbrace{0\dots\dots 0}_{i \text{ Nullen}}$"'
 \end{center}
 (die vorderen Zifferen -- die "`\dots"' -- müssen gleich sein), der danach terminiert.
 
-\minisec{Skalarprodukt Baumkombination}
+\newpage\minisec{Skalarprodukt Baumkombination}
 \verb|{ int N, d, Pr=| $\mathtt{2^d}$ \verb|; real X[N], y[N], s[Pr]=0;|\\
 \verb|  boolean flag[Pr] = false; // Initialisierung vor Start des|\\
 \verb|                           // ersten Threads|\\
