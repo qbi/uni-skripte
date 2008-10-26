@@ -103,6 +103,14 @@ dateien=$(find . -type f -name .svn -prune -o \( -name \*tex -o -name \*.ltx \) 
 echo I: skript-check $src $dateien
 $TMP/sc $src $dateien
 
+for i in $src $dateien
+do
+    grep -q "$(printf '\r')\$" $i && \
+      echo "F: Die Zeilenenden in $i nur mit Newline nicht mit Carriage" \
+        "return kennzeichen. Eventuell das SVN-Schlüsselwort svn:eol-style" \
+        "auf LF setzen."
+done
+
 if [ -e ${src%.*}.idx ] && ! [ -e ${src%.*}.idx ]; then
     echo "W: die Indexdatei ${src%.*}.idx existiert, ist aber leer."
 fi
