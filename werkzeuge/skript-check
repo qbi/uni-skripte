@@ -189,6 +189,12 @@ sub usepackage
 }
 neue_funktions_regel(qr/\\usepackage/, qr/^$/, \&usepackage, undef);
 
+# Wenn in einem \usepackage-Befehl mehrere Pakete aufgeführt sind, erschwert
+# dies die Fehlersuche mit Teile und Herrsche. Außerdem ist es unübersichtlich
+# auf diese Weise kann man auch keine Optionen direkt Paketen zuordnen.
+neue_funktions_regel(qr/\\usepackage(\[.*\])?{.*,.*}/, qr/^$/, \&monieren,
+                     "Nur ein Paket pro usepackage verwenden");
+
 my ($makeindex_gefunden, $index_gefunden);
 neue_suchregel(qr/\\makeindex/, \$makeindex_gefunden);
 neue_suchregel(qr/\\index/, \$index_gefunden);
