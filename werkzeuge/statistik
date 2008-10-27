@@ -7,21 +7,21 @@ BEGIN
     #      old-logs | sort -u
 
     # alle Bots, die am Anfang ihre Kennung stehen haben
-    $bots_beg=qr/(Dot|Ena|Euro|Exa|Giga|Google|IRL|Mc|MJ12|msn|ps|Seek|Snap)[bB]ot[\/-]|egothor|e-SocietyRobot|Twiceler|Semager\/|[Ss]ogou( web)? spider|MSRBOT|woriobot|Yeti/;
+    $bots_beg=qr/(?:Dot|Ena|Euro|Exa|Giga|Google|IRL|Mc|MJ12|msn|ps|Seek|Snap)[bB]ot[\/-]|egothor|e-SocietyRobot|Twiceler|Semager\/|[Ss]ogou(?: web)? spider|MSRBOT|woriobot|Yeti/;
     # alle Bots, die mit "Mozilla/5.0 (compatible;" beginnen
-    $bots_moz_comp=qr/ (archive.org_|Dot|Exa|Google|MJ12|worio)[bB]ot| Ask Jeeves| Yahoo! Slurp|MAINSEEK_BOT/;
+    $bots_moz_comp=qr/ (?:archive.org_|Dot|Exa|Google|MJ12|worio)[bB]ot| Ask Jeeves| Yahoo! Slurp|MAINSEEK_BOT/;
     # alle Bots, die mit "Mozilla/5.0 (" beginnen
-    $bots_moz=qr/compatible;($bots_moz_comp)|SnapPreviewBot|Twiceler-/;
+    $bots_moz=qr/compatible;(?:$bots_moz_comp)|SnapPreviewBot|Twiceler-/;
     # die anderen
     $bots_misc=qr/Googlebot-Mobile|^Mozilla\/4.0 compatible ZyBorg|^MSNBOT_Mobile|\(Exabot-Thumbnails\)$|^SpiderCow-BM$/;
 
-    $BOTS=qr/^($bots_beg)|^Mozilla\/5\.0 \(($bots_moz)|$bots_misc/;
+    $BOTS=qr/^(?:$bots_beg)|^Mozilla\/5\.0 \((?:$bots_moz)|$bots_misc/;
     if ( defined($ARGV[1]) )
     {
         open ("-", "<", $ARGV[1]) or die "couldn't open logfile";
     }
 
-    $SEARCH_ENGINE=qr/\.altavista\.com\/web\/|(google\.[a-z.]*\/(custom|scholar|search))|metager\.de\/meta\/cgi-bin|search\.(icq|live|msn|yahoo)\.com|suche\.(exalead|fireball|lycos|t-online|web)\.de/;
+    $SEARCH_ENGINE=qr/\.altavista\.com\/web\/|(?:google\.[a-z.]*\/(?:custom|scholar|search))|metager\.de\/meta\/cgi-bin|search\.(?:icq|live|msn|yahoo)\.com|suche\.(?:exalead|fireball|lycos|t-online|web)\.de/;
 
     our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS, $FIRST_DATE, $LAST_DATE);
     our (%PS_ACCESS, %PS_UNI_ACCESS, %PS_GOOGLE_ACCESS);
@@ -96,7 +96,7 @@ print "bot line: $_\n" if ($agent =~ /bot|spider/i or $url eq "/robots.txt");
 ++$ALL_UNI_ACCESS if ($ip =~ /^141\.35\./);
 ++$ALL_GOOGLE_ACCESS if ($referer =~ /^http:\/\/www\.google/);
 
-if ($referer !~ /^(<unknown>|-)$|uni-skripten?\.lug-jena|\.minet\.uni-jena\.de\/(~|%7[eE])joergs\/|$SEARCH_ENGINE/)
+if ($referer !~ /^(?:<unknown>|-)$|uni-skripten?\.lug-jena|\.minet\.uni-jena\.de\/(?:~|%7[eE])joergs\/|$SEARCH_ENGINE/)
 {
     ++$REFERER{$referer};
 }
