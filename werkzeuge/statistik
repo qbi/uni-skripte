@@ -26,8 +26,8 @@ BEGIN
     our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS, $FIRST_DATE, $LAST_DATE);
     our (%PS_ACCESS, %PS_UNI_ACCESS, %PS_GOOGLE_ACCESS);
     our (%TGZ_ACCESS, %TGZ_UNI_ACCESS, %TGZ_GOOGLE_ACCESS);
-    our ($ALL_ACCESS, $ALL_UNI_ACCESS, $ALL_GOOGLE_ACCESS) = (0, 0, 0);
-    our (%REFERER);
+    our ($ALL_ACCESS, $ALL_UNI_ACCESS) = (0, 0);
+    our (%REFERER, %SEARCH_ENGINE_REFS);
 }
 END
 {
@@ -61,13 +61,19 @@ END
 
     printf "\nZugriffe auf alle Seiten\n".
       "Von überall: %6d\n".
-      "Aus der Uni: %6d\n".
-      "Über Google: %6d\n", $ALL_ACCESS, $ALL_UNI_ACCESS, $ALL_GOOGLE_ACCESS;
+      "Aus der Uni: %6d\n", $ALL_ACCESS, $ALL_UNI_ACCESS;
 
     printf "\nDirekte Zugriffe von fremden Seiten\n";
     foreach (sort { $REFERER{$b} <=> $REFERER{$a} } keys %REFERER)
     {
         printf "%4d: %s\n", $REFERER{$_}, $_;
+    }
+
+    printf "\nZugriffe über Suchmaschinen\n";
+    foreach (sort { $SEARCH_ENGINE_REFS{$b} <=> $SEARCH_ENGINE_REFS{$a} }
+        keys %SEARCH_ENGINE_REFS)
+    {
+        printf "%4d: %s\n", $SEARCH_ENGINE_REFS{$_}, $_;
     }
 }
 
@@ -94,9 +100,15 @@ print "bot line: $_\n" if ($agent =~ /bot|spider/i or $url eq "/robots.txt");
 
 ++$ALL_ACCESS;
 ++$ALL_UNI_ACCESS if ($ip =~ /^141\.35\./);
-++$ALL_GOOGLE_ACCESS if ($referer =~ /^http:\/\/www\.google/);
 
-if ($referer !~ /^(?:<unknown>|-)$|uni-skripten?\.lug-jena|\.minet\.uni-jena\.de\/(?:~|%7[eE])joergs\/|$SEARCH_ENGINE/)
+if ($referer =~ /$SEARCH_ENGINE/)
+{
+    ($_) = $referer =~ /:\/\/([\w\.-]+)\.\w+\.?\//;
+    $_ = $1 if (/(.*)\.com?$/);
+    /([^\.]+)$/;
+    ++$SEARCH_ENGINE_REFS{$1};
+}
+elsif ($referer !~ /^(?:<unknown>|-)$|uni-skripten?\.lug-jena|\.minet\.uni-jena\.de\/(?:~|%7[eE])joergs\//)
 {
     ++$REFERER{$referer};
 }
