@@ -26,7 +26,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
 
-\usepackage{lmodern}		% Latin Modern
+%\usepackage{lmodern}		% Latin Modern
 \usepackage[T1]{fontenc}        % T1-Schriften notwendig f�r PDFs
 \usepackage{textcomp}           % wird ben�tigt, damit der \textbullet
                                 % f�r itemize in lmodern gefunden wird.
@@ -57,6 +57,11 @@
 \usepackage{nicefrac}
 \usepackage{accents}
 \usepackage{wasysym}
+\usepackage[euler-digits,T1]{eulervm}
+\usepackage{charter}
+\usepackage[scaled=.92]{helvet}
+\usepackage{courier}
+\usepackage{todonotes}
 
 % Damit auch die Zeichen im Mathemode in �berschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -80,16 +85,15 @@
 
 % Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
 % Kapitels zur�ckgesetzt
-\newtheorem{satz}{Satz}[chapter]
-\newtheorem{bemerk}{Bemerkung}[chapter]
-\newtheorem{defini}{Definition}[chapter]
-\newtheorem{bsp}{Beispiel}[chapter]
-\newtheorem{festl}{Festlegung}[chapter]
-\newtheorem{lem}{Lemma}[chapter]
+\newtheorem{defini}{Definition}[section]
+\newtheorem{satz}[defini]{Satz}
+\newtheorem{lem}[defini]{Lemma}
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
 \newtheorem{fakt}{Fakt}
+\newtheorem{bemerk}{Bemerkung}
+\newtheorem{bsp}{Beispiel}
 
 % \theoremheaderfont{\global\hasprooftrue\scshape}
 \theoremheaderfont{\scshape}
@@ -127,7 +131,7 @@
 \newcommand*{\help}[1]{\textcolor{green}{help: #1}}
 
 % \todo ist das gleiche wie \help nur f�r offene Aufgaben
-\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+% \newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
 
 % Um wichtige Begriffe im Text �berall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
@@ -171,6 +175,10 @@
 \DeclareMathOperator{\cl}{cl}
 \DeclareMathOperator{\spn}{span}
 \DeclareMathOperator{\card}{card}
+\DeclareMathOperator{\inner}{int}
+
+
+
 
 \makeindex
 
@@ -469,6 +477,189 @@ n_{\epsilon}\in\N\forall n\geq n_{\epsilon}\colon\norm{x_{n}-x}\leq\epsilon$.
     \end{itemize}
   \end{proof}
 \end{lem}
+
+% Vorlesung vom 2008-10-27
+\begin{defini}
+  Die \highl[Hülle!abgeschlossene]{abgeschlossene Hülle} von $M\subseteq X$
+  ist definiert als $\cl(M)\colon= \bigcap_{N\supseteq M} N=\{x\in
+  X\colon\forall N (N\supseteq M\Rightarrow x\in N)\}= \{x\in X\colon\exists
+  (x_{n})\subset M\colon x_{n}\Rightarrow x\}$.
+
+  Das \highl{Innere} oder \highl{Kern} von $M\subseteq X$ ist $\inner (M)\colon=
+  \bigcup_{N\subseteq M, \text{offen}} N= \{x\colon\exists N(N\subseteq
+  M\wedge x\in N)\}$.
+\end{defini}
+
+Der Abschluss $\cl(M)$ ist die kleinste abgeschlossene Menge, die $M$ enthält.
+Es ist $\cl\accentset{\circ}{B}_{x}=B_{x}$. Weiter ist $\inner(M)$ die größte
+offene Menge in $M$.
+
+\begin{defini}
+  Es heißt $M\subseteq X$  genau dann \highl{beschränkt}, wenn $\sup_{x\in M}
+  \norm{x}<\infty(\Leftrightarrow\exists r\geq0\colon M\subset B_{r}(0))$.
+
+  Eine Folge $(x_{n})\subset X$ heißt \highl{Cauchyfolge}, genau dann wenn
+  $\forall\epsilon>0\,\exists n_{\epsilon}\in\N\,\forall n,m\geq
+  n_{\epsilon}\colon\norm{x_{n} -x_{m}}\leq\epsilon$
+\end{defini}
+
+% lem I.2.2
+\begin{lem}\label{lem:i.22}
+  Sei $(x_{n})\subset X$ eine Cauchyfolge, $(x_{n_{j}})\subset(x_{n})$ eine
+  konvergente Teilfolge. Dann ist $(x_{n})$ konvergent.
+  \begin{proof}
+    Sei $x\colon=\lim x_{n_{k}}$ und $\epsilon>0$. Dann existiert
+    $k_{\epsilon}\in\N\,\forall k\geq k_{\epsilon}\colon \norm{x-x_{n_{k}}}
+    \leq\frac{\epsilon}{2}$. Andrerseits $(x_{n})\subset F\Rightarrow\exists
+    n_{l}\geq n_{k_{\epsilon}}\,\forall n\geq n_{\epsilon}\colon\norm{x_{n}-
+    x_{n_{k}}}\leq\frac{\epsilon}{2}$. Dann folgt für $n\geq
+    n_{l}\colon\norm{x-x_{n}}= \norm{x-x_{n_{l}}+x_{n_{l}} -x_{n}}\leq
+    \norm{x-x_{n_{l}}} +\norm{x_{n_{l}}-x_{n}}\leq\frac{\epsilon}{2}+
+    \frac{\epsilon}{2}=\epsilon$.
+  \end{proof}
+\end{lem}
+
+\begin{defini}
+  Ein normierter Raum heißt \highl[Raum!vollständig]{vollständig}, falls jede
+  Cauchyfolge in $X$ konvergiert.
+
+  Ein vollständiger normierter Raum heißt \highl{Banachraum}.
+\end{defini}
+
+%satz I.2.3
+\begin{satz}[Kriterium für die Vollständigkeit]
+  Ein normierter Raum ist genau dann vollständig, wenn [$\forall(x_{n})\subset
+  X\colon \sum_{n=1}^{\infty} \norm{x_{n}}<\infty\Rightarrow
+  \sum_{n=1}^{\infty} x_{n}$ ist in $X$ konvergent].
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $(x_{n})\subset X$ mit $\sum_{n=1}^{\infty}
+      \norm{x_{n}}<\infty$. Dann sind die Partialsummen
+      $s_{n}\colon=\sum_{n=1}^{m} x_{n}$ Cauchyfolgen. Denn für $\epsilon>0$
+      existiert ein $N_{\epsilon}\in\N$ und für $m>k\geq N_{\epsilon}$ gilt
+      $\norm{s_{m}-s_{k}}= \norm{\sum_{n=k+1}^{m} x_{k}}\leq \sum_{n=k+1}^{m}
+      \norm{x_{n}}\leq\epsilon$. Damit ist $\sum_{n=1}^{\infty} x_{n}$
+      konvergent in $X$, da $X$ vollständig.
+     \item["`$\Leftarrow$"'] Sei $(x_{n})\subset X$ Cauchyfolge in $X$. Dann
+      ist zu zeigen, dass ein $x\in X$ mit $\lim x_{n}=x$ existiert. Also
+      existiere ein $n_{1}$ mit $\norm{x_{n}- x_{m}}\leq\frac{1}{2}$ für
+      $n,m\geq n_{1}$. Weiter existiert ein $n_{2}>n_{1}$ mit $\norm{x_{n}
+      -x_{m}}\leq\frac{1}{2^{2}}$ für $n,m\geq n_{2}$. Das wird fortgeführt.
+      Also existiert ein $n_{k}>n_{k-1}>\dotsb> n_{1}$ mit $\norm{x_{n}-
+      x_{m}}\leq \frac{1}{2^{k}}$ für $n,m\geq n_{k}$. Insbesondere hat man
+      $\norm{x_{n_{1}}- x_{n_{1}}}\leq\frac{1}{2}$ und $\norm{x_{n_{3}}
+      -x_{n_{2}}}\leq\frac{1}{2^{2}}$ Letztlich ist $\norm{x_{n_{k+1}}
+      -x_{n_{k}}}\leq\frac{1}{2^{k}}$. Durch diese Konstruktion folgt,
+      $\sum_{k=1}^{\infty} \norm{x_{n_{k+1}}-x_{n_{k}}}<\infty$. Nach der
+      Voraussetzung ist die Reihe $\sum (x_{n_{k+1}}-x_{n_{k}})$ in $X$
+      konvergent.
+
+      Damit folgt, $x_{n_{m+1}}-x_{n_{1}}= \sum_{k=1}^{\infty}
+      (x_{n_{k+1}}-x_{n_{k}})\rightarrow s\in X$ oder $x_{n_{m+1}}\rightarrow
+      x_{n_{1}}+s=\colon x\in X$. Nach dem \autoref{lem:i.22} ist die
+      Cauchyfolge konvergent, denn $(x_{n_{k}})$ ist konvergente Teilfolge von
+      $(x_{n})$.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+Das folgende Lemma ist oft nützlich bei der Untersuchung der Vollständigkeit
+normierter Räume.
+
+% lem I.2.4
+\begin{lem}\label{lem:i.24}
+  Sei $X$ ein normierter Raum und $U\subseteq X$ ein linearer Teilraum. Dann
+  gilt,
+  \begin{enumerate}[(a)]
+   \item Ist $U$ vollständig, so ist $U$ abgeschlossen.
+   \item Ist $X$ vollständig und $U$ abgeschlossen, so ist auch $U$
+    vollständig.
+  \end{enumerate}
+
+  \begin{proof}
+    \begin{enumerate}[(a)]
+     \item Sei $(u_{n})\subset U$ eine konvergente Teilfolge in $X$, d.\,h.
+      $u_{n}\rightarrow x\in X$. Dann ist $(u_{n})$ eine Cauchyfolge in $U$
+      und da $U$ vollständig, existiert ein Grenzwert $u\in U$. Also muss
+      gelten $x=u\in U$ wegen der Eindeutigkeit des Grenzwertes. Somit ist $U$
+      abgeschlossen.
+     \item Sei $(u_{n})\subset U$ eine Cauchyfolge. Dann ist $(u_{n})$ auch
+      eine Cauchyfolge in $X$. Da $X$ vollständig, existiert $x\colon=\lim
+      u_{n}\in X$. Die Abgeschlossenheit von $U$ impliziert, dass $x\in U$,
+      d.\,h. $U$ ist vollständig.
+    \end{enumerate}
+  \end{proof}
+\end{lem}
+
+\begin{bemerk}
+  \begin{itemize}
+   \item Das obige Lemma (\autoref{lem:i.24}) gilt ebenso für metrische Räume,
+    wobei $U\subset X$ die Rolle einer Teilmenge spielt.
+   \item Im Punkt (B) ist die Vollständigkeit von $X$ notwendig. 
+  \end{itemize}
+\end{bemerk}
+
+\paragraph{Präkompakte und kompakte Mengen}
+
+\begin{defini}
+  Eine Teilmenge $M\subset X$ eines normierten Raumes $X$ heißt genau dann
+  \highl{präkompakt}, wenn für jedes $\epsilon>0$ existieren $s_{1},\dotsc,
+  s_{n}\in X\colon M\subset\bigcup_{i=1}^{n} (\{s_{i}\}+\epsilon B_{x})$.
+
+  $M$ heißt genau dann \highl{kompakt}, wenn $\forall(x_{n})\subset M$
+  existiert eine konvergente Teilfolge $(x_{n_{k}})\subset(x_{n})\colon\lim
+  x_{n_{k}} \in M$. Das ist äquivalent dazu, dass jede offene Überdeckung
+  $\{G_{\alpha}\}_{\alpha\in I}$ von $M$ mit $M\subset\bigcup_{\alpha\in I}
+  G_{cma}$ enthält eine endliche offene Teilüberdeckung, d.\,h. es existieren
+  Indizes $\alpha_{1},\dotsc,\alpha_{n}\colon M\subset\bigcup_{i=1}^{n}
+  G_{\alpha_{i}}$.
+
+  Sei $X$ ein Banachraum. Dann gilt für $M\subset X$: $M$ ist genau dann
+  präkompakt, wenn der Abschluss von $M$ kompakt ist.
+\end{defini}
+
+\begin{defini}[Entropiezahl]
+  Sei $M\subset X$ beschränkt. Dann heißt die Größe:
+  \begin{gather*}
+    E_{n}(M)\colon= \inf\{\epsilon\geq0\colon \exists s_{1},\dotsc, s_{n}\in
+       X\colon M\subset\bigcup_{i=1}^{n}(\{s_{i}\}+\epsilon B_{x})\}
+  \end{gather*}
+  $n$"~te \highl{Entropiezahl} von $M$.
+\end{defini}
+
+\begin{bemerk}
+  Es ist $E_{1}(M)\geq E_{2}(M)\geq\dotsb\geq0$. Also ist $M$ genau dann
+  präkompakt, wenn $\lim_{n\rightarrow\infty} E_{n}(M)=0$.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $\delta>0$. Dann existiert $n_{\delta}\in\N$
+      mit $s_{1},\dotsc, s_{n_{\delta}}\in X\colon
+      M\subset\bigcup_{i=1}^{n_{\epsilon}} (\{s_{i}\}+\epsilon
+      B_{x})\Rightarrow E_{n_{\delta}}(M)\leq\delta$. Somit $E_{n}(M)\leq
+      E_{n_{\delta}}(M)\leq\delta$ für $n\geq n_{\delta}$, d.\,h. $\lim
+      E_{n}(M)=0$.
+     \item["`$\Leftarrow$"'] Sei $\lim E_{n}(M)=0$. Für $\delta>0$ existiert
+      eine Zahl $n_{\delta}$ mit $E_{n_{\delta}}<\delta$. Damit folgt nach der
+      Definition der Entropiezahlen, dass $s_{1},\dotsc, s_{n_{\delta}}\in X$
+      mit $M\subset\bigcup_{i=1}^{n_{\delta}} (\{s_{i}\}+\delta B_{x})$
+      existieren. Also ist $M$ präkompakt.
+    \end{itemize}
+  \end{proof}
+
+  Somit ergibt sich das folgende Problem: Sei $X$ ein Banachraum mit $\dim
+  X=\infty$. Ist es möglich, dass die Einheitskugel $B_{x}$ von $X$ durch
+  endlich viele $\epsilon$"~Kugeln $\{s_{i}\}+\epsilon B_{X}$ mit $\epsilon<1$
+  überdeckt werden kann?
+
+  Hinweis: $E_{nm}(B_{X})\leq E_{n}(B_{X})E_{M}(B_{X})$
+
+  \missingfigure{Grafik siehe unten}
+  kompakt $\Rightarrow$ präkompakt (zurück mit vollständig) (bei metr. Räumen)
+  ||                         ||
+  v                          v
+  abgeschlossen           beschränkt
+\end{bemerk}
+
 
 
 
