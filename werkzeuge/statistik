@@ -20,10 +20,14 @@ BEGIN
     {
         open ("-", "<", $ARGV[1]) or die "couldn't open logfile";
     }
+
+    $SEARCH_ENGINE=qr/\.altavista\.com\/web\/|(google\.[a-z.]*\/(custom|scholar|search))|metager\.de\/meta\/cgi-bin|search\.(icq|live|msn|yahoo)\.com|suche\.(exalead|fireball|lycos|t-online|web)\.de/;
+
     our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS, $FIRST_DATE, $LAST_DATE);
     our (%PS_ACCESS, %PS_UNI_ACCESS, %PS_GOOGLE_ACCESS);
     our (%TGZ_ACCESS, %TGZ_UNI_ACCESS, %TGZ_GOOGLE_ACCESS);
     our ($ALL_ACCESS, $ALL_UNI_ACCESS, $ALL_GOOGLE_ACCESS) = (0, 0, 0);
+    our (%REFERER);
 }
 END
 {
@@ -59,6 +63,12 @@ END
       "Von überall: %6d\n".
       "Aus der Uni: %6d\n".
       "Über Google: %6d\n", $ALL_ACCESS, $ALL_UNI_ACCESS, $ALL_GOOGLE_ACCESS;
+
+    printf "\nDirekte Zugriffe von fremden Seiten\n";
+    foreach (sort { $REFERER{$b} <=> $REFERER{$a} } keys %REFERER)
+    {
+        printf "%4d: %s\n", $REFERER{$_}, $_;
+    }
 }
 
 next if ($_ eq "\n");
@@ -85,6 +95,11 @@ print "bot line: $_\n" if ($agent =~ /bot|spider/i or $url eq "/robots.txt");
 ++$ALL_ACCESS;
 ++$ALL_UNI_ACCESS if ($ip =~ /^141\.35\./);
 ++$ALL_GOOGLE_ACCESS if ($referer =~ /^http:\/\/www\.google/);
+
+if ($referer !~ /^(<unknown>|-)$|uni-skripten?\.lug-jena|\.minet\.uni-jena\.de\/(~|%7[eE])joergs\/|$SEARCH_ENGINE/)
+{
+    ++$REFERER{$referer};
+}
 
 if ($url =~ /\/([^\/]*)\.pdf$/)
 {
