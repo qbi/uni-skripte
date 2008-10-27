@@ -61,6 +61,10 @@
 \usepackage{fixltx2e}
 \usepackage[final]{microtype} % Verbesserung der Typographie
 \usepackage{nicefrac}
+\usepackage[version=3]{mhchem}
+\usepackage{wasysym}
+\usepackage{bbm}
+\usepackage{todonotes}
 
 
 % Damit auch die Zeichen im Mathemode in überschriften fett sind
@@ -168,6 +172,12 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
+
+\newcommand*{\ID}{\mathbbm{1}}
+\newcommand*{\E}{\mathbb{E}}
+
+
+
 \newcommand*{\SL}{\mathcal{L}}
 
 \makeindex
@@ -331,7 +341,7 @@ gefangen. Insgesamt existieren acht solcher Fanggeschichten.
   100 &=X_{5}\\
   010 &=X_{6}\\
   001 &=X_{7}\\
-  000 &\text{unbekannt}
+  000 &\quad\text{unbekannt}
 \end{align*}
 
 Wir kennen die Variablen $X_{1},\dotsc, X_{7}$, für $X_{8}= N-(X_{1}+\dotsb+
@@ -373,90 +383,187 @@ Modellierung.
 
 Zum Abschluss steht der Test der Hypothesen.
 
-\begin{satz}[Toller Satz]\label{satz:1}
-  Dies ist ein ganz toller und wichtiger Satz mit einer ganz einfachen
-  Formel
+%Vorlesung vom 2008-10-27
+Also ergeben sich die folgenden sechs Punkte:
+\begin{enumerate}
+ \item Statistische Modellbildung
+ \item Parameterschätzung
+ \item Verteilung von Parameterschätzern
+ \item Modellanpassung
+ \item Test der Hypothesen
+ \item Konfidenzintervalle/""Prognoseintervalle
+\end{enumerate}
+
+\section{Beispiele für statistische Modelle}
+
+\begin{bsp}[Körpergewicht von Säuglingen]
+  Man betrachtet das Körpergewicht von Säuglingen im ersten Lebensjahr. Also
+  Ergebnis von Messungen ergeben sich Punktepaare $(x_{i}, y_{i})$ für
+  $i=1,\dotsc,n$. Dabei steht das $x_{i}$ für das Alter in Tagen und das
+  $y_{i}$ für das Körpergewicht. Wir fassen das $y_{i}$ als Realisierung einer
+  zufälligen Größe $Y_{i}$ auf. Es ist
+  $y_{i}=b_{1}+\beta_{2}x_{i}+\epsilon_{i}$ eine lineare Funktion. Das
+  $\epsilon_{i}$ wird als \highl{Störterm} bezeichnet. Typischerweise nimmt
+  man an, dass die $\epsilon_{i}$ unabhängig und identisch verteilt sind. Die
+  Standardannahme für die Verteilung ist $\epsilon_{i}\sim N(O,\sigma^{2})$.
+  Das Modell wird als \highl[Regression!einfache lineare]{einfache lineare
+  Regression} bezeichnet.
+
+  Die Zufallsgröße $Y_{i}$ hat einen Erwartungswert $\E
+  Y_{i}=\mu_{i}=\beta_{1}+ \beta_{2}x_{i}$ (deterministischer Teil). Im
+  statistischen Teil ergibt sich $Y_{i}\sim N(\mu_{i}, \sigma^{2})$.  
+\end{bsp}
+
+\begin{bsp}[\ce{SO2}"~Belastung der Luft]
+  Wir haben $y_{i}$ als den \ce{SO2}"~Gehalt der Luft.
+  Weiter ist $x_{i2}$ die mittlere Jahrestemperatur, $x_{i3}$ Anzahl der
+  Betriebe mit mehr als 20~Beschäftigten, $x_{i4}$ Einwohnerzahl, $x_{i5}$
+  mittlerer Jahresniederschlag, $x_{i6}$ mittlere Windgeschwindigkeit und
+  $x_{i7}$ die mittlere Anzahl von Regentagen. Als Daten haben wir nun Angaben
+  in Form von Vektoren $(y_{i}, x_{i2},\dotsc, x_{i7})$. Die Zufallsvariable
+  ist im wesentlichen $Y_{i}= \beta_{1}+ \beta_{2}x_{i2}+\dotsb+\beta_{7}
+  x_{i7}+\epsilon_{i}$. Die $\epsilon_{i}$ sind wieder unabhängig und
+  identisch verteilt und es gilt $\epsilon_{i}\sim N(O,\sigma^{2})$.
+\end{bsp}
+
+\begin{bsp}[Geburtsgewicht von Säuglingen]
+  Diese werden getrennt nach \male und \female. Es ist
   \begin{gather*}
-    a\cdot0=0
+    \mu_{i}=
+       \begin{cases}
+	 \beta_{11}+ \beta_{21}x_{i}& \text{für \male}\\
+	 \beta_{12}+ \beta_{22}x_{i}& \text{für \female}
+       \end{cases}
   \end{gather*}
+  Eine typische Hypothese wäre $H_{0}\colon\beta_{21}= \beta_{22}$ oder
+  $H_{0}\colon\beta_{11}= \beta_{12}$. Es wird eine so genannte Dummyvariable
+  eingeführt. Das ist eine Indikatorvariable mit $\ID_{i}= \begin{cases}1 &
+							    \text{falls \female}\\
+							    0& \text{sonst}\end{cases}$.
+  Damit folgt $\mu_{i}=\beta_{1}+\beta_{2}\ID_{i}+\beta_{3}x_{i}+
+  \beta_{4}\ID_{i}x_{i}$, d.\,h.
+  \begin{gather*}
+    \mu_{i}=
+       \begin{cases}
+	 \beta_{1}+\beta_{3}& \text{für \male}\\
+	 (\beta_{1}+\beta_{2})+(\beta_{3}+\beta_{4})x_{i}& \text{sonst}
+       \end{cases}
+  \end{gather*}
+  Damit können wir die Hypothesen einfach übersetzen: $H_{0}\colon\beta_{4}=0$
+  bzw. $H_{0}\colon\beta_{2}=0$. Das wird klassisch als
+  \highl{Kovarianzanalyse} bezeichnet.
+\end{bsp}
 
-  \begin{proof}
-    Daher müssen wir ihn auch beweisen:
-    \begin{align*}
-      a\cdot 0 &= a\cdot(1-1)\\
-      &= a-a&\text{durch ausmultiplizieren}\\
-      &= 0&\text{n.\,Definition d.\,Inversen d.\,Addition}
-    \end{align*}
-  \end{proof}
-\end{satz}
+\begin{bsp}[Reaktionszeit von Busfahrern]
+  Es wird die Reaktionszeit von Busfahrern auf unterschiedlichen Linien
+  betrachtet. Das $y_{i}=\alpha_{k}+\epsilon_{ik}$ mit $k=1,\dotsc,K$ der
+  Nummer der Linie und $i=1,\dotsc,n$ Numerierung der Busfahrer. Es ist $\E
+  Y_{i}= \alpha_{k}= \begin{cases}\alpha_{1}& k=1\\
+			\vdots& \vdots\\
+			\alpha_{k}& k=K
+		      \end{cases}$. Die Prüfung wird wiederum mit einer
+  Dummyvariable vorgenommen. Es ist $\ID_{ik}=
+  \begin{cases}
+    1 & \text{Fahrer $i$ fährt Linie $k$}\\
+    0 & \text{sonst}
+  \end{cases}$.  Dann ist $Y_{i}=\sum_{k=1}^{K}
+  \alpha_{k}\ID_{ik}+\epsilon_{i}$. Die Annahme für die Verteilung von
+  $\epsilon_{i}$ ist $\epsilon_{i}\sim N(O,\sigma^{2})$ unabhängig und
+  identisch verteilt. Es ist $\mu_{i}= \sum_{k=1}^{K} \alpha_{k}\ID_{ik}$. Es
+  interessiert die Hypothese $H_{0}\colon\alpha_{1}=\dotsb=\alpha_{k}$. Dieser
+  Ansatz heißt \highl{Varianzanalyse}.
+\end{bsp}
 
-Die Umgebung \texttt{proof} sollte immer innerhalb der Umgebung stehen, zu der
-der Beweis gehört. Das hat den Vorteil, dass man Umgebungen ohne Beweis z.\,B.
-mit $\scriptstyle\Box$ enden lassen kann, wärend Umgebungen mit Beweisen
-mit $\scriptstyle\blacksquare$ enden. Dadurch kann man im laufenden Text
-auch das Ende von Sätzen, Bemerkungen und dergleichen erkennen, was sonst
-schwer ist, da die gleiche Schrift sowohl innerhalb als auch außerhalb
-verwendet wird.
-% Man beachte die speziellen Anweisungen bei der theorem-Definition in der
-% Präampel
+\begin{bsp}[Vorkommen der blauflügligen Ödlandschrecke (Oedipoda caerulescens)]
+  Die Zielgröße $y_{i}$ ist das Vorkommen. Das kann nur die Werte 0 oder 1
+  annehmen. Weiter bezeichnet $x_{i}$ den Offenbodenanteil. Das bisherige
+  Herangehen muss hier geändert werden. Denn das $y$ kann nur die Werte 0 oder
+  1 annehmen. Der obige Ansatz kann aber immer beliebige Werte annehmen.
 
-\begin{bemerk}
-  Der ganz tolle und wichtige \autoref{satz:1} ist gar nicht so toll und
-  wichtig ist er schon gar nicht.
-\end{bemerk}
+  Jetzt beginnen wir mit dem stochastischen Teil. Wir nutzen die
+  Binomialverteilung $y_{i}\sim\text{Bin}(1,\mu_{i})$ mit $\mu_{i}\in(0,1)$.
+  Im deterministischen Teil ergibt sich $\mu_{i}= h(\underbrace{\beta_{1}+
+  \beta_{2}x_{i}}_{\text{\highl[Prädiktor!linearer]{linearer Prädiktor}}})$.
+  Das $h$ heißt \highl{Responsefunktion}. Was wäre eine vernünftige
+  Responsefunktion? Sie sollte monoton, stetig sein und Wert in $(0,1)$ haben.
+  Vernünftige Kandidaten sind stetige Verteilungsfunktionen. Typisch wäre
+  $h=\Phi(\cdot)$, also die Verteilungsfunktion der Standard"=Normalverteilung
+  oder $h(x)=\frac{1}{1+e^{-x}}$ Verteilungsfunktion der logistischen
+  Verteilung. Diese Klasse von Modellen werden als verallgemeinerte lineare
+  Modelle bezeichnet.
+\end{bsp}
 
-\begin{bemerk}[Wichtiger Hinweis]
-  Aber merke: Keine \texttt{equation}-Umgebung mehr verwenden.
-  Stattdessen lieber \texttt{gather}. Siehe \url{news:d9bfko$fdp$1@news.BelWue.DE}
-  \href{ftp://cam.ctan.org/tex-archive/macros/latex/contrib/onlyamsmath/onlyamsmath.dvi}
-  {Dokumentation von onlyamsmath}
-  und einfach mal "`\texttt{texdoc amsldoc}"' aufrufen.
+\begin{bsp}[Entwicklung des Körpergewichts von mehreren Säuglingen im ersten
+  Lebensjahr]
+  Wir setzen $y_{ij}$ das Körpergewicht von Kind $i$ zum Zeitpunkt $x_{j}$.
+  \missingfigure{Graf mit verschiedenen Gewichtspunkten, $x_{j}$ aufd x"~Achse
+    und $y_{ij}$ auf y"~Achse}
+  Es ist $y_{ij}= \beta_{1}+ \beta_{2}x_{j} +\epsilon_{ij}$. Dann ist nicht
+  Anname, dass die $\epsilon_{ij}$ unabhängig und identisch verteilt sind,
+  \emph{nicht vernünftig}. Wir haben eine Gruppierung der Daten. Das führt zu
+  stochastischer Abhängigkeit. Die Einführung von Dummyvariablen birgt ein
+  Problem. Es ist zwar für jedes Kind möglich. Aber wir wollen keine Aussage
+  für \emph{jedes} Kind, sondern eine allgemeine Aussage wie sich die Kinder
+  im ersten Lebensjahr entwickeln.
 
-  Auf \url{http://www.dante.de/CTAN/info/german/l2tabu/l2tabu.pdf} sind
-  weitere nützliche Hinweise zu finden.
-\end{bemerk}
+  Hierfür nutzt man gemischte Modelle. Dabei wird mehr Zufall eingeführt,
+  indem man die individuellen Unterschiede als zufällig modellieren. Wir haben
+  $y_{ij}= (\beta_{1}+ b_{1i})+ (\beta_{2}+b_{2i}) x_{ij} +\epsilon_{ij}$. In
+  diesem Modell können wir nun sagen, $\epsilon_{ij}\sim N(O,\sigma^{2}),
+  b_{1i}\sim N(O,\sigma^{2}_{1}), b_{2i}\sim N(O,\sigma^{2}_{2})$. Zwischen
+  den Größen $b_{1i}$ und $b_{2i}$ gibt es eine Korrelation $\cov(b_{1i},
+  b_{2i})= \rho\sigma_{1}\sigma_{2}$. Aber die $b_{1i}, b_{2i}$ sind
+  unabhängig von den $\epsilon_{ij}$.
+\end{bsp}
 
-\begin{satz}[Verwendung von Grafiken]
-  Grafiken sollten prinzipell in einem Vektorformat erstellt werden. Dazu
-  eignet sich \texttt{xfig} sehr gut. Wird das Bild mit
-  \texttt{\textbackslash{}includegraphics\{bild\}} eingebunden, erstellt
-  \texttt{rubber} automatisch daraus die benötigte Datei
-  -- \texttt{bild.pdf} oder \texttt{bild.eps} -- für \LaTeX{}.
+\chapter{Exponentialfamilien}
+%def 2.1
+\begin{defini}
+  Ein Zufallsvektor $Y=(Y_{1},\dotsc, Y_{n})$ besitz eine Verteilung aus einer
+  \highl{Exponentialfamilie}, falls er eine Dichte bzw. Wahrscheinlichkeitsfunktion
+  besitzt, die sich in der Form
+  \begin{gather*}
+    f(y|\Theta)= f((y_{1},\dotsc, y_{n})|(\Theta_{1},\dotsc,\Theta_{n}))= h(y)
+       \exp\{\sum_{i=1}^{k} \eta_{i}(\Theta) T_{i} (y)-c(\Theta)\}
+  \end{gather*}
+  darstellen lässt. Die Familie heißt
+  \highl[Exponentialfamilie!$k$"~parametrige]{$k$"~parametrige
+  Exponentialfamilie}, falls $k$ die kleinste Zahl, für die so eine
+  Darstellung möglich ist, ist.
+\end{defini}
 
-  Für besondere Schriften (z.\,B. mathmatische Zeichen oder
-  Hoch-/Tiefstellen) kann man in \texttt{xfig} das "`Special Flag"' für
-  Text setzen und das Bild mit
-  \texttt{\textbackslash{}input\{bild.pdf\_t\}} einbinden. Damit wird die
-  Schrift direkt von \LaTeX{} erzeugt und man hat (fast) alle
-  Möglichkeiten, die \LaTeX{} bietet. \texttt{rubber} erkennt
-  selbstständig, welches Grafikformat benötigt wird und erzeugt
-  unabhängig vom Namen das Bild als PDF oder PS.
-\end{satz}
 
-\begin{festl}
-  Im Mathematikmodus drückt man mit einem Doppelpunkt \texttt{:} nicht
-  unbedingt das aus, was man will. Der Doppelpunk ist der
-  Divisionsoperator, wie er z.\,B. in "`$1:2 = 0\mathord{,}5$"'
-  \footnote{Da im Englischen das Komma der Trenner für die
-    Tausenderstelle ist man \texttt{\textbackslash{}mathord\{,\}} verwenden,
-    sonst stimmt der Abstand nicht: $0,5$ (ohne) statt $0\mathord{,}5$
-    (mit). Siehe
-    \href{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
-    {Mathmode von Herbert Voss}\cite{mathmode} Abschnitt
-    "`11.4 Dot versus comma"'}
-  verwendet wird. Wenn man jedoch $f\colon \R\rightarrow\R$ oder
-  $\{a\colon a\in\N\cap\Q\}$ ausdrücken will, muss man \verb+\colon+
-  verwenden.
-
-  Der Unterschied zeigt sich u.\,a. im linken und rechten Abstand
-  $g:A\rightarrow B$ mit Doppelpunkt im Vergleich zu $g\colon
-  A\rightarrow B$ mit \verb+\colon+. Siehe
-  \href{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
-  {Short Math Guide for \LaTeX{}}\cite{shmathguide}
-\end{festl}
 
 \clearpage
 \appendix
+
+\chapter{Übungsaufgaben}
+
+\begin{enumerate}
+  %Übung vom 2008-10-27
+ \item Überlegen Sie sich, welche Arten der Verteilung Sie kennen.
+  \begin{itemize}
+   \item Normalverteilung
+   \item Exponentialverteilung
+   \item Binomialverteilung
+   \item Poissonverteilung
+   \item Gleichverteilung
+   \item Gammaverteilung
+   \item hypergeometrische Verteilung
+   \item Bernoulliverteilung
+   \item $\chi^{2}$"~Verteilung
+   \item logistische Verteilung
+   \item Fischersche $F$"~Verteilung
+   \item Studentsche $t$"~Verteilung
+   \item Lorentzverteilung
+   \item Erlangverteilung
+   \item Weibullverteilung
+   \item Boltzmannverteilung
+   \item Multinomialverteilung
+   \item geometrische Verteilung
+  \end{itemize}
+\end{enumerate}
+
 \begin{thebibliography}{99}
  \bibitem{mathmode} Math mode von Herbert Voss,\\
   \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
