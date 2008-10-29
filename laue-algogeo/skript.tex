@@ -1,0 +1,631 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: index.tool      xindy
+% rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+\usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final,babel]{microtype} % Verbesserung der Typographie
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{thrm}{Theorem}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+\newtheorem{eigen}{Eigenschaften}
+
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Algorithmische Geometrie}
+\author{Sören Laue}
+\date{Semester: WS 2008/09}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Person \nolinkurl{<email>}} (Jahr)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+
+%Inhalt:
+
+%1. Grundlagen
+%- Hyperebenen, Halbräume
+%- Bälle
+%- Konvexe Mengen
+
+%2. Geometrische Prädikate
+%- Floating point vs exakte arithmetik
+
+%3. Konvexe Hüllen, Delaunay-Diagramme, Voronoi-Diagramme
+
+%4. Flächenrekonstruktion im $R^3$ (selbst implementieren), Meshing
+
+%5. Geometrische Datenanalyse
+%- Alpha Shapes
+%- Flow Shapes
+
+
+
+\chapter{Grundlagen}
+
+\section{Affine Geometrie}
+
+Vorraussetzung: Lineare Algebra im $\R^d$
+
+\begin{defini}[Affiner Unterraum]
+Eine Teilmenge nennt man affiner Unterraum, wenn entweder $A = \emptyset$ oder $A$ ist ein "verschobener" linearer Unterraum.
+D.h. $A = V + L$, wobei $L$ ein linearer Unterraum des $\R^d$ ist und $v \in \R^d$ ein Vektor.
+\end{defini}
+
+\begin{bsp}
+
+\begin{itemize}
+\item Gerade in der Ebene
+\item Gerade im $\R^d$
+\item Ebene im $\R^3$
+\end{itemize}
+\end{bsp}
+
+\begin{defini}[Dimension]
+$\operatorname{dim } A = - 1$ falls $A = \emptyset$ und $\operatorname{dim } L$ sonst (Dimension des linearen Unterraums).
+\end{defini}
+
+\begin{defini}[Affine Kombination von Punkten]
+Seien $p_1, p_2.. p_n \in \R^d, n \geq 1$ und 
+$\lambda_1... \lambda_n \in \R$
+mit $\sum_{i=1}^n \lambda_i = 1$
+dann nennt man \[\lambda_1 p_1 + \lambda_2 p_2 + ... + \lambda_n p_n\]
+eine affine Kombination der Punkte $p_i$.
+\end{defini}
+
+\begin{defini}[Affine Hülle]
+Sei $S \subseteq \R^d$.
+Dann nennt man 
+\[\operatorname{aff}(S) := {  \lambda_1 p_1 + \lambda_2 p_2 + ... + \lambda_n p_n \text{ mit } n \geq 1,
+p1, ... ,p_n \in S,
+\lambda_1... \lambda_n \in \R
+\sum_{i=1}^n \lambda_i = 1 }\]
+affine Hülle von S.
+\end{defini}
+
+\begin{eigen}
+Die affine Hülle ist die kleinste affine Unterraum, der S enthält.
+\end{eigen}
+
+\begin{bsp}
+\begin{itemize}
+\item affine Hülle von 2 Punkten $p_i \neq p_j \in \R^3$ ist die Gerade durch beide Punkte.
+\item affine Hülle von 3 Punkten paarweise verschiedenen Punkten $p_1$, $p_2$ und $p_3 \in \R^3$ ist die Ebene durch alle drei Punkte
+\end{itemize}
+\end{bsp}
+
+\section{Affine Abhängigkeiten/Unabhängigkeiten}
+
+\begin{defini}[Affine Abhängigkeit]
+Punkte $p_1 .. p_n \in \R^d$ heißen affin abhängig, wenn es $\alpha_1 ... \alpha_n \in \mathbb R$ gibt, so dass gilt:
+\[\alpha_1 p_1 + \alpha_2 p_2 + .... + \alpha_n p_n = 0 \text{ mit }
+\sum_{i=1}^n \alpha_i = 0 \text{ und mind. ein } \alpha_i \neq \emptyset.\]
+Ansonsten heißen die Punkte affin unabhängig.
+\end{defini}
+
+
+\begin{bsp} 
+\begin{itemize}
+\item Zwei Punkte $p_1$ und $p_2 \in \R^2$ affin unabhänig, wenn die Gerade durch beide Punkte nicht durch den Ursprung geht.
+\item drei Punkte auf einer Gerade sind affin abhängig.
+\end{itemize}
+\end{bsp}
+
+\begin{bemerk}
+$p_1 ... p_n$ sind affin abhängig ($n \geq 3$) gdw. $p_2 - p_1, p_3 - p_1 .. p_n - p_1$ linear abhängig sind.
+\end{bemerk}
+
+\section{Affine Abbildung}
+
+\begin{defini}[Affine Abbildung]
+Eine affine Abbildung ist eine Abbildung $f \colon \R^d \rightarrow \R^k$, die als Kombination von linearer Abbildung und Translation ausgedrückt werden kann, d.h. in Koordinatenschreibweise kann $f$ als
+\[f(x) = Ax + b \text{ mit } A \in \R^{k \times d} (k\times d-\text{Matrix}), b \in \R^k\]
+aufgeschrieben werden.
+\end{defini}
+
+
+\section{Euklidische Räume}
+$\R^d$
+
+\begin{defini}{Skalarprodukt}
+$v = (v_1, v_2, ... , v_d) \in \R^d$ und $w = (w_1, w_2, .. w_n) \in \R^d$
+\[<v,w> := v^Tw = \sum_i=1^d v_i w_i\]
+\end{defini}
+
+\begin{eigen}
+\begin{itemize}
+\item symmetrisch: $<v,w> = <w,v>$
+\item bilinear: $<\alpha v + \beta u, w> = \alpha<v,w> + \beta <u,w>$ und $<v,\alpha w + \beta u> = \alpha<v,w> + \beta <v,u>$
+
+\item nichtnegativ: $<v,v> \geq 0$, $\forall v \in R^d$
+und $<v,v> = 0 $ gdw. $v = 0$
+\end{itemize}
+\end{eigen}
+
+wegen dieser Eigenschaften induziert das Skalarprodukt eine Norm:
+\begin{defini}[euklidische Norm]
+\[||v|| := \sqrt{<v,v>}, v \in \R^d \]
+\end{defini}
+
+\begin{eigen}
+\begin{itemize}
+\item $||v|| \geq 0$ und $||v|| = 0 \gdw v = 0$
+\item $||\lambda v|| = |\lambda| ||v|| \text{ für } \lambda \in R, v \in \R^d$
+\item $||v+w|| \leq || v || + || w || \text{ mit} v,w \in \R^d$ (Dreiecksungleichung)
+\end{itemize}
+\end{eigen}
+
+Cauchy-Schwarz-Ungleichung
+\[|<v,w>| \leq ||v|| \cdot ||w||, \forall v,w \in R^d\]
+
+Winkel zwischen zwei Vektoren (kleiner Winkel)
+$v,w \in R^d$: 
+\[\cos(\alpha) = \frac{<v,w>}{||v|| \cdot ||w||}\]
+
+\begin{satz}[Kosinussatz]
+$p,q,r \in \R^d$:
+\[||q - r||^2 = ||q-p||^2 + ||r-p||^2 - 2 <r-p, q-p>\]
+\end{satz}
+
+\begin{defini}[Hyperebenen]
+Ein affiner Unterraum mit Codimension 1 im $\R^d$.
+\[h := \{ x \in \mathbb R^d | a^Tx = \alpha  \text{ für } a \in \R^d, \alpha \in \R\}\]
+\end{defini}
+
+\begin{bsp}
+\begin{itemize}
+\item Ebene im $\R^3$ = Hyperebene
+\item Gerade im $\R^2$ ist Hyperebene
+\end{itemize}
+\end{bsp}
+
+\begin{eigen}
+\begin{itemize}
+\item Vektor a heißt Normalenvektor. Er steht senkrecht auch Hyperebene, d.h. \[\forall p,q \in h: <a,p-q> = 0\]
+\item Entfernung von h zum Ursprung $ = \frac{|\alpha|}{||a||}$
+\item h ist invariant unter Skalierung der definierten gleichung mit Skalar $\lambda \neq 0$
+\end{itemize}
+\end{eigen}
+
+\section{Halbräume}
+
+\begin{defini}[offener Halbraum]
+Jede Hyperebene teilt den Raum $\R^d$ in drei Teile, die Hyperebene und die zwei offenen Halbräume:
+\[ h^+ := {x \in \R^d | a^Tx > a} \text{ - positiv offener Halbraum} \]
+\[ h^- := {x \in \R^d | a^Tx < a} \text{ - negativ offener Halbraum} \]
+\end{defini}
+
+\begin{bemerk}
+positiver und negativer Halbraum sind durch die Orientierung der Hperebene bestimmt.
+\end{bemerk}
+
+\begin{defini}[geschlossener Halbraum]
+\[ \bar{ h^+} := {x \in \mathbb R^d | a^Tx \geq a} - positiv offener Halbraum \]
+\[ \bar h^- := {x \in \mathbb R^d | a^Tx \leq a} - negativ offener Halbraum \]
+\end{defini}
+
+Konventionen: 
+nicht-vertikale Hyperebene: Hyperebene mit $a_d \neq 0$ heißt nicht-vertikal (Die letzte Komponente ist nicht ungleich 0)
+
+\begin{itemize}
+\item $h^+$ - Halbräume ''über'' der Hyperebene
+\item $h^-$ - Halbräume ''unter'' der Hyperebene
+\end{itemize}
+
+\begin{equation*} 
+\begin{split}
+h &= \{x \in \R^d | a^Tx = \alpha\} \\
+&= \{x \in \R^d | (a_1, a_2, ... , a_d)^Tx = \alpha\} (\text{mit } a_d \neq 0)\\
+&= \{x \in \R^d | a_1 x_1 + a_2x_2 + ... +a_d x_d = \alpha\}  \\
+&= \{x \in \R^d | x_d = \frac{1}{a_d} (a_1x_1 + a_2x_2 + ... + a_{d-1} x_{d-1} - \alpha)\}  \\
+&= \{x \in \R^d | x_d = b_1x_1 + b_2x_2 + ... + b_{d-1} x_{d-1} - \beta)\}  \\
+&= \text{ Graph einer affinen Abbildung } \R^{d-1} \rightarrow \R
+\end{split}
+\end{equation*}
+
+\section{Dualität zwischen Punkten und Hyperebenen}
+beliebiger Punkt aus $\mathbb R^d$ entspricht nicht-vertikale  Hyperebene im $\R^d$
+
+\begin{defini}[Dualität]
+Sei $p = (p_1, p_2, ... , p_d) \in \R^d$, dann ist 
+\[p^* = \{ x \in \R^d | x_d = \sum_{i=1}^{d-1} p_i x_i = p_d \}\] 
+die duale Hyperebene zu $p$.
+
+Sei $h = \{x \in \R^d | x_d = \sum_{i = 1}^{d-1}  b_i x_i = \beta\}$, dann ist 
+\[h^* = (b_1, b_2, ... , b_{d-1}, \beta)\] der duale Punkt zu $h$.
+\end{defini}
+
+\begin{eigen}
+$(p^*)^* = p$, $(h^*)^* = h$
+\end{eigen}
+
+\begin{bsp}
+$p = (1,2), q = (2,3), r = (3,4)$
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics{grafiken/grafik1}
+%\caption{default}
+\label{grafik1}
+\end{center}
+\end{figure}
+
+\begin{equation*}
+\begin{split}
+p^* &= \{x \in R^2 | x_2 = 1 x_1 - 2\} \\
+q^* &= \{x \in R^2 | x_2 = 2 x_1 - 3\} \\
+r^* &= \{x \in R^2 | x_2 = 3 x_1 - 4\}
+\end{split}
+\end{equation*}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics{grafiken/grafik2}
+%\caption{default}
+\label{grafik2}
+\end{center}
+\end{figure}
+
+Die drei gerade schneiden sich bei Punkt $(1, -1)$. Dessen duale Ebene ist genau die, die durch die drei Punkte geht. 
+\end{bsp}
+
+\begin{lemma}
+Es gilt für alle p und alle nicht-vertikalen Hyperebenen h:
+\[
+p \in \begin{cases} 
+h^+ \\ 
+h^- \\ 
+h 
+\end{cases} 
+\text{ gdw } h^* = \begin{cases} (p^*)^+ \\ (p^*)^- \\ p* \end{cases}
+\]
+\end{lemma}
+
+\begin{lemma}
+Seien $p,q$ und $r \in \R^2$, dann sind folgende Aussagen äquivalent:
+\begin{itemize}
+\item Die Punkte $p$,$q$ und $r$ sind colinear, d.h. liegen auf einer Gerade $l$
+\item Die Geraden $p^*, q^*$ und $r^*$ schneiden sich in einem gemeinsamen Punkt $l^*$ oder sie sind alle parallel zueinander, falls $l$ vertikal war.
+\end{itemize}
+\end{lemma}
+
+\section{Eigenschaften konvexer Mengen}
+
+\begin{defini}
+Konvexe Menge: Eine Menge $K \subseteq \R^d$ heißt konvex, falls für alle $p,q \in K$ und alle $\lambda \in [0,1]$ gilt: \[ \lambda p + (1 - \lambda) q \in K \]
+\end{defini}
+
+Geometrische Interpretation: Wenn zwei Punkte in der Menge liegen, dann muss auch das verbindende Geradensegment in der Menge liegen.
+
+\begin{bsp}
+Kreis ist konvex, Banane nicht
+\end{bsp}
+
+\begin{fakt}
+Der Durchschnitt konvexer Mengen ist wieder Konvex.
+\end{fakt}
+
+\begin{defini}
+Sei $X \subseteq \R^d$ eine Teilmenge. Die konvexe Hülle von X ist definiert als der Durchschnitt aller konvexer Hüllen, die $X$ enthalten, d.h.
+\[
+\operatorname{conv}(x) := \bigcap_{C,\text{ so dass }X \subseteq C\text{ und }C\text{ konvex}} C
+\]
+\end{defini}
+
+\begin{bsp}
+Das kleinste konvexe Objekt, dass X enth\"alt.
+\end{bsp}
+
+\begin{defini}[Konvexkombination]
+ Sei $p_{1}... p_{n} \in \mathbb R^d$, dann heißt 
+\[\lambda_{1} p_{1} + \lambda_{2}p_{2} + ... + \lambda_{d}p_{d}\text{ mit } \lambda_{i} \geq 0, \sum_{i=1}^n \lambda_i = 1\] 
+eine Konvexkombination von $p_{1} .. p_{d}$. 
+\end{defini}
+
+\begin{bsp}
+Jede kombination liegt innerhalb der von den Punkten aufgespannten konvexen Hülle.
+\end{bsp}  
+
+\begin{lemma}
+Sei $X \subseteq \R^d$. Die konvexe Hülle stimmt mit der Menge aller endlichen Konvexkombinationen von Punkten von $X$ überein, d.h. 
+\[
+\operatorname{conv}(x) = \{ \sum_{p \in S} \lambda_{p} p | S \subseteq X\text{ ist endlich und } \sum_{p \in S} \lambda_{p} = 1, \lambda_{p} \geq 0 \forall p \in S\}
+\]
+\end{lemma}
+
+\section{Konvexe Hüllen von Punktmengen}
+
+\begin{lemma}
+Sei $X \in R^d$ endlich. Dann gilt: \[
+conv(x) = \bigcap_{H\text{, so dass }X \subseteq H, H\text{ Halbraum}} H
+\]
+\end{lemma}
+
+\begin{thrm}[Separationstheorem]
+Seien $C$ und $D \in \mathbb R^d$ zwei konvexe Mengen, mit $C \cap D = \emptyset$. Dann existiert eine Hyperebene $h = \{ x \in \mathbb R^d | a^Tx = \alpha \}$, die beide Mengen schwach separiert, d.h. $C \subseteq \bar h^+$ und $D \subseteq \bar h^-$
+\end{thrm}
+
+\begin{fakt}
+Wenn $C$ und $D$ abgeschlossen sind und wenigstens eine Menge beschr\"ankt ist, so k\"onnen beide Mengen stark separiert werden. dh. $C 
+\subseteq h^+$ und $D \subseteq h^-$.
+\end{fakt}
+
+\begin{lemma}[Radon]
+Sei $S\subseteq \R^d$ mit $|S| \geq d+2$. Dann existieren zwei disjunkte Teilmengen $A$ und $B \subseteq S$, so dass: \[
+\operatorname{conv}(A) \cap \operatorname{conv}(B) \neq \emptyset
+\]
+\end{lemma}
+
+\begin{bsp}
+Wenn im $\R^2$ 4 Punkte gegeben sind, so k\"onnen diese so in zwei Teilmengen unterteilt werden, dass der Schnitt der konvexen H\"ullen nicht leer ist.
+\end{bsp}
+
+\begin{thrm}[Caratheodory]
+Falls $S \subseteq \R^d, p \in \operatorname{conv}(S)$ gilt, so existiert eine Teilmenge $A \subseteq S$ mit $|A| \leq d+1$, so dass $p \in \operatorname{conv}(A)$.
+\end{thrm}
+
+\begin{thrm}[Helly] 
+Seien $C_{1} ... C_{n} \in \mathbb R^d$ konvexe Teilmengen und $n \geq d + 1$.
+Wenn sich alle $d+1$-Tupel dieser konvexen Mengen einen nichtleeren Durchschnitt haben, so ist der Durchschnitt aller dieser Mengen nichtleer, d.h. \[
+\bigcap_{i=1}^n C_{i} \neq \emptyset
+\]
+\end{thrm}
+
+\section{B\"alle im $\R^d$}
+
+\begin{defini}[B\"alle]
+Sei $c \in \R^d$, $r \in R_{\geq 0}$. 
+
+Dann hei{\ss}t die Menge \[
+B_{d}(c,r) := \{x \in \R^d | ||x - c|| \leq r\}
+\]
+\end{defini}
+
+
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+% \bibitem{mathmode} Math mode von Herbert Voss,\\
+% \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+% \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+%  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
