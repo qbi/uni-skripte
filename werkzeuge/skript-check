@@ -428,6 +428,30 @@ neue_funktions_regel(qr/\\\{\\?\w+$ltxspc(\\in$ltxspc\\?\w+$ltxspc)?:/,
 neue_funktions_regel(qr/\\not(=|\\(in|cong|exists|mid))/, qr/^$/, \&monieren,
                      'Statt \not\XY besser den Spezialbefehl verwenden');
 
+# Als Auslassungszeichen sollte der Dreipunkt verwendet werden. Insbesondere in
+# Matheumgebungen die \dotsX-Befehle aus Amsmath.
+neue_funktions_regel(qr/\.\.\./, qr/^$/, \&schimpfen,
+    'Nicht drei Punkte, sondern den Dreipunkt als Auslassungszeichen verwenden');
+
+# Als Auslassungspunkte werden verschiedene Zeichen verwendet. Zwischen binären
+# Operatoren stehen Punkte auf x-Höhe, zwischen Kommata stehen Punke auf der
+# Grundlinie. Im Paket amsmath werden spezielle Befehle dafür definiert, die
+# verwendet werden sollten.
+my $bin_op = qr/(?:[\+\-]|\\(?:c[au]p|times))/;
+neue_funktions_regel(qr/$bin_op *(?:\.\.\.|\\ldots) *$bin_op/, qr/^$/,
+    \&monieren,
+    'Zwischen binären Operatoren stehen \cdots, siehe \dotsX in amsmath');
+
+# Als Auslassungspunkte werden verschiedene Zeichen verwendet. Zwischen binären
+# Operatoren stehen Punkte auf x-Höhe, zwischen Kommata stehen Punke auf der
+# Grundlinie. Im Paket amsmath werden spezielle Befehle dafür definiert, die
+# verwendet werden sollten.
+unless ( $paket_gefunden{ellipsis} )
+{
+    neue_funktions_regel(qr/\\l?dots(?:\{\})?[)\]]/, qr/^$/, \&schimpfen,
+      '\l?dots erzeugt falschen Abstand vor Klammern. Paket ellipsis verwenden');
+}
+
 # LaTeX kann bei \includegraphics selbst die Endung herausfinden. Mit Endung
 # geht die Flexibilität mit rubber verlohren.
 neue_funktions_regel(qr/\\includegraphics\[[^]]*\]\{\w*\.\D*\}/, qr/^$/, \&monieren,
