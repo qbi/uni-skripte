@@ -1,20 +1,21 @@
 \RequirePackage[l2tabu,orthodox]{nag}
-\documentclass[halfparskip,pointednumbers,twoside,openright,smallheadings,headsepline]{scrreprt}
-\usepackage[ngerman]{babel}
+\documentclass[halfparskip,pointednumbers,smallheadings,headsepline,ngerman]{scrreprt}
+\usepackage{babel}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
-\usepackage{amsmath,amsthm,amssymb,xspace,url,svn,color,fixmath,pifont,booktabs,tikz,scrpage2}
-\usepackage[colorlinks]{hyperref}
+\usepackage{amsmath,amsthm,amssymb,xspace,url,svn,color,fixmath,pifont,booktabs,scrpage2}
+\usepackage[colorlinks,breaklinks]{hyperref}
 \usepackage[	top=30mm,
 					bottom=20mm,
 					inner=30mm,
 					outer=20mm]{geometry}
 \clearscrheadfoot
-\automark[chapter]{chapter}
+\automark{chapter}
 \ihead[]{\normalfont\sffamily\headmark}
 \ohead[]{\normalfont\textsf{\textbf{\thepage}}}
 \renewcommand*{\chapterpagestyle}{scrheadings}
 
+\usepackage{tikz}
 \usetikzlibrary{calc}
 
 \theoremstyle{definition}
@@ -24,6 +25,7 @@
 \newtheorem*{bsp}{Beispiel}
 
 \newcommand*{\bR}{\ensuremath{\mathbb{R}}\xspace}
+\newcommand*{\bN}{\ensuremath{\mathbb{N}}\xspace}
 \newcommand*{\cO}{\ensuremath{\mathcal{O}}\xspace}
 
 \let\epsilon\varepsilon
@@ -299,7 +301,7 @@ Ziel ist es, den kritischen Abschnitt baumartig auszuführen, damit ein logarithm
 \draw (4,-4) node[right] (bbb) {$S_4 + S_5 + S_6 + S_7$};
 \draw (0,-6) node[right] (aaaa) {$S_0 + S_1 + S_2 + S_3+S_4 + S_5 + S_6 + S_7$};
 \draw[->] (a.south west) -- (aa.north west);
-\draw[->] (b.south west) -- ($(aa.north west)+(0.1,0)$);
+\draw[->] (b.south west) -- ($(aa.north west) + (0.1,0)$);
 \draw[->] (c.south west) -- (bb.north west);
 \draw[->] (d.south west) -- ($(bb.north west)+(0.1,0)$);
 \draw[->] (e.south west) -- (cc.north west);
@@ -335,7 +337,7 @@ Ziel ist es, den kritischen Abschnitt baumartig auszuführen, damit ein logarithm
 \hrule
 \end{figure}
 
-Wir brauchen eine globale Variable für Zwischenergebnisse \verb|S[p]| und für die Terminierung $\verb|flag[p]|.$
+Wir benötigen eine globale Variable für Zwischenergebnisse \verb|S[p]| und für die Terminierung $\verb|flag[p]|$.
 
 Sei \texttt{Pr}$=P= 2^d$. Im Schritt $i \in \{0, \dots, d-1\}$ addiert
 \begin{center}
@@ -366,7 +368,127 @@ Thread "`$r=\dots 1 \underbrace{0\dots\dots 0}_{i \text{ Nullen}}$"'
 
 Ergebnis liegt am Ende in \verb|S[0]|. Alternativ zum Busy Wait kann man Synchronisation des OS verwenden.
 
+\newpage\section{Daten verteilen / lokalisieren}
 
+Der Zugriff auf lokale Daten ist meist schneller als auf globale Daten. Zum Teil ist der Zugriff auf globale Daten auch nicht möglich, z.\,B. bei mehreren PCs ohne gemeinsamen Speicher.
 
+Beispiel:
+
+\verb|Skalarprodukt lokal {|\\
+\verb|   int Pr, N; real S=0; // globale Variable f. d. Summe|\\
+\verb|                       // keine glob. Variablen für die Vektoren X u. Y|\\
+\verb|   thread| $\pi$ \verb|(int p) {|\\
+\verb|      real X| $\mathtt{\left[\frac{N}{Pr}\right]}$ \texttt{, Y} $\mathtt{\left[\frac{N}{Pr}\right]}$\texttt{;}\\
+\verb|      real t = 0;|\\
+\verb|      for i = 0 ... |$\mathtt{\left(\frac{N}{Pr} - 1\right)}$\\
+\verb|         t = t + X[i]*Y[i];|        // Teilsumme\\
+\verb|      [ s = s + t ;] }|             // krit. Abschnitt\\
+\verb|}|
+
+Folgendes Diagramm veranschaulicht die Lokalisierung der Daten:
+\begin{center}
+\begin{tabular}{|lr|lr|lr|}
+\hline
+\multicolumn{3}{|l}{$0$} & \multicolumn{3}{r|}{$N$}\\
+\hline
+$0$ & \qquad $\frac{N}{P}$ & $0$ & \qquad $\frac{N}{P}$ & $0$ & \qquad $\frac{N}{P}$\\
+\hline
+\end{tabular}
+\begin{tabular}{l}
+\quad lokal\\
+\quad global
+\end{tabular}
+\end{center}
+
+In diesem Beispiel fehlt das Einlesen der Daten $X$ und $Y$, z.\,B. mit einem parallelen Dateisystem. Die Umrechnung der Indizes kann auf verschiedene Arten erfolgen:
+\begin{enumerate}
+\item $i_\text{global} = i_\text{lokal} + N \cdot \frac{p}{P}$ oder
+\item $i_\text{global} = i_\text{lokal} \cdot P + p$.
+\end{enumerate}
+
+Die Erweiterung auf $\frac{N}{P} \notin \bN$ erfolgt durch Rundung. Es besteht aber immer noch das Problem der globalen Variable $S$.
+
+\section{Nachrichten austauschen (message passing)}
+
+Es liegt ein verteilter Speicher vor, also sind keine globalen Variablen mehr möglich. Konstanten können aber beispielsweise global sein (im Programmcode). Die Kommunikation geschieht über einen Nachrichtenaustausch (siehe \autoref{fig:block_senden}).
+
+\begin{figure}[t!]
+\begin{center}
+\begin{tikzpicture}
+\draw[->] (0,0) -- (0,-3);
+\draw (-.5,-2.5) node {$t$};
+\draw (2,0) node {$\pi_1$};
+\draw (8,0) node {$\pi_2$};
+\draw (2,-.5) node[rectangle,draw=black] (a) {\tt send};
+\draw (8,-.5) node[rectangle,draw=black] {\tt recv};
+\draw (2,-1.2) node[rectangle,draw=black] (d) {warte};
+\draw (8,-1.2) node[rectangle,draw=black] {warte};
+\draw (8,-3) node[rectangle,draw=black] (b) {~~~~~};
+\draw[->] (a) -- (b);
+\draw (2,-3) node (c) {};
+\draw[->] (b) -- (c);
+\draw[->] (d) -- (c);
+\draw (5,-2.7) node {Bestätigung};
+\draw (5,-1.5) node[rotate=-25] {Daten};
+\end{tikzpicture}
+\end{center}
+\caption{Blockierendes Senden / Empfangen. \newline \tiny Schematische Darstellung der Übertragung einer Nachricht von Prozess $\pi_1$ nach $\pi_2$ (z.\,B. auf unterschiedlichen Rechnern).}
+
+\vspace{5mm}
+
+\hrule \label{fig:block_senden}
+\end{figure}
+
+\newpage Beispiel: Sei \texttt{Pr=}$P=2^d$. $N$ ein Vielfaches von $P$.
+
+\verb|Skalarprodukt message-passing {|\\
+\verb|   int N, d, Pr=|$\mathtt{2^d}$\\
+\verb|   process | $\pi$ \verb|(int p) {|\\
+\verb|      real X|$\mathtt{\left[\frac{N}{Pr}\right]}$ \texttt{, Y} $\mathtt{\left[\frac{N}{Pr}\right]}$\texttt{;}\\
+\verb|      real s, t=0;|\\
+\verb|      for i = 0 ... |$\mathtt{\left(\frac{N}{Pr} - 1\right)}$\\
+\verb|         t 0 t + X[i]*Y[i];|\\
+\verb|      for i = 0 ... d-1|\\
+\verb|         l = (p >> i+1) << (i+1);|\verb+ r = (l | (1 << i);+\\
+\verb|         if (p == r)|\\
+\verb|            send(l,t); // Sende t an Prozess l|\\
+\verb|            terminate;|\\
+\verb|         else|\\
+\verb|            recv(r,s); // Empfange s von Prozess r|\\
+\verb|            t = t + s;}|\\
+\verb|}|
+
+Das Endergebnis liegt bei Prozess $0$ in der Variable $t$ vor. Die Synchronisation geschieht über \texttt{send} und \texttt{recv}. Ein verteilter Speicher ist im Allgemeinen schwierig zu programmieren und zu debuggen. Aber er ist skalierbar für große $P$.
+
+\section{Leistungsbewertung und Komplexität}
+
+Wir führen folgende Bezeichnungen ein:
+\begin{align*}
+T(N,P) &:= \text{Programmlaufzeit mit $N$ Daten und $P$ Prozessoren}\\
+T_\text{SEQ}(N) &:= \text{Laufzeit des seq. Programms}
+\end{align*}
+
+\begin{defi}[Paralleles Speedup] Wir definieren den Beschleunigungsfaktor $S$ durch:
+\[S(N,P) := \frac{T_\text{SEQ}(N)}{T(N,P)}.\]
+\end{defi}
+
+Es gilt $0 < S(N,P) \leq P.$
+
+Für unser Beispiel des Skalarproduktes gilt nun:
+
+\begin{description}
+\item[sequentiell:] Es ist $T_\text{SEQ} = 2 \cdot N \cdot t_a$, wobei $N$ die Anzahl der Optionen bezeichnet und $t_a$ die Zeit pro arithmetischer Operation (Add. / Mult.).
+
+\item[parallel:] Es ist $T(N,P) = \underbrace{2 \tfrac{N}{P} t_a}_\text{Teilsumme} + \underbrace{\left( \log_2 P \right) \left(t_a + t_m \right)}_\text{Baum}$, wobei $t_m$ die Zeit für das Versenden eines Wortes bezeichnet.
+
+Somit ist
+\[S(N,P) = \frac{2 N t_a}{2\frac{N}{P}t_a + \left( \log_2 P \right) \left(t_a + t_m \right)} = \frac{P}{1 + \frac{P}{N} \left( \log_2 P \right) \left(\frac{t_a + t_m}{2t_a} \right) }< P.\]
+
+Für die Extremfälle gilt:
+\begin{itemize}
+\item $N=P$ $\Rightarrow$ $S(N,P) \approx \frac{P}{\left( \log_2 P \right) \left(\frac{t_a + t_m}{2t_a} \right)}$ 
+\item $N \gg P$ $\Rightarrow$ $S(N,P) \approx P$
+\end{itemize}
+\end{description}
 
 \end{document}
