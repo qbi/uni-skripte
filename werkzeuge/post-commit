@@ -103,7 +103,8 @@ trap "rm -r $tmp_dir" EXIT
 
 for REV in $(seq $(($last_build_revision + 1)) $last_rev_number)
 do
-    skript=$(svnlook dirs-changed "$REPOS" --revision "$REV" | sed 's+/.*++; /^$/d; q')
+    skript=$(svnlook changed "$REPOS" --revision "$REV" |
+      sed 's/^... //; s+/.*++; /^$/d; q')
 
     /usr/share/subversion/hook-scripts/commit-email.pl "$REPOS" "$REV" \
       -h ${MAIL_FROM#*@} -l "$tmp_dir/$skript.log"
