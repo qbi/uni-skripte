@@ -149,6 +149,7 @@
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
 \newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
 \newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
+\newcommand*{\ndist}[2][]{#1\lVert[#2]#1\rVert}
 
 % Das original Epsilon sieht nicht so toll aus
 \renewcommand*{\epsilon}{\varepsilon}
@@ -161,6 +162,7 @@
 \DeclareMathOperator{\spn}{span}
 \DeclareMathOperator{\card}{card}
 \DeclareMathOperator{\inner}{int}
+\DeclareMathOperator{\cdm}{codim}
 
 
 \def\thechapter{\Roman{chapter}}
@@ -512,7 +514,7 @@ offene Menge in $M$.
 \end{defini}
 
 %satz I.2.3
-\begin{satz}[Kriterium für die Vollständigkeit]
+\begin{satz}[Kriterium für die Vollständigkeit]\label{satz:i.23}
   Ein normierter Raum ist genau dann vollständig, wenn [$\forall(x_{n})\subset
   X\colon \sum_{n=1}^{\infty} \norm{x_{n}}<\infty\Rightarrow
   \sum_{n=1}^{\infty} x_{n}$ ist in $X$ konvergent].
@@ -769,9 +771,127 @@ normierter Räume.
 \end{defini}
 
 %Vorlesung vom 2008-11-03
+%satz I.3.5
+\begin{satz}
+  Sei $M\subseteq X$ ein abgeschlossener linearer Teilraum eines normierten
+  Raumes $X$. Dann wird durch
+  \begin{gather*}
+    \ndist{x}\colon=\inf\{\norm{x-y}\colon y\in M\}
+  \end{gather*}
+  eine Norm auf $X/M$ definiert. Ist $X$ ein Banachraum, so
+  ist $X/M$ ebenfalls ein Banachraum. Es ist:
+  \begin{align*}
+    [x]+[y] &\colon= [x+y] & [x] &\colon= \{x+y\colon y\in M\}\\
+    \alpha[x] &\colon= [\alpha\cdot x] & X/M &\colon= \{[x]\colon x\in X\}
+  \end{align*}
+  \begin{proof}
+    \begin{enumerate}[1.\,Schr{i}tt]
+     \item $\ndist{\cdot}$ ist wohldefiniert, d.\,h. unabhängig von
+      Repräsentanten. Denn für $[x_{1}]=[x_{2}]\Rightarrow \exists y\in
+      M\colon x_{1}=x_{2}+y\Rightarrow\ndist{x_{1}}= \ndist{x_{2}+y}=
+      \inf\{\norm{x_{2}+y-z}\colon z\in M\}= \inf\{\norm{x_{2}-(z-y)}\colon
+      z\in M\}= \inf\{\norm{x_{2}-w}\colon w\in M\}= \ndist{x_{2}}$.
+     \item Wir müssen nun die Normeigenschaften prüfen: Es ist klar, dass
+      $\ndist{x}\geq0$ gilt. Es ist
+      $\ndist{x}=0\Leftrightarrow\inf\{\norm{x-y}\colon y\in M\}=0 \Rightarrow
+      x\in M$. Denn $M$ ist abgeschlossen und somit gibt es eine Folge, die
+      gegen $x$ konvergiert. Insgesamt ergibt sich $[x]=0$.
 
+      Die Homogenität lässt sich wie folgt zeigen: Sei $x\in X,
+      \alpha\in\K\setminus\{0\}$. Dann gilt, $\norm{\alpha[x]}=
+      \inf\{\norm{\alpha x-y}\colon y\in M\}= \inf\{\abs{\alpha}
+      \norm{x-\nicefrac{1}{\alpha} y}\colon y\in M\}=\abs{\alpha}
+      \inf\{\norm{x-\nicefrac{1}{\alpha} y}\colon y\in M\}=\abs{\alpha}
+      \cdot\ndist{x}$.
 
-\todo[inline]{Vorlesung vom 2008-11-03}
+      Zuletzt ist noch die Dreiecksungleichung zu zeigen:
+      \begin{align*}
+	\norm{[x]+[y]} &= \ndist{x+y}= \inf\{\norm{x+y-z}\colon z\in M\}\\
+	&= \inf\{\norm{x+y-z_{1}-z_{2}}\colon z_{1}, z_{2}\in M\}
+	   =\inf\{\norm{(x-z_{1})+ (y-z_{2})}\colon z_{1}, z_{2}\in M\}\\
+	&\leq \inf\{\norm{(x-z_{1})}+ \norm{y-z_{2})}\colon z_{1}, z_{2}\in
+	   M\}= \inf\{\norm{x-z_{1}}\colon z_{1}\in M\}+
+	   \inf\{\norm{y-z_{2}}\colon z_{2}\in M\}\\
+	&= \ndist{x}+ \ndist{y}
+      \end{align*}
+     \item Mit der Anwendung des Vollständigkeitskriteriums
+      (\autoref{satz:i.23}) gilt, dass $X/M$ vollständig ist, falls $X$
+      vollständig ist. Sei nun $([x_{n}])\subseteq X/M$ mit
+      $\sum_{n=1}^{\infty} \ndist{x_{n}}<\infty$. Es ist zu zeigen, dass
+      $\sum_{n=1}^{\infty} [x_{n}]\in X/M$. Es ist
+      $y_{n}\in[x_{n}]\colon\norm{y_{n}}\leq \ndist{x_{1}}+2^{-n}$. Somit ist
+      $\sum_{n=1}^{\infty} \norm{y_{n}} \leq\sum_{n=1}^{\infty} \ndist{x_{n}}
+      +\sum_{n=1}^{\infty} 2^{-n}<\infty\Rightarrow
+      y\colon=\sum_{n=1}^{\infty} y_{n}\in X$, da $X$ ein Banachraum ist.
+      Weiter ist $\norm{[y]-\sum_{k=1}^{n} [x_{k}]}= \norm{[y]- \sum_{k=1}^{n}
+      [y_{k}]}= \ndist{y-\sum_{k=1}^{n} y_{k}}\leq \norm{y-\sum_{k=1}^{n}
+      y_{k}} \xrightarrow{n\rightarrow\infty}0$. Nach der Definition von
+      $\norm{\cdot}$ gilt immer $\ndist{x}\leq\norm{x}$. Insgesamt folgt somit
+      $\sum_{k=1}^{\infty} [x_{k}]= \lim_{n\rightarrow\infty}
+      \sum_{k=1}^{\infty} [x_{k}]= [y]\in X/M$. Nach dem
+      Vollständigkeitskriterium ist damit $X/M$ vollständig.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\begin{defini}
+  Sei $X$ ein Vektorraum und $M\subseteq X$ ein linearer Teilraum. Die
+  Abbildung $Q_{M}\colon X\rightarrow X/M$ definiert durch $Q_{M}x\colon=[x]$
+  heißt \highl{Quotientenabbildung}.
+\end{defini}
+
+%satz I.3.6
+\begin{satz}
+  Sei $X$ ein normierter Raum und $M\subseteq X$ ein abgeschlossener linearer
+  Teilraum. Dann gilt für die Quotientenabbildung $Q_{M}\colon X\rightarrow
+  X/M\colon Q_{M}(\mathring{B}_{X})= \mathring{B}_{X/M}$ (offene
+  Einheitskugeln).
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\subseteq$"'] Sei $x\in\mathring{B}_{X}$. Dann gilt
+      $\norm{Q_{M}x}=\ndist{x}\leq\norm{x}<1\Rightarrow
+      Q_{M}x\in\mathring{B}_{X/M}$.
+     \item["`$\supseteq$"'] Sei $[x]\in\mathring{B}_{X/M}$, d.\,h. $\ndist{x}=
+      \inf\{\norm{x-z}\colon z\in M\}<1$. Dann existiert $z_{0}\in
+      M\colon\norm{x-z_{0}}<1$. Wir setzen $y\colon=x-z_{0}$. Dann ist
+      $y\in\mathring{B}_{X}$ und es gilt, $Q_{M}y= [y]= [x-z_{0}]= [x]-
+      \underbrace{[z_{0}]}_{=0}=[x]$, d.\,h. $Q_{M}\mathring{B}_{X}\supseteq
+      \mathring{B}_{X/M}$.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+%satz I.3.7
+\begin{satz}
+  Sei $X$ ein Vektorraum, $M,N\subseteq X$ lineare Teilräume und $X=M\oplus
+  N$. Dann existiert eine lineare Bijektion von $N$ auf $X$ nach $M$, also $N$
+  auf $X/M$.
+  \begin{proof}
+    Sei $\phi\colon N\rightarrow X/M$ definiert durch $\phi(x)\colon=[x]$ mit
+    $x\in N$. Es ist $\phi\colon=Q_{M}|_{M}$ ein Isomorphismus von $N$ auf
+    $X/M$.
+
+    Wir zeigen zuerst die Linearität: Für $\alpha, \beta\in\K$ und $x,y\in N$
+    gilt $\phi(\alpha x+\beta y)=\alpha[x]+ \beta[y]=\alpha\phi(x)+
+    \beta\phi(y)$.
+
+    Die Abbildung ist injektiv: Seien $x,y\in N$ und
+    $\phi(x)=\phi(y)\Rightarrow0=\phi(x)-\phi(y)= \phi(x-y)= [x-y]=
+    ([x]-[y])$. Damit ist $x-y\in M$. Da $N$ ein Teilraum ist, sind für
+    $x,y\in N$ auch $x-y\in N$. Dies ergibt nun, $x-y\in M\cap
+    N=\{0\}\Rightarrow x=y$. Also ist $\phi$ injektiv.
+
+    Nun verbleibt noch die Surjektivität zu zeigen: Sei $[x]\in X/M$. Wegen
+    $x=x_{1}+ x_{2}$ mit $x_{1}\in M_{1}, x_{2}\in M$ folgt, $[x]=Q_{M}(x)=
+    Q_{M}(x_{1}+x_{2})= \underbrace{Q_{M}(x_{1})}_{=0}ü Q_{M}(x_{2})=
+    Q_{M}(x_{2})=\phi(x_{2})$.
+  \end{proof}
+\end{satz}
+
+\begin{defini}
+  Sei $M\subseteq X$ ein linearer Teilraum eines Vektorraums. Dann wird die
+  \highl{Codimension} von $M$ durch $\cdm M\colon=\dim X/M$.
+\end{defini}
 
 
 
