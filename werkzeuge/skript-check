@@ -341,6 +341,12 @@ neue_funktions_regel(qr/\\usepackage{color}/, qr/^$/, \&monieren,
                      'Das Paket color nicht einsetzen. Stattdessen xcolor '.
                      'verwenden');
 
+# \def und \let sind TeX-Befehle, die nicht die Sicherheiten von
+# \(re)newcommand* bieten. Daher dürfen diese nicht verwendet werden.
+# Wenn \let verwendet werden muss, dann mit skript-check an/aus arbeiten.
+neue_funktions_regel(qr/\\(?:let|def\W/, qr/^$/, \&schimpfen,
+     '\(re)newcommand* statt \let und \def vewenden');
+
 ##########
 #
 # Die Präampel abarbeiten
@@ -395,6 +401,12 @@ alle_regeln_vergessen();
 # Hier kommen jetzt alle Regeln, die nach \begin{document} und in den anderen
 # Dokumenten geprüft werden sollen
 #
+
+# \def und \let sind TeX-Befehle, die nicht die Sicherheiten von
+# \(re)newcommand* bieten. Daher dürfen diese nicht verwendet werden.
+# Wenn \let verwendet werden muss, dann mit skript-check an/aus arbeiten.
+neue_funktions_regel(qr/\\(?:let|def\W/, qr/^$/, \&schimpfen,
+     '\(re)newcommand* statt \let und \def vewenden');
 
 # (Neu-)Definitionen von Befehlen sollen in der Präampel stehen, weil
 # später die Befehle übersehen werden können und dadurch schwer erkennbare
