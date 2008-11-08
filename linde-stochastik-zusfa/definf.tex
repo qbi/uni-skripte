@@ -98,6 +98,15 @@
 
 % http://www.tug.org/TUGboat/Articles/tb18-1/tb54becc.pdf
 \newcommand*{\ez}{\mathrm{e}}               % eulersche Zahl
+\newcommand*{\diff}[1]{%                    % Differentialoperator d (wie bei
+                                            % \int ... dx)
+  \mathop{\mathrm{\mathstrut d}}%
+  \ifx#1(\else%
+  \ifx#1[\else%
+  \ifx#1\{\else%
+    \!%
+  \fi\fi\fi#1%
+}
 
 \SVN $LastChangedRevision$
 \SVN $LastChangedDate$
@@ -238,7 +247,7 @@ Eine stückweise stetige Funktion $p\colon\R\mapsto\R$ heißt
 \highl{Wahrscheinlichkeitsdichte}, wenn
 \begin{eigenschaften}
  \item $p(x)\ge 0$ für $x\in\R$ und
- \item $\int_{-\infty}^\infty p(x)\,\mathrm d x=1$
+ \item $\int_{-\infty}^\infty p(x)\diff{x}=1$
 \end{eigenschaften}
 gelten.
 \subsubsection{Borel-$\sigma$-Algebra}
@@ -250,7 +259,7 @@ deren abzählbaren Vereinigungen und Durchschnitte usw.
 Gegeben sei eine Wahrscheinlichkeitsdichte $p$. Dann existiert ein eindeutig bestimmtes
 Wahrscheinlichkeitsmaß $\WKM \colon\BorelM(\R)\mapsto [0,1]$ mit
 \begin{gather*}
-  \WKM([\alpha,\beta])=\WKM((\alpha,\beta])=\int_\alpha^\beta\,p(x)\,\mathrm dx
+  \WKM([\alpha,\beta])=\WKM((\alpha,\beta])=\int_\alpha^\beta\,p(x)\diff{x}
 \end{gather*}
 für alle reelle Zahlen $\alpha<\beta$. Das so erzeugte Wahrscheinlichkeitsmaß $\WKM$ heißt \highl{stetig}
 und $p$ nennt man die \highl{Dichte} von $\WKM$. Stetige Wahrscheinlichkeitsmaße beschreiben Vorgänge,
@@ -347,7 +356,7 @@ wird eine Wahrscheinlichkeitsdichte auf $\R$ definiert. Damit berechnet sich die
 eines Intervalls $[\alpha,\beta]$ durch
 \begin{gather}
 \label{gleich}
-\WKM([\alpha,\beta])=\int_\alpha^\beta p(x)\,\mathrm dx= \frac{\mbox{Länge von}\;([\alpha,\beta]\cap[a,b])}
+\WKM([\alpha,\beta])=\int_\alpha^\beta p(x)\diff{x}= \frac{\mbox{Länge von}\;([\alpha,\beta]\cap[a,b])}
 {b-a}\;.
 \end{gather}
 Insbesondere ergibt sich im Fall $[\alpha,\beta]\subseteq [a,b]$ die Formel
@@ -373,7 +382,7 @@ ihre Dichte
 Für ein Intervall $[\alpha,\beta]\subseteq [0,\infty)$ berechnet sich damit
 die Wahrscheinlichkeit seines Eintretens durch
 \begin{gather*}
-  E_\lambda([\alpha,\beta])=\lambda \int_\alpha^\beta \ez^{-\lambda x}\,\mathrm dx
+  E_\lambda([\alpha,\beta])=\lambda \int_\alpha^\beta \ez^{-\lambda x}\diff{x}
      = \ez^{-\lambda\alpha}- \ez^{-\lambda\beta}\;.
 \end{gather*}
 \subsubsection{Normalverteilung}
@@ -387,13 +396,13 @@ erzeugt ein Wahrscheinlichkeitsmaß $\mathcal N(\mu,\sigma^2)$, das
 man \highl{Normalverteilung} mit Mittelwert $\mu$ und Varianz $\sigma^2$ nennt. Es gilt dann
 \begin{gather*}
   \mathcal N(\mu,\sigma^2)([\alpha,\beta])=\frac{1}{\sqrt{2\pi}\sigma}
-     \int_\alpha^\beta \ez^{-(x-\mu)^2/2\sigma^2}\mathrm dx\;.
+     \int_\alpha^\beta \ez^{-(x-\mu)^2/2\sigma^2}\diff{x}\;.
 \end{gather*}
 Im Fall $\mu=0$ und $\sigma=1$ erhält man die \highl{Standardnormalverteilung}
 $\mathcal N(0,1)$ . Wahrscheinlichkeiten des Eintretens von Intervallen berechnen sich in diesem Fall durch
 \begin{gather*}
   \mathcal N(0,1)([\alpha,\beta])=\frac{1}{\sqrt{2\pi}}
-     \int_\alpha^\beta \ez^{-x^2/2}\mathrm dx\;.
+     \int_\alpha^\beta \ez^{-x^2/2}\diff{x}\;.
 \end{gather*}
 
 \subsubsection{Gleichverteilung auf einer Menge im $\R^n$}
@@ -449,11 +458,11 @@ des Maßes konzentriert ist. Dazwischen ist sie konstant.
 Ist $F$ Verteilungsfunktion eines stetigen Wahrscheinlichkeitsmaßes $\WKM$ mit Dichte $p$, so berechnet
 sich $F$ aus
   \begin{gather*}
-    F(t)=\int_{-\infty}^t\,p(x)\,\mathrm d x\,,\quad t\in\R\;.
+    F(t)=\int_{-\infty}^t\,p(x)\diff{x}\,,\quad t\in\R\;.
   \end{gather*}
 Insbesondere gilt für alle $t\in\R$, in denen $p$ stetig ist, die Gleichung
   \begin{gather*}
-    F'(t)=\left(\frac{\mathrm d F}{\mathrm d t} \right)(t)= p(t)\;.
+    F'(t)=\left(\frac{\diff{F}}{\diff{t}} \right)(t)= p(t)\;.
   \end{gather*}
 \end{enumerate}
 \subsection{Bedingte Verteilungen}
@@ -593,8 +602,8 @@ Eine zufällige Größe $X$ heißt \highl{stetig}, falls $\WKM_X$ ein stetiges W
 ist. Das gilt genau dann, wenn mit einer Wahrscheinlichkeitsdichte $p$ für alle $\alpha<\beta$
 die Gleichung
 \begin{gather*}
-  \WKM_X([\alpha,\beta])=\WKM\{\omega\in\Omega \colon \alpha\le X(\omega)\le\beta\}=\int_\alpha^\beta\,p(x)\,
-     \mathrm d x
+  \WKM_X([\alpha,\beta])=\WKM\{\omega\in\Omega \colon \alpha\le X(\omega)\le\beta\}=\int_\alpha^\beta\,p(x)
+     \diff{x}
 \end{gather*}
 erfüllt ist. Die Funktion $p$ nennt man auch \highl{Verteilungsdichte} (oder einfach
 \highl{Dichte}) von $X$.
@@ -626,7 +635,7 @@ gilt. Oder $X$ ist $\mathcal N(\mu,\sigma^2)$-verteilt (man schreibt $X\sim \mat
 sofern
 \begin{gather*}
   \WKM_X([\alpha,\beta])=\WKM\{\omega\in \Omega \colon \alpha\le X(\omega)\le \beta\}=
-     \frac{1}{\sqrt{2\pi}\sigma}\int_\alpha^\beta \ez^{-(x-\mu)^2/2\sigma^2}\mathrm d x\;.
+     \frac{1}{\sqrt{2\pi}\sigma}\int_\alpha^\beta \ez^{-(x-\mu)^2/2\sigma^2}\diff{x}\;.
 \end{gather*}
 \subsubsection{Identisch verteilte zufällige Größen}
 Zwei zufällige Größen $X$ und $Y$ sind \highl[verteilt!identisch]{identisch verteilt}, wenn $\WKM_X=\WKM_Y$ gilt,
@@ -716,12 +725,12 @@ dass für alle $\alpha<\beta$ und $\gamma<\delta$ stets
 \begin{gather*}
   \WKM_{(X,Y)}\big([\alpha,\beta]\times[\gamma,\delta]\big)
      =\WKM\{\omega\in \Omega \colon \alpha\le X(\omega)\le\beta,\,\gamma\le Y(\omega)\le\delta\}
-     =\int_\alpha^\beta\int_\gamma^\delta p(x,y)\,\mathrm d y \,\mathrm d x
+     =\int_\alpha^\beta\int_\gamma^\delta p(x,y)\diff{y} \diff{x}
 \end{gather*}
 gilt. Dann haben $X$ bzw.~$Y$ Verteilungsdichten $q$ und $r$ mit
 \begin{gather*}
-  q(x):=\int_{-\infty}^\infty p(x,y)\,\mathrm d y\qquad\mbox{und}\qquad
-     r(y):=\int_{-\infty}^\infty p(x,y)\,\mathrm d x\;.
+  q(x):=\int_{-\infty}^\infty p(x,y)\diff{y}\qquad\mbox{und}\qquad
+     r(y):=\int_{-\infty}^\infty p(x,y)\diff{x}\;.
 \end{gather*}
 \subsubsection{Unabhängigkeit von zufälligen Größen}
 Gegeben seien $n$ zufällige Größen $X_1,\ldots,X_n$ auf $(\Omega,\Algeb,\WKM)$. Gilt für beliebige
@@ -840,7 +849,7 @@ Im Fall stetiger zufälliger Größen gilt folgender Satz:
 Seien $X$ und $Y$ unabhängig mit Verteilungsdichten $p$ und $q$. Dann besitzt $X+Y$
 die Verteilungsdichte $r$  mit
   \begin{gather*}
-    r(x)=\int_{-\infty}^\infty p(x-y)\,q(y)\,\mathrm d y = \int_{-\infty}^\infty p(y)\,q(x-y)\,\mathrm d y \;.
+    r(x)=\int_{-\infty}^\infty p(x-y)\,q(y)\diff{y} = \int_{-\infty}^\infty p(y)\,q(x-y)\diff{y} \;.
   \end{gather*}
 \end{thm}
 Man nennt $r$ die \highl{Faltung} von $p$ und $q$ und schreibt $r=p*q$.
@@ -882,11 +891,11 @@ eine wohldefinierte reelle Zahl.
 Sei $p$ die Verteilungsdichte einer zufälligen Größe $X$. Dann
 \highl[besitzt Erwartungswert]{besitzt $X$ einen Erwartungswert}, wenn
 \begin{gather*}
-  \int_{-\infty}^\infty \abs{x}\,p(x)\,\mathrm   d x <\infty\;,
+  \int_{-\infty}^\infty \abs{x}\,p(x)\diff{x} <\infty\;,
 \end{gather*}
 und man definiert den \highl{Erwartungswert} von $X$ durch
 \begin{gather*}
-  \E X := \int_{-\infty}^\infty x \,p(x)\,\mathrm   d x\;.
+  \E X := \int_{-\infty}^\infty x \,p(x)\diff{x}\;.
 \end{gather*}
 \subsubsection{Beispiele zur Berechnung von Erwartungswerten}
 \medskip
@@ -930,11 +939,11 @@ und es gilt
 Ist $X$ stetig mit Verteilungsdichte $p$ , so existiert für eine messbare
 Abbildung $f \colon\R\mapsto\R$ genau dann der Erwartungswert von $f(X)$ , wenn
   \begin{gather*}
-    \int_{-\infty}^\infty \abs{f(x)}\,p(x)\,\mathrm d x<\infty\;,
+    \int_{-\infty}^\infty \abs{f(x)}\,p(x)\diff{x}<\infty\;,
   \end{gather*}
 und man hat
   \begin{gather*}
-    \E f(X)=\int_{-\infty}^\infty  f(x) \,p(x)\,\mathrm d x\;.
+    \E f(X)=\int_{-\infty}^\infty  f(x) \,p(x)\diff{x}\;.
   \end{gather*}
 \item
 Sind $X$ und $Y$ unabhängige zufällige Größen deren Erwartungswert existiert,
@@ -954,7 +963,7 @@ $\E\abs{X}^n<\infty$ . Im diskreten Fall bedeutet dies
 \end{gather*}
 und im stetigen
 \begin{gather*}
-  \int_{-\infty}^\infty \abs{x}^n\,p(x)\,\mathrm d x<\infty\;.
+  \int_{-\infty}^\infty \abs{x}^n\,p(x)\diff{x}<\infty\;.
 \end{gather*}
 Insbesondere hat $X$ ein erstes Moment, genau dann, wenn $\E X$ existiert.
 \begin{thm}
@@ -982,7 +991,7 @@ Mit $a:=\E X$ berechnet sich die Varianz für diskrete zufällige Größen in de
   \end{gather*}
 und im stetigen Fall hat man
   \begin{gather*}
-    \V X =\int_{-\infty}^\infty (x-a)^2\,p(x)\,\mathrm d x\;.
+    \V X =\int_{-\infty}^\infty (x-a)^2\,p(x)\diff{x}\;.
   \end{gather*}
 \item
 Es besteht die Identität
@@ -1047,7 +1056,7 @@ wobei
 Hat die Verteilung des zufälligen Vektors $(X,Y)$ eine Dichte $p \colon\R^2\mapsto\R$, so
 ergibt sich die Kovarianz von $X$ und $Y$ aus
   \begin{gather*}
-    \cov(X,Y)=\int_{-\infty}^\infty \int_{-\infty}^\infty (x-a)(y-b)\,p(x,y)\,\mathrm d x\, \mathrm d y\;.
+    \cov(X,Y)=\int_{-\infty}^\infty \int_{-\infty}^\infty (x-a)(y-b)\,p(x,y)\diff{x}\diff{y}\;.
   \end{gather*}
 \item
 Sind $X$ und $Y$ unabhängig, so impliziert dies $\cov(X,Y)=0$, d.\,h.~$X$ und $Y$ sind
