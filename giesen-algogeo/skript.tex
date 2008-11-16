@@ -64,6 +64,8 @@
 \usepackage{mathtools}   % Zur Definition von \abs und \norm
 \usepackage[babel]{csquotes}
 
+\usepackage[algochapter,linesnumbered]{algorithm2e}
+
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \addtokomafont{sectioning}{\boldmath}
@@ -98,6 +100,9 @@
 \theoremstyle{nonumberbreak}
 \newtheorem{fakt}{Fakt}
 \newtheorem{eigen}{Eigenschaften}
+\newtheorem{folg}{Folgerung}
+\newtheorem{beob}{Beobachtung}
+\newtheorem{beha}{Behauptung}
 
 
 % \theoremheaderfont{\global\hasprooftrue\scshape}
@@ -620,6 +625,977 @@ B_{d}(c,r) := \{x \in \R^d | \norm{x - c} \leq r\}
 \end{defini}
 
 
+
+\chapter{Voronoi Diagramme \& Delaunay Triangulierung}
+
+$P \subset \R^d$ ist endlich
+
+\begin{defini}[Nicht-degeneriert]
+\begin{itemize}
+\item  Die affine Hülle von Punkten aus $P$ ist homeomorph zu, $\R^{k-1}$. 
+%(Bei 2 Punkten auf Linie - > degeneriert)
+\item Keine $d+2$ Punkte liegen auf gemeinsamer Sphäre
+\end{itemize}
+\end{defini}
+
+%Warum degenieriert: degenerierte Fälle sind sehr instabil. %Wir betrachten zuerst Algorithmen ohne degenerierte Fälle.
+
+\begin{bemerk}
+Degenerierte Fälle sind sehr instabil.
+Im Augenblich nehmen wir immer an, dass $P$ nicht-degeneriert ist. Später wird die degeneriertheit explizit behandelt.
+\end{bemerk}
+
+\begin{defini}[Voronoi-Zelle]
+$p \in P$
+\[  V_p = \{ x \in \R^d | \norm{x-p} \leq \norm{x-q} \quad \forall q \in P \}\]
+\end{defini}
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/voronoi}
+\end{center}
+\caption{Voronoi-Diagramm}
+\end{figure} 
+
+
+\begin{defini}[Bisektor] 
+$p,q \in P$		
+\[B_{p,q} = \{x \in \R^d | \norm{y-p} = \norm{x-q} \}\]
+\end{defini}
+
+\begin{folg}
+ 
+
+\begin{equation*}
+\begin{split}
+x \in B_{p,q}& \Leftrightarrow  \norm{y-p} = \norm{x-q} \\
+& \Leftrightarrow \norm{y-p}^2 = \norm{x-q}^2 \\
+& \Leftrightarrow \norm{x}^2 - 2x^tp + \norm{p}^2 = \norm{x}^2 - 2x^Tq + \norm{q}^2 \\
+& \Leftrightarrow (q-p)^Tx + \frac{1}{2} (\norm{p}^2 - \norm{q}^2) = 0 
+\end{split}
+\end{equation*}
+
+Falls $p \neq q$: Ursprungsvermeidende Hyperebene
+\end{folg}
+
+\begin{fakt}
+\begin{itemize}
+\item  $V_p$ ist der Schnitt von Halbräumen mit Rand $B_{p,q}$.
+\item $V_p$ ist konvex.
+\end{itemize}
+\end{fakt}
+
+\begin{defini}[Voronoi-Face]
+Ein $k$-dimensionales Voronoi-Face ist der Schnitt von $d+1-k$ Voronoi-Zellen, falls dieser Schnitt nicht leer ist. 
+\end{defini}
+
+\begin{folg}
+Alle Punkte in einem $k$-dimensionalen Voronoi-Face (Voronoi $k$-Face) sind gleich abständig zu $d+1-k$ Punken in $p$.
+\end{folg}
+
+\begin{defini}[Voronoi-Diagramm] 
+Zellkomplex, der von den Voronoi-Faces gebildet wird.
+\end{defini}
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.6\textwidth]{grafiken/delaunay-triangulierung}
+\end{center}
+\caption{Delaunay-Triangulierung und ihr duales Voronoi-Diagramm}
+\end{figure} 
+
+\begin{defini}[Delaunay-Triangulierung]
+\[D(P) = \{ \sigma = \operatorname{conv}(T) | \bigcap_{p \in T \subseteq P} V_p \neq \emptyset \}\]
+%\todo{Rausfinden, was da fehlt. Das stimmt doch so nicht. }
+\end{defini}
+
+
+
+\begin{defini}[Voronoi-Delauny-Dualität]
+Wenn $k+1$ Voronoi Zellen einen nicht-leeren gemeinsamem Schnitt haben, definieren sie 
+\begin{itemize}
+\item k-dimensionalen Delauanay-Simplex
+\item $(d-k)$-dimensionales Voronoi-Face.
+\end{itemize}
+Delaunay-Simplex und Voronoi-Face sind dual zueinander.
+\end{defini}
+
+In der Ebene $\R^2$:
+
+\begin{tabular}{|l|l|}
+\hline
+Delaunay & Voronoi \\ 
+\hline
+Vertex & Zelle \\ 
+Kante & Kante \\
+Dreieck & Voronoi-Knoten/Vertex \\
+\hline
+\end{tabular}
+
+
+\begin{defini}[Power-Diagramme]
+$(p,wp) \in P \subseteq \R^d \times \R$
+\[\pi_p \colon \R^d \rightarrow	\R, x \mapsto  \norm{x-p}^2 - wp\]
+$p$ ist Punkt und $w_p$ sein Gewicht. Verallgemeinerung von Voronoi-Diagrammen.
+\end{defini}
+
+
+Falls $w_p > 0$ folgende Interpretation:
+\todo{Bild}
+
+\begin{defini}[Power-Zelle]
+$(p,w_p) \in P$
+\[V_p = \{ x \in \R^d | \pi_p(x) \leq \pi_q(x)	\qquad	\forall(q,w_q) \in P \}\]
+\end{defini}
+
+\begin{defini}[Power-Bisektor]
+$(p,w_p), (q,w_q) \in P$
+\[B_{p,q} = \{ x \in R^d | \pi_p(x) = \pi_q(x) \} \]
+\end{defini}
+
+
+
+\begin{folg}
+\begin{equation*}
+\begin{split}
+x \in B_(p,q)& \Leftrightarrow \pi_p(x) = \pi_q(x) \\
+& \Leftrightarrow \norm{x-p}^2 - w_p = \norm{x-q}^2 - w_q \\
+& \Leftrightarrow	\norm{x}^2 - 2x^Tp + p^2 - w_p = \norm{x}^2 - 2x^Tq + \norm{q}^2 - w_q \\
+& \Leftrightarrow (q-p)^Tx + \frac{1}{2} (\norm{p}^2 - \norm{q}^2 - w_p + w_q) = 0 
+\end{split}
+\end{equation*}
+Das ist für $p \neq q$ eine Ursprungsvermeidende Hyperebene.
+\end{folg}
+
+\begin{bemerk}
+Mögliche Anwendung von Power Diagrammen:
+$P = \{(p,w_p)\}$ Menge von Atomen mit Zentrum $p$ und Van der Waals-Radius $w_p$.
+\end{bemerk}
+
+\begin{defini}[Power-Faces]
+Genauso wie Voronoi-Faces
+\end{defini}
+
+\begin{defini}[Power-Diagramm] 
+Komplex der von den Power Faces gebildet wird.
+\end{defini}
+
+Gewichtete Delaunay Triaungulierung dual zum Power Diagramm (genauso wie Delaunay dual zu Voronoi)
+ 
+
+\section{Berechnung von Delaunay Triangulierungen in der Ebene}
+ 
+\begin{defini}[Umschreibender Ball eines Simplex]
+Ball der alle Knoten des Simplex auf seinem Rand hat.
+\end{defini}
+
+\begin{beob}
+Der umschreibende Ball für einen $d$-Simplex im $\R^d$ ist eindeutig.
+\end{beob}
+ 
+
+\begin{defini}[lokale Delaunay-Eigenschaft]
+Sei $T$ eine Triangulierung von $P$, wobei $P$ eine ungewichtete Punktemenge im $\R^2$ sei.
+$T$ hat die lokale Delaunay-Eigenschaft falls jede Kante der Triangulierung entweder
+\begin{enumerate}
+\item eine inzidentes Dreieck hat. (D.h. Kante ist auf dem Rand der komplexen Hülle von $T$)
+\item Kante hat 2 inzidente Dreiecke $abc$ und $bcd$ hat, so dass der umschreibende Ball von $abc$ den Punkt $d$ nicht enthält.
+\end{enumerate}
+\end{defini}
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.8\textwidth]{grafiken/delaunayeigenschaft}
+\end{center}
+\caption{lokale Delaunay-Eigenschaft}
+\end{figure} 
+
+
+\begin{satz}
+Wenn in einer Triangulierung $T$ von $P$ jede Kante die lokale Delaunay-Eigenschaft hat, dann ist $T$ eine Delaunay-Triangulierung.
+\end{satz}
+
+\begin{folg}
+Algorithmus der versucht, die lokale Delaunay-Eigenschaft herzustellen, indem er verletzende Kanten flipt.
+\end{folg}
+
+\begin{proof}
+Idee:
+Für jedes Dreieck $abc$ in der Triangulierung gilt: Die umschließende Kreisscheibe enthält keinen Punkt von $P$ im innern.
+
+Voronoi-Vertex:
+\begin{enumerate}
+ \item Schnitt der Voronoi-Zellen von $a,b,c$ nichtleer
+ \item $abc$ (Konvexe Hülle von $a,b$ und $c$) ist Delaunay
+\end{enumerate}
+
+Sei $p \in P \setminus \{a,b,c\}$ und
+$q$ beliebig in Umkreisscheibe.
+Das Linienegment $qp$ schneidet Dreiecke $t_1, t_2, ... , t_k$ der Triangulierung.
+Dazu folge von gewichteten Punkten $S_1, S_2, ... , S_k$ mit Gewichten $w_1, w_2, ... , w_k$
+$w_i = \text{Radius der Umkreisscheibe von} t_i$
+Damit ergeben sich eine Folge von Power-Abständen $\Pi_1(p), ... , \Pi_k()$
+
+\todo{wo kommen die Sks her?}
+
+\begin{beob}
+\begin{enumerate}
+\item Der Power-Abstand ist
+\begin{itemize}
+ \item 	negativ, falls innerhalb der Kreisscheibe
+ \item 	$0$, falls auf Rand der Kreisscheibe
+ \item 	positiv, falls ausserhalb der Kreisscheibe
+\end{itemize}
+
+\item auf der geraden der gemeinsamen Kante von $t_i$ und $t_{i+1}$ gilt $\Pi_i = \Pi_{i+1}$. (Wegen $\Pi_i(x) = \Pi_{i+1}(x) = \Pi_i(y) = \Pi_{i+1}(y) = 0$)
+Außerdem gilt $\Pi_i < \Pi_{i+1}$ links vom Power-Bisektor bzw. $\Pi_i < \Pi_{i+1}$ rechts vom Power-Bisektor.
+
+\includegraphics[width=0.3\textwidth]{grafiken/power-bisektor}
+
+\item $p$ ist Knoten von $t_k$. Daraus folgt $\Pi_k(p) = 0 \rightarrow \Pi_{k+1}(p) > 0 \rightarrow \Pi_{1}(p) > 0$.
+Das bedeutet $p \notin \text{ Umkreisscheibe von } t_1 = abc$ 
+\todo{wieso folgt das?}
+\end{enumerate}
+\end{beob}
+Aus Punkt 3 der Beobachtung folgt also die Behauptung.
+\end{proof}
+
+Lawson-Flip
+Wann immer $bc$ nicht die lokale Delaunay-Eigenschft hat, dann ``flippen'' der Kante zu $ad$.
+d.h. in Triangulierung tauschen wir die Dreiecke $abc$ und $bcd$ aus durch $abd$ und $adc$.
+
+\includegraphics[width=0.3\textwidth]{grafiken/flip}
+
+
+Der Lawson-Flip-Algorithmus muss entscheiden, ob $bc$ die lokale Delaunay-Eigenschaft ha, d.h. ob $d$ in der Umkreisscheib von $abc$ enthalten ist. Dazu benötigt man den IN\_CIRCLE\_TEST.
+
+
+\begin{satz}[Lifted Circle Claim]
+Dazu Hochhebungsabbildung:
+\begin{gather*}
+h \colon \R^2 \rightarrow \R^3 \\
+(x,y) \mapsto (x,y,x^2 + y^2) 
+\end{gather*}
+
+
+Seien $p,q,r \in \R^2$. 
+
+$s\in \R^2$ ist
+\begin{enumerate}
+ \item  auf dem Rand der umschließenden Kreisscheibe genau dann, wenn $h(s) \in \operatorname{aff}(h(p), h(q), h(r))$ gilt
+ \item Innerhalb der Kreisscheibe, falls $h(s)$ Vertikal unterhalb von $\operatorname{aff}(h(p), h(q), h(r))$ liegt.
+ \item Außerhalb der Kreisscheibe sonst
+\end{enumerate}
+\end{satz}
+
+\begin{proof}
+Spezialfall:
+Der Mittelpunkt der Kreisscheibe von $p,q$ und $r$ ist Ursprung.
+
+\begin{beob}
+\begin{enumerate}
+ \item dritte Komponente des gelifteten Punktes ist der quadratische Abstand des Punktes vom Ursprung
+ \item $p$, $q$ und $r$ haben alle den gleichen Abstand zum Ursprung
+$\rightarrow$ $\operatorname{aff}(h(p), h(q), h(r))$ ist Ebene parallel zur $x,y$-Ebene, die das Parabol in einem Kreis schneidet
+\end{enumerate}
+\end{beob}
+
+Sei $s$ Punkt auf dem Rand der umschließenden Kreisscheibe von $p$, $q$ und $r$
+\[
+\begin{pmatrix}
+ s_x \\ s_y \\ s_x^2 + s_y^2 \\ 1
+\end{pmatrix}
+= \lambda 
+\begin{pmatrix}
+ p_x \\ p_y \\ p_x^2 + p_y^2 \\ 1
+\end{pmatrix}
++
+\mu 
+\begin{pmatrix}
+ q_x \\ q_y \\ q_x^2 + q_y^2 \\ 1
+\end{pmatrix}
++\rho 
+\begin{pmatrix}
+ r_x \\ r_y \\ r_x^2 + r_y^2 \\ 1
+\end{pmatrix}
+\]
+$\lambda, \mu, \rho \in \R$
+Verwendung von Homogenen Koordinaten um die Bedingung $\lambda + \mu + \rho = 1$ sicherzustellen.
+
+Allgemeiner Fall:
+Der mittelpunkt der Kreisscheibe von $p$,$q$ und $r$ ist $t \neq 0$.
+Translation der Konfiguration mit $t$.
+%\todo{bild einfügen}
+
+\begin{gather*}
+\begin{split}
+\begin{pmatrix}
+ s_x + t_x \\ s_y + t_y \\ (s_x + t_x)^2 + (s_y + t_y)^2 \\ 1
+\end{pmatrix}
+= & \lambda 
+\begin{pmatrix}
+ p_x + t_x \\ p_y + t_y \\ (p_x + t_x)^2 + (p_y + t_y)^2 \\ 1
+\end{pmatrix} 
++ \mu 
+\begin{pmatrix}
+ q_x + t_x \\ q_y + t_y \\ (q_x + t_x)^2 + (q_y + t_y)^2 \\ 1
+\end{pmatrix}\\
+ + & \rho 
+\begin{pmatrix}
+ r_x + t_x \\ r_y + t_y \\ (r_x + t_x)^2 + (r_y + t_y)^2 \\ 1
+\end{pmatrix}
+\end{split}
+\end{gather*}
+
+Nachrechnen der dritten Komponente:
+\begin{gather*}
+\begin{split}
+2s_xt_x + t_x^2 + 2s_yt_y + t_y^2 = & \lambda(2p_xt_x + t_x^2 + 2p_yt_y + t_y^2) + \mu(2q_xt_x + t_x^2 + 2q_yt_y + t_y^2) + \\ 
+& \rho(2r_xt_x + t_x^2 + 2r_yt_y + t_y^2)
+\end{split}
+\end{gather*}
+daraus folgt
+\begin{gather*}
+\begin{split}
+s_xt_x + s_yt_y = & \lambda(p_xt_x + p_yt_y) + \mu(q_xt_x + q_yt_y) + \rho(r_xt_x + r_yt_y) \\
+ = & t_x(\lambda p_x + \mu q_x + \rho r_x) +  t_y(\lambda p_y + \mu q_y + \rho r_y) \\
+= & t_xs_x + t_ys_y
+\end{split}
+\end{gather*}
+
+\[
+h(s+t) \in \operatorname{aff}(h(p+t), h(q+t), h(r+t))
+\]
+Daraus folgt die Behauptung, da $s$ beliebig auf Rand gewählt war.
+\end{proof}
+
+Berechnung des IN\_CIRCLE-Prädikats durch die Determinante:
+\[ \Gamma = \begin{vmatrix} 
+1 & p_x & p_y & p_x^2 + p_y^2 \\ 
+1 & q_x & q_y & q_x^2 + q_y^2 \\ 
+1 & r_x & r_y & r_x^2 + r_y^2 \\ 
+1 & s_x & s_y & s_x^2 + s_y^2  
+\end{vmatrix}
+\]
+
+Determinante verschwindet genau dann, wenn $s$ im Rand der umschließenden Kreisscheibe von $p$,$q$ und $r$ ist. (Die Determinante ist $0$, wenn die Punkte affin abhängig sind.)
+
+\[ \Delta = \begin{vmatrix} 
+1 & p_x & p_y \\ 
+1 & q_x & q_y \\ 
+1 & r_x & r_y 
+\end{vmatrix}
+\]
+Mit der Matrix $\Delta$ heben sich Vorzeichenwechsel der Determinante bei Permutation gegenseitig auf.
+
+\begin{lemma}
+Ein Punkt $s \in R^2$ liegt im Inneren der umschließenden Kreisscheibe von $p$, $q$ und $r$ genau dann, wenn das Produkt aus $\Delta$ und $\Gamma$ negativ ist. ($\Delta \Gamma < 0$)
+\end{lemma}
+
+\begin{proof}
+ Spezialfall:
+$p = (0,0)$, $q = (1,0)$, $r = (0,1)$ und $s = (\frac{1}{4},\frac{1}{4})$ 
+Damit ist $\Delta = 1$ und $\Gamma < 0$
+
+Idee der stetige Bewegung:
+
+Führe $p$, $q$, $s$ und $r$ stetig von Situation in Spezialfall über, wobei degenerierte Situationen vermieden werden müssen. Dies funktioniert wegen der Stetigkeit der Determinante.
+\end{proof}
+
+
+\subsection{Lawsons-Flip-Algorithmus}
+
+Idee: Wenn immer eine Kante $bc$ nicht die lokale Delaunay-Eigenschaft hat, dann "Flip" zu ab
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Der Lawson-Flip-Algorithmus}
+    \KwIn{$T$ Triangulierung}
+    \KwOut{Delaunay-Triangulierung}
+	\ForEach{Kante $e \in T$}{
+		Markiere $e$\;
+		PUSH $e$ auf den Stack s\;
+	}
+	\While{$S \neq \emptyset$}{
+		$(b,c)$ = S.pop()\;
+		entferne Markierung von $(b,c)$\;
+		\If{$(b,c)$ hat nicht die lokale Delaunay-Eigenschaft}{
+			FLIP $(b,c)$ zu $(a,d)$\;
+			\For{ $(x,y) \in \{ac,cd,db,ba\}$}{
+				\If{ $(x,y)$ nicht markiert ist}{
+					markiere $(x,y)$\;
+					S.push(x,y)\;
+				}
+			}
+		}
+	}
+  \end{algorithm}
+
+%Algorithmus:
+
+%Lawsons Flip (T Triangulierung)
+%FOR EACH e KANTE IN T DO
+% 	MARKIERE c
+% 	PUSH e AUF DEN STACK S
+% END FOR
+% 
+% WHILE $S \neq \emptyset$ DO
+% 	$(b,c)$ = S.pop()
+% 	ENTFERNE MARKIERUNG VON $(b,c)$
+% 	IF $(b,c)$ hat nicht die lokale Delaunay-Eigenschaft THEN
+% 		FLIP $(b,c)$ zu $(a,d)$
+% 		FOR $(x,y) \in \{ac,cd,db,ba\}$ DO
+% 			IF $(x,y)$ NICHT MARKIERT IST DO
+% 				MARKIERE $(x,y)$
+% 				S.push(x,y)
+% 			END IF
+% 		END FOR
+% 	END IF
+% END WHILE
+
+
+\begin{satz}
+Der Lawson-Flip-Algorithmus terminiert
+\end{satz}
+
+\begin{proof}
+
+\begin{beob}
+Bei jedem Flip bleibt die Anzahl der Dreiecke in der Triangulierung die gleiche.
+\end{beob}
+
+\begin{defini}
+Gewicht von Triangulierung $T$ ($= w(T)$) ist der Vektor aller Winkel, die in $T$ auftreten, aufsteigend geordnet.
+\end{defini}
+	
+$T < T'$ falls $w(T) < w(T')$ (Lexikographischer Vergleich), $w(T) der Winkelvector$	
+
+\begin{beha}
+ $w(t) < w(T')$ falls $T'$ aus $T$ durch einen Flip entsteht.
+\end{beha}
+
+\todo{Skizze davon einfügen: abc-dreieck, d ist Punkt im Kreis}
+
+\begin{gather*}
+w(T) = \alpha_1 + \alpha_2, \beta_1, \beta_2, \gamma_1 + \gamma_2, \delta_1, \delta_2 \\
+w(T') = \alpha_1,\alpha_2, \beta_1 +  \beta_2, \gamma_1, \gamma_2, \delta_1 +  \delta_2
+\end{gather*}
+
+Um zu zeigen $w(T) < w(T')$ benutzen wir den  Satz von Thales.
+
+\includegraphics[width=0.3\textwidth]{grafiken/thales}
+
+$\alpha_e > \alpha_d = \alpha_c > \alpha_f$
+
+\todo{versteh das nicht.. evtl. abschreibfehler?}
+
+Kante:
+$qc: \beta_1 < \delta_2$
+$bc: \gamma_2 < \delta_1$
+$dc: \beta_2 < \alpha_1$
+$bd: \gamma_1 < \alpha_2$
+
+=>
+$\beta_1, \beta_2 < \beta_1 + \beta_2$
+$\gamma_2 < \delta_1$
+$\beta_1 < \delta_2$
+$\gamma_1, \gamma_2 < \gamma_1 + \gamma_2$
+$\gamma_1 < \alpha_2$
+$\beta_2 < \alpha_1$
+
+D.h. für jeden Winkel aus $w(T)$ gibt es einen größeren n $w(T')$. Da die Anzahl der Triangulierungen endlich und das Maß immer ansteigend ist folgt daraus, dass der Algorithmus terminiert.
+\end{proof}
+
+\begin{satz}[Thales]
+ Der Mittelpunktswinkel ist doppelt so groß wie der Umfangswinkel.
+\end{satz}
+
+\begin{proof}
+Zuerst der einfache Basisfall bei dem der Mittelpunkt auf der Linie liegt:
+Da die Dreiecke gleichschenklig sind, gilt für das Dreieck $amc$: $2x + \Pi - 2\alpha = \Pi$. Daraus folgt $x = \alpha$.
+
+\includegraphics[width=0.3\textwidth]{grafiken/thales-einfach}
+
+Der Fall, dass der Mittelpunkt im Dreieck enthalten ist: $\gamma + \beta = \alpha$
+
+\includegraphics[width=0.3\textwidth]{grafiken/thales-mpenthalten}
+
+Der Fall, das der Mittelpunkt nicht enthalten ist: $\beta + x = 2\beta + 2\gamma$. Daraus folgt wieder $x = \gamma$.
+
+\includegraphics[width=0.3\textwidth]{grafiken/thales-nichtmpenthalten}
+
+Der Trick in beiden Fällen: Betrachte Diagonale durch Punkt $m$ und argumentiere danach mit dem Basisfall.
+\end{proof}
+
+
+%Was fehlt noch: Eingabe des Lawson Flip Algorithmus. Die initiale Triangulierung.
+%Jetzt kommt Algorithmus für konvexe Hülle. Dieser hat als Nebenprodukt eine Triangulierung.
+\section{Konvexe Hülle in der Ebene \texorpdfstring{$\R^2$}{R hoch 2}}
+
+$P \subset \R^2$:
+Konvexe Hülle ist der Schnitt aller konvexen Mengen, die $P$ enthalten.
+
+%$= \{ x = \sum \delta_i p_i | p_i \in P, \delta_i \geq 0, \sum \delta_i = 1\}$
+
+\begin{defini}
+ Extrempunkte sind Punkte aus P auf dem Rand der konvexen Hülle. %Also Punkte bei denen nur ein einziger Koeffizient 1 ist.
+\end{defini}
+
+Das algorithmische Ziel ist das Aufzählen der Extrempunkte entlang des Randes der Konvexen Hülle von P.
+%im Uhrzeigersinn. ?
+Dazu benötigen wir das Prädikat $\operatorname{IS\_LEFT\_OF}(p,q,r)$ das uns sagt, ob $r$ links von (auf, rechts) der geraden durch $p$ und $q$ liegt.
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/isleftof}
+\end{center}
+\caption{IS\_LEFT\_OF-Prädikat}
+\end{figure} 
+
+
+%Algorithmus Jarvis Wrap:
+%1. Ordne Punkte in P Lexikographisch nach (x,y) Koordinaten.
+%....
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Der Jarvis-Wrap-Algorithmus}
+    \KwIn{$P \subset \R^2$}
+    \KwOut{Extrempunkte auf dem Rand der konvexen Hülle}
+	$p :=$ Lexikographisch kleinster Punk in $P$\;
+	$p' := p$\;
+	\Repeat{$p = p'$}{
+		q := beliebiger Punkt in $P\setminus \{p\}$\;
+		\ForAll{$ r \in P\setminus\{p,q\}$}{
+			\If{$\operatorname{IS\_LEFT\_OF}(p,q,r)$}{
+				$q := r$\;
+			}
+		}
+		Ausgabe von $q$\;
+		$p:=q$\;
+	}
+\end{algorithm}
+
+% PSEUDOCODE:
+% p := Lexikographisch kleinster Punk in P
+% p' := p
+% DO
+% 	q := beliebiger Punkt in $P\setminus \{p\}$
+% 	FOR ALL$ r \in P\setminus\{p,q\}$
+% 		IF $IS_LEFT_OF(p,q,r)$ THEN
+% 			q := r
+% 		END IF
+% 	END FOR
+% 	AUSGABE VON q
+% 	p:=q
+% WHILE ($p \neq p'$)
+
+
+Kurze Kostenanalyse: 
+\[
+\text{Finden des lexik. kleinsten Elements} + h * (n-2) * \text{IS\_LEFT\_OF}
+\]
+$h$ ist die Anzahl der Extrempunkte.
+Das bedeutet der Jarvis-Wrap-Algorithmus ist Output-Sensitiv, d.h. Laufzeit hängt von Anzahl der Extrempunkte ab.
+
+\subsubsection{Implementierung des IS\_LEFT\_OF-Prädikats}
+Falls $r \in \operatorname{aff}(p,q)$:
+\[
+\begin{pmatrix}
+r_x\\
+r_y\\
+1
+\end{pmatrix}
+= \lambda
+\begin{pmatrix}
+p_x\\
+p_y\\
+1
+\end{pmatrix}
++ \mu
+\begin{pmatrix}
+q_x\\
+q_y\\
+1
+\end{pmatrix}
+%				p_x			q_x
+%	= \lambda		p_y	+ \mu	q_y	
+%				1			1
+\]
+
+daraus folgt: $p$,$q$ und $r$ sind linear abhängig. Das bedeutet, die folgende Determinante ist $0$.
+\[
+\Delta = 
+\begin{vmatrix}
+1 & p_x & p_y \\
+1 & q_x & q_y \\
+1 & r_x & r_y
+\end{vmatrix}
+= 0
+%		1	p_x	p_y
+%\Delta = 	1	q_x	q_y	= 0
+%		1	r_x	r_y
+\]
+
+Aus dem stetigen Bewegungs-Argument (z.B. mit Punkten $p = (1,0)$, $q = (0,1)$ und $r = (0,0)$) folgt:
+$r$ ist links von der affinen Hülle, falls $\Delta > 0$. Argument folgt aus der Stetigkeit der Determinante. 
+
+%Der Jarvis-Wrap algorithmus ist numerisch unstabil. Die Auswertung des Prädikats schlägt bei float-Werten relativ oft fehl, so dass die Gefahr einer endlosschleife besteht.
+
+\subsection{Graham Scan Algorithmus}
+
+Halbkanten-Datenstruktur:
+
+Kante zwischen $p$ und $q$ wird gespeichert als zwei Halbkanten.
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/halbkanten}
+\end{center}
+\caption{Halbkanten-Datenstruktur}
+\end{figure} 
+
+
+1. Sortiere Punkte in P lexikographisch. Verpointere die Punkte.
+
+Starten beim keinsten Punkte. Gehen zum übernächsten Punkt. (zweimal Next)
+....
+erst Untere und dann die Obere Konvexe Hülle.
+Ergebnis ist insbesondere auch eine Triangulierung.
+
+
+Halbkanten-Datenstruktur:
+Jede Kante besteht aus zwei einzelkanten. Jede Einzelkante erhält previous und next.
+
+für planare Graphen.
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Der Graham-Scan-Algorithmus}
+    \KwIn{$P \subset \R^2, P = \{p_1, p_2, ... , p_k \}$}
+    \KwOut{Triangulierung und konvexen Hülle}
+	Sortiere $\{p_1 ... p_k\} lexikographisch$\;
+	verbinde alle $p_i p_{i+1}$ mit Kanten\;
+	berechne untere konvexe Hülle LowerHull(p)\;
+	berechne obere konvexe Hülle UpperHull(p)\;
+\end{algorithm}
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{LowerHull($P$)}
+%    \KwIn{$P \subset \R^2, P = \{p_1, p_2, ... , p_k \}$}
+%    \KwOut{Triangulierung und konvexen Hülle}
+	$p:=p_1, q = p_3, r = p_2$\;
+	$i := 3$\;
+	\While{$i \leq n$}{
+		\eIf{$\operatorname{IsLeftOf}(p,q,r)$}{
+			fügen Kante $(p,q)$ ein\;
+			$i++$\;
+			$r:=q$\;
+			$q:=p_i$\;
+		}
+		{
+			$i++$\;
+			$p:=r$\;
+			$r:=q$\;		
+			$q:=p_i$\;
+		}		
+	}
+\end{algorithm}
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{UpperHull($P$)}
+%    \KwIn{$P \subset \R^2, P = \{p_1, p_2, ... , p_k \}$}
+%    \KwOut{Triangulierung und konvexen Hülle}
+	drehe Reihenfolge von $p_1 ... p_k$ um\;
+	LowerHull(p)\;
+\end{algorithm}
+
+Die Laufzeit ist $O(n \log n)$, da am Anfang die Punkte sortiert werden müssen. 
+
+Untere Schranke:
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Sortieren mit konexen Hüllen}
+    \KwIn{$a_1 ... a_n \in \R \geq 0;  a \geq 0$}
+    \KwOut{Zahlen in sortierter Reihenfolge -> $\Omega(n \log n)$}
+	konstruiere Punkte $p_i := (a_i, a_i^2)$\;
+	berechne die Konvexe Hülle\;
+\end{algorithm}
+
+%gegeben: $a_1 ... a_n \in \R \geq 0;  a \geq 0$
+%ausgabe: Zahlen in sortierter Reihenfolge -> $\Omega(n \log n)$
+%konstruiere Punkte $p_i := (a_i, a_i^2)$
+Konvexe Hülle würde die Zahlen $a_1 .. a_n$ sortieren. Damit ist die untere Schranke $\Omega(n \log n)$ wenn $n$ Punkte auf der konvexen Hülle liegen.
+
+\section{Berechnung von Voronoi-Diagrammen in der Ebene}
+
+Komplexität eines Voronoi-Diagramms in der Ebene:
+
+\begin{lemma}
+Wenn $\norm{p} = n \geq 3$ ist, so gibt es höchstens $2n -5$ Voronoiknoten und $3n-6$ Voronoikanten. (in der Ebene)
+\end{lemma}
+
+\begin{proof}
+Eulers Formel für planare Graphen:
+\[m_{kn} - m_{ka} + m_F = 2\]
+
+hier (unendlichen Knoten einfügen und alle Knoten auf der konvexen Hülle damit verbinden.): 
+\[(n_{Kn} + 1) - n_{Ka} + n = 2\]
+
+Summe aller Knotengrade:
+\[2 \cdot n_{Ka} \geq 3 (n_{Kn} + 1)\], da jeder Knoten mindestens Grad 3 hat.
+
+daraus folgt:
+\begin{gather*}
+\begin{split}
+(n_{Kn} + 1) + n = 2 + n_{Ka} &\geq 2 + \frac{3}{2} (n_{Kn} + 1) \\
+n &\geq 2 + \frac{1}{2} (n_{Kn} + 1) \\
+2n -5 &\geq n_{Kn} 
+\end{split}
+\end{gather*}
+
+Analog folgt $3n - 6 \geq n_{Ka}$
+\end{proof}
+
+
+\subsection{Sweep Line Paradigma}
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.7\textwidth]{grafiken/sweepline}
+\end{center}
+\caption{sweep line}
+\end{figure} 
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/beachline}
+\end{center}
+\caption{beach line}
+     \end{figure} 
+
+
+\begin{enumerate}
+ \item Punkt-Event:
+Sweepline trifft auf einen Punkt aus $P$.
+
+\begin{enumerate}
+ \item Ein neuer Parabelbogen kommt zur beach line hinzu
+ \item Neue Voronoikanten werden in ihrem Verlauf beschrieben
+\end{enumerate}
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = \textwidth]{grafiken/punktevent}
+\end{center}
+\caption{Punkt-Event}
+\end{figure} 
+
+
+Daraus folgt: Es gibt maximal $2n - 1$ Parabelbogen auf  beachline.
+
+
+ \item Kreis-Event:
+In dem Moment, in dem $a'$ verschwindet, gehen alle drei Parabelbögen $a', a''$ und $a'''$ durch einen gemeinsamen Punkt $q$. Dieser ist ein neuer Knoten im Voronoi-Diagramm, da der offene Kreis $K$ mit Mittelpunkt $q$ leer ist.
+\end{enumerate}
+
+\begin{lemma}
+Ein neuer Parabelpunkt kann auf der beach line nur durch ein Punkt-Event entstehen.
+\end{lemma}
+
+
+\begin{lemma}
+Ein Parabelbogen kann von der beach line nur durch ein Kreis-Event verschwinden.
+\end{lemma}
+
+\begin{enumerate}
+ 
+
+ \item Datenstrukturen für das schon konstruierte Voronoi-Diagramm
+\begin{itemize}
+ \item Halbkantendatenstruktur
+\end{itemize}
+
+ \item Datenstruktur für die beach line
+\begin{itemize}
+ \item ausbalancierten Binärbaum, wobei die Blätter die Parabelbögen darstellen
+ \item Schnittpunkte benachbarter Parabelbögen können durch interne Knoten dargestellt werden
+\end{itemize}
+
+ \item Datenstruktur für die Events 
+\begin{itemize}
+ \item Prioritätswarteschlange
+ \item füge am Anfang alle Punktevents ein. 
+ \item füge Kreis-Events hinzu, sobald klar ist, wann sie stattfinden (ist Berechenbar bei Punkt-Event)
+\end{itemize}
+\end{enumerate}
+
+\begin{bemerk}
+Laufzeit pro Punktevent: $\log n$
+
+Laufzeit pro Kreisevent: konstante Zeit
+\end{bemerk}
+
+Insgesamt: $O(n \log n)$
+
+
+\section{Inkrementeller Algorithmus zur Berechnung der Delaunay-Triangulierung von \texorpdfstring{$P \subset \R^2$}{P ist Teilmenge von R hoch 2}} 
+
+$P = \{p_1, ... , p_n\}, S_1 = \{p_1\}, S_n = \{p1, ... , p_n\} = P, P_i = \{1, ..., p_i\}$
+
+Seien $D_i = D(S_i)$ die Delaunay-Triangulierung von $S_i$
+
+Annahme:
+$x,y,z \in \R^2$ mit 
+$\{x,y,z\} \cap P = \emptyset$
+, so dass  
+$P \subset \operatorname{CONV}\{x,y,z\}$ 
+und Radius der umschließenden Kreisscheibe von 
+$xyz >> max\{ \norm{ p_i - p_j } | p_i, p_j \in P \} \forall i = 1, ..., n$.
+
+$D_0 = D(x,y,z)$ Delaunay-Triangulierung von x,y,z.
+\begin{enumerate}
+\item Einfügen in Dreieck, dass $p_2$ enthält
+\item \enquote{Splitten} des Dreiecks
+\item Herstellen der lokalen Delaunay-Eigenschaft für alle Kanten  
+\end{enumerate}
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Inkremententeller Algorithmus für Delaunay-Triangulierung}
+    \KwIn{$P \subset \R^2$}
+    \KwOut{Delaunay-Triangulierung}
+\For{i=1 TO n}
+{
+	FIND $\sigma_{i-1}$ IN $D_{i-1}$ WITH $p_i \in \sigma_{i-1}$\; %\sigma_{i-1} Dreieck in Delaunay-Triangulierung D_{i-1}, dass ist das Punktlokalisierungsproblem
+	ADD $p_i$ by splitting $\sigma_{i-1}$\;  % <-- Update
+	\While{$\exists$ Edge $bc$ WITHOUT "lokale Delaunay-Eigenschaft"}
+	{
+		Flip $bc$ to $ad$\;
+	}	
+}
+\end{algorithm}
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = \textwidth]{grafiken/D1-3}
+\end{center}
+\caption{$D_0$, $D_1$ und $D_2$}
+\end{figure} 
+
+
+Der Algorithmus untertei sich in 2 Teilprobleme: Das Lokalisierungsproblem in Zeile 2 und das Update-Problem in Zeile 3-6. Das Update besteht aus einer Split-Operation (genannt "1-3-Flip")
+und mehreren Flip-Operationen (genannt "2-2-Flip").
+	
+	
+\subsubsection{Anzahl von Flips im Verlauf des Algorithmus}
+
+\begin{lemma}
+Sei $\sigma \in D_i \notin D_{i-1}$, dann hat $\sigma$ den Punkt $p_i$ als einen seiner Knoten.
+\end{lemma}
+\begin{proof}
+Da $\sigma$ Delaunay-Dreieck enthält die Umkreisscheibe keinen Punkt von $S_i$ im Innern. Da $S_{i-1} \subset S_i$ gilt das gleiche für $S_{i-1}$, d.h. falls $p_i$ kein Knoten von $\sigma$ ist, dann $\sigma \in D_{i-1}$. Daraus folgt: $p_i$ Knoten von $\sigma$.
+\end{proof}
+
+
+\begin{defini}
+\begin{itemize}
+\item Sei $p$ Knoten von Triangulierung $T$. Der Stern (Star) von $p$ sind alle Dreiecke in $T$, die inzidient sind zu $p$.
+
+\item Der Link von $P$ sind alle Kanten im Stern von $p$, die nicht zu $p$ inzident sind.
+\end{itemize}
+\end{defini}
+
+\begin{enumerate}
+\item Nur die Dreiecke im Stern von $p_i$ können durch Flip-Operationen beim einfügen von $p_i$ in $D_{i-1}$ entstanden sein. Die Anzahl der Flip-Operationen ist $\leq \frac{1}{2} \operatorname{GRAD}(p_i)$, wobei $\operatorname{GRAD}(p_i) =$ die Anzahl der Kanten inzident zu $p_i$ in $D_i$ ist.
+Jeder Flip erzeugt ein neues Dreieck inzident zu $p_i$
+
+\item Nach jeder Operation müssen wir immer nur die noch nicht geprüften Kanten im Link von $p_i$ auf die lokale Delaunay-Eigenschaft prüfen.
+\end{enumerate}
+
+Beispiel: Kaskadierender Flip, d.h. es reicht nicht nur die Kanten des Dreiecks in das $p_i$ eingefügt wurde auf die lokale Delaunay-Eigenschaft zu prüfen.
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = \textwidth]{grafiken/kaskadierenderflip}
+\end{center}
+\caption{kaskadierender Flip}
+\end{figure} 
+
+
+$\operatorname{GRAD}(p_i) \leq i-1$, d.h. höchstens $\frac{i-1}{2}$ Flips beim Einfügen von $p_i$.
+
+Faustregel und Trick: Wenn immer die Auswahl in einem Algorithmus beliebig ist, dann treffe die Entscheidung zufällig.
+In diesem Fall bedeutet das, dass wir die Reihenfolge der Punkte $p_1, ... , p_n$ zufällig wählen.
+
+Jetzt müssen nur noch die erwartete Anzahl von Flip-Operationen beim Einfügen von $p_i$ bestimmt werden.
+
+\begin{beob}
+\begin{enumerate}
+ \item Bei zufälliger (gleichverteilt) Einfügereihenfolge hat jeder Punkt die gleiche Wahrscheinlichkeit als letzter eingefügt zu werden.
+ \item Gesamtanzahl von Flips über alle Einfügereihenfolgen von $i$ Punkten: \[ \sum_{j = 1}^{i} \operatorname{GRAD}_i (p_j)\] 
+Wobei $\operatorname{GRAD}_i (p_j)$ der Knotengrad von $p_j$ in $D_i$ ist.
+ \item  $\sum_{j = 1}^{i} \operatorname{GRAD}_i (p_j) = 2$ \# Kanten in $D_i$
+ \item  Für die Anzahl der Kanten in $D_i$ gilt die Eulerformel: 
+\[\text{Anzahl der Knoten }v - \text{Anzahl der Kanten } e + \text{Anzahl der Dreiecke } f = 2\]
+Für Delaunay-Triangulierungen gilt außerdem folgendes: 
+\[3f = 2(e-h) + h = 2e - h\text{, h ist die Anzahl der Kanten auf Rand von $D_i$}\] 
+Daraus folgt: \[f = \frac{2}{3} e - \frac{1}{3} h \]
+Durch einsetzen in die Euler-Formel erhält man nun 
+\[v - e + \frac{2}{3} e - \frac{1}{3} h = 2\] 
+Daraus folgt: \[e = 3v - h - 6\]
+\end{enumerate}
+\end{beob}
+
+Aus 1-4 folgt: 
+\[ \text{Gesamtanzahl von Flips} \leq \frac{1}{2}(2 \cdot 3i - 9 ) \leq 3i\]
+% h >= 3.
+Daraus folgt die durchschnittliche Anzahl von Flips $\leq 3$.
+
+
+\subsubsection{Aufwand für das Punktlokalisierungsproblem}
+
+Datenstruktur für die Punktlokalisierung ist der Delaunay-Graph: 
+Gerichteter, anzyklischer Graph. Abgeleitet aus Split und Flip.
+Knoten des Graphen sind alle Dreiecke, die im Verlauf des inkrementellen Algorithmus auftauchen.
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/dg-flip}
+\end{center}
+\caption{Delaunay-Graph beim Flip}
+\end{figure} 
+
+\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/dg-split}
+\end{center}
+\caption{Delaunay-Graph beim Split}
+\end{figure} 
+
+
+\begin{bemerk}
+Beweis der Eulerformel: $v -e + f = 2$
+
+\begin{enumerate}
+ \item 1-Skelett der Delaunay-Triangulierung. (D.h. der planare Graph der Delaunay-Kanten und Verticies.)
+\item 1-Skelett enthält minimalen Spannbaum von $P$.
+\end{enumerate}
+
+Für den Spannbaum gilt: 
+\[v = \abs{p} = n\]
+\[e = n-1\]
+\[f = 1\]
+
+Das bedeutet für diesen Fall gilt die Eulerformel.
+
+Induktion: Durch Einfügen von Delaunay-Kanten in den Spannbaum gilt:
+\[v \rightarrow v + 1\]
+\[f \rightarrow f + 1\text{ , weil jede neue Kante ein Gebiet teilt}\]
+\[v \rightarrow v\]
+
+Damit gilt die Eulerformel.
+ \end{bemerk}
 
 \clearpage
 \appendix
