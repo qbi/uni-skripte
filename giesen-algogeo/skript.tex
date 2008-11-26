@@ -1597,6 +1597,518 @@ Induktion: Durch Einfügen von Delaunay-Kanten in den Spannbaum gilt:
 Damit gilt die Eulerformel.
  \end{bemerk}
 
+%\section{Inkrementeller Algorithmus zur Berechnung der Delaunay-Triangulierung}
+
+Lower Hull(P), $\abs{P}= n, P \subset \R^2$
+
+\begin{algorithm}
+    \dontprintsemicolon
+	\caption{LowerHull($P$), $ |P| = n, P \subset \R^2$}
+%    \caption{LowerHull($P$), $\abs{P}= n, P \subset \R^2$}
+%    \KwIn{$P \subset \R^2, P = \{p_1, p_2, ... , p_k \}$}
+%    \KwOut{Triangulierung und konvexen Hülle}
+	a:a[0,....,n] Array mit $n+1$ Elementen\;
+	$a[0] := p_1$\;
+	\For{$i = 1TO n$}{
+		$a[i]:=p_i$\;	
+	}
+	$i:=1$\;
+	\While{$i < LENGTH(q) - 1$}{
+		\eIf{$IS_LEFT_OF(a[i], a[i+2], a[i+1])$}{
+			Remove(a,i+1)\; %//Entferne das i+1te Element aus q
+			$i := i -1$\;
+		}
+		{
+			$i:=i +1$\;
+		}	
+	}
+	\For{$i=1 TO Length(a)$}{
+		Output a[i]	\;
+	}
+\end{algorithm}
+
+Randomisierte Analyse:
+
+Sei $p_1, ...., p_n$ zufälige Reihenfolge der Punke in $P$.
+$D_0, ..., D_n$ folge von Delaunay-Triangulierungen.
+
+$D_0 = {xyz}$ Großes Dreieck, das alle Punkte in $P$ enthält.
+
+$D_i$ entsteht durch $D_{i-1}$ durch
+\begin{enumerate}
+\item split-Operation: $\sigma \in D_{i-1}$ das Dreieck in Delaunay-Triangulierung von $p_1, ..., p_{i-1}$, das $P$ enthält. -> 1-3-Flip
+\item Flip-Operationen: -> 2-2-Flip
+\end{enumerate}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/22flip}
+\caption{2-2-Flip}
+\label{default}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/13flip}
+\caption{1-3-Flip}
+\label{default}
+\end{center}
+\end{figure}
+
+
+Punktlokalisation durch gerichtete, nicht-zyklische Graphen
+....
+
+\begin{enumerate}
+\item Erwartete Größe, des Graphen.
+\[\underbrace{1}_{\text{Dreieck}} 		+	\underbrace{3n}_{\parbox{0.3\textwidth}{Einfügen von n Punkten, also n Split-Operationen, jeder Split erzeugt 3 neue Dreiecke}} 											+ 	\underbrace{3 * 2n}_{\parbox{0.3\textwidth}{Jeder Flip erzeugt 2 neue Dreiecke, Pro Runde erwartet drei Flips, $n$ Punkte}}\]
+%Dreieck	Einfügen von n Punkten, also n Split-Operationen, jeder Split erzeugt 3 neue Dreiecke
+%		Jeder Flip erzeugt 2 neue Dreiecke, Pro Runde erwartet drei Flips, n Punkte
+		
+D.h. Punktlokalisierungsdatenstruktur braucht Speicher $O(n)$
+
+\item Erwartete Laufzeit
+
+Im Schritt $i$ einfügen von $p_i$. D.h. wir suchen $\sigma \in D_{i-1}$ mit $p_i \in \sigma_i$. Für Suche starten wir in $xyz$ und gehen dann zu Kind, das $p_i$ enthält.
+\end{enumerate}
+
+IN\_TRIANGLE Prädikat:
+
+$p_i \in abc$ falls $p_i$ auf gleicher Seite von 
+$\operatorname{aff}(a,b)$ wie $c$,
+von $\operatorname{aff}(b,c)$ wie $a$,
+von $\operatorname{aff}(c,a)$ wie $b$.
+
+Azyklische Graph zerfällt in Schichten. Eine Schicht für jede Runde.
+Betrachte $j$te Schicht $0<j<i-2$. Auf dieser Schicht sind Dreiecke von $D_j$ gespeichert.
+
+Seien $G_j$ die Dreiecke in $D_j$, die beim Einfügen von $p_{j+1}$ zerstört werden.
+
+Seien $H_j$ die Dreiecke in $D_j$, die beim Einfügen von $p_i$ in $D_j$ zerstört werden.
+
+\begin{beob}
+Falls $G_j \cap H_j = \emptyset$, dann ist $\sigma_{j+1} = \sigma_j$, wobei $\sigma_j \in D_j$, $\sigma_{j+1} \in D_{j+1}$ die Dreiecke sind, die $p_i$ enthalten.
+\end{beob}
+
+Sei $X_j = G_j \cap H_j$, der Aufwand von $\sigma_j$ nach $\sigma_{j+1}$ zu gehen ist höchstens proportional zu $\abs{X_j}$. (Durchlaufen von Dreiecken, die durch Flip-Operationen erzeugt werden.)
+
+Wir müssen $\abs{X_j}$ abschätzen.
+
+Sei $\hat{D}_j$ die Delaunay-Triangulierung von $p_1, p_2, ...., p_j, p_i$.
+Seien $Z_j$ die Dreiecke in $\hat{D}_j$, die durch Einfügen von $p_{j+1}$ zerstört werden.
+
+Symbolische Darstellung:
+
+Seien $Y_j$ die Dreiecke inzident zu $p_i$, die beim Einfügen von $p_{j+1}$ in $\hat{D}_j$ zerstört werden
+
+\[ X_j = H_j \ (Z_j \ Y_j)\]
+\[ \abs{X_j} = \abs{H_j} - (\abs{Z_j} - \abs{Y_j})\]
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.7\textwidth]{grafiken/symbolischedarstellung}
+\caption{Symbolische Darstellung der Variablen}
+\label{default}
+\end{center}
+\end{figure}
+
+Beachte: $Y_j \subseteq Z_j$ und $Z_j \ Y_j \subseteq H_j$
+
+Erwarteter Suchaufwand ist:
+\[E[\sum_{j=1}^{i-2} \abs{X_j}] =  \sum_{j=1}^{i-2} E[\abs{X_j}]  = \sum_{j=1}^{i-2} E[\abs{H_j}] - \sum_{j=1}^{i-2} E[\abs{Z_j}] + \sum_{j=1}^{i-2} E[\abs{Y_j}]\]
+
+
+$H_j$: Anzahl der zerstörten Dreiecke beim Einfügen von zufälligen Punkt in die Delaunay-Triangulierung von $j$ Punkten.
+
+$Z_j$: Anzahl der zerstörten Dreiecke beim Einfügen eines zufälligen Punktes in die Delaunay-Triangulierung von $j+1$ Punkten.
+
+
+%=> 
+\[E[\abs{H_{j+1}}] = E[\abs{Z_j}]\]
+%=> 
+\[E[\sum_{j=1}^{i-2} \abs{X_j}] = E[\abs{H_0}] - E[\abs{H_{i-1}}] + \sum_{j=1}^{i-2} E[\abs{Y_j}]\]
+
+\[E[\abs{H_0}] = 3, E[\abs{H_{i-1}}] = 4 => E[\sum_{j=1}^{i-2} \abs{X_j}]  \leq \sum_{j=1}^{i-2} E[\abs{Y_j}]\]
+
+Es bleibt $E[\abs{Y_j}]$ zu bestimmen.
+Dazu: Erwartete Anzahl zerstörter Dreiecke beim Einfügen von $p_{j+1}$ in $\hat{D}_j$:
+\[1 \text{ (Split)} + 3 \text{ (Flips)} = 4\]
+ 
+In $Y_j$ interessieren uns nur Dreiecke in $\hat{D}_j$, die inzident zu $p_i$ sind.
+Die Wahrscheinlichkeit für ein Dreieck in $\hat{D}_j$ inzident zu $p_i$ zu sein ist $\leq \frac{3}{j+1}$.
+
+Daraus folgt:
+\[E[\abs{Y_j}] \leq \frac{12}{j+1} = \frac{3}{j+1} 4\]
+
+\begin{gather*}
+\begin{split}
+E[\sum_{j=1}^{i-2} \abs{X_j}] &\leq 12 \sum_{j=1}^{i-1} \frac{1}{j+1} \\
+&\leq 12 H_i \leq 12 \log(i+1) \\
+&\leq \sum_{i=1}^n 12 \log(i+1) \\ 
+&\leq 12n \log{n+1} \in O(n \log n) \text{ (Gesamte Suchzeit)}
+\end{split}
+\end{gather*}
+
+\section{(Unendliche) Gleitkommazahlsysteme}
+
+$G_{\beta, t}$ mit $\beta, t > 1$ natürliche Zahl ist Gleitkommezahlsystem.
+\[
+G_{\beta, t} = \{ y = \sigma m \beta^{e-t} | \sigma in \{  -1, +1 \}, \beta^{t-1} \leq m < \beta^t-1, e \in \Z \} \cup \{0\}
+\]  
+
+$\beta$: Basis des Systems
+$t$: Genauigkeit (Precision)
+
+$\sigma$: Vorzeichen
+
+$m$: Mantisse
+
+$e$: Exponent
+
+Gleitkommazahl Approximation: $x \in \R: Fl(x) = \arg\min_{y\in G_{\beta, t}} \abs{x-y}$. 
+Falls $\abs{Fl(x)} = 2$, d.h. zwei nächste Gleitkommezahlen, dann immer diejenige näher an Null als approximation.
+
+\begin{lemma}
+Sei $n = \frac{1}{2} \beta^{1-t}$ Dann gilt:
+\begin{enumerate}
+\item $Fl(x) = x(1+\delta)$, mit $\abs{\delta} < u$
+\item $\lambda = Fl(x)(1+\delta')$, mit $\abs{\delta'} < u$
+\end{enumerate}
+ (Der relative approximationsfehler ist immer beschränkt durch $\mu$)
+\end{lemma}
+
+\begin{proof}
+Annahme $x>0$. Dann können wir schreiben $x = \mu \beta^{e-t}$ mit $\beta^{t-1} \leq \mu < \beta^t-1$, wobei $\mu \in \R$.
+
+Dann $y_1= \lfloor \mu \rfloor \beta^{e-t}, y_2 = \lceil \mu \rceil \beta^{e-t} \in G_{\beta, t}$
+
+\[\abs{Fl(x) - x} \leq min\{ x-y_1, x-y_2 \}
+\leq (y_2-y_1)/2
+= \frac{1}{ 2}(\lfloor \mu \rfloor - \lceil \mu \rceil)
+\leq \frac{1}{2} \beta^{e-t}
+\]
+Daraus: 
+\[
+\abs{\frac{Fl(x)-x}{x}} \leq \frac{\frac{1}{2} \beta^{e-t} }{\mu \beta^{e-t}} 
+\leq \frac{1}{2} \frac{1}{\beta^{t-1}} = \frac{1}{2} \beta^{1-t} = u
+\]
+
+Die Ungleichung ist nur dann eine Gleichung, wenn $\mu = \beta^{t-1}$, aber dann $\abs{Fl(x) - x} = 0$, d.h. wir haben immer 
+\[
+\frac{Fl(x) - x}{x} < u
+\]
+Daraus folgt für $Fl(x) = x(1+\delta)$
+\[
+\abs{\delta} = \abs{\frac{x(1-\delta) - x}{x}} < u
+\]
+Die Zweite Behauptung folgt analog.
+
+\end{proof}
+
+Es gibt 2 Arten von Approximationsfehlern: 
+\begin{enumerate}
+\item relativ: $\abs{\frac{Fl(x) - x}{x}}$
+\item absolut: $\abs{Fl(x) - x}$
+\end{enumerate}
+
+Notation: 
+\begin{enumerate}
+\item $a = b\pm c$ heisst  $a \in [b - \abs{c} , b + \abs{c}]$
+\item $a \pm b = c \pm d$ falls $[a - \abs{b}, a + \abs{b}] \in [c - {d}, c + {d}]$
+\end{enumerate}
+
+Gleitkommazahlenoperationen: $\oplus, \ominus, \otimes$
+
+$x,y \in F_{\beta, t}$, dann ist
+\[
+x \circledast y = Fl(x * y), * \in {+,-,\times}
+\]
+
+\begin{bemerk} 
+Das ist Definition, die von fast aller moderner Hardware befolgt wird.
+\end{bemerk}
+
+Korollar zu Lemma: 
+\begin{enumerate}
+\item $x \oplus y = x+y \pm u\abs{x+y}$
+\item $x \ominus y = x+y \pm u\abs{x-y} = x-y \pm \abs{\abs{x} + \abs{y}}$
+\item $x \otimes y = xy \pm \abs{xy}$
+\end{enumerate}
+
+
+\section{Gleitkommazahlapproximation von Geometrischen Prädikaten}
+
+Beispiel: IS\_LEFT\_OF(p,q,r)
+
+Implementiert als
+$\begin{vmatrix}
+1 & p_x & p_y \\
+1 & q_x & q_y \\
+1 & r_x & r_y
+\end{vmatrix}
+>0$
+
+$\begin{vmatrix}
+1 & p_x & p_y \\
+1 & q_x & q_y \\
+1 & r_x & r_y
+\end{vmatrix} = (r_x - p_x)(r_y - q_y) + (p_y - r_y)(r_x - q_x)$
+
+Annahme: $p_x, p_y, q_x, q_y, r_x, r_y \in G_{\beta, t}$
+(In der Praxis: Koordinaten sind ganze Zahlen in $G_{\beta, t}$)
+
+Audrücke: 
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+reelle Ausdrücke		&	Gleitkommazahl-Ausdrücke \\
+\hline
+$w_1 = r_x - p_x$		&	$a_1 = r_x \ominus p_x$	\\
+$w_2 = r_y - q_y$		&	$a_2 = r_y \ominus q_y$	\\
+$w_3 = p_y - r_y$		&	$a_3 = p_y \ominus r_y$	\\
+$w_4 = r_x - q_x$		&	$a_4 = r_x \ominus q_x$	\\
+$w_5 = w_1 w_2$		&	$a_5 = a_1 \otimes a_2$	\\
+$w_6 = w_3 w_4$		&	$a_6 = a_3 \otimes a_4$	\\
+$w_7 = w_5 + w_6$		&	$a_7 = a_5 \oplus a_6$	\\
+\hline
+\end{tabular}
+\end{center}
+
+
+\begin{enumerate}
+\item 
+\begin{gather*}
+a_i = w_i \pm u \abs{w_i}
+\end{gather*}
+aus obigem Lemma.
+
+\item 
+\begin{gather*}
+\begin{split}
+a_1a_2 &= (w_1 \pm u \abs{w_1}) \cdot (w_2 \pm u \abs{w_2}) \\
+&= w_1 w_2 \pm u w_1 \abs{w_2} \pm u w_2 \abs{w_1} \pm u^2 \abs{w_1 w_2}\\
+&= w_1 w_2 \pm (2u + u^2)\abs{w_1 w_2}
+\end{split}
+\end{gather*}
+Genauso für $a_3a_4$.
+
+\item 
+\begin{gather*}
+\begin{split}
+a_5 &= a_1 \otimes a_2 = a_1 a_2 \pm u \abs{a_1 a_2} \text{ (Lemma und def. der Gleitkommazahlen)} \\ 
+&= w_5 \pm (2u + u^2)\abs{w_5} \pm u\abs{w_5 \pm (2u + u^2)\abs{w_5}} \\
+&= w_5 \pm (3u + 3u^2 + u^3)\abs{w_5}
+\end{split}
+\end{gather*}
+
+Genauso für $a_6$
+
+\item 
+\begin{gather*}
+\begin{split}
+a_7 &= a_5 \oplus a_6 \\
+&= a_5 + a_6 \pm u \abs{a_5 + a_6}\\
+&= w_5 \pm (3u + 3u^2 + u^3)\abs{w_5} + w_6 \pm (3u + 3u^2 + u^3)\abs{w_6} \pm ((3u + 3u^2 + u^3)(\abs{w_5} + \abs{w_6}) )\\
+&= w_5 + w_6 \pm (3u + 3u^2 + u^3)(\abs{w_5}+ \abs{w_6}) \pm (3u^2 + 3u^3 + u^4)(\abs{w_5} + \abs{w_6}) \pm u(\abs{w_5} + \abs{w_6})\\
+&= w_5 + w_6 \pm (4u + 6u^2 + 4u^3 + u^4)(\abs{w_5} + \abs{w_6})\\
+&= w_7 \pm (4u + 6u^2 + 4u^3 + u^4)(\abs{w_5} + \abs{w_6}) = \phi 
+\end{split}
+\end{gather*}
+Das Ergebnis ist ein reeler Ausdruck plus die Abschätzung für den Fehler.
+\end{enumerate}
+
+Sei $a$ Wert von Gleitkommazahlausdruck, dann falls $a > \phi \rightarrow w > 0$, falls $a < -\phi \rightarrow w < 0$
+
+\begin{bemerk}
+Sei $B = max\{ p_x, p_y, q_x, q_y, r_x, r_y \}$. Dann gilt $\abs{\phi} \leq (4u + 6u^2 + 4u^3 + u^4) 8 B^2$. 
+Das kann vorberechnet werden.
+\end{bemerk}
+
+\begin{beob}
+\begin{enumerate}
+\item Wenn $x \in \Z$, dann ist $Fl(x) \in \Z$
+\item Falls $\abs{\phi}$ < 1, dann $a \in (-\abs{phi}, \abs{phi})$. Daraus folgt $w = 0$, da $w \in \Z$ angenommen und Eingabekoordinaten aus $\Z$ angenommen und alle Operationen $+,-,x$ abgeschlossen in $\Z$.
+\end{enumerate}
+\end{beob}
+
+
+\section{Degeneriertheit - Symbolische Pertubierung}
+
+Bei theoretischer Analyse der Algorithmen immer Annahme von allgemeiner Lage, d.h. in der Ebene
+\begin{enumerate}
+\item keine drei Punkte auf gemeinsamer Geraden
+\item keine vier Punkte auf gemeinsamen Kreisrand.
+\end{enumerate}
+
+Vier Punkte auf Kreisrand führt zu Vierecken im Delaunay-Komplex. Es ist also keine Triangulierung mehr.
+Vielecke können wir immer Triangulieren, aber wie?
+
+
+Degeneriertheit kann mit zufälligem Verwackeln (= Verrauschen, Pertubieren) der Eingabe aufgehoben werden. Da man die Eingabe aber nur ungern verändern will, werden wir mit symbolischen Pertubieren arbeiten.
+
+
+
+Eingabe: 
+Punktmenge $P = \{p_1, ... , p_n\} \in \R^2$ bzw. $(X_1, ... , X_n) \in \R^{2n}$
+
+Mit $P_{ix} = X_{2i-1}$ und $P_{iy} = X_{2i}$.
+
+Für $\{i,j,k\} \in \binom {[n]} 3$, d.h. dreielementige Teilmengen von $\{1, ..., n\}$.
+
+Folgende Funktion:
+$t_{i,j,k} \colon \R^{2n} \rightarrow \R$
+
+\todo{hier fehlt einiges}
+
+Frage: Wie $\epsilon > 0$ wählen?
+Antwort: Gar nicht, sondern symbolisch pertubieren.
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{IS\_LEFT\_OF mit symbolisch pertubiert}
+    \KwIn{$p,q,r$}
+		$d:= \delta = \begin{vmatrix} 1 & p_x & p_y \\ 1 & q_x & q_y \\ 1 & r_x & r_y \end{vmatrix}$\;
+		\If{$d > 0$}{
+			\Return{true}\;
+		}
+		\If{$d < 0$}{
+			\Return{false}\;
+		}
+		$d:= \delta_1 = \begin{vmatrix} 1 & q_y \\ 1 & r_y \end{vmatrix}$\;
+		\If{$d < 0$}{
+			\Return{true}\;
+		}
+		\If{$d > 0$}{
+			\Return{false}\;
+		}
+		$d:= \delta_2 = \begin{vmatrix} 1 & r_x \\ 1 & q_x \end{vmatrix}$\;
+		\If{$d > 0$}{
+			\Return{true}\;
+		}
+		\If{$d < 0$}{
+			\Return{false}\;
+		}
+		$d:= \delta_3 = \begin{vmatrix} 1 & p_y \\ 1 & r_y \end{vmatrix}$\;
+		\If{$d > 0$}{
+			\Return{true}\;
+		}
+		\If{$d < 0$}{
+			\Return{false}\;
+		}		
+		\Return{false}\;
+\end{algorithm}
+
+\begin{enumerate}
+\item Im Vergleich zum nicht pertubierten Prädikat müssen wir jetzt im schlimmsten Fall vier Determinanten berechnen.
+\item Falls Eingabe nicht degeneriert, ergibt pertubiertes Prädikat genau das gleiche Ergebnis wie das Unpertubierte.
+\end{enumerate}
+
+In welche Richtung die Entscheidung aufgelöst wird, hängt von der Reihenfolge der Punkte ab.
+
+\section{3D Delaunay-Triangulierung für gewichtete Punkte}
+
+Gewichteter Punkt: $(p, w_p) \in \R^3 \times \R$
+
+Powerabstand zum gewichteten Punkt: $\pi_p (x) = \norm{x-p}^2 - w_p$
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/graphenabstandsfunktion-normal}
+\caption{Graph der Abstandsfunktion}
+\label{default}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/graphenabstandsfunktion-quadratisch}
+\caption{Graph der quadratischen Abstandsfunktion}
+\label{default}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/graphenabstandsfunktion-power}
+\caption{Graph der quadratischen Powerabstände}
+\label{default}
+\end{center}
+\end{figure}
+
+
+\begin{beob}
+Nicht alle Eingabepunkte sind Knoten in der Delaunay-Triangulierung. Das tritt genau dann auf, wenn die zugehörige Powerzelle leer ist.
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/leerepowerzelle}
+\caption{Die Powerzelle von $p_2$ ist leer}
+\label{default}
+\end{center}
+\end{figure}
+
+Ein gewichteter Punkt ist relevant genau dann, wenn seine Powerzelle nicht leer ist.
+\end{beob}
+
+\begin{beob}
+Ein gewichteter Punkt muss nicht in der eigenen Powerzelle enthalten sein.
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/punktnichtinseinerpowerzelle}
+\caption{$p_2$ ist nicht in seiner Powerzelle enthalten}
+\label{default}
+\end{center}
+\end{figure}
+\end{beob}
+
+Erinnerung: 
+Ein Dreieck (in der Ebene) gehört zur Delaunay-Triangulierung wenn seine offene Umkreisscheibe keinen Punkt von $P$ im innern enthält.
+
+Jetzt: 
+Ein Tetraeder (im $\R^3$ bei Eingabe gewichteter Punkte) gehört zur gewichteten Delaunay-Tetraedisierung (im Folgenden immer kurz Triangulierung genannt), wenn seine Orthosphäre weiter \todo{weiter?} oder orthogonal zu allen Eingabepunkten ist.
+
+\begin{defini}[Orthogonalität]
+$(p, w_p), (q, w_q)$ gewichtete Punkte sind orthogonal zueinander, falls $\pi_{p,q} := \norm{p-q}^2 - w_p - w_q = 0$ gilt.
+\end{defini}
+
+\begin{bemerk}
+Gewichteter Punkte mit positivem Gewicht kann als Ball aufgefasst werden.
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/gewichteterpunktalsball}
+\caption{Darstellung eines gewichteten Punkts als Ball im $\R^2$}
+\label{default}
+\end{center}
+\end{figure}
+\todo{bild}
+\end{bemerk}
+
+\begin{defini}[Orthogonalität zweier Sphären] 
+2 Sphären heißen Orthogonal zueinander, wenn sie sich in einer Sphäre eine Dimension niedriger schneiden.
+
+Die Tangenten in den Schnittpunkten sind orthogonal.
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width = 0.5\textwidth]{grafiken/orthogonaletangenten}
+\caption{2 Sphären mit orthogonalen Tangenten}
+\label{default}
+\end{center}
+\end{figure}
+
+\end{defini}
+\todo{überprüfen, ob die beiden Definitionen von Orthogonalität stimmen. Kommt mir irgendwie widersprüchlich vor.}
+
+\begin{defini}[Orthosphäre]
+Eindeutige Sphäre, die orthogonal zu den 4 gewichteten Knoten des Tetraeders ist.
+\end{defini}
+
+
+
+
 \clearpage
 \appendix
 \begin{thebibliography}{99}
