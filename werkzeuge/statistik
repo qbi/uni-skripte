@@ -21,6 +21,8 @@ BEGIN
         open ("-", "<", $ARGV[1]) or die "couldn't open logfile";
     }
 
+    $BOT_IP_ADDR='^$';
+
     $SEARCH_ENGINE=qr/\.altavista\.com\/web\/|(?:google\.[a-z.]*\/(?:custom|scholar|search))|metager\.de\/meta\/cgi-bin|search\.(?:icq|live|msn|yahoo)\.com|suche\.(?:exalead|fireball|lycos|t-online|web)\.de/;
 
     our (%PDF_ACCESS, %PDF_UNI_ACCESS, %PDF_GOOGLE_ACCESS, $FIRST_DATE, $LAST_DATE);
@@ -95,7 +97,7 @@ $LAST_DATE = $date;
 
 next unless ($method eq "GET" and $ret_code eq "200");
 
-next if ($agent =~ /$BOTS/);
+next if ($agent =~ /$BOTS/ || $ip =~ /$BOT_IP_ADDR/);
 print "bot line: $_\n" if ($agent =~ /bot|spider|crawler/i or $url eq "/robots.txt");
 
 ++$ALL_ACCESS;
