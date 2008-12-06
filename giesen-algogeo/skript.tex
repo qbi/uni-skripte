@@ -486,7 +486,7 @@ $p = (1,2), q = (2,3), r = (3,4)$
 \begin{figure}[htbp]
   \centering
 \includegraphics{grafiken/grafik1}
-\caption{\todo{Beschriftung ergänzen}}
+\caption{Die Punkte $p = (1,2), q = (2,3), r = (3,4)$}
 \label{grafik1}
 \end{figure}
 
@@ -501,7 +501,7 @@ r^* &= \{x \in R^2 | x_2 = 3 x_1 - 4\}
 \begin{figure}[htbp]
   \centering
 \includegraphics{grafiken/grafik2}
-\caption{\todo{Beschriftung ergänzen}}
+\caption{Die dualen Hyperebenen der Punkte $p = (1,2), q = (2,3), r = (3,4)$}
 \label{grafik2}
 \end{figure}
 
@@ -1248,18 +1248,20 @@ Kante zwischen $p$ und $q$ wird gespeichert als zwei Halbkanten.
 \end{figure} 
 
 
-1. Sortiere Punkte in P lexikographisch. Verpointere die Punkte.
+%1. Sortiere Punkte in P lexikographisch. Verpointere die Punkte.
 
-Starten beim kleinsten Punkte. Gehen zum übernächsten Punkt. (zweimal Next)
-....
-erst Untere und dann die Obere Konvexe Hülle.
-Ergebnis ist insbesondere auch eine Triangulierung.
+%Starten beim kleinsten Punkte. Gehen zum übernächsten Punkt. (zweimal Next)
+%....
+%erst Untere und dann die Obere Konvexe Hülle.
+%Ergebnis ist insbesondere auch eine Triangulierung.
 
 
-Halbkanten-Datenstruktur:
+\begin{defini}[Halbkanten-Datenstruktur]
 Jede Kante besteht aus zwei Einzelkanten. Jede Einzelkante erhält previous und next.
+\end{defini}
 
-für planare Graphen.
+Die Halbkantendatenstruktur eigent sich für die Darstellung planarer Graphen.
+
 
 \begin{algorithm}
     \dontprintsemicolon
@@ -1642,7 +1644,6 @@ $D_i$ entsteht durch $D_{i-1}$ durch
 
 
 Punktlokalisation durch gerichtete, nicht-zyklische Graphen
-....
 
 \begin{enumerate}
 \item Erwartete Größe, des Graphen.
@@ -2060,7 +2061,6 @@ Gewichteter Punkte mit positivem Gewicht kann als Ball aufgefasst werden.
 \caption{Darstellung eines gewichteten Punkts als Ball im $\R^2$}
 \label{default}
 \end{figure}
-\todo{bild}
 \end{bemerk}
 
 \begin{defini}[Orthogonalität zweier Sphären] 
@@ -2074,15 +2074,429 @@ Die Tangenten in den Schnittpunkten sind orthogonal.
 \caption{2 Sphären mit orthogonalen Tangenten}
 \label{default}
 \end{figure}
-
 \end{defini}
-\todo{überprüfen, ob die beiden Definitionen von Orthogonalität stimmen. Kommt mir irgendwie widersprüchlich vor.}
+%\todo{überprüfen, ob die beiden Definitionen von Orthogonalität stimmen. Kommt mir irgendwie widersprüchlich vor.}
 
 \begin{defini}[Orthosphäre]
 Eindeutige Sphäre, die orthogonal zu den 4 gewichteten Knoten des Tetraeders ist.
 \end{defini}
 
 
+
+Orthosphärenbedingung für gewichtete Delaunay-Triangulierung
+
+Orthogonalität: $(p, w_p)$ und $(w, w_q)$ sind orthogonal, falls 
+
+\[\pi_{p,q} = \norm{p-q}^2 -w_p - w_q = 0 \text{ [Mehr als orthogonal, falls $\pi_{p,q} > 0$]}\]
+
+\begin{defini}[Orthosphären Bedingung]
+$P \subset \R^3$ gewichtete Punktmenge
+Tetraeder $abcd$ in einer Triangulation von $P$ ist Delaunay-Tetraeder, genau dann wenn die orthosphäre von $abcd$ orthogonal zu den gewichteten Punkten $abc$ und $d$ ist (<- def von orthoshpäre), und mehr als orthogonal von jedem anderen Punkt in $P$.
+\end{defini}
+
+Quadratische Distanzfunktion zu $p \in \R^2$
+
+\[d_p(x) = \norm{x-p}^2 = -2p^Tx + \norm{p}^2 + \norm{x}^2\]
+
+\[d_p(x) - \norm{x}^2 \text{ ist Hyperebene im $\R^3$}\]
+
+
+Anwenden der Transformation  $- \norm{x}^2$ auf alle Punkte im $\R^2$
+
+\begin{beha}
+Die Hyperebene $h_p = d_p(x) - \norm{x}^2$ ist tangential an das Paraboloid $\pi$ im Punkt $-\norm{x}^2$
+\end{beha}
+
+\begin{enumerate}
+\item $(p, -\norm{p}^2) \in \pi$: Einsetzen von $p$ in $h_p$
+\item Alle Punkte in $\pi$ sind auf oder unterhalb von $h_p$
+denn \[0 \leq \norm{x-p}^2 = \norm{x}^2 - 2p^Tx + \norm{p}^2 = \norm{x}^2 + h_p{x}\]
+=> \[-\norm{x}^2 \leq h_p(x)\]
+\end{enumerate}
+
+Die Transformation überführt die Graphen von Abstandsfunktionen in Tangentenebene an $\pi$ => Schnitte von Abstandsfunktionen in Schnitte von Tangentialebenen
+
+=> Untere Einhüllende von Abstandsfunktionen wird überführt in obere Einhüllende von Halbräumen begrenzt von Tangentialebenen. 
+
+
+Projektion der oberen Einhüllenden ergibt das Voronoidiagramm der Eingabepunkte.
+
+
+\begin{defini}[Polarität]
+Nicht-vertikale Hyperebene kann geschrieben werden als $h(x) = -2p^Tx + \norm{p}^2 - c$. (Bestimmt durch $p \in \R^3$ und $c \in \R$)
+Polarer Punkt im $\R^4:  h^* = (p, -\norm{p}^2 + c)$ 
+\end{defini}
+
+
+\begin{lemma}[Inzidenzlemma]
+$h^*$ liegt über (auf, unter) $g$, genau dann wenn $g^*$ über (unter, auf) $h$ liegt.
+\end{lemma}
+
+\begin{proof}
+\[h^*= (p, -\norm{p} + c), g(x) = -2q^Tx + \norm{q}^2 - c\]
+Betrachten nur den Fall über (auf, unter analog):
+
+\[
+-\norm{p} + c >  -2q^Tp + \norm{q}^2 - c (h^* über g) \]
+\[ => -\norm{q}^2 + c' > - 2r^Tq + \norm{p}^2 - c (g^* über h)
+\]
+
+\end{proof}
+
+
+Abstandsfunktion zu gewichtetem Punkt ergibt Hyperebene im $\R^4$ (im Allgemeinen nicht mehr Tangential zu Paraboloid $\pi$)
+
+Weiterhin gültig: Rückprojektion der oberen Einhüllenden Des Schnittes, der nach unten offenen Halbräume (berandet durch die transformierte Abstandsfunktionen) gibt das Power-Diagramm. (gewichtete Voronoi-Diagramm)
+
+\begin{beob}
+Zwei gewichtete Punkte sind orthogonal zueinander, genau dann wenn $\hat p^*$ auf $\hat q$ liegt, wobei $\hat p$ Hyperebene $\hat p(x) = -2p^Tx + \norm{p}^2 - w_p$, $\hat p^* = (p, -\norm{p}^2 + w_p)$
+
+Analog für $q$
+\end{beob}
+
+\begin{proof}
+$\hat p^*$ liegt auf $\hat q$ bedeutet:
+\[
+-\norm{p}^2 + w_p = -2q^Tp + \norm{q}^2 - w_q
+=> \norm{p}^2 - 2p^Tq + \norm{q}^2 - w_p - w_q = 0
+=> \norm{p-q}^2 - w_p - w_q = 0
+ \]
+\end{proof}
+
+\begin{folg}
+Powervertex im $R^3$ (im nicht-degenerierten Fall) hat den gleichen Power-Abstand zu vier gewichteten Eingabepunkten.
+=> Transformierter Powervertex ist im Schnitt von 4 transformierten Abstandsfunktionen. [nicht-vertikale Hyperebenen]
+=> $\exists$ gewichteter Punkt $(v, w_v)$, der orthogonal zu den vier gewichteten Eingabepunkten ist.
+Dabei st $v$ der Powervertex. $(v, w_v)$ ist die Orthosphäre des durch die vier Eingabepunkte gegebenen Tetraeders.
+
+\end{folg}
+
+
+\begin{defini}[Lokale Delaunay-Bedingung]
+
+Sei $P \subset \R^3$ eine gewichtete Punktmenge. Ein Dreieck $bcd$ in einer Triangulierung von $P$ hat die lokale Delaunay-Eigenschaft, falls entweder 
+\begin{enumerate}
+\item $bcd$ ist auf dem Rand der konvexen Hülle von $P$ [D.\,h. $bcd$ hat nur einen inzidenten Tetraeder.], oder
+
+\item $bcd$ hat 2 inzidente Tetraeder $abcd$ und $bcde$, so dass der gewichtete Punkt $e$ mehr als orthogonal zur Orthosphäre von $abcd$ ist.  
+\end{enumerate}
+\end{defini}
+
+=> Idee: Herstellen der globalen Delaunay-Triangulierung durch sicherstellen er lokalen Bedingung für jedes Dreieck. => \enquote{Flippen}
+
+Projektion von 4 Punkten in die Ebene.
+
+
+\begin{satz}[Radons Theorem]
+Gegeben $n \geq d+2$ Punkte im $\R^d$. Dann gibt es eine Zerlegung der Punktmenge $P = P_1 \cup P_2$, so dass $conv(P_1) \cap conv(P_2) \neq \emptyset$. 
+\end{satz}
+
+\begin{proof}
+$n \geq d+2$ Punkte im $\R^d$ müssen affin abhängig sein.  Es gibt $\lambda_i $, so dass $\sum_{i=1}^n \lambda_i p_i = 0$ und nicht alle $\lambda_i = 0$ und $\sum_{i=1}^n \lambda_i = 0$.
+
+Sei $I \subset [1, \dotsc, n]$ mit $\lambda_i > 0$ falls $i \in I$.
+\[c := \sum_{i \in I} \lambda_i = - \sum_{i \in [1..n] \ I} \lambda_i\]
+\[ \underbrace{\frac{1}{c} \sum_{i \in I} \lambda_i p_i}_{ \in conv\{p_i | i \in I\} } = 	\underbrace{-\frac{1}{c} \sum_{i \in [1, .., n] \ I} \lambda_i p_i}_{\in conv\{p_i | i \in [1, \dotsc, n] \setminus I\} }  \]
+					
+
+=> $conv\{p_i | i \in I\} \cap$
+$conv\{p_i | i \in [1, \dotsc, n] \setminus I\} \neq \emptyset$
+\end{proof}
+
+
+
+\begin{satz}
+Haben alle Dreieke in K die lokale Delaunay-Eigenschaft, dann ist K die (gewichtete) Delaunaytriangulierung
+\end{satz}
+\begin{proof} Genauso wie im ungewichteten 2D Fall, d.\,h. zeige dass für jeden Tetraeder $abcd \in K$ gilt, dass orthosphäre von abcd mindestens orthogonal zu allen Punkten aus P.
+\end{proof}
+
+Flips im 3D
+
+Projetion von 4D Tetraeder in den $\R^3$
+
+\begin{enumerate}
+\item Ein Punkt in konvexer Hülle von vier Punkten -> 1-4 Flip
+\item Fünf Punkte in konvexer Lage -> 2-3 Flip
+Entweder zwei Tetraeder inzident zu bcd, oder drei Tetraeder inzident zu a
+\end{enumerate}
+
+Vorsicht
+
+$bc$ nichtkonvexe Kante. Zwei Möglichkeiten:
+\begin{enumerate}
+\item cb hat drei inzidente Tetraeder.
+=> 3-2 Flip möglich
+
+\item $cb$ hat mehr als drei inzidente Tetraeder:
+=> $bcd$ heisst nicht-transformierbar [Beachte: in dem Fall ist die Kante ae nicht vorhanden. ]
+\end{enumerate}
+
+
+Inkrementeller Algorithmus
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Inkrementeller Algorithmus für 3D Delaunay-Triangulierung}
+    \KwIn{$P \subset \R^3$ (gewichtet), $P = \{p_1, \dotsc, p_n\}$ beliebig (d.\,h. am Besten zufällige Ordnung)}
+    Sei $D_i$ Delaunay Triangulierung von $p_1, \dotsc, p_i, c, y, z, w$\;
+    $D_0$ sei hinreichend großer Tetraeder $xyzw$\;
+    \For{$i = 1$ TO $n$}{
+	Finde $pqrs$ In $D_{i-1}$ Mit $p_i \in pqrs$  // Point Location\;
+	\If{$p_i$ ist nicht-redundant bzgl p, q, r und s}{
+		Füge $P_i$ mittels 1-4 Flip ein\;
+	}
+    }
+    \While{ $\exists bcd$ Dreieck in momentaner Triangulierung, das nicht die lokale Delaunay-Eigenschaft hat }{
+    	Flip $bcd$\;    
+    }
+\end{algorithm}
+	
+	
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{lokale Korrektur}
+    \KwIn{Stack von Dreiecken, die möglicherweise geflippt werden müssen}
+    \While{$stack \neq \emptyset$}{
+		$bcd :=$ pop von stack\;
+		\If{$bcd \in momentaner Triangulierung$ AND bcd hat nicht lokale Delaunay-Eigenschaft AND bcd ist transformierbar} {
+			wende 2-3, 3-2 oder 4-1 Flip an\;
+			push erzeugte Dreiecke auf den Stack\;
+		}
+	}
+\end{algorithm}
+	
+%lokale korrektur
+%	Stack von Dreiecken, die möglicherweise geflippt werden müssen
+%	while $stack \neq \emptyset$ Do
+%		bcd := pop von stack
+%		if $bcd \in momentaner Triangulierung$ AND bcd hat nicht lokale Delaunay-Eigenschaft AND bcd ist transformierbar
+%			wende 2-3, 3-2 oder 4-1 Flip an
+%			push erzeugte Dreiecke auf den Stack
+%		end if
+%	end while
+	
+	
+\begin{beob}
+Als Linkkandidaten sind nur Dreiecke im Link von $p_i$ relevant
+\begin{enumerate}
+\item Falls Dreieck $\notin$ Stern von $p_i$, dann gehört das Dreieck zu $D_{i-1}$, d.\,h. es hat die lokale Delaunay-Eigenschaft
+\item bc sei Kante im Link => $p_i bc \in Stern(p_i)$
+$p_i bc \notin Link(p_i)$ (Bild)
+\end{enumerate}
+
+Seien $p_ibcx$ und $p_ibcy$ Tetraeder inzident zu $p_ibc$ falls $xp_ibcy$ konvex ist, könnten wir einen 2-3 Flip anwenden.
+=> neue Tetraeder $xyp_ib$, $xyp_ic$ und $xybc$
+
+xybc hat nur Knoten aus $\{1, \dotsc , p_{i-1}\}$, gehört nicht zum Stern. Müsste zu Delaunay-Triangulierung von $D_{i-1}$ gehören. Widerspruch, da 2-3-Flip nicht möglich.
+
+Fall $xp_ibcy$ nicht-konvex und $p_ibc$ ist transformierbar, dann ist auch entweder $bcx$ oder $bcy$ transformierbar, d.\,h. wir können Dreieck $\in Link(p_i)$ anstelle von $p_ibc$ transformieren.
+	
+\end{beob}
+
+\begin{beha}
+Falls keine Transformierbaren Dreiecke im $Link(p_i)$ gibt, die nicht die lokale Delaunay-Eigenschaft haben, dann ist momentane Triangulierung die Deleunay Triangulierung D.
+\end{beha}
+
+\begin{proof}
+Annahme: Es gibt Dreiecke $\in Link(p_i)$, die nicht die lokale Delaunay Eigenschaft haben, aber alle nicht-transformierbar sind. (wollen widerspruch)
+Seien L Dreiecke im Link von $p_i, L' \subseteq L$ seien Dreiecke, die nicht lokale Delaunay und nicht transformierbar sind.
+
+Seien T' die Tetraeder inzident zu L', mit $T' \cap Stern(p_i) = \emptyset$.
+Sei $t \in T'$, so dass $\pi_{t,p_i}$ minimal ist unter allen Tetraeder in $T'$.
+
+Erinnerung $\pi_{t,p_i}$ ist der Abstand der Orthosphäre von t zum (gewichteten) Punkt $p_i$.
+
+=> $\pi_{i,p_i} < 0$ [Da nicht lokale Delaunay Eigeschaft im Dreieck $t \cap Stern(p_i) = bcd$]
+
+Ziel zu zeigen, dass $bcd$ transformierbar ist
+
+$bcd \in Link(p_i)$
+Bild
+falls $p_ibcde$ konvex, dann transformierbar mit 2-3-Flip
+=> $p_ibcde$ nicht konvex
+\begin{enumerate}
+\item Annahme: Genau eine nicht-konvexe Kante bc 
+Sei xbcd Tetraeder $\neq t$ inzident zu bce. Falls $x = p_i$, dann 3-2-Flip um Kante bc möglich.
+=> entweder $x \neq p_i$, oder zweite nichtkonvexe Kante
+
+\item Annahme: 2 nichtkonvexe Kanten bc, cd seien bcex und cdey Tetraeder $\neq t$ inzident zu bce BZW. cde Falls $x = y = p_i$ => 4-1 Flip möglich
+\end{enumerate}
+%....
+
+Situation: Nicht alle Dreiecke haben die lokale Delaunay-Eigenschaft, aber alle Dreiecke im Link sind nicht transformierbar.
+
+%\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/delaunay3d}
+\end{center}
+%\caption{IS\_LEFT\_OF-Prädikat}
+%\end{figure} 
+
+$abcd$ Tetraeder, der inzident zu Dreieck $bcd \in Link{p_i}$, so dass $\pi_{abcd, p_i} < 0$ minimal ist.
+
+Betrachte Dreiecke $abc$ und $abd$.
+Seien $abcx$ und $abcy$ Tetraeder $\neq abcd$. Falls $x = y = p_i$, dann ist $abcdp_i$ Transformierbar mit einem 4-1-Flip.
+
+%\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/delaunay3d-2}
+\end{center}
+%\caption{IS\_LEFT\_OF-Prädikat}
+%\end{figure} 
+
+Da nichttransformierbarkeit angenommen, gibt es $x$ mit $abcx \neq abcp_i$ und $bc$ nicht-konvex. Das bedeutet der Strahl startend von $p_i$, der durch $abc$ geht, muss zuerst durch ein Dreieck im $Link(p_i)$ gehen.
+
+Widerspruch: Tetraeder $\sigma$ in $D_{i-1}$ sind längs des Strahls von $p_i$ geordnet gemäß $\pi_{\sigma, p_i}$. Das ist ein Widerspruch zu $abcd$ minimal.
+
+[Ordnung längs des Strahls haben wir schon bewiesen, als wir im 2D gezeigt haben, dass lokale Delaunay-Eigenschaft die Delaunay-Eigenschaft impliziert.]
+\end{proof}
+
+\chapter{Geometrisch modellieren}
+
+Idee: Benutze Delaunay-Triangulierung um Flächen im 3D zu beschreiben.
+
+
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/kurve}
+\caption{Kurve im $\R^2$ mit Sampling} 
+\end{figure} 
+
+
+Kurve im $\R^3$:
+$\gamma[0,1] \rightarrow \R^2$
+mit 
+\begin{enumerate}
+\item Glatt (unendlichoft stetig differenzierbar)
+\item Injektiv, bis auf $\gamma(0) = \gamma(1)$
+\end{enumerate}
+
+$P \subset \Sigma = \gamma[0,1]$
+
+Ziel: Rekonstruiere $\Sigma$ aus $P$.
+
+\begin{defini}[Leeres Segment]
+$\gamma(x,y)$ heißt leeres Segment, falls $x = \gamma(t)$, $y = \gamma(s)$ und $\gamma([t,s]) \cap P = \emptyset$
+\end{defini}
+
+\begin{defini}[korrekte Kante]
+$pq$ mit $p,q \in S$ heißt korrekte Kante, falls $\gamma(p,q)$ leeres Segment ist, d.\,h. korrekte Kante verbindet konsekutive Punkte längs von $\gamma$.
+\end{defini}
+
+\begin{bemerk}
+Aus beliebigen Sampling ist es schwierig bzw. unmöglich korrekte Kanten zu finden. Wir brauchen zusätzliche Bedingung.
+\end{bemerk}
+
+\begin{defini}[mediale Achse]
+Gegeben $\Sigma \subset \R^d$ kompakt (abgeschlossen und beschränkt). Die mediale Achse $M(z) = 
+CL\{ x \in \R^d \\ \Sigma | x hat mindestens 2 nächste Nachbarn in \Sigma \}$
+\end{defini}
+
+\begin{bemerk}
+Mediale Achsen finden auch Anwendung in 
+\begin{itemize}
+\item Virtual Colonoscopy
+\item Fahrplanung in der Robotik
+\item Stick Figures bei Animation
+\end{itemize}
+\end{bemerk}
+
+\begin{defini}[mediale Bälle]
+$x \in M(z)$, dann heißt $B(x,d(x, \Sigma))$ ($d(x, \Sigma) = \inf \norm{x-y} mit y \in \Sigma$) ein medialer Ball.
+\end{defini}
+
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/skelet}
+\caption{Mediale Achse mit Bällen} 
+\end{figure} 
+
+\begin{defini}[$\epsilon$-Sampling]
+$p \subset \Sigma$ heißt $\epsilon$-Sampling für $\epsilon > 0$, falls $\forall x \in \Sigma$, $\exists p \in P$ mit $\norm{x-p} \leq \epsilon f(x)$, wobei $f \colon \Sigma \rightarrow \R$, $x \mapsto d(x, M(\Sigma))$. [Die Funktion $f$ wird lokale Feature Größen Funktion genannt.]
+\end{defini}
+
+
+
+%Crust(p)
+%1. Berechne das Voronoi-Diagramm von $p$. $V:=$ Menge der Voronoi-Vertices.
+%2. Berechne die Delaunay-Triangulierung von $P \cup V$.
+%3. Gebe alle Kanten aus $Del(P\cup V)$ aus, deren Endpunkte beide in $P$ sind.
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Crust (Krusten)-Algorithmus}
+    \KwIn{$P \subset \Sigma$ Sampling der Kurve $\Sigma$.}
+ Berechne das Voronoi-Diagramm von $p$. $V:=$ Menge der Voronoi-Vertices.\;
+ Berechne die Delaunay-Triangulierung von $P \cup V$.\;
+ Gebe alle Kanten aus $Del(P\cup V)$ aus, deren Endpunkte beide in $P$ sind.\;
+\end{algorithm}
+
+\begin{beha}
+Falls $p$ $\epsilon$-Sampling mit $\epsilon < 0,2$, dann gibt der crust-Algorithmus genau die korrekten Kanten aus.
+\end{beha}
+
+Eigenschaften der Feature Größen Funktion:
+\begin{enumerate}
+\item $f\colon \Sigma \rightarrow \R$, $x \mapsto d(x, M(\Sigma))$ ist 1-Lipschitz, d.\,h. $f(x) \leq f(y) + \norm{x-y}$
+
+\begin{proof}
+Sei $m \in M(z)$ mit $f(y) = \norm{y - m}$, dann $f(x) \leq \norm{x - m} \leq \norm{x-y} + \norm{y-m} = \norm{x-y} + f(y)$ (Dreiecksungleichung)
+\end{proof}
+
+\item Feature Verschiebungslemma
+
+Sei $\epsilon > 1$ und $\norm{x - y} \leq \epsilon f(x)$, dann gilt:
+\begin{enumerate}
+\item $f(x) \leq \frac{1}{1 - \epsilon} f(x)$
+\item $\norm{x-y} \leq \frac{\epsilon}{1 - \epsilon} f(y)$
+\end{enumerate}
+
+\begin{proof}
+\begin{enumerate}
+\item $f(x) \leq f(y) + \norm{x-y} \leq f(y) + \epsilon f(x)$ Lippschitz-Stetigkeit =>
+$(1 - \epsilon) f(x) \leq f(y)$ => $f(x) \leq \frac{1}{1-\epsilon} f(y)$
+\item $\norm{x-y} \leq \epsilon f(x) \leq \frac{\epsilon}{1 - \epsilon} f(y)$
+\end{enumerate}
+\end{proof}
+
+\end{enumerate}
+
+Schnitte von Bällen mit $\Sigma$
+
+\begin{lemma}
+Falls ein Ball B eine Mannigfaltigkeit $\Sigma \subset \R^d$ (z.B. glatte Kurven im $\R^2$, glatte Fläche im $\R^3$) in mindestens einem Punkt schneidet, und falls entweder
+\begin{enumerate}
+\item $B \cap \Sigma$ kein topologischer d-Ball ist, oder
+\item $\gamma(B \cap \Sigma)$ keine topologische (d-1)-Sphäre ist
+\end{enumerate}
+dann enthält $B$ einen Punkt von der medialen Achse von $\Sigma$.
+\end{lemma}
+
+
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/kurveundbaelle}
+\caption{Bälle schneiden die Kurve} 
+\end{figure} 
+
+\begin{lemma}[leeres Segment]
+Sei $p$ $\epsilon$-Sampling von Kurve $\Sigma$ mit $\epsilon < 1$ seien $p \in P$ und $x \in \Sigma$, so dass das Segment $\gamma(p,x)$ leer ist. Sei $z$ der Schnitt des Bisektors von $px$ mit $\Sigma$. Dann gilt:
+
+\begin{enumerate}
+\item Der Ball $B(z, \norm(z-p))$ schneidet $\Sigma$ nur in $\gamma(p,x)$
+\item $B(z, \norm{p-z})$ ist leer, d..h der offene Ball enthält keine Sample-Punkte
+\item $\norm{p-z} \leq \epsilon f(z)$
+\end{enumerate}
+\end{lemma}
+
+
+%\begin{figure}
+\begin{center}
+ \includegraphics[width = 0.5\textwidth]{grafiken/lemma-leeressegment}
+\end{center}
+%\caption{} 
+%\end{figure} 
 
 
 \clearpage
