@@ -139,7 +139,7 @@
 % auszublenden, indem man den Befehl einfach leer definiert
 \newcommand*{\help}[1]{\textcolor{green}{help: #1}}
 
-% \todo ist das gleiche wie \help nur für offene Aufgaben
+% \g ist das gleiche wie \help nur für offene Aufgaben
 \newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
@@ -1069,7 +1069,7 @@ $T < T'$ falls $w(T) < w(T')$ (Lexikographischer Vergleich), $w(T)$ der Winkelve
  $w(t) < w(T')$ falls $T'$ aus $T$ durch einen Flip entsteht.
 \end{beha}
 
-\todo{Skizze davon einfügen: abc-Dreieck, d ist Punkt im Kreis}
+%\todo{Skizze davon einfügen: abc-Dreieck, d ist Punkt im Kreis}
 
 \begin{gather*}
 w(T) = \alpha_1 + \alpha_2, \beta_1, \beta_2, \gamma_1 + \gamma_2, \delta_1, \delta_2 \\
@@ -1943,7 +1943,7 @@ Für $\{i,j,k\} \in \binom {[n]} 3$, d.\,h. dreielementige Teilmengen von $\{1, \
 Folgende Funktion:
 $t_{i,j,k} \colon \R^{2n} \rightarrow \R$
 
-\todo{hier fehlt einiges}
+\todo{hier fehlen einige Tafeln}
 
 Frage: Wie $\epsilon > 0$ wählen?
 Antwort: Gar nicht, sondern symbolisch pertubieren.
@@ -2540,7 +2540,7 @@ $\leq \frac{2 \epsilon}{1 - \epsilon} f(x) )$
 
 
 \begin{lemma}
-Seo $pq$ eine korrekte Kante. Für $\epsilon < 1 $ gilt ($\epsilon$-Sampling)
+Sei $pq$ eine korrekte Kante. Für $\epsilon < 1 $ gilt ($\epsilon$-Sampling)
 \begin{enumerate}
 \item $\norm{p-q} \leq \frac{2\epsilon}{1-\epsilon} f(p)$
 \item $pq$ ist Delaunay-Kante
@@ -2578,6 +2578,349 @@ CRUST-Algorithmus:
     berechne Delaunay-Triangulierung von $P \cup V$\;
     gebe Knoten aus $Del(P \cup V)$ aus, deren Endpunkte beide in $P$ liegen\;
 \end{algorithm}
+
+
+\section{Korrektheitsbeweis für Crust Algorithmus}
+
+\begin{lemma}
+\label{crust1}
+Sei $p$ ein $\epsilon < 0,2$-Samplung einer glatten Kurve, $\Sigma < \R^2$, dann sind alle korrekten Kanten in $\operatorname{crust}(P)$.
+% [Korrekte Kante. Liniensegment, dass konsekutive Kantenpunkte vereinigt.]
+\end{lemma} 
+
+\begin{lemma}
+\label{crust2}
+Unter den Vorraussetzungen von \ref{crust1} ist keine nicht-korrekte Kante in $\operatorname{crust}(P)$.
+
+\end{lemma} 
+
+Es gilt immer $\epsilon < 0,2$-Sampling
+
+\begin{lemma}[Empty Segment]
+$p \in P, x \in \Sigma$, so dass $\gamma(p,x)$ leer ist, $z$ Schnittpunkt des Bisektors von $p$ und $x$ mit $\gamma(p,x)$ dann gilt:
+\begin{enumerate}
+\item $B(z,\norm{p-z})$ schneidet $\Sigma$ nur in $\gamma(p,x)$
+\item $B(z,\norm{p-z}) \cap P = \emptyset$ ($B(z,\norm{p-z})$ ist ein offener Ball)
+\item $\norm{p-z} \leq \epsilon f(x)$ 
+\end{enumerate}
+\end{lemma}
+
+\begin{lemma}[Small Segment]
+$x,y \in \Sigma$, so dass $\gamma(x,y)\cap P = \emptyset$, dann $\norm{x-y} \leq \frac{2\epsilon}{1-\epsilon}$
+\end{lemma}
+
+\begin{lemma}[Small Edge]
+Sei $pq$ korrekte Kante, dann 
+\begin{enumerate}
+\item $\norm{p-q} \leq \frac{2\epsilon}{1 - \epsilon} f(p)$
+\item $pq$ ist Delaunay
+\end{enumerate}
+\end{lemma}
+
+\begin{lemma}[Segment Angle]
+\label{smallangle}
+$x,y,z \in \Sigma, \norm{x-y}, \norm{y-z} \leq \frac{2\epsilon}{1-\epsilon} f(y)$.
+$\alpha$ sei der Winkel der Tangente von $\Sigma$ in $y$ mit dem Segment $yz$, dann gilt:
+\begin{enumerate}
+\item $\alpha \leq \arcsin \frac{\epsilon}{1-\epsilon}$ und
+\item $\measuredangle xyz \geq \pi -2\arcsin \frac{\epsilon}{1-\epsilon}$ 
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/smallangle}
+\caption{Skizze zum Beweis des Small Angle-Lemmas (\ref{smallangle})} 
+\end{figure} 
+$\alpha = \arcsin(\frac{\norm{y-z'}}{2} / \norm{m-y}) \leq  \arcsin(\frac{\norm{y-z}}{2} / \norm{m-y})$ \todo{2 oder $z$ im Nenner?}
+
+Es gilt:
+\begin{enumerate}
+\item $\norm{y-z} \leq \frac{\epsilon}{1-\epsilon} f(y)$
+\item $f(y) \geq \norm{m-y}$
+\end{enumerate}
+
+Daraus folgt $\alpha \leq \arcsin(\frac{\epsilon}{1-\epsilon})$
+
+Für 2. betrachte $\measuredangle myz = \frac{\pi}{2} - \alpha > \frac{\pi}{2} - \arcsin(\frac{\epsilon}{1-\epsilon})$
+und $\measuredangle myx \geq  \frac{\pi}{2}  - \arcsin(\frac{\epsilon}{1-\epsilon})$
+
+Es folgt: $\measuredangle xyz \geq  \pi  - 2\arcsin(\frac{\epsilon}{1-\epsilon})$. Das gilt, falls $x$ oberhalb der Tangente liegt sowieso. Ansonsten folgt es wegen der beiden vorherigen Formeln.
+
+\end{proof}
+
+\begin{proof}[Lemma \ref{crust1}]
+Sei $pq$ korrekte Kante. Aus dem Empty Segment Lemma folgt $B \cap P = \emptyset$. Aber es ist möglich, dass $B \cap \{v | v \text{ Voronoi-Vertex von Punktmenge $P$}\} \neq \emptyset$.
+
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/crustlemma1}
+\caption{Empty Segment Lemma} 
+\end{figure} 
+
+Beachte: Crust Algorithmus gibt Kanten in der Delaunay-Triangulierung von $P\cup V$ aus, die beide Enden in $P$ haben.
+
+Annahme: $v \in B$, wobei $v$ Voronoi Vertex von $P$ ist.
+
+Betrachte $\norm{p-v}$
+\begin{enumerate}
+\item $\norm{p-v} 
+\leq 2\norm{p-z} %\text{ (Durchmesser des Balls) }
+\leq 2 \epsilon f(z) %\text{ (Empty Segment Lemma 3.) }
+\leq 2 \frac{\epsilon}{1-\epsilon} f(p)$
+\end{enumerate}
+
+\item $2\norm{p-v} \geq f(p)$, sei $B'$ Voronoi-Ball mit Mittelpunkt $v$. % 1-Ball (Segment) schneiden *
+$B'$ ist Umkreisball eines Delaunay-Dreiecks $rst$ (Dual zum Voronoi-Vertex $v$.)
+\begin{figure}
+\centering
+ \includegraphics[width = 0.7\textwidth]{grafiken/ballbstrich}
+\caption{Ball $B'$} 
+\end{figure} 
+
+=> $B'$ muss Punkt in der medialen Achse enthalten. $\norm{p-m} \geq 2\norm{p-v}$.
+
+=> $B'$ kann $\Sigma$ nicht in einem 1-Ball schneiden.
+
+Insgesamt folgt:
+\[
+\frac{1}{2} f(p) \leq \norm{p-v} \leq \frac{2\epsilon}{1-\epsilon} 
+\]
+Das ist ein Widerspruch falls $\frac{2\epsilon}{1-\epsilon} < \frac{1}{2} \Leftrightarrow 5\epsilon < 1$. Widerspruch, da $\epsilon < 0,2$ angenommen wurde.
+
+=> $pq \in \operatorname{crust}(P)$ für alle korrekten Kanten $pq$.  
+
+\end{proof}
+
+
+\begin{proof}[Lemma \ref{crust2}]
+
+Crust gubt keine nicht-korrekten Kanten aus für $\epsilon < \frac{1}{5}$. Annahme für widerspruch $pq$ nicht-korrekte Kante in $\operatorname{Crust}(p)$.
+
+=> Es gibt Ball $D$ mit $p,q \in \partial D$ (Rand von D) und $D \cap P = \emptyset, D \cap \{v | \text{ $v$ Voronoi Vertex von $P$ }\} = \emptyset$
+
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/crustlemma2}
+\caption{Skizze zum Beweis von Lemma \ref{crust2}} 
+\end{figure} 
+
+$z, z'$ sind die beiden Schnittpunkte des Bisektors von $p$ und $q$ mit dem Rand von $D$.
+
+$B = B(z, \norm{z-p})$, 
+$B' = B(z', \norm{z'-p})$.
+
+\begin{enumerate}
+\item Behauptung: Sowohl $B$ als auch $B'$ können keinen Punkt von $P$ enthalten.
+$B \cap P = \emptyset = B' \cap P$
+\begin{proof}
+Transformiere $D$, so dass $p,q \in \partial D$ erhalten bleibt und $D(1) = B$. [Pencil zwischen $D$ und $B$.]
+
+Falls $B \cap P \emptyset$, dann $\exists \lambda \in (0,1)$ mit $\partial D(\lambda) \cap P \neq \emptyset$, d.h. $D(\lambda)$ hat $p,q$ und einen weiteren Punkt $r\in P$ auf dem Rand => $D(\lambda)$ ist Voronoi Ball des Delaunay-Dreiecks $pqr$. => Widerspruch, da $D$ keine Voronoi-Vertices im Inneren enthält. (nach Annahme.)
+\end{proof}
+
+\item $\measuredangle zpz' = \frac{\pi}{2}$ (Satz von Thales)
+=> Tangenten von $B$ und $B'$ in $p$ schneiden sich im Winkel von $\frac{\pi}{2}$.
+=> $\Sigma$ kann nicht tangential zu $B$ und $B'$ in $P$ sein.
+
+
+\item Annahme: $\Sigma$ ist weder Tangential zu $B$ noch zu $B'$ in $p$.
+Sei $p_1$ der erste Schnittpunkt von $\Sigma$ mit $B$ längs $\Sigma$, und sei $p_2$ der erste Schnittpunkt von $\Sigma$ mit $B'$ längs $\Sigma$
+=> $\norm{p-p_1}, \norm{p-p_2} \leq \frac{2\epsilon}{1-\epsilon} f(p)$ (folgt aus dem Small Segment Lemma, da $\gamma(p, p_1), \gamma(p,p_2)$ leer sind, denn $B$ bzw. $B'$ enthalten keine Punkte von $P$.
+\end{enumerate}
+
+Aus Segment Angle Lemma folgt $\measuredangle p_1 p p_2 \geq \pi - \arcsin \frac{\epsilon}{1-\epsilon}$
+=> $\alpha \geq \frac{1}{2} (\pi - 2\arcsin(\frac{\epsilon}{1-\epsilon}) - \frac{\pi}{2})$, wobei $\alpha$ der Winkel zwischen Tangente  an $B$ in $D$ und dem Liniensegment $pp_1$ ist. [Hier ist $\alpha$ größer angenommen, als entsprechender Winkel für $B'$.] 
+\end{proof}
+
+
+
+\begin{lemma}
+Der Crust-Algorithmus gibt keine nicht-korrekte Kante aus für $\epsilon$-Sampling mit $\epsilon < 0.2$
+\end{lemma}
+\begin{proof}
+$pq$ nicht-korrekt.
+$\alpha$ Winkel von Segment $pp_1$ mit Tangente an $\Sigma$ in $p$
+D. Ball mit $p,q \in \partial B$
+
+$B \cap P \neq \emptyset$ [$P$ Samplepunkte]
+$B \cap V \neq \emptyset$ [$V$ Voronoiverices des Voronoi-Diagramms von $P$]
+
+In letzter Stunde: $\alpha \geq \frac{\pi}{4} - \arcsin \frac{\epsilon}{1-\epsilon}$ [untere Schranke für $\alpha$]
+
+Heute: Obere Schranke für $\alpha$. Konstruiere $x$ als Schnitt des Bisektors von $p$ und $p_1$ mit Kurvensegment $\gamma{p,p_1}$.
+
+\begin{beob}
+Da $p$ und $q$ nicht konsekutiv längs $\Sigma$ sind, gilt entweder $\gamma(p,q) \not \subset B$ oder $\gamma(q,p) \not \subset B$ [Echte Teilmenge]. Bachte: Wir haben gezeigt, dass $B$ keinen Punkt von $P$ im inneren enthält.
+
+=> $B$ schneidet $\Sigma$ nicht in 1-Ball, d.\,h. $B$ muss Punkt der medialen Achse enthalten..
+
+=> $f(x) \leq 2r$, mit $r$ Radius von $B$
+[<=> $r \geq \frac{1}{2} f(x)$]
+
+
+$\underbrace{\epsilon f(x) \geq \norm{p-x}}_{\text{Da $p$ einer der beiden konsekutiven Samplepunkte zu $x$ Längs $\Sigma$ ist [Empty Segment Lemma]}} \geq \frac{1}{2} \norm{p-p_1} = r \sin \alpha \geq \frac{1}{2} f(x) \sin \alpha$
+
+
+=> $2 \epsilon \geq \sin \alpha \geq \sin(\frac{\pi}{4} - \arcsin \frac{\epsilon}{1-\epsilon})$
+
+=> Widerspruch für $\epsilon < 0.2$, d.h. Ungleichung kann nicht gelten für kleine $\epsilon$.
+
+\end{beob}
+
+\end{proof}
+
+\section{Flächenrekonstruktion}
+
+\begin{thrm}[Edelsbrunner \& Shah, Amenta \& Bern]
+Sei $P$ ein $\epsilon$-Sampling einer glatten Fläche $\Sigma$ mit $\epsilon <0.18$, dann sind $\Sigma$ und $D(P,\Sigma)$ homeomorph.
+
+Glatte Fläche: $\phi$ und $\phi^{-1}$ mit $\phi(B) \rightarrow B$ unendlich oft stetig differenzierbar.
+Wollen glatte Flächen hier, da $\inf_{x \in \Sigma} f(x) > 0$, d.h. $\Sigma$ hat positiven Abstand von $M(\Sigma)$.
+
+Homeomorphismus: Bijektive Abbildung zwischen zwei Flächen, die in beide Richtungen stetig ist
+
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/homeomorpheobjekte}
+\caption{Beispiele für homeomorphe Abbildungen} 
+\end{figure} 
+
+Eingeschränkte Delaunay-Triangulierung:
+$P \subset \R^3$ endliche Punktemenge, $\Sigma \subset \R^3$.
+Erinnerung: $S < P $, $\operatorname{conv}(s)$ ist Simplex in $D(P)$, genau dann wenn $\bigcap_{p \in S} V_p \neq \emptyset$, wobeo $V_p$ Voronoizelle von $p$.
+
+Sei $S < P$,  $\operatorname{conv}(s)$ ist Simplex in $D(P, \Sigma)$, genau dann wenn  $\bigcap_{p \in S} V_p \cap \Sigma \neq \emptyset$
+
+\end{thrm}
+
+
+Nochmal Crustalgorithmus für Kurven:
+
+Rot: Vereinigung der Voronoi-Zellen der Voronoi-Vertices des Voronoi-Diagramms von $P$ im Voronoi-Diagramm von $P\cup V$
+
+Blau: Komplement von Rot im $\R^2$, aufgedickte Version der Kurve $\Sigma$.
+
+Der Crust-Algorithmus berechnet D(P,Blau).
+
+Idee: Gesampletes Objekt $\Sigma$ (Kurve im $\R^2$, bzw. Fläche im $\R^3$) ist nicht direkt bekannt, sondern nur über das $\epsilon$-Samplung $P$. D.h. wir können $D(P,\Sigma)$ nicht direkt berechnen, was wir nach Edelsbrunner, Shah, Amenta, Bern-Theorem gerne würden.
+
+Stattdessen: Schätze \enquote{aufgedickte Version} $\Sigma_D$ von $\Sigma$ aus $P$ und berechne $D(P,\Sigma_D)$.
+ 
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/aufdickung}
+\caption{\enquote{Aufdickung} einer Kurve} 
+\end{figure} 
+
+ 
+ Kleine Vorrausschau:
+\begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/cocones-uebersicht}
+\caption{\enquote{Aufdickung} mittels Kegelkomponenten} 
+\end{figure} 
+
+Aufdickung mittels Kegelkomplementen (Co-Cones) an den Sample-Punkten.
+ 
+  
+ Normalen Approximation
+ \begin{lemma}
+ Seien $m_1$ und $m_2$ Mittelpunkte der beiden medialen Bälle Tangential an die Fläche $\Sigma$ im Punkt $p$. Dann sind $m_1$ und $m_2$ in $V_p$ enthalten.
+ \end{lemma} 
+ \begin{proof}
+  Sei $B_i$ der medialer Achsenball mit Mittelpunkt $m_i$ dann ist $B_i \cap \Sigma = \emptyset$ und $p$ ist ein nächster Punkt zu $m_i$ in $\Sigma$.
+  => $m_i \in V_p$ für Sampling von $\Sigma$.
+ 
+\begin{figure}
+\centering
+\includegraphics[width = 0.5\textwidth]{grafiken/sigmaundbaelle}
+\caption{Mediale Bälle tangential an der Fläche $\Sigma$} 
+\end{figure} 
+
+\end{proof}
+  
+  
+  \begin{lemma}
+  Sei $\mu > 0$, sei $v \in V_p$ mit $\norm{v-p} \geq \mu f(p)$ für $p \in P$, wobei $P$ ein $\epsilon$-Sampling von $\Sigma$ mit $\epsilon < 1$ ist dann gilt $\measuredangle (m_p, \overrightarrow{v_p}) \leq \arcsin \frac{\epsilon}{\mu(1-\epsilon)} + \arcsin \frac{\epsilon}{1-\epsilon}$.  
+  \end{lemma}
+  \begin{proof}
+Idee:
+Beobachtung: $n_p$ zeigt in gleiche (bzw. entgegengesetzte) Richtung wie $\overrightarrow{pm_1}$ bzw. $\overrightarrow{pm_2}$
+
+Sei o.b.d.A. $v$ auf gleicher Seite von $\Sigma$ wie $m_1$. Wir sind interessiert an
+\[
+\measuredangle m_1pv = \underbrace{\measuredangle pvm_2 + \measuredangle vm_2p}_{\pi - \measuredangle m_2pv}
+\]
+d.h. es reicht $\measuredangle pvm_2$ und $\measuredangle vm_2p$ abzuschätzen.
+  \end{proof}
+  
+  
+  \begin{figure}
+\centering
+ \includegraphics[width = 0.5\textwidth]{grafiken/crust3d-suchbereich}
+\caption{Suchbereich das Crust-Algorithmus in 3D} 
+\end{figure} 
+
+\begin{lemma}[Normalenlemma]
+Sei $\mu > 0$ und $v \notin \Sigma$ ein Punkt aus der Voronoizelle $V_p$ von $p$ mit $\norm{v-p} \geq \mu f(p)$. Für $\epsilon < 1$ gilt: $\measuredangle(\overrightarrow{vp}, n_p) \leq \arcsin \frac{\epsilon}{\mu(1-\epsilon} + \arcsin \frac{\epsilon}{1-\epsilon}$
+% Der Winkel zwischen normalenvektor und einen Punkt aus Voronoi-Zelle ist immer relativ klein. Desto größer \mu gewählt wird, desto kleiner (?) wird der Winkel
+\end{lemma}
+
+\begin{proof}
+$m_1$ - Mittelpunkt von medialen Ball an $p$.
+$m_2$ - Mittelpunkt von medialen Ball an $p$.
+
+ 
+$n_p || m_1p$
+ $n_p || m_2p$  => $m_1, m_2$ und $p$ sind colinear.
+ 
+ $\alpha = \measuredangle (\overrightarrow{vp}, n_p) = \measuredangle(pvm_2) + \measuredangle(v,m_2,p)$ laut Nebenwinkelsatz.
+ 
+ Sei $y$ der Schnitt von $vm_2$ mit $\Sigma$. $y$ liegt in $V_p$ Voronoizelle von $p$. (Weil alles konvex ist und die Endpunkte in $V_p$ liegen.)
+ => der nächste Samplingpunkt zu $y$ ist $p$. (Weil er ja in der Voronoizelle liegt)
+ $\norm{y-p} \leq \epsilon f(y)$, weil $\epsilon$-Sampling 
+ $\leq \frac{\epsilon f(p)}{1 - \epsilon}$ lt. Feature Verschiebungslemma
+ 
+ $\measuredangle pvm_2 = \arcsin \frac{\norm{x-p}}{\norm{v-p}}$
+ $\leq \arcsin \frac{\frac{\epsilon}{1-\epsilon} f(p)}{\mu f(p)}$
+ $\leq \arcsin \frac{\epsilon}{\mu(1-\epsilon)} $
+ 
+ $\measuredangle vm_2p \leq \arcsin \frac{\norm{x-p}}{\norm{p-m_2}}$
+ $\leq \arcsin \frac{\frac{\epsilon}{1-\epsilon} f(p)}{ f(p)}$
+ $\leq \arcsin \frac{\epsilon}{1-\epsilon}$
+
+
+Addieren der beiden WInkel ergibt genau das gewünschte Ergebnis.
+ \end{proof}
+ 
+ 
+\begin{defini}[Pol]
+Den am weitesten von $p$ entfernten Voronoiknoten $p^+$ in $V_p$ nennt man positiver Pol.
+Der negative Pol $p^- \in V_p$ von $p$ ist der am weitesten von $p^+$ entfernte Punkt, so dass die Vektoren $pp^+$ und $pp^-$ einen Winkel von mehr als $\pi$ bilden.
+Mann nennt $\overrightarrow{vp} = p^+ - p^-$ den Pol-Vektor von $p$.
+Falls $V_p$ unbeschränkt ist, so ist $p^+$ der Punkt im unendlichen und die Richtung von $\overrightarrow{vp}$ ist der Durchschnitt aller Richtungen der unbeschränkten Voronoi-Kanten.
+\end{defini}
+
+\begin{lemma}
+Für $\epsilon < 1$ gilt für den Normalenvektor $n_p$ und dem Pol-Vektor $\overrightarrow{vp}$
+
+$\measuredangle(n_p, \overrightarrow{v_p}) \leq 2\arcsin \frac{\epsilon}{1-\epsilon}$
+\end{lemma}
+
+\begin{defini}[Co-Kegel/Cocone]
+Die Menge $C_p := \{y \in V_p | \measuredangle (\overrightarrow{py}, v_p) \geq \frac{3}{8} \pi\}$ heißt Co-Kegel (Cocone) vpn $p$.
+
+$\approx V_p \setminus K$
+\end{defini}
+
+
+
+
+
+
+
 
 \clearpage
 \appendix
