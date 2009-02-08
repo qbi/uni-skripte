@@ -182,6 +182,7 @@
 \newcommand*{\K}{\mathbb{K}}
 \newcommand*{\CA}{\mathcal{A}}
 \newcommand*{\CE}{\mathcal{E}}
+\newcommand*{\CF}{\mathcal{F}}
 \newcommand*{\CK}{\mathcal{K}}
 \newcommand*{\CL}{\mathcal{L}}
 \newcommand*{\CM}{\mathcal{M}}
@@ -194,6 +195,8 @@
 \DeclareMathOperator{\card}{card}
 \DeclareMathOperator{\inner}{int}
 \DeclareMathOperator{\cdm}{codim}
+\DeclareMathOperator{\graph}{graph}
+\DeclareMathOperator{\rg}{rank}
 
 
 \renewcommand\thechapter{\Roman{chapter}}
@@ -3463,14 +3466,14 @@ gleichbedeutend mit dem erstgenannten \autoref{satz:iii.11} ist der folgende
 \end{defini}
 
 % lem iii.3.1
-\begin{lem}
+\begin{lem}\label{lem:iii.31}
   Seien $X$ und $Y$ normierte Räume und ist $T\colon X\rightarrow Y$ linear.
   Dann gilt, $T$ ist genau dann eine offene Abbildung, wenn es ein $\delta>0$
   mit $\mathring{B}_{\delta}(0)\subset T(\mathring{B}_{1}(0))$ gibt.
   \begin{proof}
     \begin{itemize}
      \item["`$\Rightarrow$"'] klar
-     \item Sei $O\subset X$ eine offene Menge und $x\in O$. Wir wählen
+     \item["`$\Leftarrow$"'] Sei $O\subset X$ eine offene Menge und $x\in O$. Wir wählen
       $\epsilon>0$ mit $\mathring{B}_{\epsilon}(x)\subset O$. Dann gilt,
       $\mathring{B}_{\epsilon\delta}(Tx)\subset
       T(\mathring{B}_{\epsilon}(x))\subset T(O)$. Denn für
@@ -3487,7 +3490,7 @@ gleichbedeutend mit dem erstgenannten \autoref{satz:iii.11} ist der folgende
 \end{lem}
 
 %lem iii.3.2
-\begin{lem}
+\begin{lem}\label{lem:iii.32}
   Sei $T\in\CL(X,Y)$ ein beschränkter linearer Operator von einem Banachraum
   $X$ in einen Banachraum $Y$. Dann gilt,
   $\mathring{B}_{c}(0)\subset\cl(T(\mathring{B}_{x}))$ mit $c>0$ impliziert
@@ -3522,6 +3525,164 @@ gleichbedeutend mit dem erstgenannten \autoref{satz:iii.11} ist der folgende
     Damit liegt $x\in\mathring{B}_{x}$ und $y\in T(\mathring{B}_{x})$.
     \end{proof}
 \end{lem}
+
+%Vorlesung vom 2009-01-14
+%satz iii.3.3
+\begin{satz}[Satz von der offenen Abbildung]\label{satz:iii.33}
+  Seien $X$ und $Y$ Banachräume und $T\in\CL(X,Y)$. Dann ist $T$ genau dann
+  surjektiv, wenn $T$ offen ist.
+  \begin{proof}
+    \begin{enumerate}[1.\,Schr{i}tt]
+     \item Wir zeigen zunächst, dass aus der Surjektivität von $T$ die
+      Offenheit folgt. Aus der Surjektivität folgt, $Y=\bigcup_{k=1}^{\infty}
+      \cl T(\mathring{B}_{k}(0))$. Jetzt wenden wir den \textsc{Baire}schen
+      Kategoriensatz (\autoref{satz:iii.11}) an. Danach gibt es ein $k_{0}$
+      mit $\inner\cl T(\mathring{B}_{k_{0}}(0))\neq\emptyset$. Das heißt, es
+      gibt eine offene Kugel $\mathring{B}_{\epsilon}(y_{0})$ mit
+      $\mathring{B}_{\epsilon}(y_{0})\subset \cl T(\mathring{B}_{k_{0}}(0))$.
+      Für $y\in\mathring{B}_{\epsilon}(0)$ existiert eine Folge
+      $(x_{i})\subset\mathring{B}_{k_{0}}(0)$ mit der Eigenschaft
+      $Tx_{i}\rightarrow y_{0}+y$. Wir wählen $x_{0}\in X$ mit $Tx_{0}=y_{0}$
+      und es folgt, $T(\frac{x_{i}-x_{0}}{k_{0}+ \norm{x_{0}}})\rightarrow
+      \frac{y}{k_{0}+\norm{x_{0}}}$ und
+      $\norm{\frac{x_{i}-x_{0}}{k_{0}+\norm{x_{0}}}}<1$ wegen der
+      Dreiecksungleichung. Somit ist die Kugel
+      $\mathring{B}_{\delta_{0}}(0)\subset \cl T(\mathring{B}_{x})$ für
+      $\delta_{0}\coloneq\frac{\epsilon}{k_{0} +\norm{x_{0}}}$. Nun können wir das
+      \autoref{lem:iii.32} anwenden und es folgt,
+      $\mathring{B}_{\delta_{0}}(0)\subset T(\mathring{B}_{x})$. Jetzt wenden
+      wir das \autoref{lem:iii.31} an und wissen, dass $T$ offen ist.
+     \item Sei $T$ offen. Nach dem \autoref{lem:iii.31} existiert ein
+      $\delta>0$ mit $\mathring{B}_{\delta}(0)\subset T(\mathring{B}_{X})$.
+      Also gilt $\mathring{B}_{r\delta}(0)\subset T(r\mathring{B}_{X})$ für
+      $r>0$. Damit folgt, dass $T(X)=Y$, d.\,h. $T$ ist surjektiv.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\section{Satz vom inversen Operator und vom abgeschlossenen Graphen}
+
+%satz iii.4.1
+\begin{satz}[Satz von \textsc{Banach} über den inversen Operator]
+  Seien $X$ und $Y$ Banachräume und $T\in\CL(X,Y)$ sei injektiv und surjektiv.
+  Dann existiert $T^{-1}\colon Y\rightarrow X$ und $T^{-1}\in\CL(Y,X)$.
+  \begin{proof}
+    Die Existenz und  Linearität von $T^{-1}$ ist klar. Daher zeigen wir hier,
+    dass das Urbild einer offenen Menge $O\subset X$ von $T^{-1}$ offen ist.
+    Nach dem Satz von der offenen Abbildung (\autoref{satz:iii.33}) ist
+    $(T^{-1})^{-1}(O)=T(O)$ offen. Damit ist $T^{-1}$ stetig, d.\,h.
+    $T^{-1}\in\CL(Y,X)$.
+  \end{proof}
+\end{satz}
+
+%satz iii.4.2
+\begin{satz}[Satz vom abgeschlossenen Graphen]
+  Seien $X$ und $Y$ Banachräume und $T\colon X\rightarrow Y$ ein linearer
+  Operator. Dann ist der Graph von $T$, $\graph(T)\coloneq\{(x,Tx)\in X\times
+  Y\colon x\in X\}$ im Banachraum $X\times Y$ versehen mit der
+  Norm\footnote{Auch andere Normen sind hier denkbar.}
+  $\norm{(x,y)}\coloneq\norm{x}_{X}+ \norm{y}_{Y}$ genau dann abgeschlossen,
+  wenn $T\in\CL(X,Y)$ ein beschränkter linearer Operator ist.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $G\coloneq\graph(T)\subset X\times Y$. Das
+      ist ein abgeschlossener Teilraum und damit ein Banachraum. Da $X\times
+      Y$ ein Banachraum ist. Wir definieren die Operatoren $P_{X}\colon
+      G\rightarrow X$ und $P_{Y}\colon G\rightarrow Y$ durch den Ansatz
+      $P_{X}(x,y)\coloneq x$ und $P_{Y}(x,y)\coloneq y$ für $(x,y)\in G$. Es
+      gilt, $P_{X}\in\CL(G,X)$ und $P_{Y}\in(G,Y)$. Denn
+      $\norm{P_{X}(x,y)}=\norm{x}_{X}\leq \norm{x}_{X}+ \norm{y}_{Y}=
+      \norm{(x,y)}$ (analog für $\norm{P_{Y}(x,y)}$). Somit ist die
+      Operatorennorm kleiner oder gleich 1.
+
+      $P_{X}$ ist injektiv und surjektiv. Letzteres ist klar, denn dazu muss
+      das $x$ in $P_{X}(x,y)$ nur $X$ durchlaufen. Die Injektivität lässt sich
+      wie folgt zeigen: $0=P_{X}(x,y)=P_{X}(x,Tx)=x\Rightarrow(x,Tx)=(0,0)$.
+      Also ist $P_{X}$ injektiv. Nach dem Satz vom inversen Operator ist
+      $P_{X}^{-1}\in\CL(X,G)$. Damit folgt, $T=P_{Y}P_{X}^{-1}\in\CL(X,Y)$.
+      Denn $P_{Y}P_{X}^{-1}x=P_{Y}(x,Tx)= Tx$.
+     \item["`$\Leftarrow$"'] Sei $T$ stetig. Dies impliziert, dass der
+      $\graph(T)$ abgeschlossen ist. Dazu nehmen wir eine Folge $(x_{n},
+      Tx_{n})\rightarrow(x,y)\in X\times Y$ und es folgt, $x_{n}\rightarrow x,
+      Tx_{n}\rightarrow y$. Da $T$ stetig ist, ist $y=Tx$. Damit ist
+      $(x,Tx)\in G$. Also ist der Graph von $T$ abgeschlossen.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+\chapter{Finite Operatoren, Projektionen, approximierbare und kompakte Operatoren}
+
+\section{Finite Operatoren}
+\begin{defini}[Finiter Operator]
+  Ein Operator $T\in\CL(X,Y)$ von einem normierten Raum $X$ in einen normierten Raum
+  $Y$ heißt genau dann \highl{finit} oder \highl[Operator!finiter]{finiter
+  Operator}, wenn $\dim R(T)=\dim T(X)<\infty$. Die Dimension des Bildraumes
+  wird auch als Rang bezeichnet. Wir bezeichnen die Menge aller finiten
+  Operatoren mit $\CF\coloneq\{T\in\CL(X,Y)\colon T\text{ finiter Operator
+						   }\}$.
+\end{defini}
+
+
+  Für $a\in X'$ und $y\in Y$ sei $a\otimes y\colon X\rightarrow Y$ durch
+  $(a\otimes y)(x)\coloneq\langle x,a\rangle y$ definiert. Es ist $a\otimes y$
+ein finiter Operator mit $\rg(a\otimes y)=\dim R(a\otimes y)\leq1$. Ferner
+gilt $\norm{a\otimes y}= \norm{a}\norm{y}$. Denn $\norm{a\otimes
+y}=\sup_{\norm{x}\leq1} \norm{(a\otimes y)(x)}= \sup_{\norm{x}\leq1}
+\norm{\langle x,a\rangle y}= \sup_{\norm{x}\leq1} \abs{\langle x,a\rangle}
+\norm{y}= \norm{a}\norm{y}$.
+
+%satz satz iv.1.1
+\begin{satz}
+  Es ist $T\in\CL(X,Y)$ genau dann finit, wenn $a_{1},\dotsc, a_{n}\in X'$ und
+  $y_{1},\dotsc, y_{n}\in Y$ mit $T=\sum_{i=1}^{n} a_{i}\otimes y_{i}$
+  existiert.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Leftarrow$"'] klar
+     \item["`$\Rightarrow$"'] Sei $n\coloneq\dim R(T)$. Wir betrachten die
+      kanonische Faktorisierung:
+      \begin{gather*}
+	\xymatrix{X \ar[r]^{T} \ar[d]_{Q} & Y\\
+	  X/_{N(T)} \ar[r]^{T_{0}} & R(T)\ar[u]_{J}}
+      \end{gather*}
+      mit $\norm{T_{0}}=\norm{T, T_{0}[x]}\coloneq Tx, \norm{Q}\leq1$ und
+      $\norm{J}\leq1$. Wir wählen in $R(T)$ eine Basis $y_{1},\dotsc, y_{n}$.
+      Weil $T_{0}$ eineindeutig von $X/_{N(T)}$ auf $R(T)$ ist, existiert eine
+      Basis $[x_{1}],\dotsc,[x_{n}]\in X/_{N(T)}$ mit $T_{0}[x_{i}]=y_{i}$.
+      Jedes Element $[x]\in X/_{N(T)}$ kann eindeutig in der Form $[x]=
+      \sum_{i=1}^{n} \xi_{i} [x_{i}]$ dargestellt werden. Wir definieren nun
+      Koordinatenfunktionale $\hat{a_{i}},\dotsc,\hat{a_{n}}\in(X/_{N(T)})'$
+      durch $\hat{a_{i}}([x])\coloneq\xi_{i}$ für $i=1,\dotsc,n$. Die
+      Funktionale $\hat{a_{i}}$ sind beschränkt. Dazu definieren wir auf
+      $X/_{N(T)}$ eine zusätzliche Norm $\ndist{y}_{0}\coloneq \max_{1\leq
+      i\leq n} \abs{\xi_{i}}$. Weil $X/_{N(T)}$ endlich-dimensional ist, ist
+      die Norm $\norm{\cdot}_{0}$ zur ursprünglichen Norm $\norm{\cdot}$
+      äquivalent (nach \autoref{satz:i.53}), d.\,h. $\exists
+      c_{0},c>0\,\forall[x]\in X/_{N(T)}\colon
+      c_{0}\norm{\ndist{x}}\leq\ndist{x}_{0}\leq c\ndist{x}$. Damit folgt für
+      $[x]= \sum_{i=1}^{n} \xi_{i}[x_{i}]$ folgendes: $\abs{\langle[x],
+      \hat{a}\rangle}= \abs{\xi_{i}} \leq\max\abs{\xi_{i}}= \ndist{x}_{0}\leq
+      c\ndist{x}$ und somit $\norm{\hat{a_{i}}}\leq c$. Mit $Qx=[x]=
+      \sum_{i=1}^{n} \langle[x], \hat{a_{i}}\rangle[x_{i}]= \sum_{i=1}^{n}
+      \langle Qx, \hat{a_{i}}\rangle[x_{i}]$ folgt, $Tx=JT_{0}Qx=
+      JT_{0}(\sum_{i=1}^{n} \langle Qx, \hat{a_{i}}\rangle[x_{i}]=
+      \sum_{i=1}^{n} \langle Qx, \hat{a_{i}}\rangle JT_{0}[x_{i}]=
+      \sum_{i=1}^{n} \langle Qx, \hat{a_{i}}\rangle y_{i}= \sum_{i=1}^{n}
+      \langle x, Q'\hat{a_{i}}\rangle y_{i}= \sum_{i=1}^{n} \langle
+      x,a_{i}\rangle y_{i})$. Wegen $\norm{a_{i}}=\norm{Q'\hat{a_{i}}}\leq
+      \norm{Q'} \norm{\hat{a_{i}}}=\norm{Q}\norm{\hat{a_{i}}}$ sind die
+      Funktionale $a\in X'$ beschränkt. Damit ist $T=\sum_{i=1}^{n}
+      a_{i}\otimes y_{i}$ eine gewünschte Darstellung.
+    \end{itemize}
+  \end{proof}
+\end{satz}
+
+\todo[inline]{fehlende Vorlesungen ergänzen}
+
+%Vorlesung vom 2009-02-02
+
+
+
 
 \clearpage
 \appendix
