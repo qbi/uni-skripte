@@ -65,6 +65,16 @@ END
       "Von überall: %6d\n".
       "Aus der Uni: %6d\n", $ALL_ACCESS, $ALL_UNI_ACCESS;
 
+    # bei URLs von uni-protokolle.de die GET-Parameter (die Session-ID)
+    # wegschneiden
+    foreach (grep m@uni-protokolle\.de/foren/viewt/.*\.html\?sid=@,
+        keys %REFERER)
+    {
+        (my $without_sid = $_) =~ s/\?sid=.*//;
+        $REFERER{$without_sid} += $REFERER{$_};
+        delete $REFERER{$_};
+    }
+
     printf "\nDirekte Zugriffe von fremden Seiten\n";
     foreach (sort { $REFERER{$b} <=> $REFERER{$a} } keys %REFERER)
     {
