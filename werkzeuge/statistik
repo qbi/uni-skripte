@@ -74,6 +74,16 @@ END
         $REFERER{$without_sid} += $REFERER{$_};
         delete $REFERER{$_};
     }
+    # Einträge für Hostnamen mit und ohne www zusammenfassen
+    foreach (keys %REFERER)
+    {
+        (my $with_www = $_) =~ s@://@://www.@;
+        if (defined $REFERER{$with_www})
+        {
+            $REFERER{$with_www} += $REFERER{$_};
+            delete $REFERER{$_};
+        }
+    }
 
     printf "\nDirekte Zugriffe von fremden Seiten\n";
     foreach (sort { $REFERER{$b} <=> $REFERER{$a} } keys %REFERER)
