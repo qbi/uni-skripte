@@ -1,0 +1,645 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: index.tool      xindy
+% rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst} % einbinden der neuen
+                   % Trennmuster, diese korrigieren einige Fehler der alten
+                   % und bieten mehr Trennstellen
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final,babel]{microtype} % Verbesserung der Typographie
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
+                         % Markierungen für offene Aufgaben zu setzen; wird
+                         % auch für \help (s.u.) verwendet
+\usepackage{nicefrac}
+\usepackage{wasysym}
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Wir beginnen bei 0
+\addtocounter{chapter}{-1}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Elliptische Kurven}
+\author{PD Dr.\,Klaus Haberland}
+\date{Semester: SS 2009}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2009)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+
+\chapter{Einführung}
+
+\section{Die projektive Ebene}
+
+Sei $K$ ein beliebiger Körper.
+\begin{defini}[Projektive Ebene]
+  Die \highl[Ebene!projektive]{projektive Ebene} $\P^{2}(K)$ ist per definitionem
+  $K^{3}\setminus\{0,0,0\}/_{~}$, wobei  $(x_{0}, x_{1}, x_{2})~ (y_{0},
+  y_{1}, y_{2})\Leftrightarrow \exists\lambda\in K^{*}$ mit $y_{j}= \lambda
+  x_{j}$. Man schreibt $(x_{0}\colon x_{1}\colon x_{2})$.
+\end{defini}
+
+\begin{bemerk}
+  Analog $\P^{n}(K)$ für $n\geq1$.
+\end{bemerk}
+
+\begin{bsp}
+  Man nennt $\P^{1}(K)$ die projektive Gerade und ist $\P^{1}(K)=
+  \{(1\colon\alpha)\colon\alpha\in K\}\cup\{(0\colon1)\}$. Das ist also die
+  affine Ebene vereinigt mit einem unendlich fernen Punkt.
+
+  Es ist $\P^{1}(\R)=\R$ plus $\infty$, also die $S^{1}$"~Kreislinie. Für
+  $\P^{1}(\C)$ ergibt sich $S^{2}$, die auch als \textsc{Riemann}sche
+  Zahlensphäre bezeichnet wird.
+
+  Weiter haben wir $\P^{1}(\F_{2})=\{(0\colon1),(1\colon0),(1\colon1)\}$.
+\end{bsp}
+
+\begin{bemerk}[Affine Überdeckung von $\P^{n}(K)$]
+  Sei $U_{i}=\{(x_{0}\colon x_{1}\colon\dotso \colon x_{n})\colon
+  x_{i}\neq0\}, \phi_{i}\colon U_{i}\rightarrow A^{n}(K)$ mit $(x_{0}\colon
+  x_{1}\colon\dotso \colon x_{n})\mapsto(\nicefrac{x_{0}}{x_{i}},
+  \nicefrac{x_{1}}{x_{i}},\dotsc,\hat{\nicefrac{x_{i}}{x_{i}}},\dotsc,
+  \nicefrac{x_{n}}{x_{i}})$. Die inverse Abbildung dazu ist, $\psi\colon
+  A^{n}(K)\rightarrow U_{i}$ mit $(y_{1},\dotsc,
+  y_{n})\mapsto(y_{1}\colon\dotso \colon y_{i}\colon1\colon
+  y_{i+1}\colon\dotso \colon y_{n})$. Insbesondere ist $\P^{2}(K)=
+  U_{0}\dotcup\P^{1}(K)$.
+
+  Für $K=\R$ haben wir, $S^{2}\subset
+  \R^{3}\setminus(0,0,0)\rightarrow\P^{2}(\R)$. Man bezeichnet
+  $S^{2}\rightarrow\P^{2}(\R)$ als zweiblättrige Überlagerung.
+
+
+  $\GL(n+1,K)$ operiert auf $\P^{n}(K)$ vermöge
+  \begin{gather*}
+    g(x_{0}\colon x_{1}\colon\dotso \colon x_{n})= (g_{0}x\colon
+       g_{1}x\colon\dotso \colon g_{n}x)
+  \end{gather*}
+\end{bemerk}
+
+\begin{bsp}
+  Es operiert $\GL(2,\F_{2})$ auf $\P^{1}(\F_{2})= \{0,1,\infty\}$. Die Aktion
+  ist transitiv. Also haben wir einen injektiven Homomorphismus $\GL(2,\F_{2})\rightarrow
+  S_{3}$. Denn $\begin{pmatrix}a & b\\ c & d\end{pmatrix} (0\colon1)=
+  (0\colon1)\Leftrightarrow b=0, d=1$ und $\begin{pmatrix}a & b\\ c &
+					     d\end{pmatrix} (1\colon0)=
+  (1\colon0)\Leftrightarrow a=1, c=0$. Damit folgt, dass $\SL(2,\F_{2})$
+  isomorph zu $S_{3}$ ist.
+\end{bsp}
+
+\section{Ebene projektive Kurven}
+
+Sei $F\in K[X_{0},X_{1},X_{2}]$ homogen vom Grad $d$.
+\begin{defini}[ebene algebraische Kurve]
+  Eine \highl[Kurve!ebene algebraische]{ebene algebraische Kurve} ist der Nullstellenort eines homogenen
+  Polynoms  $F\in K[X_{0},X_{1},X_{2}]$ in $\P^{2}(K)$.
+\end{defini}
+
+\begin{fakt}
+  Diese Definition ist korrekt, da homogen vorausgesetzt wird.
+  \begin{proof}
+    $F(\lambda x_{0},\lambda x_{1}, \lambda x_{2})= \lambda^{d} F(x_{0},
+    x_{1}, x_{2})$
+  \end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Sei $C_{F}(K)= \{(x_{0}\colon x_{1}\colon x_{2})\in\P^{2}(K)\colon
+  F(x_{0},x_{1},x_{2})=0\}$ und $L/K$ eine Körpererweiterung. Dann gilt
+  $C_{F}(K)\subset C_{F}(K)$.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Die \textsc{Fermat}"~Kurven: Sei $d\geq2, F=x^{d}+
+    y^{d}-z^{d}\in\Q[X,Y,Z]$. Was sind die unendlich fernen Punkte? $z=0$!
+    Also $x^{d}+y^{d}=1\Rightarrow y=(-1)^{\nicefrac{1}{d}}x$ und somit
+    $(1\colon\xi\colon0), \xi^{d}=-1$. Es hat $C_{d}(\R)$ einen unendlich
+    fernen Punkt für gerade $d$ und keinen für gerades $d$.
+
+    Sei nun $d$ ungerade. Dann ist $C_{d}(\Q)=\{(0\colon1\colon1),
+    (1\colon0\colon1), (1\colon-1\colon0)\}$. Für $C_{2}(\Q)$ kennt man alle
+    rationalen Punkte. Weiter hat $C_{4}(\Q)$ nur die trivialen rationalen
+    Punkte (nach \textsc{Fermat}).
+   \item Hyperelliptische Kurven: $y^{2}=f(x)$ mit $f\in K[X]$ oder homogen,
+    $y^{2}z^{d-2}=f(x/z)z^{d}$ mit $d$ gleich dem Grad von $f$. Ist der Grad
+    von $f$ größer oder gleich $5$ und $y^{2}-f(x)\in\overline{\Q}[X,Y]$
+    irreduzibel, so ist $C_{F}(\Q)$ endlich (nach \textsc{Faltings}).
+  \end{enumerate}
+\end{bsp}
+
+\begin{defini}[irreduzibel]
+  Die projektive ebene Kurve $C_{F}$ mit $F\in K[X,Y,Z]$ homogen heißt
+  \highl{irreduzibel}, wenn $F$ irreduzibel in $\overline{K}[X,Y,Z]$ ist.
+\end{defini}
+
+\begin{defini}[glatt, regulär]
+  Der Punkt $P\in C_{F}(\overline{K})$ heißt \highl{glatt} oder
+  \highl{regulär}, wenn der Gradient von $F$ im Punkt $p$ ungleich $0$ ist.
+  Also hat die Kurve in dem Punkt eine Tangente.
+
+  Man bezeichnet $C_{F}$ als \highl{glatt} oder \highl{singularitätenfrei},
+  wenn alle $P\in C_{F}(\overline{K})$ glatt sind.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $(xyz=0)=C$, $C=C_{0}\cup C_{1}\cup C_{2}, C_{0}=(x=0), C_{1}=(y=0),
+    C_{2}=(z=0)$. Es ist $C$ die Vereinigung dreier projektiver Geraden in
+    $\P^{2}(K)$. Singulär sind genau die Schnittpunkte:$(1\colon0\colon0),
+    (0\colon1\colon0), (0\colon0\colon1)$.
+   \item Die \textsc{Fermat}"~Kurven: $\grad(x^{d}+ y^{d}+z^{d})= (dx^{d-1},
+    dy^{d-1}, dz^{d-1})$. Also sind die Kurven glatt.
+   \item Hyperelliptische Kurven: $y^{2}z^{d-2}= f(x/z)z^{d}=
+    a_{0}z^{d}+ a_{1}z^{d-1}x\dotsb+ a_{d}x^{d}$. Für den Gradient ergibt
+    sich: $(z^{d-1}f'(x/z), -2yz^{d-2}, -z^{d-2}x f'(x/z)+ dz^{d-1} f(x/z))$.
+    Unendlich ferne Punkte: $z=0, d>2\Rightarrow x=0$, nur $(0\colon1\colon0)$.
+    In $(0\colon1\colon0)$ ist der Gradient $(0,0,0)$, also ist der Punkt
+    singulär.
+  \end{enumerate}
+\end{bsp}
+
+\chapter{Quadriken}
+
+\section{Allgemeines}
+
+\begin{defini}[Quadrik]
+  Eine \highl{Quadrik} ist eine ebene projektive Kurve definiert durch
+  quadratische Form:
+  \begin{gather*}
+    C=C_{F} & F=aX^{2}+ bXY + cXZ+ dY^{2}+eYZ+fZ^{2}
+  \end{gather*}
+\end{defini}
+
+\begin{bemerk}
+  Für $\lambda\in K^{*}$ ist $C_{\lambda F}=C_{F}$. Wir setzen voraus, dass
+  die Charakteristik des Körpers nicht $2$ ist.
+  \begin{gather*}
+    M_{F}\coloneq
+       \begin{pmatrix}
+	 a & \nicefrac{b}{2} & \nicefrac{c}{2}\\
+	 \nicefrac{b}{2} & d & \nicefrac{d}{2}\\
+	 \nicefrac{c}{2} & \nicefrac{e}{2} & f
+       \end{pmatrix}\\
+    F=(X,Y,Z)M_{F}
+       \begin{pmatrix}
+	 X\\Y\\Z
+       \end{pmatrix}
+  \end{gather*}
+\end{bemerk}
+
+\begin{defini}[linear isomorph]
+  Zwei Quadriken $C_{F}, C_{G}$ heißen \highl{linear isomorph}, wenn es ein
+  $g\in\GL(3,K)$ mit $G=F\circ g\Leftrightarrow M_{G}=g^{T}M_{F}g$ gibt.
+\end{defini}
+
+\begin{defini}[Rang]
+  Der \highl{Rang} von $F$ ist als der Rang von $M_{F}$ definiert.
+\end{defini}
+
+\begin{fakt}
+  Jede quadratische Form ist linear äquivalent zu einer Diagonalform.
+  \begin{proof}
+    Ist $v^{T}Mv=0$ für alle $v\in K^{3}$, so ist $M=0$. Das Einsetzen von
+    $e_{1}, e_{2}, e_{3}$ zeigt $a=d=f=0$ und $e_{1}+e_{2}, e_{2}+e_{3},
+    e_{3}+e_{1}$ zeigt $b=c=e=0$. Wir wählen also $v\neq0$ mit
+    $v^{T}Mv\coloneq\alpha\neq0$ und bilden $g\in\GL(3,K)$ mit $v$ als erster
+    Spalte. Dann hat $g^{T}Mg$ links oben den Eintrag $\alpha$. Die zugehörige
+    Form  ist $G= \alpha X^{2}+\beta XY+\gamma XZ+H(Y,Z)=
+    \alpha(X+\nicefrac{1}{2}\nicefrac{\beta}{\alpha}Y+ \nicefrac{1}{2}
+    \nicefrac{\gamma}{\alpha} Z)^{2} +H_{1}(Y,Z)$. Also ist $F$ linear
+    äquivalent zu $F_{1}= \alpha X^{2}+H_{1}(Y,Z)$. Der Rest ergibt sich durch
+    Induktion.
+  \end{proof}
+\end{fakt}
+
+\begin{bemerk}
+  Der Rang von $aX^{2}+ bY^{2}+cZ^{2}$ ist die Anzahl der Koeffizienten, die
+  ungleich Null sind.
+\end{bemerk}
+
+\begin{fakt}
+  Die Kurve $C_{F}$ ist genau dann glatt, wenn der Rang von $F$ gleich $3$ ist.
+  \begin{proof}
+    Die Glattheit erhält sich unter linearen Substitutionen. Also sei
+    o.\,B.\,d.\,A. $F=aX^{2}+bY^{2}+cZ^{2}$ und für den Gradient ergibt sich
+    $2(aX, bY, cZ)$. Ist der Rank $3$, so ist $abc\neq0$ und somit ist $C_{F}$
+    glatt.
+
+    Sei nun der Rang kleiner als $3$. Für $c=0$ ist $F=aX^{2}+b^{2}$ und
+    $(0\colon0\colon1)$ ist singulärer Punkt auf $C_{F}$.
+  \end{proof}
+\end{fakt}
+
+\begin{fakt}
+  Sei $C_{F}$ glatt und $C_{F}(K)\neq\emptyset$. Dann existiert eine Bijektion
+  zwischen $C_{F}(K)$ und der projektiven Geraden $\P^{1}(K)$.
+  \begin{proof}
+    Seo $P_{0}\in C_{F}(K)\subset\P^{2}(K)$ und $H\subset\P^{2}(K)$ eine
+    projektive Gerade, die $P_{0}$ nicht enthält. Sei $\phi\colon H\rightarrow
+    C_{F}(K)$ mit $P\mapsto$ Schnittpunkt der projektiven Geraden $L$ durch
+    $P$ und $P_{0}$ mit $C_{F}(K)$. Es schneidet $L$ die Kurve $C_{F}(K)$ in
+    $P_{0}$ und deshalb noch in einem weiteren Punkt. Dieser liegt auch in
+    $C_{F}(K)$.
+
+    Die inverse Abbildung ist $\psi\colon C_{F}(K)\rightarrow H$, die $P$ auf
+    den Schnitt der Geraden durch $P$ und $P_{0}$ mit $H$ abbildet. Für
+    $P=P_{0}$ nehme man die Tangente an  $C_{F}(K)$.
+  \end{proof}
+\end{fakt}
+
+\section{Die Quadriken über $\R$ und $\C$}
+
+\begin{enumerate}
+ \item Über $\C$ ist jede Quadrik linear äquivalent zu
+  \begin{gather*}
+    X^{2}+Y^{2}+Z^{2}
+  \end{gather*}
+  (isomorph zu $\P^{2}(\C)$, gewöhnliche Quadrik in $\P^{2}(\C)$.) oder 
+  \begin{gather*}
+    X^{2}+Y^{2}
+  \end{gather*}
+  (zwei transversale projektive Gerade in $\P^{2}(\C)$) oder
+  \begin{gather*}
+    X^{2}
+  \end{gather*}
+  (doppelte projektive Gerade) oder
+  \begin{gather*}
+    0
+  \end{gather*}
+  $\P^{2}(\C)$
+ \item über $\R$:
+  \begin{align*}
+    X^{2}+Y^{2}+Z^{2} && X^{2}+Y^{2}-Z^{2}
+  \end{align*}
+  Das erstgenannte ist die leere Menge und das zweite ist eine gewöhnliche
+  Quadrik in $\P^{2}(\R)$
+  \begin{align*}
+    X^{2}+Y^{2} && X^{2}-Y^{2}
+  \end{align*}
+  Erstes ist $(0\colon0\colon1)$ und das Zweite sind zwei transversale
+  projektive Geraden
+  \begin{align*}
+    X^{2}
+  \end{align*}
+  zweifache projektive Gerade
+  \begin{align*}
+    0
+  \end{align*}
+  $\P^{2}(\R)$
+\end{enumerate}
+
+
+\section{Quadriken über endlichen Körpern}
+\label{sec:13}
+
+Wie schon oben setzen wir wieder voraus, dass die Charakteristik des Körpers
+ungleich $2$ ist. Weiter sei $K=\F_{q}$ mit $q=p^{f}$ für $p$ größer als $2$.
+Wir behandeln nur glatte Quadriken. Jede solche Quadrik lässt sich bis auf
+lineare Äquivalenz durch
+\begin{gather*}
+  X^{2}+Y^{2}+Z^{2}
+\end{gather*}
+oder
+\begin{gather*}
+  X^{2}+Y^{2}+\lambda Z^{2}
+\end{gather*}
+beschreiben. Dabei ist $\lambda$ ein fixiertes Nichtquadrat in $\F_{q}^{*}$.
+
+\begin{fakt}
+  $C_{F}(\F_{q})$ ist stets nichtleer für $C_{F}$ glatt.
+  \begin{proof}
+    Der Beweis erfolgt durch Zählen. Dazu wählen wir $z_{0}\in K^{*}$ und
+    setzen $\alpha=-z_{0}^{2}$ im ersten Fall und $\alpha=-\lambda z_{0}^{2}$
+    im zweiten Fall. Dann produzieren die Polynome $X^{2}$ und $\alpha-Y^{2}$
+    jeweils $\frac{q+1}{2}$ verschiedene Werte. Also muss es $x_{0}, y_{0}\in
+    K$ mit $x_{0}^{2}= \alpha-y_{0}^{2}$ geben.
+  \end{proof}
+\end{fakt}
+
+\begin{folg}
+  $\card C_{F}(\F_{q})=q+1$
+\end{folg}
+
+\begin{bsp}
+  Wir betrachten die Kreislinie $x^{2}+y^{2}=1$ in $\F_{q}^{2}$. Das sind
+  gerade die Punkte auf $\{x^{2}+y^{2}-z^{2}=0\}\subset\P^{2}(\F_{q})$, weche
+  im Endlichen liegen. Unendlich ferne Punkte sind die mit $z=0$, also
+  $x^{2}+^{2}=0\Leftrightarrow(\frac{x}{y})^{2}=-1$. Ist also $-1$ kein
+  Quadrat in $\F_{q}^{*}$, so liegen alle $q+1$~Punkte im Endlichen. Somit hat
+  die Kreislinie $q+1$~Punkte. Ist dagegen $-1$ ein Quadrat in $\F_{q}^{*}$,
+  liegen auf der Kreislinie $q-1$~Punkte. Für $q=p\in\P$ gilt, dass $-1$ genau
+  dann ein Quadrat, wenn $p\equiv 1\pmod{4}$.\todo{Stimmt das Modulo?}
+\end{bsp}
+
+\begin{bsp}
+  Für $p=7$ hat $x^{2}+y^{2}=1$ insgesamt acht Lösungen.
+  \begin{tabular}{c|ccccccc}
+    $x$ & $0$ & $1$ & $2$ & $3$ & $4$ & $5$ & $6$\\
+    \hline
+    $x^{2}$ & $0$ & $1$ & $4$ & $2$ & $2$ & $4$ & $1$\\
+    \hline
+    $1-x^{2}$ & $1$ & $0$ & $4$ & $6$ & $6$ & $4$ & $0$
+  \end{tabular}
+\end{bsp}
+
+\section{Quadriken über $\Q_{p}$}
+
+Details zu $p$"~adischen Zahlen kann man in \cite{serre} nachlesen.
+Wir betrachten nur glatte Quadriken:
+\begin{gather*}
+  C=\{ax^{2}+ by^{2}+cz^{2}=0\}\subset\P^{2}(\Q_{p})
+\end{gather*}
+Bis auf lineare Äquivalenz und Skalare nur zwei Typen:
+\begin{enumerate}
+ \item $a,b,c\in\Z_{p}^{*}$
+ \item $a,b\in\Z_{p}^{*}, c\in p\Z_{p}^{*}$
+\end{enumerate}
+
+\begin{fakt}
+  \begin{enumerate}
+   \item Im ersten Fall ist $C(\Q_{p})$ stets nichtleer.
+   \item Im zweiten Fall ist $C(\Q_{p})$ genau dann nichtleer, wenn gilt $-ab$
+    ist Quadrat modulo $p$ oder genau dann, wenn $\left(\frac{-ab}{p}}right)=1$.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}
+     \item Nach \autoref{sec:13} hat die Kongruenz
+      $ax^{2}+by^{2}+cz^{2}\equiv0\pmod{p}$ nichttriviale Lösung, d.\,h. es
+      gibt ein $(x_{0}, y_{0}, z_{0})\in\Z_{p}^{3}$, nicht alle drei durch $p$
+      teilaren mit $ax_{0}^{2}+ by_{0}^{2}+ cz_{0}^{2}\equiv0\pmod{p}$. Sei
+      beispielsweise $x_{0}\equiv0\pmod{p}$. Setze $f()= at^{2}+by_{0}^{2}+
+      cz_{0}^{2}\in\Z_{p}[t]$. Dann ist $\abs{f(x_{0})}_{p}<1, f'(x_{0})=
+      2ax_{0}, \abs{f'(x_{0})}_{p}=1$. Nach \textsc{Hensel}s Lemma existiert
+      ein $x\in\Z_{p}$ mit $x\equiv x_{0}\pmod{p}$ mit $f(x)=0\Rightarrow$
+      nichttriviale Lösung.
+     \item Angenommen die Kurve $C(\Q_{p})$ hat einen rationalen Punkt. Also
+      existieren $x,y,z\in\Z_{p}, (x,y,z)\neq(0,0,0)$ mti $ax^{2}+by^{2}
+      +cz^{2}=0$. Seien alle o.\,B.\,d.\,A. durch $p$ teilbar. Ist
+      $x\equiv0\pmod{p}$, so auch $y$. Mithin $ax^{2}+by^{2}+cz^{2}\equiv
+      0\pmod{p^{2}}\Rightarrow cz^{2}\equiv0\pmod{p^{2})\Rightarrow
+      z\equiv0\pmod{p}$ \lightning{} Also sind $x,y,z$ Einheiten. Weiter
+      $ax^{2}+by^{2}\equiv0\pmod{p}$ wegen $p|c$. Dann ist
+      $abx^{2}\equiv-(by)^{2} \pmod{p}$ und $-ab\equiv
+      (\nicefrac{by}{x})^{2}\pmod{p}$. Also folgt, dass $-ab$ Quadrat modulo
+      $p$ ist.
+
+      Sei nun $-ab$. Dann ist $-ab$ nach \textsc{Hensel}s Lemma ein Quadrat in
+      $\Z_{p}^{*}$. Somit $-ab=t^{2}$ für $t\in\Z_{p}^{*}$. Also ist
+      $at^{2}+ba^{2}=0$ nichttriviale Lösung $(t,a,0)$.
+    \end{enumerate}
+  \end{proof}
+\end{fakt}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+
+ \bibitem{knapp} \textsc{Knapp}. Elliptic curves. Princeton university
+  press. 1992.
+ \bibitem{husemoller} \textsc{Husemoller}. Elliptic curves. Springer 1987.
+ \bibitem{koblitz}\textsc{Koblitz}. Introduction to elliptic curves and
+  modular forms. Springer 1984.
+ \bibitem{silverman} \textsc{Silverman, Joseph}. The arithmetic of elliptic
+  curves. Springer 1986.
+ \bibitem{silverman2} \textsc{Silverman, Joseph}. Advanced topics in the
+  arithmetic of elliptic curves. Springer 1994.
+ \bibitem{silvertate} \textsc{Silverman, Josef}, \textsc{Tate, J}. Rational
+  points on elliptic curves. Springer 1992.
+ \bibitem{milne} \textsc{Milne, J}. Elliptic curves.
+  \url{http://www.jmilne.org/math/}.
+
+ \bibitem{serre} \textsc{Serre, Jean"=Pierre}. Cours d'arithmetique. A course
+  in arithmetic.
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+\printindex
+
+\end{document}
