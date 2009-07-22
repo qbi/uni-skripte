@@ -828,7 +828,7 @@ Sei $p \in P \setminus \{a,b,c\}$ und
 $q$ beliebig in Umkreisscheibe.
 Das Liniensegment $qp$ schneidet Dreiecke $t_1, t_2, \dotsc, t_k$ der Triangulierung.
 Dazu folge von gewichteten Punkten $S_1, S_2, \dotsc, S_k$ mit Gewichten $w_1, w_2, \dotsc, w_k$
-$w_i = \text{Radius der Umkreisscheibe von} t_i$
+$w_i = \text{Radius der Umkreisscheibe von } t_i$
 Damit ergeben sich eine Folge von Power-Abständen $\Pi_1(p), \dotsc, \Pi_k()$
 
 \todo{wo kommen die Sks her?}
@@ -1274,28 +1274,59 @@ Die Halbkantendatenstruktur eigent sich für die Darstellung planarer Graphen.
 	berechne obere konvexe Hülle UpperHull(p)\;
 \end{algorithm}
 
+%ich glaube, der algorithmus stimmt so nicht
+%\begin{algorithm}
+%    \dontprintsemicolon
+%    \caption{LowerHull($P$)}
+%%    \KwIn{$P \subset \R^2, P = \{p_1, p_2, \dotsc, p_k \}$}
+%%    \KwOut{Triangulierung und konvexen Hülle}
+%	$p:=p_1, q = p_3, r = p_2$\;
+%	$i := 3$\;
+%	\While{$i \leq n$}{
+%		\eIf{$\operatorname{IsLeftOf}(p,q,r)$}{
+%			fügen Kante $(p,q)$ ein\;
+%			$i++$\;
+%			$r:=q$\;
+%			$q:=p_i$\;
+%		}
+%		{
+%			$i++$\;
+%			$p:=r$\;
+%			$r:=q$\;		
+%			$q:=p_i$\;
+%		}		
+%	}
+%\end{algorithm}
+
+Lower Hull(P), $\abs{P}= n, P \subset \R^2$
+
 \begin{algorithm}
     \dontprintsemicolon
-    \caption{LowerHull($P$)}
+	\caption{LowerHull($P$), $ |P| = n, P \subset \R^2$}
+%    \caption{LowerHull($P$), $\abs{P}= n, P \subset \R^2$}
 %    \KwIn{$P \subset \R^2, P = \{p_1, p_2, \dotsc, p_k \}$}
 %    \KwOut{Triangulierung und konvexen Hülle}
-	$p:=p_1, q = p_3, r = p_2$\;
-	$i := 3$\;
-	\While{$i \leq n$}{
-		\eIf{$\operatorname{IsLeftOf}(p,q,r)$}{
-			fügen Kante $(p,q)$ ein\;
-			$i++$\;
-			$r:=q$\;
-			$q:=p_i$\;
+	$a:a[0,\dotsc,n]$ Array mit $n+1$ Elementen\;
+	$a[0] := p_1$\;
+	\For{$i = 1$ TO $n$}{
+		$a[i]:=p_i$\;	
+	}
+	$i:=1$\;
+	\While{$i < LENGTH(q) - 1$}{
+		\eIf{$IS\_LEFT\_OF(a[i], a[i+2], a[i+1])$}{
+			Remove(a,i+1)\; %//Entferne das i+1te Element aus q
+			$i := i -1$\;
 		}
 		{
-			$i++$\;
-			$p:=r$\;
-			$r:=q$\;		
-			$q:=p_i$\;
-		}		
+			$i:=i +1$\;
+		}	
+	}
+	\For{$i=1$ TO $Length(a)$}{
+		Output a[i]	\;
 	}
 \end{algorithm}
+
+
 
 \begin{algorithm}
     \dontprintsemicolon
@@ -1504,7 +1535,9 @@ Jeder Flip erzeugt ein neues Dreieck inzident zu $p_i$
 \item Nach jeder Operation müssen wir immer nur die noch nicht geprüften Kanten im Link von $p_i$ auf die lokale Delaunay-Eigenschaft prüfen.
 \end{enumerate}
 
-Beispiel: Kaskadierender Flip, d.\,h. es reicht nicht nur die Kanten des Dreiecks in das $p_i$ eingefügt wurde auf die lokale Delaunay-Eigenschaft zu prüfen.
+\begin{bsp}
+Kaskadierender Flip, d.\,h. es reicht nicht nur die Kanten des Dreiecks in das $p_i$ eingefügt wurde auf die lokale Delaunay-Eigenschaft zu prüfen.
+\end{bsp}
 
 \begin{figure}
   \centering
@@ -1587,33 +1620,33 @@ Damit gilt die Eulerformel.
 
 %\section{Inkrementeller Algorithmus zur Berechnung der Delaunay-Triangulierung}
 
-Lower Hull(P), $\abs{P}= n, P \subset \R^2$
+%5Lower Hull(P), $\abs{P}= n, P \subset \R^2$
 
-\begin{algorithm}
-    \dontprintsemicolon
-	\caption{LowerHull($P$), $ |P| = n, P \subset \R^2$}
+%\begin{algorithm}
+%    \dontprintsemicolon
+%	\caption{LowerHull($P$), $ |P| = n, P \subset \R^2$}
 %    \caption{LowerHull($P$), $\abs{P}= n, P \subset \R^2$}
 %    \KwIn{$P \subset \R^2, P = \{p_1, p_2, \dotsc, p_k \}$}
 %    \KwOut{Triangulierung und konvexen Hülle}
-	$a:a[0,\dotsc,n]$ Array mit $n+1$ Elementen\;
-	$a[0] := p_1$\;
-	\For{$i = 1TO n$}{
-		$a[i]:=p_i$\;	
-	}
-	$i:=1$\;
-	\While{$i < LENGTH(q) - 1$}{
-		\eIf{$IS_LEFT_OF(a[i], a[i+2], a[i+1])$}{
-			Remove(a,i+1)\; %//Entferne das i+1te Element aus q
-			$i := i -1$\;
-		}
-		{
-			$i:=i +1$\;
-		}	
-	}
-	\For{$i=1 TO Length(a)$}{
-		Output a[i]	\;
-	}
-\end{algorithm}
+%	$a:a[0,\dotsc,n]$ Array mit $n+1$ Elementen\;
+%	$a[0] := p_1$\;
+%	\For{$i = 1TO n$}{
+%		$a[i]:=p_i$\;	
+%	}
+%	$i:=1$\;
+%	\While{$i < LENGTH(q) - 1$}{
+%		\eIf{$IS\_LEFT\_OF(a[i], a[i+2], a[i+1])$}{
+%			Remove(a,i+1)\; %//Entferne das i+1te Element aus q
+%			$i := i -1$\;
+%		}
+%		{
+%			$i:=i +1$\;
+%		}	
+%	}
+%	\For{$i=1$ TO $Length(a)$}{
+%		Output a[i]	\;
+%	}
+%\end{algorithm}
 
 Randomisierte Analyse:
 
@@ -1624,8 +1657,8 @@ $D_0 = {xyz}$ Großes Dreieck, das alle Punkte in $P$ enthält.
 
 $D_i$ entsteht durch $D_{i-1}$ durch
 \begin{enumerate}
-\item split-Operation: $\sigma \in D_{i-1}$ das Dreieck in Delaunay-Triangulierung von $p_1, \dotsc, p_{i-1}$, das $P$ enthält. -> 1-3-Flip
-\item Flip-Operationen: -> 2-2-Flip
+\item split-Operation: $\sigma \in D_{i-1}$ das Dreieck in Delaunay-Triangulierung von $p_1, \dotsc, p_{i-1}$, das $P$ enthält. (1-3-Flip)
+\item Flip-Operationen: 2-2-Flip
 \end{enumerate}
 
 \begin{figure}[htbp]
@@ -1738,7 +1771,7 @@ E[\sum_{j=1}^{i-2} \abs{X_j}] &\leq 12 \sum_{j=1}^{i-1} \frac{1}{j+1} \\
 
 $G_{\beta, t}$ mit $\beta, t > 1$ natürliche Zahl ist Gleitkommezahlsystem.
 \[
-G_{\beta, t} = \{ y = \sigma m \beta^{e-t} | \sigma in \{  -1, +1 \}, \beta^{t-1} \leq m < \beta^t-1, e \in \Z \} \cup \{0\}
+G_{\beta, t} = \{ y = \sigma m \beta^{e-t} | \sigma \in \{  -1, +1 \}, \beta^{t-1} \leq m < \beta^t-1, e \in \Z \} \cup \{0\}
 \]  
 
 $\beta$: Basis des Systems
@@ -1754,12 +1787,12 @@ Gleitkommazahl Approximation: $x \in \R: Fl(x) = \arg\min_{y\in G_{\beta, t}} \a
 Falls $\abs{Fl(x)} = 2$, d.\,h. zwei nächste Gleitkommezahlen, dann immer diejenige näher an Null als approximation.
 
 \begin{lemma}
-Sei $n = \frac{1}{2} \beta^{1-t}$ Dann gilt:
+Sei $\mu = \frac{1}{2} \beta^{1-t}$ Dann gilt:
 \begin{enumerate}
-\item $Fl(x) = x(1+\delta)$, mit $\abs{\delta} < u$
-\item $\lambda = Fl(x)(1+\delta')$, mit $\abs{\delta'} < u$
+\item $Fl(x) = x(1+\delta)$, mit $\abs{\delta} < \mu$
+\item $\lambda = Fl(x)(1+\delta')$, mit $\abs{\delta'} < \mu$
 \end{enumerate}
- (Der relative approximationsfehler ist immer beschränkt durch $\mu$)
+ (Der relative Approximationsfehler ist immer beschränkt durch $\mu$)
 \end{lemma}
 
 \begin{proof}
@@ -1786,7 +1819,7 @@ Daraus folgt für $Fl(x) = x(1+\delta)$
 \[
 \abs{\delta} = \abs{\frac{x(1-\delta) - x}{x}} < u
 \]
-Die Zweite Behauptung folgt analog.
+Die zweite Behauptung folgt analog.
 
 \end{proof}
 
@@ -1842,7 +1875,7 @@ $\begin{vmatrix}
 Annahme: $p_x, p_y, q_x, q_y, r_x, r_y \in G_{\beta, t}$
 (In der Praxis: Koordinaten sind ganze Zahlen in $G_{\beta, t}$)
 
-Audrücke: 
+Ausdrücke: 
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -1912,7 +1945,7 @@ Das kann vorberechnet werden.
 \begin{beob}
 \begin{enumerate}
 \item Wenn $x \in \Z$, dann ist $Fl(x) \in \Z$
-\item Falls $\abs{\phi}$ < 1, dann $a \in (-\abs{phi}, \abs{phi})$. Daraus folgt $w = 0$, da $w \in \Z$ angenommen und Eingabekoordinaten aus $\Z$ angenommen und alle Operationen $+,-,x$ abgeschlossen in $\Z$.
+\item Falls $\abs{\phi}$ < 1, dann $a \in (-\abs{\phi}, \abs{\phi})$. Daraus folgt $w = 0$, da $w \in \Z$ angenommen und Eingabekoordinaten aus $\Z$ angenommen und alle Operationen $+,-,x$ abgeschlossen in $\Z$.
 \end{enumerate}
 \end{beob}
 
@@ -2137,8 +2170,8 @@ $h^*$ liegt über (auf, unter) $g$, genau dann wenn $g^*$ über (unter, auf) $h$ l
 Betrachten nur den Fall über (auf, unter analog):
 
 \[
--\norm{p} + c >  -2q^Tp + \norm{q}^2 - c (h^* über g) \]
-\[ => -\norm{q}^2 + c' > - 2r^Tq + \norm{p}^2 - c (g^* über h)
+-\norm{p} + c >  -2q^Tp + \norm{q}^2 - c (h^*\text{ über }g) \]
+\[ => -\norm{q}^2 + c' > - 2r^Tq + \norm{p}^2 - c (g^*\text{ über }h)
 \]
 
 \end{proof}
@@ -2211,9 +2244,9 @@ Haben alle Dreieke in K die lokale Delaunay-Eigenschaft, dann ist K die (gewicht
 \begin{proof} Genauso wie im ungewichteten 2D Fall, d.\,h. zeige dass für jeden Tetraeder $abcd \in K$ gilt, dass orthosphäre von abcd mindestens orthogonal zu allen Punkten aus P.
 \end{proof}
 
-Flips im 3D
+\subsubsection{Flips im 3D}
 
-Projetion von 4D Tetraeder in den $\R^3$
+Projektion von 4D Tetraeder in den $\R^3$
 
 \begin{enumerate}
 \item Ein Punkt in konvexer Hülle von vier Punkten -> 1-4 Flip
@@ -2390,7 +2423,7 @@ Aus beliebigen Sampling ist es schwierig bzw. unmöglich korrekte Kanten zu finde
 
 \begin{defini}[mediale Achse]
 Gegeben $\Sigma \subset \R^d$ kompakt (abgeschlossen und beschränkt). Die mediale Achse $M(z) = 
-CL\{ x \in \R^d \\ \Sigma | x hat mindestens 2 nächste Nachbarn in \Sigma \}$
+CL\{ x \in \R^d \setminus \Sigma | x \text{ hat mindestens 2 nächste Nachbarn in } \Sigma \}$
 \end{defini}
 
 \begin{bemerk}
@@ -2403,7 +2436,7 @@ Mediale Achsen finden auch Anwendung in
 \end{bemerk}
 
 \begin{defini}[mediale Bälle]
-$x \in M(z)$, dann heißt $B(x,d(x, \Sigma))$ ($d(x, \Sigma) = \inf \norm{x-y} mit y \in \Sigma$) ein medialer Ball.
+$x \in M(z)$, dann heißt $B(x,d(x, \Sigma))$ ($d(x, \Sigma) = \inf \norm{x-y}\text{ mit }y \in \Sigma$) ein medialer Ball.
 \end{defini}
 
 \begin{figure}
@@ -2422,7 +2455,7 @@ $p \subset \Sigma$ heißt $\epsilon$-Sampling für $\epsilon > 0$, falls $\forall 
 %1. Berechne das Voronoi-Diagramm von $p$. $V:=$ Menge der Voronoi-Vertices.
 %2. Berechne die Delaunay-Triangulierung von $P \cup V$.
 %3. Gebe alle Kanten aus $Del(P\cup V)$ aus, deren Endpunkte beide in $P$ sind.
-
+\section{Crust-Algorithmus}
 \begin{algorithm}
     \dontprintsemicolon
     \caption{Crust (Krusten)-Algorithmus}
@@ -2446,9 +2479,9 @@ Sei $m \in M(z)$ mit $f(y) = \norm{y - m}$, dann $f(x) \leq \norm{x - m} \leq \n
 
 \item Feature Verschiebungslemma
 
-Sei $\epsilon > 1$ und $\norm{x - y} \leq \epsilon f(x)$, dann gilt:
+Sei $\epsilon < 1$ und $\norm{x - y} \leq \epsilon f(x)$, dann gilt:
 \begin{enumerate}
-\item $f(x) \leq \frac{1}{1 - \epsilon} f(x)$
+\item $f(x) \leq \frac{1}{1 - \epsilon} f(y)$
 \item $\norm{x-y} \leq \frac{\epsilon}{1 - \epsilon} f(y)$
 \end{enumerate}
 
@@ -2481,11 +2514,11 @@ dann enthält $B$ einen Punkt von der medialen Achse von $\Sigma$.
 \end{figure} 
 
 \begin{lemma}[leeres Segment]
-Sei $p$ $\epsilon$-Sampling von Kurve $\Sigma$ mit $\epsilon < 1$ seien $p \in P$ und $x \in \Sigma$, so dass das Segment $\gamma(p,x)$ leer ist. Sei $z$ der Schnitt des Bisektors von $px$ mit $\Sigma$. Dann gilt:
+Sei $P$ $\epsilon$-Sampling von Kurve $\Sigma$ mit $\epsilon < 1$ seien $p \in P$ und $x \in \Sigma$, so dass das Segment $\gamma(p,x)$ leer ist. Sei $z$ der Schnitt des Bisektors von $px$ mit $\Sigma$. Dann gilt:
 
 \begin{enumerate}
-\item Der Ball $B(z, \norm(z-p))$ schneidet $\Sigma$ nur in $\gamma(p,x)$
-\item $B(z, \norm{p-z})$ ist leer, d..h der offene Ball enthält keine Sample-Punkte
+\item Der Ball $B(z, \norm{z-p})$ schneidet $\Sigma$ nur in $\gamma(p,x)$
+\item $B(z, \norm{p-z})$ ist leer, d.h. der offene Ball enthält keine Sample-Punkte
 \item $\norm{p-z} \leq \epsilon f(z)$
 \end{enumerate}
 \end{lemma}
@@ -2511,7 +2544,7 @@ Verkleinern $B$ zu $B'$.  => $B' \cap \Sigma$ ist kein topologischer 1-Ball. Im 
 
 Radius von $B' > f(z)$ 
 
-da $\epsilon$-Sampling: $\exists p': \norm(p' - z) \leq \epsilon f(z) < f(z)$ -> Widerspruch.-> 1.
+da $\epsilon$-Sampling: $\exists p': \norm{p' - z} \leq \epsilon f(z) < f(z)$ -> Widerspruch.-> 1.
 
 2. und 3. folgen daraus. 3. folgt, da $p$ ein $\epsilon$-Sample. $\norm{z-p} \leq f(z)$
 
@@ -2580,7 +2613,7 @@ CRUST-Algorithmus:
 \end{algorithm}
 
 
-\section{Korrektheitsbeweis für Crust Algorithmus}
+\subsection{Korrektheitsbeweis für Crust Algorithmus}
 
 \begin{lemma}
 \label{crust1}
@@ -2696,9 +2729,11 @@ Das ist ein Widerspruch falls $\frac{2\epsilon}{1-\epsilon} < \frac{1}{2} \Leftr
 
 \begin{proof}[Lemma \ref{crust2}]
 
-Crust gubt keine nicht-korrekten Kanten aus für $\epsilon < \frac{1}{5}$. Annahme für widerspruch $pq$ nicht-korrekte Kante in $\operatorname{Crust}(p)$.
+Crust gibt keine nicht-korrekten Kanten aus für $\epsilon < \frac{1}{5}$. 
 
-=> Es gibt Ball $D$ mit $p,q \in \partial D$ (Rand von D) und $D \cap P = \emptyset, D \cap \{v | \text{ $v$ Voronoi Vertex von $P$ }\} = \emptyset$
+Annahme für Widerspruch: $pq$ nicht-korrekte Kante in $\operatorname{Crust}(p)$.
+
+Daraus folgt, es gibt Ball $D$ mit $p,q \in \partial D$ (Rand von D) und $D \cap P = \emptyset, D \cap \{v | \text{ $v$ Voronoi Vertex von $P$ }\} = \emptyset$
 
 \begin{figure}
 \centering
@@ -2737,7 +2772,7 @@ Aus Segment Angle Lemma folgt $\measuredangle p_1 p p_2 \geq \pi - \arcsin \frac
 
 
 \begin{lemma}
-Der Crust-Algorithmus gibt keine nicht-korrekte Kante aus für $\epsilon$-Sampling mit $\epsilon < 0.2$
+Der Crust-Algorithmus gibt keine nicht-korrekte Kante aus für $\epsilon$-Sampling mit $\epsilon < 0,2$
 \end{lemma}
 \begin{proof}
 $pq$ nicht-korrekt.
@@ -2745,7 +2780,8 @@ $\alpha$ Winkel von Segment $pp_1$ mit Tangente an $\Sigma$ in $p$
 D. Ball mit $p,q \in \partial B$
 
 $B \cap P \neq \emptyset$ [$P$ Samplepunkte]
-$B \cap V \neq \emptyset$ [$V$ Voronoiverices des Voronoi-Diagramms von $P$]
+
+$B \cap V \neq \emptyset$ [$V$ Voronoivertices des Voronoi-Diagramms von $P$]
 
 In letzter Stunde: $\alpha \geq \frac{\pi}{4} - \arcsin \frac{\epsilon}{1-\epsilon}$ [untere Schranke für $\alpha$]
 
@@ -2765,7 +2801,7 @@ $\underbrace{\epsilon f(x) \geq \norm{p-x}}_{\text{Da $p$ einer der beiden konse
 
 => $2 \epsilon \geq \sin \alpha \geq \sin(\frac{\pi}{4} - \arcsin \frac{\epsilon}{1-\epsilon})$
 
-=> Widerspruch für $\epsilon < 0.2$, d.h. Ungleichung kann nicht gelten für kleine $\epsilon$.
+=> Widerspruch für $\epsilon < 0,2$, d.h. Ungleichung kann nicht gelten für kleine $\epsilon$.
 
 \end{beob}
 
@@ -2774,12 +2810,14 @@ $\underbrace{\epsilon f(x) \geq \norm{p-x}}_{\text{Da $p$ einer der beiden konse
 \section{Flächenrekonstruktion}
 
 \begin{thrm}[Edelsbrunner \& Shah, Amenta \& Bern]
-Sei $P$ ein $\epsilon$-Sampling einer glatten Fläche $\Sigma$ mit $\epsilon <0.18$, dann sind $\Sigma$ und $D(P,\Sigma)$ homeomorph.
+Sei $P$ ein $\epsilon$-Sampling einer glatten Fläche $\Sigma$ mit $\epsilon <0,18$, dann sind $\Sigma$ und $D(P,\Sigma)$ homeomorph.
 
 Glatte Fläche: $\phi$ und $\phi^{-1}$ mit $\phi(B) \rightarrow B$ unendlich oft stetig differenzierbar.
 Wollen glatte Flächen hier, da $\inf_{x \in \Sigma} f(x) > 0$, d.h. $\Sigma$ hat positiven Abstand von $M(\Sigma)$.
 
-Homeomorphismus: Bijektive Abbildung zwischen zwei Flächen, die in beide Richtungen stetig ist
+\begin{defini}[Homeomorphismus]
+Bijektive Abbildung zwischen zwei Flächen, die in beide Richtungen stetig ist
+\end{defini}
 
 \begin{figure}
 \centering
@@ -2787,9 +2825,11 @@ Homeomorphismus: Bijektive Abbildung zwischen zwei Flächen, die in beide Richtun
 \caption{Beispiele für homeomorphe Abbildungen} 
 \end{figure} 
 
-Eingeschränkte Delaunay-Triangulierung:
+\begin{defini}[Eingeschränkte Delaunay-Triangulierung]
 $P \subset \R^3$ endliche Punktemenge, $\Sigma \subset \R^3$.
-Erinnerung: $S < P $, $\operatorname{conv}(s)$ ist Simplex in $D(P)$, genau dann wenn $\bigcap_{p \in S} V_p \neq \emptyset$, wobeo $V_p$ Voronoizelle von $p$.
+\end{defini}
+
+Erinnerung: $S < P $, $\operatorname{conv}(s)$ ist Simplex in $D(P)$, genau dann wenn $\bigcap_{p \in S} V_p \neq \emptyset$, wobei $V_p$ Voronoizelle von $p$.
 
 Sei $S < P$,  $\operatorname{conv}(s)$ ist Simplex in $D(P, \Sigma)$, genau dann wenn  $\bigcap_{p \in S} V_p \cap \Sigma \neq \emptyset$
 
@@ -2892,14 +2932,14 @@ $n_p || m_1p$
  $\leq \arcsin \frac{\epsilon}{1-\epsilon}$
 
 
-Addieren der beiden WInkel ergibt genau das gewünschte Ergebnis.
+Addieren der beiden Winkel ergibt genau das gewünschte Ergebnis.
  \end{proof}
  
  
 \begin{defini}[Pol]
 Den am weitesten von $p$ entfernten Voronoiknoten $p^+$ in $V_p$ nennt man positiver Pol.
 Der negative Pol $p^- \in V_p$ von $p$ ist der am weitesten von $p^+$ entfernte Punkt, so dass die Vektoren $pp^+$ und $pp^-$ einen Winkel von mehr als $\pi$ bilden.
-Mann nennt $\overrightarrow{vp} = p^+ - p^-$ den Pol-Vektor von $p$.
+Man nennt $\overrightarrow{vp} = p^+ - p^-$ den Pol-Vektor von $p$.
 Falls $V_p$ unbeschränkt ist, so ist $p^+$ der Punkt im unendlichen und die Richtung von $\overrightarrow{vp}$ ist der Durchschnitt aller Richtungen der unbeschränkten Voronoi-Kanten.
 \end{defini}
 
@@ -2910,7 +2950,7 @@ $\measuredangle(n_p, \overrightarrow{v_p}) \leq 2\arcsin \frac{\epsilon}{1-\epsi
 \end{lemma}
 
 \begin{defini}[Co-Kegel/Cocone]
-Die Menge $C_p := \{y \in V_p | \measuredangle (\overrightarrow{py}, v_p) \geq \frac{3}{8} \pi\}$ heißt Co-Kegel (Cocone) vpn $p$.
+Die Menge $C_p := \{y \in V_p | \measuredangle (\overrightarrow{py}, v_p) \geq \frac{3}{8} \pi\}$ heißt Co-Kegel (Cocone) von $p$.
 
 $\approx V_p \setminus K$
 \end{defini}
@@ -2920,20 +2960,998 @@ $\approx V_p \setminus K$
 
 
 
+\subsection{(Konforme) Alpha Shapes}
+
+Erinnerung: Gegeben $P \subset \R^d$ endlich und $A \subset \R^d$ beliebig. Sei $V_p$ die Voronoi-Zelle von $p \in P$, dann ist $V_p^a = V_p \cap A$.
+Sei $T \subseteq P$ dann ist $conv(T)$ ein Simplex der Delaunay-Triangulierung eingeschränkt auf $A$, genau dann wenn 
+
+\[
+\bigcap_{p \in T} V_p^A \neq \emptyset (\leftrightarrow (\bigcap_{p \in T} V_p)\cap A \neq \emptyset)
+\]
+
+\begin{bsp}
+$A = \Sigma$ (Glatte Kurve bzw. Fläche). Dann ist die Delaunay-Triangulierung von einem dichten Sampling $P$ von $\Sigma$ eingeschränkt auf $A$ eine homogene Rekonstruktion von $\Sigma$.
+\end{bsp}
+
+\begin{defini}[Alpha Shape] 
+Parameter $\alpha \in [0,\infty)$ gegeben $P \in \R^d$ endlich. Das Alpha Shape zum Wert $\alpha$ ist die Delaunay-Triangulierung von $P$ eingeschränkt auf die Menge von Bällen mit Radius $\alpha$ und Mittelpunkt in $P$.
+\end{defini}
+
+Konvention: Alle Delaunay-Vertices sind $\alpha$-spät und alle Delaunay-$d$-Simplices sind $\alpha$-früh
+
+\begin{defini}
+[Kritischer Delaunay-Simplex] $\sigma$ wird kritisch genannt, falls $\sigma$ sowohl $\alpha$-früh als auch $\alpha$-spät ist.
+\end{defini}
+
+\begin{beob}
+kritische Simplices im Alpha-Shape sind entweder Zerstörer oder Erzeuger, d.h. entweder zerstören sie eine Zusammenhangskomponente oder ein "Loch". (Im $\R^2$ ist das eine Zusammenhangskomponente im Komplement der $\alpha$-Bälle)
+\end{beob}
+
+Filtrierung der Delaunay-Triangulierung
+$K_0 \subset K_1 \subset ... \subset K_n$ ("$\subset$" heißt, alle Simplices in $K_i$ sind auch in $K_{i+1}$ enthalten)
+
+Folge von Sub-Komplexen der Delaunay mit $K_0 = P$ und $K_n =$ Delaunay-Triangulierung von $P$.
+D.h. Alpha-Shapes sind eine Filtrierung der Delaunay-Triangulierung von $P$.
+
+
+\subsubsection{Alpha-Shapes für Kurven-(bzw. Flächen-)Rekonstruktion}
+
+[Bild eines uniformen Samplings]
+
+In Alpha-Shape Filtrierung viel Aktivität bei kleinen $\alpha$-Werten, dann ein $\alpha$-Intervall ohne Aktivität  dann wieder Aktivität durch einfügen von nicht-Rekonstruktionskanten.
+
+Achtung: Funktioniert nicht bei Feature-Adaptiven $\epsilon$-Sampling. Man erhält im kleineren Teil bereits nicht-Rekonstruktionskanten, während im großen Teil noch nicht alle Rekonstruktionskanten im Alpha Shape sind.
+
+In der Praxis: Flächenrekonstruktion mit Alpha Shapes ist nicht sehr stabil, da in der Regel keine uniformes Sampling vorhanden.
+
+
+
+Konforme Alpha Shapes: Anpassung von Alpha Shapes geeignet für Flächenrekonstruktion von $\epsilon$-Sampling.
+
+$\sigma$ Simplex in Delaunay-Triangulierung $\alpha(\sigma)$ ist $\alpha$-Wert bei dem $\sigma$ im Alpha Shape erscheint.
+
+Sei $p \in P$ und $\sigma_1,...,\sigma_k$ seien alle Delaunay-Simplices inzident zu $p$, geordnet so dass $\alpha(\sigma_i) \leq \alpha(\sigma_{i+1})$
+
+Seien $\alpha_p^+ > \alpha_p^-$ Werte aus $\alpha(\sigma_1),...,\alpha(\sigma_k)$
+
+\[
+\hat \sigma_p^i = \frac{\alpha(\sigma_i) - \alpha_p^-}{\alpha_p^+}
+\]
+
+Konforme Alpha Shapes sind Einschränkungen der Delaunay-Triangulierung von $P$ auf folgende Menge das topologische Innere von $\bigcup_{p \in P} C_p^{\hat \alpha}$
+
+mit $C_p^{\hat \alpha}$ für $\hat \alpha \in [0, \infty)$ ist der Schnitt des Balles mit Mittelpunk $p$ und Radius $\alpha_p (\hat \alpha) = \alpha_p^+ \hat \alpha + \alpha_p^-$
+und $V_p$ d.h. $C_p^{\hat \alpha} = V_p \cap B(p,\alpha_p^+ \hat \alpha + \alpha_p^-)$
+
+Sei $\hat \alpha(\sigma)$ für Delaunay Simplex $\sigma$ der Wert von $\hat \alpha$ bei dem $\sigma$ im konformen Alpha Shape erscheint.
+
+\begin{beob}
+$\hat \alpha(\sigma) = \max_{i = 1,...,k} \inf\{\hat \alpha | \alpha_{p_i}(\hat \alpha) \geq \alpha(\sigma)\}$ wobei $\sigma = conv(p_1,...,p_k), p_i \in P$
+
+[Bild]
+
+Das Bild zeigt: Im konformen Alpha Shape können Dinge kritisch werden, die im normmalen Alpha Shape nicht kritisch waren.
+\end{beob}
+
+%-- 9.Januar
+
+\subsubsection{Konforme Alpha Shapes}
+
+$p \in P$, $\sigma_1, ..., \sigma_k$ Delaunay Simplices inzident zu $p$ in Delaunay Triangulierung von $P$. Sei $\alpha(\sigma_i)$ der Alphawert für den $\sigma_i$ im Alpha Shape von $P$ auftaucht. Annahme $\alpha(\sigma_i) \leq \alpha(\sigma_{i+1})$
+
+Lokales Wachstum des Balles im Zentrum $p$:
+Seien $\alpha_p^+ > \alpha_p^- \in \{\alpha(\sigma_i)\}$
+
+$\alpha_p(\hat \alpha) = \alpha_p^+$ (Radius des Balles mit Zentrum $p$ als Funktion des Parameters $\hat \alpha \in [0,\infty)) + \alpha_p^-$
+
+
+Konforme Alpha Shapes: Einschränkung der Delaunay Triangulierung von P auf das topologische Innere (Menge ohne Rand) von $\bigcup_{p \in P} C_p^{\hat \alpha} = C^{\hat \alpha}$
+
+\[
+C_p^{\hat \alpha} = V_p \cap B(p,\alpha_p(\hat \alpha))
+\]
+
+\begin{beha}
+Konforme Alpha Shapes (für wachsendes $\hat \alpha$) sind Filtrierung des Delaunay Triangulierung von $P$.
+\end{beha}
+
+\begin{proof}
+
+zu zeigen 
+\begin{enumerate}
+\item[(1)] Für hinreichend große $\hat \alpha$ ist das konforme Alpha Shape die Delaunay Triangulierung von $P$.
+\item[(2)] Für $\hat \alpha_1 < \hat \alpha_2$ gilt: die Simplices im konformen Alpha Shape zu $\hat \alpha_1$ sind auch Simplices des konformen Alpha Shapes zu $\hat \alpha_2$
+\item[(3)] ein Simplex im konformen Alpha Shape erscheint nicht später als seine Co-Faces
+\end{enumerate}
+
+\begin{enumerate}
+\item[zu (1)] Folgt daraus, dass $C^{\hat \alpha}$ "im Limes" $\hat \alpha$ gegen unendlich den ganzen Raum überdeckt.
+\item[zu (2)] Folgt aus $C^{\hat \alpha_1} \subset C^{\hat \alpha_2}$
+\item[zu (3)] Beobachtung: $\hat \alpha(\sigma)$ (Wert, bei dem $\sigma$ im konformen Alpha Shape auftaucht.) $= max_{p_1,...,p_k} inf\{\hat \alpha | \alpha_{p_i}(\hat \alpha) \geq \alpha(\sigma)  \}$
+wobei $p_1,...,p_k$ die Vertices des Simplex $\sigma$ sind.
+\end{enumerate}
+
+
+Zu zeigen: $\sigma$ taucht nicht später auf, als alle seine Co-Faces. Es gibt Vertex $p_i$ von $\sigma$ mit 
+\[
+\alpha_{p_i}(\hat \alpha(\sigma)) = \alpha(\sigma) \leq \alpha(\tau) \leq \alpha_{p_i}(\hat \alpha(\tau))
+\]
+hierbei $\tau$ Co-Face von $\sigma$. Nach Konstruktion ist $\alpha_{p_i}$ eine monoton wachsende Funktion.
+=> $\hat \alpha(\sigma) \leq \hat \alpha(\tau)$, was zu zeigen war.
+
+\end{proof}
+
+
+Ziel: Zeige, dass konforme Alpha Shapes besser geeignet sind für Flächenrekonstruktion als Alpha Shapes.
+Dazu unterschiede von Konformen- und Alpha-Shapes.
+
+\begin{satz}
+Alle $\alpha$-kritischen Delaunay-Simplices sind auch $\hat \alpha$-kritisch. (Achtung: Die Umkehrung gilt nicht.)
+\end{satz}
+
+\begin{proof}
+Sei $\sigma$ ein $\alpha$-kritischer Simplex mit Vertices $p_1, ..., p_k$, d.h. $\sigma$ ist $\alpha$-spät (erscheint also später als alle seine Faces im Alpha Shape) und $\alpha$-früh (d.h. erscheint vor all seinen Co-Faces im Alpha Shape). Zu zeigen: $\alpha$ ist $\hat \alpha$-spät und $\hat \alpha$-früh.
+
+(1) $\hat \alpha$-spät: Reicht Behauptung für alle $(k-2)$-Faces zu zeigen. Sei $\rho_i$ $(k+2)$-Face, das durch weglassen von $p_i$ entsteht.
+\[
+ \hat \alpha(\rho_i) = \max_{p_j, j\neq i} inf\{\hat \alpha |\alpha_{p_j}(\hat \alpha) \geq \alpha(\rho_i) \}
+<  \hat \alpha(\rho_i) = \max_{p_j, j\neq i} inf\{\hat \alpha |\alpha_{p_j}(\hat \alpha) \geq \alpha(\sigma) \} \text{(Weil $\alpha(\sigma) > \alpha(\rho_i)$, da $\sigma \alpha$-spät ist.)}
+\leq max_{p_j \in \{p_1,...,p_k\}} inf \{\hat \alpha | \alpha_{p_j}(\hat \alpha) \geq \alpha(\sigma)\} = \hat \alpha(\sigma) \text{=> $\sigma$ ist $\hat \alpha$-spät}
+\]
+
+
+(2) $\alpha$-früh. Reicht zu zeigen für $k$-Dimensionale Co-Faces von $\sigma$. Sei $\tau$ so ein Co-Face mit zusätzlichem Vertex $p$.
+\[
+\hat \alpha(\sigma) = max_{p_j \in \{p_1,...,p_k\}} inf \{\hat \alpha | \alpha_{p_j}(\hat \alpha) \geq \alpha(\sigma)\}
+< \hat \alpha(\sigma) = max_{p_j \in \{p_1,...,p_k\}} inf \{\hat \alpha | \alpha_{p_j}(\hat \alpha) \geq \alpha(\tau)\} (Weil \alpha(\sigma) < \alpha(\tau))\text{, da $\sigma \alpha$-früh ist.}
+\leq < \hat \alpha(\sigma) = max_{p_j \in \{p_1,...,p_{k+1}\}} inf \{\hat \alpha | \alpha_{p_j}(\hat \alpha) \geq \alpha(\tau)\} = \hat \alpha (\tau) \text{=> $\sigma$ ist $\hat \alpha$-früh.}
+\]
+(1) und (2) => $\sigma$ ist $\hat \alpha$-kritisch, was zu zeigen war.
+\end{proof}
+
+
+
+Konforme Alpha Shapes für Flächenrekonstruktion:
+[Bild] 
+
+Idee: Skaliere das Ballwachstum, so dass erscheinen von Simplices inzident zu Sample Punkt $P$ nur von der Form von $V_p$ abhängt, aber nicht von der Skalierung.
+
+Dazu: 
+$\alpha_p^- = \alpha_{p_1} = 0$ (nämlich $p$ selbst zum Zeitpunkt $\alpha = 0$ im Alpha Shape auf)
+$\alpha_p^+ = \norm{p - p^*}, p^*$ zweiter Pol von $p$
+
+(1) Voronoi Zelle beschränkt, dann $Pol(p)$ Voronoi-Vertex in $V_p$, der größten Abstand zu $p$ hat.
+[Bild]
+$Pol(p)$ - $p$ Pol-Vektor
+
+(2) Falls $V_p$ unbeschränkt ist, dann ist der Pol-Vektor die \enquote{durchschnittliche Richtung} aller Voronoi-Kanten.
+[Bild]
+
+Zweiter Pol (auch negativer Pol genannt) von $p$ ist der am weitesten entfernte Vertex $q$ von $p$ in $V_p$, im Halbraum mit beschränkender Hyperebene mit normale der Pol-Vektor, d.h. $\measuredangle(Pol-Vektor, p-q) \geq \frac{\pi}{2}$
+
+
+\begin{lemma}
+Sei $\Sigma$ eine glatte Fläche, $P$ sei ein $\epsilon$-Sampling von $\Sigma$. Dann ist für $\hat \alpha \geq \eta := \frac{\epsilon}{1-\epsilon}$ die Delaunay Triangulierung von $P$  eingeschränkt auf $\Sigma$ (d.h. $D_\Sigma(P))$ im konformen Alpha Shape zu 2 enthalten.
+\end{lemma}
+
+\begin{proof}
+Sei $\alpha_p^i$ der größte $\alpha$-Wert für den ein Simplex $\sigma$ aus $D_\Sigma(P)$ inzident zu $p \in P$ im Alpha Shape erscheint. Dann ist $\alpha_p^i \leq \eta f(p)$ [$\epsilon$-Sampling Bedingung und Feature Translation Lemma]
+
+$\alpha_p^+ \geq f(p)$ [Da Voronoizelle $V_p$ Mittelpunkt der medialen Achsenbälle Tangential an $\Sigma$ in $p$ enthält]
+
+=> $\hat \alpha_p^C = \frac{\alpha_p^i}{\alpha_p^+} \leq \frac{\eta f(p)}{f(p)} \leq \eta$
+\end{proof}
+
+
+Vorlesung vom 13.1.09 fehlt..
+
+\chapter{Topologie (Homologie)}
+
+\begin{defini}
+[Topologischer Raum] Menge X, $\sigma \subseteq P(X)$ (Menge aller Teilmengen)
+\begin{enumerate}
+\item $\emptyset, X \in \sigma$
+\item Beliebige Vereinigung von Mengen aus $\sigma_j$ sind wieder in $\sigma$
+\item endliche Schnitte von Mengen sind wieder in $\sigma$
+\end{enumerate}
+\end{defini}
+
+\begin{defini}
+[Stetige Abbildung] Seien $X,Y$ topologische Räume. $X \mapsto Y$ heißt stetig, falls das Urbild einer offenen Menge immer offen ist.
+\end{defini}
+
+\begin{defini}
+[Homeomorphismus] $f: X \mapsto Y$ heißt homeomorphismus, falls $f$ bijektiv ist und sowohl $f$ als auch $f^{-1}$ stetig sind.
+\end{defini}
+
+\begin{defini}[Homeomorph]
+$X,Y$ heißen homeomorph, falls es homeomorphismus $f: X \mapsto Y$ gibt.  [$X$ und $Y$ sind im topologischen Sinne gleich]
+\end{defini}
+
+Testen auf homeomorphie ist schwierig. [Nicht im Sinne von Berechenbarkeitstheorie, aber im technischen Sinn, d.h. es gibt wenige Werkzeuge.]
+
+
+Klasifizieren von Flächen (geschlossene Flächen)
+\begin{enumerate}
+\item orientierbare Flächen (normale: Kugel, Donut, zusammengeklebte Donuts)
+\item nicht-orientierbaree Flächen (Kugel mit rundem Ausschnitt, in Ausschnitt ist Möbiusband geklebt (Hat Kreis als Rand))
+\end{enumerate}
+
+Zylinder -> Fläche mit Rand, keine Manigfaltigkeit mehr.
+
+\begin{defini}
+[Homotopyäquivalenz] Seien X,Y topologische Räume. Zwei stetige Abbildungen $f,g: X \mapsto Y$ heißen homotop zueinander, falls es eine stetige Abbildung
+\[H: X \times [0,1] \mapsto Y\] gibt, so dass $H(x,0) = f(x)$ und $H(x,1) = g(x) \forall x \in X$.
+\end{defini}
+
+\begin{defini}[Homotopyäquivalent]
+$X,Y$ sind homotopyäquivalent, falls es stetige Abbildungen $f:X\mapsto Y$ und $g:X\mapsto Y$ gibt, so dass $g \circ f$ homotop ist zu $ID_x$ und $f \circ g$ homotop ist zu $ID_y$.
+$ID_x:X \mapsto X$ identische Abbildung $x \mapsto x$.
+\end{defini}
+
+\begin{defini}
+[Deformationsretrakt] Sei $X$ ein topologischer Raum und $Y \subset X$ Unterraum. Ein Deformationsretrakt ist eine stetige Abbildung $F:X \times [0,1] \mapsto X$ mit
+
+\begin{enumerate}
+\item $F(x,0) = x \forall x \in X$
+\item $F(x,1) \in Y \forall x \in X$
+\item $F(y,t) = y \forall y \in Y, \forall t \in [0,1]$
+\end{enumerate}
+\end{defini}
+
+\begin{bsp}
+Bild: Kreisscheibe, viele Pfeile gehen von Kreisscheibe richtung Mittelpunkt. Länge der Pfeile etwa halber Radius.
+
+Kreisscheibe ist homotopyäquivalent zu einem Punkt.
+
+Bild: Zwei zusammengeklebte Donuts, mediale Achse, Pfeile vom rand richtung mediale Achse.
+
+Jede offene Teilmenge des $R^d$ ist homeotopyäquivalent zu seiner medialen Achse.
+\end{bsp}
+
+
+Hier nur topologische Räume, die Teilmengen des $R^d$ sind. $\sigma$ für $R^d$ besteht aus allen Teilmengen $X \subseteq R^d$, so dass für jedes $x \in X$ gibt es $\epsilon_x > 0$, so dass $B(x,\epsilon_xj) \subseteq X$
+
+Topologie für $\Sigma \subset R^d$: $\sigma_\Sigma = \{\Sigma \cap O | O \in \sigma\}$
+
+\begin{defini}
+[Homotopie invariante] Eine Invariante ordnet topologischen Räumen algebraische Objekte zu (z.B. Gruppen, Körper oder Zahlen), so dass wenn für zwei topologische Räume $X,Y$ gilt $i(X) \neq i(Y)$, dann sind $X$ und $Y$ nicht homotopieäquivalent. 
+\end{defini}
+
+
+
+
+
+%Vorlesung vom 21.1.09:
+
+\section{Homologietheorie}
+
+Invarianten für topologische Räume $X \subseteq \R^d$ ($X$ erbt die Topologie von $\R^d$)
+
+Berechnungen für allgemeines $X$ schwierig, deshalb Einschränkung auf spezielle Teilmengen: simpliziale Komplexe.
+\begin{defini}
+[$k$-Simplex] Die konvexe Hülle von $k+1$ affin unabhängigen Punkten im $\R^d$ heißt $k$-Simplex.
+\end{defini}
+
+Seien $p_1,\dots,p_{k+1}$ affin unabhängig. $\sigma(p_1,\dots,p_{k+1})$ ist der zugehörige $k$-Simplex und für jede Teilmenge $P \subset \{p_1,\dots,p_k\}$ ist $\tau = \sigma(P)$ ein Face von $\sigma = \sigma(p_1,\dots,p_{k+1})$.
+
+\begin{defini}[Simplizialer Komplex]
+Ein simplizaler Komplex $K$ ist Menge von Simplices mit:
+\begin{enumerate}
+\item $\sigma \in K$ => jedes Face von $\sigma$ ist in $K$
+\item $\sigma, \tau \in K$ => $\sigma \cap \tau = \emptyset$ oder $\sigma \cap \tau$ ist gemeinsames Face von $\sigma$ und $\tau$
+\end{enumerate}
+\end{defini}
+
+
+Ziel: konstruiere abelsche Gruppen aus den Mengen der k-Simplices, $k=0,1,2,3,\dots$
+
+\begin{defini}
+[Abelsche Gruppe] $(G,+)$ mit Menge G und Abbildung $+: G\times G \rightarrow G$, so dass:
+1. $\forall a \in G: \exists -a \in G$ mit $a + (-a) = 0$ [Existenz eines Inversen]
+2. Kommutativ $\forall a,b \in G$ gilt: $a+b = b+a$
+\end{defini}
+
+\begin{defini}
+[Untergruppe] $H \subseteq G$ ist Untergruppe von $G$, falls $H$ selbst eine Gruppe ist, wenn wir $+$ einschränken auf $H$. Insbesondere $0 \in H$.
+\end{defini}
+
+\begin{defini}
+[Ko-Menge] Sei H Untergruppe von G und $a \in G$, dann ist die Menge $a + H$ eine Ko-Menge.
+\end{defini}
+
+\begin{beob}
+Es gibt immer eine Bijektion von H auf eine Ko-Menge, da $b \neq c \in H$ impliziert $a+b = a+c$.
+\end{beob}
+
+\begin{defini}
+[Quotient] Sei $G$ abelsche Gruppe und $H$ Untergruppe, dann ist der Quotient $G|H$ die Menge aller Ko-Mengen.
+\end{defini}
+
+\begin{beob}
+\begin{enumerate}
+\item  Für $a,b \in G$ gilt entweder
+\begin{enumerate}
+\item $a + H = b + H$, oder
+\item $(a + H) \cap (b+H) = \emptyset$
+\end{enumerate}
+
+\item Der Quotient G|H ist selbst wieder eine abelsche Gruppe mit der Addition
+\[(a+H)+(b+H) = a+b+H\]
+
+Beachte: Addition hängt nicht von Repräsentation der Ko-Menge ab. 
+
+$z \in a + H$  => $\exists h_a \in H$ mit $z = a + h_a$
+$z + H = a + h_a + H = a + H$
+
+\item Falls G eine endliche Gruppe ist, d.h. G hat nur endlich viele Elemente, dann $\norm{G|H} = \norm{G}|\norm{H}$
+
+\end{enumerate}
+\end{beob}
+
+\begin{defini}
+[Gruppen Homomorphismus] Seien $G$ und $G'$ eine Abbildung $f \colon G \rightarrow G'$ heißt Gruppenhomomorphismus, falls $F$ mit der Addition kommutiert, d.h. $f(a+b) = f(a) + f(b)$
+\end{defini}
+
+\begin{defini}
+[Kern \& Bild eines Homomorphismus] Sei $f\colon G \rightarrow G'$ Gruppenhomomorphismus, dann ist $Bild(f) \subseteq G' : \{b \in G' | \exists a \in G'\text{ mit }f(a) = b\}$
+
+$Kern(f) \subseteq G : \{a \in G | f(a) = o \in G\}$
+
+$Bild(f)$ ist Untergruppe von $G'$ und $Kern(f)$ ist Untergruppe von $G$.
+\end{defini}
+%------------------
+
+\begin{defini}[Addition mit simplizialen Komplexen]
+Sei $Y$ simplizaler Komplex und $Y_k = \{\sigma \in Y | dim(\sigma) = k\}$ $K$-te Kettengruppe $C_k$. Sei $P(Y_k)$ die Menge aller Teilmengen von $Y_k$. Wir definieren eine Addition auf $C_k$ wie folgt: 
+\[a,b \in C_k: a+b := (a \cup b)\setminus (a \cap b) \text{ (symmetrische Differenz)}\]
+\end{defini}
+
+\begin{bsp}
+(Bild von Dreieck mit Ecken a,b,c. Fläche ist schraffiert.)
+
+$Y_1 = \{\{a,b\},\{b,c\},\{a,c\}\}$
+
+$C_1 = \{\emptyset, \{\{a,b\}\},\{\{b,c\}\},\{\{a,c\}\}, \{\{a,b\},\{b,c\}\},  \{\{a,b\},\{a,c\}\}, \{\{b,c\},\{a,c\}\}, \{\{a,b\},\{b,c\},\{a,c\}\} \}$
+
+(Bild: 
+
+\{\{a,b\},\{b,c\}\} + \{\{a,c\}\} = \{\{a,b\},\{b,c\},\{a,c\}\} 
+
+\{\{a,b\},\{b,c\}\} + \{\{a,c\},\{a,b\}\} = \{\{b,c\},\{a,c\}\}
+
+\{\{a,b\},\{b,c\},\{a,c\}\} + \{\{b,c\}\} = \{\{a,b\},\{a,c\}\}
+)
+\end{bsp}
+
+\begin{defini}
+[Randhomomorphismus] $\delta \cdot C_k \rightarrow C_{k+1}$. Sei $\sigma \in Y_k$, dann wird $\sigma$ abgebildet auf seinen Rand, d.h.
+\[\delta(\sigma) = \{\tau \in Y_{k-1} | \tau\text{ ist ein Face von }\sigma\}\]
+
+$\delta$ ist definiert, als die additive Fortsetzung von $\delta$ von Simplices auf Ketten, d.h. sei $a \in C_k, a = \{\sigma_1,\dots,\sigma_n\}$ dann 
+$\delta(a) = \delta(\sigma_1) + \delta(\sigma_2)+\dots+\delta(\sigma_n)$
+\end{defini}
+
+
+\begin{defini}[Zyklen \& Ränder]
+$C_{k+1} \rightarrow^{\delta_{k+1}} C_k \rightarrow^{\delta_k} C_{k-1}$
+
+$Z_k = \{a \in C_k | \delta_k(a) = \emptyset\} \subseteq C_k$
+
+Zyklen in $C_k$ als Kern von $\delta_k$ eine Untergruppe von $C_k$.
+\end{defini}
+
+
+\begin{bsp}
+\begin{enumerate}
+\item (Bild: Dreieck abc, Inhalt nicht schraffiert)
+
+$Z_1 = \{\emptyset, \{\{a,b\},\{b,c\},\{a,c\}\}\}$
+
+\item (Bild: Dreieck abc, Inhalt schraffiert, und Dreieck def)
+
+$Z_1 = \{\emptyset, \{\{a,b\},\{b,c\},\{a,c\}\}, \{\{d,e\},\{e,f\},\{d,f\},\{\{a,b\},\{b,c\},\{a,c\},\{d,e\},\{e,f\},\{d,f\}\}\}\}$
+\end{enumerate}
+\end{bsp}
+
+
+$B_k = \{a \in C_k | \exists b \in C_{k+1}\text{ mit }\delta_{k+1}(b) = a\} \subseteq C_k$
+
+Ränder in $C_k$. Als Bild von $\delta_{k+1}$ eine Untergruppe von $C_k$.
+
+\begin{bsp}
+\begin{enumerate}
+\item $B_1 = \{\emptyset\}$
+\item $B_1 = \{\emptyset, \{\{a,b\},\{b,c\},\{a,c\}\}\}$
+\end{enumerate}
+\end{bsp}
+
+\begin{lemma}[Fundamentales Lemma der Homologietheorie]
+$\delta_k \delta_{k+1}(d) = \emptyset$
+\label{}
+\end{lemma}
+\begin{proof}
+Sei $\sigma$ ein $(k+1)$-Simplex. Jedes $(k-1)$-Face im Rand $\delta_{k+1}(\sigma)$ gehört zu genau zwei $k$-Faces von $\sigma$ => $\delta_k \delta_{k+1} (\sigma) = \emptyset$
+\end{proof}
+
+Sei $d$ eine $(k+1)$-Kette. $d = \{\sigma_1, \dots, \sigma_n\}$. Dann gilt wegen der Linearität von $\delta_{k+1}$:
+\[\delta_k \delta_{k+1}(d) =  \delta_k \sum^n_{i=1} \delta_{k+1}(\sigma_i) =
+\sum^n_{i=1}\delta_k \delta_{k+1}(\sigma_i) = \emptyset\]
+
+\begin{folg}
+Es gilt immer $B_k \subseteq Z_k \subseteq C_k$, d.h. $B_k$ Untergruppe von $Z_k$ und $Z_k$ Untergruppe von $C_k$.
+\end{folg}
+
+\begin{defini}[$k$-te Homologiegruppe]
+$k$-te Homologiegruppe ist der Quotient. $Z_k | B_k =: H_k$
+\end{defini}
+
+%--Vorlesung vom 23.1.09
+
+\section{Simplizale Homologie}
+
+$Y$ simplizaler Komplex
+
+\begin{defini}[Kettengruppe]
+Kettengruppen $C_k$: $C_k$ ist die Menge aller Teilmengen der $k$-Simplizes von $Y$. Wird Abelsche Gruppe mit Addition als symmetrische Diffeerenz
+\[
+a,b \in C_k: a+b := (a \cup b)\setminus (a \cap b)
+\] (Addition Modulo 2)
+\end{defini}
+
+\begin{defini}[Randabbildung]
+Randabbildung $\delta_k: C_k \rightarrow C_{k-q}$: Bilde $k$-Simplizes auf ihren $(k-1)$-Dimensionen \dots.
+\end{defini}
+
+\begin{defini}[Zyklengruppe]
+Zyklengruppen $Z_k$: $\{a \in C_k | \delta_k(a) = 0\}$, d.h. $Z_k$ sind die $k$-Ketten, deren Rand leer ist.
+\end{defini}
+
+\begin{defini}[Randgruppen]
+Randgruppen: $B_k$: $\{a \in C_k | \exists b \in C_{k+1}\text{ mit }\delta_{k+1}(b) = a\}$, d.h. $B_k$ sind die $k$-Ketten, die $(k+1)$-Ketten beranden.
+\end{defini}
+
+\begin{folg}
+Aus fundamentalen Lemma der Homologie ($\delta_k \circ \delta_{k+1} = 0$) folgt: $B_k \subseteq Z_k$
+\end{folg}
+
+\begin{defini}[Homologiegruppen]
+Homologiegruppen: $H_k = Z_k | B_k$
+\end{defini}
+
+
+Bildliche Darstellung: \todo{bild}
+
+\begin{bsp}
+homologie von Dreieck a,b,c:
+
+$C_0 = \{\emptyset, \{a\}\, \{b\}, \{c\}, \{a,b\}, \{a,c\},\{b,c\}, \{a,b,c\}\}$
+
+$Z_0 = C_0$
+
+$B_0 = \{\emptyset, \{a,c\},\{a,b\},\{b,c\}\}$
+
+$H_0 = Z_0 | B_0 = $ Menge aller Ko-Mengen von $Z_0$ bezüglich $B_0$ 
+$ = \{ \{a\} + B_0 = \{\{a\}, \{b\}, \{a,b,c\}, \} \} $
+$ =  \{b\} + B_0 = \{a,b,c\} + B_0 $
+
+$ \{ \emptyset + B_0 = \{\emptyset, \{a,b\}, \{b,c\}, \{a,c\} \} \} $
+$ = \{a,b\} + B_0 = \{b,c\} + B_0 \}$
+
+$=> \abs{C_0} = \abs{Z_0} = 8$, $\abs{B_0}=4$, $\abs{H_0} = 2$ => $\beta_0 = 1$
+
+
+$C_1 = \{\emptyset, \{ab\}, \{bc\}, \{ac\}, \{ab,ac\}, \{ab,bc\},\{ac,bc\}, \{ab,bc,ac\}\}$
+
+$Z_1 = \{\emptyset, \{ab,bc,ac\}\}$
+
+$B_1 = \{\emptyset\}$
+
+$H_1 = \{\emptyset + B_1 = \{\emptyset\}, \{ab,bc,ac\} + B_1 = \{\emptyset, \{ab,bc,ac\}\} \}\}$
+=> $\abs{H_1} = 2$, $\beta_1 = 1$
+
+$C_2 = \{\emptyset\}$, $Z_2 = \{\emptyset\}$, $B_2 = \{\emptyset\}$ => $H_2 = \{\emptyset\} => \abs{H_2} = 1 => \beta_2 = 0$
+
+Bettizahlen(Dreieck) = (1,1,0)
+\end{bsp}
+
+\begin{bsp}
+
+Beispiel 2: V = \{a,b,c\}, E = \{\{ab\}, \{bc\}\}
+
+$C_0 = \{\emptyset, \{a\}, \{b\}, \{c\}, \{a,b\} \{b,c\}, \{a,c\}, \{a,b,c\}\} = Z_0$
+
+$B_0 = \{\emptyset, \{a,b\}, \{b,c\}, \{a,c\}\}$ => $\abs{H_0} = 2$ => $\beta_0 = 1$
+
+Enttäuschend: Die nullte Bettizahl hilft nicht, Dreieck von Segment zu unterscheiden.
+
+$C_1 = \{\emptyset, \{ab\}, \{bc\}, \{ab,bc\}\}$
+
+$Z_1 = \left\{ \emptyset \right\}$
+
+$B_1 = \left\{ \emptyset \right\}$ => $H_1 = \left\{ \emptyset \right\}$ => $\abs{H_1}=1$ => $\beta_1 = 0$
+
+$C_2 = \left\{ \emptyset \right\} = Z_2 = B_2 = H_2$ => $\beta_2 = 0$
+
+Bettizahlen(Segment) = (1,0,0)
+\end{bsp}
+
+\begin{bsp}
+
+Beispiel 3: $V = \left\{ a,b,c \right\}, E = \left\{ \left\{ b,c \right\} \right\}$
+
+$C_0 = \left\{ \emptyset, \left\{ a \right\}, \left\{ b \right\}, \left\{ c \right\}, \left\{ a,b \right\}, \left\{ b,c \right\}, \left\{ a,c \right\}, \left\{ a,b,c \right\} \right\} = Z_0$
+
+$B_0 = \left\{ \emptyset, \left\{ b,c \right\} \right\}$ => $\abs{H_0} = 4$ => $\beta_0 = 2$
+
+$C_1 = \left\{ \emptyset, \left\{ bc \right\} \right\}$, $Z_1 = \left\{ \emptyset \right\}$ => $B_1 = \left\{ \emptyset \right\}$ => $H_1 = \left\{ \emptyset \right\}$ => $\abs{H_1} = 1$ => $\beta_1 = 0$
+
+ausserdem: $\beta_2 = 0$
+
+Bettizahl(Punkt + Segment) = (2,0,0)
+\end{bsp}
+
+
+%$\beta_0 = Anzahl der Zusammenhangskomponenten, \beta_1 = Anzahl der Löcher, \beta_2 = Anzahl der Voids (3dimensionale löcher)$
+
+\begin{beob}
+$\beta_0$ zählt die Anzahl der Zusammenhangskomponenten des simplizialen Komplexes
+\end{beob}
+
+\begin{proof}
+Sei $Y$ simplizialer Komplex mit $n$ Kanten und $m$ Zusammenhangskomponenten. Seien $n_1, \dots, n_m$ die Anzahl der Knoten in den einzelnen Zusammenhangskomponenten. $n = n_1 + \dots + n_m$
+
+$Z_0 = C_0 = $ Menge aller Teilmengen der Knotenmenge => $\abs{Z_0} = 2^n$
+
+\begin{beob}
+\begin{enumerate}
+\item  Alle Teilmengen der Knotenmenge einer Zusammenhangskomponente beranden genau dann, wenn die Teilmenge eine gerade Anzahl von Knoten enthält.
+\item genau die Hälfte aller Teilmengen hat gerade Anzahl von Knoten
+\end{enumerate}
+\end{beob}
+
+\begin{folg}
+Anzahl der berandeten Teilmengen ist $(2^{n-1})(2^{n-1})\dots(2^{n_m-1}) = $ $2^{\Sigma^m_{i = 1} n_i - m} = 2^{n-m}$ => $\abs{H_0} = \abs{Z_0 | B_0} = 2^n / 2^{n-m} = 2^mj$ => $\beta_0 = \log_2 \abs{H_0} = m$
+\end{folg}
+\end{proof}
+
+Formal: $Y$: $d$-Dimensionaler simplizaler Komplex, d.h. die Dimension des höchstdimensionalen Simplex in $Y$ ist $d$:
+
+\begin{defini}
+[Kettenkomplex] $\{\emptyset\} \rightarrow^{\delta_{d+1}} C_d \rightarrow^{\delta_{d}} C_{d-1} \rightarrow^{\delta_{d-1}} \dots C_0 \rightarrow^{\delta_{0}} \{\emptyset\} $
+\end{defini}
+
+\begin{defini}
+[Rang einer endlichen Gruppe] Anzahl der Elemente in der Gruppe
+\end{defini}
+
+\begin{defini}
+[$k$-Betti Zahl] $log_2$ des Rangs der $k$-ten Homologiegruppe.
+\end{defini}
+
+
+Zusammenhang der Eulerzahl und der Bettizahl:
+$Y$ $d$-dimensionaler simplizialer Komplex.
+
+$C_k$ die Anzahl der $k$-Simplizes in $Y$
+
+$\chi(Y) = \sum_{k=0}^d (-1)^k C_k$ (Graph in der Ebene: $v-e+f = \chi(G) = 2$)
+
+Seien $z_k$ dei Anzahl der $k$-Zyklen, $b_k$ die Anzahl der $k$-Ränder
+Daraus folgt $\abs{H_k} = z_k / b_k$ => $\beta_k = \log_2 z_k - \log_2 b_k$.
+
+Weiterhin $\log_2 \abs{C_k} = \log_2 z_k + \log_2 b_{k-1}$
+
+\begin{bemerk}
+$\delta_k: C_k \rightarrow C_{k-1}$, $\dim{C_k} = \dim{Kern(\delta_k)} + \dim{Bild(\delta_k)}$
+
+(aus Linearer Algebra)
+\end{bemerk}
+
+=> $\chi(Y) = \Sigma (-1)^k C_k = \Sigma (-1)^k (\log_2 z_k + \log_2 b_{k-1}) = \Sigma (-1j^k (\log_2 z_k - \log_2 b_k)) = \Sigma (-1)^k \beta_k$
+
+Achtung bei den Randfällen: $\log(b_{k-1}) := 0$
+d.h. Eulerzahle ist alternierende Summe der Bettizahlen.
+
+=> Wenn Bettizah homotopieinvariante, dann auch Eulerzahl.
+
+%nächste Woche: ausrechnen der Bettiezahlen mit Alpha Shapes\dots.
+
+%--- 28. 01.09
+
+\section{Berechnung von Bettizahlen}
+
+$C_k$, $k$-te Kettengruppe, $\delta_k: C_k \rightarrow C_{k-1}$, $Z_k$ $k$-te Zyklengruppe (Kern der Randabbildung), $B_k$ $k$-te Randgruppe (Bild der Randabbildung), $H_k = Z_k | B_k$ $k$-te Homologiegruppe.
+
+\[
+c_k = \log_2 \abs{C_k}, z_k = \log_2 \abs{Z_k}, b_k = \dots, \beta_k = \log_2 \abs{H_k}
+\]
+=> $c_k = z_k + b_{k-1}$ (Rangsatz aus linearer Algebra)
+$\beta_k = z_k - b_k$
+
+
+%(hier fehlt was)
+\begin{enumerate}
+\item[(a)] $z_k = z_k +1$
+\item[(b)] $b_{k-1} = b_{k-1}+1$
+\end{enumerate}
+
+=> (a) für den Rang von $H_k$ (d.h. für $\beta_k$): $\beta_k = \beta_{k}+1$
+
+=> (b) für den Rang von $H_{k-1}$ (d.h. für $\beta_{k-1}$): $\beta_{k-1} = \beta_{k-1}-1$
+
+Bei Alpha Shapes: (a) erzeugt, (b) zerstört.
+
+Frage: Wie können wir Rang von $C_k$ um eins erhöhen?
+
+Antwort: Durch Filtrierung des simplizialen Komplexes $Y$.
+
+
+Filtrierung von simplizialen Komplex $Y$
+
+Folge $Y_0, Y_1, \dots, Y_n$ von simplizialen Komplexen mit
+
+\begin{enumerate}
+\item $Y_0 = \emptyset, Y_1 = Y, Y_i \subset Y_{i+1}$ (Teilkomplex, d.h. alle simplizes aus $Y_i$ sind auch in $Y_{i+1}$)
+\item $Y_i$ und $Y_{i+1}$ unterscheiden sich um genau einen Simplex
+\end{enumerate}
+
+\begin{bemerk}
+Aus der Forderung $Y_i$ simplizialer Komplex folgt, dass ein Face immer vor seinen Co-Faces eingefügt wird. 
+\end{bemerk}
+
+\begin{bsp}
+Eindimensionaler simplizialer Komplex
+Bild: (Dreieck): $\emptyset$, ein Knoten, zwei Knoten, die Kante dazwischen, der dritte Knoten, zweite Kante, dritte Kante
+
+Hinzufügen eines k-Simplex erhöht $c_k$ um eins.
+
+$\beta_0 = 0  , \beta_1 = 0  $
+
+$\beta_0 = 1  , \beta_1 = 0  $
+
+$\beta_0 = 2  , \beta_1 = 0  $
+
+$\beta_0 = 1  , \beta_1 = 0  $
+
+$\beta_0 = 2  , \beta_1 = 0  $
+
+$\beta_0 = 1  , \beta_1 = 0  $
+
+$\beta_0 = 1  , \beta_1 = 1  $
+\end{bsp}
+
+Algorithmus: Union-Find
+
+Datenstruktur, die die folgenden 3 Operationen unterstützt:
+\begin{itemize}
+\item Add(i): Erzeugt eine neue Komponente für Element i.
+\item Find(i,j): Gibt \enquote{wahr} zurück, falls $i$ und $j$ zur selben Komponente gehören, sonst \enquote{falsch}
+\item Union(i,j): Vereinige die Komponenten, zu der $i$ und $j$ gehören.
+\end{itemize}
+
+
+Algorithmus für eindimensionale Komplexe:
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Berechnung der Bettizahlen im 2D}
+\KwIn{$\sigma_1, \dots, \sigma_n$ Simplizes von $Y$ in der Einfügereihenfolge gemäß der Filtrierung}
+
+$\beta_0 = 0, \beta_1 = 0$
+\For{ $i=1$ To $n$ }{
+  \eIf{ $dim(\sigma_i) = 0$} { $\beta_0 = \beta_0 + 1$\; $Add(\sigma_i)$\;}
+  { $\left\{ a,b \right\} = $ Endpunkte von $\sigma_i$\;
+    \eIf{ $Find(a,b) = True$}{
+      $\beta_1 = \beta_1 + 1$\;
+    }{
+      $\beta_0 = \beta_0 - 1$\; $Union(a,b)$\;
+    }
+  }
+}
+\end{algorithm}
+
+Erweiterung auf dreidimensionale Komplexe:
+
+Fallunterscheidung:
+  $Dim(\sigma_i)$ 
+\begin{enumerate}
+\item[$ = 0$:] Immer $\beta_0 = \beta_0 + 1$, erzeugen von Komponente
+
+\item[$= 1$:] entweder $\beta_0 = \beta_0 -1$ (Zwei Komponenten werden verbunden) oder $\beta_1 = \beta_1 + 1$ (ein Loch wird hinzugefügt)
+
+\item[$= 2$:] entweder $\beta_1 = \beta_1 -1$ (nicht berandende Kette wird berandend) oder $\beta_2 = \beta_2 + 1$ (erzeugen von 2-Zyklus)
+
+\item[$= 3$:] $\beta_2 = \beta_2 -1$ zerstören von 2-Zyklus.
+\end{enumerate}
+
+
+Problem: $Dim(\sigma_i)= 2$ Dreieck
+
+Lösungsidee: Gehe rückwärts durch die Filtrierung
+
+Bsp in der Ebene:
+Aufbau eines dualen Graphen. 
+
+Entfernen von Dreiecken erzeugt Komponenten, 
+entfernen von Kanten 
+\begin{enumerate}
+\item[(a)] vereinigt Komponenten oder 
+\item[(b)] erzeugt einen Zyklus
+\end{enumerate}
+
+\begin{enumerate}
+\item[(a)] $\beta_1 = \beta_1  + 1$ (Zerstören eines Zyklus im Komplement)
+\item[(b)] $\beta_0 = \beta_0 - 1$ (Erzeugt Zusammenhangskomponente im Komplement)
+\end{enumerate}
+
+Schwierigkeit: Was ist mit Kanten im Rand das simplizialen Komplexes?
+
+In Vorwärtsbetrachtung hat Kante Zyklus erzeugt, d.h. $\beta_1 = \beta_1 + 1$, aber hier vereinigt das entfernen keine Komponenten im dualen Graph.
+
+Lösung: Kompaktifizieren, d.h. füge virtuellen Punkt im \enquote{unendlichen} hinzu plus den Kegel auf dem Rand.
+
+Zusätzliche Kanten verbinden Vertices auf dem Rand mit dem Punkt um unendlichen und Dreiecke aus Kanten auf dem Rand plus dem Vertex im unendlichen.
+
+Erweitert Filtrierung um zusätzliche Kanten und Dreiecke.
+
+Änderung: Einfügen des letzten Dreiecks zerstört nicht, sondern erzeugt.
+
+
+Eine Dimension höher: Kompaktifizieren von 3D simplizialen Komplex mittels Punkt im unendlichen, und rückwärts durchlaufen einer erweiterten Filtrierung erlaubt zu entscheiden, ob ein Dreieck erzeugt oder zerstört.
+
+--Vorlesung fehlt (30. 1.  09)
+
+Paaren von vernichtern und Erzeugern in persistenter Homologie
+
+Filtrierung: $Y_1 = \emptyset, Y_2, \dots, Y_n = Y$ Filtrierung von $Y$, d.h. insbesondere $Y_j$ und $Y_{j+1}$ unterscheiden sich in genau einem Simplex $\sigma_{j+1} = Y_{j+1}\ Y_j$
+
+Annahme: Alle $\sigma_j$ gelabeld als Vernichter bzw. Erzeuger
+
+Persistente $i$-te Homologiegruppe: Dazu $i$-dimensionale Erzeuger und $(i+1)$-Dimensionale Vernichter sortiert entlang der Filtrierung.
+
+Paaren von Vernichtern und Erzeugern:
+Dazu explizit Aufrechterhalten von Basis der $i$-ten Homologiegruppen $H_i^j$ [$i$-te Homologiegruppe für $j$-ten Komplex]
+Explizite: Zyklen, die genau einen Erzeuger enthalten
+\begin{beob}
+Eine solche Basis existiert immer
+\end{beob}
+\begin{proof}
+Induktion: Erster Zykel (D.h. für kleinstes $j$, so dass $H_i^j$ nicht trivial) ist ($=0$) wird vom ersten Erzeuger erzeugt.
+
+Induktionsschritt: Gegeben irgendein Zykel $Z$, der aktuellen Erzeugere enthält. Falls Zykel noch \enquote{ältere} Zykel enthält, dann addiere die zugehörigen Basiszykel zu $Z$. Da Basiszykel genau einen Erzeuger enthält, kann $Z$ durch diese Addition nicht leer werden. Außerdem entfernt jede Addition genau einen Basiszyklus.
+\end{proof}
+
+
+Falls $\sigma_l$ Erzeuger [von einem $i$-Zyklus], dann sei $c_l$ der zugehörige Basiszyklus.
+
+
+Jetzt Annahme: $\sigma_j$ ist $(i+1)$-dimensionaler Simplex, der vernichtet. => $\delta \sigma_j$ ist ein Zyklus in $Y_{j+1}$. Wir können d ausdrücken als Summe:
+\[
+\Sigma_{c_l} + B_j
+\] mit $c_k$ Basiszyklen.
+
+Diese Summe ist eindeutig [Eindeutige Darstellbarkeit aus Basis]
+
+Sei $c_i$ der jüngste Zyklus in dieser eindeutigen Darstellung und sei $\sigma_i$ der zugehörige Erzeuger, dann Paaren wir $\sigma_i$ und $\sigma_j$, d.h. 
+
+Interpretation: Der durch $\sigma_i$ erzeugte Zyklus wird durch $\sigma_j$ zerstört. [eingekastet, erlaubt Berechnung der Lebensdauer der Features.]
+
+Jetzt: Berechnen der Paarung.
+
+Folge von Simplices $\sigma_j = Y_j \ Y_{j-1}$, $j=2, \dots, n$
+
+Array speichert an Stelle $j$ den zugehörigen Vernichter, falls $\sigma_j$ erzeugt und irgendwann vernichtet wird. Andernfalls speichern von $\infty$ falls $\sigma_j$ erzeugt, aber nicht vernichtet wird, bzw. gar nichts, falls $\sigma_j$ vernichtet. Außerdem wird Zeiger auf Liste die Simplices \enquote{älter} als $\sigma_j$ und $\sigma_j$ enthält [falls $\sigma_j$ erzeugt und vernichtet wird.]
+
+Füllen des Arrays: Gehen linear durch das Array. Annahme an Stelle $j$ wird ein $i$-Vernichter eingefügt. Sei $I$ die Indexmenge der $i$-Erzeuger in $\delta\sigma_j$, d.h. für alle $i\in I$ gilt $i<j$. Sei $k = \max\left\{ i \in I \right\}$.
+Nachschauen im Array an der Stelle $k$ gibt zwei Fälle:
+\begin{enumerate}
+\item Feld im Array an der Stelle $k$ ist leer
+\item Feld ist nicht leer, d.h. speichert Index von Vernichter mit Index kleiner als $j$ und Zeiger auf iste mit Indizes kleiner als $k$.
+\end{enumerate}
+
+(1) Speichere $j$ an der Stelle $k$ und Zeiger auf $I$.
+
+(2) Update: $I = (I \oplus L_k)$, d.h. symmetrische Differenz von $I$ und der Liste $L_k$ auf die im Feld mit Index $k$ verwiesen wird.
+
+Weitermachen am neuen Wert von $k$.
+
+
+Was ist zu zeigen für diesen Algorithmus:
+\begin{enumerate}
+\item Algorithmus terminiert
+\item Algorithmus ist korrekt
+\end{enumerate}
+
+1. Beobachtung: $k$ wird stetig kleiner und $I \neq \emptyset$, da $\delta \sigma_j$ kein Randzyklus in $Y_{j-1}$ ist. Füll Algorithmus terminiert.
+
+Vor dem Korrektheitsbeweis ein Beispiel: 
+\begin{bsp}
+Filtrierung:
+Einfügen in dieser Reihenfolge: $s$, $t$, $u$, $st$, $v$, $w$, $sw$, $tw$, $uv$, $sv$.
+
+\begin{tabular}{lcll}
+$s$ &$\rightarrow$& $(+,0)$ &(Erzeuger eines 0-Dimensionalen Zyklus) \\
+$t$ &$\rightarrow$&  $(+,0)$ &\\
+$u$ &$\rightarrow$&  $(+,0)$ &\\
+$st$ &$\rightarrow$&  $(-,0)$ &(Vernichter eines 0-Dimensionalen Zyklus) \\
+$v$ &$\rightarrow$&  $(+,0)$ &\\
+$w$ &$\rightarrow$&  $(+,0)$ &\\
+$sw$ &$\rightarrow$&  $(-,0)$&\\
+$tw$ &$\rightarrow$&  $(+,1)$&\\
+$vu$ &$\rightarrow$&  $(-,0)$&\\
+$sv$ &$\rightarrow$&  $(-,0)$&\\
+\end{tabular}
+
+Array:
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+ 1&        2  &3&  4 & 5 & 6 & 7&  8     & 9& 10 \\
+\hline
+ $\infty$ &  4 &   &  &  9 & 7 &   & $\infty$ &   &   \\   
+\hline
+\end{tabular}
+
+\begin{tabular}{lll}
+$4$ & $\rightarrow$ & $\left\{ 1,2 \right\}$ \\
+$7$ & $\rightarrow$ & $\left\{ 1,6 \right\}$ \\
+$9$ & $\rightarrow$ & $\left\{ 3,5 \right\}$ \\
+\end{tabular}
+
+Bei 10: s in erscheint in 1, v erscheint bei 5. max davon ist 5. 5 ist aber besetzt
+\[
+10 -> \left\{ 1,3 \right\} = \left\{ 1,5 \right\} \oplus \left\{ 3,5 \right\}
+\]
+1 und 8 sind die Zusammenhangskomponenten, die überleben.
+
+Zusammenfassende Interpretation:
+\begin{enumerate}
+\item Die Zusammenhangskomponente, die bei $j=1$ erzeugt wird, wird nicht zerstört.
+\item Die Zusammenhangskomponente, die bei $j=2$ erzeugt wird, wird bei $j=4$ zerstört.
+\item Die Zusammenhangskomponente, die bei $j=3$ erzeugt wird, wird erst bei 10 zerstört.
+\item Die bei 5 erzeugt wird, wird bei 9 zerstört
+\item Bei 6 erzeugt, bei 7 zerstört
+\item Der bei 8 erzeugt 1-Zyklus wird garnicht zerstört.
+\end{enumerate}
+
+\end{bsp}
+
+
+(2) Der Korrektheitsbeweise
+
+Sei $f$ der Zyklus $\delta \sigma_j$ [$\sigma_j$ sei $i$-Vernichter] und $i$ der \enquote{jüngste} Basiserzeuger in eindeutiger Basisdarstellung von $f$. Sei $k$ der kollisionsfreie Index beim Einfügen von $\sigma_j$
+
+Wir können zeigen: $k=i$
+\begin{enumerate}
+\item[(a)] 
+\item[] %todo: wie macht man das besser?
+\begin{beob}
+$Y_l$ enthält keinen zu $f$ homologen Zyklus [die homologieklasse von $f$ wird erst zum Zeitpunkt $i$ erzeugt.] $\Rightarrow$ $k\geq i$ 
+\end{beob}
+\item[(b)] zu zeigen $k \leq i$. 
+
+Annahme: $k>i$. 
+
+Sei $g$ die Homologieklasse, die zum Zeitpunkt $k$ erzeugt wird. $g$ und $f$ müssen homolog sein, d.h. $g = f + c$ mit einem Randzyklus $c$. 
+Da $\sigma_k$ der jüngste Erzeuger in $g$ ist, ist $\sigma_k$ auf jüngster Erzeugeer in $c$. 
+Da Array an Stelle $k$ kollisionsfrei war, kann $\sigma_k$ nicht der Erzeuger sein, der für Rand $c$ vernichtet wurde. 
+Daraus folgt: $c$ muss einen \enquote{jüngeren} Erzeuger enthalten. Das ist ein Widerspruch. $ \Rightarrow$ $k=i$
+\end{enumerate}
+
+
+%--Vorlesung vom 6.2.09
+
+\chapter{Meshing} 
+
+Bisher: Kurvenmeshing (Kurvenrekonstruktion) bzw. Flächenmeshing (Flächenrekonstruktion)
+
+Delaunay-Dreiecke innerhalb der rekonstruierten Kurve $\Sigma$ sind nicht unbedingt Dreiecke \enquote{guter} Qualität.
+
+Gute Dreiecke:
+\begin{enumerate}
+\item Der kleinste Winkel in  jedem Dreieck ist mindestens $\alpha$
+\item der größte Winkel ist höchstens $\pi - \beta$
+\item Das Verhältnis der Höhe über der längsten Seite zur Längsten Seite,d.h. $\frac{\norm{c-x}}{\norm{a-b}}$ ist mindestens $\lambda$  (Wir wollen das die Dreiecke eine gewisse Dicke haben)
+\end{enumerate}
+
+Verhältnis von 1,2 und 3:
+\begin{enumerate}
+\item[$1 \rightarrow 2$:] Falls kleiner Winkel mind. $\alpha$, dann ist der größte Winkel höchstens $\pi - \alpha$
+\item[$2 \nrightarrow 1$:] Man kann den kleinsten Winkel immer kleiner machen, ohne das dies Einfluss auf den größten Winkel haben muss
+\item[$3 \leftrightarrow 1$:] $\alpha$ kleinster Winkel, $x$ ist Schnittpunkt der Kante mit der Höhe an $c$
+\end{enumerate}%berechnung betti zahlen
+
+\begin{enumerate}
+\item[a)] $\sin \alpha = \frac{\norm{c-x}}{\norm{a-c}}$
+\item[b)] $\norm{a-c} \leq \norm{a-b}$
+\item[c)] $\norm{a-c} \geq \norm{b-c}$ => $\norm{a-b} \leq \norm{a-c} + \norm{b-c} \leq 2 \norm{a-c}$
+\end{enumerate}
+=> $\frac{1}{\sin \alpha} = \frac{\norm{a-c}}{\norm{c-x}} \leq \frac{\norm{a-b}}{\norm{c-x}} \leq \frac{2\norm{a-c}}{\norm{c-x}} = \frac{2}{\sin \alpha}  $
+
+$\frac{\norm{a-b}}{\norm{c-x}} $ ist $1/ aspect ratio$, d.h. der Kehrwert des Aspect Ratio beschränkt den kleinsten Winkel von unten, und der kleinste Winkel beschränkt den Kehrwert des Aspekt Ratio von oben. (bzw. den Aspect Ratio von Unten).
+
+$\Rightarrow$ d.h. es ist \enquote{egal} ob wir 1 oder 3 sicherstellen.
+
+Idee: Einfügen zusätzlicher Knoten.
+
+Meshing Problem in der Ebene:
+\begin{enumerate}
+\item Gegeben Polygonale Region mit Randgraph $G$, unter umständen mit geforderten Kanten im Inneren
+\item Gesucht ist eine Triangulierung von $G$ (und den inneren Kanten) deren Dreiecke alle einen kleinsten Winkel von mindestens $\alpha$ haben.
+\end{enumerate}
+
+Kleine Winkel im Eingabepolygon können nicht entfernt werden.
+
+
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{Ruppert's Meshing Algorithmus}
+Berechne kleinstes Achsenparalleles Rechteck, das $G$ enthält.\;
+Konstruiere 3x3 Gitter, in dem jede Zelle das Achsenparallele Rechteck aus 1 ist. Platziere $G$ in die mittlere Zelle und füge die 12 Knoten auf dem Rand des Gitters zu $G$ hinzu.\;
+Bereche die Delaunay-Triangulierung aller Knoten aus 2\;
+\end{algorithm}
+
+Ein Aufdringlicher Knoten  ist ein Knoten der im diametrischen Umkreis einer Kante aus $G$ liegt. 
+
+\begin{bemerk}
+Falls Kante aus $G$ keinen aufdringlichen Knoten hat, dann gehört sie zur Delaunay-Triangulierung
+\end{bemerk}
+
+Probleme: 
+\begin{enumerate}
+\item Es kann aufdringliche Knoten in Delaunay-Triangulierung aus 3 geben
+\item Die Dreiecke aus der Delaunay-Triangulierung aus 3 haben nicht unbedingt einen kleinsten Winkel $\geq \alpha$ 
+\end{enumerate}
+
+
+Operationen: 
+\begin{itemize}
+\item[Split 1:] Falls $ab \in G$ und $ab \notin $ Delaunay-Triangulierung aus 3, dann füge den mittelpunkt $m$ des Segments $ab$ zur Knotenmenge hinzu und füge $am$ und $mb$ zu $G$ hinzu. Retriangulieren um die Delaunay-Eigenschaft wieder herzustellen. (Flips um alle Kanten wieder lokal Delauny zu machen)
+
+\item[Split 2:] Falls $abc$ ein Dreieck aus der Delaunay-Triangulierung ist, dessen kleinster Winkel kleiner als $\alpha$ ist, dann füge den Mittelpunkt des Umkreises von $abc$ zur Kontenmenge hinzu und re-trianguliere, um Delaunay-Eigenschaft wieder herzustellen.
+\end{itemize}
+
+
+Algorithmus:
+\begin{algorithm}
+    \dontprintsemicolon
+    \caption{}
+\While{true}{
+  \While{ $\exists$ aufdringlicher Knoten}{
+    Wende Split 1 auf die zugehörige Kante an\;
+  }
+  \If{ $\nexists$ dünnes Dreieck}{
+	exit while loop\;
+  }
+    abc = dünnes Dreieck\;
+    p = mittelpunkt des Umkreises von abc\;
+    \If{$p$ aufdringlich für Kanten $e_1, \dots, e_k, k \geq 1$ aus $G$}{
+      split 1 operation angewand auf $e_1,\dots,e_k$\;
+    }{
+      split 2 operationen für o, d.h. einfügen von p in Delaunay-Triangulierung.\;
+    }
+}
+\end{algorithm}
+
+
 
 
 \clearpage
 \appendix
-\begin{thebibliography}{99}
+%\begin{thebibliography}{99}
 % \bibitem{mathmode} Math mode von Herbert Voss,\\
 % \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
 
 % \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
 %  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
-\end{thebibliography}
+%\end{thebibliography}
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
 \printindex
 
+Prüfung:
+unterschied zu Algorithmik: numerik ist relevant
+floating point system
+
+grundlegend: delaunay-triangulierung, voronoi, eingeschränkte diagramme, auf welche mengen, was damit machen 
 \end{document}
