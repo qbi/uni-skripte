@@ -63,6 +63,7 @@
 \usepackage{tikz}
 \usepackage{wasysym}
 \usepackage{xypic}
+\usepackage{listings}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -5178,11 +5179,31 @@ typischerweise \emph{nicht} injektiv. Aber $G/G'$ ist stets abelsch.
   (\Abb(Y), \circ)$.
 \end{enumerate}
 
+\lstset{language=bash}
 \subsection{Aufgabe 4}
 Beantworten Sie die folgenden Fragen mit GAP:
 \begin{enumerate}
  \item Wie viele Untergruppen von $\Sym(9)$ haben die Ordnung $4$?
+   \begin{lstlisting}
+     G:=SymmetricGroup(9);
+     sum:=Size(Filtered(G,x->Order(x)=4))/2; #zyklische Untergruppen der Ordnung 4
+     F:=Filtered(G,x->Order(x)=2);
+     C:=0; #initialisieren, nicht unbedingt nötig
+     H:=0; #initialisieren
+     for x in F do
+     C:=Intersection(Centralizer(G,x),F);
+     H:=Filtered(C,y->x*y in C); 
+     sum:=sum+Size(H)/2; #noch nicht gezählte Kleinsche Vierergruppen die x enthalten
+     F:=Difference(F,[x]);
+     od;
+     Print(sum,"\n"); #Lösung: 56007
+   \end{lstlisting}
  \item Wie viele Untergruppen hat $\Z/12\Z\times\Z/15\Z$?
+   \begin{lstlisting}
+     LoadPackage("sonata"); #für den Befehl "Subgroups"
+     G:=DirectProduct(CyclicGroup(12),CyclicGroup(15));
+     Print(Size(Subgroups(G)),"\n"); #Lösung: 36
+   \end{lstlisting}
  \item Gegeben seien die folgenden Permutationen von $\Omega\coloneq
   \{0,1,\dotsc,9,10\}\cup\{\infty\}$:
   \begin{align*}
@@ -5192,6 +5213,12 @@ Beantworten Sie die folgenden Fragen mit GAP:
   Dabei rechnet man jeweils modulo $11$ und das Rechnen mit $\infty$ wird
   geeignet definiert. Welche Ordnung hat die von $\alpha, \beta, \gamma$
   erzeugte Untergruppe von $\Sym(\Omega)$?
+  \begin{lstlisting}
+    alpha:=(11,1,2,3,4,5,6,7,8,9,10); #ersetze 0 durch 11 und unendlich durch 12
+    beta:=(1,2,4,8,5,10,9,7,3,6);
+    gamma:=(1,10)(2,5)(3,7)(4,8)(6,9)(11,12);
+    Print(Size(Group([alpha,beta,gamma])),"\n"); #Lösung: 1320
+  \end{lstlisting}
 \end{enumerate}
 
 \section{Übungsblatt 2}
@@ -5224,12 +5251,24 @@ Beantworten Sie die folgenden Fragen mit GAP:
 
 \subsection{Aufgabe 6}
 Für alle Elemente $a$ in dem Monoid $M$ sei $a^{2}=1$. Zeigen Sie, dass $M$
-eine abelsche Gruppe ist.
+eine abelsche Gruppe ist.\\
+Wegen $a^{2}=1$ ist $a$ invers zu $a$ für alle $a\in M$. Also ist $M$
+eine Gruppe. Aus $ab=a^{-1}b^{-1}= (ba)^{-1}= ba$ folgt, dass $M$
+abelsch ist.
 
 \subsection{Aufgabe 7}
 
 Zeigen Sie, dass eine nichtleere endliche Teilmenge $H$ einer Gruppe $G$ genau
-dann eine Untergruppe von $G$ ist, wenn $ab\in H$ für alle $a,b\in H$ gilt.
+dann eine Untergruppe von $G$ ist, wenn $ab\in H$ für alle $a,b\in H$
+gilt.
+\begin{itemize}
+\item["`$\Rightarrow$"'] klar
+\item["`$\Leftarrow$"'] Sei $x\in H$ mit $H\neq\emptyset$. Dann ist
+  $x^{n}\in H$ für alle $n\in\N$. Wegen $\abs{H}<\infty$ existieren
+  $n,m\in\N$ mit $n<m$ und $x^{n}=x^{m}$. Also ist $1=x^{m-n}\in H$
+  und $x^{-1}= x^{m-n-1}\in H$. Da $x$ beliebig war, hat jedes Element
+  in $H$ ein Inverses in $H$ und $H\leq G$ folgt.
+\end{itemize}
 
 \subsection{Aufgabe 8}
 
@@ -5240,6 +5279,7 @@ Zeigen Sie, dass für Untergruppen $H,K$ einer Gruppe $G$ mit $G=HK$ gilt:
 \end{enumerate}
 
 \subsection{Aufgabe 9}
+\label{sec:aufg9}
 
 Sei $G\coloneq\langle a,b\rangle$ mit $a\coloneq
 \begin{pmatrix}
@@ -5252,11 +5292,37 @@ Sei $G\coloneq\langle a,b\rangle$ mit $a\coloneq
 \end{pmatrix}\in\GL(2,\C)$.
 \begin{enumerate}
  \item Zeigen Sie: $\abs{G}=8$ und $\abs{Z(G)}=2$.
+   \begin{lstlisting}
+     i:=E(4); #(erste) primitive 4-te Einheitswurzel
+     a:=[[i,0],[0,-i]];
+     b:=[[0,1],[1,0]];
+     G:=Group([a,b]);
+     Print(Size(G),"\n"); #Formel: |G|=|<a,b>|=|<a><b>|=|<a>||<b>|/|<a>\cap<b>|
+     Print(Size(Center(G)),"\n");
+   \end{lstlisting}
  \item Bestimmen sie alle Elemente in $G$ und deren Ordnungen.
+   \begin{lstlisting}
+     Print(Elements(G),"\n");
+     Print(List(G,Order),"\n");
+   \end{lstlisting}
  \item Bestimmen Sie die Untergruppen und Normalteiler von $G$ und deren
   Ordnungen.
+  \begin{lstlisting}
+    LoadPackage("sonata");
+    Print(Subgroups(G),"\n");
+    Print(List(Subgroups(G),Size),"\n");
+    Print(NormalSubgroups(G),"\n");
+    Print(List(NormalSubgroups(G),Size),"\n");
+  \end{lstlisting}
  \item Finden Sie die Untergruppen $A,B$ von $G$ mit $A\trianglelefteq
   B\trianglelefteq G$, aber $A\ntrianglelefteq G$.
+  \begin{lstlisting}
+    A:=Subgroup(G,[b]);
+    B:=Subgroup(G,[b,a^2]);
+    Print(IsNormal(B,A),"\n"); #normal, da Index=2
+    Print(IsNormal(G,B),"\n"); #normal, da Index=2
+    Print(IsNormal(G,A),"\n"); #nicht normal, da nicht in NormalSubgroups(G)
+  \end{lstlisting}
 \end{enumerate}
 Bei dieser Aufgabe können Sie GAP verwenden.
 
@@ -5276,23 +5342,76 @@ Seien $K$ ein Körper und $n$ eine natürliche Zahl.
 
 \subsection{Aufgabe 11}
 \label{sec:a11}
-Zeigen Sie, dass jede endlich erzeugte Untergruppe von $(\Q,+)$ zyklisch ist.
+Zeigen Sie, dass jede endlich erzeugte Untergruppe von $(\Q,+)$ zyklisch ist.\\
+Sei
+$H\coloneq\langle\nicefrac{x_{1}}{y_{1}},\dotsc,\nicefrac{x_{n}}{y_{n}}\rangle\leq
+(\Q,+)$ mit $x_{1},\dotsc, x_{n}, y_{1},\dotsc, y_{n}\in\Z$ und
+$k\coloneq\kgv(y_{1},\dotsc, y_{n})$. Für jedes $i\in\{1,\dotsc,n\}$ lässt
+sich dann der Bruch $\nicefrac{x_{i}}{y_{i}}$ zu $\nicefrac{z_{i}}{k}$ mit
+$z_{i}\in\Z$ erweitern. Also ist $\nicefrac{x_{i}}{y_{i}} =
+\nicefrac{z_{i}}{k}\in\langle\nicefrac{1}{k}\rangle$ für alle
+$i\in\{1,\dotsc,n\}$ und es folgt, $H\leq\langle\nicefrac{1}{k}\rangle$. Als
+Untergruppe einer zyklischen Gruppe ist dann auch $H$ zyklisch.
 
 \subsection{Aufgabe 12}
 Beweisen Sie, dass $G\neq\bigcup_{g\in G} gHg^{-1}$ für jede echte Untergruppe
-$H$ einer endlichen Gruppe gilt.
+$H$ einer endlichen Gruppe gilt.\\
+Im Fall $H\unlhd G$ ist $\bigcup_{g\in H} gGg^{-1}=H<G$ nach Voraussetzung.
+Sei also $H\ntrianglelefteq G$. Für $x,y\in G$ gilt:
+\begin{gather*}
+  xH=yH\Rightarrow Hx^{-1}=(xH)^{-1}=(yH)^{-1}= Hy^{-1}\Rightarrow xHx^{-1}=
+     yHx^{-1}= yHy^{-1}
+\end{gather*}
+wobei $(xH)^{-1}\coloneq\{a^{-1}\colon a\in xH\}$ die Menge der Inversen von
+$xH$ sei (nicht etwa das Inverse von $xH$ in der nicht vorhandenen
+Faktorgruppe $G/H$). Diese Rechnung zeigt:
+\begin{gather*}
+  \abs{\{gHg^{-1}\colon g\in G\}}\leq\abs{G\colon H}
+\end{gather*}
+Sei nun $g\in G$ mit $H\neq gHg^{-1}$ (Erinnerung: $H\ntrianglelefteq G$).
+Dann ist $1\in H\cap gHg^{-1}$. Insbesondere sind $H$ und $gHg^{-1}$ nicht
+disjunkt. Da $gHg^{-1}$ das Bild von $H$ unter einem inneren Automorphismus
+ist, gilt $\abs{H}= \abs{gHg^{-1}}$ für alle $g\in G$. Also ist
+\begin{gather*}
+  \abs[\bigg]{\bigcup_{g\in G} gHg^{-1}}< \abs{G\colon H}\abs{H}=\abs{G}
+\end{gather*}
+nach \textsc{Lagrange} (\autoref{satz:32-lagrange}).
 
 \subsection{Aufgabe 13}
 
 \begin{enumerate}
- \item Geben Sie einen Homomorphismus von gruppen $f\colon G\rightarrow H$ und
-  einen Normalteiler $M\trianglelefteq G$ mit $f(M)\ntrianglelefteq H$ an.
+ \item Geben Sie einen Homomorphismus von Gruppen $f\colon G\rightarrow H$ und
+  einen Normalteiler $M\trianglelefteq G$ mit $f(M)\ntrianglelefteq H$ an.\\
+  Setze $G\coloneq M\coloneq\langle(12)\rangle$ und $H\coloneq\Sym(3)$. Dann
+  ist $f\colon G\rightarrow H, x\mapsto x$ ein Homomorphismus mit $f(M)=M$.
+  Wegen $(123)(12)(123)^{-1}= (23)\notin M$ ist $M\ntrianglelefteq H$.
  \item Zeigen Sie, dass in $\Sym(4)$ die Normalteiler"=Relation nicht
   transitiv ist.
+  \begin{lstlisting}
+    G:=SymmetricGroup(4);
+    A:=Subgroup(G,[(1,2)(3,4)]);
+    B:=Subgroup(G,[(1,2)(3,4),(1,3)(2,4)]);
+    Print(IsNormal(B,A),"`\n"');
+    Print(IsNormal(G,B),"`\n"');
+    Print(IsNormal(G,A),"`\n"');
+  \end{lstlisting}
  \item Finden Sie eine Gruppe, in der das Zentrum nicht vollinvariant ist.
+  \begin{lstlisting}
+    LoadPackage("`sonata"');
+    for i in [1..12] do
+    Print(Filtered(AllSmallGroups(i),G$\rightarrow$not
+    IsFullinvariant(G,Center(G))),"`\n"');
+    od;    
+  \end{lstlisting}
  \item Zeigen Sie, dass $G\coloneq\Sym(6)$ von zwei Elementen erzeugt wird,
   aber eine Untergruppe $H$ hat, die sich nicht durch zwei Elemente erzeugen
   lässt.
+  \begin{lstlisting}
+    G:=SymmetricGroup(6);
+    Print(Filtered(Subgroups(G),H->Size(GeneratorsOfGroup(H))>2 and
+    IsSolvable(H) and Size(MinimalGeneratingSet(H))>2),"`\n"');
+    #MinimalGeneratingSet ist bisher nur für auflÃ¶sbare Gruppen implementiert
+  \end{lstlisting}
 \end{enumerate}
 Bei dieser Aufgabe können Sie wieder GAP verwenden.
 
@@ -5338,7 +5457,393 @@ Bestimmen Sie $Z(G)$.
 Sei $n\in\N\setminus\{4\}$. Zeigen Sie, dass zu jedem
 $\sigma\in\Sym(n)\setminus\{1\}$ ein $\tau\in\Sym(n)$ mit
 $\Sym(n)=\langle\sigma, \tau\rangle$ existiert. Zeigen Sie weiter, dass diese
-Aussage für $n=4$ falsch ist.
+Aussage für $n=4$ falsch ist.\\
+Sei $n\in\N\setminus\{4\}$ und $\sigma\in\Sym(n)\setminus\{1\}$. Da man
+$\sigma$ durch eine beliebige Potenz ersetzen kann, können wir annehmen, dass
+$\sigma$ Primzahlordnung $p$ hat (Erinnerung: Wegen $\langle\sigma^{k},
+\tau\rangle\subseteq\langle\sigma,\tau\rangle$ für alle $k\in\N$ genügt es
+$\langle\sigma^{k}, \tau\rangle=\Sym(n)$ für ein $k\in\N$ zu zeigen.) Dann ist
+$\sigma$ ein Produkt von disjunkten Zyklen (Erinnerung: Die Ordnung eines
+Elements ist das $\kgv$ der Zyklenlängen.). \OE können wir annehmen, dass
+$\sigma$ die Form $\sigma=(12\dotso p)\dotso$ hat. Ist $\sigma=(12)$ oder
+$\sigma= (12\dotso n)$, so können wir bekanntlich $\tau=(12\dotso n)$ bzw.
+$\tau=(12)$ wählen. Andernfalls werden wir $\tau$ als ein disjunktes Produkt
+einer Transposition $(x,y)$ und eines $r$"~Zyklus' wählen, wobei $r=n-2$ (bzw.
+$r=n-3$) für ungerades (bzw. gerades) $n$ gilt. Insbesondere ist $r$ stets
+ungerade. Folglich ist $\tau^{r}= (x,y)$ und der $r$"~Zyklus eine Potenz von
+$\tau^{2}$. Wir werden dann zeigen, dass $(i,k)\in\langle\sigma, \tau\rangle$
+für ein festes $k\in\{1,\dotsc,n\}$ und alle $i\in\{1,\dotsc,n\}$ gilt. Somit
+folgt die Behauptung.
+\begin{enumerate}[1.\,F{a}ll]
+ \item Sei $\sigma=(12\dotso p)$ für $2<p<n$. Wähle
+  \begin{gather*}
+    \tau=
+       \begin{cases}
+	 (1,n)(23\dotso n-1) & n \text{ ungerade}\\
+	 (1,n)(34\dotso n-1) & n \text{ gerade}
+       \end{cases}
+  \end{gather*}
+  Konjugiert man nun $(1,n)$ mit den Potenzen von $\sigma$ und $\tau^{2}$, so
+  erhält man $(i,n)\in\langle\sigma,\tau\rangle$ für alle $i\in\{1,\dotsc,n\}$
+  (Erinnerung: $\sigma(a_{1},a_{2},\dotsc, a_{k})\sigma^{-1}= (\sigma(a_{1}),
+  \sigma(a_{2}),\dotsc,\sigma(a_{k}))$ für $k\in\N$).
+ \item Sei $\sigma=(12\dotso p)(p+1\dotso 2p)\dotso$ das Produkt von
+  mindestens zwei $p$"~Zyklen und $p$ ungerade. Wähle
+  \begin{gather*}
+    \tau=
+       \begin{cases}
+	 (12)(34\dotso n) & n\text{ ungerade}\\
+	 (12)(34\dotso p,p+2\dotso n) & n\text{ gerade}
+       \end{cases}
+  \end{gather*}
+  Konjugiert man nun $(12)$ mit $\sigma$, so erhält man $(23)\in\langle\sigma,
+  \tau\rangle$. Konjugiert man $(23)$ weiter mit den Potenzen von $\tau^{2}$,
+  so erhält man $(2,i)\in\langle\sigma, \tau\rangle$ für alle
+  $i\in\{1,\dotsc,p, p+2,\dotsc,n\}$. Konjugiert man $(2,p+2)$ mit
+  $\sigma^{-1}$, so erhält man $(1,p+1)\in\langle\sigma, \tau\rangle$.
+  Konjugiert man weiter mit $(12)$, so erhält man schließlich auch $(2,p+1)\in
+  \langle\sigma,\tau\rangle$.
+ \item Sei $\sigma=(12)(34)\dotso$ das Produkt von mindestens zwei
+  Transpositionen. Insbesondere ist in diesem Fall $n>4$ (wegen $n\neq4$).
+  Wähle
+  \begin{gather*}
+    \tau=
+       \begin{cases}
+	 (13)(245\dotso n) & n\text{ ungerade}\\
+	 (13)(45\dotso n) & n \text{ gerade}
+       \end{cases}
+  \end{gather*}
+  Konjugiert man $(13)$ mit $\sigma$, so erhält man $(24)\in \langle\sigma,
+  \tau\rangle$. Konjugiert man $(24)$ mit den Potenzen von $\tau^{2}$, so
+  erhält man $\Sym(2,4,5,\dotsc,n)\subseteq\langle\sigma, \tau\rangle$.
+  Insbesondere ist $(n,i)\in\langle\sigma, \tau\rangle$ für
+  $i\in\{2,4,5,\dotsc,n\}$. Konjugiert man nun $(n,2)$ und $(n,4)$ mit
+  $\sigma$, so erhält man entweder $(n,1), (n,3)\in\langle\sigma, \tau\rangle$
+  oder $(n+1,1), (n+1,3)\in\langle\sigma, \tau\rangle$. Im zweiten Fall
+  konjugiert man zusätzlich mit $(n,n-1)$.
+
+  Sei nun $n=4$ und $\sigma=(12)(34)$. Wir nehmen indirekt
+  $\Sym(4)=\langle\sigma, \tau\rangle$ für ein $\tau\in\Sym(4)$ an. Dann ist
+  \begin{align*}
+    \Sym(4)/\langle(12)(34), (13)(24)\rangle &= \langle\tau\rangle
+       \langle(12)(34), (13)(24)\rangle/\langle(12)(34), (13)(24)\rangle\\
+    &\cong\langle\tau\rangle/ \langle\tau\rangle\cap\langle(12)(34),
+       (13)(24)\rangle
+  \end{align*}
+  zyklisch. Da $\Sym(4)$ aber kein Element der Ordnung größer gleich $6$
+  besitzt, erhalten wir einen Widerspruch.
+\end{enumerate}
+
+\section{Blatt 5}
+\subsection{Aufgabe 18}
+Seien $g,h$ Elemente einer Gruppe $G$ der endlichen Ordnungen $m,n$. Zeigen Sie:
+\begin{enumerate}
+ \item Ist $k\in\Z$ mit $g^{k}=1$, so gilt $m\mid k$.
+ \item Für $k\in\Z$ hat $g^{k}$ die Ordnung $\frac{m}{\ggt(m,k)}$.
+ \item Gilt $gh=hg$ und $\ggt(m,n)=1$, so hat $gh$ die Ordnung $mn$.
+\end{enumerate}
+
+\subsection{Aufgabe 19}
+Seien $G$ eine Gruppe, $n\in\N$ und $H\leq\Sym(n)$. Zeigen Sie, dass
+\begin{gather*}
+  G\wr H\coloneq\{(g_{1},\dotsc, g_{n};h)\colon g_{1},\dotsc, g_{n}\in G, h\in H\}
+\end{gather*}
+mit der folgenden Multiplikation zu einer Gruppe wird:
+\begin{gather*}
+  (g_{1},\dotsc,
+     g_{n};h)(g_{1}',\dotsc,g_{n}';h)\coloneq(g_{1}g_{h^{-1}(1)}',\dotsc,g_{n}g_{h^{-1}(n)}';hh')
+\end{gather*}
+Man nennt $G\wr H$ das \highl{Kranzprodukt} von $G$ und $H$. Beweisen Sie,
+dass $G\wr H$ einen Normalteiler $N$ mit $N\cong G\times\dotso \times G$
+($n$~Faktoren) und eine Untergruppe $U$ mit $U\cong H, G\wr H=NU$ und $N\cap
+U=1$ hat.
+
+\subsection{Aufgabe 20}
+Zeigen Sie, dass für jede einfache nichtabelsche Gruppe $G$ gilt:
+\begin{enumerate}
+ \item $\Inn(G)$ ist eine charakteristische Untergruppe von $\Aut(G)$.
+ \item $\Aut(\Aut(G))= \Inn(\Aut(G))$.
+\end{enumerate}
+
+\subsection{Aufgabe 21}
+\begin{enumerate}
+ \item Geben Sie eine Kompositionsreihe und eine Hauptreihe von $\SL(2,
+  \Z/3\Z)$ an.
+ \item Zeigen Sie, dass es bis auf Isomorphie genau zwei Gruppen der Ordnung
+  $6$ gibt.
+\end{enumerate}
+
+\section{Blatt 6}
+\subsection{Aufgabe 22}
+Zeigen Sie, dass jede endliche Gruppe $G$, die eine einfache $\End(G)$"~Gruppe
+ist, charakteristisch einfach ist. (Hinweis: Zeigen Sie, dass für jeden echten
+Normalteiler $N$ in $G$ möglichst großer Ordnung der Durchschnitt aller
+Normalteiler $M$ von $G$ mit $G/M\cong G/N$ eine vollinvariante Untergruppe
+von $G$ ist.)
+
+\subsection{Aufgabe 23}
+Geben Sie Beispiele für Gruppen an, die die folgenden Bedingungen für
+Untergruppen erfüllen (bzw. nicht erfüllen):
+\begin{enumerate}
+ \item Minimal"~/""Maximalbedingung
+ \item Minimal- und nicht Maximalbedingung
+ \item Maximal- und nicht Minimalbedingung
+ \item weder Minimal- noch Maximalbedingung
+\end{enumerate}
+
+\subsection{Aufgabe 24}
+Zeigen Sie, dass für jede Gruppe $G$ gilt:
+\begin{enumerate}
+ \item Die Abbildung $G\rightarrow G, x\mapsto x^{-1}$ ist genau dann ein
+  Automorphismus, wenn $G$ abelsch ist.
+ \item Die Abbildung $G\rightarrow G, x\mapsto x^{2}$ ist genau dann ein
+  Endomorphismus, wenn $G$ abelsch ist.
+ \item Im Fall $\abs{G}<\infty$ ist die Abbildung $G\rightarrow G, x\mapsto
+  x^{2}$ genau dann ein Automorphismus, wenn $G$ abelsch von ungerader Ordnung
+  ist.
+\end{enumerate}
+
+\subsection{Aufgabe 25}
+\begin{enumerate}
+ \item Zeigen Sie, dass die komplexen Matrizen
+  \begin{align*}
+    a &=
+       \begin{pmatrix}
+	 i & 0\\
+	 0 & -i
+       \end{pmatrix} &
+       b &=
+       \begin{pmatrix}
+	 0 & 1\\
+	 -1 & 0
+       \end{pmatrix}
+  \end{align*}
+  eine nichtabelsche Gruppe $G$ der Ordnung $8$ erzeugen.
+ \item Zeigen Sie, dass jede Untergruppe von $G$ normal in $G$ ist.
+ \item Ist $G$ zu der Gruppe aus Aufgabe~9 (\autoref{sec:aufg9}) isomorph?
+\end{enumerate}
+
+\section{Blatt 7}
+\subsection{Aufgabe 26}
+\begin{enumerate}
+ \item Zeigen Sie: $\Z/120\Z\cong\Z/8\Z\times\Z/3\Z\times\Z/5\Z$.
+ \item Bestimmen Sie die Anzahl der Isomorphieklassen abelscher Gruppen der
+  Ordnung 36.
+ \item Sei $A\coloneq\Z\times(\Z/2\Z)$. Bestimmen Sie $T(A)$ und geben Sie
+  zwei verschiedene Untergruppen $F_{1}, F_{2}$ von $A$ mit $A=T(A)\oplus
+  F_{1}= T(A)\oplus F_{2}$ an.
+\end{enumerate}
+
+\subsection{Aufgabe 27}
+Sei $N$ ein Normalteiler einer Gruppe $G$ mit $N\cong\Sym(3)\cong G/N$. Zeigen
+Sie, dass $G$ zu $\Sym(3)\times\Sym(3)$ isomorph ist.
+
+\subsection{Aufgabe 28}
+Seien $G_{1}, G_{2}$ Gruppen. Konstruieren Sie eine Bijektion zwischen der
+Menge aller Untergruppen von $G_{1}\times G_{2}$ und der Menge aller
+$5$"~Tupel ($H_{1}, K_{1}, H_{2}, K_{2}, \phi$) mit den folgenden Eigenschaften:
+\begin{enumerate}
+ \item $K_{1}\unlhd H_{1}\leq G_{1}$ und $K_{2}\unlhd H_{2}\leq G_{2}$.
+ \item $\phi\colon H_{1}/K_{1}\rightarrow H_{2}/K_{2}$ Isomorphismus.
+\end{enumerate}
+
+\subsection{Aufgabe 29}
+Finden Sie mit GAP eine endliche Gruppe $G$, in der nicht jedes Element aus
+$G'$ ein Kommutator ist.
+
+\section{Blatt 8}
+\subsection{Aufgabe 30}
+Zeigen Sie, dass für Elemente $a,b$ einer Gruppe $G$ stets gilt:
+\begin{enumerate}
+ \item Ist $[a,b]$ mit $a$ vertauschbar, so ist $[a^{n}, b]= [a,b^{n}]$ für
+  $n\in\Z$.
+ \item Ist $[a,b]$ mit $a$ und $b$ vertauschbar, so ist $(ab)^{n}= a^{n}b^{n}
+  [b,a]^{\binom{n}{2}}$ für $n\in\N$.
+\end{enumerate}
+
+\subsection{Aufgabe 31}
+Seien $K$ ein Körper und $n\in\N$.
+\begin{enumerate}
+ \item Zeigen Sie, dass die Untergruppe $U$ von $\GL(n,K)$, die aus allen
+  Matrizen der Form
+  \begin{gather*}
+    \begin{pmatrix}
+      1 & *      & \dotso & \dotso & *\\
+      0 & \ddots & \ddots &        & \vdots\\
+      \vdots & \ddots & \ddots & \ddots & \vdots\\
+      \vdots &        & \ddots & \ddots & *\\
+      0 & \dotso & \dotso & 0 & 1
+    \end{pmatrix}
+  \end{gather*}
+  besteht, nilpotent ist und bestimmen Sie die Nilpotenzklasse von $U$.
+ \item Zeigen sie, dass die Untergruppe $B$ von $\GL(n,K)$, die aus allen
+  Matrizen der Form
+  \begin{gather*}
+    \begin{pmatrix}
+      *      & \dotso & \dotso & \dotso & *\\
+      0      & \ddots &        &        & \vdots\\
+      \vdots & \ddots & \ddots &        & \vdots\\
+      \vdots &        & \ddots & \ddots & \vdots\\
+      0 & \dotso & \dotso & 0 & *
+    \end{pmatrix}
+  \end{gather*}
+  besteht, auflösbar ist.
+\end{enumerate}
+
+\subsection{Aufgabe 32}
+\begin{enumerate}
+ \item Zeigen Sie, dass es bis auf Isomorphie genau fünf Gruppen der Ordnung
+  $8$ gibt.
+ \item Zeigen Sie, dass es bis auf Isomorphie genau zwei Gruppen der Ordnung
+  $10$ gibt.
+\end{enumerate}
+
+\subsection{Aufgabe 33}
+Beweisen Sie, dass eine zyklische Gruppe der Ordnung $n<\infty$ zu jedem
+teiler $d$ von $n$ genau eine Untergruppe der Ordnung $d$ enthält.
+
+\section{Blatt 9}
+\subsection{Aufgabe 34}
+Seien $G$ eine endliche Gruppe und $\alpha\in\Aut(G)$ mit $\{x\in
+G\colon\alpha(x)=x\}= \{1\}$. (Automorphismen mit dieser Eigenschaft heißen
+\highl{fixpunktfrei}\index{Automorphismus!fixpunktfreier}.) Zeigen Sie:
+\begin{enumerate}
+ \item $G=\{\alpha(x)x^{-1}\colon x\in G\}$
+ \item Ist $\alpha^{2}=\id_{G}$, so ist $G$ abelsch von ungerader Ordnung.
+\end{enumerate}
+
+\subsection{Aufgabe 35}
+Sei $K$ ein Körper mit $\abs{K}=3$. Zeigen Sie, dass $\GL(2,K)/Z(\GL(2,K))$ zu
+$\Sym(4)$ isomorph ist.
+
+\subsection{Aufgabe 36}
+Beweisen Sie, dass für jede Gruppe $G$ gilt: Ist $G/Z(G)$ zyklisch, so ist $G$
+abelsch.
+
+\subsection{Aufgabe 37}
+Zeigen Sie, dass eine endlich erzeugte Gruppe für $n\in\N$ nur endlich viele
+Untergruppen vom Index $n$ enthält.
+
+\subsection{Aufgabe 38}
+Sei $H$ eine Untergruppe einer endlichen Gruppe $G$, deren Index der kleinste
+Primfaktor von $\abs{G}$ ist. Zeigen Sie: $H\unlhd G$.
+
+\section{Blatt 10}
+\subsection{Aufgabe 39}
+Wie viele verschiedene Armbänder aus insgesamt 10~Perlen lassen sich
+herstellen, wenn Perlen in den Farben rot, gelb und blau zur Verfügung stehen?
+
+\subsection{Aufgabe 40}
+\begin{enumerate}
+ \item Zeigen Sie, dass es bis auf Isomorphie genau zwei Gruppen der
+  Ordnung~$9$ gibt.
+ \item Bestimmen Sie bis auf Isomorphie alle endlichen Gruppen der
+  Klassenzahl~$4$.
+\end{enumerate}
+
+\subsection{Aufgabe 41}
+Seien $G\neq1$ eine endliche Gruppe und $A\leq\Aut(G)$. Wir betrachten die
+natürliche Operation von $A$ auf $G\setminus\{1\}$. Zeigen Sie:
+\begin{enumerate}
+ \item Ist die Operation transitiv, so ist $G$ abelsch und es existiert ein
+  $p\in\PP$ mit $x^{p}=1$ für alle $x\in G$.
+ \item Ist sie $2$"~transitiv, so ist $p=2$ oder $\abs{G}=3$.
+ \item Ist sie $3$"~transitiv, so ist $\abs{G}=4$.
+ \item Sie ist nie $4$"~transitiv.
+\end{enumerate}
+
+\subsection{Aufgabe 42}
+Seien $G$ eine endliche Gruppe, $p\in\PP$ und $S,T$ verschiedene
+$p$"~Sylowgruppen von $G$ derart, dass $\abs{S\cap T}$ möglichst groß. Zeigen
+Sie:
+\begin{gather*}
+  \abs{\Syl_{p}(G)}\equiv1\pmod{\abs{S\colon S\cap T}}
+\end{gather*}
+
+\section{Blatt 11}
+\subsection{Aufgabe 43}
+Sei $G$ eine Gruppe der Ordnung $2n$, wobei $n\in\N$ ungerade ist. Zeigen Sie,
+dass $G$ einen Normalteiler $H$ vom Index $2$ enthält.
+
+\subsection{Aufgabe 44}
+Seien $K$ ein Körper, $n\in\N$ und $U$ die Untergruppe von
+$G\coloneq\GL(n,K)$, die aus allen oberen Dreiecksmatrizen mit lauter Einsen
+auf der Hauptdiagonale besteht. Berechnen Sie $N_{G}(U)$.
+
+\subsection{Aufgabe 45}
+Sei $g\in\Alt(n)$ für ein $n\in\N$. Wie kann man am Typ $(k_{1},\dotsc,
+k_{l})$ von $g$ erkennen, ob $C_{\Sym(n)}(g)\subseteq\Alt(n)$ ist?
+
+\subsection{Aufgabe 46}
+\begin{enumerate}
+ \item Zeigen Sie, dass für $p\in\PP$ und $n\in\N$ Gruppen der Ordnungen
+  $4p^{n}$ und $8p^{n}$ stets auflösbar sind.
+ \item Beweisen Sie, dass Gruppen der Ordnungen $61,\dotsc,119$ auflösbar sind.
+ \item Zeigen Sie, dass eine Gruppe der Ordnung $120$ nicht einfach sein kann.
+ \item Sind $\Sym(5)$ und $\SL(2,\F_{5})$ isomorph?
+\end{enumerate}
+
+\section{Blatt 12}
+\subsection{Aufgabe 47}
+\begin{enumerate}
+ \item Zeigen Sie, dass $\Alt(4)$ keine Untergruppe der Ordnung $6$ enthält.
+ \item Ist $\Sym(4)$ zu $\SL(2,\F_{3})$ isomorph?
+ \item Konstruieren Sie zwei nichtkonjugierte Untergruppen der Ordnung $24$ in
+  $\GL(3,\F_{2})$.
+\end{enumerate}
+
+\subsection{Aufgabe 48}
+\begin{enumerate}
+ \item Beweisen Sie, dass es bis auf Isomorphie genau fünf Gruppen der Ordnung
+  $12$ gibt.
+ \item Zeigen Sie, dass jede Gruppe der Ordnung $15$ zyklisch ist.
+\end{enumerate}
+
+\subsection{Aufgabe 49}
+wie viele verschiedene Färbungen der sechs Seiten eines Würfels mit höchstens
+3~Farben gibt es?
+
+\subsection{Aufgabe 50}
+Seien $G$ eine endliche auflösbare Gruppe, $\pi\subseteq\PP$,
+$H\in\Hall_{\pi}(G)$ und $N_{G}(H)\leq u\leq G$. Zeigen Sie: $N_{G}(U)=U$.
+
+\section{Blatt 13}
+\subsection{Aufgabe 51}
+\begin{enumerate}
+ \item Sei $n\in\N$ mit $n\geq3$. Zeigen Sie, dass die Permutationen
+  \begin{align*}
+    a &= (1,2,\dotsc,n) & b &= (1,n)(2,n-1)(3,n-2)\dotso 
+  \end{align*}
+  eine Untergruppe der Ordnung $2n$ von $\Sym(n)$ erzeugen. Man nennt
+  $D_{2n}\coloneq\langle a,b\rangle$ \highl{Diedergruppe} der Ordnung $2n$.
+ \item Beweisen Sie, dass $D_{2n}$ zur Symmetriegruppe eines regelmäßigen
+  $n$"~Ecks isomorph ist.\\
+  \emph{Bemerkung}: Manchmal betrachtet  man die \textsc{Klein}sche Vierergruppe
+  \begin{gather*}
+    V_{4}= \{(1), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3)\}\leq\Sym(4)
+  \end{gather*}
+  als Diedergruppe der Ordnung $4$.
+\end{enumerate}
+
+\subsection{Aufgabe 52}
+Sei $G$ eine endliche Gruppe und seien $x,y\in G$ zwei verschiedene
+Involutionen (d.\,h. Elemente der Ordnung $2$). Zeigen Sie, dass $\langle
+x,y\rangle$ zu einer Diedergruppe isomorph ist.
+
+\subsection{Aufgabe 53}
+\begin{enumerate}
+ \item Beweisen Sie, dass es für $p\in\PP$ bis auf Isomorphie genau zwei
+  Gruppen der Ordnung $2p$ gibt.
+ \item Zeigen Sie, dass es bis auf Isomorphie genau zwei Gruppen der Ordnung
+  $21$ gibt.
+\end{enumerate}
+
+\subsection{Aufgabe 54}
+Seien $G$ eine endliche Gruppe, $p\in\PP, Q\leq G$ eine $p$"~Untergruppe und
+$N\unlhd G$ ein $p'$"~Normalteiler. Zeigen Sie:
+\begin{align*}
+  N_{G/N}(QN/N) &= N_{G}(Q)N/H & C_{G/N}(QN/N) &= C_{G}(Q)N/N
+\end{align*}
 
 
 
