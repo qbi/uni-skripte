@@ -68,6 +68,7 @@
 \usepackage{amsfonts}
 \usepackage{wasysym}
 \usepackage[text]{esdiff}
+\usepackage{tikz}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -97,6 +98,8 @@
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{folg}{Folgerung}[chapter]
 
+% Keine Nummer vor Beweisen
+\theoremstyle{nonumberbreak}
 % \theoremheaderfont{\global\hasprooftrue\scshape}
 \theoremheaderfont{\scshape}
 \theorembodyfont{\normalfont}
@@ -248,7 +251,7 @@
 
 \begin{defini}
   Sei $\Omega \subseteq \C$ ein Gebiet, d.\,h. $\Omega$ ist offen und
-  zusammenhängend). Dann heißt $f\colon\Omega \rightarrow \C, z \mapsto f(z)$
+  zusammenhängend. Dann heißt $f\colon\Omega \rightarrow \C, z \mapsto f(z)$
   \highl[Funktion!komplexe]{komplexe Funktion} und hat eine Darstellung
   durch zwei reelle Funktionen in zwei reellen Variablen: $f\colon\Omega
   \rightarrow \C, x+iy \mapsto u(x,y) + iv(x,y)$ mit $u,v\in\R$.
@@ -275,8 +278,8 @@ Der Raum $(\C, \abs{\cdot}, +)$ ist ein normierter Raum mit der Betragsfunktion
 \begin{gather*}
   \lim_{z \rightarrow a} f(z) = b \Leftrightarrow \forall
      \{z_n\}^{\infty}_{n=0} \subset U \setminus \{a\}\colon z_n \xrightarrow{n
-     \rightarrow \infty} a \Rightarrow \lim_{z \rightarrow \infty} f(z_n) \xrightarrow{n \rightarrow
-     \infty} b
+     \rightarrow \infty} a \Rightarrow \lim_{n \rightarrow \infty}
+   f(z_n) \rightarrow b
 \end{gather*}
 \end{defini}
 
@@ -285,7 +288,7 @@ Der Raum $(\C, \abs{\cdot}, +)$ ist ein normierter Raum mit der Betragsfunktion
    \item Äquivalent zur obigen Definition ist:
     \begin{gather*}
 	\lim_{z \rightarrow a} f(z) = b \Leftrightarrow \forall \epsilon > 0
-	 \exists \delta > 0\colon \abs{f(z)-b} < \epsilon  \forall 0 < \abs{z
+	 \exists \delta > 0\colon \abs{f(z)-b} < \epsilon  \text{ für } \abs{z
 	 - a} < \delta
      \end{gather*}
    \item Weiterhin gilt für $h \in \R$:
@@ -455,8 +458,8 @@ Man schreibt statt $f'(a)$ auch gerne $\diff{f}{z}(a)$.
 
 % satz 3
 \begin{satz}
-  Mit $f,g\colon\Omega\rightarrow\C$ holomorph $\Rightarrow\alpha f+\beta g,
-  fg, \nicefrac{f}{g}$ mit $\alpha, \beta\in\C$ sind holomorph.
+  Mit $f,g\colon\Omega\rightarrow\C$ holomorph sind auch $\alpha f+\beta g,
+  fg, \nicefrac{f}{g}$ mit $\alpha, \beta\in\C$ holomorph.
   \begin{proof}
     Folgt aus Ableitungsregeln
   \end{proof}
@@ -465,13 +468,12 @@ Man schreibt statt $f'(a)$ auch gerne $\diff{f}{z}(a)$.
 % satz 4
 \begin{satz}\label{satz:15}
   Die Funktion $f\colon z=x+iy\mapsto u(x,y)+iv(x,y)$ ist genau dann
-  holomorph, wenn $u,v$ als
-  reellwertige Funktionen auf $\Omega\subseteq\R^{2}$
-  $C^{1}$"~differenzierbar sind und die
+  holomorph, wenn $u,v$ auf $\Omega\subseteq\R^{2}$ als reellwertige
+  Funktionen $C^{1}$"~differenzierbar sind und die
   \highl[Differentialgleichung!Cauchy"=Riemannsche]{Cauchy"=Riemannsche
-  Differentialgleichungen} gelten:
+    Differentialgleichungen} gelten:
   \begin{align*}
-    \diffp{u}{x} &= \diffp{v}{y}\\
+    \diffp{u}{x} &= \diffp{v}{y} & 
     \diffp{v}{x} &= -\diffp{u}{y}
   \end{align*}
   Dann gilt:
@@ -483,16 +485,19 @@ Man schreibt statt $f'(a)$ auch gerne $\diff{f}{z}(a)$.
     \begin{enumerate}
      \item Sei $f$ holomorph $\Rightarrow f'(z)= \lim_{h\rightarrow0}
       \frac{u(x+h,y)-u(x,y)}{h}+ i \lim_{h\rightarrow0}
-      \frac{v(x+h,y)-v(x,y)}{h}= u_{x}(x,y)+iv_{x}(x,y)$. Denn: Man geht davon
+      \frac{v(x+h,y)-v(x,y)}{h}= u_{x}(x,y)+iv_{x}(x,y)$. Denn man geht davon
       aus, dass $f$ stetig differenzierbar ist. Dann gilt:
-      $f'(z)=\lim_{h\rightarrow0} \frac{f(z+h)-f(z)}{h}=
-      \lim_{h=h_{1}+ih_{2}\rightarrow0} \frac{u(x+h_{1}, y+h_{2})+iv(x+h_{1},
-      y+h_{2})- u(x,y)-iv(x,y)}{h_{1}+ih_{2}}\stackrel{h_{2}=0}{=}
-      \lim_{h_{1}\rightarrow0} \frac{u(x+h_{1}, y)-u(x,y) +
-      i(v(x+h_{1},y)-v(x,y))}{h_{1}}= \lim_{h_{1}\rightarrow0}
-      \frac{u(x+h_{1}, y)-u(x,y)}{h_{1}}+
-      i\lim_{h_{1}\rightarrow0}\frac{v(x+h_{1}, y)-v(x,y)}{h_{1}}= u_{x}(x,y)+
-      v_{x}(x,y)$.
+      \begin{align*}
+        f'(z) &= \lim_{h\rightarrow0} \frac{f(z+h)-f(z)}{h}\\
+        &= \lim_{h=h_{1}+ih_{2}\rightarrow0} \frac{u(x+h_{1}, y+h_{2})+iv(x+h_{1},
+          y+h_{2})- u(x,y)-iv(x,y)}{h_{1}+ih_{2}}\\
+        &= \lim_{h_{1}\rightarrow0}
+        \frac{u(x+h_{1}, y)-u(x,y) + i(v(x+h_{1},y)-v(x,y))}{h_{1}}
+        \text{ für } h_2=0\\
+        &= \lim_{h_{1}\rightarrow0} \frac{u(x+h_{1}, y)-u(x,y)}{h_{1}}+
+        i\lim_{h_{1}\rightarrow0}\frac{v(x+h_{1}, y)-v(x,y)}{h_{1}}\\
+        &= u_{x}(x,y)+ v_{x}(x,y)
+      \end{align*}
 
       Im Reellen folgt \emph{nicht} aus $\lim_{x\rightarrow x_{0}}
       (f_{1}(x)-f_{2}(x)$ existiert, die Tatsache, dass die Limites der
@@ -565,8 +570,24 @@ Man schreibt statt $f'(a)$ auch gerne $\diff{f}{z}(a)$.
 \begin{bsp}
   $C_{r}(z_{0})\colon t\mapsto z_{0}+re^{it}, 0\leq t\leq2\pi$. Kreislinie
   $\abs{z-z_{0}}=r$ im positiven Sinn durchlaufen.
-
-  Es gilt, $e^{i\phi}= \cos\phi+i\sin\phi$. \todo{Kreis zeichnen}
+  Es gilt, $e^{i\phi}= \cos\phi+i\sin\phi$.
+  \begin{figure}[htb]
+    \centering
+  \begin{tikzpicture}[scale=2]
+    \draw[step=.5cm,gray,very thin] (-1.4,-1.4) grid (1.4,1.4);
+    \draw (-1.5,0) -- (1.5,0);
+    \draw (0,-1.5) -- (0,1.5);
+    \draw (.2,.3) circle (.8cm);
+    \draw[->] (.5,.3) arc (0:60:3mm);
+    \draw[dashed] (.2,.3) -- (1,.3);
+    \draw[->] (.2,.3) -- (.6,1);
+    \draw (.4,.7) node {$r$};
+    \draw (.2,.2) node {$z_0$};
+    \draw (.5,.5) node {$\phi$};
+    \draw (.65,1.1) node {$z$};
+  \end{tikzpicture}    
+    \caption{Darstellung der Kreislinie}
+  \end{figure}
 \end{bsp}
 
 \paragraph{Kettenregel}
@@ -643,7 +664,7 @@ Dann gilt,
     \int^{b}_{a} F(t)\,dt = re^{i\phi}$ und wir können die folgende
     Abschätzung treffen:
     \begin{align*}
-      \abs[\big]{\int_{\gamma} f(z)\,dz} & = \abs[\big]{int^{b}_{a} F(t)\,dt}
+      \abs[\big]{\int_{\gamma} f(z)\,dz} & = \abs[\big]{\int^{b}_{a} F(t)\,dt}
 	 = r = \Re(r) = \Re\left(e^{-i\phi}\int^{b}_{a} F(t)\,dt\right) =
 	 \int^{b}_{a} \Re(e^{-i\phi} F(t))\,dt\\
       &\leq \int^{b}_{a} \abs{e^{-i\phi} F(t)}\,dt = \int^{b}_{a}
@@ -676,10 +697,10 @@ Dann gilt,
     $(u,-v)$ und $(v,u)$ Gradientenfelder sind. Also sind die Kurvenintegrale
     wegunabhängig.
 
-    Denn sei $f$ holomorph. Dann folgt, $u_x = v_y$ und $u_y = -v_x$. Also
-    sind die Integrabilitätsbedingungen von Schwarz an $(u,-v)$ und $(v,u)$
-    erfüllt. Der Rest sind bereits bekannte Folgerungen aus der reellen
-    Analysis.
+    Denn sei $f$ holomorph. Dann folgt, $u_x = v_y$ und $u_y =
+    -v_x$. Also sind die Integrabilitätsbedingungen von
+    \textsc{Schwarz} an $(u,-v)$ und $(v,u)$ erfüllt. Der Rest sind
+    bereits bekannte Folgerungen aus der reellen Analysis.
   \end{enumerate}
 \end{satz}
 
