@@ -69,6 +69,11 @@
 \usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
                          % Markierungen für offene Aufgaben zu setzen; wird
                          % auch für \help (s.u.) verwendet
+\usepackage{bera}
+\usepackage{berasans}
+\usepackage{beramono}
+\usepackage{beraserif}
+\usepackage{nicefrac}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -129,12 +134,8 @@
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
-
-% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
-% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
-% macht es leichter sie alle zu finden und auch ganz einfach
-% auszublenden, indem man den Befehl einfach leer definiert
-\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+\newcommand*{\FA}{\mathfrak{A}}
+\newcommand*{\FP}{\mathfrak{P}}
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
@@ -150,17 +151,6 @@
 % Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
 \newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
 
-% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
-% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
-% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
-% sondern \Leftrightarrow.
-\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw\mspace{8mu}}%
-			       {$gdw$\xspace}}
-\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
-			       {$gdw_{def}$\xspace}}
-
 % Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. Aus
@@ -172,15 +162,6 @@
 \renewcommand*{\epsilon}{\varepsilon}
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
-
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-\newenvironment*{mdescription}%
-                {\renewcommand*{\descriptionlabel}[1]%
- 			       {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		{\end{description}}
 
 \makeindex
 
@@ -252,6 +233,198 @@
 \section*{Definitionen und Festlegungen}
 % \theoremlisttype{all}
 \listtheorems{defini,festl}
+
+
+\chapter{Einleitung}
+
+Im Jahr 1900 war in Paris der Mathematikerkongress und \textsc{David Hilbert}
+hiel einen Vortrag zu den 23 wichtigsten Problemen der Mathematik. Das sechste
+Problem war, ein Fundament für die Wahrscheinlichkeitstheorie zu finden. Etwa
+zwei Jahre später entwickelte \textsc{Henry Lebesgue} die Maßtheorie sowie das
+Lebesgueintegral. In seiner Theorie ging es rein um analystische
+Fragestellungen. Das Buch "`Grundlagen der Wahrscheinlichkeitstheorie"' von
+\textsc{Kolmogorow} erschien 1933 und war das Fundament der Theorie. Die
+Inhalte des Buches sind Grundlage der Vorlesung.
+
+
+\todo{Herr Linde bezeichnet Kapitel mit §}
+
+% § 1
+\chapter{Wahrscheinlichkeitsmaße und Zufallsvariablen}
+% 1.1
+\section{Wahrscheinlichkeitsräume}
+Ausgangspunkt ist der \highl{Grundraum} $\Omega\neq\emptyset$. Die beobachteten
+\highl{Ereignis}se liegen alle in $\Omega$. Weiterhin braucht man eine Teilmenge
+$\FA\subseteq\FP(\Omega)$, eine \highl{$\sigma$-Algebra} sowie ein
+\highl{Wahrscheinlichkeitsmaß} $P$ mit den Eigenschaften:
+\begin{itemize}
+ \item $P\colon\FA\rightarrow[0,1]$
+ \item $P(\emptyset)=0, P(\Omega)=1$
+ \item und $P$ muss $\sigma$"~additiv sein
+\end{itemize}
+Wenn man ein Maß mit den Eigenschaften hat, so ist $P(A)$ die
+Wahrscheinlichkeit ein Element aus $A$ zu beobachten. Das Tripel
+$(\Omega,\FA,P)$ ist ein \highl{Wahrscheinlichkeitsraum}. Insgesamt ergeben
+sich die folgenden Eigenschaften:
+\begin{enumerate}
+ \item $0\leq P(A)\leq1$
+ \item $P(\emptyset)=0$
+ \item $A\cap B=\emptyset, P(A\cup B)= P(A)+P(B)$ und $P(A\cup B)=
+  P(A)+P(B)-P(A\cap B)$
+ \item $P(A^{c})=1-P(A)$
+ \item $A\subseteq B\Rightarrow P(A)\leq P(B)$
+ \item $A_{n}\nearrow A, A_{1}\subseteq A_{2}\subseteq\dotso,
+  \bigcup_{n=1}^{\infty} A_{n}=A\Rightarrow
+  P(A_{n})\xrightarrow{n\rightarrow\infty} P(A)$
+ \item $A_{n}\searrow A, A_{1}\supseteq A_{2}\supseteq\dotso,
+  \bigcap_{n=1}^{\infty} A_{n}=A\Rightarrow
+  P(A_{n})\xrightarrow{n\rightarrow\infty} P(A)$
+ \item $A_{n}\in\FA\Rightarrow
+  P(\bigcup_{n=1}^{\infty}A_{n})\leq\sum_{n=1}^{\infty} P(A_{n})$
+\end{enumerate}
+
+
+\begin{bsp}
+  \begin{enumerate}[(1)]
+   \item $\Omega=\{\omega_{1},\omega_{2}, \dotsc,\}, \FA=\FP(\Omega), P(A)=
+    \sum_{\{j\colon\omega_{j}\in A\}} P(\{\omega_{j}\})$. Dann ist $P$
+    eindeutig durch die Werte $P(\{\omega_{j}\})$ für $j=1,2,\dotsc$ bestimmt.
+    Es ist $p_{j}\coloneq P(\{\omega_{j}\})$ mit $p_{j}\geq0,
+    \sum_{j=1}^{\infty}=1$.
+   \item Sei $\Omega=\N_{0}$. Dann ist $P(\{k\})\coloneq\frac{\lambda^{k}}{k!}
+    e^{-\lambda}= p_{_{k}}$ die \highl{Poissonverteilung}.
+   \item Sei $\Omega\subseteq\R^{d}$ beschränkt und eine Borelmenge. Dann
+    können wir definieren: $P(A)\coloneq\frac{\lambda_{d}(\Omega\cap
+    A)}{\lambda_{d}(\Omega)}$ und das ist die \highl{Gleichverteilung} auf
+    $\Omega$.
+  \end{enumerate}
+\end{bsp}
+
+% 1.2
+\section{Verteilungsfunktion und Absolutstetigkeit}
+
+Sei $\Omega=\R$ und $\FA=\FB(\R)$ die $\sigma$"~Algebra der Borelmengen.
+Weiter sei $P$ ein Wahrscheinlichkeitsmaß auf $(\R,\FB(\R))$ und $F(t)\coloneq
+P((-\infty,t])$ mit $F\colon\R\rightarrow[0,1]$. Dann ist $F$ die
+\highl{Verteilungsfunktion}.
+
+% satz 1.1
+\begin{satz}
+  Die Verteilungsfunktion $F$ hat folgende Eigenschaften:
+  \begin{enumerate}[(i)]
+   \item $F(-\infty)=0$ und $F(+\infty)=1$.
+   \item $F$ ist nicht fallend.
+   \item $F$ ist rechtsseitig stetig.
+  \end{enumerate}
+  Umgekehrt gilt:
+  Sei $F$ eine Abbildung von $\R$ nach $[0,1]$ mit den obigen Eigenschaften.
+  Dann existiert ein eindeutig bestimmtes Wahrscheinlichkeitsmaß $P$ mit
+  \begin{gather*}
+    P((-\infty,t])=F(t)\qquad t\in\R
+  \end{gather*}
+\end{satz}
+
+Weitere Eigenschaften:
+\begin{enumerate}[(a)]
+ \item $P((a,b])= F(b)-F(a)$
+ \item $F(t_{0})-F(t_{0}-0)=h>0\Leftrightarrow P(\{t_{0}\})=h$
+ \item $F$ ist genau dann stetig, wenn für alle $t\in\R$ gilt: P(\{t\})=0$.$
+ \item $F$ hat höchstens abzählbar unendlich viele Sprungstellen.
+\end{enumerate}
+
+Man sagt, $P\ll\lambda_{1}$ genau dann, wenn $\lambda_{1}(A)=0\Rightarrow
+P(A)=0$. Dann ist $P$ \highl{absolutstetig}.
+
+%satz 1.2
+\begin{satz}[Satz von \textsc{Radon}"~\textsc{Nikodym}]
+  $P\ll\lambda_{1}\Leftrightarrow\exists p\colon\R\rightarrow[0,\infty)$
+  messbar mit $F(t)=\int_{-\infty}^{t} p(x)\,dx$ für alle $t\in\R$. Das ist
+  äquivalent zu $P(A)= \int_{A}p(x)\,dx= \int_{-\infty}^{\infty} 1_{A}(x)\cdot
+  p(x)\,dx$. Das $p$ ist $\lambda_{1}$"~fast-überall eindeutig bestimmt und
+  heißt \highl{Radon"=Nikodym"=Dichte} oder \highl{Dichte} von $P$ bezüglich
+  $\lambda_{1}$.
+\end{satz}
+
+Die Menge $\{P\text{ Wahrscheinlichkeitsmaß auf } \R\text{ mit }
+P\ll\lambda_{1}\} ist äquivalent zu \{p\colon\R\rightarrow[0,\infty), p\text{
+messbar und } \int_{-\infty}^{\infty} p(x)\,dx=1\}$.
+
+Insgesamt haben wir drei Typen von Wahrscheinlichkeitsmaßen auf $\R$:
+\begin{enumerate}[(a)]
+ \item die diskreten oder atomaren Wahrscheinlichkeitsmaße:
+  $P_{d}=\sum_{j=1}^{\infty}p_{j}\cdot\delta_{x_{j}}, p_{j}\geq0, x_{j}\in\R,
+  P_{d}(\{x_{j}\})=p_{j}$.
+ \item die absolutstetigen Wahrscheinlichkeitsmaße: $P_{a}\ll\lambda_{1}$
+ \item die singulärstetigen Wahrscheinlichkeitsmaße: $P_{s}(\{x\})=0$ und
+  $P_{s}$ ist singulär zu $\lambda_{1}$ ($P_{s}\perp \lambda_{1}$), d.\,h.
+  $\exists B\subseteq\R, \lambda_{1}(B)=0, P_{s}(B)=1$.
+\end{enumerate}
+
+Für ein beliebiges $P$ auf $(\R, \FB(\R))$ können wir schreiben:
+\begin{gather*}
+  P= \lambda_{d}\cdot P_{d}+ \lambda_{a}\cdot P_{a}+ \lambda_{s}\cdot
+     P_{s}\qquad\lambda_{d}+ \lambda_{a}+ \lambda_{s}=1
+\end{gather*}
+
+Die wichtigsten Beispiele von Dichten:
+\begin{enumerate}[(a)]
+ \item $p(x)= \frac{1}{\sqrt{2\pi}} e^{-\nicefrac{x²}{2}}$ mit $x\in\R$ und
+  $P=\CN(0,1)$
+ \item $p_{\mu,\sigma^{2}}(x)= \frac{1}{\sqrt{2\pi}}
+  e^{-\frac{(x-\mu)}{2\sigma^{2}}}$ mit $x\in\R$ und $P=\CN(\mu, \sigma^{2})$.
+ \item $p(x)=
+  \begin{cases}
+    \lambda e^{-\lambda x} & x\geq0\\
+    0 & x<0
+  \end{cases}$ mit $\lambda>0$ und $P=E_{\lambda}$
+ \item $p(x)= \frac{1}{\pi}+ \frac{1}{1+x^{2}}$ mit $x\in\R$
+  (\highl{Cauchyverteilung})
+ \item \highl{Halbkreisverteilung}
+ \item Seien $a,b>0$ mit $p(x)= \frac{1}{a^{b} \Gamma(b)} x^{b-1}
+  e^{-\frac{x}{a}}$ mit $x>0$ und $p(x)=0$ für $x\leq0$.
+  (\highl{Gammaverteilung})
+\end{enumerate}
+
+% 1.3
+\section{Produktmaße}
+
+Seien $(\Omega_{1},\FA_{1}, P_{1}),\dotsc,(\Omega_{n}, \FA_{n}, P_{n})$
+Wahrscheinlichkeitsräume. Dann ist $\Omega=\Omega_{1}\times\dotso
+\times\Omega_{n}=\{\omega=(\omega_{1},\dotsc,\omega_{n})\colon\omega_{j}\in\Omega_{j}\}$
+und $\FA=\sigma\{A_{1}\times\dotso \times A_{n}\colon
+A_{j}\in\FA_{j}\}\coloneq\FA_{1}\odot\dotso \odot\FA_{n}$.
+
+%satz 1.3
+\begin{satz}
+  Auf $(\Omega,\FA)$ existiert genau ein Wahrscheinlichkeitsmaß $P$ mit:
+  \begin{gather}
+    \label{eq:13}
+    P(A_{1}\times\dotso \times A_{n})= P_{1}(A_{1})\cdot\dotso \cdot
+       P_{n}(A_{n})\qquad A_{j}\in\FA_{j}
+  \end{gather}
+  \begin{proof}
+    Die Existenz eines Maßes $P$ mit der Eigenschaft in \autoref{eq:13} wurde
+    in der Maßtheorie bewiesen. Wir müssen noch zeigen, dass $P$ ein
+    Wahrscheinlichkeitsmaß ist. Es gilt, $P(\Omega)= P(\Omega_{1}\times\dotso
+    \times\Omega_{n})= P_{1}(\Omega_{1})\cdot\dotso \cdot
+    P_{n}(\Omega_{n})=1\cdot\dotso \cdot1=1$.
+  \end{proof}
+\end{satz}
+
+Man schreibt $P=P_{1}\odot\dotso \odot P_{n}$ ist ein \highl{Produktmaß}.
+
+\begin{bsp}
+  Sei $\Omega_{1}=\{x_{1},x_{2}, \dotsc\}$ und
+  $\Omega_{2}=\{y_{1},y_{2},\dotsc\}$. Dann ist $\Omega=\{(x_{i},
+  y_{j})\colon1\leq i,j<\infty\}$ und $P(\{x_{i}\}\times\{y_{j}\})=
+  P_{1}(\{x_{i}\})\cdot P_{2}(\{y_{j}\})$.
+
+  Nehmen wir an, wir werfen eine Münze mit $0$ und $1$. Weiterhin würfeln wir
+  mit einem fairen Würfel. Dann ist $\Omega_{1}=\{0,1\}$ und $\Omega_{2}=
+  \{1,2,3,4,5,6\}$ und $\Omega=\{(0,1), (0,2), (0,3), (0,4), (0,5), (0,6),
+  (1,1), (1,2), (1,3), (1,4), (1,5), (1,6)\}$. Insgesamt ergibt sich
+  $P(\{(0,1)\})= \frac{1}{2}\cdot\frac{1}{6}$.
+\end{bsp}
 
 
 \clearpage
