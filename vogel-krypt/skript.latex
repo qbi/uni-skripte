@@ -3531,7 +3531,7 @@ Für jedes Byte $b^{(z,s)}\in\F_{256}$ ($z,s\in\{0,\dotsc,3\}$) der Eingabe $S_{i
   \end{gather*}
 \end{enumerate}
 
-Die praktische Umsetzung der Byte-Sub-Transformation erfolgt durch eine
+Die praktische Umsetzung der SubBytes-Transformation erfolgt durch eine
 \highl{lookup-table}, d.\,h. man berechnet einmal für alle möglichen Eingaben
 die Ergebnisse und speichert sie in einer Tabelle im Programm ab. Das Programm
 schlägt dann nur noch in der Tabelle das Ergebnis nach und berechnet nichts
@@ -3561,31 +3561,26 @@ mehr.
       F0& 8C& A1& 89& 0D& BF& E6& 42& 68& 41& 99& 2D& 0F& B0& 54& BB& 16
     \end{tabular}
   }
-  \caption{Die Substitutionsbox $S_{8}$ für den Byte-Sub-Schritt im AES;
+  \caption{Die Substitutionsbox $S_{8}$ für den SubBytes-Schritt im AES;
     Quelle: \href{http://en.wikipedia.org/wiki/Rijndael_S-box}{englische
   Wikipedia}}
   \label{tab:s8-aes}
 \end{table}
 
 Die Tabelle ist die $S$-Box\footnote{da sie je 8~Bit verarbeitet, wird
-sie mit $S_{8}$ bezeichnet}, die z.\,B. zweidimensional mit 16~Zeilen und
-16~Spalten dargestellt werden kann. Die niederwertigen Bits $b_{3}, b_{2},
+sie mit $S_{8}$ bezeichnet}, die zweidimensional mit 16~Zeilen und
+16~Spalten dargestellt wird. Die niederwertigen Bits $b_{3}, b_{2},
 b_{1}$ und $b_{0}$ der Eingabe bestimmen die Spalte in der Tabelle und die
-Bits $b_{7}, b_{6}, b_{5}$ und $b_{4}$ die Zeile. \autoref{tab:s8-aes}
+Bits $b_{7}, b_{6}, b_{5}$ und $b_{4}$ die Zeile. (siehe~\autoref{tab:s8-aes})
 
 Beispiel: $S_{8}(1011\,0101)$, Zeile~11 und Spalte~5. \autoref{tab:s8-aes}
 liefert $D5$. $S_{8}(1011\,0101) = (1101\,0101)$.
 
-\todo{Das ist falsch. Es fehlt die Abbildung im Polynomring. Ändern/Umtexten!}
-Zusammengefasst gesprochen, wird im Byte-Sub-Schritt mit einer Abbildung, der
-$S$-Box, für jedes Byte (jeden 8-Bit-Block) der Eingabe ein Byte bestimmt,
-dass dem inversen Element des Eingabebytes entspricht, wenn man beide als
-Elemente des Körpers $\F_{258}$ auffasst.
 \begin{gather*}
   c^{(z,s)} = S_{8}(b^{(z,s)})
 \end{gather*}
 
-\subsubsection{Row-Shift}
+\subsubsection{ShiftRows}
 Rechnen in $\nicefrac{\F_{256}[x]}{x^{4}+1}$ zeilenweise:
 \begin{align*}
   [d^{(0,0)}, d^{(0,1)}, d^{(0,2)}, d^{(0,3)}]
@@ -3615,7 +3610,7 @@ Plätze nach links rotiert werden.
      \end{pmatrix}
 \end{gather*}
 
-\subsubsection{Column-Mix}
+\subsubsection{MixColumns}
 Auf die Eingabe $S_{i,d}$ wird spaltenweise die
 Abbildung~$S_{32}$\footnote{$S_{32}$, weil die Abbildung 32~Bit verarbeitet}
 angewendet.
@@ -3668,7 +3663,7 @@ was 127\,Gigabit entspricht, was sich praktisch nur schwer umsetzen lässt.
 \begin{figure}
   \centering
   \input{aes-s32.pdf_t}
-  \caption{Schematische Darstellung der $S$-Box $S_{32}$ für den Column-Mix im
+  \caption{Schematische Darstellung der $S$-Box $S_{32}$ für den MixColumns im
     AES}
   \label{fig:s32}
 \end{figure}
@@ -3708,16 +3703,16 @@ Die Polynomdivision ergibt (nach einem Schritt) das Restpolynom
 Da jeder Verschlüsselungsschritt einen Umkehrschritt besitzt ist die
 Entschlüsselung der Nachricht gesichert:
 \begin{enumerate}
- \item Key-Add$^{-1} = $Key-Add ist einfach ein \texttt{xor}
+ \item AddRoundKey$^{-1} = $AddRoundKey ist einfach ein \texttt{xor}
   mit demselben Schlüssel.
 
- \item Byte-Sub$^{-1}$ existiert, da die affine Abbildung eine
+ \item SubBytes$^{-1}$ existiert, da die affine Abbildung eine
   Umgekehrabbildung besitzt und das Inverse des Inversen das ursprüngliche
   Element im Körper liefert.
 
- \item Row-Shift$^{-1}$ ist einfach eine Rotation nach rechts.
+ \item ShiftRows$^{-1}$ ist einfach eine Rotation nach rechts.
 
- \item Column-Shift$^{-1}$ existiert, da $a(x) = 02+01x+ 01x^{2} +
+ \item MixColumns$^{-1}$ existiert, da $a(x) = 02+01x+ 01x^{2} +
   03x^{3}$ im Ring $\nicefrac{\F_{256}[x]}{x^{4}+1}$ das inverse Polynom
   $a^{-1}(x)$ hat.
 \end{enumerate}
