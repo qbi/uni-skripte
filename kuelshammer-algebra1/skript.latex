@@ -152,6 +152,7 @@
 \newcommand*{\labelarrow}[1]{\stackrel{#1}{\longmapsto}}
 
 
+\DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\gt}{gT}
 \DeclareMathOperator{\ggt}{ggT}
 \DeclareMathOperator{\kgv}{kgV}
@@ -1053,53 +1054,62 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
   \[1 = \ggt(39, 100) = 16 \cdot 100 - 41 \cdot 39 \equiv 59 \cdot 39
   \pmod{100}\]
   Also: $(39 + 100\Z)^{-1} = 59 + 100\Z$.
-\item Die \highl{Eulersche $\varphi$-Funktion} $\varphi \colon \N
+\item Die \highl{Eulersche $\phi$-Funktion} $\phi \colon \N
   \rightarrow \N$ (\textsc{Euler} 1707--1783) wird definiert durch:
   \begin{align*}
-    \varphi(m) &\coloneqq \abs{U(\ZmZ{m})} = \abs{\Set{a + m\Z | \ggt(a, m) = 1}} \\
+    \phi(m) &\coloneqq \abs{U(\ZmZ{m})} = \abs{\Set{a + m\Z | \ggt(a, m) = 1}} \\
     &= \abs{\Set{a \in \N | 1 \leq a \leq m, \ggt(a, m) = 1}} \qquad m \in \N
   \end{align*}
-  Beispielsweise ist $\varphi(6) = 2$.
+  Beispielsweise ist $\phi(6) = 2$.
 \end{enumerate}
 \end{bem}
 
 % Satz 3.2
 \begin{satz}\label{satz:3.2}
-  Für $m \in \N$ ist $\sum_{d\mid m} \varphi(d) = m$. Dabei durchläuft
+  Für $m \in \N$ ist 
+  \begin{gather*}
+    \sum_{d\mid m} \phi(d) = m
+  \end{gather*}
+  Dabei durchläuft
   die Summe alle positiven Teiler $d$ von $m$.
   \begin{beweis}
     \begin{align*}
       m &= \abs{\Set{a \in \N | 1 \leq a \leq m}} = \sum_{d\mid m}
       \abs{\Set{a \in \N | 1 \leq a \leq m, \ggt(a, m) = d}}\\
-      &= \abs{\Set{b \in \N | 1 \leq b \leq \frac{m}{d}, \ggt(b,
-          \frac{m}{d}) = 1}} = \sum_{d\mid m} \varphi(\frac{m}{d}) =
-      \sum_{d\mid m} \varphi(d)
+      &= \abs[\big]{\Set{b \in \N | 1 \leq b \leq \frac{m}{d}, \ggt(b,
+          \frac{m}{d}) = 1}} = \sum_{d\mid m} \phi(\frac{m}{d}) =
+      \sum_{d\mid m} \phi(d)
     \end{align*}
   \end{beweis}
 \end{satz}
 
 % Bemerkung
 \begin{bem}
-  Damit kann man $\varphi(m)$ induktiv berechnen:
+  Damit kann man $\phi(m)$ induktiv berechnen:
   \begin{align*}
-    \varphi(1) &= 1\\
-    \varphi(1) + \varphi(2) &= 2 \Rightarrow \varphi(2) = 1,\\
-    \varphi(1) + \varphi(5) &= 5 \Rightarrow \varphi(5) = 4,\\
-    \varphi(1) + \varphi(2) + \varphi(5) + \varphi(10) &= 10
-    \Rightarrow \varphi(10) = 4
+    \phi(1) &= 1\\
+    \phi(1) + \phi(2) &= 2 \Rightarrow \phi(2) = 1,\\
+    \phi(1) + \phi(5) &= 5 \Rightarrow \phi(5) = 4,\\
+    \phi(1) + \phi(2) + \phi(5) + \phi(10) &= 10
+    \Rightarrow \phi(10) = 4
   \end{align*}
-  Wir suchen jedoch nach einer expliziten Formel.
+  Wir suchen jedoch nach einer expliziten Formel und gehen einen Umweg
+  über die Möbius"=Funktion.
 \end{bem}
 
 % Definition
 \begin{defi}[Möbius-Funktion]
   Die \highl{Möbius-Funktion} $\mu \colon \N \rightarrow \Z$
-  (\textsc{Möbius} 1790--1868) wird definiert durch:
-  \[\mu(m) \coloneqq
-  \begin{cases}(-1)^r & \text{falls } m \text{ Produkt von } r \text{
-      verschiedenen Primzahlen ist}\\
+  (\textsc{Möbius} 1790--1868) wird für $m\in\N$ mit der
+  Primfaktorzerlegung $m=p_{1}^{a_{1}}\cdot\dotsc \cdot p_{r}^{a_{r}}$
+  definiert durch:
+  \begin{gather*}
+    \mu(m) \coloneqq
+  \begin{cases}(-1)^r & a_{1}=\dotso=a_{r}=1\\
     0 & \text{sonst}
-  \end{cases}\]
+  \end{cases}
+  \end{gather*}
+  Insbesondere ist $\mu(1)=1$.
 \end{defi}
 
 % Beispiel
@@ -1129,14 +1139,14 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
       \sum_{d\mid m}\mu(d) & = \sum_{i_1 = 0}^{a_1} \ldots \sum_{i_r =
         0}^{a_r} \underbrace{\mu(p_1^{i_1} \cdot \ldots \cdot
         p_r^{i_r})}_{\mu(p_1^{i_1}) \cdot \ldots \cdot \mu(p_r^{i_r})}\\
-      & = \prod_{j = 0}^{r}\left[\underbrace{\mu(p_j^0)}_{= 1} +
+      & = \prod_{j = 1}^{r}\left(\underbrace{\mu(p_j^0)}_{= 1} +
         \underbrace{\mu(p_j^1)}_{= -1} + \underbrace{\mu(p_j^2)}_{= 0} +
-        \ldots + \underbrace{\mu(p_j^{a_i})}_{= 0}\right] = 0
+        \ldots + \underbrace{\mu(p_j^{a_i})}_{= 0}\right) = 0
     \end{align*}
   \end{beweis}
 \end{satz}
 
-% Satz 3.4
+% Satz 3.6 in Vorlesung vom WS09
 \begin{satz}[Möbius-Inversion]\label{satz:3.4}
   Für Funktionen $f, F \colon \N \rightarrow \C$ sind äquivalent:
   \begin{enumerate}[(1)]
@@ -1150,7 +1160,7 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
         \sum_{d\mid m}\mu(d)F(\frac{m}{d}) & = \sum_{d\mid
           m}\mu(\frac{m}{d})F(d) = \sum_{e\mid d\mid
           m}\mu(\frac{m}{d})f(e)\\
-        & = \sum_{e\mid m}f(e)\sum_{d, e\mid d\mid m}\mu(\frac{m}{d}) = \sum_{e\mid m}f(e)\underbrace{\sum_{c\mid
+        & = \sum_{e\mid m}f(e)\sum_{e\mid d\mid m}\mu(\frac{m}{d}) = \sum_{e\mid m}f(e)\underbrace{\sum_{c\mid
             \frac{m}{e}}\mu(c)}_{= 0 \text{ außer für }\frac{m}{e} =
           1}\\
         & = f(m)
@@ -1161,7 +1171,7 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
         \sum_{d\mid m}f(d) & = \sum_{d\mid m}\sum_{e\mid
           d}\mu(e)F(\frac{d}{e}) = \sum_{e\mid d\mid
           m}\mu(\frac{d}{e})F(e)\\
-        & = \sum_{e\mid m}F(e)\sum_{d, e\mid d\mid m}\mu(\frac{d}{e}) =
+        & = \sum_{e\mid m}F(e)\sum_{e\mid d\mid m}\mu(\frac{d}{e}) =
         \sum_{e\mid m}F(e)\underbrace{\sum_{c\mid \frac{m}{e}}\mu(c)}_{=
           0 \text{ außer für }\frac{m}{e} =
           1}\\
@@ -1175,13 +1185,13 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
 \begin{satz}\label{satz:3.5}
   Für $m \in \N$ mit Primfaktorzerlegung $m = p_1^{a_1} \cdot\dotsc\cdot
   p_r^{a_r}$ gilt:
-  \[\varphi(m) = (p_1^{a_1} - p_1^{a_1-1}) \ldots
+  \[\phi(m) = (p_1^{a_1} - p_1^{a_1-1}) \ldots
   (p_r^{a_r} - p_r^{a_r-1}) = m(1 - \frac{1}{p_1})
   \ldots (1 - \frac{1}{p_r})\]
   \begin{beweis}
-    Möbius-Inversion mit $f \coloneqq \varphi, F \coloneqq id_{\N}$ ergibt:
+    Möbius-Inversion mit $f \coloneqq \phi, F \coloneqq\id_{\N}$ ergibt:
     \begin{align*}
-      \varphi(m) &= \sum_{d\mid m} \mu(d) \underbrace{F(\frac{m}{d})}_{=
+      \phi(m) &= \sum_{d\mid m} \mu(d) \underbrace{F(\frac{m}{d})}_{=
         \frac{m}{d}}\\
       &= m - \frac{m}{p_1}- \frac{m}{p_2} - \dotsc -
       \frac{m}{p_r} + \frac{m}{p_1p_2} + \dotsc + \frac{m}{p_{r-1}p_r} +
@@ -1194,12 +1204,12 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
 
 % Bemerkung
 \begin{bem}
-  $\ggt(m, n) = 1 \Rightarrow \varphi(mn) = \varphi(m) \varphi(n)$
+  $\ggt(m, n) = 1 \Rightarrow \phi(mn) = \phi(m) \phi(n)$
 \end{bem}
 
 % Beispiel
 \begin{bsp}
-  $\varphi(100) = \varphi(2^2 \cdot 5^2) = (2^2 - 2^1)(5^2 - 5^1) = 2
+  $\phi(100) = \phi(2^2 \cdot 5^2) = (2^2 - 2^1)(5^2 - 5^1) = 2
   \cdot 20 = 40$
 \end{bsp}
 
@@ -1214,7 +1224,7 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
       \cdot b$ mit $a, b \in \{1, \ldots, m-1\}$ und $a + m\Z \neq
       0 \neq b + m\Z$, aber $(a + m\Z)(b + m\Z) = m + m\Z = 0 +
       m\Z$. Also ist $\ZmZ{m}$ kein Körper.
-    \item[\glqq$\Leftarrow$\grqq] Sei $m \in \PZ$. Dann ist $\varphi(m)
+    \item[\glqq$\Leftarrow$\grqq] Sei $m \in \PZ$. Dann ist $\phi(m)
       = m - 1$, d.\,h. $\ZmZ{m}$ enthält $m - 1$ invertierbare Elemente,
       d.\,h. alle Elemente in $\ZmZ{m}$ außer der Null sind
       invertierbar. Also ist $\ZmZ{m}$ ein Körper.
@@ -1250,7 +1260,7 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
 \begin{satz}[\textsc{Euler-Fermat}]\label{satz:3.8}
   Für jede endliche abelsche Gruppe $G$ und jedes $g \in G$ gilt:
   \[g^{\abs{G}}=1\]
-  Insbesondere ist $a^{\varphi(m)} \equiv 1 \pmod{m}$ für alle $m \in
+  Insbesondere ist $a^{\phi(m)} \equiv 1 \pmod{m}$ für alle $m \in
   \N$, $a \in \Z$ mit $\ggt(a, m) = 1$.
   \begin{beweis}
     Sei $G = \{x_1, \ldots, x_n\}, n = \abs{G} $. Für $i, j = 1, \ldots,
@@ -1262,11 +1272,11 @@ $\ZmZ{6}$ ist kein Körper. So ist z.\,B. $\underbrace{(2 + 6\Z)}_{\neq 0 +
     g^n\prod_{i = 1}^{n} x_{i} = g^nx,\]
     d.\,h. $g^n = 1=g^{\abs{G}}$.
 
-    Für $G = U(\ZmZ{m})$, d.\,h. $\abs{G} = \varphi(m)$ und
+    Für $G = U(\ZmZ{m})$, d.\,h. $\abs{G} = \phi(m)$ und
     $g \coloneqq a + m\Z \in G$ gilt also:
-    \[1 + m\Z = g^{\abs{G}} = (a + m\Z)^{\varphi(m)} = a^{\varphi(m)}
+    \[1 + m\Z = g^{\abs{G}} = (a + m\Z)^{\phi(m)} = a^{\phi(m)}
     + m\Z,\]
-    d.\,h. $a^{\varphi(m)} \equiv 1 \pmod{m}$.
+    d.\,h. $a^{\phi(m)} \equiv 1 \pmod{m}$.
   \end{beweis}
 \end{satz}
 
@@ -2389,9 +2399,9 @@ Für $p \in \PZ$ und $n \in \N$ hat $\F_{p^n}$ genau $n$ Körperautomorphismen, nä
 
 % Beweis
 \begin{beweis}
-Für $i \in \N_0$ ist $f^i \colon \F_{p^n} \rightarrow \F_{p^n}$, $x \mapsto x^{p^i}$, ein Körperautomorphismus; dabei ist $f^n = id_{\F_{p^n}}$.\\
+Für $i \in \N_0$ ist $f^i \colon \F_{p^n} \rightarrow \F_{p^n}$, $x \mapsto x^{p^i}$, ein Körperautomorphismus; dabei ist $f^n =\id_{\F_{p^n}}$.\\
 Seien $i, j \in \N_0$ mit $1 \leq i \leq j < n$ und $f^i = f^j$. Dann ist
-  $f^{j-i} = id_{\F_{p^n}}$, d.\,h. $x^{p^{j-i}} = x$ für alle $x \in \F_{p^n}$. Da das Polynom $X^{p^{j-i}} - X$ im Fall $j \neq i$ höchstens $p^{j-i}$ Nullstellen hat, folgt $j = i$. Daher sind $id_{\F_{p^n}}, f, f^2, \ldots, f^{n-1}$ paarweise verschieden.\\
+  $f^{j-i} =\id_{\F_{p^n}}$, d.\,h. $x^{p^{j-i}} = x$ für alle $x \in \F_{p^n}$. Da das Polynom $X^{p^{j-i}} - X$ im Fall $j \neq i$ höchstens $p^{j-i}$ Nullstellen hat, folgt $j = i$. Daher sind $id_{\F_{p^n}}, f, f^2, \ldots, f^{n-1}$ paarweise verschieden.\\
 Andererseits existiert ein $b \in \F_{p^n}$ mit $\F_{p^n} = \left\{0, 1, b, b^2, \dotsc, b^{p^n-2}\right\}$ und $b^{p^n-1} = 1$.\\
 Der Primkörper $P$ von $\F_{p^n}$ ist zu $\F_p$ isomorph, \OE{} $\F_p = P \subseteq \F_{p^n}$.\\
 Wegen $\F_{p^n} = \F_p(b)$ hat das Minimalpolynom $\mu$ von $b$ über $\F_p$ den Grad $n$.\\
@@ -2433,7 +2443,7 @@ Dabei:
 	\item Nachricht = Vektor in $K^k$ $(K \text{ endlicher Körper, } \left|K\right| = q)$ [oft $K = \F_2$, aber: bei CD, DVD: $K = \F_{256}$]
 	\item Codierung: injektive Abbildung\\
 	$\underbrace{E}_{\text{Encode}} \colon K^k \rightarrow K^n\ (n > k)$  [oft: $E$ linear]
-	\item Decodierung: $D \colon K^n \rightarrow K^k$ mit $D \circ E = id_{K^k}$
+	\item Decodierung: $D \colon K^n \rightarrow K^k$ mit $D \circ E =\id_{K^k}$
 	\item Hilfreich \highl{Hamming--Abstand} \footnote{Hamming: Pionier der Codierungstheorie} $d \colon K^n \times K^n \rightarrow \R$ \footnote{$d$ Metrik}
 	\[d(x, y) \coloneqq \left|\left\{i \colon 1 \leq i \leq n, x_i \neq y_i\right\}\right| \text{ für } x = (x_1, \ldots, x_n), (y_1, \ldots, y_n) \in K^n\] misst Anzahl der Fehler:
 	\begin{itemize}
@@ -2739,6 +2749,15 @@ $z$ ist aus $m$ konstruierbar $\Leftrightarrow \exists$ Folge von Teilkörpern
 
 
 \appendix
+
+\chapter{Übungsaufgaben}
+\label{chap:uebung}
+
+\section{Übungsblatt 1}
+
+\begin{enumerate}
+\item 
+\end{enumerate}
 
 \begin{thebibliography}{99}
 \bibitem{bewer} Jörg Bewersdorf: "`Algebra für Einsteiger"',
