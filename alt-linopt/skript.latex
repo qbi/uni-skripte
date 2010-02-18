@@ -59,10 +59,7 @@
 \usepackage{booktabs}    %% schöne Linien in Tabelle
 \usepackage{wasysym}
 \usepackage{txfonts}
-\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
-                         % Markierungen für offene Aufgaben zu setzen; wird
-                         % auch für \help (s.u.) verwendet
-\usepackage{mathtools}   % Zur Definition von \abs und \norm
+
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -105,7 +102,6 @@
 \newcommand*{\verfautorefname}{Verfahren}
 \newcommand*{\lemmaautorefname}{Lemma}
 \newcommand*{\korautorefname}{Korollar}
-\newcommand*{\proofautorefname}{Beweis}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -128,7 +124,10 @@
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
 % macht es leichter sie alle zu finden und auch ganz einfach
 % auszublenden, indem man den Befehl einfach leer definiert
-\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
+
+% \todo ist das gleiche wie \help nur für offene Aufgaben
+\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
@@ -146,12 +145,23 @@
 %% unter den Nebenbedingungen ist auch zu lang zum Eintippen
 \newcommand*{\unb}{unter den Nebenbedingungen\xspace}
 
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+% \newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+% 			       {\mspace{8mu}gdw\mspace{8mu}}%
+% 			       {$gdw$\xspace}}
+% \newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+% 			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+% 			       {$gdw_{def}$\xspace}}
+
 % Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
 % rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
 % ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
-\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
+\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
 
 % Das original Epsilon sieht nicht so toll aus
 \renewcommand*{\epsilon}{\varepsilon}
@@ -213,7 +223,7 @@
    \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
     \texttt{<jens@kubieziel.de>}} (2006)
    \item \href{mailto:joerg.bader@wurzel.org}{Jörg Bader
-    \texttt{<joerg.bader@wurzel.org>}} (2009)
+    \texttt{<joerg.bader@wurzel.org>}} (2009/2010)
   \end{itemize}
 }
 
@@ -541,12 +551,12 @@ Optimierungsproblemen.
   \begin{align*}
     \min c^Tx \text{ mit }
     l_x\leq x\leq u_x,
-    l_A\leq A^{(1)}\leq u_A,
-    A^{(2)}(x)= b
+    l_A\leq A^{(1)}x\leq u_A,
+    A^{(2)}x= b
   \end{align*}
   wobei gilt: $x, c, l_x, u_x\in\R^n, A^{(1)}$ ist eine
   $m_1\times n$-Matrix, $l_A, u_A\in\R^{m_1}, A^{(2)}$ ist eine
-  $m_2\times n$-Matrix.
+  $m_2\times n$-Matrix, $b\in\R^{m_2}$.
 \end{defin}
 
 \begin{bsp}
@@ -624,7 +634,7 @@ Optimierungsproblemen.
     \min c^Tx \text{ mit } Ax\geq b, x\geq0
   \end{align*}
   mit $c\in\R^n, A$ ist eine $m\times n$-Matrix, $b\in\R^m$. In diesem
-  Fall ist die zulässige Menge $\FF= \{x\in\R\colon Ax\geq b, x\geq 0\}$.
+  Fall ist die zulässige Menge $\FF= \{x\in\R^n\colon Ax\geq b, x\geq 0\}$.
 \end{defin}
 
 \begin{bsp}
@@ -655,7 +665,7 @@ Optimierungsproblemen.
   Ein lineares Optimierungsproblem in Normalform oder Standardform ist
   die Aufgabe
   \begin{gather*}
-    \min c^{T} x\text{\unb } Ax=b, x\geq 0
+    \min c^{T} x\text{ \unb  } Ax=b, x\geq 0
   \end{gather*}
   mit $c\in\R^{n}, b\in\R^{m}$ und $A$ ist eine $m\times n$-Matrix.
   Die zulässige Menge ist
@@ -1216,7 +1226,7 @@ Es gibt folgende Spezialfälle:
   Sei $A\in\R^{m\times n}, m\leq n, b\in\R^{m}$. Wir betrachten das
   lineare Optimierungsproblem in Standardform:
   \begin{gather*}
-    \min c^{T}x \text{ \unb } x\in\FF=\set{x\in\R^{n}| Ax=b, x\geq 0}
+    \min c^{T}x \text{ \unb  } x\in\FF=\set{x\in\R^{n}| Ax=b, x\geq 0}
   \end{gather*}
   Dann gilt:
   \begin{enumerate}[(a)]
@@ -2543,7 +2553,7 @@ löst das Hilfsproblem (HP) und man erhält aus der Lösung des
 Hilfsproblems
 \begin{itemize}
  \item die Startbasis für die Phase 2 oder
- \item die Information, dass die zulässige Menge nichtleer ist oder
+ \item die Information, dass die zulässige Menge leer ist oder
  \item die Information, dass der Rang von $A$ kleiner als $m$ ist
   (redundante Gleichungen)
 \end{itemize}
@@ -2552,12 +2562,16 @@ Hilfsproblems
 Wir bezeichnen den Einheitsvektor mit $e=(1,1,\dotsc,1)^{T}$ und die
 Variablen des Hilfsproblems mit $z= (z_{1},\dotsc, z_{n},
 z_{n+1},\dotsc, z_{n+m})^{T} = (x_{1},\dotsc, x_{n}, y_{1},\dotsc,
-y_{m})^{T}$. Das Hilfsproblem lautet $\min e^{T}y= \sum_{i=1}^{m}
-y_{i}$ \unb $\begin{pmatrix}x\\y\end{pmatrix} \in\tilde{\FF} \coloneqq 
+y_{m})^{T}$. Das Hilfsproblem lautet 
+\begin{gather*}\min e^{T}y= \sum_{i=1}^{m}y_{i}
+\end{gather*}
+ \unb 
+\begin{gather*}\begin{pmatrix}x\\y\end{pmatrix} \in\tilde{\FF} \coloneqq 
 \Set{z=\begin{pmatrix}x\\y\end{pmatrix} \in\R^{n+m}|
-  \begin{pmatrix}x\\y\end{pmatrix} \geq 0, (A, I_{m})
+  \begin{pmatrix}x\\y\end{pmatrix} \geq 0, (A \; I_{m})
   \begin{pmatrix}x\\y\end{pmatrix}=b}=
-\Set{z=\begin{pmatrix}x\\y\end{pmatrix}| x,y\geq 0, Ax+y=b}$.
+\Set{z=\begin{pmatrix}x\\y\end{pmatrix}| x,y\geq 0, Ax+y=b}\text{.}
+\end{gather*}
 
 Ist $\begin{pmatrix}x\\y\end{pmatrix} \in\tilde{\FF}$ und
 $y=0_{m}\Rightarrow Ax=b$, d.\,h. $x\in\FF$. Wir schreiben das
@@ -2578,26 +2592,33 @@ ist:
 
 Die zugehörige Basislösung ist
 $z_{B}=\underbrace{\tilde{A}_{B}^{-1}}_{=I_{m}} b=b, z_{N}=0_{n}$.
-Wegen $b\geq 0$ ist $\tilde{z}_{B}\geq0\Rightarrow$ zulässige
+Wegen $b\geq 0$ ist $z_{B}\geq0\Rightarrow$ zulässige
 Basislösung. Einträge für das Starttableau:
 \begin{align*}
   \tilde{A}_{B}^{-1} &= I_{m}\\
   \tilde{A}_{B}^{-1} \tilde{A}_{N} &= \tilde{A}_{N}=A\\
   \widehat{s}^{T} &= \tilde{c}_{N}^{T} - \tilde{c}_{B}^{T}
      \tilde{A}_{B}^{-1} \tilde{A}_{N} = 0_{n}-e^{T}I_{m}A=-e^{T}A\\
-  \tilde{c}^{T}z &= \tilde{c}_{B}^{T} z_{b} = e^{T}b\\
+  \tilde{c}^{T}z &= \tilde{c}_{B}^{T} z_{B} = e^{T}b\\
   y^{T} &= \tilde{c}_{B}^{T} \tilde{A}_{B}^{-1}=e^{T}
 \end{align*}
 
-\todo{Tableau einfügen}
+ Das Simplexverfahren mit der Zusatzregel berechnet also nach endlich
+ vielen Schritten eine Ecke für folgendes Starttableau:
 
-Damit folgt, dass das Simplexverfahren mit der Zusatzregel eine Ecke
-nach endlich vielen Schritten berechnet.
+\begin{tabular}{c|c|c|c}
+  & $(1\,...\,n)$ & & $(n+1\,...\,n+m)$\\
+  \toprule
+  $\begin{pmatrix}n+1\\...\\n+m\end{pmatrix}$ & $A$ & $b$ &
+     $I_{m}$\\
+  \bottomrule
+  & $-e^{T}A$ & $e^{T}b$ & $e^{T}$
+\end{tabular}
 
 \begin{lemma}
   Sei $\tilde{z}=\begin{pmatrix}\tilde{x}\\\tilde{y}\end{pmatrix}$
   eine Lösung des Hilfsproblems. Ist der Optimalwert $\tilde{c}^{T}
-  \tilde{z}=0$, dann erfüllt $\tilde{x}\in\FF$, also $\FF\neq 0$ und
+  \tilde{z}=0$, dann ist $\tilde{x}\in\FF$, also $\FF\neq \emptyset$ und
   $\tilde{y}=0_{m}$. Ist der Optimalwert $\tilde{c}^{T}\tilde{z}>0$,
   dann ist $\FF=\emptyset$.
   \begin{proof}
@@ -2858,7 +2879,7 @@ $\tilde{\alpha}\in \R^{n}, \lambda\in\R^{m}$.
 
 \section{Optimalitätsbedingungen}
 
-Sei $c\in\R^{n}, A\in\R^{m\times n}, B\in\R^{m}, m\leq n$ sowie das
+Sei $c\in\R^{n}, A\in\R^{m\times n}, b\in\R^{m}, m\leq n$ sowie das
 lineare Problem $\min c^{T}x$ \unb $x\in\FF=\{x\in\R^{n}\colon x\geq
 0, Ax=b\}$.
 
@@ -2866,7 +2887,7 @@ lineare Problem $\min c^{T}x$ \unb $x\in\FF=\{x\in\R^{n}\colon x\geq
   Ein Punkt $\tilde{x}\in\FF$ ist genau dann Lösung des linearen
   Problem, wenn ein $\tilde{y}\in\R^{m}, \tilde{s}\in\R^{n}$ existiert mit:
   \begin{gather}\label{eq:41}
-    A^{T}\tilde{y}+\tilde{s}=c\qquad \tilde{x}^{T}\tilde{s} =\sigma\qquad
+    A^{T}\tilde{y}+\tilde{s}=c\qquad \tilde{x}^{T}\tilde{s} =0\qquad
     \tilde{s}\geq0
   \end{gather}
   \begin{proof}
@@ -2874,7 +2895,7 @@ lineare Problem $\min c^{T}x$ \unb $x\in\FF=\{x\in\R^{n}\colon x\geq
      \item["`$\Rightarrow$"'] Sei $x\in\FF$ die Lösung des linearen
       Problems. Wir betrachten zunächst den Fall $\rg(A)=m$. Da das
       Problem eine Lösung hat, berechnet das Simplex-Verfahren (nach
-      \autoref{satz:325}\todo{label zu satz:325 anlegen}) in endlich vielen Schritten eine optimale
+      \autoref{satz:325}) in endlich vielen Schritten eine optimale
       Ecke $x$ zu einer Basis $B$ von $A$.
 
       Weiter ist die Optimalitätsbedingung $s_{N}\geq 0$ erfüllt und
@@ -2981,7 +3002,7 @@ Wegen \autoref{eq:42} ist das System aus \autoref{eq:44} äquivalent zu:
 \begin{align}\label{eq:45}
   Ax &= b \qquad x\geq 0\\
   A^{T}y+s &= c \qquad s\geq 0\nonumber\\
-  c^{T}x &= b^{T}y \Leftrightarrow x^{T}s=0
+  c^{T}x &= b^{T}y
 \end{align}
 
 \begin{bsp}
@@ -3065,7 +3086,7 @@ formulieren:
 
 \begin{bsp}
   zu Beispiel \todo{richtigen Verweis finden}
-  Dort ist die zuläsige Menge von (DP) angegeben: $\tilde{\FF}_{D}=
+  Dort ist die zulässige Menge von (DP) angegeben: $\tilde{\FF}_{D}=
   \{y\in\R^{n}\colon \tilde{A}^{T}y\leq \tilde{c}\}$ mit $\tilde{A}=
   (A, -I_{m}), \tilde{c}=
   \begin{pmatrix}c\\0_{m}\end{pmatrix}\Rightarrow \tilde{\FF}_{D}=
@@ -3131,7 +3152,7 @@ formulieren:
 \begin{bem}
   Die Aussagen von \autoref{satz:41} und \autoref{satz:45}:
   \begin{itemize}
-   \item Ein primal zuläsiger Punkt $\tilde{x}\in\FF_{P}$ ist genau
+   \item Ein primal zulässiger Punkt $\tilde{x}\in\FF_{P}$ ist genau
     dann Lösung von (LP), wenn ein dual zulässiger Punkt $(\tilde{y},
     \tilde{s})\in\FF_{D}$ mit $c^{T}\tilde{x}=b^{T}\tilde{y}$ existiert.
    \item Ein dual zulässiger Punkt $(\tilde{y}, \tilde{s})\in\FF_{D}$
@@ -3297,10 +3318,10 @@ Allgemein betrachten wir die folgende Situation:
   \min c^{T}x\text{ \unb} \tag{(LP)\textsubscript{v}}\\
   x\in\FF(v)=\{x\in\R^{n}\colon x\geq0, Ax=b+v\}\nonumber\\
 \end{gather}
-Frage: Wie hängen Lösung und Optimalwert von $V\in\R^{n}$ ab? Das duale
+Frage: Wie hängen Lösung und Optimalwert von $v\in\R^{n}$ ab? Das duale
 Problem lautet:
 \begin{gather}
-  \max (b+t)^{T}y\text{ \unb} \tag{(LP)\textsubscript{v}}\\
+  \max (b+t)^{T}y\text{ \unb} \tag{(DP)\textsubscript{v}}\\
   y\in\tilde{\FF}_{D}=\{y\in\R^{n}\colon A^{T}y\leq c\}\nonumber\\
 \end{gather}
 Sei $x$ eine Lösung des linearen Problems für $v=0_{m}$ zur Basis $B$ und
@@ -3314,11 +3335,11 @@ Für $v\in\R^{m}$ definieren wir:
 \end{gather*}
 
 \begin{satz}
-  Unter obiger Voraussetzung gelte $x_{B}(v)\geq0$ und damit auch
-  $x(v)\geq0$). dann ist $x(v)$ Lösung von $(LP)_{v}$. Für den Optimalwert
+  Unter obiger Voraussetzung gelte $x_{B}(v)\geq0$ (und damit auch
+  $x(v)\geq0$). Dann ist $x(v)$ Lösung von $(LP)_{v}$. Für den Optimalwert
   gilt:
   \begin{gather}\label{eq:47}
-    c^{T}x(v)= c^{T}\tilde{x}+ \tilde{y}v
+    c^{T}x(v)= c^{T}\tilde{x}+ \tilde{y}^{T}v
   \end{gather}
   Weiter ist auch $\tilde{y}$ Lösung von $(DP)_{v}$.
   \begin{proof}
@@ -3487,15 +3508,15 @@ wählen.
     E(Q, x, \rho)=\{y\in\R^{n}\colon (y-x)^{T} (Q^{-1})^{T}
        Q(y-x)\leq\rho^{2}\}
   \end{gather*}
-  definierte Menge \highl{Ellipsoid} mit MIttelpunkt $x$ und Radius
+  definierte Menge \highl{Ellipsoid} mit Mittelpunkt $x$ und Radius
   $\rho$.
 \end{defin}
 
 \begin{bem}
   Ist $Q=I_{n}\Rightarrow E(I_{n},x,\rho)=\{y\in\R^{n}\colon
   (y-x)^{T}(y-x)\leq\rho^{2}\}= \{y\in\R^{n}\colon
-  \norm{y-x}^{2}\leq\rho^{2}\}\Rightarrow E(I_{n}, x, \rho)$ ist die
-  abgeschlossene Kugel um $x$ mit Radius $\rho$.
+  \norm{y-x}^{2}\leq\rho^{2}\}\\
+  Also ist E(I_{n}, x, \rho)$ die abgeschlossene Kugel um $x$ mit Radius $\rho$.
 
   Sei allgemein $Q\in\R^{n\times n}\colon\rg(Q)=n\Rightarrow
   \rg(Q^{-1})=n$. Die Matrix $(Q^{-1})^{T}Q$ ist symmetrisch und
