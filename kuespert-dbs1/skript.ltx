@@ -60,7 +60,10 @@
 \usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
                          % Markierungen für offene Aufgaben zu setzen; wird
                          % auch für \help (s.u.) verwendet
-\usepackage{graphicx}
+\usepackage{tikz-er2}
+\usepackage{braket}
+
+%\usetikzlibrary{positioning}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -158,15 +161,7 @@
 % kopiert.
 \newcommand*{\coloneq}{\mathrel{\mathop:}=}
 
-
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-\newenvironment*{mdescription}%
-                {\renewcommand*{\descriptionlabel}[1]%
- 			       {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		{\end{description}}
+\DeclareMathOperator{\dom}{dom}  % Domain
 
 \makeindex
 
@@ -393,6 +388,234 @@ Schnittstellen aus. Details sind in dem Buch~\cite{ja76} erläutert.
 \label{sec:diam}
 
 \todo{DIAM beschreiben}
+
+\chapter{Datenmodellierung mit dem Entity-Relationship-Modell}
+\label{cha:datenm-mit-ermodell}
+
+\section{Einleitung}
+\label{sec:einleitung-er}
+
+
+Das Kapitel wird Begriffe wie Entity, Entitytyp, Wertebereich
+einführen. Weiterhin lernen wir die grafische Darstellungsform von
+Entity"=Relationship"=Modellen, die sogenannten
+Entity"=Relationship"=Diagramme, kennen. Diese Modelle kürzen wir
+durch ER"=Modell ab. Eingedeutscht könnte man auch von einem
+Gegenstand"=Beziehungs"=Modell sprechen. ER"=Modelle beschreiben einen
+Ausschnitt aus der realen Welt.
+
+\begin{bsp}
+Das Beispiel zeigt ein unvollständiges ER"=Diagramm.
+
+  \begin{tikzpicture}[node distance=9em]
+    \node[entity] (person) {Professor};
+    \node[relationship] (reads) [right of=person] {liest} edge (person);
+    \node[entity] (vorlesung) [right of=reads] {Vorlesung} edge
+    (reads);
+    \node[attribute] (name) [below left of=person] {Name} edge (person);
+    \node[attribute] (fach) [below right of=person] {Fach} edge (person);
+    \node[attribute] (telefon) [below of=person] {Telefon} edge
+    (person);
+    \node[attribute] (semester) [below of=reads] {Semester} edge
+    (reads);
+    \node[attribute] (titel) [above right of=vorlesung] {Titel} edge
+    (vorlesung);
+    \node[attribute] (zeitplan) [above left of=vorlesung] {Zeitplan}
+    edge (vorlesung);
+    \node[relationship] (empfiehlt) [below of=vorlesung] {emfpiehlt}
+    edge (vorlesung);
+    \node[entity] (buch) [below of=empfiehlt] {Buch} edge (empfiehlt);
+    \node[attribute] (autor) [above left of=buch]  {Autor} edge
+    (buch);
+    \node[attribute] (butitel) [left of=buch] {Titel} edge (buch);
+    \node[attribute] (isbn) [below left of=buch] {ISBN} edge (buch);
+  \end{tikzpicture}
+\end{bsp}
+Datenbanksysteme unterstützen in aller Regel das ER"=Modell nicht
+direkt. Stattdessen muss eine Umsetzung vom ER"=Modell zum
+Datenbankmodell erfolgen.
+
+\section{Entitäten, Attribute und Schlüssel}
+\label{sec:entitaten}
+
+
+\begin{defini}[Entität]
+  Eine \highl{Entität} (vom engl.\,\textit{entity}) ist ein bestimmtes,
+  wohlunterscheidbares Objekt.
+\end{defini}
+
+\begin{defini}[Entitätstyp]
+  Ein \highl{Entitätstyp} ist eine Zusammenfassung von Entitäten mit
+  gleichen charakteristischen Merkmalen.
+\end{defini}
+
+\begin{bsp}
+  Die Angestellten Müller, Meier und Schulze sind Entitäten. Der
+  Entitätstyp \texttt{ANGEST} steht für die Menge aller möglichen
+  Angestellten. Weiterhin könnte es den Entitätstyp \texttt{GEBÄUDE},
+  \texttt{ABTEILUNG} etc. geben.
+\end{bsp}
+
+\begin{bemerk}
+  Verschiedene Entitätstypen müssen nicht disjunkt sein. Vergleiche
+  die Entitytypen \texttt{PERSON} und \texttt{STUDENT}.
+\end{bemerk}
+
+\begin{defini}[Attribut]
+  Ein \highl{Attribut} ist eine Eigenschaft des Entitätstyps. Jedem
+  Entitätstyp $E$ wird eine nichtleere endliche Attributmenge $A$
+  zugeordnet.
+\end{defini}
+
+\begin{bsp}
+  \texttt{E=ANGEST} und \texttt{A=\{Personalnummer, Name, Vorname, Gehalt\}}
+\end{bsp}
+
+Allgemeiner lässt sich feststellen: $A=\{a_{1}, a_{2},
+\ldots\}$. Dabei sind die $a_{i}$ die Attribute und $i<\infty$.
+
+\begin{defini}[Wertebereich, Domäne, Domain]
+  Jedem Attribut $a$ ist ein \highl{Wertbereich} $\dom(a)$
+  zugeordnet. Dieser wird auch als \highl{Domain} oder \highl{Domäne}
+  bezeichnet.
+\end{defini}
+
+\begin{bsp}
+  \begin{itemize}
+  \item $\dom(\text{Personalnummer})= \Z$
+  \item $\dom(\text{Gehalt}) = \Set{g | 1000\leq g \leq 10000}$
+  \end{itemize}
+\end{bsp}
+
+Die Festlegungen zum Wertebereich stellen einfache semantische
+Integritätsbedingungen dar.
+
+\begin{defini}[Schlüssel]
+  Ein \highl{Schlüssel} dient zur eindeutigen Identifizierung einer
+  Entität $e$ innerhalb des Entitätstyps $E$.
+\end{defini}
+
+\begin{bsp}\label{bsp:schluessel}
+  Sei \texttt{E=ANGEST} und \texttt{A=\{Personalnummer, Name, Vorname,
+    Gehalt\}}. Dann suchen wir eine Teilmenge $K\subseteq A$ so, dass
+  die Attributwerte des Schlüssel eindeutig die Entität
+  identifizieren. Beispielsweise könnte \texttt{K=\{Personalnummer\}}
+  sein. Dabei müssen wir voraussetzen, dass die Personalnummer
+  innerhalb des Unternehmens eindeutig ist.
+\end{bsp}
+
+\begin{bemerk}
+  Sollte im \autoref{bsp:schluessel} die Personalnummer nicht
+  eindeutig sein, so könnte man ein weiteres Attribut
+  hinzufügen. Allgemein wird die Minimalität eines Schlüssels
+  gefordert, d.\,h. $\nexists K'\subset K$ mit der Eigenschaft, dass
+  $K'$ Schlüssel ist.
+
+  Sollte es mehrere Schlüssel zur Auswahl geben, so werden diese als
+  Schlüsselkandidaten bezeichnet. Einer davon wird dann als
+  \highl{Primärschlüssel} gewählt. Üblicherweise wird dieser möglichst
+  klein gewählt, d.\,h. er enthält wenig Attribute.
+
+  Primäschlüssel werden manchmal "`künstlich"' gewählt. Meist
+  existiert kein Schlüssel in natürlicher Weise oder er verliert diese
+  Eigenschaft eventuell in der Zukunft.
+\end{bemerk}
+
+\section{Beziehungen}
+\label{sec:beziehungen}
+
+
+\begin{defini}[Beziehung, Relation]
+  Eine \highl{Beziehung} oder \highl{Relation} ist eine Verknüpfung
+  zwischen mindestens zwei Entitäten.
+\end{defini}
+
+\begin{bsp}
+  Wir nehmen an, dass es zwei Entitätstypen \texttt{ANGEST} und
+  \texttt{PROJEKT} gibt. Dann besteht zwischen einem Angestellten $a$
+  und einem Projekt $p$ eine Beziehung, wenn $a$ an $p$
+  arbeitet. Zwischen  Angestellten $a_{1}$ und $a_{2}$ besteht eine
+  Beziehung, wenn $a_{1}$ Chef von $a_{2}$ ist.
+\end{bsp}
+
+\begin{defini}[Beziehungstyp]
+  Ein \highl{Beziehungstyp} $E$ ist die Menge aller möglichen Beziehungen
+  zwischen je einer Entität der beteiligten Entitätstypen $E_{i}$ (mit
+  $i\in\N$). Man kann $R$ auch als kartesisches Produkt $R=E_{1}\times
+  E_{2}\times\dotsc\times E_{n}$ auffassen.
+\end{defini}
+
+\begin{bsp}[Beziehungstypen]
+  Man betrachtet in der Regel verschiedene Beziehungstypen. So hat
+  jeder Angestellte eine Personalakte. Das heißt, die Entität
+  Angestellter besitzt die Eigenschaft haben bezüglich der Entität
+  Personalakte. Jeder hat genau eine. Also spricht man vom
+  \highl{1:1"=Beziehungstyp}.
+
+  Die Angestellten arbeiten in verschiedenen Abteilungen. Herr Müller
+  arbeitet in der Finanz- und der Steuerabteilung, Freu Petermann im
+  Verkauf und Frau Lehmann in der Geschäftsführung sowie in der
+  Organisation. Somit kann jeder Angestellte in mehreren Abteilungen
+  arbeiten. Man spricht vom \highl{1:n"=Beziehungstyp}.
+
+  Schließlich arbeiten die Angestellten Müller, Meier und Schulze am
+  Projekt Straßenbau, die Angestellten Müller und Petermann am Projekt
+  Jahresabschluss sowie die Angestellten Fischer, Meier und Petermann
+  am Projekt Einkaufsplanung. In dem Falle sind verschiedene
+  Angestellte mit verschiedenen Projekten betraut und man spricht vom
+  \highl{n:m"=Beziehungstyp}.
+\end{bsp}
+
+\begin{bemerk}[Integritätsbedingungen]
+  \begin{itemize}
+  \item Von jeder Beziehung $r_{i}$ geht \emph{genau eine} Kante aus.
+  \item Nicht von jeder Entität $e$ muss eine Kante ausgehen.
+  \end{itemize}
+\end{bemerk}
+
+\begin{defini}[Grad]
+  Die Zahl der an einer Beziehung beteiligten Entitätstypen wird als
+  \highl{Grad} bezeichnet.
+\end{defini}
+
+\section{Entity-Relationship-Diagramme}
+\label{sec:entity-relat-diagr}
+
+Die Entity"=Relationship"=Diagramme werden auch als ER"=Diagramme
+bezeichnet und sind die grafische Darstellung von Entitäts- und
+Beziehungstypen. Sie bestehen aus folgenden Elementen:
+\begin{description}
+\item[Entitätstyp] 
+  \begin{tikzpicture}
+    \node[entity] (e) {E};
+  \end{tikzpicture}
+\item[Beziehungstyp] 
+  \begin{tikzpicture}
+    \node[relationship] (r) {R};
+  \end{tikzpicture}
+\item[Attribut] 
+  \begin{tikzpicture}
+    \node[attribute] (a) {A};
+  \end{tikzpicture}
+\item[Schlüsselattribut] 
+  \begin{tikzpicture}
+    \node[attribute] (k) {\key{A}};
+  \end{tikzpicture}
+\end{description}
+
+\begin{description}
+\item[Zwingende Beziehung] Sei $R=E\times E'$. Betrachte $e_{1}\in
+  E$. Dann gibt es stets mindestens ein $e_{2}\in E'$ mit dem $e_{1}$
+  innerhalb von $R$ in Beziehung steht, $r=(e_{1}, e_{2})$.
+\item[Optionale Beziehung] Entity $e_{1}$ darf in $E$ existieren, ohne
+  dass es über $R$ zu einer Entität $e_{2}\in E'$ in Beziehung steht.
+\end{description}
+
+\begin{defini}[Kardinalität, Komplexität]
+  Die \highl{Kardinalität} oder \highl{Komplexität} eines
+  Beziehungstyps drückt aus, zu wie vielen Entitys $e_{j}\in E'$ ein
+  Eintity $e_{i}\infty E$ in Beziehung stehen darf.
+\end{defini}
 
 \clearpage
 \appendix
