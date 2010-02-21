@@ -617,6 +617,97 @@ Beziehungstypen. Sie bestehen aus folgenden Elementen:
   Entity $e_{i}\in E$ in Beziehung stehen darf.
 \end{defini}
 
+\section{Schwache Entitytypen}
+\label{sec:schwach-enttyp}
+
+Manche Entitäten existieren nur in Verbindung mit anderen
+Entitäten. Diese werden als \highl[Entität!schwache]{schwache Entität}
+bezeichnet. Anders gesagt muss zur eindeutigen Identifizierung einer
+Instanz eines schwachen Entitätstyps die Beziehung mit herangezogen
+werden. Also identifizieren bestimmte Attributwerte der Entity
+\emph{plus} die Beziehung  es eindeutig.
+
+\begin{bsp}
+  Manche Angestellte haben Kinder. Diese sollen ebenfalls mit in der
+  Datenbank geführt werden. Diese Kinder "`existieren"' nur zusammen
+  mit den Eltern. Im ER"=Diagramm wird das wie folgt dargestellt:
+
+  \begin{tikzpicture}[node distance=9em]
+    \node[entity] (angest) {ANGEST};
+    \node[attribute] (pnr) [below left of=angest] {\key{PNR}} edge
+    (angest);
+    \node[attribute] (name) [below right of=angest] {Name} edge
+    (angest);
+    \node[ident relationship] (hat) [right of=angest] {hat} edge (angest);
+    \node[weak entity] (kind) [right of=hat] {Kind} edge (hat);
+    \node[attribute] (vorname) [above right of=kind] {\key{Vorname}} edge
+    (kind);
+    \node[attribute] (gebdat) [below right of=kind] {Geb.-Datum} edge (kind);
+  \end{tikzpicture}
+
+  Das heißt doppelte Linien beim Entity- und beim Beziehungstyp
+  kennzeichnen schwache Entitätstypen. 
+\end{bsp}
+
+\section{Erweiterungen des ER-Modells}
+
+\subsection{Erweiterungen bei Attributen}
+
+\begin{description}
+\item[Optionale Attribute] Das Attribut existiert für den Entitätstyp
+  bzw. den Beziehungstyp. Aber es muss nicht für jede Entität oder
+  Beziehung einen definierten Wert annehmen. Grafisch wird das durch
+  einen Kringel in der Verbindungslinie dargestellt. Optionale
+  Attribute sind primär für den Fall gedacht, wo strukturelle
+  Unterschiede zwischen den Entitys eines Typs erlaubt sind
+
+\item[Strukturierte Attribute] setzt sich aus anderen Attributen
+  zusammen. Die Komponenten eines strukturierten Attributs sind
+  benannt und bezüglich des Wertebereichs meist inhomogen.
+
+\item[Mengenwertiges Attribut] Der Attributwert ist eine Wertemenge,
+  wie beispielsweise die Telefonnummern einer Person oder die Kinder
+  des Angestellten. Im letzten Fall ist die Entscheidung, ob es sich
+  um ein schwaches oder ein mengenwertiges Attribut handelt regelmäßig
+  nicht einfach.
+
+\item[Virtuelle Attribute] sind nicht real gespeichert. Die Werte
+  werden durch eine Berechnungsvorschrift ermittelt. Die virtuellen
+  Attribute kennzeichnet man durch gestrichelte Linien.
+\end{description}
+
+\subsection{Erweiterung um Spezialisierung und Generalisierung}
+
+Spezialisierung und Generalisierung sind Bestandteil von erweiterten
+ER"=Modellen. Bei der \highl{Generalisierung} werden Eigenschaften
+ähnlichen Entitytypen ermittelt und einem gemeinsamen Obertyp
+zugeordnet. Die ähnlichen Entitytypen heißen \highl{Untertypen} des
+Obertyps. In der umgekehrten Richtung sind die Untertypen eine
+\highl{Spezialisierung} des Obertyps.
+
+\begin{bsp}
+  Jeder Angestellte und jeder Arbeiter ist ein Mitarbeiter. Beim
+  Mitarbeiter handelt es sich damit um eine Generalisierung und
+  Angestellte sowie Arbeiter sind die Spezialisierung. Die dabei
+  entstehende Beziehung wird als \highl{IS-A-Beziehung}
+  bezeichnet. Das bedeutet, ein Angestellter \emph{ist ein}
+  Mitarbeiter etc.
+
+  Weiterhin kann man sagen, dass Mitarbeiter ein \highl{Supertyp} von
+  Angestellten und Arbeitern ist und die beiden letztgenannten sind
+  ein \highl{Subtyp} von Mitarbeiter.
+
+  Diese Beziehung stellt man im ER"=Diagramm wie folgt dar:
+
+  \begin{tikzpicture}[node distance=6em]
+    \node[entity] (mitarbeiter) {Mitarbeiter};
+    \node[isa] (isa) [below of=mitarbeiter] {IS-A} edge (mitarbeiter);
+    \node[entity] (angest) [below left of=isa] {Angestellter} edge
+    (isa);
+    \node[entity] (arbeiter) [below right of=isa] {Arbeiter} edge (isa);
+  \end{tikzpicture}
+\end{bsp}
+
 \clearpage
 \appendix
 \begin{thebibliography}{99}
