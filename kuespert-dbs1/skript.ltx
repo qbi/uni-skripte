@@ -62,6 +62,7 @@
                          % auch für \help (s.u.) verwendet
 \usepackage{tikz-er2}
 \usepackage{braket}
+\usepackage{listings}
 
 %\usetikzlibrary{positioning}
 
@@ -818,7 +819,176 @@ Hierbei existieren die "`doppelten"' Entitäten in nur einer Hierarchie
 physisch. Aus anderen Hierarchien wird auf diese Entität per Zeiger
 verwiesen. Benutzer sehen diese Realisierung nicht. Das
 Datenbanksystem kann in diesem Modell wieder seine Stärken
-ausspielen. 
+ausspielen.
+
+\section{IMS als Beispiel eines hierarchischen Datenbanksystems}
+
+\highl{IMS} ist eine Abkürzung und steht für \highl{Information
+  Management System}. Es wurde zwischen 1966 und 1968 von IBM,
+Rockwell und Caterpiller für das Apollo"=Mondprogramm
+entwickelt. Seit 1969 wird es von IBM bis heute weiterentwickelt.
+
+IMS speichert die Daten durch ein hierarchisches Modell. Dies wird
+durch Datenblöcke, die \highl{Segment} genannt sind, realisiert. Jedes
+Segment kann verschiedene Daten enthalten. Die Teile bezeichnet man
+als \highl{Feld}. Das Datenbankmodell wie auch die Sprache sind nicht
+sehr flexibel und schwer zu beherrschen. Nichtsdestotrotz wird das
+Datenbanksystem weltweit oft eingesetzt und gehört zu den
+umsatzstärksten Produkten des Konzerns.
+
+\subsection{Begriffe und Eigenschaften}
+
+\begin{defini}[Segment]
+  Ein Knoten in der  Typhierarchie wurde bisher als Entitytyp
+  bezeichnet. Innerhalb von IMS heißt der \highl{Segment}.
+\end{defini}
+
+\begin{defini}[Feld]
+  Jedes Segment besteht aus einem oder mehreren \highl[Feld]{Feldern}.
+\end{defini}
+
+\begin{bemerk}
+  Die Segmente der Typhierarchie werden im Sinne der
+  Präorder"=Reihenfolge als geordnet betrachtet.
+\end{bemerk}
+
+\begin{defini}[Wurzelsegment]
+  Es gibt ein unabhängiges, ausgezeichnetes
+  \highl{Wurzelsegment}. Alle anderen Segmente sind
+  \highl[Segment!abhängiges]{abhängige Segmente}.
+\end{defini}
+
+\begin{bemerk}
+  Man spricht auch vom \highl{Vatersegment}, \highl{Kindsegment} sowie
+  vom \highl{Geschwistersegment}.
+\end{bemerk}
+
+\begin{defini}[Satz]
+  Die Knoten der Ausprägungsebene trugen bislang den Namen Entität. In
+  IMS werden sie als \highl{Satz} oder \highl{Record} bezeichnet. Die
+  Sätze enthalten eine \highl{Feldausprägung}.
+\end{defini}
+
+\begin{bemerk}
+  Übertragen auf die Typebene gibt es also einen \highl{Wurzelsatz},
+  \highl[Satz!abhängiger]{abhängige Sätze}, \highl{Elternsatz},
+  \highl{Kindsatz} und \highl{Geschwistersatz}.
+
+  Es sind keine "`Waisenkinder"' erlaubt, d.\,h. ein Kindsatz kann nur
+  solange existieren, wie es einen zugehörigen Elternsatz
+  gibt. Weiterhin erfolgt die Zuordnung von Kindrecord zum
+  Elternrecord durch den Anwendungsprogrammierer. Das ist auch die
+  schlechte Nachricht: Die Konsistenzwahrung erfolgt durch ein
+  Anwendungsprogramm!
+\end{bemerk}
+
+\subsection{Schemadefinition im IMS}
+
+\subsubsection{Konzeptionelles Schema}
+
+Die Struktur einer IMS"=Datenbank, also die Typhierarchie, wird als
+\highl{Physical Database Record Type} bezeichnet und wird durch eine
+\highl{Database Definition} (\highl{DBD}) festgelegt. Die DBD
+beschreibt einen wesentlichen Teil des konzeptionellen Schemas der
+IMS"=Datenbank. Daneben kommen noch Aspekte des internen Schemas
+hinzu. Das heißt, IMS bietet keine klare Trennung zwischen der
+Beschreibung der konzeptionellen und der internen Ebene. In der DBD
+können nur 1:n"=Beziehungstypen modelliert werden.
+
+\begin{bsp}
+  Eine Definition des Physical Database Record Type könnte so
+  aussehen.\todo{Definition des listings entsprechend DBD anpassen.}
+\begin{lstlisting}
+DBD   NAME=KursDB
+SEGM  NAME=Kurs, BYTES=36
+FIELD NAME=(KursNr,SEQ), BYTES=3, START=1
+FIELD NAME=Titel, BYTES=33, START=4
+SEGM  NAME=Vorauss, PARENT=Kurs, BYTES=3
+FIELD NAME=(VorNr,SEQ), BYTES=3, START=1
+SEGM  NAME=Angebot, PARENT=Kurs, BYTES=21
+FIELD NAME=(AngNr,SEQ), BYTES=3, START=1
+FIELD NAME=DATUM, BYTES=6, START=4
+FIELD NAME=Ort, BYTES=12, START=10
+SEGM  NAME=Kursleiter, PARENT=Angebot, BYTES=23
+FIELD NAME=(PersNr,SEQ), BYTES=5, START=1
+FIELD NAME=Name, BYTES=18, START=6
+SEGM  NAME=Teilnehmer, PARENT=Angebot, BYTES=41
+FIELD NAME=(TnNr,SEQ), BYTES=3 , START=1
+FIELD NAME=Name, BYTES=18, START=4
+FIELD NAME =Ort, BYTES=20, START=22
+END
+\end{lstlisting}
+Die Reihenfolge der Segment"=Definitionen (\lstinline{SEGM}) bestimmt
+die Präorder"=Reihenfolge der Segmente in der Typhierarchie. Alle
+Felder sind untypisiert und besitzen eine feste Länge. Die Angabe
+\lstinline{SEQ} legt fest, dass die Segmentausprägungen nach diesen
+Feldwerten \emph{aufsteigend} sortiert sind. Damit die Felder mit
+\lstinline{SEQ} gleichzeitig Schlüsselfelder.
+\end{bsp}
+
+\subsubsection{Externe Schemas}
+
+Auf IMS kann nicht ad hoc zugegriffen werden. Stattdessen erfolgt der
+Zugriff immer über ein Anwendungsprogramm. Diese Programme sehen nicht
+die physische Datenbank, sondern einen \highl{Programm Communication
+  Block} (\highl{PCB}). Ein Programm kann auch mehrere PCBs
+verwenden. Diese bilden dann \highl{Programm Specification Block}
+(\highl{PSB}), also das externe Schema.
+
+\begin{bsp}
+\begin{lstlisting}
+PCB    DBDNAME=KursDB, KEYLEN=9
+SENSEG NAME=Kurs, PROCOPT=G
+SENSEG NAME=Angebot, PARENT=Kurs, PROCOPT=G
+SENFLD NAME=(AngNr,SEQ), START=1
+SENFLD NAME=DATUM, START=4
+SENSEG NAME=Teilnehmer, PARENT=Angebot, PROCOPT=GID
+PSBGEN LANG=COBOL, PSBNAME=KursMaint
+END
+\end{lstlisting}
+Die in der \lstinline{SENSEG}"=Anweisung aufgeführten Segmente werden
+sichtbar gemacht. Man spricht auch von sensibilisierten oder
+sensitiven Segmenten. Diese sind Teil des externen Schemas und damit
+durch das Programm ansprechbar. Weiterhin sensibilisiert
+\lstinline{SENFLD} die entsprechenden Felder in den Segmenten. Sollte
+auf ein \lstinline{SENSEG} kein \lstinline{SENFLD} folgen, gelten alle
+Felder als sensibilisiert. \lstinline{PROCOPT} steht für "`processing
+options"' und definiert Zugriffsrechte. Dabei steht \texttt{G} für
+"`get"', \texttt{I} für "`insert"' und \texttt{D}  für "`delete"'.
+\end{bsp}
+
+\subsubsection{Zugriff mittels DL/I}
+
+Das \highl{Data Language Interface}, manchmal als Data Language/One
+bezeichnet, wird als Sprache für den IMS"=Datenbankzugriff
+benutzt. Zum besseren Verständnis betrachten wir die Abfolge bei einem
+lesenden Zugriff.
+\begin{enumerate}
+\item Die Anwendung ruft das Anschlussmodul mittels eines
+  Unterprogrammaufrufs auf und übergibt die Anfrage in der Parameterliste.
+\item Die Anfrage wird an das DBMS weitergegeben.
+\item Das DBMS bearbeitet die Anfrage und stellt das Ergebnis bereit.
+\item Ergebnis wird zurückgegeben.
+\item Das Anwendungsprogramm analysiert den Rückgabewert  und greift
+  ggf. auf die Treffer zu.
+\end{enumerate}
+
+Im folgenden lernen wir eine Auswahl des Operationsvorrats von DL/I
+kennen.
+\begin{description}
+
+\item[\texttt{GET UNIQUE} (\texttt{GU})]  direktes Positionieren auf
+  einen Record und Lesen einer Segmentausprägung. Einstieg erfolgt von außen
+\item[\texttt{GET NEXT} (\texttt{GN})] Zugriff auf nächste
+  Segmentausprägung ausgehend von aktueller Position
+\item[\texttt{GET NEXT WITH PARENT} (\texttt{GNP})] wie oben nur mit Vater"=Segment"=Ausprägung
+\item[\texttt{GET HOLD} (\texttt{GHU}, \texttt{GHN}, \texttt{GHNP})]
+  wie bei obigen Varianten, nur die Segmentausprägung, auf die
+  positioniert wurde, kann geändert werden.
+\item[\texttt{INSERT} (\texttt{INSRT})] Einfügen einer neuen Segmentausprägung
+\item[\texttt{DELETE} (\texttt{DLET})] Löschen einer Segmentausprägung
+\item[\texttt{REPLACE} (\texttt{REPL})] Ändern einer Segmentausprägung
+\end{description}
 
 
 \clearpage
