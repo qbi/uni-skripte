@@ -1189,6 +1189,71 @@ Datenintegrität.
   \emph{kann} beliebige Fremdschlüssel haben.
 \end{bemerk}
 
+\section{Abbildungen von ER-Modell auf relationales Modell}
+
+\subsection{Nichtrekursive 1:n-Beziehungstypen}
+
+Wir wollen den Entitytypen in ein Relationsschema überführen und
+betrachten das am Beispiel, dass eine Abteilung Mitarbeiter hat. Die
+Abteilungsnummer bei Mitarbeiter ist der Fremdschlüssel in Bezug auf
+den Primärschlüssel von Abteilung. Es repräsentiert den Beziehungstyp
+"`hat"' aus dem ER"=Diagramm.  Die (atomaren) Attribute eines
+Entitytyps werden unmittelbar in Attribute der entsprechenden Relation
+übernommen. Es ist zu beachten, dass beliebige Kardinalitäten, wie
+(3,7) nach der (min,max)"=Notation, nicht darstellbar sind.
+
+\subsection{Rekursive 1:n-Beziehungstypen}
+
+Man stelle sich das folgende ER"=Diagramm vor:\todo{noch verbessern,
+  zwei Linien}
+
+\begin{tikzpicture}[node distance=9em]
+  \node[entity] (ma) {Mitarbeiter} ;
+  \node[relationship] (vg) [below of=ma] {Vorgesetzter} edge (ma);
+\end{tikzpicture}
+
+Der Mitarbeiter hat (0,1) Vorgesetzte und der Vorgesetzte hat (0,*)
+Mitarbeiter. Das lässt sich wie folgt modellieren:
+Mitarbeiter(Personanummer, Name, \ldots, Chefnummer). Die Chefnummer
+ist Fremdschlüssel mit Bezug auf den Primärschlüssel der gleichen
+Relation. Dann verbleibt nur noch die Frage, wie man in dem Beispiel
+den obersten Chef modelliert.
+\begin{itemize}
+\item Chefnummer und Personanummer haben den gleichen Wert. Dies ist
+  nicht empfehlenswert.
+\item Chefnummer ist undefiniert, d.\,h. es besitzt einen speziellen NULL"=Wert.
+\end{itemize}
+
+\subsection{Nichtrekursive n:m-Beziehungstypen}
+
+Dazu stellen wir uns vor, dass ein Lieferant Teile liefert. Die
+gelieferten Mengen können beliebig groß sein. Dies lässt sich in die
+Relation überführen:
+\begin{itemize}
+\item Lieferant(\underline{Liefernummer}, Name, Ort)
+\item Teil(\underline{Teilenummer}, Bezeichnung)
+\item Liefert(\underline{Liefernummer}, \underline{Teilenummer}, Menge)
+\end{itemize}
+Das heißt, der Beziehungstyp bekommt eine eigene Relation mit dem
+Primärschlüssel als der Attributkombination der Relationen Lieferant
+und Teil. Die Teilenummer in Liefert ist Fremdschlüssel mit Bezug auf
+Primärschlüssel von Teil und Liefernummer in Liefert ist
+Fremdschlüssel mit Bezug auf Primärschlüssel von Lieferant.
+
+\subsection{Rekursive n:m-Beziehungstypen}
+
+Dazu stelle man sich eine Stückliste mit den Beziehungen Teil enthält
+beliebige Unterteile und Unterteil hat beliebige Oberteile. Dies lässt
+sich mit zwei Relationen modellieren:
+\begin{itemize}
+\item Teil(\underline{Teilenummer}, Bezeichnung)
+\item Struktur(\underline{Oberteilnummer},
+  \underline{Unterteilnummer}, Anzahl)
+\end{itemize}
+Es wird also wieder jeder Beziehungstyp in eine Relation
+überführt. Der Primärschlüssel setzt sich aus den Attributen
+Oberteilnummer und Unterteilnummer zusammen. Beide sind einzeln
+Fremdschlüssel mit Bezug auf den Primärschlüssel von Teil.
 
 \clearpage
 \appendix
