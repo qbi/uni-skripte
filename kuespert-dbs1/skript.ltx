@@ -704,6 +704,123 @@ Obertyps. In der umgekehrten Richtung sind die Untertypen eine
   \end{tikzpicture}
 \end{bsp}
 
+\chapter{Das hierarchische Datenbankmodell}
+
+In diesem Kapitel wollen wir die Möglichkeiten der Modellierung mit
+dem hierarchischen Datenbankmodell (HDM) kennenlernen und einen Zusammenhang
+zwischen dem Modell und dem ER"=Modell herstellen. Im weiteren Verlauf
+werden die reinen Hierarchien in Richtung vernetzter Strukturen
+erweitert. Dabei bedienen wir uns sogenannter virtueller
+Satztypen. Als Beispiel für ein hierarchisches Datenbanksystem wird
+uns IMS dienen.
+
+Im Allgemeinen sollte am Ende des Kapitels verstanden werden, was die
+Möglichkeiten eines HDM sind, ohne dass jemand mit einem spezifischen
+DBMS umgehen kann. Dazu wären weitergehende Details nötig. Weiterhin
+existiert eine Vielzahl von DMBS, die auf das hierarchische Modell
+setzen. Alle lassen sich in unterschiedlicher Weise bedienen.
+
+\begin{defini}[Hierarchisches Datenbankmodell]
+  Das \highl[Datenbankmodell!hierarchisches]{hierarchische
+    Datenbankmodell} bildet die reale Welt durch eine hierarchisch
+  aufgebaute Baumstruktur ab.
+\end{defini}
+
+\begin{bemerk}
+  Es muss sich nicht notwendigerweise um eine Hierarchie
+  handeln. Vielmehr kann es mehrere geben. Dabei darf jeder Entitytyp
+  nur einmal vorkommen. Innerhalb des Datenbankschemas muss der Name
+  des Entitytyps eindeutig sein.
+\end{bemerk}
+
+\begin{bsp}
+  Eine Miniwelt mit Kunden und Aufträgen liesse sich mit folgender
+  Baumstruktur modellieren.
+
+  \begin{tikzpicture}         %[edge from parent fork down]
+    \node {Kunde}
+    child {node {Auftrag}
+      child {node {Auftragsposition}}
+    }
+    child {node {Rechnung}
+      child {node {Rechnungsposition}}
+    };
+  \end{tikzpicture}
+  Diese Darstellung entspricht der \highl{Typebene}. Wenn die Einträge
+  mit konkreten Werten gefüllt werden, spricht man von der
+  \highl{Ausprägungsebene} bzw. \highl{Instanzenebene} oder \highl{Satzebene}.
+\end{bsp}
+
+\section{Bestandteile einer hierarchischen Datenbank}
+
+
+\begin{defini}[Hierarchieordnung]
+  Eine \highl{Hierarchieordnung} drückt aus, dass die Reihenfolge des
+  Auftretens von Kindern eines Vaterknotens von Bedeutung ist.
+\end{defini}
+
+Das Datenbankschema besteht aus:
+\begin{itemize}
+\item einer Menge von (benannten) Entitytypen
+\item einer Menge von (benannten) Hierarchien über den Entitytypen
+  (versehen mit einer Hierarchieordnung)
+\end{itemize}
+
+Die Daten bestehen aus:
+\begin{itemize}
+\item einer Menge von Entitäten. Diese können auf der Ausprägungsebene
+  in Beziehung stehen.
+\item einer Ordnungsreihenfolge innerhalb der Entitymenge.
+\end{itemize}
+
+\begin{bemerk}[Eigenschaften/Bezeichnungen]
+  \begin{itemize}
+  \item Jeder Entitytyp einer HDM gehört zu genau einer Hierarchie.
+  \item Der oberste Entitytyp wird als \highl{Wurzeltyp} bezeichnet.
+  \item Für den Wurzeltyp existiert ein
+    \highl{Primärschlüssel}. Dieser erlaubt die eindeutige
+    Identifizierung einer Entität aus der zugehörigen Entitymenge. Das
+    bedeutet, es gibt einen Einstiegspunkt zum zugehörigen Baum.
+  \item Ein direkter Zugriff auf eine beliebige Entität auf der
+    Ausprägungsebene ist im HDM \emph{nicht} möglich.
+  \end{itemize}
+\end{bemerk}
+
+\section{Erweiterung des hierarchischen Datenbankmodells}
+
+Der Entitytyp müsste eigentlich mehrfach, also in verschiedenen
+Hierarchien auftreten. Dies ist in dem Modell jedoch
+verboten. Erweiterungen versuchen, den Konflikt zu lösen.
+
+\subsection{Einführung von Redundanz}
+
+Man könnte verschiedene Hierarchien erlauben, in denen Entitytypen
+mehrfach vorkommen.
+
+\begin{tikzpicture}
+  \node {Abteilung}
+  child {node {Angestellter}};
+  \node {Position}
+  child {node {Angestellter1}};
+\end{tikzpicture}
+\todo{Beide Knoten nebeneinander}
+
+Aus Sicht des Datenbanksystems sind Angestellter und Angestellter1
+unterschiedliche Entitytypen. Das heißt, dass die Entitäten aus der
+realen Welt in der Modellierung zweimal vorhanden sind. Dies ist eine
+Diskrepanz, die das Datenbanksystem nicht überwachen kann. Die
+Kontrolle muss durch den Benutzer geschehen. Letztlich ist dies nicht
+akzeptabel und daher abzulehnen.
+
+\subsection{Einführung von virtuellen Entitytypen}
+
+Hierbei existieren die "`doppelten"' Entitäten in nur einer Hierarchie
+physisch. Aus anderen Hierarchien wird auf diese Entität per Zeiger
+verwiesen. Benutzer sehen diese Realisierung nicht. Das
+Datenbanksystem kann in diesem Modell wieder seine Stärken
+ausspielen. 
+
+
 \clearpage
 \appendix
 \begin{thebibliography}{99}
