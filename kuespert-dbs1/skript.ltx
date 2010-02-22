@@ -1255,6 +1255,77 @@ Es wird also wieder jeder Beziehungstyp in eine Relation
 Oberteilnummer und Unterteilnummer zusammen. Beide sind einzeln
 Fremdschlüssel mit Bezug auf den Primärschlüssel von Teil.
 
+\subsection{Umgang mit nichtatomaren Attributen}
+
+Zu Anfang stellen wir zwei Beispiele.
+
+\begin{tikzpicture}[node distance=11em]
+  \node[entity] (angest) {Anstellter};
+  \node[attribute] (pnr) [above left of=angest] {\key{PNR}} edge
+  (angest);
+  \node[attribute] (name) [below left of=angest] {Name} edge (angest);
+  \node[attribute] (adr) [below right of=angest]  {Adresse} edge
+  (angest);
+  \node[attribute] (plz) [below left of=adr] {PLZ} edge (adr);
+  \node[attribute] (ort) [below of=adr] {Ort} edge (adr);
+  \node[attribute] (str) [below right of=adr] {Straße} edge (adr);
+\end{tikzpicture}
+
+\begin{tikzpicture}[node distance=11em]
+  \node[entity] (ang) {Angestellter};
+  \node[attribute] (pnr) [below left of=ang] {\key{PNR}} edge (ang);
+  \node[attribute] (name) [below of=ang] {Name} edge (ang);
+  \node[multi attribute] (tel) [below right of=ang] {Telefonnummer}
+  edge  (ang);
+\end{tikzpicture}
+
+Das letzte Beispiel lässt sich mit zwei Tabellen lösen. Dabei ist die
+PNR Fremdschlüssel mit Bezug auf den Primärschlüssel von
+Angestellter. Das Problem der Nullwerte ist damit per Definition
+ausgeschlossen. Außerdem sind zusätzliche Integritätsbedingungen
+denkbar.
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{|c|c|l|}
+    \toprule
+    Angestellter & \underline{PNR} & Name\\
+    \midrule
+    & 3841 & Schmid\\
+    & 6513 & Meier\\
+    & 8612 & Lehman\\
+    \bottomrule
+  \end{tabular}
+  \caption{Tabelle mit PNR und Name}
+\end{table}
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{|c|c|l|}
+    \toprule
+    Telefon & \underline{PNR} & \underline{Telefonnummer}\\
+    \midrule
+    & 3841 & 23813\\
+    & 3841 & 54128\\
+    & 6513 & 12908\\
+    & 8612 & 87124\\
+    & 8612 & 98236\\
+    & 8612 & 76123\\
+    \bottomrule
+  \end{tabular}
+  \caption{Tabelle mit PNR und Telefonnummer}
+\end{table}
+
+Will man die Daten in eine Tabelle modellieren, entstehen schnell
+Konflikte. Denn als Primärschlüssel empfiehlt sich eine Kombination
+aus PNR und Telefonnummer. Wenn ein Mitarbeiter keine Telefonnummer
+hat, so ist der Primärschlüssel nicht definiert.
+
+Das erste obige Beispiel mit Adressen könnte man in einer Tabelle
+modellieren. Dabei geht die Zusammengehörigkeit der Adressdaten (PLZ,
+Ort, Straße) verloren. Daher ist es auch hier zu empfehlen, zwei
+Tabellen zu verwenden.
+
 \clearpage
 \appendix
 \begin{thebibliography}{99}
