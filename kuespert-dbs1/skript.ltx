@@ -1326,6 +1326,180 @@ modellieren. Dabei geht die Zusammengehörigkeit der Adressdaten (PLZ,
 Ort, Straße) verloren. Daher ist es auch hier zu empfehlen, zwei
 Tabellen zu verwenden.
 
+\section{Relationenalgebra und -kalkül}
+
+Die Sprachen für das relationale Modell sind nicht navigierend und
+satzorientiert, sondern mengenorientiert und deskriptiv. Mit einer
+Anweisung werden Mengen von Tupeln gelesen bzw. modfiziert. Zu den
+Basisoperationen des relationalen Modells zählen:
+\begin{description}
+\item[Selektion] Auswahl von Tupeln mit einer Relation
+\item[Projektion] Streichen von Spalten
+\item[Verbund (Join)] Verknüpfung von Tabellen aufgrund von
+  Attribut"=Beziehungen
+\item[Mengenoperation] Vereinigung, Differenz und Durchschnitt auf
+  verschiedenen Relationen gleicher Struktur
+\end{description}
+
+\begin{bsp}
+  Finde die Wohnorte aller Angestellten, die Programmierer sind. Dazu
+  werden alle Tupel der Angestellten"=Relation selektiert, deren Beruf
+  Programmierer ist. Daraufhin folgt eine Projektion auf die Spalte
+  Wohnort. Das Ergebnis der Operation ist wieder eine Menge.
+
+  Finde die Namen aller Angestellten, die am Projekt Foo
+  mitarbeiten. Dazu werden die Relationen Angestellter und Mitarbeit
+  miteinander verbunden. Dies geschieht, indem Tupel mit gleicher
+  Angestelltennummer zusammengefasst werden. Auf dem Zwischenergebnis
+  erfolgt eine Selektion der Tupel mit Projektnummer 27 und eine
+  Projektion auf die Spalte Name. Andere Lösungen sind auch denkbar.
+\end{bsp}
+
+\subsection{Kriterien für Anfragesprachen}
+
+In \cite{hesa03} sind auf Seite~225 verschiedene Kriterien
+festgelegt. Dazu zählen:
+\begin{description}
+\item[Ad-hoc-Formulierung] Benutzer kann eine Anfrage ohne zugehöriges
+  Programm formulieren.
+\item[Mengenorientiert] Jede Operation arbeitet auf Mengen von Daten.
+\item[Deskriptivität] Benutzer formuliert, was er haben will.
+\item[Abgeschlossenheit] Ergebnis der Anfrage ist wieder eine Relation
+  und kann als Eingabe verwendet werden.
+\item[Adäquatheit] Alle Konstrukte des Datenmodells werden unterstützt.
+\item[Orthogonalität] Sprachkonstrukte sind in ähnlichen Sprachen
+  anwendbar. Orthogonalität setzt Abgeschlossenheit voraus.
+\item[Optimierbarkeit] Sprache besteht aus wenigen Operationen, für
+  die es Optimierungsregeln gibt. Die Eigenschaft wird durch eine
+  formale Sprachdefinition sowie durch die Orthogonalität gefördert.
+\item[Effizienz] Jede Operation ist effizient ausführbar.
+\item[Sicherheit] Keine syntaktisch korrekte Anfrage darf in eine
+  Endlosschleife führen oder ein unendliches Ergebnis liefern.
+\item[Eingeschränktheit] Sprache darf keine vollständige
+  Programmiersprache sein.
+\item[Vollständigkeit] Sprache muss mindestens die Anfragen aus der
+  Relationenalgebra ausdrücken können.
+\end{description}
+
+\subsection{Relationenalgebra}
+
+Der Begriff der \highl{Relationenalgebra} stammt vom Begriff der Algebra aus
+der Mathematik. Es ist eine nichtleere Menge mit Operationen, die auf
+dem Wertebereich definiert sind. Übertragen auf das relationale Modell
+heißt dass, dass die Werte die Relationen darstellen und die
+Operationen sind die vorgestellten Basisoperationen.
+
+\begin{bsp}
+  Im folgenden betrachten wir die zwei untenstehenden
+  Beispieltabellen. Diese sind \cite{hesa03} entnommen.
+
+  \begin{table}[htb]
+    \centering
+    \begin{tabular}{|c|c|l|c|l|}
+      \toprule
+      Buch & \underline{Inventarnummer} & Titel & ISBN & Autor\\
+      \midrule
+      & 7613 & Dr.\,No & 3145 & James B\\
+      & 8712 & ObjektDB & 6512 & Heuer\\
+      & 5412 & Analysis I & 9823 & Bauer\\
+      & 9131 & COBOL & 6192 & Würth\\
+      \bottomrule
+    \end{tabular}
+    \caption{Relation Buch}
+  \end{table}
+
+  \begin{table}[htb]
+    \centering
+    \begin{tabular}{|c|c|l|}
+      \toprule
+      Ausleihe & \underline{Inventarnummer} & Name\\
+      \midrule
+      & 7613 & Meier\\
+      & 8712 & Müller\\
+      & 5412 & Schulze\\
+      & 9131 & Meier\\
+      \bottomrule
+    \end{tabular}
+    \caption{Relation Ausleihe}
+  \end{table}
+\end{bsp}
+
+Nun wollen wir verschiedene Operationen diskutieren.
+
+\paragraph{Projektion}
+
+Üblicherweise wird die Projektion durch $\pi_{\text{Attr}} R$
+bezeichnet. Dabei steht Attr für eine nichtleere Menge von Attributen
+der Relation $R$. Die Projektion $\pi_{\text{Attr}} R$ wählt jene
+Spalten von $R$ aus, die in Attr gegeben sind.
+
+So besteht zum Beispiel $\pi_{\{\text{Name}\}} \text{Ausleihe}$ aus
+Meier, Müller und Schulze. Wegen der Mengenoperation wurden die
+Duplikate entfernt. Wenn das Attribut einen Schlüssel enthält, ist
+hingegen keine Elimination möglich.
+
+\paragraph{Selektion}
+
+Die Selektion wird durch $\sigma_{F} R$ bezeichnet. Dabei steht $F$
+für eine Selektionsformel. Die Operation $\sigma_{F}R$ wählt alle
+Zeilen von $R$ aus, die der Bedingung $F$ genügen. Beispielsweise gibt
+$\sigma_{\text{Inventarnummer}>8800} \text{Buch}$ die Zeile (9131,
+COBOL, 6192, Würth) zurück. Man kann auch Attributwerte untereinander
+vergleichen und logishe Verknüpfungen sind ebenso möglich.
+
+\paragraph{Verbund (Join)}
+
+Der Verbund wird durch $R\Join_{F} S$ bezeichnet. Dabei steht $F$
+für eine Verbundbedingung. Der Verbund $R\Join_{F} S$ fügt die Tupel
+der Relationen $R$ und $S$ zusammen, die der Bedingung $F$ genügen.
+
+Mittels $\text{Buch}\Join_{\text{Inventarnummer} =
+  \text{Inventarnummer}} \text{Ausleihe}$ fügt man beide Tabellen
+ineinander. Die Gleichheitsbedingung wird als \highl{Equi-Join}
+bezeichnet.
+
+\paragraph{Vereinigung}
+
+Die Vereinigung $R\cup S$ ist bei gleichen Relationsschemata
+möglich. Bei unterschiedlichen Relationsschemata ist zu entscheiden,
+ob die Anzahl der Attribute (Spaltenzahl) und der Wertebereich
+kompatibel ist. In dem Fall kann die Voraussetzung für eine
+Vereinigung geschaffen werden.
+
+\paragraph{Durchschnitt}
+
+Die Voraussetzungen für den Durchschnitt entsprechen denen der
+Vereinigung. Wir schreiben $R\cap S$.
+
+\paragraph{Differenz}
+
+Die Differenz $R\setminus S$ enthält alle Tupel von $R$, die nicht in
+$S$ vorkommen. Die Voraussetzung für die Anwendung entspricht der der
+Vereinigung.
+
+Es lassen sich weitere Basisoperationen aufzählen. Jedoch bilden die
+oben aufgeführten  eine minimale Relationenalgebra. Das bedeutet, dass
+das Weglassen einer Operation die Mächtigkeit reduziert. Hingegen
+bringt ein Hinzufügen einer neuen Operation keine Steigerung der
+Mächtigkeit.
+
+Operationen lassen sich in äquivalente Operationen umformen. Das ist
+jedoch nicht beliebig möglich. Es darf nur eine syntaktische
+Transformation ohne Änderung der Semantik geben. Eine Auswahl
+äquivalenter Umformungen ist:
+\begin{enumerate}
+\item $\sigma_{F_{1}} (\sigma_{F_{2}} R)\equiv \sigma_{F_{2}}
+  (\sigma_{F_{1}} R)$
+\item $\sigma_{F}R\equiv \sigma_{F_{1}} (\sigma_{F_{2}}R)$ mit
+  $F=F_{1}\wedge F_{2}$
+\item $\sigma_{F} (\pi_{\text{Attr}} R)\equiv \pi_{\text{Attr}}
+  (\sigma_{F} R)$, wenn die Attribute von $F$ eine Teilmenge von Attr sind.
+\item $S\cup R\equiv R\cup S$
+\item $S\Join_{F}R\equiv R\Join_{F}S$
+\item $(R\cup S)\cup T\equiv R\cup (S\cup T)$
+\end{enumerate}
+
+
 \clearpage
 \appendix
 \begin{thebibliography}{99}
