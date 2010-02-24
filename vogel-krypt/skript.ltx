@@ -2061,7 +2061,7 @@ vorangegangenen Entwicklungen des Projekts \highl{Lucifer}, das die
 Feistel"=Chiffre entwickelt hatte. Am 23.\,November 1976 wurde DES als
 Standard für die Verschlüsselung in den amerikanischen Bundesbehörden
 anerkannt und im Januar 1977 erfolgte die Veröffentlichung als FIPS
-PUB~46\cite{des}.
+PUB~46\cite{des}. Weitere Ergänzungen gab es in den folgenden Jahren.
 
 Die International Organization for Standardization~(ISO) übernahm den
 Algorithmus unter der Bezeichnung "`Data Encipherment No.\,1"'~(DEA-1) in ihr
@@ -2078,7 +2078,8 @@ war dieser Angriff seit 1974 bekannt und es wurde entsprechende Gegenmaßnahmen
 bei der Entwicklung getroffen.\cite{des-copper}
 
 Die fortschreitende Weiterentwicklung der Rechenkraft führte letztlich
-dazu, dass ein Brute-Force-Angriff gegen DES erfolgreich ist. So
+dazu, dass ein Brute-Force-Angriff gegen DES erfolgreich ist. Nach
+vielen theoretischen Überlegungen
 wurde 1997 das erste Mal eine verschlüsselte Nachricht gebrochen. Ein
 Jahr später gelingt es der Electronic Frontier Foundation~(EFF) mit
 dem eigens dafür angefertigten Supercomputer "`Deep Crack"', der
@@ -2105,51 +2106,15 @@ DES arbeitet mit 16 Runden. Aus dem Schlüssel~$k\in\mathcal{K}$ werden
 generiert, die jeweils in einer Runde verwendet
 werden.
 
-% \begin{figure}
-%   \begin{gather*}
-%     % Eine Runde "`Zeichnen für arme Leute"' :-))
-%        \xrightarrow[64]{m}
-%        \raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$IP$}}\:
-%        \begin{split}
-%          \xrightarrow[32]{}\\
-%          \xrightarrow[32]{}\\
-%        \end{split}
-%        \stackrel{k_{1}\downarrow 48}%
-%        {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}1.~Runde}}}
-%        \begin{split}
-%          \xrightarrow[32]{}\\
-%          \xrightarrow[32]{}\\
-%        \end{split}
-%        \stackrel{k_{2}\downarrow 48}%
-%        {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}2.~R.}}}
-%        \dotso
-%        \stackrel{k_{15}\downarrow 48}%
-%        {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}15.~R.}}}
-%        \begin{split}
-%          \xrightarrow[32]{}\\
-%          \xrightarrow[32]{}\\
-%        \end{split}
-%        \stackrel{k_{16}\downarrow 48}%
-%        {\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}16.~R.}}}
-%        \begin{split}
-%          \xrightarrow[32]{}\\
-%          \xrightarrow[32]{}\\
-%        \end{split}
-%        \:\raisebox{-1.6ex}{\framebox{\rule{0pt}{5.5ex}$IP^{-1}$}}
-%        \xrightarrow[64]{c}
-%        % und wer hat jetzt Lust das Bild auszumalen?
-%   \end{gather*}
-%   \caption{Schema für den Ablauf des DES}
-%   \label{fig:des}
-% \end{figure}
-
-Die Nachricht wird in Blöcke~$m$ der Länge~64 aufgeteilt und nach einer
-initialen Permutation\footnote{Die initiale Permutation hat keinen
-Einfluss auf die Sicherheit des Algorithmus'. Sie wurde damals
-eingeführt, um das Laden der Daten in den Chip zu vereinfachen. Da die
-Realisierung der $IP$ in Software jedoch schwieriger ist, wird sie manchmal
-weggelassen.} ($IP$) in den 16~Runden transformiert und anschließend noch einmal mit
-$IP^{-1}$ permutiert.
+Die Nachricht wird in Blöcke~$m$ der Länge~64 aufgeteilt und nach
+einer initialen Permutation\footnote{Die initiale Permutation hat
+  keinen Einfluss auf die Sicherheit des Algorithmus'. Sie wurde
+  damals eingeführt, um das Laden der Daten in den Chip zu
+  vereinfachen. Da die Realisierung der $\mathrm{IP}$ in Software
+  jedoch schwieriger ist, wird sie manchmal weggelassen. Eine
+  derartige Implementierung darf jedoch nicht den Namen DES tragen.}
+($\mathrm{IP}$) in den 16~Runden transformiert und anschließend noch
+einmal mit $\mathrm{IP}^{-1}$ permutiert.
 
 \begin{figure}
   \centering
@@ -2158,9 +2123,10 @@ $IP^{-1}$ permutiert.
   \label{fig:des-runde}
 \end{figure}
 
-In der $i$-ten~Runde wird gemäß des \highl[Feistel-Netzwerk]{Feistel-Netzwerks}
-die Eingabe in eine linke und reche Hälfte $(L,R)$ geteilt. Die Ausgabe der
-Runde $(L', R')$ wird durch $L'=R$ und $R'=L\oplus f_{k_{i}}(R)$ erzeugt,
+In der ersten~Runde wird gemäß des \highl[Feistel-Netzwerk]{Feistel-Netzwerks}
+die Eingabe in eine linke und rechte Hälfte $(L,R)$ geteilt. Die Ausgabe der
+Runde $(L_{i}, R_{i})$ wird durch $L_{i}=R_{i-1}$ und $R_{i}=L_{i-1}
+\oplus f_{k_{i}}(R_{i})$ mit $i>0$ erzeugt,
 wobei die Verschlüsselungsfunktion~$f$ wie folgt aufgebaut ist:
 \begin{enumerate}
  \item Diffusionsschritt: Aus den 32~Bit von $R$ wird ein 48-Bit-Wort $R_{1}$
@@ -2186,20 +2152,20 @@ in einem Bit ändert die Ausgabe in mindestens zwei Bit --~\highl{Diffusion}~--
 und jedes Ausgabebit hängt nach fünf Runden von allen Schlüssel- und Klartextbits ab
 --~\highl{Konfusion}.
 
-$DES_{k}\colon\Z_{2}^{64}\rightarrow\Z_{2}^{64}$ sei die gesamte
-Transformation (vom $IP$ bis zum $IP^{-1}$) des DES. Da der DES aufgrund
+Die Abbildung $\text{DES}_{k}\colon\Z_{2}^{64}\rightarrow\Z_{2}^{64}$ sei die gesamte
+Transformation (vom $\mathrm{IP}$ bis zum $\mathrm{IP}^{-1}$) des DES. Da der DES aufgrund
 seines kurzen Schlüssels nicht mehr als sicher gilt, aber im Laufe der Jahre
 sehr viele Implementationen des Algorithmus' in Hardware und Software
 geschaffen wurden, schaltet man einfach mehrere DES-Verschlüsselungen
 hintereinander, um die Sicherheit zu erhöhen.
 
 Diese Kaskadierung von mehreren DES-Verschlüsselungen ist nur deshalb
-sinnvoll, weil $DES$ keine \highl{Gruppeneigenschaft} besitzt, d.\,h. für zwei
+sinnvoll, weil DES keine \highl{Gruppeneigenschaft} besitzt, d.\,h. für zwei
 Schlüssel~$k_{1}$ und $k_{2}$ gibt es im Allgemeinen keinen Schlüssel~$k_{3}$,
-so dass $DES_{k_{3}}$ die gleiche Abbildung beschreibt wie $DES_{k_{1}}\circ
-DES_{k_{2}}$. Wäre $DES$ abgeschlossen bzgl. Verkettung (besäße also die
-Gruppeneigenschaft), so könnte man statt der Verkettung $DES_{k_{1}}\circ
-DES_{k_{2}}$ die einfache Verschlüsselung $DES_{k_{3}}$ angreifen, der
+so dass $\text{DES}_{k_{3}}$ die gleiche Abbildung beschreibt wie $\text{DES}_{k_{1}}\circ
+\text{DES}_{k_{2}}$. Wäre DES abgeschlossen bzgl. Verkettung (besäße also die
+Gruppeneigenschaft), so könnte man statt der Verkettung $\text{DES}_{k_{1}}\circ
+\text{DES}_{k_{2}}$ die einfache Verschlüsselung $\text{DES}_{k_{3}}$ angreifen, der
 Schlüsselraum hätte sich also nicht vergrößert. Es gilt sogar, dass die Gruppe
 von Verschlüsselungen, die durch beliebige Verkettungen von
 DES-Verschlüsselungen erzeugt wird, mehr als $10^{2499}$ Verschlüsselungen
@@ -2207,7 +2173,7 @@ umfasst.\cite[S.\,258]{menezes}\cite{wiener}
 
 \begin{itemize}
  \item Eine Variante ist es, den Geheimtext noch einmal zu verschlüsseln:
-  ($DES_{k_{1}} \circ DES_{k_{2}}$)
+  ($\text{DES}_{k_{1}} \circ \text{DES}_{k_{2}}$)
   \begin{itemize}
    \item Wenn $k_{1}=k_{2}$ ist, bringt dies keine wesentliche Erhöhung der
     Sicherheit, da es einfach nur die Rundenzahl erhöht.
@@ -2221,24 +2187,24 @@ umfasst.\cite[S.\,258]{menezes}\cite{wiener}
     man damit das Paar~$(k_{1},k_{2})$ ermitteln.
 
     \begin{enumerate}
-     \item Berechne und speichere $DES_{k_{1}}(m)$ für alle Schlüssel~$k_{1}$
+     \item Berechne und speichere $\text{DES}_{k_{1}}(m)$ für alle Schlüssel~$k_{1}$
       ($2^{56}$~Stück).
-     \item Berechne und speichere $DES^{-1}_{k_{2}}(c)$ für alle
+     \item Berechne und speichere $\text{DES}^{-1}_{k_{2}}(c)$ für alle
       Schlüssel~$k_{2}$ ($2^{56}$~Stück).
      \item Vergleiche beide Listen auf identische Einträge.
     \end{enumerate}
 
     Somit hat man bei $n$~Schlüsseln nach $2n$~Berechnungen (anstelle von
     $n^{2}$) und $O(n\log n)$~Vergleichen das Schlüsselpaar~$(k_{1},k_{2})$
-    gefunden, für das gilt $DES_{k_{2}}(DES_{k_{1}}(m))=c$.
+    gefunden, für das gilt $\text{DES}_{k_{2}}(\text{DES}_{k_{1}}(m))=c$.
 
     Unter Umständen gibt es mehrere Schlüsselpaare, die die Bedingung
     erfüllen. Dann benötigt man ein zweites Klartext-Chiffretext-Paar und muss
     damit das Verfahren nochmal wiederholen.
   \end{itemize}
 
- \item Eine Verkettung der Form $DES_{k_{1}} \circ DES_{k_{2}}^{-1} \circ
-  DES_{k_{3}}$ bezeichnet man als \highl{Triple-DES} (\highl{3DES}). Der
+ \item Eine Verkettung der Form $\text{DES}_{k_{1}} \circ \text{DES}_{k_{2}}^{-1} \circ
+  \text{DES}_{k_{3}}$ bezeichnet man als \highl{Triple-DES} (\highl{3DES}). Der
   Standard schlägt folgende Kombinationen von Schlüsseln vor:
   \begin{itemize}
    \item $k_{1}=k_{2}=k_{3}$: Damit ergibt sich der einfache DES; Die Idee
@@ -2257,10 +2223,10 @@ umfasst.\cite[S.\,258]{menezes}\cite{wiener}
 
 \begin{bemerk}
   Nach dem Prinzip der Feistel"=Chiffre wäre die
-  Entschlüsselung~$DES^{-1}_{k}$ eine Verschlüsselung~$DES_{k^{R}}$ mit dem
+  Entschlüsselung~$\text{DES}^{-1}_{k}$ eine Verschlüsselung~$\text{DES}_{k^{R}}$ mit dem
   umgekehrten Schlüssel $k^{R}$. Da aber der DES noch eine Erzeugung der
   Teilschlüssel aus $k$ umfasst, ist $k^{R}$ nicht der permutierte Schlüssel,
-  der bei der Entschlüsselung $DES^{-1}_{k}$ verwendet wird.
+  der bei der Entschlüsselung $\text{DES}^{-1}_{k}$ verwendet wird.
 \end{bemerk}
 
 % 20.11.
@@ -2270,7 +2236,7 @@ umfasst.\cite[S.\,258]{menezes}\cite{wiener}
 
 Zur Vereinfachung des ganzen, sei die Blocklänge $n=12$ (statt 64) und der
 (Haupt"~)""Schlüssel~$k$ habe die Länge 9 (statt 64). Damit sind die beiden
-Teilblöcke~$L$ und $R$ 6~Bit lang. Die initiale Permutation $IP$ und die
+Teilblöcke~$L$ und $R$ 6~Bit lang. Die initiale Permutation $\mathrm{IP}$ und die
 Permutation im 4.\,Schritt seien die Identität, sprich diese Schritte
 entfallen.
 
