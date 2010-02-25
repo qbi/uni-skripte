@@ -3052,6 +3052,7 @@ abspeichern.
 \end{enumerate}
 
 \subsection{Der erweiterte euklidische Algorithmus}
+\label{sec:erwe-eukl-alo}
 
 Mit dem \highl[Algorithmus!erweiterter euklidischer]{erweiterten euklidischen Algorithmus} bestimmt man zusätzlich
 zum größten gemeinsamen Teiler zweier Zahlen~$a$ und $b$ zwei Zahlen~$u$ und
@@ -4302,31 +4303,36 @@ Adleman} entwickelt.
     Schritt& Alice& Kanal& Bob\\
     \hline
     1.& & & Wählt große Primzahlen $p,q$, bestimmt $n=p\cdot q$\\
-    2.& & & Wählt große Zahl $d$ mit $\ggT(d,\phi(n)) = 1$\\
-    3.& & & Berechnet das Inverse~$e$ in $\Z_{\phi(n)}$\\
-    4.& & $\xleftarrow{n,e}$& \\
-    5.& Chiffriert die Botschaft~$m\leq n-1$ durch $c\equiv m^{e}\pmod{n}$& & \\
-    6.& & $\xrightarrow{c}$& \\
-    7.& & & Dechiffriert $m\equiv c^{d}\pod{n}$\\
+    2.& & & Berechnet $\phi (n)= (p-1) (q-1)$.\\
+    3.& & & Wählt große Zahl $e$ mit $\ggT(e,\phi(n)) = 1$\\
+    4.& & & Berechnet Zahl $d$ mit $ed\equiv 1\pmod{\phi (n)}$\\
+    5.& & $\xleftarrow{n,e}$& \\
+    6.& Chiffriert die Botschaft~$m$ durch $c= m^{e}\pmod{n}$& & \\
+    7.& & $\xrightarrow{c}$& \\
+    8.& & & Dechiffriert $m= c^{d}\pmod{n}$\\
     \hline
   \end{tabularx}
   \caption{Das RSA-Verfahren}
   \label{tab:rsa}
 \end{table}
 
-Damit Bob verschlüsselte Nachrichten empfangen kann, muss er zwei große
-Primzahlen~$p$ und $q$ und eine große Zahl~$d$ wählen, wobei
-$d$ eine Einheit im Ring $\Z_{\phi(n)}$ ist, diese also die Bedingung
-$\ggT(d, (p-1)(q-1))=1$ erfüllt. Danach
-berechnet er das eindeutig bestimmte Inverse~$e$ in $\Z_{\phi(n)}$ von $d$
-(mit Hilfe des erweiterten euklidische Algorithmus). Das Paar~$(n,e)$ ist der
+Damit Bob verschlüsselte Nachrichten empfangen kann, muss er folgende
+Schritte durchführen:
+\begin{enumerate}
+\item Wähle zwei Primzahlen $p$ und $q$.
+\item Berechne $\phi (n)=\phi (p\cdot q)= \phi(p)\cdot\phi (q)= (p-1) (q-1)$.
+\item Wähle eine natürliche Zahl $e$ mit $1<e<\phi (n)$ und $\ggT (e,\phi (n))=1$.
+\item Berechne $ed\equiv 1\pmod{\phi (n)}$ mit Hilfe des erweiterten
+  euklidischen Algorithmus' (siehe~\ref{sec:erwe-eukl-alo}).
+\end{enumerate}
+Das Paar~$(n,e)$ ist der
 öffentliche Schlüssel, $d$ ist der geheime Schlüssel von Bob. Die anderen
 Größen werden im Folgenden nicht mehr benötigt.
 
-Wenn Alice ihm eine Botschaft~$m$ zukommen lassen will, wobei $m\leq n-1$ ist,
+Wenn Alice ihm eine Botschaft~$m$ zukommen lassen will,
 muss sie diese als $c=m^{e}\pmod{n}$ verschlüsseln und das Kryptogramm~$c$ an
-Bob senden. Bob kann daraus die Botschaft mit $m=c^{d}\pmod{n}$ berechnen.
-\autoref{tab:rsa}
+Bob senden. Bob kann daraus die Botschaft mit $m=c^{d}\pmod{n}$
+berechnen. Das Verfahren ist in \autoref{tab:rsa} dargestellt.
 Diese beiden Berechnungen sind nach \autoref{satz:1} in Polynomialzeit
 durchführbar.
 
