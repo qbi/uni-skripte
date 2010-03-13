@@ -1,0 +1,342 @@
+% Für die Nutzungsbedingungen siehe die Folie am Ende des Vortrags.
+% © Jörg Sommer 2010
+%
+% Powerdot creates the .bm file and it's important to watch on it.
+% rubber: clean $base.bm $base.vrb
+% rubber: watch $base.bm $base.toc
+
+\PassOptionsToPackage{draft=false,breaklinks}{hyperref}
+\RequirePackage[ngerman]{babel}
+
+\documentclass[mode=print,style=fyma,ngerman]{powerdot}
+  % mode=present: generate a presentation
+  % mode=handout: generate a handout (no visual effect)
+  % mode=print: generate a document for printing with the slides
+  % nopagebreak: allow more than two slides per page on handout
+  % display=slidesnotes: include slides + notes in output
+  % display=slides: output only slides
+  % display=notes: output only notes
+  % clock: insert a clock on slides
+  % style: the layout style
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage[draft=false,babel]{microtype}
+\usepackage{wasysym}
+\usepackage{dingbat}
+\usepackage[babel,german=guillemets]{csquotes}
+
+\pdsetup{lf={-- Erstellt mit Jörg's\LaTeX{}mode -- Schriftsatz und Effekte
+  von powerdot und \LaTeX{} --},
+  list={topsep=0pt,partopsep=0pt,itemsep=2ex},
+  itemize={leftmargin=10pt},           % default 25pt
+  enumerate={leftmargin=15pt}}         % default 22pt
+
+\renewcommand*{\emph}[1]{\textcolor[rgb]{.77,0,.55}{#1}}
+
+\makeatletter
+\newcommand*{\pd@contslide@title}{}
+\newcounter{pd@continue}
+\pddefinetemplate[slide]{contslide}{}{%
+  \ifnum\value{pd@overlay}=1%
+    \ifx\pd@contslide@title\pd@t@tle%
+      \stepcounter{pd@continue}%
+      \setkeys[pd]{slide}{toc=,bm=}%
+    \else%
+      \setcounter{pd@continue}\@ne%
+      \global\let\pd@contslide@title\pd@t@tle%
+      \ifx\pd@@toc\@undefined%
+        \let\pd@@toc\pd@contslide@title%
+      \fi%
+      \ifx\pd@@bm\@undefined%
+        \let\pd@@bm\pd@contslide@title%
+      \fi%
+    \fi%
+    \edef\pd@t@tle{\noexpand\pd@contslide@title\noexpand\space%
+      (\arabic{pd@continue})}%
+  \fi%
+}
+\makeatother
+
+\begin{document}
+
+\title{Automatische Verarbeitung von \LaTeX{}"=Dokumenten\\%
+  \vspace{2ex}\normalsize\normalfont Erfahrungen aus
+  einem Projekt für Vorlesungsskripten}
+\author{Jörg Sommer
+  \href{mailto:joerg@alea.gnuu.de}{\nolinkurl{<joerg@alea.gnuu.de>}}\\
+  \url{http://uni-skripte.lug-jena.de/}}
+\date{2010-03-14}
+
+\maketitle
+
+\section{Anfang}
+
+\begin{slide}[toc=]{Anfang}
+  \begin{itemize}
+   \item Mitschrift war nicht lesbar + neues iBook $\rightarrow$ Mitschrift
+    gleich \TeX{}en\pause
+
+   \item Anfrage von Kommilitonen $\rightarrow$ \TeX{}"~Datei ins Web gelegt
+
+   \item Hoffnung: Zusammenarbeit + Arbeitsteilung
+  \end{itemize}
+\end{slide}
+
+\section{Werkzeuge}
+
+\begin{slide}{Editor}
+  \begin{itemize}
+   \item jed + erweiterter \LaTeX{}"~Modus, später Jörg's\LaTeX{}mode
+
+    $\rightarrow$ direktes Mitschreiben von Mathematikvorlesungen
+
+   \item \url{http://www.jedsoft.org/jed/}\\
+    \url{http://git.debian.org/?p=users/jo-guest/jjm.git}
+  \end{itemize}
+\end{slide}
+
+\begin{slide}{rubber}
+  \begin{itemize}
+   \item \textit{rubber} erleichtert das Übersetzen von \TeX{}"~Dokumenten,
+    ähnlich \textit{latex"~make}
+
+   \item ruft \TeX{} mehrfach auf, bis Ausgabe stabil
+
+   \item ruft Indexgenerator und Literaturverzeichnisgenerator auf
+
+   \item wandelt automatisch Grafikdateien in passendes Format um; PDF- oder
+    PS"~Ausgabe
+
+   \item kann auch komplexere Umwandlungen .svg in .pdf/.ps oder .fig in
+    .pdf/.ps
+
+   \item rubber wird leider nicht mehr gepflegt \frownie{}
+  \end{itemize}
+\end{slide}
+
+\begin{slide}{SVN}
+  \begin{itemize}
+   \item ständig \TeX{}"~Datei ins Web legen aufwändig $\rightarrow$ SVN
+    (uni"~intern) \pause
+
+   \item aber keiner benutzt es/will es benutzen
+
+   \item ständige Nachfrage nach PDF"~Datei $\rightarrow$
+    SVN"~Post"=Commit"=Hook
+  \end{itemize}
+\end{slide}
+
+\begin{slide}[toc={Post"=Commit"=Hook}]{SVN-Post-Commit-Hook}
+  \begin{itemize}
+   \item Herzstück der gesamten Verarbeitung
+
+   \item versendet eine E"~Mail mit den Änderungen an eine Mailing-Liste
+
+   \item übersetzt das Skript und kopiert Ausgabe ins Web
+
+   \item schreibt Meldung der letzten Änderung mit auf die Webseite \pause
+
+   \item Wechsel zu git, viele, kleine Änderungen $\rightarrow$ DOS"~Angriff
+
+   \item Umbau des Hooks auf verzögerte Übersetzung; erst bauen, wenn 5~Minuten
+    lang keine weitere Änderung
+
+   \item E"~Mails der Änderungen zusammenfassen
+
+   \item
+    \href{http://svn.lug-jena.de/uni-skripte/werkzeuge/post-commit?view=auto}%
+         {\nolinkurl{http://svn.lug-jena.de/uni-skripte/werkzeuge}}%
+    \carriagereturn{}
+    \href{http://svn.lug-jena.de/uni-skripte/werkzeuge/post-commit?view=auto}%
+         {\nolinkurl{/post-commit?view=auto}} +
+    \href{http://svn.lug-jena.de/uni-skripte/werkzeuge/erzeuge-ausgabe.sh?view=auto}%
+         {\ldots{}/erzeuge-ausgabe.sh}
+  \end{itemize}
+\end{slide}
+
+\begin{slide}[toc={Struktur + Pre-Com.}]%
+  {Verzeichnisstruktur + SVN-Pre-Commit-Hook}
+  \begin{itemize}
+   \item anfangs für jedes Skript eigenes SVN"~Repository $\rightarrow$
+    Änderungen an Hooks und Einstellungen aufwändig zu verwalten
+
+   \item jedes Skript hat ein Unterverzeichnis
+
+   \item Pre"~Commit"=Hook damit jeder Commit nur ein Skript ändert
+
+   \item zusätzliche Verzeichnisse wie web und werkzeuge; jedes
+    Skriptverzeichnis der Form \$Dozent-\$Titel
+  \end{itemize}
+\end{slide}
+
+\begin{slide}{Xindy}
+  \begin{itemize}
+   \item Ersatz für makeindex (tot)
+
+   \item bessere Unterstützung für UTF-8 und \TeX{}"~interne Kodierungen
+
+   \item \url{http://www.xindy.org/}
+  \end{itemize}
+\end{slide}
+
+\begin{slide}{Webseite}
+  \begin{itemize}
+   \item anfangs PHP, jetzt Ophelia
+    \url{http://thomas-lotze.de/software/ophelia/}
+
+   \item Statusübersicht, Tabelle mit Fehlerzahlen, rot/grün = Fehler/""gut,
+    hilfreich, um schnell Überblick zu bekommen
+
+   \item Google liest und empfiehlt lieber PS als PDF
+
+   \item Experimente mit \TeX{}4ht für XML+MathML für Google, \TeX{}4ht sehr
+    pedantisch, viele Fehler dadurch gefunden
+
+   \item wöchentliche Auswertung der Zugriffe auf die Webseite $\rightarrow$
+    Sammlung von Crawler"=Namen
+  \end{itemize}
+\end{slide}
+
+\section{Qualitätsprüfung}
+
+\begin{slide}{Qualitätsprüfung}
+  \begin{itemize}
+   \item ganz einfach am Anfang \enquote{in jedem Dokument steht
+    Versionskennung}, Standard"=Version bei Debian entlehnt
+
+   \item schlechte Idee, kein Überblick was bei Änderungen der Vorlage tun,
+    unsicher, auf netten Bearbeiter angewiesen
+
+   \item aktive Prüfungen, erster Schritt: Pakete nag u. onlyamsmath,
+    TeXidate.pl von M.\,Kohm
+
+   \item TeXidate.pl wird nicht gepflegt, eigenes Programm geschrieben, größte
+    Errungenschaft des Projekts
+    \href{http://svn.lug-jena.de/uni-skripte/werkzeuge/skript-check?view=auto}%
+         {http://svn.lug-jena.de/uni-skripte/werkzeuge/skript-check}
+
+   \item Automatisierung zwingend um Überblick zu behalten und Qualität zu
+    sichern
+  \end{itemize}
+\end{slide}
+
+\begin{slide}[toc=ext.\,Beispiele]{Beispiele für externe Prüfungen}
+  \begin{itemize}
+   \item Skript muss übersetzen, als PDF und PS (Ausnahme mit PSTricks)
+
+   \item rubber muss bei -{}-clean Ursprungszustand wiederherstellen
+
+   \item SVN"~Keywords gesetzt
+
+   \item leere Indexdatei
+
+   \item missfont.log
+
+   \item Quelldateien für Bilder in Vektorformaten
+
+   \item Tests sind in erzeuge"=ausgabe.sh implementiert
+  \end{itemize}
+\end{slide}
+
+\begin{contslide}[toc=int.\,Beispiele]{Beispiele für interne Prüfungen
+  (skript"=check)}
+  \begin{itemize}
+   \item sind nag, onlyamsmathm, fixmath, fixltx2e, hyphsubst geladen?
+
+   \item KOMA"=Script"=Klassen statt englischen Klassen
+
+   \item kein \textbackslash{}newcommand nach \textbackslash{}begin\{document\}
+
+   \item E"~Mailadresse + Webseite-URL des Projekts im Dokument
+
+   \item werden alle selbstdefinierten Befehle/""Umgebungen verwendet?
+
+   \item xcolor statt color, babel statt ngerman, index statt makeidx
+
+   \item \textbackslash{}autorefname für eigene Theoremumgebungen definiert?
+
+   \item kein \textbackslash{}let oder \textbackslash{}def
+
+   \item \textbackslash{}abs und \textbackslash{}norm mit
+    \textbackslash{}DeclarePairedDelimiter erstellen, nicht mit
+    \textbackslash{}newcommand
+  \end{itemize}
+\end{contslide}
+
+\begin{contslide}[toc=int.\,Beispiele]{Beispiele für interne Prüfungen
+  (skript"=check)}
+  \begin{itemize}
+   \item keine Leerzeichen vor oder nach \textasciitilde{} und
+    \textbackslash{},
+
+   \item ntheorem mit den Optionen hyperref und amsmath aufrufen, wenn diese
+    Pakete geladen wurden
+
+   \item statt 3~Punkten Dreipunkt verwenden
+
+   \item Paket index geladen, aber kein \textbackslash{}index oder
+    \textbackslash{}printindex
+
+   \item kein Komma vor etc. und usw. oder fehlendes Spatium vor \%
+  \end{itemize}
+\end{contslide}
+
+\begin{slide}{skript"=check}
+  \begin{itemize}
+   \item \TeX{} ist sehr schwer zu parsen, vollständig überprüfen geht nicht
+
+   \item verbatim schwer zu erkennen, daher skript"=check ab-/""anschaltbar mit
+    Kommentarzeile \enquote{\%~skript"=check~aus},
+    \enquote{\%~skript"=check~an}
+
+   \item Nachteil: arbeitet zeilenweise, erkennt keine Probleme über Zeilenende
+    hinaus
+
+   \item Nachteil: Erkennt keinen Mathemodus (dort einige Regeln anders)
+  \end{itemize}
+\end{slide}
+
+\section{Abspann}
+
+\begin{slide}{Fazit}
+  \begin{itemize}
+   \item sehr wenig ($<10$) Mitstreiter/""Helfer in 4~Jahren
+
+   \item kaum Unterstützung durch Dozenten
+
+   \item aber Kritik, Meckerei und immer noch häufige Zugriffe aus Uni
+
+   \item Webformular zur Fehlermeldung half nicht
+
+   \item Projekt stirbt bald
+
+   \item ich habe sehr viel über \TeX{}, automatische Verarbeitung und Parser
+    gelernt
+  \end{itemize}
+\end{slide}
+
+\begin{slide}[toc=Ende]{}
+  \centering
+  \huge
+  \vfill
+  Vielen Dank für Ihre Aufmerksamkeit\\%
+  und\\%
+  \bfseries besonderen Dank an\\Jens Kubieziel für seine Unterstützung
+  \vfill\vfill
+  \null
+\end{slide}
+
+\begin{slide}[toc=Nutzungsbedingung.]{Nutzungsbedingungen}
+  Dieses Dokument sowie die \LaTeX{}"~Quellen dafür und alle zugehörigen
+  Dateien dürfen in Teilen oder als Ganzes unter Angabe der Quelle, des Names
+  und der E"~Mailadresse des Autors kopiert, verändert und weitergegeben
+  werden.
+
+  \bigskip
+  \copyright{} 2010, Jörg Sommer
+  \href{mailto:joerg@alea.gnuu.de}{\nolinkurl{<joerg@alea.gnuu.de>}}
+\end{slide}
+
+\end{document}
