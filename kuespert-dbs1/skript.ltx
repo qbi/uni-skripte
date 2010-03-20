@@ -1737,6 +1737,43 @@ gelesen werden. Dies ist ein wesentlicher Vorteil gegenüber den
 anderen Modellen. Dort waren diese Kataloginformation in einer
 internen Form gespeichert.
 
+Die Definition von Primär-/Fremdschlüssel zielt auf die Sicherung der
+Integrität ab. Die Integritätssicherung war eines der großen Themen
+bei der Normung. Folgende Zusätze wurden geschaffen:
+\begin{description}
+\item[\texttt{default}-Klausel] dient zur expliziten Festlegung
+  eines Standardwertes für eine Tabellenspalte (siehe \autoref{cre-tab-ref}).
+\item[\texttt{check}-Klausel] dient zur Spezifikation von
+  Integritätsbedingungen einzelner Attributwerte. In
+  \autoref{cre-tab-check} erfolgt eine Prüfung, dass der
+  Primärschlüssel zwischen $5$ und $999$ liegt sowie dass der Autor
+  nicht den Namen "`Kujau"' trägt. Die \texttt{check}"=Klausel
+  ermöglicht die Angabe von Prädikaten, die den zulässigen
+  Wertebereich von Attributen weiter einschränken. Die Kontrolle
+  geschieht durch das DBMS beim Einfügen oder Ändern der Werte. Bei
+  einer drohenden Verletzung der Regeln wird die Anweisung
+  \emph{nicht} ausgeführt, sondern zurückgewiesen. Daher sind
+  Anweisungen stets \highl[Anweisung!atomare]{atomar}\index{atomar}.
+\end{description}
+
+\begin{lstlisting}[caption={CREATE TABLE mit default-Wert},label=cre-tab-def]
+CREATE TABLE Buch
+   (InvNr integer primary key,
+    Titel varchar(30),
+    ISBN char(5),
+    Autor varchar(40) default  'Küspert')
+\end{lstlisting}
+
+\begin{lstlisting}[caption={CREATE TABLE mit check-Wert},label=cre-tab-check]
+create table Buch
+   (InvNr integer primary key
+        check (InvNr between 5 and 9999),
+    Titel varchar(30),
+    ISBN char(5),
+    Autor varchar(40) default  'Küspert'
+        check (Autor != 'Kujau'))
+\end{lstlisting}
+
 \paragraph{\lstinline{CREATE DOMAIN}}
 
 Diese Anweisung ermöglicht die Vereinbarung benutzerspezifischer
