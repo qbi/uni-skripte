@@ -15,6 +15,8 @@
 
 %% TODO:
 %%       - Befehl für Algorithmen anlegen
+%%       - Algorithmen mit algorithm2e setzen
+%%       - Pakete epic, ecltree durch TikZ eliminieren
 
 \RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
                    % Befehle oder solche, die man nicht in LaTeX verwenden
@@ -53,6 +55,7 @@
 \usepackage{todonotes}
 \usepackage{paralist}    % besseres enumerate und itemize und neue
                          % compactenum/compactitem; s. texdoc paralist
+\usepackage[german,boxruled,algosection,linesnumbered]{algorithm2e}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -551,20 +554,18 @@ Die zu sortierende Folge liegt meist in einem Feld \verb@A[1@\ldots\verb@n]@ vor
   
   Die Karten vor uns auf dem Boden entsprechen der nicht sortierten Folge
   in dem Feld $A$. Der Algorithmus dafür sind nun wie folgt aus:
-  \begin{Algorithmus}[h]
-  \addcontentsline{alg}{Algorithmus}{\textsc{InsertionSort}}
-    \lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort}, emphstyle=\textsc, escapeinside=~~}  
-    \begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{InsertionSort}, gobble=4]{InsertionSort}
-    for j := 2 to length(A) do
-      key := A[j];
-      i := j-1;
-      while (i > 0 and A[i] > key) do
-        A[i+1] := A[i];
-        i := i-1;
-      A[i+1] := key;
-    \end{lstlisting}
-   % \caption{\textsc{InsertionSort}}
-  \end{Algorithmus}
+
+  \begin{algorithm}
+    \Begin{
+    \For{$j\leftarrow2$ to length(A)}
+    {$key \leftarrow A[j]$\;
+    $i\leftarrow j-1$\;
+    \While{$i>0$ and $A[i]> key$}
+    {$A[i+1]\leftarrow A[i]$\;
+    $i\leftarrow i-1$}
+    $A[i+1] \leftarrow key$}}
+\caption{\textsc{InsertionSort}}
+  \end{algorithm}
 \end{definition}
 
 \subsection{Beispiel für \textsc{InsertionSort}}
@@ -875,27 +876,25 @@ formaleren Laufzeitanalyse für \textsc{MergeSort} eingeführt.
 
 % Christoph Henniger
 %
-\begin{Algorithmus}[h]
-\addcontentsline{alg}{Algorithmus}{\textsc{MergeSort}}
-\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort}, emphstyle=\textsc, escapeinside=~~}  
-    \begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{MergeSort}, gobble=3]{MergeSort}   
-   if (l < r) then
-     p :=$\lfloor\frac{l+r}{2}\rfloor$ 
-     MergeSort(A, l, p)
-     MergeSort(A, p+1, r)
-     Merge
-    \end{lstlisting}
-  \end{Algorithmus}
-  
+\begin{algorithm}
+  \Begin{
+    \If{$l<r$}{
+      $p \leftarrow\lfloor\frac{l+r}{2}\rfloor$\;
+      MergeSort (A,l,p)\;
+      MergeSort (A, p+1,r)\;
+      Merge}}
+  \caption{\textsc{MergeSort}}
+\end{algorithm}
+
 \begin{table}[h]
   \begin{tabular}{*{2}{l}}
     Zeile & Asymptotischer Aufwand\\
     \hline
-    1 & $\Theta(1)$\\
     2 & $\Theta(1)$\\
-    3 & $T(\frac{n}{2})$\\
+    3 & $\Theta(1)$\\
     4 & $T(\frac{n}{2})$\\
-    5 & $\Theta(n)$\\
+    5 & $T(\frac{n}{2})$\\
+    6 & $\Theta(n)$\\
   \end{tabular}
   \caption{Kosten für \textsc{MergeSort}} 
 \end{table}
