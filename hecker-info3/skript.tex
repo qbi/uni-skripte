@@ -125,6 +125,14 @@
 \DeclareMathOperator{\Bh}{Bh}       % Schwarzhöhe eines Baumes
 \DeclareMathOperator{\rg}{Rang}     % Rang eines Elements
 
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+
 \SVN $LastChangedRevision$
 \SVN $LastChangedDate$
 
@@ -416,7 +424,7 @@ Die worst-case-Zeit $T$ für den Algorithmus $a$ für Eingaben der Länge $n$
 ist das Maximum der Laufzeiten für alle möglichen Eingaben dieser
 Länge:
 \begin{gather*}
-  T_a(n) = \max_{w\colon |w|=n}\big\{T_a(w)\big\}
+  T_a(n) = \max_{w\colon \abs{w}=n}\{T_a(w)\}
 \end{gather*}
 
 Es sei an dieser Stelle angemerkt, daß die worst-case-Betrachtung mitunter
@@ -458,7 +466,7 @@ bewältigen.
 \begin{table}[h]
   \begin{tabular}{*{7}{|l}|}
     \hline
-    Zeit/ & 1 sec & $10^2$ sec & $10^4$ sec & $10^6$ & $10^8$ & $10^{10}$ \\
+    Zeit/ & $1$ sec & $10^2$ sec & $10^4$ sec & $10^6$ & $10^8$ & $10^{10}$ \\
     Komplexität & | & $\approx$ 1,7 min & $\approx$ 2,7 Std & 12 Tage & 3 Jahre & 3 Jhd.\\
     \hline
     $1000n$ & $10^3$ & $10^5$ & $10^7$ & $10^9$ & $10^{11}$ & $10^{13}$ \\
@@ -1634,7 +1642,7 @@ T(n)=2n  \ln n \approx 1,38 n   \log n
 
 \begin{definition}
  Sei eine Folge $A=(a_{1}, \ldots , a_{n})$ gegeben, wobei alle $a_{i}$ die Elemente einer linear geordneten Menge sind. 
- Dann ist der Rang eines Elements $a_i$ im Feld $A$ definiert als $\rg(a_{i}:A)\coloneqq \left|\left\{x|x \in A:x\leq a_{i}\right\}\right|$.
+ Dann ist der Rang eines Elements $a_i$ im Feld $A$ definiert als $\rg(a_{i}:A)\coloneqq \abs{\left\{x|x \in A:x\leq a_{i}\right\}}$.
 \end{definition}
 
  Sei $A=(9,-5,2,-7,6,0,1)$, dann ist $\rg(1:A)\coloneqq 4$ (4 Elemente von $A$ sind $\leq 1$)
@@ -1670,11 +1678,11 @@ $A\coloneqq (a_{1}, \ldots , a_{n})$ erhält und unter der Bedingung $1\leq k\le
  \addcontentsline{alg}{Algorithmus}{\textsc{Selektion}($A^n,  k$)}
  Wähle beliebige feste Ganzzahl $Q$ (z.\,B. 5)\todo{In Algorithmus ändern.}
  \begin{enumerate}[Schr{i}tt~1:]
-  \item If $|A|\leq Q$ Then sortiere $A$ (z.\,B. mit Bubblesort)
+  \item If $\abs{A}\leq Q$ Then sortiere $A$ (z.\,B. mit Bubblesort)
   \hspace{2cm}Ausgabe des k-ten Elementes \hfill(da Anzahl konstant: $\OO(1)$)
-  \hspace{1cm}Else Zerlege $A$ in $\frac{\left|A\right|}{Q}$ Teilfolgen der maximalen Länge Q
+  \hspace{1cm}Else Zerlege $A$ in $\frac{\abs{A}}{Q}$ Teilfolgen der maximalen Länge Q
   \item Sortiere jede Teilfolge und bestimme den Median $m_{i}$ \hfill(dauert $\OO(n)$ Zeit)
-  \item $SELECT(\{m_{1}, m_{2}, \ldots , m_{\frac{\left|A\right|}{Q}}\},\frac{\left|A\right|}{2Q})$, Ausgabe m
+  \item $SELECT(\{m_{1}, m_{2}, \ldots , m_{\frac{\abs{A}}{Q}}\},\frac{\abs{A}}{2Q})$, Ausgabe m
   \item Definition von drei Mengen:
 
   $A_{1}\coloneqq \left\{x\in A|x<m\right\}$
@@ -1682,11 +1690,11 @@ $A\coloneqq (a_{1}, \ldots , a_{n})$ erhält und unter der Bedingung $1\leq k\le
   $A_{2}\coloneqq \left\{x\in A|x=m\right\}$
 
   $A_{3}\coloneqq \left\{x\in A|x>m\right\}$
-  \item If $|A_{1}|\geq k$ Then $SELECT (A_{1},k)$
+  \item If $\abs{A_{1}}\geq k$ Then $SELECT (A_{1},k)$
 
-  \hspace{1cm}Elseif $\left|A_{1}\right|+\left|A_{2}\right|\geq k$ Then Output m
+  \hspace{1cm}Elseif $\abs{A_{1}}+\abs{A_{2}}\geq k$ Then Output m
 
-  \hspace{1cm}Else $SELECT (A_{3},k-(\left|A_{1}\right|+\left|A_{2}\right|))$
+  \hspace{1cm}Else $SELECT (A_{3},k-(\abs{A_{1}}+\abs{A_{2}}))$
  \end{enumerate}
  
  \subsubsection{Zeitanalyse:}
@@ -1704,11 +1712,11 @@ $A\coloneqq (a_{1}, \ldots , a_{n})$ erhält und unter der Bedingung $1\leq k\le
 Seien die Mediane $m_{j}$ aller Teilfolgen sortiert. Dann ist $m$, der Median der Mediane, der Median dieser Folge. 
 Wieviele Elemente aller Teilfolgen sind größer oder gleich $m$?
 
- $\frac{\left|A\right|}{2Q}$ Mediane der Teilfolgen sind größer oder gleich $m$ und für jeden dieser $\frac{\left|A\right|}{2Q}$
+ $\frac{\abs{A}}{2Q}$ Mediane der Teilfolgen sind größer oder gleich $m$ und für jeden dieser $\frac{\abs{A}}{2Q}$
  Mediane sind $\frac{Q}{2}$ Elemente "`seiner"' Teilfolge größer oder gleich $m$. Damit sind mindestens
- $\frac{\left|A\right|}{2Q}\cdot \frac{Q}{2}=\frac{\left|A\right|}{4}$ Elemente größergleich $m$.
+ $\frac{\abs{A}}{2Q}\cdot \frac{Q}{2}=\frac{\abs{A}}{4}$ Elemente größergleich $m$.
 	
- $\Rightarrow\left|A_{1}\right|\leq\frac{3}{4}\left|A\right|\Rightarrow T(n)=\OO(n)+T(\frac{n}{Q})+T(\frac{3}{4}n)$
+ $\Rightarrow\abs{A_{1}}\leq\frac{3}{4}\abs{A}\Rightarrow T(n)=\OO(n)+T(\frac{n}{Q})+T(\frac{3}{4}n)$
 und $T(n)=\OO(n)\Longleftrightarrow\frac{n}{Q}+\frac{3}{4}n<n$
 
  Dies trifft für $Q\geq 5$ zu. Damit hat \textsc{Selection}($A^n,k$) die Komplexität $\OO(n)$.
@@ -1720,11 +1728,11 @@ und $T(n)=\OO(n)\Longleftrightarrow\frac{n}{Q}+\frac{3}{4}n<n$
 %\lstset{emph={S-Quicksort, Select}}
 \lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort, S-Quicksort, Select}, emphstyle=\textsc, escapeinside=~~}
 \begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{S-Quicksort}, gobble=1]{S-Quicksort}
- If $\left|A\right|=2$ und $a_{1}<a_{2}$ Then Tausche $a_{1}$ und $a_{2}$
- Elseif $\left|A\right|>2$ Then
-   Select $(A,\frac{\left|A\right|}{2})\longrightarrow m$
-   $A_{1}\coloneqq \left\{x\leq m, x\in A,\textup{sodaß} \left|A_{1}\right|=\left\lceil\frac{\left|A\right|}{2}\right\rceil\right\}$
-   $A_{2}\coloneqq \left\{x\geq m, x\in A, \textup{sodaß} \left|A_{2}\right|=\left\lfloor \frac{\left|A\right|}{2}\right\rfloor\right\}$
+ If $\abs{A}=2$ und $a_{1}<a_{2}$ Then Tausche $a_{1}$ und $a_{2}$
+ Elseif $\abs{A}>2$ Then
+   Select $(A,\frac{\abs{A}}{2})\longrightarrow m$
+   $A_{1}\coloneqq \left\{x\leq m, x\in A,\textup{sodaß} \abs{A_{1}}=\left\lceil\frac{\abs{A}}{2}\right\rceil\right\}$
+   $A_{2}\coloneqq \left\{x\geq m, x\in A, \textup{sodaß} \abs{A_{2}}=\left\lfloor \frac{\abs{A}}{2}\right\rfloor\right\}$
    S-Quicksort$(A_{1})$
    S-Quicksort$(A_{2})$
  End
@@ -2159,9 +2167,10 @@ nächste Zeile $(d,13)$		&			& \\ \hline
 
 
 Nun interessiert uns natürlich die Komplexität des Algorithmus. Dazu wird die jeweilige Rechenzeit
-der einzelnen Zeilen betrachtet, wobei $|V|=n$ und $|{Knoten}| = m$.
+der einzelnen Zeilen betrachtet, wobei $\abs{V}=n$ und die Anzahl der
+Knoten $m$ ist.
 \begin{enumerate}
-\item $\OO(|V|) = \OO(n)$
+\item $\OO(\abs{V}) = \OO(n)$
 \item $\OO(n)$
 \item meist in $\OO(1)$
 \item nicht zu beantworten
@@ -4090,7 +4099,7 @@ Beispiel.
 \end{Algorithmus}
 
 \begin{tabular}{|l|l|}
-aktuellle Kante (v, w) & K:\{a\}, \{b\}, \{c\}, \{d\}, \{e\}, \{f\}, \{g\}, \{h\}, \{i\}, \{j\}, \{k\}\\
+aktuelle Kante (v, w) & K:\{a\}, \{b\}, \{c\}, \{d\}, \{e\}, \{f\}, \{g\}, \{h\}, \{i\}, \{j\}, \{k\}\\
 \hline
 1.  $\star$(i, k) & \{a\}, \{b\}, $\ldots$, \{h\}, \{i, k\}\\
 2.  $\star$(h, i) & \{a\}, \{b\}, $\ldots$, \{h, i, k\}\\
@@ -4724,35 +4733,35 @@ und wie üblich mit $x_1, x_2, y_1, y_2, z_1, z_2$ und $y'_1, y'_2$
 bezeichnet. Wie bereits angemerkt ist das Vorzeichen, nicht der genaue Wert der
 Determinante, entscheidend. Diese angenommenen Werte vereinfachen nur die Rechnung:
 
-\[ \left| 
+\[ \abs{ 
 \begin{array}{ccc}
 1 & x_1 & x_2\\
 1 & y_1 & y_2\\
 1 & z_1 & z_2\\
 \end{array} 
-\right|=
-\left| 
+}=
+\abs{ 
 \begin{array}{ccc}
 1 & 1 & 0\\
 1 & 1 & 1\\
 1 & 0 & 1\\
 \end{array} 
-\right|=1-1+1=1>0 \]
+}=1-1+1=1>0 \]
 
-\[ \left| 
+\[ \abs{ 
 \begin{array}{ccc}
 1 & x_1 & x_2\\
 1 & y'_1 & y'_2\\
 1 & z_1 & z_2\\
 \end{array} 
-\right|=
-\left| 
+}=
+\abs{ 
 \begin{array}{ccc}
 1 & 1 & 0\\
 1 & 0 & 0\\
 1 & 0 & 1\\
 \end{array} 
-\right|=-1<0 \]
+}=-1<0 \]
 
 In dem einen Fall handelt es sich also um eine Linksdrehung, im anderen um eine Rechtsdrehung. Der Aufwand für die Berechnung des
 Drehsinns liegt in $\OO(1)$, da immer nur eine Determinante konstanter Größe berechnet werden muß.
