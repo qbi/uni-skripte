@@ -57,6 +57,7 @@
 \usepackage{paralist}    % besseres enumerate und itemize und neue
                          % compactenum/compactitem; s. texdoc paralist
 \usepackage[german,boxruled,algosection,linesnumbered]{algorithm2e}
+\usepackage{braket}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -653,15 +654,13 @@ bessere Algorithmen.
 $\forall_n^\infty$ bedeutet für alle $n$ bis auf endlich viele
 Ausnahmen, gleichbedeutend mit $\exists n_0 \in \N\colon  \forall n\geq n_0$
 \begin{align*}
-  \OO(g(n)) &\coloneqq \{ f(n) | \exists c_2 > 0, n_0 \in \N\
-  \forall_n^\infty\colon  0\leq f(n)\leq c_2 g(n)\}\\
-  \Omega(g(n)) &\coloneqq \{ f(n) | \exists{}c_1 > 0, n_0
-  \in\N\ \forall_n^\infty\colon  0\leq c_1 g(n)\leq f(n) 
-    \} \\
-  \Theta(g(n)) &\coloneqq \{ f(n) | \exists c_1, c_2 > 0, n_0 \in \N\ \forall_n^\infty\colon  c_1 g(n)\leq f(n)\leq c_2 g(n)\} = \OO(g(n)) \cap \Omega(g(n))\\
-o(g(n)) &\coloneqq \{ f(n) | \exists c_2 > 0, n_0 \in \N\ \forall_n^\infty\colon  0\leq f(n)< c_2 g(n)\}\\
-\omega(g(n)) &\coloneqq \{ f(n) | \exists{}c_1 > 0, n_0 \in  \N\ \forall_n^\infty\colon  0\leq c_1 g(n)< f(n) 
-    \}
+  \OO(g(n)) &\coloneqq \Set{ f(n) | \exists c_2 > 0, n_0 \in \N\
+  \forall_n^\infty\colon  0\leq f(n)\leq c_2 g(n)}\\
+  \Omega(g(n)) &\coloneqq \Set{ f(n) | \exists{}c_1 > 0, n_0
+  \in\N\ \forall_n^\infty\colon  0\leq c_1 g(n)\leq f(n) } \\
+  \Theta(g(n)) &\coloneqq \Set{ f(n) | \exists c_1, c_2 > 0, n_0 \in \N\ \forall_n^\infty\colon  c_1 g(n)\leq f(n)\leq c_2 g(n)} = \OO(g(n)) \cap \Omega(g(n))\\
+o(g(n)) &\coloneqq \Set{ f(n) | \exists c_2 > 0, n_0 \in \N\ \forall_n^\infty\colon  0\leq f(n)< c_2 g(n)}\\
+\omega(g(n)) &\coloneqq \Set{ f(n) | \exists{}c_1 > 0, n_0 \in  \N\ \forall_n^\infty\colon  0\leq c_1 g(n)< f(n)}
 \end{align*} 
 
 $f$ wächst mit zunehmendem $n$ proportional zu $g$.
@@ -724,7 +723,7 @@ Beispiel: $f(n)=n$ und $g(n)=n^{1+sin(n\Pi)}$ sind nicht vergleichbar mittels de
 \item   Der Logarithmus $\log$ soll immer als $\log_2$, also als dualer Logarithmus interpretiert werden. Im Sinne der $\OO$"=Notation ist das
 irrelevant, da Logarithmen mit unterschiedlicher Basis in einem konstanten VerhÄltnis zueinander stehen. Beispielsweise $\log_2 n = 2 \log_4 n$
 \item   $\log^{(0)}n \coloneqq n; \quad \log^{(i)}n \coloneqq \log^{(i-1)}\log n$
-\item   $\log^{*}n \coloneqq \min \{i |\log^{(i)}n \leq1 \}$ Es gilt $ \lim\limits_{n \rightarrow \infty}{\log^{*}n} = + \infty$
+\item   $\log^{*}n \coloneqq \min \Set{i |\log^{(i)}n \leq1}$. Es gilt $ \lim_{n \rightarrow \infty}{\log^{*}n} = + \infty$
 \end{enumerate}
 
 \subsection{Eine Beispieltabelle}
@@ -756,8 +755,8 @@ Die Linie zwischen Formel Nummer neun und zehn repräsentiert die bereits erwäh
 
 Desweiteren gilt die folgende Regel:
 
-$(f_1(n)+ \dots +f_m(n)) \in \OO (\max\{f_1(n),\dots,f_m(n)\})$, mengentheoretisch ausgedrückt gilt also: $\OO(f_1(n)) \cup \dots
-\cup \OO(f_m(n)) = \OO (\max\{f_1(n),\dots,f_m(n)\})$
+$(f_1(n)+ \dots +f_m(n)) \in \OO (\max\{f_1(n),\dotsc,f_m(n)\})$, mengentheoretisch ausgedrückt gilt also: $\OO(f_1(n)) \cup \dots
+\cup \OO(f_m(n)) = \OO (\max\{f_1(n),\dotsc,f_m(n)\})$
 
 
 \chapter{Jetzt geht's los}
@@ -1245,19 +1244,19 @@ Sortierverfahren dieser Art.  Die erste Anfrage ist dann nicht $ (a_i
 Der erste Test $V(i,j)$ der Vergleichsfunktion wird immer für dasselbe Indexpaar $(i,j)$ der Eingabe $(a_1, \dots , a_{\textup{n}})$
 ausgeführt, über die der Algorithmus A zu diesem Zeitpunkt noch keinerlei Informationen besitzt.
 
-Falls nun $V(i,j)=1$ ist, d.\,h. für alle Eingaben, die der Menge a(i$<$j)$=\{(a_1,\ldots,a_{\textup{n}})\in \R^n :
-a_{\textup{i}}<a_{\textup{j}}\}$ angehören, wird der zweite Funktionsaufruf immer dasselbe Indexpaar $(k,l)$ als Parameter
-enthalten, da $A$ deterministisch ist und zu diesem Zeitpunkt nur weiß, daß $a_{\textup{i}}<a_{\textup{j}}$ ist. Analog wird für alle
+Falls nun $V(i,j)=1$ ist, d.\,h. für alle Eingaben, die der Menge
+$a(i<j)= \Set{(a_1,\ldots,a_{n})\in \R^n | a_{i} <a_{j}}$ angehören, wird der zweite Funktionsaufruf immer dasselbe Indexpaar $(k,l)$ als Parameter
+enthalten, da $A$ deterministisch ist und zu diesem Zeitpunkt nur weiß, daß $a_{i}<a_{j}$ ist. Analog wird für alle
 Folgen a(j$<$i) derselbe Funktionsaufrauf als zweiter ausgeführt. Die Fortführung dieser überlegung führt zu dem vergleichsbasierten
-Entscheidungsbaum von Algorithmus $A$, einem binären Baum, dessen Knoten mit Vergleichen "`$a_{\textup{i}}<a_{\textup{j}}$"' beschriftet
-sind. An den Kanten steht entweder "`j"' oder "`n"'. Ein kleines Beispiel ist in\autoref{271003c} zu sehen.
+Entscheidungsbaum von Algorithmus $A$, einem binären Baum, dessen Knoten mit Vergleichen "`$a_{i}<a_{j}$"' beschriftet
+sind. An den Kanten steht entweder "`$j$"' oder "`$n$"'. Ein kleines Beispiel ist in\autoref{271003c} zu sehen.
 
 Genau die Eingabetupel aus der Menge $\textup{a}(3<4)\cap \textup{a}(3<2)=\{(a_1,\ldots,a_{\textup{n}})\in \R^n : a_3<a_4 \wedge
 a_3<a_2\}$ führen zum Knoten $\mathcal{V}$. 
 
-Weil A das Sortierproblem löst, gibt es zu jedem Blatt des Entscheidungsbaumes eine Permutation $\pi$, so das nur die Eingaben mit 
+Weil $A$ das Sortierproblem löst, gibt es zu jedem Blatt des Entscheidungsbaumes eine Permutation $\pi$, so das nur die Eingaben mit 
 $\textup{a}_{\pi(1)}<\textup{a}_{\pi(2)}<\ldots<\textup{a}_{\pi(\textup{n})}$ zu diesem Blatt führen. Der Entscheidungsbaum hat 
-daher mindestens n! Blätter. Der Beweis dafür stammt fast unverändert aus \cite{klein}.
+daher mindestens $n!$~Blätter. Der Beweis dafür stammt fast unverändert aus \cite{klein}.
  
 %
 %Annette Eisenbraun
@@ -1371,10 +1370,8 @@ des Entscheidungsbaumes von $\log (card(\M))=\log m$ ist. Nun sei $b$ ein Blatt 
   
 Nach Definition des linearen Modells sind diese Mengen $E(b)$ jeweils Durchschnitt von offenen und abgeschlossenen affinen Teilräumen
 \begin{gather*}
-  \begin{array}{c}
-  \{(x_1,\ldots,x_{\textup{n}}) \in \R^n : g(x_1,\ldots,x_{\textup{n}})<0\}\\
-  \{(x_1,\ldots,x_{\textup{n}}) \in \R^n : g(x_1,\ldots,x_{\textup{n}})\geq0\}
-  \end{array}
+  \Set{(x_1,\ldots,x_{n}) \in \R^n | g(x_1,\ldots,x_{n})<0}\\
+  \Set{(x_1,\ldots,x_{n}) \in \R^n | g(x_1,\ldots,x_{n})\geq0}
 \end{gather*}
 Die Mengen $E(b)$ sind konvex und insbesondere zusammenhängend. Für alle Punkte a in $E(b)$ trifft der Algorithmus dieselbe
 Entscheidung; folglich gilt entweder $E(b) \subset \M$ oder $E(b) \cap \M=\emptyset$. 
@@ -1642,7 +1639,8 @@ T(n)=2n  \ln n \approx 1,38 n   \log n
 
 \begin{definition}
  Sei eine Folge $A=(a_{1}, \ldots , a_{n})$ gegeben, wobei alle $a_{i}$ die Elemente einer linear geordneten Menge sind. 
- Dann ist der Rang eines Elements $a_i$ im Feld $A$ definiert als $\rg(a_{i}:A)\coloneqq \abs{\left\{x|x \in A:x\leq a_{i}\right\}}$.
+ Dann ist der Rang eines Elements $a_i$ im Feld $A$ definiert als
+ $\rg(a_{i}:A)\coloneqq \abs{\Set{x | x \in A\colon x\leq a_{i}}}$.
 \end{definition}
 
  Sei $A=(9,-5,2,-7,6,0,1)$, dann ist $\rg(1:A)\coloneqq 4$ (4 Elemente von $A$ sind $\leq 1$)
@@ -1682,14 +1680,13 @@ $A\coloneqq (a_{1}, \ldots , a_{n})$ erhält und unter der Bedingung $1\leq k\le
   \hspace{2cm}Ausgabe des k-ten Elementes \hfill(da Anzahl konstant: $\OO(1)$)
   \hspace{1cm}Else Zerlege $A$ in $\frac{\abs{A}}{Q}$ Teilfolgen der maximalen Länge Q
   \item Sortiere jede Teilfolge und bestimme den Median $m_{i}$ \hfill(dauert $\OO(n)$ Zeit)
-  \item $SELECT(\{m_{1}, m_{2}, \ldots , m_{\frac{\abs{A}}{Q}}\},\frac{\abs{A}}{2Q})$, Ausgabe m
+  \item $SELECT(\{m_{1}, m_{2}, \ldots , m_{\frac{\abs{A}}{Q}}\},\frac{\abs{A}}{2Q})$, Ausgabe $m$
   \item Definition von drei Mengen:
-
-  $A_{1}\coloneqq \left\{x\in A|x<m\right\}$
-
-  $A_{2}\coloneqq \left\{x\in A|x=m\right\}$
-
-  $A_{3}\coloneqq \left\{x\in A|x>m\right\}$
+    \begin{align*}
+      A_{1}&\coloneqq\Set{x\in A | x<m}\\
+    A_{2}&\coloneqq \Set{x\in A | x=m}\\
+    A_{3}&\coloneqq \Set{x\in A | x>m}      
+    \end{align*}
   \item If $\abs{A_{1}}\geq k$ Then $SELECT (A_{1},k)$
 
   \hspace{1cm}Elseif $\abs{A_{1}}+\abs{A_{2}}\geq k$ Then Output m
@@ -1698,7 +1695,7 @@ $A\coloneqq (a_{1}, \ldots , a_{n})$ erhält und unter der Bedingung $1\leq k\le
  \end{enumerate}
  
  \subsubsection{Zeitanalyse:}
- \hspace{4mm}zu Schritt 1: $max\{\OO(1),\OO(n)\}$
+ \hspace{4mm}zu Schritt 1: $\max\{\OO(1),\OO(n)\}$
 
  zu Schritt 2: $\OO(1)$ für jedes Sortieren der $\OO(n)$ Teilfolgen
 
@@ -1731,8 +1728,8 @@ und $T(n)=\OO(n)\Longleftrightarrow\frac{n}{Q}+\frac{3}{4}n<n$
  If $\abs{A}=2$ und $a_{1}<a_{2}$ Then Tausche $a_{1}$ und $a_{2}$
  Elseif $\abs{A}>2$ Then
    Select $(A,\frac{\abs{A}}{2})\longrightarrow m$
-   $A_{1}\coloneqq \left\{x\leq m, x\in A,\textup{sodaß} \abs{A_{1}}=\left\lceil\frac{\abs{A}}{2}\right\rceil\right\}$
-   $A_{2}\coloneqq \left\{x\geq m, x\in A, \textup{sodaß} \abs{A_{2}}=\left\lfloor \frac{\abs{A}}{2}\right\rfloor\right\}$
+   $A_{1}\coloneqq \{x\leq m, x\in A,\textup{sodaß} \abs{A_{1}}=\lceil\frac{\abs{A}}{2}\rceil\}$
+   $A_{2}\coloneqq \{x\geq m, x\in A, \textup{sodaß} \abs{A_{2}}=\lfloor \frac{\abs{A}}{2}\rfloor\}$
    S-Quicksort$(A_{1})$
    S-Quicksort$(A_{2})$
  End
@@ -2401,8 +2398,8 @@ Nullen besetzt sind, aber trotzdem Bearbeitungszeit (und Speicherplatz!) verschl
    \label{171103b}
   \end{figure}
   \begin{itemize}
-   \item x ist der Zeiger auf dem Knoten
-   \item Die Ausgabereihenfolge ist \{1,4,3,2,7,9,8,5\}
+   \item $x$ ist der Zeiger auf dem Knoten
+   \item Die Ausgabereihenfolge ist $\{1,4,3,2,7,9,8,5\}$.
   \end{itemize}
  
  \subsubsection{\textsc{Treepreorder}(x)}
@@ -2429,8 +2426,8 @@ Beispiel für \textsc{Treepreorder}
    \label{171103c}
   \end{figure}
  \begin{itemize}
-  \item x ist der Zeiger auf dem Knoten
-  \item Die Ausgabenreihenfolge ist \{5,2,1,3,4,8,7,9\}
+ \item $x$ ist der Zeiger auf dem Knoten
+  \item Die Ausgabenreihenfolge ist $\{5,2,1,3,4,8,7,9\}$.
  \end{itemize}
  
  \subsubsection{\textsc{Treeinorder}(x)}
@@ -2457,8 +2454,8 @@ Beispiel für \textsc{Treepreorder}
    \label{171103d}
   \end{figure}
  \begin{itemize}
-  \item x ist der Zeiger auf dem Knoten
-  \item Die Ausgabenreihenfolge ist \{1,2,3,4,5,7,8,9\}
+  \item $x$ ist der Zeiger auf dem Knoten
+  \item Die Ausgabenreihenfolge ist $\{1,2,3,4,5,7,8,9\}$.
  \end{itemize}
  
   \begin{satz}
@@ -3252,8 +3249,8 @@ oberhalb von G$_{p_l p_r}$ (dies läßt sich notfalls in $\OO(n\log n)$~Zeit err
   \begin{enumerate}
   \item Der Stapel S speichert Punkte x$_0$, x$_1$, \ldots, x$_t$=x$_{\textnormal{Top}}$, die eine Teilfolge von p$_n$, p$_1$, p$_2$, \ldots sind
   \item t$\geq$2 $\wedge$ x$_0$=p$_n$ $\wedge$ x$_1$=p$_1$ $\wedge$ im Schritt s gilt: x$_t$=p$_s$, dabei ist s$\geq$2
-  \item x$_0$, x$_1$, \ldots, x$_t$ ist UH(\{p$_1$, \ldots, p$_s$\})
-  \item x$_1$, \ldots, x$_t$ sind von rechts sortiert
+  \item $x_0, x_1, \ldots, x_t$ ist UH($\{p_1, \ldots, p_s\}$)
+  \item $x_1, \ldots, x_t$ sind von rechts sortiert.
   \end{enumerate}
 \end{itemize}
 
@@ -3373,7 +3370,7 @@ Seien die $y$-Werte 0, 1, 3, 6, 9 als sogenannte Roatorpunkte \textcolor{red}{St
 
 \end{figure}
 
- a) Y=Y $\cup$ \{(R$_1$, [1, 6])\}=\{(R$_1$, [1, 6])\} \hspace{2em} b) Y=\{(R$_1$, [1, 6]), (R$_2$, [0, 9]) \}
+ a) $Y=Y \cup \{(R_1, [1, 6])\}=\{(R_1, [1, 6])\} \hspace{2em} b) Y=\{(R_1, [1, 6]), (R_2, [0, 9]) \}$
 
 \begin{figure}[H]
 \centering
@@ -4220,7 +4217,9 @@ Ackermann-Funktion und ihre Inverse.
  A&(i,j)=A(i-1, A(i,j-1))   & i,j \geq 2\\
  \end{align*}
  und ihre Inverse
- \[\alpha(m,n)\coloneqq \mbox{min}\{i \geq 1 : A\left(i,\left\lfloor\frac{m}{n}\right\rfloor\right)> \log n\]
+ \begin{gather*}
+   \alpha(m,n)\coloneqq \min\Set{i \geq 1 | A(i,\lfloor\frac{m}{n}\rfloor)> \log n}
+ \end{gather*}
 \end{definition}
 Wegen obigem kann $n$ nicht größer als $m$ sein. Für den Grenzwert der Inversen gilt natürlich
 \[\lim_{\substack{n \rightarrow \infty \\n \leq m }}=\infty\]
@@ -4352,9 +4351,12 @@ $x$ muß aber immer die gleiche Hashfunktion benutzt werden, dazu wird beim Einf
 ausgewählt und dann abgespeichert.
 
 \begin{definition}
-Sei H eine Menge von Hashfunktionen, die das Universum U in $\{0, \ldots, m-1\}$ abbilden. Dann heißt H genau dann
-universal, wenn für jedes Paar von verschiedenen Schlüsseln $x, y \in $U gilt:
-\[\vert\{h \in \mbox{H} : h(x)=h(y)\}\vert=\frac{\vert \mbox{H}\vert}{m}\]
+Sei $H$ eine Menge von Hashfunktionen, die das Universum $U$ in $\{0, \ldots, m-1\}$ abbilden. Dann heißt $H$ genau dann
+universal, wenn für jedes Paar von verschiedenen Schlüsseln $x, y \in
+U$ gilt:
+\begin{gather*}
+  \abs{\Set{h \in H | h(x)=h(y)}} =\frac{\abs{H}}{m}
+\end{gather*}
 oder anders ausgedrückt:
 \[\mbox{H }universal \leftrightarrow Wsk([h(x)=h(y)])=\frac{1}{m}
 \mbox{ für }x,  y \in U \wedge x\neq y\]
@@ -4374,7 +4376,7 @@ Die Werte in unserem Universum seien als Bit-Strings der gleichen Länge gegeben
 Gestalt $x=<x_0, x_1, \cdots, x_r>$, wobei die Länge aller $x_i$ gleich ist.  Dabei ist $0\leq x_i\leq m$ Voraussetzung
 bezüglich $m$ bzw. $r$.
 \begin{definition}
-\[H\coloneqq \{h=h_a : a=<a_0, \ldots, a_r>, a_i \in \{0, \ldots, m-1\}, i=0, \ldots, r\]
+\[H\coloneqq \Set{h=h_a | a\leq a_0, \ldots, a_r>, a_i \in \{0, \ldots, m-1\}, i=0, \ldots, r}\]
 \[h_a(x)\coloneqq \sum_{i=0}^r (a_i \cdot x_i) \mod m\]
 \end{definition}
 Es ist ersichtlich, daß es dabei $m^r$ verschiedene Hashfunktionen geben kann.
@@ -4609,13 +4611,12 @@ mit $h{\in}H$ und $v{\in}V$ und $h$ schneidet $v$\}
 
 \begin{enumerate}
 \item
-Sei \begin{gather*}
-  \begin{array}{rcl}
-  S =&& \{(x_1, (x_1,x_2;y)) | (x_1,x_2,y)\in H\}\\
-  &\cup& \{(x_2,(x_1,x_2,y)) | (x_1,x_2,y)\in H\}\\
-  &\cup& \{(x,(x,y_1,y_2)) | (x,y_1,y_2)\in V\};
-\end{array}
-\end{gather*}
+Sei
+\begin{align*}
+  S &= \Set{(x_1, (x_1,x_2,y)) | (x_1,x_2,y)\in H}\cup
+  \Set{(x_2,(x_1,x_2,y)) | (x_1,x_2,y)\in H}\\
+  &\qquad\cup \Set{(x,(x,y_1,y_2)) | (x,y_1,y_2)\in V}
+\end{align*}
 ($S$ ist also eine gemischte Menge von horizontalen und vertikalen Segmenten,
 in der jedes horizontale Segment einmal anhand des linken und einmal
 anhand des rechten Endpunkts dargestellt ist. Diese Menge beschreibt die
@@ -4636,7 +4637,7 @@ rechter Endpunkt von $h=(x_1,x_2,y)$:\\
 $Y \coloneqq Y \backslash \{(y,(x_1,x_2,y))\}$ (entferne $h$ aus $Y$)
 \item
 ein vertikales Segment $v=(x,y_1,y_2)$:\\
-$A \coloneqq\pi_2 (\{w\in Y | w_0 \in [y_1,y_2] \})$;
+$A \coloneqq\pi_2 (\Set{w\in Y | w_0 \in [y_1,y_2]})$;
  \hspace{1cm}  (finde alle Segmente in $Y$, deren
    $y$-Koordinate im $y$-Intervall von $v$ liegt)\\
 gibt alle Paare in $A\times\{v\}$ aus
