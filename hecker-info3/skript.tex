@@ -1925,7 +1925,8 @@ Der gepflückte Wert sickert allmählich durch alle Level des Heaps, bis die
 Heap-Eigenschaft wieder hergestellt ist und wir einen Heap mit n-1 Elementen erhalten haben.
 
 Im obigen Beispiel heißt das also:
-Wenn man nun die Wurzel (hier: 8) wieder entfernt, wandert die 1 nach oben und in diesem Moment ist es kein Binärheap. D.h. es muß
+Wenn man nun die Wurzel (hier: 8) wieder entfernt, wandert die 1 nach
+oben und in diesem Moment ist es kein Binärheap. D.\,h. es muß
 ein neuer Heap erzeugt werden und dies geschieht unter zu Zuhilfenahme von Heapify (Versickern).
 In der grafischen Darstellung wurde die Position im Array rechts neben die Knoten geschrieben:
 \begin{figure}[H]
@@ -2042,28 +2043,25 @@ Heap-Eigenschaft wieder hergestellt. Das gemerkte Wurzel wird nun ausgegeben.
 Falls die Anzahl der Elemente in A (heap-size) kleiner als 1 ist, wird eine Fehlermeldung ausgelöst.
 \end{Algorithmus}
 
-Increasekey sorgt dafür, das nach änderungen die Heapbedingung wieder gilt. Es vertauscht solange ein Element mit dem Vater, bis
+Increasekey sorgt dafür, das nach Änderungen die Heapbedingung wieder gilt. Es vertauscht solange ein Element mit dem Vater, bis
 das Element kleiner ist.
 
-\begin{Algorithmus}[ht]
-\addcontentsline{alg}{Algorithmus}{\textsc{IncreaseKey}(A, x, k)}
-%\lstset{emph={Add}}
-\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={Add, MergeSort, Heapify}, emphstyle=\textsc, escapeinside=~~}
-\begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{IncreaseKey\textnormal{(A, x, k)}}, gobble=4]{IncreaseKey(A, x, k)}
-     if key[x] > k
-         then Fehler ~ä~lter Schl~ü~sselwert ist gr~öß~er"    
-     key[x] := k
-     y := x
-     z := p[y]
-     while z $\neq$ NIL und key[y] > key[z]
-         do tausche key[y] mit key[z]
-         y := z
-         z := p[y]
-\end{lstlisting}
+\begin{algorithm}
+  \Begin{
+\If{$key[x]>k$}{Fehler älterer Schlüsselwert ist größer}
+$key[x]\leftarrow k$\;
+$y\leftarrow x$\;
+$z\leftarrow p[y]$\;
+\While{$z\neq$ NIL AND $key[y]>key[z]$}
+{tausche $key[y]$ und $key[z]$\;
+$y\leftarrow z$\;
+$z\leftarrow p[y]$}}
+\caption{\textsc{IncreaseKey} $(A,x,k)$}
+\end{algorithm}
 
-Die übergebene Variable x ist der Index im Array und k ist der neue Schlüsselwert. Der Vater des Knotens x in
-der Baumstruktur wird mit p[x] bezeichnet.
-\end{Algorithmus}
+Die übergebene Variable $x$ ist der Index im Array und $k$ ist der neue Schlüsselwert. Der Vater des Knotens $x$ in
+der Baumstruktur wird mit $p[x]$ bezeichnet.
+
 \textsc{IncreaseKey} kostet $\OO(\log n)$, dazu siehe auch \autoref{121103a}.
 Damit wird \textsc{IncreaseKey} unterstützt und wir wenden uns der Operation \textsc{Insert} zu.
 Dabei wandert key solange nach oben, bis die Heap-Eigenschaft wieder gilt. Damit kostet auch \textsc{Insert} $\OO(\log n)$.
@@ -2165,26 +2163,25 @@ Zur Lösung des Problems verwenden wir den Algorithmus von Dijkstra (1959).
 \end{figure}
 Nun zum eigentlichen Algorithmus:
 
-\begin{Algorithmus}[ht]
-\addcontentsline{alg}{Algorithmus}{\textsc{Dijkstra}}
-%\lstset{emph={ExtractMin, DecreaseKey}}
-\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={ExtractMin,
-DecreaseKey, MergeSort, Heapify}, emphstyle=\textsc, escapeinside=~~}
-\begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{Dijkstra}, gobble=1]{Dijkstra}
- for all v in V do d(v) := + $\infty$
- d(s) := 0; W := $\emptyset$
- Initalisiere Struktur V (mit d(v), v in V)
- while V \ W $\neq \emptyset$ do
-   v := Min(V \ W); ExtractMin(V \ W);
-   W := W$\cup${v}
-   for all w in Succ(v) \ W do
-     if d(r) + l(vw) < d(w)
-       then DecreaseKey(w, d(v) + l(vw))
-\end{lstlisting}
+\begin{algorithm}
+  \Begin{
+\For{$\forall v\in V$}
+{$d(v)\leftarrow +\infty$}
+$d(s)\leftarrow 0$\;
+$W\leftarrow\emptyset$\;
+Initialisiere Struktur $V$\;
+\While{$V\setminus W\neq\emptyset$}
+{$v\leftarrow\min (V\setminus W)$\;
+\FuncSty{ExtractMin}$(V\setminus W)$\;
+$W\leftarrow W\cup\{v\}$\;
+\For{$\forall w$ in \FuncSty{Succ} $(v)\setminus W$}
+{\If{$d(r)+l(vw)<d(w)$}{\FuncSty{DecreaseKey} ($w, d(v)+l(vw)$)}}
+}}
+\caption{\textsc{Dijkstra}}
+\end{algorithm}
 
-Der Nachweis der Korrektheit dieses Algorithmus ist sehr schwer und soll nicht Gegenstand
-dieses Skriptes sein.
-\end{Algorithmus}   % noch nicht fertig
+Der Nachweis der Korrektheit dieses Algorithmus ist sehr schwer und
+soll nicht Gegenstand dieses Skriptes sein.
 
 Ein einfaches Beispiel soll seine Funktion veranschaulichen. Die verwendeten Knoten und Kanten entsprechen denen
 aus \autoref{121103d}. Jede Zeile der Tabelle entspricht einer Ausführung des Rumpfes der while Schleife (ab Zeile 5)
@@ -2986,11 +2983,9 @@ Seien wie im folgenden Beispiel Schlüsselwerte $a_1<\ldots<a_n$ mit festen beka
 \put(2100,-3400){\circle{300}}
 \put(2050,-3480){\makebox(0,0)[lb]{\smash{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}4}}}
 \end{picture}
-      
-      
 \end{description}
 
-An diesem Beispiel wird deutlich, daß es bis zur $4$ ein relativ langer Weg ist, d.h. auch die Suche nach $4$ dauert
+An diesem Beispiel wird deutlich, daß es bis zur $4$ ein relativ langer Weg ist, d.\,h. auch die Suche nach $4$ dauert
 im Vergleich zu anderen lange. Nun hat aber die 4 eine hohe Wahrscheinlichkeit und wird deshalb oft abgefragt
 werden. Also wird die durchschnittliche Rechenzeit relativ lang sein. Es wäre also schöner, wenn die $4$ weiter oben im Baum stünde.
 Diese überlegungen lassen sich fortführen und es fraglich erscheinen, ob sich durch Umplazieren von anderen Schlüsselwerten,
@@ -3030,11 +3025,11 @@ Gegeben ist folgendes:
     \item Die mittlere Suchzeit, gegeben durch $\sum_{i=1}^n p_i(t_i+1)$
 \end{itemize}
 \begin{description}
-    \item[Idee] Das Gesamtproblem wird in Teilprobleme aufgesplittet, d.h. grössere optimale Suchbäume werden
+    \item[Idee] Das Gesamtproblem wird in Teilprobleme aufgesplittet, d.\,h. grössere optimale Suchbäume werden
      aus kleineren optimalen Suchbäumen  berechnet und zwar in einem rekursiven Verfahren.
      
      Angenommen alle möglichen optimalen Suchbäume mit weniger als den $n$ gegebenen Schlüsselwerten sind schon bekannt.
-     Der optimale Suchbaum mit $n$ Schlüsselwerten besteht aus einer Wurzel, einem rechten und einem linken Teilbaum, wobei
+     Der optimale Suchbaum mit $n$~Schlüsselwerten besteht aus einer Wurzel, einem rechten und einem linken Teilbaum, wobei
      für die Teilbäume die optimale Darstellung schon gegeben ist. Zu suchen ist noch die Wurzel $a_k$, für die die
      Summe der mittleren Suchzeiten der beiden Teilbäume minimal ist.
 \end{description}
@@ -3150,13 +3145,13 @@ $\begin{array}{cccl}
 \end{array}$\\
 Die Werte für q sind korrekt gewählt, da nach der Ungleichung von Kraft gilt: $\sum_{i=1}^m 2^{-t_i}\leq1$
 \end{beweis}
-\begin{flushright} q.~e.~d. \end{flushright}
+
 \begin{satz}
 Die mittlere Knotentiefe eines optimalen binären Suchbaumes (Daten im gesamten Suchbaum) liegt im Intervall $
 \begin{bmatrix}
   \displaystyle\frac{ H(p_1,\ldots,p_n)}{\log_23}-1,H(p_1,\ldots,p_n)
 \end{bmatrix}$
-wobei $p_i$ die Wahrscheinlichkeit ist, mit der der i-te Knoten abgefragt wird.
+wobei $p_i$ die Wahrscheinlichkeit ist, mit der der $i$-te Knoten abgefragt wird.
 \end{satz}
 \begin{beweis}
 \begin{enumerate}
@@ -3208,7 +3203,6 @@ Es gilt:\\
       $\mbox{mittlere Suchbaumtiefe}=\sum_{i=1}^n p_i\cdot t_i\leq-\sum_{i=1}^n p_i\cdot \log_2p_i=H(p_1,\ldots,p_n)$
 \end{enumerate}
 \end{beweis}
-\begin{flushright} q.~e.~d. \end{flushright}
 
 \section{Stapel}
 Stapel haben eine so große Bedeutung in der Informatik, daß sich auch im Deutschen das englische "`Stack"' eingebürgert hat.
@@ -3281,11 +3275,12 @@ Ziel ist die Berechnung der CH(X) für endliche X $\subseteq \R^2$. Erreicht wir
 (1972), der sich grob wie folgt einteilen läßt:
 
 \begin{itemize}
-\item Sortiere X bezüglich wachsender x-Werte (o.B.d.A. habe X allgemeine Lage, Sonderfälle wie z.\,B. x$_i$=x$_j$ für i$\neq$j treten
+\item Sortiere $X$ bezüglich wachsender $x$-Werte (o.\,B.\,d.\,A. habe
+  $X$ allgemeine Lage, Sonderfälle wie z.\,B. $x_i=x_j$ für $i\neq j$ treten
 also nicht auf und müssen nicht behandelt werden)
-\item Setze p$_1$=p$_l \in$ X als den Punkt mit dem kleinsten x-Wert und p$_r \in$ X als den Punkt mit dem größten x-Wert 
-\item Wende den Algorithmus zur Berechnung von UH(X) an, dabei ist UH(X) die obere konvexe Hülle von X
-\item für LH(X) vertausche die Vorzeichen und benutze UH(X) noch einmal, dabei ist LH(X) die untere konvexe Hülle von X
+\item Setze $p_1=p_l\in X$ als den Punkt mit dem kleinsten $x$-Wert und $p_r \in X$ als den Punkt mit dem größten $x$-Wert.
+\item Wende den Algorithmus zur Berechnung von UH(X) an, dabei ist UH(X) die obere konvexe Hülle von $X$.
+\item für LH(X) vertausche die Vorzeichen und benutze UH(X) noch einmal, dabei ist LH(X) die untere konvexe Hülle von $X$.
 \end{itemize}
 
 \begin{figure}[H]
@@ -3538,19 +3533,19 @@ Mit g=2 erhalten wir die Binärdarstellung natürlicher Zahlen.
 \begin{definition}[Binomialheap]  
 Ein Binomialheap ist ein Wald von Binomialbäumen, der zusätzlich folgende Bedingungen erfüllt:
 \begin{enumerate}
-\item Heap-Eigenschaft = alle Bäume sind heap-geordnet, d.h. der Schlüsselwert jedes Knotens ist größer oder gleich dem
+\item Heap-Eigenschaft = alle Bäume sind heap-geordnet, d.\,h. der Schlüsselwert jedes Knotens ist größer oder gleich dem
 Schlüsselwert des Vaters
-\item Einzigkeitseigenschaft = Von jedem Binomialbaum ist maximal ein Exemplar da, d.h. zu einem gegebenen Wurzelgrad
+\item Einzigkeitseigenschaft = Von jedem Binomialbaum ist maximal ein Exemplar da, d.\,h. zu einem gegebenen Wurzelgrad
 gibt es maximal einen Binomialbaum im Heap.
 \end{enumerate}
 \end{definition}
 
 \begin{satz}[Struktursatz über Binomialbäume]
 \begin{enumerate}
-\item Im Baum gibt es 2$^n$ Knoten
-\item Die Höhe des Baumes B$_n$ ist n
-\item Es gibt genau $\binom{n}{i}$ Knoten der Tiefe $i$ im Baum B$_n$
-\item In B$_n$ hat die Wurzel den maximalen Grad (degree) und die Söhne sind von rechts nach links nach wachsendem Grad
+\item Im Baum gibt es $2^n$ Knoten.
+\item Die Höhe des Baumes $B_n$ ist $n$
+\item Es gibt genau $\binom{n}{i}$ Knoten der Tiefe $i$ im Baum $B_n$
+\item In $B_n$ hat die Wurzel den maximalen Grad (degree) und die Söhne sind von rechts nach links nach wachsendem Grad
 geordnet.
 \end{enumerate}
 \end{satz}
@@ -3561,16 +3556,14 @@ $d(n,i)\coloneqq $ Anzahl der Knoten der Tiefe i im B$_n$
 
 \begin{beweis}
 \begin{enumerate}
-\item I.A. $n=0$ trivial, $n-1 \Rightarrow n$, $2^{n-1}+2^{n-1}=2^n$ 
+\item I.\,A. $n=0$ trivial, $n-1 \Rightarrow n, 2^{n-1}+2^{n-1}=2^n$ 
 \item $n=0$ trivial, $n-1 \Rightarrow n$ trivial
-\item 
+\item IA. trivial $n=0$
 
-I.A. trivial n=0
-
-I.S. $n-1 \Rightarrow n$ Setzen die Gültigkeit von 3) für $n-1$ alle $i$ voraus und zeigen sie dann für $n$ und alle
+IS. $n-1 \Rightarrow n$ Setzen die Gültigkeit von 3) für $n-1$ alle $i$ voraus und zeigen sie dann für $n$ und alle
 $i$
 
-$d(n,i)=d(n-1,i)+d(n-1,i-1)=_{I.V.} \binom{n-1}{i}+ \binom{n-1}{i-1}=_{HS} \binom{n}{i}$
+$d(n,i)=d(n-1,i)+d(n-1,i-1)= \binom{n-1}{i}+ \binom{n-1}{i-1}=_{HS} \binom{n}{i}$
 \end{enumerate}
 \end{beweis}
 
@@ -4230,12 +4223,12 @@ VNG steht dabei für Vereinigung nach Größe.
 
 \begin{beweis}
 \begin{itemize}
-\item[I.A.] h=0 (Wuzelbaum) 2$^h=1$
-\item[I.V.] gelte für T$_1$, T$_2$ o.B.d.A. size[T$_2$]$\leq$size[T$_1$], size[T$_2$]$\geq 2^{h_2}$, size[T$_1$]$\geq
+\item[IA.] h=0 (Wuzelbaum) 2$^h=1$
+\item[IV.] gelte für T$_1$, T$_2$ o.B.d.A. size[T$_2$]$\leq$size[T$_1$], size[T$_2$]$\geq 2^{h_2}$, size[T$_1$]$\geq
 2^{h_1}$
-\item[I.B.] size[T]$\geq 2^h$
-\item[1. Fall] $h=$max$(h_1, h_2)$ $\Rightarrow$ size[T]=size[T$_1$]+size[T$_2$]$\geq 2^{h_1}+2^{h_2} \geq 2^h$
-\item[2. Fall] $h=$max$(h_1, h_2)+1$ $\Rightarrow$ size[T]=size[T$_1$]+size[T$_2$]$\geq 2 \cdot $size[T$_2$]$\geq 2
+\item[IB.] size[T]$\geq 2^h$
+\item[1.\,Fall] $h=$max$(h_1, h_2)$ $\Rightarrow$ size[T]=size[T$_1$]+size[T$_2$]$\geq 2^{h_1}+2^{h_2} \geq 2^h$
+\item[2.\,Fall] $h=$max$(h_1, h_2)+1$ $\Rightarrow$ size[T]=size[T$_1$]+size[T$_2$]$\geq 2 \cdot $size[T$_2$]$\geq 2
 \cdot 2^{h_2} =2^{h_2+1} \geq 2^h$
 \end{itemize}
 \end{beweis}
@@ -4340,12 +4333,13 @@ gelöscht. Dafür brauchen wir eine Hash-Funktion $h$ und einen Schlüssel $k$ (
 \end{Algorithmus} 
 
 Alle drei Operationen dauern $\OO(1)$~Schritte, aber
-die Hash-Funktion $h$ bildet aus U auf $m-1$ Werte ab ($h: U \rightarrow \{0, \cdots, m-1\}$), bei vielen Werten steigt
+die Hash-Funktion $h$ bildet aus U auf $m-1$ Werte ab ($h\colon U \rightarrow \{0, \cdots, m-1\}$), bei vielen Werten steigt
 damit die Wahrscheinlichkeit für Kollisionen (Abbildung auf den gleichen Funktionswert) sprunghaft an. 
 
-Dies wird durch das folgende Beispiel vielleicht klarer: Bei 23 Personen
-ist die Wahrscheinlichkeit, daß sie alle an verschiedenen Tagen Geburtstag haben etwas geringer als $0,5$, bei 40
-Personen ist die Wahrscheinlichkeit dafür schon auf ca. 10\% gesunken.
+Dies wird durch das folgende Beispiel vielleicht klarer: Bei
+23~Personen ist die Wahrscheinlichkeit, daß sie alle an verschiedenen
+Tagen Geburtstag haben etwas geringer als $0,5$, bei 40~Personen ist
+die Wahrscheinlichkeit dafür schon auf ca.\,10\,\% gesunken.
 
 \section{Drei Methoden zur Behandlung der Kollisionen}
 \begin{enumerate}
@@ -4587,7 +4581,7 @@ Weiter ist
 (\frac{1}{x})dx=\frac{1}{\alpha} \ln{\frac{m}{m-n}}=\frac{1}{\alpha}\ln{\frac{1}{1-\alpha}}\]
 \end{beweis}
 
-Sei z.\,B. die Tabelle halbvoll $\rightarrow \sim 1,387$ oder zu 90\% voll $\rightarrow \sim 2,56$. Diese Werte gelten
+Sei z.\,B. die Tabelle halbvoll $\rightarrow \sim 1,387$ oder zu 90\,\% voll $\rightarrow \sim 2,56$. Diese Werte gelten
 nicht unbedingt für unsere Beispiele wie doppeltes Hashing sondern für idealisertes uniformes Hashing. Falls aber
 $h_1$ und $h_2$ geschickt gewählt werden (siehe unser Beispiel), liegen die tatsächlichen Werte nah bei den oben
 angegebenen. 
