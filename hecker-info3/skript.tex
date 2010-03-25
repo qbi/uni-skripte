@@ -17,6 +17,7 @@
 %%       - Befehl für Algorithmen anlegen
 %%       - Algorithmen mit algorithm2e setzen
 %%       - Pakete epic, ecltree durch TikZ eliminieren
+%%       - autoref beibringen, Algorithmus 3.2.1 zu schreiben
 
 \RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
                    % Befehle oder solche, die man nicht in LaTeX verwenden
@@ -104,6 +105,7 @@
 \newcommand*{\definitionautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\algorithmautorefname}{Algorithmus}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -939,25 +941,25 @@ Aufgabe löst.
 
 Paralleles und optimales Sortieren benötigt $\OO(\log n)$~Zeit. Der Beweis hierfür (Richard Cole) ist extrem schwer und wird an dieser Stelle nicht aufgeführt.
 
-Dafür folgt hier ein einfacheres Beispiel: Addiere n Zahlen, die Eingabe liege wieder als Liste A ($=(a_1,\ldots,a_n)$) vor.
+Dafür folgt hier ein einfacheres Beispiel: Addiere $n$~Zahlen, die
+Eingabe liege wieder als Liste $A=(a_1,\ldots,a_n)$ vor.
 
-\begin{Algorithmus}[h]
-\addcontentsline{alg}{Algorithmus}{\textsc{ParallelSort}}
-%\lstset{emph={Add}}
-\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort,Add}, emphstyle=\textsc, escapeinside=~~}
-\begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{ParallelSort}, gobble=1]{ParallelSort}
- Zerlege A in A$_1$, A$_2$ (zwei H~\ttfamily{ä}~lften)
-  Add(A$_1$)
-  Add(A$_2$)
-      Add(A$_1$)$+$Add(A$_2$)
-      Ausgabe
-      \end{lstlisting}
-  \end{Algorithmus}
+\begin{algorithm}
+  \Begin{
+  Zerlege $A$ in zwei Hälften $A_{1}, A_{2}$\;
+  Add ($A_{1}$)\;
+  Add ($A_{2}$)\;
+  Add ($A_{1}$) $+$ Add ($A_{2}$)\;
+  Ausgabe}
+\caption{\textsc{ParallelSort}}
+\end{algorithm}
 
 $ \input{221003c.latex} $
 
-Für die Laufzeit gilt nun die Rekurrenz T$_{\textup{parallel}}(n) =$ T$_{\textup{parallel}}(\frac{n}{2}) + \OO(1)$,
-also T$(n)=$ T$(\frac{n}{2})+1$ und nach Auflösen der Rekurrenz $T(n) = \OO(\log n)$
+Für die Laufzeit gilt nun die Rekurrenz $T_{\text{parallel}}(n) =
+T_{\text{parallel}}(\frac{n}{2}) + \OO(1)$, also $T(n)=
+T(\frac{n}{2})+1$ und nach Auflösen der Rekurrenz $T(n) = \OO(\log
+n)$.
 
 \section{Methoden zur Lösung von Rekurrenzen}
 Viele Algorithmen enthalten rekursive Aufrufe. Die Zeitkomplexität solcher Algorithmen wird oft durch Rekurrenzen beschrieben.
@@ -1499,47 +1501,47 @@ Widerspruch zur Voraussetzung (untere Schranke) $\Rightarrow (m \geq n! \wedge \
 \section{\textsc{Quicksort}}
 Bei \textsc{Quicksort} handelt es sich ebenfalls um ein Teile-und-Hersche-Verfahren.
 
-Eingabe ist wieder ein Feld A=($a_0, \ldots, a_{\textup{n}}$), die Werte stehen dabei in den Plätzen $a_1, \ldots, a_{\textup{n}}$.
-Dabei dient $a_0\coloneqq -\infty$ als Markenschlüssel, als sogenanntes Sentinel-Element (siehe auch \textsc{MergeSort}) und
-v ist das Pivotelement.
+Eingabe ist wieder ein Feld $A=(a_0, \ldots, a_{n})$, die Werte stehen
+dabei in den Plätzen $a_1, \ldots, a_{n}$.  Dabei dient $a_0\coloneqq
+-\infty$ als Markenschlüssel, als sogenanntes Sentinel-Element (siehe
+auch \textsc{MergeSort}) und $v$ ist das Pivotelement.
 
-\begin{Algorithmus}[H]
-\addcontentsline{alg}{Algorithmus}{\textsc{Quicksort}}
-%\lstset{emph={Quicksort}}
-\lstset{numbers=left, numberstyle=\tiny, numbersep=8pt, stepnumber=1, basicstyle=\ttfamily, emph={MergeSort, Quicksort}, emphstyle=\textsc, escapeinside=~~}  
-\begin{lstlisting}[frame=tlrb, mathescape=true, title=\textsc{Quicksort}, gobble=2]{Quicksort}
-  1)Quicksort(l,r)
-    if r>l then
-      i:=Partition(l,r)
-      Quicksort(l,i-1)
-      Quicksort(i+1,r) 
+\begin{algorithm}
+  \KwIn{$A=(a_0, \ldots, a_{n})$}
+  \Begin{
+  \If{$r>l$}
+  {$i\rightarrow$ \FuncSty{Partition} ($l,r$)\;
+   \FuncSty{Quicksort} ($l,i-1$)\;
+   \FuncSty{Quicksort} ($i+1,r$)}}
+\caption{erste Variante von \textsc{QuickSort}}
+\end{algorithm}
 
-  2)Quicksort(l,r)
-    if r>l then
-    v:= a[r] 
-    i:= l-1 
-    j:= r
-    repeat
-      repeat 
-        i:=i+1 
-      until a[i]>=v
-      repeat 
-        j:=j-1 
-      until a[j]<=v
-      t:=a[i]  
-      a[i]:=a[j] 
-      a[j]:=t
-    until j<=i
-  Quicksort(l,i-1)
-  Quicksort(i+1,r) 
-\end{lstlisting}
-\end{Algorithmus}
+\begin{algorithm}
+  \KwIn{$A=(a_0, \ldots, a_{n})$}
+  \Begin{
+  \If{$r>l$}
+  {$v\leftarrow a[r]$\;
+   $i\leftarrow l-1$\;
+   $j\leftarrow r$\;
+  \Repeat{$j\leq i$}
+  {\Repeat{$a[i]\geq v$}{$i\leftarrow i+1$}
+   \Repeat{$a[j]\leq v$}{$j\leftarrow j-1$}
+   $t\leftarrow a[i]$\;
+   $a[i]\leftarrow a[j]$\;
+   $a[j]\leftarrow t$\;}
+   }
+  \FuncSty{Quicksort}($l,i-1$)\;
+  \FuncSty{Quicksort}($i+1,r$)\;
+}
+\caption{Zweite Variante von \textsc{Quicksort}}
+\label{alg:quicksort2}
+\end{algorithm}
 
-Was passiert bei 2)?
+Was passiert bei \autoref{alg:quicksort2}?
 \begin{enumerate}
-\item Es wird von links nach rechts gesucht, bis ein Element größer v ist
-\item Es wird von rechts nach links gesucht, bis ein Element kleiner v ist
-\item Dann werden die beiden Elemente vertauscht, falls sie sich treffen, so kommt v an diese Stelle
+\item Es wird von links nach rechts gesucht, bis ein Element größer $v$ ist
+\item Es wird von rechts nach links gesucht, bis ein Element kleiner $v$ ist
+\item Dann werden die beiden Elemente vertauscht, falls sie sich treffen, so kommt $v$ an diese Stelle
 \end{enumerate}
 
 Beispiel (getauscht werden die \textbf{Fetten}):
