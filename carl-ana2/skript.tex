@@ -1,6 +1,16 @@
 % Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
 % rubber: index.tool      xindy
 % rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
 
 \RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
                    % Befehle oder solche, die man nicht in LaTeX verwenden
@@ -10,15 +20,19 @@
                    % Trennmuster, diese korrigieren einige Fehler der alten
                    % und bieten mehr Trennstellen
 
-\documentclass[titlepage,twoside]{scrreprt}
-%\usepackage[ngerman]{babel}
-\usepackage{ngerman}
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage[ngerman]{babel}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
 \usepackage{amsfonts}
 \usepackage{amsthm}
-\usepackage{amssymb}
 \usepackage{amscd}
 \usepackage{units}
 \usepackage{ae}
@@ -26,26 +40,31 @@
 \usepackage{enumerate}
 \usepackage{index}
 \usepackage{nicefrac}
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
 \makeindex
 
 \usepackage[scaled=.90]{helvet}
 \usepackage{courier}
 
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\K}{\mathbb{K}}
-\newcommand{\C}{\mathbb{C}}
-\newcommand{\LL}{\mathcal{L}}
-\newcommand{\RE}{\mathfrak{Re}}
-\newcommand{\IM}{\mathfrak{Im}}
-\newcommand{\RR}{\mathcal{R}}
-\newcommand{\ZZ}{\mathfrak{Z}}
-\newcommand{\MM}{\mathfrak{M}}
-\newcommand{\CC}{\mathcal{C}}
-\newcommand{\perdef}{:\Leftrightarrow}
+\newcommand*{\N}{\mathbb{N}}
+\newcommand*{\Z}{\mathbb{Z}}
+\newcommand*{\Q}{\mathbb{Q}}
+\newcommand*{\R}{\mathbb{R}}
+\newcommand*{\K}{\mathbb{K}}
+\newcommand*{\C}{\mathbb{C}}
+\newcommand*{\LL}{\mathcal{L}}
+\newcommand*{\RR}{\mathcal{R}}
+\newcommand*{\ZZ}{\mathfrak{Z}}
+\newcommand*{\MM}{\mathfrak{M}}
+\newcommand*{\CC}{\mathcal{C}}
+\newcommand*{\perdef}{\colon\Leftrightarrow}
 
 \theoremstyle{plain}
 \newtheorem{definition}{Definition}[section]
@@ -60,6 +79,10 @@
 \newtheorem*{remark}{Bemerkung}
 \newtheorem*{beispiel}{Beispiel}
 
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
 \begin{document}
 \title{Vorlesungsskript zu Analysis II
   \thanks{$LastChangedRevision$ vom $LastChangedDate$}}
@@ -67,13 +90,54 @@
 \date{Sommersemester 2004}
 \maketitle
 
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel \nolinkurl{<jens@kubieziel.de>}}
+  \end{itemize}
+}
+
+
 \tableofcontents
 \chapter{Normierte Räume}
 \section{Definition und Beispiele für normierte Räume}
 
 \begin{definition}
   Sei $E$ ein linearer Raum (Vektorraum) über $\K$\footnote{$\K=\R$ oder
-  $\K=\C$}. Eine Funktion $||\cdot||:E\rightarrow [0,\infty[$ heißt
+  $\K=\C$}. Eine Funktion $||\cdot||\colon E\rightarrow [0,\infty[$ heißt
   \emph{Norm\index{Norm}} auf $E$, wenn für beliebige $x,y\in E$ und
   $\alpha\in\K$ gilt:
   \begin{enumerate}[(N1)]
@@ -86,13 +150,13 @@
 \end{definition}
 
 \begin{remark}
-  Durch den Ansatz $d(x,y):=||x-y||$ wird auf $E$ eine
+  Durch den Ansatz $d(x,y)\coloneqq ||x-y||$ wird auf $E$ eine
   Metrik erklärt. Damit ist $E$ insbesondere ein metrischer
   Raum. Begriffe, wie konvergente Folge, Cauchyfolge,
   offene/abgeschlossene Mengen etc. gelten auch für normierte
-  Räume. z.B.: $(x_n)\subset E$ konvergiert in $E: \exists x\in E \,
+  Räume. z.B.: $(x_n)\subset E$ konvergiert in $E\colon  \exists x\in E \,
   \forall \varepsilon>0 \, \exists n_\varepsilon\in \N \, \forall
-  n>n_\varepsilon:||x_n-x||\leq \varepsilon$
+  n>n_\varepsilon\colon ||x_n-x||\leq \varepsilon$
 \end{remark}
 
 \begin{definition}
@@ -119,23 +183,23 @@
   \item
     \begin{enumerate}[(a)]
     \item Normierter Raum der beschränkten Funktionen auf einer Menge
-      $\Omega:$\\
+      $\Omega\colon $\\
       $[B(\Omega),||\cdot||_\infty]$,
-      $B(\Omega):=\{f:\Omega\rightarrow\R|f\text{ beschränkt}\},
-      ||f||_\infty:=\sup_{x\in\Omega}|f(x)|$\\
-      Bemerkung: $B(\{1,\dots,n\})=\R^n, f=(f(1),\dots,f(n)), B(\N):$
+      $B(\Omega)\coloneqq \{f\colon \Omega\rightarrow\R|f\text{ beschränkt}\},
+      ||f||_\infty\coloneqq \sup_{x\in\Omega}|f(x)|$\\
+      Bemerkung: $B(\{1,\dots,n\})=\R^n, f=(f(1),\dots,f(n)), B(\N)$
       Raum der beschränkten Folgen
     \item Sei $[X,d]$ ein metrischer Raum. Normierter Raum der 
-      beschränkt stetigen Funktionen auf $X:[C_b(X),||\cdot||_\infty],
-      C_b(X):=\{f:X\rightarrow\R|f \text{ beschränkt stetig}\}$
+      beschränkt stetigen Funktionen auf $X\colon [C_b(X),||\cdot||_\infty],
+      C_b(X)\coloneqq \{f\colon X\rightarrow\R|f \text{ beschränkt stetig}\}$
     \end{enumerate}
   \item Ist $X$ ein kompakter metrischer Raum, so gilt: $C_b(X)=C(X),
     [C_b(X),||\cdot||_\infty]=[C(X),||\cdot||_\infty]$
   \item Normierter Raum der $\RR$-integrierbaren Funktionen:
-    $[\RR[a,b],||\cdot||_\infty], \RR[a,b]=\{f:[a,b]
-    \rightarrow\R|f\text{ Riemann-integrierbar}\}, ||f||_\infty:=
+    $[\RR[a,b],||\cdot||_\infty], \RR[a,b]=\{f\colon [a,b]
+    \rightarrow\R|f\text{ Riemann-integrierbar}\}, ||f||_\infty\coloneqq 
     \sup_ {x\in I}|f(x)|$
-  \item $[C^1[a,b],||\cdot||_\infty], C^1[a,b]:=\{f\in C[a,b]|f 
+  \item $[C^1[a,b],||\cdot||_\infty], C^1[a,b]\coloneqq \{f\in C[a,b]|f 
     \text{ stetig differenzierbar auf } ]a,b[\}$
   \end{enumerate}
 \end{beispiel}
@@ -153,17 +217,17 @@
   \begin{enumerate}
   \item Existenz des Limes\\
     $(f_n)$ ist eine Cauchyfolge, d.h. $\forall \varepsilon>0 \,
-    \exists n_\varepsilon \in \N \, \forall n,m \geq n_\varepsilon :
+    \exists n_\varepsilon \in \N \, \forall n,m \geq n_\varepsilon \colon 
     ||f_n-f_m||_\infty\leq\varepsilon$\\
     $||f_n-f_m||=\sup_{x\in X} |f_n(x)-f_m(x)|\leq\varepsilon
-    \Leftrightarrow \forall x\in X : |f_n(x)-f_m(x)|\leq\varepsilon$
+    \Leftrightarrow \forall x\in X \colon  |f_n(x)-f_m(x)|\leq\varepsilon$
     Bei festem $x\in X$ gilt: $(f_n(x))$ ist eine Cauchyfolge in $\R$.
     Da $\R$ vollständig ist, folgt daher: $\exists \lim_{n\rightarrow\infty}
-    f_n(x)=:f(x)$
+    f_n(x)=\colon f(x)$
   \item Beschränkheit von $f$:\\
-    $\forall x\in X \, \forall m\geq n\geq n_\varepsilon : |f_n(x)-f_m(x)|
+    $\forall x\in X \, \forall m\geq n\geq n_\varepsilon \colon  |f_n(x)-f_m(x)|
     \leq\varepsilon\xrightarrow{m\rightarrow\infty}\forall x\in X
-    \, \forall n\geq n_\varepsilon : |f_n(x)-f(x)|\leq\varepsilon
+    \, \forall n\geq n_\varepsilon \colon  |f_n(x)-f(x)|\leq\varepsilon
     \Rightarrow ||f_n-f||\leq\varepsilon \text{ für } n\geq n_\varepsilon$
     Insbesondere gilt: $||f||_\infty=||f_{n_\varepsilon}+f-f_{n_\varepsilon}
     ||_\infty\leq ||f_{n_\varepsilon}||_\infty + ||f-f_{n_\varepsilon}||_\infty
@@ -171,7 +235,7 @@
     d.h. $f$ ist beschränkt.
   \item Stetigkeit von $f$:\\
     Sei $x_0\in X$ beliebig und $f_{n_\varepsilon}$ stetig: 
-    $\exists\delta_\varepsilon>0 \, \forall x\in X: d(x,x_0)\leq
+    $\exists\delta_\varepsilon>0 \, \forall x\in X\colon  d(x,x_0)\leq
     \delta_\varepsilon\Rightarrow|f_{n_\varepsilon}(x)-f_{n_\varepsilon}(x_0)|
     \leq\varepsilon\Rightarrow |f(x)-f(x_0)|\leq |f(x)-f_{n_\varepsilon}(x)|
     +|f_{n_\varepsilon}(x)-f_{n_\varepsilon}(x_0)|+|f_{n_\varepsilon}
@@ -188,11 +252,11 @@
   Für die Vollständigkeit von $[\RR[a,b],||\cdot||_\infty]$ genügt es, zu
   zeigen, dass $[\RR[a,b],||\cdot||_\infty]$ in $B[a,b]$ abgeschlossen
   ist:\\
-  Sei $(f_n)\subset\RR[a,b]:f_n\rightarrow f\in B[a,b] (||f_n-f||_\infty
+  Sei $(f_n)\subset\RR[a,b]\colon f_n\rightarrow f\in B[a,b] (||f_n-f||_\infty
   \rightarrow 0)$. zu zeigen: $f\in\RR [a,b]$:\\
-  Sei $\varepsilon >0$. Für $\eta:=\frac{\varepsilon}{4(b-a)}$ wählen
-  wir $n_0\in\N:||f_n-f||_\infty=\sup_{x\in[a,b]} |f_{n_0}(x)-f(x)|
-  \leq \eta\Leftrightarrow \forall x\in[a,b]:-\eta-f_{n_0}(x)\leq f(x)
+  Sei $\varepsilon >0$. Für $\eta\coloneqq \frac{\varepsilon}{4(b-a)}$ wählen
+  wir $n_0\in\N\colon ||f_n-f||_\infty=\sup_{x\in[a,b]} |f_{n_0}(x)-f(x)|
+  \leq \eta\Leftrightarrow \forall x\in[a,b]\colon -\eta-f_{n_0}(x)\leq f(x)
   \leq \eta + f_{n_0}(x)\Rightarrow\overline{S}(f;\ZZ)\leq \overline{S}
   (f_{n_0}+\eta;\ZZ)\leq \overline{S}(f_{n_0};\ZZ)+\overline{S}(\eta;\ZZ)
   =\overline{S}(f_{n_0};\ZZ)+\eta(b-a)=\overline{S}(f_{n_0};\ZZ)+
@@ -207,7 +271,7 @@
     & = & \overline{S}(f_{n_0};\ZZ)-\underline{S}(f_{n_0};\ZZ)+
     \frac{\varepsilon}{2}
   \end{align*}
-  $f_{n_0}\in\RR[a,b]\Rightarrow\exists\ZZ_\varepsilon:\overline{S}
+  $f_{n_0}\in\RR[a,b]\Rightarrow\exists\ZZ_\varepsilon\colon \overline{S}
   (f_{n_0};\ZZ)-\underline{S}(f_{n_0};\ZZ\leq\frac{\varepsilon}{2}
   \Rightarrow\overline{S}(f;\ZZ_\varepsilon)-\underline{S}f;\ZZ_\varepsilon)
   \leq \frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon$, d.h. $f
@@ -221,15 +285,15 @@
   Funktionen in $B(\Omega), C_b(X)$ oder $\RR[a,b]$.\\
   $||f_n-f||_\infty\rightarrow 0\Leftrightarrow\forall\varepsilon>0\,
   \exists n_\varepsilon\in\N\,\forall n\geq
-  n_\varepsilon:||f_n-f||_\infty =\sup_x |f_n(x)-f(x)|\leq\varepsilon
+  n_\varepsilon\colon ||f_n-f||_\infty =\sup_x |f_n(x)-f(x)|\leq\varepsilon
   \Leftrightarrow$
   \[\forall\varepsilon>0\,\exists n_\varepsilon\in\N\,\forall n\geq
-  n_\varepsilon\,\forall x: |f_n(x)-f(x)|\leq\varepsilon\] Im
+  n_\varepsilon\,\forall x\colon  |f_n(x)-f(x)|\leq\varepsilon\] Im
   Gegensatz dazu ist die punktweise
   Konvergenz\index{Konvergenz!punktweise} einer Folge wie folgt
   definiert:
   \[\forall x\,\forall\varepsilon>0\,\exists n_\varepsilon\in\N\,
-  \forall n\geq n_\varepsilon:|f_n(x)-f(x)|\leq\varepsilon\]
+  \forall n\geq n_\varepsilon\colon |f_n(x)-f(x)|\leq\varepsilon\]
   Aus gleichmässiger Konvergenz folgt punktweise Konvergenz.
 \end{remark}
 
@@ -245,7 +309,7 @@
   $(f_n)\in\RR[a,b], f_n\xrightarrow{||\cdot||_\infty}
   f\Rightarrow f\in\RR[a,b]$\\
   Sei $\varepsilon>0$. Dann existiert $n_\varepsilon\in\N\,\forall n\geq
-  n_\varepsilon:||f_n-f||_\infty\leq\varepsilon$
+  n_\varepsilon\colon ||f_n-f||_\infty\leq\varepsilon$
   \begin{align*}
     \left|\int_a^bf_ndx-\int_a^bfdx\right|
     & = \left|\int_a^b(f_n-f)dx\right| \leq \int_a^b |f_n-f|dx\\
@@ -261,7 +325,7 @@
 \begin{enumerate}[(i)]
 \item Der Satz \ref{satz:gleichKonvInt} gilt nicht für punktweise Konvergenz.
   \begin{beispiel}
-    $f_n:[0,1]\rightarrow\R,f_n(x):=\max\{n-n^2|x-\frac{1}{n}|;0\}=
+    $f_n\colon [0,1]\rightarrow\R,f_n(x)\coloneqq \max\{n-n^2|x-\frac{1}{n}|;0\}=
     \begin{cases}
       n^2x & 0\leq x\leq \frac{1}{n}\\
       2n-n^2x & \frac{1}{n}\leq x \leq\frac{2}{n}\\
@@ -276,7 +340,7 @@
   \end{beispiel}
 \item Satz \ref{satz:gleichKonvInt} gilt nicht für uneigentliche Integrale
   (unendliche Intervalle).\\
-  Beispiel: $f_n:[0,\infty[\rightarrow\R,f_n(x):=\frac{x}{n^2}e^{-\frac{x}{n}},
+  Beispiel: $f_n\colon [0,\infty[\rightarrow\R,f_n(x)\coloneqq \frac{x}{n^2}e^{-\frac{x}{n}},
   ||f_n||_\infty=\frac{1}{en}, ||f_n||_\infty\rightarrow 0$.\\
   Aber $\int
   _0^\infty f_n(x)dx=\frac{1}{n}+1\rightarrow 1$ und $\int
@@ -286,8 +350,8 @@
 
 \paragraph{Gleichmässige Konvergenz und Differentiation}
 \begin{theorem}
-  Seien $f_n:[a,b]\rightarrow\R$ stetig differenzierbar und $f_n
-  \rightarrow f:[a,b]\rightarrow\R$ punktweise konvergent.
+  Seien $f_n\colon [a,b]\rightarrow\R$ stetig differenzierbar und $f_n
+  \rightarrow f\colon [a,b]\rightarrow\R$ punktweise konvergent.
   Die Folge der Ableitungen $f_n'[a,b]\rightarrow\R$ konvergiere
   gleichmässig. Dann ist $f$ stetig differenzierbar und es gilt
   \[f'(x)=\lim_{n\rightarrow\infty}f_n'(x)\]
@@ -309,7 +373,7 @@
   \begin{itemize}
   \item Selbst wenn gilt $f_n\xrightarrow{||\cdot||}f$, impliziert $f$
     differenzierbar i.a. nicht, dass $\lim f_n' (x)=f'(x)$.
-  \item $f_n:[-N,N]\rightarrow\R\quad f_n(x)=\frac{1}{n}\sin (nx)$
+  \item $f_n\colon [-N,N]\rightarrow\R\quad f_n(x)=\frac{1}{n}\sin (nx)$
     beliebig oft differenzierbar\\
     $||f_n||_\infty=\frac{1}{n}\rightarrow 0\Rightarrow \lim f_n=0$\\
     $f_n'(x)=\cos(nx)\not\rightarrow f'(x)=0$
@@ -321,10 +385,10 @@
   Ein Vektorraum $E$ (über $\K$) heißt genau dann 
   \emph{endlichdimensional\index{endlichdimensional}}, wenn
   \[\exists m\in\N \, \exists x_1,\dots,x_m\in E \, \forall x\in E\,
-  \exists \alpha_1,\dots,\alpha_m\in\K: x=\sum_{i=1}^{m} \alpha_ix_i\]
+  \exists \alpha_1,\dots,\alpha_m\in\K\colon  x=\sum_{i=1}^{m} \alpha_ix_i\]
 \end{definition}
-\[\dim E :=\inf\{m| \exists x_1,\dots,x_m\in E\, \forall x\in A\,
-\exists \alpha_1,\dots,\alpha_m\in\K:x=\sum_{i=1}^m\alpha_ix_i\}\]
+\[\dim E \coloneqq \inf\{m| \exists x_1,\dots,x_m\in E\, \forall x\in A\,
+\exists \alpha_1,\dots,\alpha_m\in\K\colon x=\sum_{i=1}^m\alpha_ix_i\}\]
 Beispiel: $\R^n, \C^n$
 
 \begin{theorem}[Satz von
@@ -342,8 +406,8 @@ Beispiel: $\R^n, \C^n$
       abgeschlossen und beschränkt ist.
     \item Sei $K$ abgeschlossen und beschränkt, d.h.
       \begin{enumerate}
-      \item $\exists M\geq 0\, \forall x\in\K:||x||_\infty\leq M$
-      \item $\forall (x_n)\subset K: x_n\xrightarrow{||\cdot||}
+      \item $\exists M\geq 0\, \forall x\in\K\colon ||x||_\infty\leq M$
+      \item $\forall (x_n)\subset K\colon  x_n\xrightarrow{||\cdot||}
         x\in\R^n\Rightarrow x\in K$
       \end{enumerate}
   \end{enumerate}
@@ -352,11 +416,11 @@ Beispiel: $\R^n, \C^n$
   M (\xi_1^{(n)},\xi_2^{(n)}<\R$ beschränkt. Nach dem Satz von
   Bolzano/Weierstrass aus der Analysis~I folgt, dass es eine
   konvergente Teilfolge
-  $(\xi_1^{(n_k)})\subset(\xi_1^{(n)}):\xi_1^{(n_k)}
+  $(\xi_1^{(n_k)})\subset(\xi_1^{(n)})\colon \xi_1^{(n_k)}
   \rightarrow\xi\in\R$ gibt. Die entsprechende Teilfolge
   $(\xi_2^{(n_k)}) \subset\xi_2^{(n)}$ ist ebenfalls beschränkt und
   enthält eine konvergente Teilfolge
-  $(\xi_2^{(n_k)_l}):(\xi_2^{(n_k)_l})\rightarrow \xi_2\in\R$. Damit
+  $(\xi_2^{(n_k)_l})\colon (\xi_2^{(n_k)_l})\rightarrow \xi_2\in\R$. Damit
   hat die Folge $x_{(n_k)_l}=(\xi_1^{(n_k)_l},
   \xi_2^{(n_k)_l})\rightarrow x=(\xi_1,\xi_2)$. Denn
   $||x_{(n_k)_l}-x||_\infty
@@ -372,7 +436,7 @@ Beispiel: $\R^n, \C^n$
   Sei $E$ ein Vektorraum und $||\cdot||_0,||\cdot||$ zwei Normen auf $E$.
   $||\cdot||_0$ und $||\cdot||$ heissen genau dann auf $E$ äquivalent,
   wenn 
-  \[\exists c_0,c>0\,\forall x\in E: ||x||_0\leq c_0||x||\qquad
+  \[\exists c_0,c>0\,\forall x\in E\colon  ||x||_0\leq c_0||x||\qquad
   ||x||\leq c||x||_0\]
 \end{definition}
 
@@ -387,7 +451,7 @@ Beispiel: $\R^n, \C^n$
   E$ existieren $\alpha_1,\ldots,\alpha_n\in\R$ mit $x = \sum_{i=1}^n
   \alpha_ix_i$. Sei $||\cdot||$ eine beliebige Norm auf $E$. Des
   weiteren definieren wir eine Norm $||\cdot||_0$ auf $E$ durch
-  $||x||_0:=\sum_{i=1}^n|\alpha_i|=||\alpha||_1$ mit $\alpha=
+  $||x||_0\coloneqq \sum_{i=1}^n|\alpha_i|=||\alpha||_1$ mit $\alpha=
   (\alpha_1, \ldots, \alpha_n)\in\R^n$. Es genügt nun, zu zeigen, dass
   $||\cdot||_0$ und  $||\cdot||$ äquivalent sind.
   \[||x||=\left|\left|\sum_{i=1}^n \alpha_i\cdot x_i\right|\right|
@@ -395,8 +459,8 @@ Beispiel: $\R^n, \C^n$
   ||x_i|| \sum_{i=1}^n |\alpha_i|= \left(\underbrace{\max_{1<i\leq n}
       ||x_i||}_{=c}\right)||x||_0\]
   Jetzt ist "`$||\cdot||_0\leq c_0||\cdot||$"'. Dazu betrachten wir
-  folgende Funktion: $f:[\R^n,||\cdot||_\infty]\rightarrow\R,
-  f(\alpha_1, \dots,\alpha_n):=||\sum_{i=1}^n \alpha_i x_i||$. Es
+  folgende Funktion: $f\colon [\R^n,||\cdot||_\infty]\rightarrow\R,
+  f(\alpha_1, \dots,\alpha_n)\coloneqq ||\sum_{i=1}^n \alpha_i x_i||$. Es
   gilt, dass $f$  stetig ist.\\
   Denn $|f(\alpha_1,\dots,\alpha_n)-f(\beta_1,\dots,\beta_n)|
   =||\sum_1^n (\alpha_i-\beta_i)x_i||\leq \sum_1^n |\alpha_i-\beta_i|
@@ -406,7 +470,7 @@ Beispiel: $\R^n, \C^n$
   $S=\{\alpha=(\alpha_1,\dots,\alpha_n)\in\R^n|\sum_{i=1}^n
   |\alpha_i|=1\} \subset\R^n$ ist abgeschlossen und beschränkt in
   $[\R^n,||\cdot||_\infty]$.  Denn für
-  $g(\alpha_1,\dots,\alpha_n):=\sum_{i=1}^n|\alpha_i|, g:
+  $g(\alpha_1,\dots,\alpha_n)\coloneqq \sum_{i=1}^n|\alpha_i|, g\colon 
   [\R^n,||\cdot||_\infty]\rightarrow\R$ gilt, dass $g$ stetig
   ist. Damit ist $S=g^{-1}(\{1\})$ (Urbild) abgeschlossen. $S$ ist
   beschränkt:
@@ -416,7 +480,7 @@ Beispiel: $\R^n, \C^n$
   \ref{satz:bw}. Weil
   $f$ stetig ist, folgt, dass $f$ auf $S$ das Minimum annimmt, d.h.\\
   $\exists (\alpha_1^0,\dots,\alpha_n^0)\in S \, \forall
-  (\alpha_1,\dots, \alpha_n)\in S:
+  (\alpha_1,\dots, \alpha_n)\in S\colon 
   0<\frac{1}{c_0}=f((\alpha_1^0,\dots,\alpha_n^0)\leq
   f(\alpha_1,\dots,\alpha_n)=||\sum_1^n \alpha_ix_i||$.  Sei $0\neq
   x\in E$ beliebig. Dann existiert $0\neq(\alpha_1,\dots,
@@ -442,9 +506,9 @@ Beispiel: $\R^n, \C^n$
 \end{theorem}
 \begin{proof}
   $x=\sum_{i=1}^n \alpha_iy_i\quad (\alpha_i\in\R)$\\
-  $||x_0||:=\max_{1\leq i\leq n}|\alpha_i|=||\alpha||_\infty,\alpha=
+  $||x_0||\coloneqq \max_{1\leq i\leq n}|\alpha_i|=||\alpha||_\infty,\alpha=
   (\alpha_1,\dots,\alpha_n)\in\R^n$ ist eine Norm auf $E$. Nach Satz
-  \ref{satz:VRNorm} existieren $c, C>0:c||x||_0\leq ||x||\leq C||x||_0$.
+  \ref{satz:VRNorm} existieren $c, C>0\colon c||x||_0\leq ||x||\leq C||x||_0$.
   \begin{enumerate}[(i)]
   \item Sei $x_k=\sum_{i=1}^n \alpha_i^{(k)} y_i, \alpha_i^{(k)}=
     (\alpha_1^{(k)},\dots,\alpha_n^{(k)})\in\R^n$. Es gilt $c||
@@ -453,15 +517,15 @@ Beispiel: $\R^n, \C^n$
     Cauchyfolge. Dann folgt, dass
     $(\alpha^{(k)})\subset[\R^n,||\cdot||_\infty]$ eine Cauchyfolge
     ist. Da nun $[\R^n,||\cdot||8]$ vollständig ist, gibt es ein
-    $\alpha =)\alpha_1,\dots,\alpha_n)\in\R^n:||\alpha^{(k)}
+    $\alpha =)\alpha_1,\dots,\alpha_n)\in\R^n\colon ||\alpha^{(k)}
     -\alpha||_\infty\rightarrow 0\Rightarrow ||x_k-x||\rightarrow 0,
     x=\sum_{i=1}^n \alpha_iy_i\in E$. Also konvergiert $(x_k)$ in $E$
     gegen $x$ und es folgt, dass $E$ vollständig ist.
   \item
     \begin{itemize}
     \item["`$\Rightarrow$"'] klar, siehe Analysis I
-    \item["`$\Leftarrow$"'] Definieren $f:[\R^n, ||\cdot||_\infty]
-      \rightarrow E, f(\alpha_1,\dots,\alpha_n):=\sum_{i=1}^n
+    \item["`$\Leftarrow$"'] Definieren $f\colon [\R^n, ||\cdot||_\infty]
+      \rightarrow E, f(\alpha_1,\dots,\alpha_n)\coloneqq \sum_{i=1}^n
       \alpha_i y_i, \{y_i\}$ ist eine Basis in $E$. Es gilt
       \begin{enumerate}
       \item $f$ ist bijektiv von $\R^n$ auf $E$.
@@ -469,7 +533,7 @@ Beispiel: $\R^n, \C^n$
         die zu Beginn des Beweises genannt sind.
       \end{enumerate}
       Sei $K\subset E$ beschränkt und abgeschlossen. $f^{-1}(K)=
-      \{(\alpha_1,\dots,\alpha_n)\in\R^n:\sum_{i=1}^n \alpha_iy_i
+      \{(\alpha_1,\dots,\alpha_n)\in\R^n\colon \sum_{i=1}^n \alpha_iy_i
       \in K\}$ ist beschränkt, da $K$ beschränkt (wegen Ungleichung
       oben) und abgeschlossen (Urbilder von abg. Mengen sind wieder
       abg.), da $f$ stetig ist. Nach Satz \ref{satz:bw} folgt:
@@ -484,9 +548,9 @@ und abgeschlossenen Mengen kompakt, so ist $E$ endlichdimensional.
 
 \section{Stetige lineare Abbildungen (Operatoren) zwischen normierten Räumen}
 \begin{definition}
-  Seien $E,F$ Vektorräume über $\K$. Eine Abbildung $A:E\rightarrow F$
+  Seien $E,F$ Vektorräume über $\K$. Eine Abbildung $A\colon E\rightarrow F$
   heißt \emph{linear\index{Abbildung!lineare}}, genau dann wenn:
-  \[\forall \alpha,\beta\in\K\,\forall x,y\in E: A(\alpha x+\beta y)=
+  \[\forall \alpha,\beta\in\K\,\forall x,y\in E\colon  A(\alpha x+\beta y)=
   \alpha Ax+\beta Ay\]
 \end{definition}
 
@@ -494,17 +558,17 @@ Bemerkung: Lineare Abbildungen zwischen endlichdimensionalen
 Vektorräumen können durch Matrizen dargestellt werden.
 
 \begin{definition}
-  Seien $E,F$ normierte Räume. Eine lineare Abbildung $A:E\rightarrow F$
+  Seien $E,F$ normierte Räume. Eine lineare Abbildung $A\colon E\rightarrow F$
   heißt beschränkt, genau dann wenn:
-  \[\exists M\geq 0 \, \forall x\in E: ||Ax||_F \leq M||x||_E\]
+  \[\exists M\geq 0 \, \forall x\in E\colon  ||Ax||_F \leq M||x||_E\]
 \end{definition}
 
-Es gilt: $\LL(E,F):=\{A:E\rightarrow F| A\text{ beschränkt}\}$ ist ein
-Vektorraum. Durch $||A||:=\sup_{||x||_E\leq 1} ||Ax||_F$ wird auf $\LL(E,F)$
+Es gilt: $\LL(E,F)\coloneqq \{A\colon E\rightarrow F| A\text{ beschränkt}\}$ ist ein
+Vektorraum. Durch $||A||\coloneqq \sup_{||x||_E\leq 1} ||Ax||_F$ wird auf $\LL(E,F)$
 eine Norm (Operatorennorm\index{Operatorennorm}) erklärt.
 $[\LL(E,F),||\cdot||]$ ist ein normierter Raum.\\
-Ferner gilt: $\forall x\in E:||Ax||_F\leq ||A||\cdot ||x||_E$. Für
-$x\neq 0:\left.
+Ferner gilt: $\forall x\in E\colon ||Ax||_F\leq ||A||\cdot ||x||_E$. Für
+$x\neq 0\colon \left.
 \begin{array}{rcl}
   ||A(\frac{x}{||x||})|| & \leq & ||A||\\
   ||Ax\frac{1}{||x||}|| & = & \frac{1}{||x||}||Ax||
@@ -515,10 +579,10 @@ B\circ A\in\LL(E,G)$ und es gilt $||BA||\leq ||B||\cdot ||A||$.
 
 \begin{theorem}
   Seien $E,F$ normierte Räume und $\dim E<\infty$. Dann ist jede
-  lineare Abbildung $A:E\rightarrow F$ stetig (=beschränkt).
+  lineare Abbildung $A\colon E\rightarrow F$ stetig (=beschränkt).
 \end{theorem}
 \begin{proof}
-  Sei $n:=\dim E$. Wählen Basis $x_1,\dots,x_n\in E$.
+  Sei $n\coloneqq \dim E$. Wählen Basis $x_1,\dots,x_n\in E$.
   Dann $\forall x\in E \, \exists \alpha_1,\dots,\alpha_n\in\K$.
   $x=\sum_{i=1}^n \alpha_i x_i, ||x||_0=\sum_1^n |\alpha_i|$ ist eine
   äquivalente Norm. Somit
@@ -540,11 +604,11 @@ B\circ A\in\LL(E,G)$ und es gilt $||BA||\leq ||B||\cdot ||A||$.
 \chapter{Differentiation}
 \section{Differentiation - Beispiele und Rechenregeln}
 \begin{definition}
-  $E$ und $F$ seien Banachräume. Eine Funktion $f:D\rightarrow F,
+  $E$ und $F$ seien Banachräume. Eine Funktion $f\colon D\rightarrow F,
   D\subset E$ offen, heißt in $x\in D$ differenzierbar, g.d.w.:
   \[
     \exists A\in \LL(E,F)\,\exists r(h)\,\exists\delta >0\,\forall
-    ||h||\leq \delta : x+h \in D\]
+    ||h||\leq \delta \colon  x+h \in D\]
     \[\text{ und } f(x+h)=f(x)+Ah+r(h)
     \text{ mit } \lim_{h\rightarrow 0}\frac{r(h)}{||h||}=0
   \]
@@ -553,7 +617,7 @@ B\circ A\in\LL(E,G)$ und es gilt $||BA||\leq ||B||\cdot ||A||$.
 Bemerkung: Die Differentiation von $f$ im Punkt $x\in D$ bedeutet eine
 Approximation durch eine affive lineare Abbildung $f(x)+Ah$ mit der
 Eigenschaft, dass \[\lim_{h\rightarrow 0}\frac{f(x+h)-f(x)-Ah}{||h||}=0.\]
-Setzt man $\tilde{r}(h):=\begin{cases}
+Setzt man $\tilde{r}(h)\coloneqq \begin{cases}
   \frac{r(h)}{||h||} & 0<||h||\leq\delta\\
   0 & h=0
 \end{cases}$, ist $\tilde{r}$ in $h=0$ stetig. Äquivalent zur Definition der
@@ -566,7 +630,7 @@ Differentiation von $f$ im Punkt $x$ ist die folgende:
 \end{theorem}
 
 \begin{definition}
-  Seien $E,F$ Banachräume und $f:D\rightarrow F, D\subset E$ offen, 
+  Seien $E,F$ Banachräume und $f\colon D\rightarrow F, D\subset E$ offen, 
   differenzierbar in $x\in D$. Dann heißt der eindeutig bestimmte
   Operator $A\in \LL(E,F)$ mit $f(x+h)=f(x)+Ah+r(h), \lim \frac{r(h)}{||h||}
   =0$ \emph{Ableitung\index{Ableitung}} (oder \emph{Fréchet-Ableitung})
@@ -578,15 +642,15 @@ Differentiation von $f$ im Punkt $x$ ist die folgende:
 % Differentiation
 
 \begin{beispiel}
-  $E,F$ sind Banachräume und $f:E\rightarrow F, f(x)=c+Ax, c\in F,
+  $E,F$ sind Banachräume und $f\colon E\rightarrow F, f(x)=c+Ax, c\in F,
   A\in\LL (E,F)$ Dann $f'(x)=A$\\
   Beweis: $f(x+h)=c+A(x+h)=c+Ax+Ah=f(x)+Ah, r(h)=0\Rightarrow f'(x)=A$
 \end{beispiel}
 
 \begin{remark}
-  Seien $E,F$ Banachräume und $f:D\subset E\rightarrow F$ in $D$
+  Seien $E,F$ Banachräume und $f\colon D\subset E\rightarrow F$ in $D$
   differenzierbar.  Dann ist $f'$ eine Abbildung von $D$ in $\LL(E,F),
-  f':D\rightarrow \LL(E,F)$, d.h. die Bilder sind beschränkte lineare
+  f'\colon D\rightarrow \LL(E,F)$, d.h. die Bilder sind beschränkte lineare
   Operatoren.
 
   Für $E=F=\R$ gilt $\LL(\R,\R)\eqsim\R$
@@ -594,16 +658,16 @@ Differentiation von $f$ im Punkt $x$ ist die folgende:
 
 \paragraph{Rechenregeln}
 \begin{enumerate}[(i)]
-\item Seien $E,F$ Banachräume und $f,g:D\rightarrow F, D\subset E$ offen
+\item Seien $E,F$ Banachräume und $f,g\colon D\rightarrow F, D\subset E$ offen
   und differenzierbar in $x\in D$. Dann $f+g,\alpha\cdot f, \alpha\in\R$
   mind. in $x$ differenzierbar und es gilt: $(f+g)'(x)=f'(x)+g'(x),
   (\alpha f)'(x)=\alpha f'(x)$
-\item Sei $E$ ein Banachraum, $f,g:D\rightarrow\R, D\subset E$ offen, in
+\item Sei $E$ ein Banachraum, $f,g\colon D\rightarrow\R, D\subset E$ offen, in
   $x\in D$ differenzierbar. Dann $f\cdot g, \frac{f}{g} (g(x)\neq 0)$
   sind in $x$ differenzierbar und es gilt $(f\cdot g)'(x)=f'(x)g(x)+
   f(x)g'(x), \left(\frac{f}{g}\right)'(x)=\frac{f'(x)g(x)-f(x)g'(x)}{(g(x))^2}$
-\item Kettenregel: Seien $E,F,G$ Banachräume, $f:D\rightarrow F$, in $x$
-  differenzierbar, $g:\tilde{D}\rightarrow G, \tilde{D\subset F}$ offen
+\item Kettenregel: Seien $E,F,G$ Banachräume, $f\colon D\rightarrow F$, in $x$
+  differenzierbar, $g\colon \tilde{D}\rightarrow G, \tilde{D\subset F}$ offen
   und $f(D)\subset\tilde{D}$ in $f(x)$ differenzierbar. Dann ist 
   $g \circ f$ in $x$ differenzierbar und es gilt $(g\circ f)'(x)=
   g'(f(x))f'(x), E\xrightarrow{f}F\xrightarrow{g} G$
@@ -644,13 +708,13 @@ Es gilt zu zeigen:
 \paragraph{Richtungsableitung}
 \begin{definition}
   Seien $E,F$ Banachräume und $0\neq h\in E$. Existiert für eine Funktion
-  $f:D\rightarrow E, D\subset E$ offen, im Punkt $x\in E$ der Grenzwert
-  \[\frac{\partial f}{\partial h}(x):=\lim_{\stackrel{t\rightarrow 0}{t\in\R}} \frac{f(x+th)-f(x)}{t}\],
+  $f\colon D\rightarrow E, D\subset E$ offen, im Punkt $x\in E$ der Grenzwert
+  \[\frac{\partial f}{\partial h}(x)\coloneqq \lim_{\stackrel{t\rightarrow 0}{t\in\R}} \frac{f(x+th)-f(x)}{t}\],
   so heißt $\frac{\partial f}{\partial h}(x)$ \emph{Richtungsableitung\index{Richtungsableitung}} von $f$ in $x$.
 \end{definition}
 
 \begin{theorem}
-  Seien $E,F$ Banachräume und $f:D\rightarrow F, D\subset F$ offen, in 
+  Seien $E,F$ Banachräume und $f\colon D\rightarrow F, D\subset F$ offen, in 
   $x\in D$ differenzierbar, so ist $f$ in $x$ stetig.\\
   \textbf{Beweis}:$f(x+h)=f(x)+f'(x)h+||h||\tilde{r}_f(h)
   \xrightarrow{h\rightarrow 0} f(x)$. Daher folgt, dass $f$ in $x$ stetig.
@@ -659,7 +723,7 @@ Es gilt zu zeigen:
 
 \begin{theorem}
   \label{satz:richtAbl}
-  Seien $E,F$ Banachräume, $f:D\rightarrow F, D\subset E$ offen, in $x$
+  Seien $E,F$ Banachräume, $f\colon D\rightarrow F, D\subset E$ offen, in $x$
   differenzierbar. Dann existiert die Richtungsableitung $\frac{\partial f}{\partial h}(x)$
   für jede Richtung $h$, und es gilt $\frac{\partial f}{\partial h}(x)=f'(x)h$.\\
   \textbf{Beweis}: $f(x+th)=f(x)+f'(x)(th)+r(th)$, wobei $\frac{r(th)}{||th||}\xrightarrow{t\rightarrow 0} 0$\\
@@ -672,7 +736,7 @@ Es gilt zu zeigen:
 \end{remark}
 
 \begin{beispiel}
-$f:\R^2\rightarrow\R, f(x_1,x_2):=
+$f\colon \R^2\rightarrow\R, f(x_1,x_2)\coloneqq 
 \begin{cases}
   \frac{x_1x_2^2}{x_1^2+x_2^4} & (x_1,x_2)\neq (0,0)\\
   0 & (x_1,x_2)=(0,0)
@@ -701,16 +765,16 @@ Für $f$ gilt:
 \section{Differentiation von $\R^n$-$\R^m$-Funktionen}
 \subsection{Partielle Ableitung von $\R^n$-$\R$-Funktionen}
 \begin{definition}
-  Sei $D\subset \R^n$ offen und $f:D\rightarrow \R$ eine reelle Funktion.
+  Sei $D\subset \R^n$ offen und $f\colon D\rightarrow \R$ eine reelle Funktion.
   Existiert in $x=(x_1,\dots,x_n)\in\R^n\in D$ die Richtungsableitung
   $\frac{\partial f}{\partial e_i}(x)=\lim_{t\rightarrow 0}
   \frac{f(x+te_i)-f(x)}{t}, e_i=(0,\dots,1,\dots,0)\in\R^n$, so heißt
-  $\frac{\partial t}{\partial x_i}(x):=\frac{\partial f}{\partial e_i}(x)$
+  $\frac{\partial t}{\partial x_i}(x)\coloneqq \frac{\partial f}{\partial e_i}(x)$
   \emph{partielle Ableitung\index{Ableitung!partielle}} von $f$ nach der
   $i$-ten Koordinate.
 \end{definition}
 
-Bemerkung: Die partielle Ableitung einer Funktion $f:D\rightarrow\R,D
+Bemerkung: Die partielle Ableitung einer Funktion $f\colon D\rightarrow\R,D
 \subset \R^n$ offen, kann man als gewöhnliche Ableitung von Funktionen einer
 reellen Veränderlichen interpretieren, indem man nach der $i$-ten
 Koordinate differenziert und die übrigen festhält.
@@ -719,10 +783,10 @@ Ist $f(x)=f(x_1,\dots,x_n)$, so ist $\frac{\partial f}{\partial x_i}=
 \frac{f(x_1,\dots,x_i+t,x_1,\dots,x_n)-f(x_1,\dots,x_n)}{t}$. Also sind
 die partiellen Ableitungen Richtungsableitungen in die $i$-te Richtung.
 
-Beispiel: \[f(x_1,x_2)=x_1^2+x_1\sin x_2 \quad f:\R^2\rightarrow \R\]
+Beispiel: \[f(x_1,x_2)=x_1^2+x_1\sin x_2 \quad f\colon \R^2\rightarrow \R\]
 \[\frac{\partial f}{\partial x_1}=2x+\sin x_2 \quad \frac{\partial f}{\partial x_2}=x_1\cos x_2\]
 
-Die Existenz der partiellen Ableitung von $f:D\rightarrow \R, D\subset\R^n$
+Die Existenz der partiellen Ableitung von $f\colon D\rightarrow \R, D\subset\R^n$
 reicht i.a. nicht für die Differenzierbarkeit von $f$ aus!
 
 Beispiel:
@@ -738,8 +802,8 @@ Aber $f$ ist in $(0,0)$ nicht differenzierbar!
 \subsection{Darstellung der Ableitung von $\R^n$-$\R^m$-Funktionen}
 \begin{theorem}
   \label{satz:AblMatrix}
-  Sei $D\subset\R$ offen und $f:D\rightarrow\R^m,f=\begin{pmatrix}
-    f_1\\\vdots\\f_m\end{pmatrix}$ und $f_i:D\rightarrow\R$ im Punkt
+  Sei $D\subset\R$ offen und $f\colon D\rightarrow\R^m,f=\begin{pmatrix}
+    f_1\\\vdots\\f_m\end{pmatrix}$ und $f_i\colon D\rightarrow\R$ im Punkt
   $x\in\R^n$ differenzierbar. Dann gilt für die Ableitung von $f$ die
   folgende Darstellung:
   \[f'(x)=\begin{pmatrix}\frac{\partial f_1}{\partial x_1} & \dots & \frac{\partial f_1}{\partial x_n}\\
@@ -756,7 +820,7 @@ Aber $f$ ist in $(0,0)$ nicht differenzierbar!
   mit $\frac{r_i(h)}{||h||}\rightarrow 0, (i=1,\dots,m)$\\
   $\Rightarrow f_i(x+h)=f_i(x)+\sum_{k=1}^n a_{ik}h_k+r_i(h)$ für
   $i=1,\dots,m$\\
-  $h=te_j$ mit $e_j=(0,\dots,1,\dots,0): f_i(x+te_j)=f_i(x)+
+  $h=te_j$ mit $e_j=(0,\dots,1,\dots,0)\colon  f_i(x+te_j)=f_i(x)+
   \sum_{k=1}^n a_{ik}+\delta_{jk}+r_i(te_j)=f_i(x)+ta_{ij}+r_i(te_j)
   \Rightarrow \frac{f_i(x+te_j)-f_i(x)}{t}=a_{ij}+\frac{r_i(te_j)}{t}$\\
   $\Rightarrow \frac{\partial f}{\partial x_j}=\lim_{t\rightarrow 0} 
@@ -768,39 +832,40 @@ Aber $f$ ist in $(0,0)$ nicht differenzierbar!
   \label{satz:DiffExist}
   Sei $D\subset\R^n$ offen und $f=\begin{pmatrix}f_1\\\vdots\\f_m
   \end{pmatrix}
-  :D\rightarrow\R^m, f_i:D\rightarrow\R$ eine Funktion, so dass die
+  \colon D\rightarrow\R^m, f_i\colon D\rightarrow\R$ eine Funktion, so dass die
   partielle Ableitung $\frac{\partial f_i}{\partial x_j}$ in $D$ 
   existieren und im Punkt $x\in D$ stetig sind, dann ist $f$ in $x$ 
   differenzierbar und es gilt die Formel aus Satz \ref{satz:AblMatrix}.\\
   \textbf{Beweis}: $f=\begin{pmatrix}f_1\\\vdots\\f_m
-  \end{pmatrix}:D\rightarrow\R^m, D\subset\R^n$ offen, ist in $x\in D$
-  differenzierbar, g.d.w. $f:D\rightarrow\R$ in $x\in D$ differenzierbar
+  \end{pmatrix}\colon D\rightarrow\R^m, D\subset\R^n$ offen, ist in $x\in D$
+  differenzierbar, g.d.w. $f\colon D\rightarrow\R$ in $x\in D$ differenzierbar
   ist.\\
   Daher ist o.B.d.A. für $m=1$:\\
-  $f:D\rightarrow\R$ Aus der Tatsache, dass $D$ offen ist, folgt, dass
-  $\exists \delta>0 : \stackrel{\circ}{B}(x,\delta)=\{z\in\R^n:||x-z||_\infty
+  $f\colon D\rightarrow\R$ Aus der Tatsache, dass $D$ offen ist, folgt, dass
+  $\exists \delta>0 \colon  \stackrel{\circ}{B}(x,\delta)=\{z\in\R^n |
+  ||x-z||_\infty
   <\delta\}\subset D$\\
   Sei $h\in \R^n, ||h||<\delta$. Setzen 
-  \[z^{(i)}:=x+\sum_{k=1}^i h_ke_k \quad z^{(0)}:=x\]
+  \[z^{(i)}\coloneqq x+\sum_{k=1}^i h_ke_k \quad z^{(0)}\coloneqq x\]
   Es gilt $z^{(n)}=x+h$. $z^{(i)}$ und $z^{(i-1)}$ unterscheiden sich in
   der $i$-ten Koordinate. Nach dem Mittwelwertsatz der Differentialrechnung
   für differenzierbare Funktionen in einer Veränderlichen existiert ein
-  $\theta_i\in [0,1]:f(z^{(i)})-f(z^{(i-1)})=\frac{\partial f}{\partial x_i}
+  $\theta_i\in [0,1]\colon f(z^{(i)})-f(z^{(i-1)})=\frac{\partial f}{\partial x_i}
   (y^{(i)})h_i$, wobei $y^{(i)}=z^{(i-1)}+\vartheta_ih_ie_i$
-  \begin{small}
-    $\varphi (t):=f(z^{(i-1)}+the_j)\, \varphi(1)=f(z^{(i)})\,\varphi (0)
+  {\small
+    $\varphi (t)\coloneqq f(z^{(i-1)}+the_j)\, \varphi(1)=f(z^{(i)})\,\varphi (0)
     =f(z^{(i-1)})$\\
     Nach dem Mittelwertsatz existiert ein $t_0$ mit\\ $\frac{\varphi (1)-\varphi (0)}{1-0}
     =\varphi'(t_0)=\lim_{\zeta\rightarrow 0} \frac{\varphi (t_0+\zeta) + \varphi (t_0)}{\zeta}
-    =\frac{f(z^{(i-1)}+(t_0+\zeta)h_ie_i)-\overbrace{f(z^{(i-1)}+t_0h_ie_i}^{=:y^{(i)}}}{\zeta}$\\
+    =\frac{f(z^{(i-1)}+(t_0+\zeta)h_ie_i)-\overbrace{f(z^{(i-1)}+t_0h_ie_i}^{=\colon y^{(i)}}}{\zeta}$\\
     $=\lim_{\zeta\rightarrow 0}\frac{f(y^{(i)}+\zeta h_ie_i)-f(y^{(i)})}{\zeta h_i}
     h_i=\frac{\partial f}{\partial x_i}(y^{(i)})h_i$
-  \end{small}
+  }
   Somit ist $f(x+h)-f(x)=\sum_{i=1}^n (f(z^{(i)})-f(z^{(i-1)})=
   \sum_{i=1}^n \frac{\partial f}{\partial x_i}(y^{(i)})h_i=\sum_{i=1}^n
   \frac{\partial f}{\partial x_i}(x)h_i+\underbrace{\sum_{i=1}^n
   (\frac{\partial f}{\partial x_i}(y^{(i)})-\frac{\partial f}{\partial x_i}
-  (x))h_i}_{=:r(h)}$\\
+  (x))h_i}_{=\colon r(h)}$\\
   Nach der Cauchy-Schwartzschen Ungleichung gilt:
   \[|r(h)|\leq \sqrt{\sum_{i=1}^n \left|\frac{\partial f}{\partial x_i}
   (x)-\frac{\partial f}{\partial x_i}(y^{(i)})\right|^2}\cdot||h||_2\]
@@ -813,11 +878,11 @@ Aber $f$ ist in $(0,0)$ nicht differenzierbar!
 
 %% Vorlesung vom 2004-05-02
 
-Die Existenz der partiellen Ableitungen von $f:D\subset\R^n
+Die Existenz der partiellen Ableitungen von $f\colon D\subset\R^n
 \rightarrow \R$ reicht i.a. \emph{nicht} für die Differenzierbarkeit von $f$!
 
 \begin{definition}
-  Sei $f:D\rightarrow \R, D\subset\R^n$ offen, eine reellwertige
+  Sei $f\colon D\rightarrow \R, D\subset\R^n$ offen, eine reellwertige
   Funktion, so dass die partiellen Ableitungen $\frac{\partial f}{\partial x_i}$
   existieren in $x\in D$. Dann heißt:
   \[\text{grad} f(x)=\left(\frac{\partial f}{\partial x_1}(x),\dots,\frac{\partial f}{\partial x_n}(x)\right)\]
@@ -832,7 +897,7 @@ Bemerkung: \begin{enumerate}[(i)]
 \end{enumerate}
 
 \begin{theorem}
-  Sei $f:D\rightarrow\R, D\subset\R^n$ offen, in $x\in D$ differenzierbar.
+  Sei $f\colon D\rightarrow\R, D\subset\R^n$ offen, in $x\in D$ differenzierbar.
   Ist $\text{grad} f(x)=0$, so verschwinden alle Richtungsableitungen in
   $x$. Ist $\text{grad} f(x)\neq 0$, so gibt es unter allen
   Richtungsableitungen $\frac{\partial f}{\partial h}(x)$ mit $||h||_2
@@ -848,7 +913,7 @@ Bemerkung: \begin{enumerate}[(i)]
   & = & ||\text{grad}f(x)||_2 \text{ für }||h||_2=1
 \end{align*}
 
-Für $h_0:=\frac{\text{grad}f(x)}{||\text{grad}f(x)||_2}$ gilt:\\
+Für $h_0\coloneqq \frac{\text{grad}f(x)}{||\text{grad}f(x)||_2}$ gilt:\\
 $\frac{\partial f}{\partial
   h_0}=(\text{grad}f(x))h_0=\left(\text{grad}f(x)\right)
 \left(\frac{\text{grad}f(x)}{||\text{grad}f(x)||_2}\right)=
@@ -856,7 +921,7 @@ $\frac{\partial f}{\partial
 \qed
 \end{theorem}
 
-Sei $f:D\subset\R^n\rightarrow \R$ differenzierbar. $f(a+h)=f'(a)h+r(h),
+Sei $f\colon D\subset\R^n\rightarrow \R$ differenzierbar. $f(a+h)=f'(a)h+r(h),
 \frac{r(h)}{||h||}\rightarrow 0$
 \begin{enumerate}[(i)]
   \item Für "`kleine"' $h$, d.h. $||h||$ "`klein"', ist eine Näherung
@@ -878,7 +943,7 @@ Eine Pyramide mit quadratischer Grundfläche der Kantenlänge \unit[1]{m}
 und Höhe \unit[3]{m} hat ein Volumen $V(l,h)=\frac{1}{3}l^2h=\unit[1]{m^3}$.
 Gesucht ist eine Näherung für das Volumen einer Pyramide mit einer Länge
 von \unit[1,03]{m} und Höhe \unit[3,06]{m}.\\
-$V:\R^2\rightarrow \R, V(l+\Delta l,h+\Delta h)\approx V(l,h)+V'(l,h)
+$V\colon \R^2\rightarrow \R, V(l+\Delta l,h+\Delta h)\approx V(l,h)+V'(l,h)
 \begin{pmatrix}\Delta l\\ \Delta h
 \end{pmatrix}
 =V(l,h)+\frac{\partial V}{\partial l}(l,h)\Delta l+\frac{\partial V}{\partial h}
@@ -891,7 +956,7 @@ Der exakte Wert beträgt: $V(1,03;3,06)=1,082118$
   
 \paragraph{Ein wichtiger Spezialfall der Kettenregel}
 \begin{alignat*}{2}
-u &:D\subset\R^n\rightarrow\R^m\ & g &:M\subset\R^m\rightarrow\R\,u(D)\subset M\\
+u &\colon D\subset\R^n\rightarrow\R^m\ & g &\colon M\subset\R^m\rightarrow\R\,u(D)\subset M\\
 u &=\begin{pmatrix}u_1\\ \vdots\\u_m
 \end{pmatrix} & f &=g\circ u\\
 f(x_1,\dots,x_n) &=g(u_1(x_1,\dots,x_n),\dots,u_m(x_1,\dots,x_n)) &
@@ -922,11 +987,11 @@ Kettenregel: $f'(x)=g'(u(x))u'(x)$
 \subsection{Mittelwertsätze}
 \begin{theorem}
   \label{satz:MWSreell}
-  Sei $f:D\rightarrow \R, D\subset\R^n$ offen, auf $D$ differenzierbar,
+  Sei $f\colon D\rightarrow \R, D\subset\R^n$ offen, auf $D$ differenzierbar,
   $x,x+h\in D$ mit $x+th\in D$ für $0\leq t\leq 1$. Dann 
-  \[\exists 0<\vartheta<1:f(x+h)-f(x)=f'(x+\vartheta h)h\]
+  \[\exists 0<\vartheta<1\colon f(x+h)-f(x)=f'(x+\vartheta h)h\]
   \textbf{Beweis}: (Anwendung des eindimensionalen Mittelwertsatzes)
-  $\varphi(t):=f(x+th), \varphi:[0,1]\rightarrow \R$ ist stetig 
+  $\varphi(t)\coloneqq f(x+th), \varphi\colon [0,1]\rightarrow \R$ ist stetig 
   differenzierbar.\\
   Kettenregel: $\varphi'(t)=f'(x+th)h$. Nach dem Mittelwertsatz gilt:
   $\frac{\varphi(1)-\varphi(0)}{1-0}=\varphi(1)-\varphi(0)=\varphi'(\vartheta)$\\
@@ -940,8 +1005,8 @@ Kettenregel: $f'(x)=g'(u(x))u'(x)$
 \begin{enumerate}[(i)]
   \item In der Version von Satz \ref{satz:MWSreell}
     gilt der Mittelwertsatz für vektorwertige Funktionen \emph{nicht} mehr.\\
-    Beispiel: $f:[0,2\pi]\rightarrow\R^2, f(t)=\begin{pmatrix}\cos t\\\sin t
-    \end{pmatrix}$ Zu zeigen ist: $\not\exists 0<\vartheta<1:f(2\pi)-
+    Beispiel: $f\colon [0,2\pi]\rightarrow\R^2, f(t)=\begin{pmatrix}\cos t\\\sin t
+    \end{pmatrix}$ Zu zeigen ist: $\not\exists 0<\vartheta<1\colon f(2\pi)-
     f(0)=f'(\vartheta 2\pi)2\pi$. Denn $f(2\pi)-f(0)=0, f'(t)=\begin{pmatrix}
       (\cos t)'\\(\sin t)'
     \end{pmatrix}=\begin{pmatrix}
@@ -954,9 +1019,9 @@ Kettenregel: $f'(x)=g'(u(x))u'(x)$
 
 \begin{definition}
   Sei $f=\begin{pmatrix}f_1\\\vdots\\f_m
-  \end{pmatrix}: [a,b]\rightarrow \R^m$, wobei $f_i:[a,b]\rightarrow\R$
+  \end{pmatrix}\colon  [a,b]\rightarrow \R^m$, wobei $f_i\colon [a,b]\rightarrow\R$
   riemannintegrierbar sind. Dann heißt
-  \[\int_a^b f(t)dt:=\begin{pmatrix}\int_a^b
+  \[\int_a^b f(t)dt\coloneqq \begin{pmatrix}\int_a^b
     f_1(t)dt\\\vdots\\\int_a^bf_m(t)dt
   \end{pmatrix}\]
   das $\RR$-Integral von $f$ über $[a,b]$.
@@ -966,18 +1031,18 @@ $f$ ist z.B. integrierbar, wenn $f$ stetig ist. Ferner: $\int_a^b
 f(t)dt=0,\int_a^bf(t)dt=-\int_b^a f(t)dt$.
 Analog definiert man für $A;[a,b]\rightarrow\LL (\R^n,\R^m)$ das $\RR$-Integral
 als:
-\[\int_a^bA(t)dt:=\left(\int_a^b a_{ij}(t)dt\right)_{\stackrel{i=1,\dots,m}{j=1,\dots,n}},
+\[\int_a^bA(t)dt\coloneqq \left(\int_a^b a_{ij}(t)dt\right)_{\stackrel{i=1,\dots,m}{j=1,\dots,n}},
 A(t)=(a_{ij}(t))\]
 Ferner: $\int_a^bA(t)hdt=\left(\int_a^bA(t)dt\right)h,
 h\in\R^n,h=\text{konstant}$
 
-\textbf{Hilfssatz}: Für jede stetige Funktion $f:[a,b]\rightarrow\R^n$
+\textbf{Hilfssatz}: Für jede stetige Funktion $f\colon [a,b]\rightarrow\R^n$
 gilt:
 \[\left|\left|\int_a^bf(t)dt\right|\right|_2\leq
 \int_a^b||f(t)||_2dt\]
 Diese Ungleichung gilt auch für jede beliebige Norm $||\cdot||$ auf
 $\R^n$\\
-Beweis: Sei $u:=\int_a^b f(t)dt\in\R^n$. Dann $||u||_2^2=
+Beweis: Sei $u\coloneqq \int_a^b f(t)dt\in\R^n$. Dann $||u||_2^2=
 <u,u>=<\int_a^b f(t)dt, u>=\int_a^b <f(t),u>dt\leq
 \int_a^b ||f(t)||_2 ||u||_2dt=\left(\int_a^b ||f(t)_2
 dt\right)||u||_2\Rightarrow \left|\left|\int_a^b f(t)dt\right|
@@ -986,17 +1051,17 @@ dt\right)||u||_2\Rightarrow \left|\left|\int_a^b f(t)dt\right|
 
 \begin{theorem}
   \label{satz:MWSint}
-  Sei $f:D\rightarrow\R^m, D\subset \R^n$ offen, stetig differenzierbar
+  Sei $f\colon D\rightarrow\R^m, D\subset \R^n$ offen, stetig differenzierbar
   und $x,x+h\in D$ mit $x+th\in D, 0\leq t\leq 1$. Dann 
   \[f(x+h)-f(x)=\left(\int_0^1 f'(x+th)dt\right)h\]
   Ferner gilt: 
   \[||f(x+h)-f(x)||_2\leq \sup_{0\leq t \leq 1}
   \underbrace{||f'(x+th)||}_{\text{Operatorennorm}}\cdot ||h||_2\]
-  Die Operatorennorm ist genauer $||f'(x+th):[\R^n,||\cdot||_2]
+  Die Operatorennorm ist genauer $||f'(x+th)\colon [\R^n,||\cdot||_2]
   \rightarrow[\R^m,||\cdot||_2]||$\\
-  \textbf{Beweis}: $f:\begin{pmatrix}f_1\\\vdots\\f_m
-  \end{pmatrix}, f_i:D\rightarrow\R$ stetig differenzierbar. Wir
-  definieren $\varphi_i:[0,1]\rightarrow\R, i=1,\dots,m, \varphi_i(t):=
+  \textbf{Beweis}: $f\colon \begin{pmatrix}f_1\\\vdots\\f_m
+  \end{pmatrix}, f_i\colon D\rightarrow\R$ stetig differenzierbar. Wir
+  definieren $\varphi_i\colon [0,1]\rightarrow\R, i=1,\dots,m, \varphi_i(t)\coloneqq 
   f_i(x+th), \varphi_i$ stetig differenzierbar. Man wendet den 
   Hauptsatz der Differential- und Integralrechnung an: $\varphi_i(1)-
   \varphi_i(0)=\int_0^1 \varphi'_i (t)dt, \varphi'_i(t)=
@@ -1017,7 +1082,7 @@ dt\right)||u||_2\Rightarrow \left|\left|\int_a^b f(t)dt\right|
   \begin{enumerate}[(i)]
     \item Sei $E$ ein normierter Raum und $x_0,x_1,\dots,x_n\in E$. Dann
       heißt
-      \[P=\bigcup_{i=1}^n \{(1-\Theta)x_{i-1}+\Theta x_i:0\leq \Theta\leq 1\}\]
+      \[P=\bigcup_{i=1}^n \{(1-\Theta)x_{i-1}+\Theta x_i\colon 0\leq \Theta\leq 1\}\]
       \emph{Polygonzug\index{Polygonzug}} durch die Punkte $x_0,\dots,x_n$.
     \item $D\subset E$ heißt genau dann \emph{polygonzugzusammenhängend},
       wenn $\forall x,y\in D$ existiert ein Polygonzug $P\subset D$ durch
@@ -1027,11 +1092,11 @@ dt\right)||u||_2\Rightarrow \left|\left|\int_a^b f(t)dt\right|
 \end{definition}
 
 \begin{theorem}
-  Sei $f:D\rightarrow \R^m, D\subset\R^n$ offen und polygonzugzusammenhängend,
+  Sei $f\colon D\rightarrow \R^m, D\subset\R^n$ offen und polygonzugzusammenhängend,
   differenzierbar mit $f'=0$ auf $D$. Dann ist $f$ konstant auf $D$.\\
   \textbf{Beweis}: Es gilt: $f$ ist stetig differenzierbar auf $D$, da
   $f'=0$. Sei $x_0\in D$ fest und $x\in D$ beliebig. Dann existiert ein
-  in $D$ verlaufender Polygonzug durch $x_0,x_1,\dots,x_n:=x$.
+  in $D$ verlaufender Polygonzug durch $x_0,x_1,\dots,x_n\coloneqq x$.
   Aus Satz \ref{satz:MWSint} folgt> $f(x_0)=f(x_1)=\dots =f(x_n)=f(x)$.
   Also $f(x)=f(x_0)\,\forall x\in D$. Daher folgt, dass $f$ konstant ist.
   \qed
@@ -1044,57 +1109,57 @@ polygonzugzusammenhängend.
 
 \subsection{Taylorsche Formel}
 \paragraph{Höhere partielle Ableitungen von $\R^n$-$\R$-Funktionen}
-Notation: Sei $f:D\rightarrow\R, D\subset\R^n$ offen, eine partiell
+Notation: Sei $f\colon D\rightarrow\R, D\subset\R^n$ offen, eine partiell
 differenzierbare Funktion. Sind alle partiellen Ableitungen 
-$\frac{\partial f}{\partial x_i}:D\rightarrow\R$ selbst wieder partiell
+$\frac{\partial f}{\partial x_i}\colon D\rightarrow\R$ selbst wieder partiell
 differenzierbar, so heißt $f$ zweimal differenzierbar. Man kann die
 partiellen Ableitungen 2. Ordnung bilden:
-\[\frac{\partial^2 f}{\partial x_j \partial x_i}:=\frac{\partial}{\partial x_j}
+\[\frac{\partial^2 f}{\partial x_j \partial x_i}\coloneqq \frac{\partial}{\partial x_j}
 \left(\frac{\partial f}{\partial x_i}\right)\]
 Allgemeiner definiert man durch Induktion folgendes:\\
-$f:D\rightarrow\R, D\subset\R^n$ offen, heißt $(k+1)$-mal partiell
+$f\colon D\rightarrow\R, D\subset\R^n$ offen, heißt $(k+1)$-mal partiell
 differenzierbar, wenn sie $k$-mal partiell differenzierbar ist und
 alle partiellen Ableitungen der $k$-ter Ordnung $\frac{\partial^k f}{\partial x_{i_k}\dots\partial x_{i_2}\partial x_{i_1}}
 D\rightarrow \R$ partiell differenzierbar sind.\\
-Eine Funktion $f:D\rightarrow\R,D\subset\R^n$ offen, heißt $k$ mal
+Eine Funktion $f\colon D\rightarrow\R,D\subset\R^n$ offen, heißt $k$ mal
 stetig differenzierbar, wenn sie $k$ mal partiell differenzierbar ist
 und alle partiellen Ableitungen der Ordnung $\leq k$ stetig sind.
 
 \begin{theorem}[Satz von Schwartz über die Vertauschbarkeit der
   partiellen Ableitungen]
-  Sei $f:D\rightarrow\R,D\subset\R^n$ offen, zweimal stetig partiell
+  Sei $f\colon D\rightarrow\R,D\subset\R^n$ offen, zweimal stetig partiell
   differenzierbar. Dann gilt für alle 
   \[\xi\in D \text{ und } i,j=1,\dots,n:
   \frac{\partial^2 f}{\partial x_j \partial x_i}
   (\xi)=\frac{\partial^2 f}{\partial x_i \partial x_j}(\xi)\]
-  \textbf{Beweis}: O.B.d.A.: $n=2, i=1, j=2, x_1\rightarrow x, x_2
+  \textbf{Beweis}: O.\,B.\,d.\,A.: $n=2, i=1, j=2, x_1\rightarrow x, x_2
   \rightarrow y$. Wir zeigen $\frac{\partial^2 f}
   {\partial x \partial y}(\xi,\eta)=
   \frac{\partial^2 f}{\partial y \partial x}(\xi,\eta)$ Wählen auf $\R^2$
   die Maximumnorm. Dann existiert die $\varepsilon$-Kugel
-  $B_\varepsilon(\xi,\eta):=\{(\tilde{\xi},\tilde{\eta})\in\R^2:
+  $B_\varepsilon(\xi,\eta)\coloneqq \{(\tilde{\xi},\tilde{\eta})\in\R^2\colon 
   \max\{|\tilde{\xi}-\xi|,|\tilde{\eta}-\eta|\}<\varepsilon\}\subset D$.
   Damit: $(\xi+h,\eta+k)\in B_\varepsilon(\xi,\eta)$ für $|h|,|k|<
-  \varepsilon$. Sei $0<|h|,|k|<\varepsilon$. Wir definieren $\varphi (x):=
-  f(x,\eta+k)-f(x,\eta), \varphi:[\xi,\xi+h]\rightarrow\R, h>0$
-  differenzierbar. Nach dem Mittelwertsatz: $\exists x_1\in]\xi,\xi+h[:
+  \varepsilon$. Sei $0<|h|,|k|<\varepsilon$. Wir definieren $\varphi (x)\coloneqq 
+  f(x,\eta+k)-f(x,\eta), \varphi\colon [\xi,\xi+h]\rightarrow\R, h>0$
+  differenzierbar. Nach dem Mittelwertsatz: $\exists x_1\in]\xi,\xi+h[\colon 
   \varphi(\xi+h)-\varphi(\xi)=h\varphi'(x_1)$.
   \begin{align*}
-    F(h,k) & := & f(\xi+h,\eta+k)-f(\xi+h,\eta)-f(\xi,\eta+k)+f(\xi,\eta)\\
+    F(h,k) & \coloneqq  & f(\xi+h,\eta+k)-f(\xi+h,\eta)-f(\xi,\eta+k)+f(\xi,\eta)\\
     & \Rightarrow & F(h,k)=\varphi(\xi+h)-\varphi(\xi)=h\varphi'(x_1)\\
     & = & h\left[\frac{\partial f}{\partial x}(x_1,\eta+k)-
     \frac{\partial f}{\partial x}(x_1,\eta)\right]\\
-    & \Rightarrow & \exists y_1\in]\eta,\eta+k[:
+    & \Rightarrow & \exists y_1\in]\eta,\eta+k[\colon 
     \frac{\partial f(x_1,\eta+k)}{\partial x}-\frac{\partial f}{\partial x}(x_1,\eta)\\
     & = & k\frac{\partial^2 f}{\partial y \partial x}(x_1,y_1)
   \end{align*}
   Also $F(h,k)=hk\frac{\partial^2 f}{\partial y \partial x}
   (x_1,y_1), x_1\in]\xi,\xi+h[, y_1\in]\eta,\eta+k[$. Nun 
-  Darstellung von $F(h,k)$ mit der Funktion $\psi(y):=f(\xi+h,y)-f(\xi)$
+  Darstellung von $F(h,k)$ mit der Funktion $\psi(y)\coloneqq f(\xi+h,y)-f(\xi)$
   in der Form $F(h,k)=\psi(\eta+k)-\psi(\eta)$\\
   Analog erhält man dann wie oben
   $\exists x_2\in]\xi,\xi+h[\quad
-  y_2\in]\eta,\eta+k[:F(h,k)=hk\frac{\partial^2 f}{\partial x \partial y}
+  y_2\in]\eta,\eta+k[\colon F(h,k)=hk\frac{\partial^2 f}{\partial x \partial y}
   (x_2,y_2)$\\
   $\stackrel{h,k\neq 0}{\Rightarrow} \frac{\partial^2 f}{\partial y \partial x}
   (x_1,y_1)=\frac{\partial^2 f}{\partial x \partial y}(x_2,y_2)
@@ -1108,22 +1173,22 @@ partiellen Ableitungen 2. Ordnung in einer Umgebung von $(\xi,\eta)$
 und die Stetigkeit in $(\xi,\eta)$ vorauszusetzen.
 
 \begin{Folg}
-  Sei $f:D\rightarrow\R,D\subset\R^n$ offen, $k$ mal stetig differenzierbar.
+  Sei $f\colon D\rightarrow\R,D\subset\R^n$ offen, $k$ mal stetig differenzierbar.
   Dann gilt:
   \[\frac{\partial^k f}{\partial x_{i_k}\dots\partial x_{i_1}}(\xi)=
   \frac{\partial^k f}{\partial x_{i_{\pi(k)}}\dots x_{i_{\pi(1)}}}\]
-  für jede Permutation $\pi:\{1,\dots,k\}\rightarrow\{1,\dots,k\}$\\
+  für jede Permutation $\pi\colon \{1,\dots,k\}\rightarrow\{1,\dots,k\}$\\
   Der Beweis erfolgt induktiv.
 \end{Folg}
 
-\paragraph{Taylorscher Satz} Notationen: $D\subset\R^n$ offen,\\ $C^m(D):=
-\{f:D\rightarrow\R|f \text{ besitzt stetige partielle Ableitungen der
+\paragraph{Taylorscher Satz} Notationen: $D\subset\R^n$ offen,\\ $C^m(D)\coloneqq 
+\{f\colon D\rightarrow\R|f \text{ besitzt stetige partielle Ableitungen der
 Ordnung }\leq m\}$\\
-$m=0:C(D):=C^0(D)$
+$m=0\colon C(D)\coloneqq C^0(D)$
 
 \begin{theorem}
   Sei $D\subset\R^n$ offen, $f\in C^{m+1}(D), (m\geq 0)$ und 
-  $h:=\begin{pmatrix}h_1\\\vdots\\h_n
+  $h\coloneqq \begin{pmatrix}h_1\\\vdots\\h_n
   \end{pmatrix}\in\R^n$.
   Liegen die Punkte $\xi$ und $\xi+h$ mitsamt ihrer Verbindungsstrecke
   $\xi+th, 0\leq t\leq 1$, in $D$, so gibt es ein $\Theta$ mit $0<\Theta
@@ -1137,7 +1202,7 @@ $m=0:C(D):=C^0(D)$
   wobei 
   \begin{align*}
     (h_1\frac{\partial }{\partial x_1}+\dots+h_n
-    \frac{\partial }{\partial x_n})^k f(\xi) & := & 
+    \frac{\partial }{\partial x_n})^k f(\xi) & \coloneqq  & 
     \sum_{i_1,\dots,i_k=1}^n 
     \frac{\partial^k f}{\partial x_{i_k}\dots\partial x_{i_1}}(\xi)
     h_{i_1}\dots h_{i_k}\\
@@ -1145,7 +1210,7 @@ $m=0:C(D):=C^0(D)$
     \cdot\frac{\partial^k}{\partial x_{i_n}^{\alpha_n}\dots\partial x_{i_1}^{\alpha_1}}
     (\xi)h_1^{\alpha_1}\dots h_n^{\alpha_n}
   \end{align*}
-  \textbf{Beweis}: Der Beweis erfolgt für den Spezialfall $n=2:$
+  \textbf{Beweis}: Der Beweis erfolgt für den Spezialfall $n=2\colon $
   \[f(\xi+h)=\sum_{k=0}^m\frac{1}{k!}\left(h_1
   \frac{\partial }{\partial x_1}+h_2\frac{\partial}{\partial x_2}\right)^k
   f(\xi)+\frac{1}{(m+1)!}\left(h_1\frac{\partial}{\partial x_1}+h_2
@@ -1153,7 +1218,7 @@ $m=0:C(D):=C^0(D)$
   wobei 
   \begin{align*}
     \left(h_1\frac{\partial}{\partial x_1}+h_2
-    \frac{\partial}{\partial x_2}\right)^kf(\xi) & := & 
+    \frac{\partial}{\partial x_2}\right)^kf(\xi) & \coloneqq  & 
     \sum_{\alpha_1+\alpha_2=k}\frac{k!}{\alpha_1!\alpha_2!}
     \frac{\partial^k}{\partial x_2^{\alpha_2} \partial x_1^{\alpha_1}}
     h_1^{\alpha_1}h_2^{\alpha_2}\\
@@ -1165,7 +1230,7 @@ $m=0:C(D):=C^0(D)$
   \end{pmatrix}
   ,h=
   \begin{pmatrix}h_1\\h_2
-\end{pmatrix}, \varphi(t):=f(\xi+th)=f(\xi_1+th_1,\xi_2+th_2), \varphi:
+\end{pmatrix}, \varphi(t)\coloneqq f(\xi+th)=f(\xi_1+th_1,\xi_2+th_2), \varphi\colon 
 [0,1]\rightarrow\R$ ist $(m+1)$-mal stetig differenzierbar. Dann gilt
 $\varphi^{(k)}(t)=\sum_{j=0}^n \binom{k}{j} \frac{\partial^k f}{\partial x_2^{k-j} \partial x_1^j}
   h_1^j h_2^{k-j}(\xi_1+th_1,\xi_2+th_2)$. Durch Induktion erhält man 
@@ -1182,7 +1247,7 @@ $\varphi^{(k)}(t)=\sum_{j=0}^n \binom{k}{j} \frac{\partial^k f}{\partial x_2^{k-
     \frac{\partial f}{\partial x_2}(\xi+th)
   \end{align*}
   für $h=1$\\
-  $k\rightarrow k+1:$
+  $k\rightarrow k+1\colon $
   \begin{align*}
     \varphi^{(k+1)}(t) & = & (\varphi^{(k)}(t))'\\
     & = & \left(\sum_{j=0}^k \binom{k}{j} h_i^j h_2^{k-j}
@@ -1201,7 +1266,7 @@ $\varphi^{(k)}(t)=\sum_{j=0}^n \binom{k}{j} \frac{\partial^k f}{\partial x_2^{k-
   Der taylorsche Satz für Funktionen einer Variable liefert die Behauptung:\\
   $\varphi(t)=\sum_{k=0}^m \frac{\varphi^{(k)}(0)}{k!}t^k+\frac{\varphi^{(m+1)}(\Theta t)}{(m+1)!}
   t^{k+1}, 0<\Theta <1$\\
-  Für $t=1: f(\xi+h)=\varphi(1)=sum_{k=0}^m \frac{\varphi^{(k)}(0)}{k!}
+  Für $t=1\colon  f(\xi+h)=\varphi(1)=sum_{k=0}^m \frac{\varphi^{(k)}(0)}{k!}
   +\frac{\varphi^{(m+1)}(\Theta)}{(m+1)!}=\sum_{k=0}^m\frac{1}{k!}h_1
   \frac{\partial }{\partial x_1 +h_2\frac{\partial}{\partial x_2}})^kf(\xi)
   +\frac{1}{(m+1)!}(h_1\frac{\partial }{\partial x_1}+h_2\frac{\partial}{\partial x_2})^{m+1}f(\xi+\Theta h)$
@@ -1254,7 +1319,7 @@ ihrer Verbindungsstrecke $\xi+th, 0\leq t\leq 1$ in $D$, so existiert $\Theta$ m
   \end{align*}
   Also: $\frac{|r(h)|}{||h||_2^2}\leq \frac{1}{2} \sqrt{\sum_{j,k=1}^n \left|\frac{\partial^2 f}{\partial x_k \partial x_j}
   (\xi+\Theta h)-\frac{\partial^2 f}{\partial x_k\partial x_j}(\xi)\right|}\rightarrow 0$\\
-  Also $\rho(h):=\begin{cases}
+  Also $\rho(h)\coloneqq \begin{cases}
   \frac{r(h)}{||h||_2^2} & h\neq 0\\
   0 & h=0
   \end{cases}
@@ -1264,7 +1329,7 @@ ihrer Verbindungsstrecke $\xi+th, 0\leq t\leq 1$ in $D$, so existiert $\Theta$ m
 
 \subsubsection{Lokale Extrema}
 \begin{definition}
-  Eine Funktion $f:D\subset \R^n\rightarrow\R$ besitzt in $x\in D$ ein
+  Eine Funktion $f\colon D\subset \R^n\rightarrow\R$ besitzt in $x\in D$ ein
   \emph{lokales Maximum\index{Maximum!lokales}} bzw. \emph{lokales
     Minimum\index{Minimum!lokales}}, falls eine Kugel $B_\varepsilon
   (x)\subset D,\varepsilon>0$ existiert, so dass $f(x)\geq f(y)$ bzw.
@@ -1277,14 +1342,14 @@ spricht man von einem \emph{isoliertem lokalem Maximum
 Ein lokales Extremum ist ein lokales Maximum bzw. Minimum.
 
 \begin{theorem}
-  Sei $D\subset \R^n$ offen und $f:D\rightarrow\R$ eine partiell
+  Sei $D\subset \R^n$ offen und $f\colon D\rightarrow\R$ eine partiell
   differenzierbare Funktion. Dann gilt $f$ besitzt in $x\in D$ ein lokales
   Extremum und es folgt, dass der Gradient von $f$ an der Stelle $x=0$.
   Dies ist gleichbedeutend mit $\frac{\partial f}{\partial x_1}(x)=\dots=
   \frac{\partial f}{\partial x_1}(x)=0$
 \end{theorem}
 \begin{proof}
-  Wir definieren $\varphi_i(t):=f(x+te_i), i=1,\dots,n,
+  Wir definieren $\varphi_i(t)\coloneqq f(x+te_i), i=1,\dots,n,
   e_i=\begin{pmatrix}0\\\vdots\\1\\\vdots\\0\end{pmatrix}$. $f$
   besitzt in $x$ ein lokales Extremum. Das impliziert $\varphi_i$
   haben in 0 ein lokales Extremum. Somit gilt
@@ -1297,20 +1362,20 @@ Ein lokales Extremum ist ein lokales Maximum bzw. Minimum.
 \begin{definition}
   Sei $A=(a_{ij})_{i,j=1}^n$ eine symmetrische reelle $n\times n$ Matrix
   A heißt \emph{positiv definit\index{definit}}, genau dann
-  wenn \[\forall x\in\R^n\backslash \{0\}: \langle Ax,x\rangle >0\]
+  wenn \[\forall x\in\R^n\backslash \{0\}\colon  \langle Ax,x\rangle >0\]
   A heißt \emph{positiv semidefinit\index{semidefinit}}, genau dann wenn
-  \[\forall x\in \R^n :\langle Ax,x\rangle \geq 0\]
+  \[\forall x\in \R^n \colon \langle Ax,x\rangle \geq 0\]
   A heißt negativ definit, genau dann wenn $-A$ positiv definit.
-  \[\Leftrightarrow \forall x\in\R^n\backslash \{0\}:\langle Ax,x\rangle <0\]
+  \[\Leftrightarrow \forall x\in\R^n\backslash \{0\}\colon \langle Ax,x\rangle <0\]
   A heißt \emph{indefinit\index{indefinit}}, genau dann wenn
-  \[\exists x,y\in\R^n:\langle Ax,x\rangle >0\text{ und } \langle Ay,y\rangle <0\]
+  \[\exists x,y\in\R^n\colon \langle Ax,x\rangle >0\text{ und } \langle Ay,y\rangle <0\]
 \end{definition}
 
 \paragraph{Kriterien für positiv definite Matrizen}
 Eine symmetrische relle $n\times n$ Matrix $A=(a_{ij})$ ist genau dann
-positiv, wenn $\exists \alpha >0\,\forall x\in\R^n:\langle Ax,x\rangle \geq \alpha ||x||_2^2$
+positiv, wenn $\exists \alpha >0\,\forall x\in\R^n\colon \langle Ax,x\rangle \geq \alpha ||x||_2^2$
 oder alle Eigenwerte von $A$ sind positiv, d.h. $\lambda >0$
-oder $\forall k=1,\dots,n: \det\begin{pmatrix}a_{11}& \dots & a_{1k}\\
+oder $\forall k=1,\dots,n\colon  \det\begin{pmatrix}a_{11}& \dots & a_{1k}\\
 \vdots & & \vdots\\
 a_{k1} & \dots & a_{kk}
 \end{pmatrix}>0$\\
@@ -1320,7 +1385,7 @@ Beweis siehe Vorlesung Algebra I+II
   Sei $D\subset\R^n$ offen und $f\in C^2(D)$. Die \emph{Hessesche
     Matrix\index{Matrix!Hessesche}} von $f$ im Punkt $x\in D$ ist
   definiert durch:
-  \[(\text{Hess}f)(x):=\left(\frac{\partial^2 f}{\partial x_j \partial x_i}
+  \[(\text{Hess}f)(x)\coloneqq \left(\frac{\partial^2 f}{\partial x_j \partial x_i}
   \right)_{i,j=1}^n\]
   Wegen $\frac{\partial^2 f}{\partial x_j \partial x_i}=
   \frac{\partial^2 f}{\partial x_i \partial x_j}$ ist $(\text{Hess} f)(x)$
@@ -1332,7 +1397,7 @@ Mit $f'(x)h=\langle \text{grad }f(x),h\rangle $ und $\langle f''(x)h,h\rangle =\
 =\sum_{i,j=1}^n \frac{\partial^2 f}{\partial x_j \partial x_i}h_ih_j$
 kann Satz \ref{satz:II36} wie folgt beschrieben werden:\\
 Sei $D\subset\R^n$ offen und $f\in C^2(D)$. Dann gilt für $B_\varepsilon
-(x)\in D$ und alle $h \in\R^n$ mit $x+h\in B_\varepsilon(x): f(x+h)=f(x)
+(x)\in D$ und alle $h \in\R^n$ mit $x+h\in B_\varepsilon(x)\colon  f(x+h)=f(x)
 +\langle f'(x),h\rangle +\frac{1}{2}\langle f''(x)h,h\rangle +||h||^2\rho(h)$ wobei $\lim_{h\rightarrow 0}
 \rho(h)=0$.
 
@@ -1346,8 +1411,8 @@ Sei $D\subset\R^n$ offen und $f\in C^2(D)$. Dann gilt für $B_\varepsilon
       Beweis: (Die Beweise zu (i) und (ii) können analog geführt werden.)
       $f(x+h)=f(x)+\langle f'(x),h\rangle +\frac{1}{2}\langle f''(x)h,h\rangle +||h||^2\rho(h)
       =f(x)+\frac{1}{2}\langle f''(x)h,h\rangle +||h||^2\rho(h)$\\
-      Wählen $\delta>0:\forall h:||h||_2\leq \delta\Rightarrow|\rho(h)|
-      \leq \frac{\alpha}{4}$. Damit erhält man für $0<||h||_2\leq \delta:
+      Wählen $\delta>0\colon \forall h\colon ||h||_2\leq \delta\Rightarrow|\rho(h)|
+      \leq \frac{\alpha}{4}$. Damit erhält man für $0<||h||_2\leq \delta\colon 
       f(x+h)=f(x)+\frac{1}{2}\langle f''(x)h,h\rangle +||h||_2^2\rho(h)\geq f(x)+
       \frac{1}{2} \langle f''(x)h,h\rangle -||h||_2^2|\rho(h)|\geq f(x)+\frac{\alpha}{2}
       ||h||_2^2-\frac{\alpha}{4}||h||_2^2=f(x)+\frac{\alpha}{4}||h||_2^2
@@ -1358,8 +1423,8 @@ Sei $D\subset\R^n$ offen und $f\in C^2(D)$. Dann gilt für $B_\varepsilon
     \item Ist $f''(x)$ indefinit, so besitzt $f$ in $x$ kein lokales
       Extremum.\\
       Beweis: Zeigen: In jeder $\varepsilon$-Kugel $B_\varepsilon(x)$ um
-      $x$ existieren $y', y'': f(y'')<f(x)<f(y')$. $f''(x)$ ist indefinit:
-      $\exists \xi\in\R^n\backslash\{0\}:\langle f''(x)\xi,\xi\rangle =:\alpha>0$.
+      $x$ existieren $y', y''\colon  f(y'')<f(x)<f(y')$. $f''(x)$ ist indefinit:
+      $\exists \xi\in\R^n\backslash\{0\}\colon \langle f''(x)\xi,\xi\rangle =\colon \alpha>0$.
       Für kleine $|t|$ gilt: $f(x+t\xi)=f(x)+\frac{1}{2}\langle f''(x)t\xi,t\xi\rangle 
       +||t\xi||_2^2\rho(t\xi)$ und für hinreichend kleine $|t|$ gilt
       $|\rho(t\xi)|\leq\frac{\alpha}{4}\frac{1}{||\xi||_2^2}$. Also hat
@@ -1369,13 +1434,13 @@ Sei $D\subset\R^n$ offen und $f\in C^2(D)$. Dann gilt für $B_\varepsilon
       \frac{\alpha}{2}t^2-\frac{\alpha}{4}t^2=f(x)+\frac{\alpha}{4}t^2
       >f(x)$ für $0<|t|\leq\delta_0$\\
       Ebenso zeigt man: Ist $\eta\in\R^n$ ein Vektor mit $\langle f''(x)\eta,\eta\rangle 
-      <0$, so gilt für genügend kleine $|t|>0: f(x+t\eta)<f(x)$
+      <0$, so gilt für genügend kleine $|t|>0\colon  f(x+t\eta)<f(x)$
   \end{enumerate}
   \qed
 \end{theorem}
 
 \paragraph{Spezialfall $n=2$}
-$x:=x_1, y:=x_2$\\
+$x\coloneqq x_1, y\coloneqq x_2$\\
 Sei $D\subset\R^2$ offen, $f\in C^2(D)$ und $\text{grad } f(\xi,\eta)=0$,
 d.h. $\frac{\partial f}{\partial x}(\xi,\eta)=\frac{\partial f}{\partial y}(\xi,\eta)=0$\\
 $f''=\text{Hess } f=\begin{pmatrix}
@@ -1391,7 +1456,7 @@ $A=\begin{pmatrix}
   \text{negativ definit }\Leftrightarrow a_{11}<0 & \det A=a_{11}a_{22}-a_{12}^2>0
 \end{cases}$
 
-Setzen $\Delta:=\det f'' =\frac{\partial^2 f}{\partial x^2}\frac{\partial^2 f}{\partial y^2}
+Setzen $\Delta\coloneqq \det f'' =\frac{\partial^2 f}{\partial x^2}\frac{\partial^2 f}{\partial y^2}
 -\left(\frac{\partial^2 f}{\partial y \partial x}\right)^2$, so hat
 \begin{enumerate}[(i)]
   \item $f$ ein isoliertes lokales Minimum in $(\xi,\eta)$, wenn 
@@ -1402,7 +1467,7 @@ Setzen $\Delta:=\det f'' =\frac{\partial^2 f}{\partial x^2}\frac{\partial^2 f}{\
 \end{enumerate}
 
 \paragraph{Beispiele}
-$f:\R^2\rightarrow\R$
+$f\colon \R^2\rightarrow\R$
 \begin{enumerate}
   \item $f(x,y)=c+x^2+y^2, \text{grad }f(x,y)=\left(
     \frac{\partial f}{\partial x},\frac{\partial f}{\partial y}\right)=
@@ -1460,7 +1525,7 @@ $f:\R^2\rightarrow\R$
 \end{enumerate}
 
 \paragraph{Beispiel: Methode der kleinsten Quadrate}
-Sei $A=(a_{ij})_{\stackrel{i=1,\dots,m}{j=1,\dots,n}}:\R^n\rightarrow\R^m,
+Sei $A=(a_{ij})_{\stackrel{i=1,\dots,m}{j=1,\dots,n}}\colon \R^n\rightarrow\R^m,
 n\leq m, b=(b_i)=\begin{pmatrix}b_1\\\vdots\\b_m\end{pmatrix}\in\R^m,
   f(x_1,\dots,x_n)=\sum_{k=1}^m\left(\sum_{j=1}^n a_{kj}x_j-b_k\right)^2,
   f\rightarrow$ Minimum, $f(x)=||Ax-b||_2^2$
@@ -1471,7 +1536,7 @@ $\begin{CD}
   \R^m
 \end{CD}$
   
-$g(x):=Ax-b, h(y):=||y||_2^2, g'(x)=A, h'(y)=\left(\frac{\partial h}{\partial y_1},
+$g(x)\coloneqq Ax-b, h(y)\coloneqq ||y||_2^2, g'(x)=A, h'(y)=\left(\frac{\partial h}{\partial y_1},
 \dots,\frac{\partial h}{\partial y_n}\right)=2(y_1,\dots,y_n)=2y^T,
 f'(x)=g'(g(x))g'(x)=2g(x)^Tg'(x)=2(Ax-b)^TA$
 $(f'(x)^T)'=(2A^T(Ax-b))'=2A^TA, (f'(x)^T)'=f''(x)^T=f''(x)$\\
@@ -1492,17 +1557,17 @@ $f(x+h)=\langle A(x+h)-b,A(x+h)-b\rangle=\langle Ax-b+Ah,Ax-b+Ah\rangle
 =\langle Ax-b, Ax-b\rangle+\langle Ax-b,Ah\rangle + \langle Ah, Ax-b
 \rangle +\langle Ah, Ah\rangle = ||Ax-b||_2^2+2\langle Ax-b,Ah\rangle+
 ||Ah||_2^2=f(x)+2\langle A^T(Ax-b), h\rangle +||Ah||_2^2=f(x)+||Ah||_2^2$
-für $x=(A^TA)^{-1}A^Tb\Rightarrow \forall h\neq 0: f(x+h)=f(x)+||Ah||_2^2
+für $x=(A^TA)^{-1}A^Tb\Rightarrow \forall h\neq 0\colon  f(x+h)=f(x)+||Ah||_2^2
 >f(x)\Rightarrow f$ besitzt in $x=(A^TA)^{-1}A^Tb$ ein absolutes isoliertes
 Minimum.\\
-Verallgemeinerung: $A:\R^n\rightarrow\R^m, n\leq m, b_k\in\R^m, 1\leq k
+Verallgemeinerung: $A\colon \R^n\rightarrow\R^m, n\leq m, b_k\in\R^m, 1\leq k
 \leq N$\\
 $f(x)=\sum_{k-1}^N ||Ax-b_k||_2^2\rightarrow$ Minimum.\\
 $A$ ist injektiv $\Rightarrow x=\frac{1}{N} \sum_{k=1}^N (A^TA)^{-1}
 A^Tb_k$ liegt ein absolutes isoliertes Minimum vor.
 
 \section{Implizite Funktionen}
-Eine Funktion $f:D\rightarrow\R^m,D\subset\R^n$ wird \emph{implizit\index{implizit}}
+Eine Funktion $f\colon D\rightarrow\R^m,D\subset\R^n$ wird \emph{implizit\index{implizit}}
 genannt, wenn sie durch eine Gleichung der Form
 \[F(x,y)=0\]
 gegeben ist, d.h. $F(x,f(x))=0\, \forall x\in D$.
@@ -1522,21 +1587,21 @@ wobei $x=\begin{pmatrix}x_1\\\vdots\\x_n
 \end{pmatrix},F=\begin{pmatrix}F_1\\\vdots\\F_m
 \end{pmatrix}$
 auf $D$ nach $y_1,\dots,y_m$ aufzulösen, also reellwertige 
-Funktionen $f_1,\dots,f_M:D\rightarrow\R$ zu bestimmen, dass gilt
+Funktionen $f_1,\dots,f_M\colon D\rightarrow\R$ zu bestimmen, dass gilt
 $F_j(x_1,\dots,x_n,f_1(x_1,\dots,x_n),\dots,f(x_1,\dots,x_n))=0, 1\leq
 j\leq m, \begin{pmatrix}x_1\\\vdots\\x_n
 \end{pmatrix}\in D$
 
-Beispiele: $n=m, F(x,y)=Ay-x, A:\R^n\rightarrow\R^n, F:\R^n\times\R^n
+Beispiele: $n=m, F(x,y)=Ay-x, A\colon \R^n\rightarrow\R^n, F\colon \R^n\times\R^n
 \rightarrow\R^n$\\
 $F(x,y)=0\Leftrightarrow Ay-x=0\Leftrightarrow Ay=x$. Ist $A$ invertierbar,
 so gilt $y=f(x)=A^{-1}x$
 \begin{enumerate}[(a)]
-  \item $m=n=1: F:\R\times\R\rightarrow\R, F(x,y)=y^3-x^2, F(x,y)=0
+  \item $m=n=1\colon  F\colon \R\times\R\rightarrow\R, F(x,y)=y^3-x^2, F(x,y)=0
     \Leftrightarrow y^3-x^2=0\Leftrightarrow y^3=x^2\Leftrightarrow y=
     \sqrt[3]{x^2}$. Durch $F(x,y)=y^3-x^2=0$ wird eindeutig eine Funktion
     $y=f(x)$ definiert. Die Auflösung nach $y$ ist eindeutig
-  \item $F:\R\times\R\rightarrow\R,F(x,y):=x^2+y^2-1=0$\\
+  \item $F\colon \R\times\R\rightarrow\R,F(x,y)\coloneqq x^2+y^2-1=0$\\
     Funktionen sind z.B. $y_1=f_1(x)=\sqrt{1-x^2}, y_2=f_2(x)=-\sqrt{1-x^2}$
     Durch die Gleichung $F(x,y)=x^2y^2-1=0$ wird nicht eindeutig eine
     Funktion $y=f(x)$ definiert. Auflösung nach $y$ ist nicht eindeutig
@@ -1554,11 +1619,11 @@ Notation:
   \end{pmatrix}\\
   \begin{pmatrix}x\\y
   \end{pmatrix} &=\begin{pmatrix}x_1\\\vdots\\x_n\\y_1\\\vdots\\y_m
-  \end{pmatrix}& F:K\rightarrow\R^m\\
+  \end{pmatrix}& F\colon K\rightarrow\R^m\\
   K &\subset\R^n\times\R^m & F=\begin{pmatrix}
     F_1\\\vdots\\F_m
   \end{pmatrix}\\
-  F_i &:K\rightarrow\R & 
+  F_i &\colon K\rightarrow\R & 
 \end{align*}
 \[F(x,y)=F(x_1,\dots,x_n,y_1,\dots,y_m)=
 \begin{pmatrix}
@@ -1567,13 +1632,13 @@ Notation:
   F_m(x_1,\dots,x_n,y_1,\dots,y_m)
 \end{pmatrix}\]
 Falls die Punkte existieren, gilt:
-\[\frac{\partial F}{\partial x}:=\begin{pmatrix}
+\[\frac{\partial F}{\partial x}\coloneqq \begin{pmatrix}
   \frac{\partial F_1}{\partial x_1} & \dots & \frac{\partial F_1}{\partial x_n}\\
   \vdots & & \vdots\\
   \frac{\partial F_m}{\partial x_1} & \dots & \frac{\partial F_m}{\partial x_n}
 \end{pmatrix}\]
 ist eine $m\times n$-Matrix und
-\[\frac{\partial F}{\partial y}:=\begin{pmatrix}
+\[\frac{\partial F}{\partial y}\coloneqq \begin{pmatrix}
   \frac{\partial F_1}{\partial y_1} & \dots & \frac{\partial F_1}{\partial y_n}\\
   \vdots & & \vdots\\
   \frac{\partial F_m}{\partial y_1} & \dots & \frac{\partial F_m}{\partial y_n}
@@ -1582,19 +1647,19 @@ ist eine $m\times m$-Matrix.
 
 \begin{theorem}
   \label{satz:implFunktion}
-  Sei $D\subset \R^n, G\subset\R^m$ offen und die Funktion $F:D\times G
+  Sei $D\subset \R^n, G\subset\R^m$ offen und die Funktion $F\colon D\times G
   \rightarrow \R^m$ stetig differenzierbar. Ferner seien $\xi\in D$ und
   $\eta \in G$ Punkte, für die $F(\xi,\eta)=0$ und $\frac{\partial F}{\partial y}
   (\xi,\eta)$ invertierbar ist. Dann gilt:
   \begin{enumerate}[(i)]
     \item Es existiert eine offene $\delta$-Kugel $B_\delta(\xi)\subset
       D$ und eine offene $\varepsilon$-Kugel $B_\varepsilon(\eta)\subset
-      G$ und genau eine stetige Funktion $f:_\delta(\xi)\rightarrow
+      G$ und genau eine stetige Funktion $f_\delta(\xi)\rightarrow
       B_\varepsilon(\eta)$ mit $f(\xi)=\eta$ und $F(x,f(x))=0\,\forall
       x\in B_\delta(\xi)$. Für jedes feste $x \in B_\delta(\xi)$ ist $f(x)$
       die einzige Lösung in $B_\varepsilon(\eta)$ mit $F(x,f(x))=0$.
     \item Es existiert eine weitere offene $\delta_1$-Kugel $B_{\delta_1}
-      (\xi), \delta_1\leq \delta$ und die Funktion $f:B_{\delta_1}(\xi)
+      (\xi), \delta_1\leq \delta$ und die Funktion $f\colon B_{\delta_1}(\xi)
       \rightarrow B_\varepsilon(\eta)$ ist stetig differenzierbar auf
       $B_{\delta_1}(\xi)$ und es gilt die Formel:
       \[f'(x)=-\left(\frac{\partial F}{\partial y} (x,f(x))\right)^{-1}
@@ -1630,7 +1695,7 @@ $f'(x)=-\left(\frac{\partial F}{\partial y}(x,f(x))\right)^{-1}
 Beispiel:
 %Bild
 \begin{align*}
-  F(x,y) & = x^2+y^2-1 & F:\R\times\R\rightarrow\R\\
+  F(x,y) & = x^2+y^2-1 & F\colon \R\times\R\rightarrow\R\\
   \frac{\partial F}{\partial y} & = 2y \neq 0 & \text{für }y\neq 0\\
   \left(\frac{\partial F}{\partial y}\right)^{-1} & =\frac{1}{2y} &
 \end{align*}
@@ -1645,54 +1710,54 @@ $f'(x)=-\left(\frac{\partial F}{\partial y}\right)^{-1}(x,f(x))\cdot
 2x=-\frac{x}{f(x)}, y>0, f(x)=\sqrt{1-x^2}, f'(x)=-\frac{x}{\sqrt{1-x^2}}$
 
 \subsection{Umkehrsatz}
-Problem: Unter welchen Bedingungen besitzt eine Funktion $f:D\rightarrow
+Problem: Unter welchen Bedingungen besitzt eine Funktion $f\colon D\rightarrow
 \R^n, D\subset\R^n$, eine Umkehrung? Welche analytischen Eigenschaften
 besitzt die Funktion $f^{-1}$?
 
-$f(x)=Ax, A:\R^n\rightarrow\R^n, f(x)=Ax=y\rightarrow x=A^{-1}y,
+$f(x)=Ax, A\colon \R^n\rightarrow\R^n, f(x)=Ax=y\rightarrow x=A^{-1}y,
 f^{-1}(y)=A^{-1}y,f'(x)=A$
 
 \begin{theorem}
   %II.4.2
   \label{satz:umkehrsatz}
-  Sei $f:D\rightarrow\R^n, D\subset\R^n$ offen, stetig differenzierbar
+  Sei $f\colon D\rightarrow\R^n, D\subset\R^n$ offen, stetig differenzierbar
   und in $\xi\in D$ sei $f'(\xi)$ invertierbar. Dann existiert eine
   offene Umgebung $U\in D$ von $\xi$ und eine $\varepsilon$-Kugel von
-  $\eta=f(\xi)$, so dass $f|_U:U\rightarrow B_\varepsilon(\eta)$
+  $\eta=f(\xi)$, so dass $f|_U\colon U\rightarrow B_\varepsilon(\eta)$
   bijektiv die Umgebung $U$ auf $B_\varepsilon(\eta)$ abbildet. Die
   Umkehrung $f_U^{-1}$ von $f|_U$ ist stetig differenzierbar und für die
   Ableitung gilt:
   \[(f|_U^{-1})'(y)=f'(x)^{-1} \text{ mit } y=f(x)\quad x\in U\]
   \[(f|_U^{-1})'(f(x))=f'(x)^{-1} \quad x\in U\]
   \textbf{Beweis}:
-  $F:D\times\R^n\rightarrow\R^n, F(x,y):=f(x)-y=0$\\
+  $F\colon D\times\R^n\rightarrow\R^n, F(x,y)\coloneqq f(x)-y=0$\\
   $F$ ist stetig differenzierbar, weil $f$ stetig differenzierbar ist,
   mit $\frac{\partial F}{\partial x}(\xi,f(\xi))=
   f'(\xi)$ und  $F(\xi,\eta)=0$ invertierbar. Satz \ref{satz:implFunktion} impliziert, dass es
   eine offene $\varepsilon$-Kugel $B_\varepsilon(\eta)$, eine offene
   $\delta$-Kugel $B_\delta(\xi)$  und genau eine stetige Funktion
-  $\varphi :B_\varepsilon(\eta)\rightarrow B_\delta(\xi), \varphi(\eta)
+  $\varphi \colon B_\varepsilon(\eta)\rightarrow B_\delta(\xi), \varphi(\eta)
   =\xi, F(\varphi(y),y)=f(\varphi(y))-y=0$ gibt. Wegen Punkt (ii) aus
   Satz \ref{satz:implFunktion} können wir $B_\varepsilon(\eta)$ so klein
   gewählt denken, dass $\varphi$ auf $B_\varepsilon(\eta)$ sogar stetig
-  differenzierbar ist. Ferner gilt, da $f:D\rightarrow\R^n$ stetig ist,
+  differenzierbar ist. Ferner gilt, da $f\colon D\rightarrow\R^n$ stetig ist,
   dass $f^{-1}(B_\varepsilon(\eta))$ offen in $\R^n$. Denn $x\in f^{-1}
   (B_\varepsilon(\eta))\stackrel{f \text{ stetig}}{\Rightarrow} \exists
-  0<r<\infty:B_r(x)\cap D \subset f^{-1}(B_\varepsilon(\eta))
-  \stackrel{D \text{ offen}}{\Rightarrow} \exists 0<r_0\leq r:B_{r_0}(x)
+  0<r<\infty\colon B_r(x)\cap D \subset f^{-1}(B_\varepsilon(\eta))
+  \stackrel{D \text{ offen}}{\Rightarrow} \exists 0<r_0\leq r\colon B_{r_0}(x)
   \subset f^{-1}(B_\varepsilon(\eta))\Rightarrow f^{-1}(B_\varepsilon(\eta))$
   ist offen im $\R^n$.\\
-  Für $U:=B_\delta(\xi)\cap f^{-1}(B_\varepsilon(\eta))=\{x\in B_\delta
-  (\xi):f(x)\in B_\varepsilon(\eta)\}$ (offen) gilt $f(U)=B_\varepsilon(\eta)$.
+  Für $U\coloneqq B_\delta(\xi)\cap f^{-1}(B_\varepsilon(\eta))=\{x\in B_\delta
+  (\xi)\colon f(x)\in B_\varepsilon(\eta)\}$ (offen) gilt $f(U)=B_\varepsilon(\eta)$.
   Klar ist, dass $f(U)\subset B_\varepsilon(\eta)$. Wichtig zu zeigen,
   ist die Gleichheit:\\
   Sei $y\in B_\varepsilon(\eta)$. Dann gilt: $\varphi(y)\in B_\delta(\xi)$
   und $f(\varphi(y))=y\in B_\varepsilon(\eta)$. Also $\varphi(y)\in
   B_\delta(\xi)\cap f^{-1}(B_\varepsilon(\eta))=U$, d.h. $f(U)=
   B_\varepsilon(\eta)$. $f$ ist also surjektiv.\\
-  Injektivität: Seien $x_1,x_2\in U:f(x_1)=f(x_2)=y\Rightarrow F(x_1,y)=
+  Injektivität: Seien $x_1,x_2\in U\colon f(x_1)=f(x_2)=y\Rightarrow F(x_1,y)=
   F(x_2,y)=0\stackrel{\text{Satz \ref{satz:implFunktion}}}{\Rightarrow}
-  x_1=x_2$. Also ist $f|_U:u\rightarrow B_\varepsilon(\eta)$ von $U$ auf
+  x_1=x_2$. Also ist $f|_U\colon u\rightarrow B_\varepsilon(\eta)$ von $U$ auf
   $B_\varepsilon(\eta)$ bijektiv und $\varphi=f|_u^{-1}$ ist die stetig
   differenzierbare Umkehrabbildung von $f|_U$. Die Formel $(f|_U^{-1})'
   (f(x))=f'(x)^{-1}$ folgt mit der Kettenregel:\\
@@ -1703,15 +1768,15 @@ f^{-1}(y)=A^{-1}y,f'(x)=A$
 
 Bemerkungen: 
 \begin{enumerate}
-  \item Sei $f:U\rightarrow V$ eine bijektive Abbildung der offenen
+  \item Sei $f\colon U\rightarrow V$ eine bijektive Abbildung der offenen
     Mengen $U,V\subset\R^n$. Sind $f,f^{-1}$ stetig differenzierbar, so
     heißt $f$ ein \emph{Diffeomorphismus\index{Diffeomorphismus}}. In
     dieser Terminologie besagt der Umkehrsatz, dass die Funktion $f|_U$
     bei hinreichend kleiner Umgebung $U$ ein Diffeomorphismus ist.
   \item Der Umkehrsatz ist eine "`lokale"' Aussage, d.h. existiert für
-    eine stetig differenzierbare Funktion $f:D\rightarrow\R^n, f(x)^{-1}$,
+    eine stetig differenzierbare Funktion $f\colon D\rightarrow\R^n, f(x)^{-1}$,
     so existiert i.a. nicht die "`globale"' Inverse auf ganz $D$.\\
-    Beispiel: $f:\R^2\rightarrow\R^2, f(x,y)=\begin{pmatrix}
+    Beispiel: $f\colon \R^2\rightarrow\R^2, f(x,y)=\begin{pmatrix}
       e^x\cos y\\e^x\sin y
     \end{pmatrix}$. $f$ ist auf $\R^2$ stetig differenzierbar.
     $f'(x,y)=\begin{pmatrix}
@@ -1721,12 +1786,12 @@ Bemerkungen:
       e^{-x} \cos y & e^{-x}\sin y\\
       -e^{-x}\sin y & e^{-x}\cos y
     \end{pmatrix}$\\
-    Aber $f:\R^2\rightarrow\R^2$ ist nicht global invertierbar auf $\R^2$:
+    Aber $f\colon \R^2\rightarrow\R^2$ ist nicht global invertierbar auf $\R^2$:
     $f(x,y)=f(x,y+2k\pi)$ mit $k\in\Z$
 \end{enumerate}
 
 \begin{theorem}
-  Sei $f:D\rightarrow\R^n, D\subset\R^n$ offen, stetig differenzierbar
+  Sei $f\colon D\rightarrow\R^n, D\subset\R^n$ offen, stetig differenzierbar
   und existiert $f'(x)^{-1}$ für jedes $x\in D$. Dann gilt:
   \begin{enumerate}[(i)]
     \item $f$ ist eine \emph{offene Abbildung\index{Abbildung!offene}},
@@ -1735,16 +1800,16 @@ Bemerkungen:
       $A$ in $\R^n$ offen ist.
       \begin{enumerate}[1. F{a}ll]
     \item $A=\emptyset\Rightarrow f(A)=\emptyset$
-    \item $a\neq\emptyset, y\in f(A)$ und $x\in A:f(x)=y$.\\
+    \item $a\neq\emptyset, y\in f(A)$ und $x\in A\colon f(x)=y$.\\
       Da $f'(x)$ invertierbar ist, folgt  es existiert eine offene
       Umgebung $U\subset A$  mit $x\in U$ und $f(U)\subset f(A)$
       offen (nach dem Umkehrsatz), d.h. $f(A)$ ist offen.
       \end{enumerate}
-    \item Die Funktion $\varphi:D\rightarrow\R, \varphi(x):=||f(x)||$,
+    \item Die Funktion $\varphi\colon D\rightarrow\R, \varphi(x)\coloneqq ||f(x)||$,
       besitzt kein Maximum und, falls $f(x)\neq 0$ in $D$, auch kein
       Minimum on $D$.\\
       Beweis: Annahme: $x_0\in D$ sei eine Maximalstelle von $\varphi$,
-      d.h. $\forall x\in D:||f(x)||\leq ||f(x_0)||$. Dann ist $f(x_0)>0$.
+      d.h. $\forall x\in D\colon ||f(x)||\leq ||f(x_0)||$. Dann ist $f(x_0)>0$.
       Denn wäre $f(x_0)=0$, dann wäre $f=0$ auf $D$ und $f'$ wäre
       auf $D$ nirgends invertierbar.\lightning\\
       Der Umkehrsatz impliziert: $\exists B_\varepsilon(f(x_0))\subset
@@ -1752,22 +1817,22 @@ Bemerkungen:
       $\exists x_1 \in D \, y_1=f(x_1)=f(x_0)+\rho f(x_0)=(1+\rho)f(x_0)$.
       Denn $||y_1-f(x_0)||=\rho||f(x_0)||=\frac{\varepsilon}{2}<\varepsilon$.
       Somit hat man $||f(x_1)||=(1+\rho)||f(x_0)||>||f(x_0)||$\lightning
-    \item Ist $f$ injektiv, so ist $f^{-1}:f(D)\rightarrow\R$ stetig
+    \item Ist $f$ injektiv, so ist $f^{-1}\colon f(D)\rightarrow\R$ stetig
       differenzierbar.\\
       Beweis: $f(D)$ ist nach (i) offen. Nach dem Umkehrsatz und da $f$
-      injektiv ist, folgt $f^{-1}:f(D)\rightarrow\R^n$ ist stetig
+      injektiv ist, folgt $f^{-1}\colon f(D)\rightarrow\R^n$ ist stetig
       differenzierbar.
   \end{enumerate}
   \qed
 \end{theorem}
 
 \section{Extrema mit Nebenbedingungen}
-Seien $f:X\rightarrow\R, X\subset\R^n$ offen und $g:X\rightarrow\R^m,
+Seien $f\colon X\rightarrow\R, X\subset\R^n$ offen und $g\colon X\rightarrow\R^m,
 m<n$.\\
 $f$ besitzt in $\xi\in X$ ein lokales Maximum bzw. lokales Minimum
-unter der Nebenbedingung, $g(x)=0:\Leftrightarrow \xi\in N:=\{x\in X:
+unter der Nebenbedingung, $g(x)=0\colon \Leftrightarrow \xi\in N\coloneqq \{x\in X\colon 
 g(x)=0\}$ und es existiert ein $B_\delta(\xi)\subset X\,\forall x\in 
-B_\delta(\xi)\cap N: f(x)\leq f(\xi)\text{ (lokales Maximum) bzw.}
+B_\delta(\xi)\cap N\colon  f(x)\leq f(\xi)\text{ (lokales Maximum) bzw.}
 f(x)\geq f(\xi)\text{ (lokales Minimum)}$
 
 Problem: Gesucht sind die also die Stellen lokaler Extrema von $f$ unter
@@ -1787,9 +1852,9 @@ möglich, dann hilft uns die sog. Multiplikatorenmethode.
 \begin{theorem}
   %II.5.1
   \label{satz:lagrange}
-  Sei $X\in\R^n$ eine offene Menge, $f:X\rightarrow\R, g:=\begin{pmatrix}
+  Sei $X\in\R^n$ eine offene Menge, $f\colon X\rightarrow\R, g\coloneqq \begin{pmatrix}
     g_1\\\vdots\\g_m
-  \end{pmatrix}:X\rightarrow\R^m$ seien stetig differenzierbar und $f$
+  \end{pmatrix}\colon X\rightarrow\R^m$ seien stetig differenzierbar und $f$
   besitzt in $\xi\in X$ ein lokales Extremum unter der Nebenbedingung
   $g(x)=0$. Ferner existieren in $g'(\xi)=\begin{pmatrix}
     \frac{\partial g_1}{\partial x_1}(\xi) & \dots & \frac{\partial g_1}{\partial x_n}(\xi)\\
@@ -1831,11 +1896,11 @@ $\begin{pmatrix}
   \begin{equation}
     \label{eq:Glb}
     \exists B_\delta(\zeta)\subset\R^{n-m}\,
-  h:B_\delta(\zeta)\rightarrow \R^m: h(\zeta)=\eta \wedge\forall
-  z\in _\delta(\zeta): g(h(z),z)=0
+  h\colon B_\delta(\zeta)\rightarrow \R^m\colon  h(\zeta)=\eta \wedge\forall
+  z\in _\delta(\zeta)\colon  g(h(z),z)=0
   \end{equation}
   Ferner sei $\delta$ so klein, dass
-  $\varphi(z):=f(h(z),z)$ differenzierbar ist. Es gilt:
+  $\varphi(z)\coloneqq f(h(z),z)$ differenzierbar ist. Es gilt:
   \[\varphi'(\zeta)=\frac{\partial f}{\partial y}(\xi)h'(\zeta)+
   \frac{\partial f}{\partial z}(\xi)\]
   $f$ lokales Extremum in $\xi$ unter der Nebenbedingung $g(x)=0$
@@ -1863,7 +1928,7 @@ $\begin{pmatrix}
 \end{proof}
 
 \subsection{Praktische Lösungen von Extremalaufgaben}
-$f:X\subset\R^n\rightarrow\R, g:X\rightarrow\R^m, m<n$\\
+$f\colon X\subset\R^n\rightarrow\R, g\colon X\rightarrow\R^m, m<n$\\
 Man betrachtet das System der $n+m$-Gleichungen 
 \[\frac{\partial f}{\partial x_k}(x)+\lambda_1
 \frac{\partial g_1}{\partial x_k}(x)+\cdots+\lambda_m
@@ -1873,15 +1938,15 @@ und
 für die $n+m$ Unbekannten $x_1,\dots,x_n, \lambda_1,\dots,\lambda_m$,
 die sich aus Satz \ref{satz:lagrange} ergeben.
 
-Aufgabe: Seien $f:X\subset\R^n\rightarrow \R, g=\begin{pmatrix}
+Aufgabe: Seien $f\colon X\subset\R^n\rightarrow \R, g=\begin{pmatrix}
   g_1\\\vdots\\g_m
-\end{pmatrix}:X\rightarrow \R^m$. $f$ soll unter der Nebenbedingung
+\end{pmatrix}\colon X\rightarrow \R^m$. $f$ soll unter der Nebenbedingung
 $g(x)=0$ extremal werden.
 
 \paragraph{Merkregel:}
 \begin{enumerate}
-  \item Man bildet die Funktion $F:X\times\R^m\rightarrow\R, F(x,\lambda)
-    :=f(x)+\lambda^Tg(x), x=\begin{pmatrix}x_1\\\vdots\\x_n
+  \item Man bildet die Funktion $F\colon X\times\R^m\rightarrow\R, F(x,\lambda)
+    \coloneqq f(x)+\lambda^Tg(x), x=\begin{pmatrix}x_1\\\vdots\\x_n
     \end{pmatrix}, \lambda=\begin{pmatrix}\lambda_1\\\vdots\\ \lambda_m
     \end{pmatrix}$
   \item Differentiation nach $(x,\lambda)$ und Null setzen. $F'(x,\lambda)
@@ -1895,15 +1960,15 @@ lokale Extrema vorliegen, muss tatsächlich noch überprüft werden.
 Hinreichende Bedingungen lassen sich schwer angeben. In diesem
 Zusammenhang sind folgende Bemerkungen dabei nützlich:
 \begin{enumerate}[(i)]
-  \item $N=\{x\in X:g(x)=0\}$. Ist $N$ kompakt, so besitzt die Funktion
+  \item $N=\{x\in X\colon g(x)=0\}$. Ist $N$ kompakt, so besitzt die Funktion
     $f|_N$ ein Maximum und ein Minimum, d.h. $f$ hat sogar ein globales
     und damit ein lokales Maximum und Minimum. 
   \item Seien $A,B\subset\R^n$ und $A\neq\emptyset$ ist kompakt und $B$ 
-    ist abgeschlossen. Dann existiert $\xi\in A, \eta\in B:||\xi-\eta||
+    ist abgeschlossen. Dann existiert $\xi\in A, \eta\in B\colon ||\xi-\eta||
     =\inf_{\stackrel{x\in A}{y\in B}} ||x-y||$\\
     Die Kompaktheit der Menge ist notwendig, denn:\\
-    $A=\{(t,\sqrt{t^2-1}:1\leq t\leq\infty\}, \not\exists \xi\in A,
-    \eta\in B:||\xi-\eta||=\inf_{\stackrel{x\in A}{y\in B}} ||x-y||$
+    $A=\{(t,\sqrt{t^2-1}\colon 1\leq t\leq\infty\}, \not\exists \xi\in A,
+    \eta\in B\colon ||\xi-\eta||=\inf_{\stackrel{x\in A}{y\in B}} ||x-y||$
 \end{enumerate}
 
 \begin{beispiel}
@@ -1917,13 +1982,13 @@ Zusammenhang sind folgende Bemerkungen dabei nützlich:
         y\\
         z
       \end{pmatrix}
-      \in\R^3:g(x,y,z)=0\right\}&
+      \in\R^3\colon g(x,y,z)=0\right\}&
     g(x,y,z) &=
     \begin{pmatrix}
       x+y+z\\
       x^2+y^2+z^2-1
     \end{pmatrix}\\
-    g &:\R^3\rightarrow\R^2&
+    g &\colon \R^3\rightarrow\R^2&
     g'(x,y,z)&=
     \begin{pmatrix}
       1 & 1 & 1\\
@@ -1951,7 +2016,7 @@ Zusammenhang sind folgende Bemerkungen dabei nützlich:
     \left.\begin{array}{rcl}
     4+2\nu x & = & 0\\
     2\nu y & = & 0
-  \end{array}\right\}\Rightarrow \nu\neq 0, y=0\stackrel{\ref{4},\ref{5}}{\Rightarrow}
+  \end{array}\right\}\Rightarrow \nu\neq 0, y=0\substack{\text{\ref{4},\ref{5}}}{\Rightarrow}
   \left.\begin{array}{rcl}
     x+z & = & 0\\
     x^2+y^2 & = & 1
@@ -1963,7 +2028,7 @@ Zusammenhang sind folgende Bemerkungen dabei nützlich:
   (-\frac{1}{\sqrt{2}},0,\frac{1}{\sqrt{2}})$ erfüllen das Gleichungssystem
   \ref{1} bis \ref{5} in Verbindung mit $\lambda=-1, \nu=-2\sqrt{2}$
   bzw. $\nu=2\sqrt{2}$.\\
-  Einsetzen in $f$: $f(\frac{1}{\sqrt{2}},0,-\frac{1}{\sqrt{2}})=5\frac{1}{\sqrt{2}}
+  Einsetzen in $f$:  $f(\frac{1}{\sqrt{2}},0,-\frac{1}{\sqrt{2}})=5\frac{1}{\sqrt{2}}
   +\frac{3}{\sqrt{2}}=\frac{8}{\sqrt{2}}=4\sqrt{2}$ und $f(-\frac{1}{\sqrt{2}}
   ,0,\frac{1}{\sqrt{2}})=-5\frac{1}{\sqrt{2}}-\frac{3}{\sqrt{2}}=-
   \frac{8}{\sqrt{2}}=-4\sqrt{2}$\\
@@ -1974,7 +2039,7 @@ Zusammenhang sind folgende Bemerkungen dabei nützlich:
   Sei 
   \begin{align*}
     N&=\left\{\begin{pmatrix}x\\y\\z\end{pmatrix}\in
-      \R^3:\begin{matrix}x+y+z=0\\x^2+y^2+z^2=1 \end{matrix}\right\}\\
+      \R^3\colon \begin{matrix}x+y+z=0\\x^2+y^2+z^2=1 \end{matrix}\right\}\\
     f(x,y,z)&=5x+y-3z=\underbrace{x+y+z}_{=0}+4(x-z) \text{ auf } N
   \end{align*}
   Es gilt folgende Abschätzung: 
@@ -1995,7 +2060,7 @@ Zusammenhang sind folgende Bemerkungen dabei nützlich:
   \end{pmatrix}\in\R^n, a_i>0, x_i>0$ mit der Nebenbedingung $\sum_{i=1}^n
   \frac{a_ib_1}{x_1}=1$ mit $b_1>0$.\\
   $N=\{x=\begin{pmatrix}x_1\\\vdots\\x_n
-  \end{pmatrix}\in\R^n:x_1,\dots,x_n>0\wedge\sum_{i=1}^n \frac{a_ib_i}{x_i}
+  \end{pmatrix}\in\R^n\colon x_1,\dots,x_n>0\wedge\sum_{i=1}^n \frac{a_ib_i}{x_i}
   =1\}$\\
   $g(x)=g(x_1,\dots,x_n)=\sum_{i=1}^n \frac{a_ib_i}{x_i}-1$\\
   $F(x,\lambda)=f(x)+\lambda g(x)=\sum_{i=1}^n
@@ -2040,12 +2105,12 @@ Zusammenhang sind folgende Bemerkungen dabei nützlich:
 \section{Geometrische Begriffe}
 \begin{definition}
   Unter einer \emph{Kurve\index{Kurve}} im $\R^n$ versteht man eine stetige
-  Abbildung $f:I\rightarrow\R^n$, wobei $I\subset\R$ ein Intervall ist.
+  Abbildung $f\colon I\rightarrow\R^n$, wobei $I\subset\R$ ein Intervall ist.
   Die Kurve $f$ heißt differenzierbar (bzw. stetig differenzierbar), 
   wenn $f$ differenzierbar (bzw. stetig differenzierbar) ist.
 \end{definition}
 \begin{definition}
-  Sei $I\subset\R$ ein Intervall und $f:I\rightarrow\R^n$ eine
+  Sei $I\subset\R$ ein Intervall und $f\colon I\rightarrow\R^n$ eine
   differenzierbare Kurve. Für $t\in I$ heißt $f'(t)$ der
   \emph{Tangentialvektor\index{Tangentialvektor}} der Kurve $f$ zum
   Parameter $t$. Falls $f'(t)\neq 0$, heißt $\frac{f'(t)}{||f'(t)||_2}$
@@ -2057,27 +2122,27 @@ Der Tangentialvektor $f'(t)$ lässt sich als Limes von Sekanten auffassen.
 Denn $f'(t)=\lim_{h\rightarrow 0} \frac{f(t+h)-f(t)}{h}$
 %Zeichnung
 
-Bemerkung: Eine Kurve $f:I\rightarrow\R^n$ braucht nicht injektiv zu sein.
+Bemerkung: Eine Kurve $f\colon I\rightarrow\R^n$ braucht nicht injektiv zu sein.
 Gilt $f(t_1)=f(t_2)=x$ für $t_1\neq t_2$, so heißt $x$ \emph{Doppelpunkt\index{Doppelpunkt}}
 der Kurve $f$. In $x$ hat dann $f$ zwei i.allg. verschiedene Tangentialvektoren.
 
 Beispiel: 
 \begin{alignat*}{2}
-  f&:\R\rightarrow\R^2 & f(t) & = \begin{pmatrix}t^2-1\\t^3-t
+  f&\colon \R\rightarrow\R^2 & f(t) & = \begin{pmatrix}t^2-1\\t^3-t
   \end{pmatrix}\\
   x & = t^2-1 & y & = t^3-t=t(t^2-1)\\
-  y^2 & = t^2(t^2-1)^2=x^2+x^3 & f(\R) & = \left\{\begin{pmatrix}x\\y\end{pmatrix}\in\R^2:y^2=x^2+x^3\right\}\\
+  y^2 & = t^2(t^2-1)^2=x^2+x^3 & f(\R) & = \left\{\begin{pmatrix}x\\y\end{pmatrix}\in\R^2\colon y^2=x^2+x^3\right\}\\
     f(-1) & = \begin{pmatrix}0\\0\end{pmatrix}=f(1) & f'(t) & = \begin{pmatrix}2t\\3t^2-1\end{pmatrix}\\
       f'(-1) & = \begin{pmatrix}-2\\2\end{pmatrix} & f'(1) & = \begin{pmatrix}2\\2\end{pmatrix}
 \end{alignat*}
 
 \begin{definition}
-  Sei $f:I\rightarrow\R^n$ eine stetig differenzierbare Kurve. Die
+  Sei $f\colon I\rightarrow\R^n$ eine stetig differenzierbare Kurve. Die
   Kurve heißt \emph{regulär\index{regulär}}, falls $f'(t)\neq 0$ für alle
   $t\in I$. Ein Parameter $t\in I$ mit $f'(t)=0$ heißt \emph{singulär\index{singulär}}.
 \end{definition}
 
-Beispiel: $f:\R\rightarrow\R^2, f(t)=\begin{pmatrix}t^2\\t^3
+Beispiel: $f\colon \R\rightarrow\R^2, f(t)=\begin{pmatrix}t^2\\t^3
 \end{pmatrix}, x=t^2, y=t^3, y^2=x^3, y=\pm\sqrt{x^3}$\\
 $f'(t)=\begin{pmatrix}2t\\3t
 \end{pmatrix}, f'(0)=\begin{pmatrix}0\\0
@@ -2085,7 +2150,7 @@ $f'(t)=\begin{pmatrix}2t\\3t
 
 \begin{definition}
   \textbf{Schnittwinkel zweier Kurven}
-  Seien $f:I_1\rightarrow\R^n, g:I_2\rightarrow\R^n$ zwei reguläre Kurven.
+  Seien $f\colon I_1\rightarrow\R^n, g\colon I_2\rightarrow\R^n$ zwei reguläre Kurven.
   Für $t_1\in I_1, t_2\in I_2$ gelte $f(t_1)=g(t_2)$. Unter dem
   \emph{Schnittwinkel\index{Schnittwinkel}} $\vartheta$ der Kurven $f$ und
   $g$ bei den Parametern $t_1$ bzw. $t_2$ versteht man den Winkel zwischen
@@ -2096,16 +2161,16 @@ $f'(t)=\begin{pmatrix}2t\\3t
 
 \subsection{Flächen und Tangentialebenen}
 \begin{definition}
-  Sei $f:D\rightarrow\R, D\subset\R^n$. Die Menge 
+  Sei $f\colon D\rightarrow\R, D\subset\R^n$. Die Menge 
  \[\text{graph }(f)=\left\{\begin{pmatrix}x\\f(x)
-  \end{pmatrix}\in\R^{n+1}:x\in D\right\}\]
+  \end{pmatrix}\in\R^{n+1}\colon x\in D\right\}\]
   heißt \emph{Fläche\index{Fläche}}
   im $\R^{n+1}$.
 \end{definition}
 \begin{definition}
-  Sei $f:D\rightarrow\R, D\subset\R^n$ offen und differenzierbar. Die
-  Menge $T:=\left\{\begin{pmatrix}x\\y
-\end{pmatrix}\in\R^{n+1}:x\in\R^n, y=f(\xi)+f'(\xi)(x-\xi)\right\}$ heißt
+  Sei $f\colon D\rightarrow\R, D\subset\R^n$ offen und differenzierbar. Die
+  Menge $T\coloneqq \left\{\begin{pmatrix}x\\y
+\end{pmatrix}\in\R^{n+1}\colon x\in\R^n, y=f(\xi)+f'(\xi)(x-\xi)\right\}$ heißt
 \emph{Tangentialebene\index{Tangentialebene}} von $f$ im Punkt 
 $\begin{pmatrix}\xi\\f(\xi)
 \end{pmatrix}$ mit $\xi\in D$.
@@ -2121,24 +2186,25 @@ Bemerkung:
     \begin{gather*}
       g_i(t)=(\xi_1,\dots,\xi_{i-1},t,\xi_{i+1},\dots,\xi_n,
    f(\xi_1,\dots,\xi_{i-1},t,\xi_{i+1},\dots,\xi_n))^T\\
-   g_i:T\rightarrow\R^{n+1}\qquad g_i(\xi_i)=(f(\xi))
+   g_i\colon T\rightarrow\R^{n+1}\qquad g_i(\xi_i)=(f(\xi))
  \end{gather*}
     Tangentialvektoren: $g_i(\xi_i)=\begin{pmatrix}0\\\vdots\\1\\0\\\vdots\\0\\
       \frac{\partial f}{\partial x_i}(\xi)
     \end{pmatrix}$\\
     Dann: \begin{align*}
       T &=& \begin{pmatrix}\xi\\f(\xi)\end{pmatrix}+\text{span }\{g_1'(\xi),\dots,g_n'(\xi)\}\\
-    &=& \left\{\begin{pmatrix}\xi\\f(\xi)\end{pmatrix}+\sum_{i=1}^n h_i g_i'(\xi): h=\begin{pmatrix}h_1\\\vdots\\h_n\end{pmatrix}\in\R^n\right\}\\
+    &=& \left\{\begin{pmatrix}\xi\\f(\xi)\end{pmatrix}+\sum_{i=1}^n h_i g_i'(\xi)\colon  h=\begin{pmatrix}h_1\\\vdots\\h_n\end{pmatrix}\in\R^n\right\}\\
       &=& \left\{\begin{pmatrix}
         \xi+h\\
         f(\xi)+\sum_{i=1}^n h_i \frac{\partial f}{\partial x_1}(\xi)
-      \end{pmatrix}:h\in\R^n\right\} \quad h_i=x_i-\xi_i
+      \end{pmatrix}\colon h\in\R^n\right\} \quad h_i=x_i-\xi_i
     \end{align*}
 \end{enumerate}
 
 \subsection{Niveauflächen}
 \begin{definition}
-  Sei $f:D\rightarrow\R, D\subset\R^n$. Dann heißt die Menge $\{x\in D:
+  Sei $f\colon D\rightarrow\R, D\subset\R^n$. Dann heißt die Menge
+  $\{x\in D |
   f(x)=c\}$ \emph{Niveaufläche\index{Niveaufläche}} der Funktion $f$
   zum Niveau $c$.
 \end{definition}
@@ -2150,21 +2216,21 @@ Bemerkung: Man kommt von einer Niveaufläche $f(x)=c_1$ zu einer
 "`klein"' am schnellsten in Richtung des Gradienten:
 \[c_2-c_1=f(x+h)f(x)\approx f'(x)h\]
 Es gilt: 
-\[\max\{|f'(x)h|:||h||_2\leq 1\}=||f'(x)||_2\]
+\[\max\{|f'(x)h| | ||h||_2\leq 1\}=||f'(x)||_2\]
 für $h=\frac{(f'(x)^T}{||f'(x)||_2}$ Richtung des Gradienten.
 
 \subsection{Niveauflächen und Tangentialebenen}
 \begin{theorem}
-  Sei $f:D\rightarrow\R, D\subset\R^n$ offen, stetig differenzierbar und
+  Sei $f\colon D\rightarrow\R, D\subset\R^n$ offen, stetig differenzierbar und
   $f'(\xi)\neq 0$ in $\xi\in D$. Dann gilt: Die Tangentialebene an die
   Niveaufläche $f(x)=c$ mit $c=f(\xi)$ ist charakterisiert durch:
   \[\langle f'(\xi), x-\xi\rangle=0\]
   In Komponenten:
   \[\sum_{i=1}^n (x-\xi)\frac{\partial f}{\partial x_i}(\xi_1,\dots,\xi_n)=0\]
-  \textbf{Beweis}: Sei o.B.d.A. $\frac{\partial f}{\partial x_n}(\xi)\neq
+  \textbf{Beweis}: Sei o.\,B.\,d.\,A. $\frac{\partial f}{\partial x_n}(\xi)\neq
   0$. Dann existieren nach dem Auflösungssatz der impliziten Funktion
   eine Umgebung $U$ von $\begin{pmatrix}\xi_1\\\vdots\\\xi_{n-1}
-  \end{pmatrix}$ und eine Umgebung $V$ von $\xi_n$ und $\varphi:
+  \end{pmatrix}$ und eine Umgebung $V$ von $\xi_n$ und $\varphi\colon 
   U\rightarrow V$ mit
   \begin{enumerate}
     \item $\varphi(\xi_1,\dots,\xi_{n-1})=\xi_n$
@@ -2180,7 +2246,7 @@ für $h=\frac{(f'(x)^T}{||f'(x)||_2}$ Richtung des Gradienten.
   \[T=\left\{\begin{pmatrix}
     \tilde{x}\\
     \varphi(\tilde{\xi}+\varphi'(\tilde{\xi})(\tilde{x}-\tilde{\xi})
-  \end{pmatrix}:\tilde{x}\in U\right\}\]
+  \end{pmatrix}\colon \tilde{x}\in U\right\}\]
   Sei $y\in T$. Dann $y_n=\varphi(\tilde{\xi}+\varphi'(\tilde{\xi})(\tilde{y}
   -\tilde{\xi})=\xi_n-\frac{\partial f}{\partial x_n}(\xi)^{-1}
   \frac{\partial f}{\partial \tilde{x}}(\xi)(\tilde{y}-\tilde{\xi})
@@ -2196,7 +2262,7 @@ für $h=\frac{(f'(x)^T}{||f'(x)||_2}$ Richtung des Gradienten.
 \chapter{Gewöhnliche Differentialgleichungen}
 \section{Einführung}
 \begin{definition}
-  Sei $G\subset\R\times\R^n, f:G\rightarrow \R^n$ stetig. Dann heißt
+  Sei $G\subset\R\times\R^n, f\colon G\rightarrow \R^n$ stetig. Dann heißt
   \begin{equation}
     \label{def:Diffgl}
     y'=f(x,y)
@@ -2207,7 +2273,7 @@ für $h=\frac{(f'(x)^T}{||f'(x)||_2}$ Richtung des Gradienten.
 
   Unter einer Lösung von \ref{def:Diffgl} versteht man eine auf einem
   Intervall $I\subset\R$ definierte differenzierbare Funktion
-  \[\varphi:I\rightarrow\R^n\]
+  \[\varphi\colon I\rightarrow\R^n\]
   mit folgenden Eigenschaften:
   \begin{enumerate}[a)]
     \item $\text{graph }\varphi\subset G, \text{graph }\varphi=\{(x,
@@ -2240,7 +2306,7 @@ Bemerkungen:
     \varphi(x_0)=c$.
   \item Implizite Gestalt eines DGL-Systems 1 Ordnung:
     \[F(x,y,y')=0\]
-    \[F:G\subset\R\times\R^n\times\R^n\rightarrow\R^n \text{ stetig}\]
+    \[F\colon G\subset\R\times\R^n\times\R^n\rightarrow\R^n \text{ stetig}\]
   \item Treten in \ref{def:Diffgl} neben $x$ weitere unabhängige 
     Variable auf sowie partielle Ableitungen, so spricht man von
     \emph{partiellen Differentialgleichungen\index{Differentialgleichungen!partielle}}.\\
@@ -2259,10 +2325,10 @@ Sei $(x_0,y_0)\in G$.\\
 Gesucht ist eine Lösung $y=\varphi(x)$ von $y'=f(x,y)$ mit $\varphi(x_0)
 =y_0$.
 
-Beispiel: $y'=f(x), f:I\rightarrow\R^n$ stetig, $x_0\in I, \varphi(x_0)
+Beispiel: $y'=f(x), f\colon I\rightarrow\R^n$ stetig, $x_0\in I, \varphi(x_0)
 =y_0$\\
 Integration: $\varphi(x)=y_0+\int_{x_0}^x f(t)dt$\\
-$\int_{x_0}^x f(t)dt := \begin{pmatrix}
+$\int_{x_0}^x f(t)dt \coloneqq  \begin{pmatrix}
   \int_{x_0}^x f_1(t)dt\\
   \vdots\\
   \int_{x_0}^x f_n(t)dt
@@ -2273,7 +2339,7 @@ Geometrische Intepretation:
 %Zeichnung
 Eine DGL $y'=f(x,y)$ in einem Gebiet $G$, $G\subset\R\times\R^n$, bestimmt
 ein \emph{Richtungsfeld\index{Richtungsfeld}}: 
-\[\{(x,y,y'):(x,y)\in G, y'=f(x,y)\}\]
+\[\{(x,y,y')\colon (x,y)\in G, y'=f(x,y)\}\]
 $(x,y,y')$ heißt \emph{Linienelement\index{Linienelement}}. In jedem
 Punkt $(x,y) \in G$ wird durch $y'=f(x,y)$ eine Steigung vorgegeben.
 
@@ -2310,7 +2376,7 @@ Die allgemeine Lösung kann oft durch Parameter beschrieben werden.
 
 \section{Reduktion von Differentialgleichungssystemen höherer Ordnung auf Differentialgleichungssysteme 1. Ordnung}
 \begin{definition}
-  $G\subset\R\times\R^n\times\dots\times\R^n, f:G\rightarrow\R^n$ stetig\\
+  $G\subset\R\times\R^n\times\dots\times\R^n, f\colon G\rightarrow\R^n$ stetig\\
   Dann heißt
   \begin{equation}
     \label{def:DiffglHoch}
@@ -2338,21 +2404,21 @@ y_i^{(k)}=f_i(x,y_1,\dots,y_n,y_1',\dots,y_n',\dots,y^{(k-1)}_1,\dots,
 y^{(k-1)}_n)$
 
 \paragraph{Reduktion von \ref{def:DiffglHoch} auf DGL-Systeme 1. Ordnung}
-Man setzt $Y:=\begin{pmatrix}y_0\\y_1\\\vdots\\y_{k-1}
+Man setzt $Y\coloneqq \begin{pmatrix}y_0\\y_1\\\vdots\\y_{k-1}
 \end{pmatrix}\in(\R^n)^k$\\
-$F(x,Y):=\begin{pmatrix}y_1\\\vdots\\y_{k-1}\\
+$F(x,Y)\coloneqq \begin{pmatrix}y_1\\\vdots\\y_{k-1}\\
   f(x,y_0,\dots,y_{k-1})
 \end{pmatrix}$.
 Dann gilt:
 \begin{enumerate}[a)] 
   \item $\varphi$ ist eine Lösung von \ref{def:DiffglHoch} 
-$\Rightarrow\Phi:=\begin{pmatrix}\varphi\\ \varphi'\\\vdots\\ \varphi^{(k-1)}
+$\Rightarrow\Phi\coloneqq \begin{pmatrix}\varphi\\ \varphi'\\\vdots\\ \varphi^{(k-1)}
 \end{pmatrix}$ ist eine Lösung von 
 \begin{equation}
   \label{def:DiffglEin}
    Y'=F(x,Y)
 \end{equation}
-Denn: Sei $\varphi:I\rightarrow\R^n$ eine Lösung von \ref{def:DiffglHoch},
+Denn: Sei $\varphi\colon I\rightarrow\R^n$ eine Lösung von \ref{def:DiffglHoch},
 d.h. $\varphi^{(k)}(x)=f(x,\varphi(x),\dots,\varphi^{(k-1)}(x))
 \Rightarrow$
 \begin{align*}
@@ -2367,9 +2433,9 @@ d.h. $\varphi^{(k)}(x)=f(x,\varphi(x),\dots,\varphi^{(k-1)}(x))
   & = & F(x,\Phi(x))
 \end{align*}
   \item $\Phi$ ist eine Lösung von \ref{def:DiffglEin}. Dann ist $\varphi
-    :=\varphi_0$ eine Lösung von \ref{def:DiffglEin}.\\
+    \coloneqq \varphi_0$ eine Lösung von \ref{def:DiffglEin}.\\
     Denn: Sei $\Phi$ eine Lösung von $Y'=F(x,Y)\Rightarrow \varphi_0'=
-    \varphi_1 \dots$. Setze $\varphi:=\varphi_0\Rightarrow \varphi Y'=F(x,Y)Y'=F(x,Y)i_1=
+    \varphi_1 \dots$. Setze $\varphi\coloneqq \varphi_0\Rightarrow \varphi Y'=F(x,Y)Y'=F(x,Y)i_1=
     \varphi', \varphi_2=\varphi'',\dots,\varphi_{k-1}=\varphi^{(k-1)}$
     und $\varphi^{(k)}(x)=f(x,\varphi(x),\dots,\varphi^{(k-1)}(x))$. 
     Daraus folgt die Aussage.
@@ -2389,11 +2455,11 @@ Die Struktur der allgemeinen Lösung $\varphi(x)$ der inhomogenen
 DGL $y'=a(x)y+b(x)$ kann auch wie folgt charakterisiert werden:\\
 $\varphi(x)=C\varphi_0(x)+\varphi_{\text{inh}}(x), \varphi_0(x)=e^{\int_{x_0}^x a(t)dt}$\\
 Beweis: Sei $\psi(x)$ eine Lösung des inhomogenen DGL $y'=a(x)y+b(x)$.
-Wir zeigen, $\exists C\in\R:\psi(x)=C\varphi_0(x)+\varphi_{\text{inh}}(x)$ und
-setzen $h(x):=\psi(x)-\varphi_{\text{inh}}(x)$. Dann gilt $h'(x)=\psi'(x)
+Wir zeigen, $\exists C\in\R\colon \psi(x)=C\varphi_0(x)+\varphi_{\text{inh}}(x)$ und
+setzen $h(x)\coloneqq \psi(x)-\varphi_{\text{inh}}(x)$. Dann gilt $h'(x)=\psi'(x)
 -\varphi_{\text{inh}}'(x)=a(x)\psi(x)+b(x)-(a(x)\varphi_{\text{inh}}(x)
 b(x))=a(x)(\psi(x)-\varphi_{\text{inh}}(x))=a(x)h(x)\Rightarrow h(x)$
-ist Lösung des homogenen DGL $y'=a(x)y$. Somit existiert ein $C\in\R :
+ist Lösung des homogenen DGL $y'=a(x)y$. Somit existiert ein $C\in\R \colon 
 h(x)=C\varphi_0(x)$ oder $\psi(x)-\varphi_{\text{inh}}(x)=C\varphi_0(x)
 \Rightarrow\psi(x)=C\varphi_0(x)+\varphi_{\text{inh}}(x)$
 
@@ -2425,7 +2491,7 @@ Beispiel: Gesucht ist die allgemeine Lösung von $y'=ay+1$.
 zurückgeführt werden können}
 \begin{enumerate}[(a)]
   \item Die inhomogene DGL $y'=f(\frac{y}{x})$\\
-    Sei $I\subset\R$ ein Intervall, $f:I\rightarrow\R$ stetig, $G:=\{
+    Sei $I\subset\R$ ein Intervall, $f\colon I\rightarrow\R$ stetig, $G\coloneqq \{
     (x,y)\in\R\backslash \{0\}\times \R|\frac{y}{x}\in I\}$. Dann
     heißt $y'=f(\frac{y}{x})$ homogene DGL. Es gilt, $\varphi(x)$ ist
     eine Lösung von $y'=f(\frac{y}{x})\Leftrightarrow\psi(x)=\frac{\varphi(x)}{x}$
@@ -2438,19 +2504,19 @@ zurückgeführt werden können}
     \psi(x)=\frac{\varphi(x)}{x}$ ist Lösung von $z'=\frac{1}{x}
     (f(z)-z)$
       \item["`$\Leftarrow$"'] Sei $\psi$ Lösung von $z'=\frac{1}{x}
-    (f(x)-x)$. Dann gilt für $\varphi(x)=\psi (x)\quad x :\varphi'(x)
+    (f(x)-x)$. Dann gilt für $\varphi(x)=\psi (x)\quad x \colon \varphi'(x)
     =\psi'(x)x+\psi(x)=\frac{1}{x}(f(\psi(x))-\psi(x))x+\psi(x)=
     f(\psi(x))-\psi(x)+\psi(x)=f(\psi(x))=f(\frac{\varphi(x)}{x})$\\
     $\varphi$ ist Lösung des DGL $y'=f(\frac{y}{x})$
     \end{itemize}
-  \item Die Differentialgleichung $y''=f(y), f:J\rightarrow\R$ stetig\\
+  \item Die Differentialgleichung $y''=f(y), f\colon J\rightarrow\R$ stetig\\
     Die Lösung erfolgt mit Hilfe der sog. Energiemethode:
     Sei $\varphi(x)$ Lösung von
     $y''=f(y)$. Dann Multiplikation mit $\varphi'(x)$: $\varphi''(x)
     \varphi'(x)=f(\varphi(x)\varphi'(x)\Leftrightarrow\frac{1}{2}
     \frac{d}{dx} ( (\varphi'(x)^2))=\frac{d}{dx}\int_{x_0}^x f(\varphi(z))
     \varphi'(z)dz=\frac{d}{dx}\int_{\varphi(x_0)}^{\varphi(x)} f(t)dt$\\
-    Physiker setzen dann: $U(y):=-\int_{y_0}^y f(t)dt\Leftrightarrow
+    Physiker setzen dann: $U(y)\coloneqq -\int_{y_0}^y f(t)dt\Leftrightarrow
     \frac{d}{dx} (\frac{1}{2}(\varphi'(x))^2+U(\varphi(x)))=0
     \Rightarrow \frac{1}{2}(\varphi'(x))^2+U(\varphi(x))=E=$konstant\\
     $y'=\pm\sqrt{2(E-U(y))}$ - Differentialgleichung mit getrennten
@@ -2459,11 +2525,11 @@ zurückgeführt werden können}
 
 \section{Lineare Differentialgleichungssysteme mit konstanten Koeffizienten}
 \subsection{Definition}
-Sei $\MM_n(\K):=\{A=\begin{pmatrix}
+Sei $\MM_n(\K)\coloneqq \{A=\begin{pmatrix}
   a_{11}& \dots & a_{1n}\\
   \vdots & & \vdots\\
   a_{n1} & \dots & a_{nn}
-\end{pmatrix}:a_{ij}\in\K\}$ die Menge aller $n\times n$-Matrizen.
+\end{pmatrix}\colon a_{ij}\in\K\}$ die Menge aller $n\times n$-Matrizen.
 Dann heißt 
 \begin{equation}
   \label{def:lDGL}
@@ -2471,7 +2537,7 @@ Dann heißt
 \end{equation}
 \emph{homogenes lineares Differentialgleichungssystem\index{Differentialgleichungssystem!homogenes lineares}} 1. Ordnung mit konstanten 
 Koeffizienten. Weiter sei $b=\begin{pmatrix}b_1\\\vdots\\b_n
-\end{pmatrix}:I\rightarrow\R^n$ eine stetige Funktion. Dann heißt
+\end{pmatrix}\colon I\rightarrow\R^n$ eine stetige Funktion. Dann heißt
 \begin{equation}
   \label{def:DGLFunkt}
   y'=Ay+b(x)
@@ -2485,7 +2551,7 @@ konstanten Koeffizienten. In Komponenten lautet die Gleichung
   y_n'=a_{n1}y_1+\cdots+a_{nn}y_n+b_n(x)
 \end{matrix}\]
 
-Bemerkungen: Die Funktion $f:\R\times\R^n\rightarrow\R^n, f(x,y):=Ay$
+Bemerkungen: Die Funktion $f\colon \R\times\R^n\rightarrow\R^n, f(x,y)\coloneqq Ay$
 ist linear in $y$. Daher stammt der Name lineare Differentialgleichung.
 Im eindimensionalen Fall $n=1$ hat man die allgemeine Lösung der
 homogenen Differentialgleichung $y'=ay, \varphi(x)=e^{ax}c, c\in\R$.
@@ -2505,7 +2571,7 @@ Die entstehen folgende Probleme:
   $(\sum_{k=0}^n A_k)_{n=1}^\infty$ in $\LL(\K^n,\K^n)$ konvergent ist.
 \end{definition}
 
-Beispiel: Sei $A\in\LL(\K^n,\K^n), e^A:=\sum_{k=0}^\infty \frac{A^k}{k!}$
+Beispiel: Sei $A\in\LL(\K^n,\K^n), e^A\coloneqq \sum_{k=0}^\infty \frac{A^k}{k!}$
 ist für jede Matrix $A\in\LL(\K^n,\K^n)$ konvergent. Denn $a_n=\frac{A^n}{n!}$. Die Norm ist $||a_n||=\frac{||A^n||}{n!}\leq \frac{||A||^n}{n!}
 =b_n$.
 \[\lim\frac{b_{n+1}}{b_n}=\lim\frac{||A||^{n+1}}{(n+1)!}\cdot\frac{n!}{||A||^n}
@@ -2518,11 +2584,11 @@ ist für jede Matrix $A\in\LL(\K^n,\K^n)$ konvergent. Denn $a_n=\frac{A^n}{n!}$. 
       \[\varphi(x)=e^{Ax}c\quad c\in\R^n\]
       Beweis:
       \begin{enumerate}[(a)]
-    \item $\varphi(x)=e^{Ax}c$ ist Lösung von $y'=Ay$ : $\varphi'(x)
+    \item $\varphi(x)=e^{Ax}c$ ist Lösung von $y'=Ay\colon \varphi'(x)
       =Ae^{Ax}c=A\varphi(x)$
     \item Jede Lösung $\varphi(x)$ von $y'=Ay$ lässt sich in der
       Form $\varphi(x)=e^{Ax}c$ darstellen. Sei $\varphi$ Lösung
-      von $y'=e^{Ax}y$. Zeigen, dass $c(x):=e^{-Ax}\varphi(x)=c$
+      von $y'=e^{Ax}y$. Zeigen, dass $c(x)\coloneqq e^{-Ax}\varphi(x)=c$
       konstant ist. $c'(x)=-Ae^{-Ax}\varphi(x)+e^{-Ax}\varphi'(x)=
       -Ae^{-Ax}\varphi(x)+e^{-Ax}A\varphi(x)=-Ae^{-Ax}\varphi(x)+
       Ae^{-Ax}\varphi(x)=0\Rightarrow c$ ist konstant. Daher folgt
@@ -2546,7 +2612,7 @@ ist für jede Matrix $A\in\LL(\K^n,\K^n)$ konvergent. Denn $a_n=\frac{A^n}{n!}$. 
   \qed
 \end{theorem}
 
-Bemerkung: $\Phi(x)=e^{Ax}, \Phi:\R\rightarrow\LL(\K^n,\K^n), \Phi'(x)
+Bemerkung: $\Phi(x)=e^{Ax}, \Phi\colon \R\rightarrow\LL(\K^n,\K^n), \Phi'(x)
 =Ae^{Ax}=e^{Ax}A$\\
 Man benutzt die Reihe 
 \[\Phi(x)=e^{Ax}=I+Ax+\frac{A^2x^2}{2!}+\frac{A^3x^3}{3!}+\cdots
@@ -2653,7 +2719,7 @@ e^{2x}c_1+e^{2x}c_2-\frac{1}{2}\Rightarrow \varphi_2'(x)=\varphi_1(x)+
 
 \begin{definition}
   Sei $A\in\mathfrak{M}_n(\K)$. Eine matrixwertige Funktion $\Phi=
-  (\varphi_1,\dots,\varphi_n):\R\rightarrow\mathfrak{M}_n(\K)$ heißt
+  (\varphi_1,\dots,\varphi_n)\colon \R\rightarrow\mathfrak{M}_n(\K)$ heißt
   ein \emph{Fundamentalsystem\index{Fundamentalsystem}} von Lösungen von
   $y'=Ay$, falls $\Phi(x)$ für alle $x$ invertierbar ist und die
   Matrixdifferentialgleichung $Y'=AY$ erfüllt, d.h. $\Phi'(x)=A\Phi(x)$.
@@ -2670,7 +2736,7 @@ e^{2x}c_1+e^{2x}c_2-\frac{1}{2}\Rightarrow \varphi_2'(x)=\varphi_1(x)+
     \item Die allgemeine Lösung von $y'=Ay$ ist $\varphi(x)=\Phi(x)c, c
       \in\K^n$\\
       Beweis: $\varphi(x)=\Phi(x)c=e^{Ax}Sc$ ist Lösung von $y'=Ay$. Zu
-      zeigen ist $\varphi(x)$ Lösung von $y'=Ay$, so exitiert $c\in\K^n:
+      zeigen ist $\varphi(x)$ Lösung von $y'=Ay$, so exitiert $c\in\K^n\colon 
       \varphi(x)=e^{Ax}Sc$. Setzen $c(x)=S^{-1}e^{-Ax}\varphi(x)$. Dann
       gilt $c'(x)=S^{-1}Ae^{-Ax}\varphi+S^{-1}e^{-Ax}\varphi(x)=S^{-1}
       Ae^{-Ax}\varphi(x)-S^{-1}e^{-Ax}A\varphi(x)=0\Rightarrow c(x)=x=$konstant.
@@ -2720,7 +2786,7 @@ Es gilt:
     0 & & \mu_n
       \end{pmatrix}$. Dann gilt: Die Spalten von $S$ sind dann Eigenvektoren 
       von $A$. Denn für $e_1$ hat man $ASe_i=SJe_i=S\mu_ie_i=\mu_iSe_i,
-      Av_i=\mu_iv_i, v_i:=Se_i$.\\
+      Av_i=\mu_iv_i, v_i\coloneqq Se_i$.\\
       $\Phi(x)e_i=e^{Ax}Se_i=Se^{Jx}e_i=Se^{\mu_ix}e_i=e^{\mu_ix}Se_i=
       e^{\mu_ix}v_i$\\
       $\Phi(x)=(e^{\mu_1x}v_1,\dots,e^{\mu_nx}v_n)$
@@ -2772,7 +2838,7 @@ Es gilt:
     $\varphi_l(x)=e^{Ax}Se_l=Se^{Ix}e_l=Se^{\lambda x}(e_l+e_{l-1}+\cdots+
     \frac{x^{l-1}}{(l-1)!}e_1)=e^{\lambda x}(Se_l+xSe_{l-1}+\cdots+
     \frac{x^{l-1}}{(l-1)!}Se_1)$\\
-    $v_i=Se_i: \varphi_l(x)=e^{\lambda x}(v_l+xv_{l-1}+\cdots+
+    $v_i=Se_i\colon  \varphi_l(x)=e^{\lambda x}(v_l+xv_{l-1}+\cdots+
     \frac{x^{l-1}}{(l-1)!}v_1)$
     Es gilt 
     \begin{align*}
@@ -2796,7 +2862,7 @@ Es gilt:
 \end{theorem}
 
 Bemerkung: Sei $A\in\MM_n(\K)$ und sei $S\in\MM_n(\K)$ invertierbar.
-Dann gilt für $J:=S^{-1}AS$ die Formel $e^{Ax}S=Se^{Jx}$. Denn $J^2=
+Dann gilt für $J\coloneqq S^{-1}AS$ die Formel $e^{Ax}S=Se^{Jx}$. Denn $J^2=
 (S^{-1}AS)^2=S^{-1}ASS^{-1}AS=S^{-1}A^2S$ und somit ist $e^{Jx}=
 \sum_{k=0}^\infty \frac{J^kx^k}{k!}=\sum_{k=0}^\infty \frac{S^{-1}ASx^k}{k!}
 =S^{-1}(\sum_{k=0}^\infty \frac{A^kx^k}{k!})S=S^{-1}e^{Ax}S\Leftrightarrow
@@ -2948,10 +3014,10 @@ Man betrachtet das DGL $y'=f(x,y), y=\begin{pmatrix}y_1\\\vdots\\y_n
 
 \subsection{Lipschitzbedingung}
 \begin{definition}
-  Sei $G\subset\R\times\R^n, f:G\rightarrow\R^n$ stetig.
+  Sei $G\subset\R\times\R^n, f\colon G\rightarrow\R^n$ stetig.
   \begin{enumerate}[(a)]
     \item $f$ genüge in $G$ einer \emph{Lipschitzbedingung\index{Lipschitzbedingung}}
-      \[\exists L\geq 0\,\forall(x,y),(x,\tilde{y})\in G: ||f(x,y)-f(x,\tilde{y})||\leq L||y-\tilde{y}||\]
+      \[\exists L\geq 0\,\forall(x,y),(x,\tilde{y})\in G\colon  ||f(x,y)-f(x,\tilde{y})||\leq L||y-\tilde{y}||\]
       (Genauer: $f=f(x,y)$ genüge in $G$ bzgl. $y$ einer Lipschitzbedingung)
     \item $f$ genüge in $G$ \emph{lokal} einer Lipschitzbedingung
       \[\forall (a,b)\in G\,\exists \text{Umgebung } U \text{ von } (a,b)
@@ -2960,19 +3026,19 @@ Man betrachtet das DGL $y'=f(x,y), y=\begin{pmatrix}y_1\\\vdots\\y_n
 \end{definition}
 
 \paragraph{Hinreichendes Kriterium für Lipschitzbedingung}
-Sei $G\subset\R\times\R^n$ offen und $f:G\rightarrow\R^n, f=f(x,y),
+Sei $G\subset\R\times\R^n$ offen und $f\colon G\rightarrow\R^n, f=f(x,y),
 y=\begin{pmatrix}y_1\\\vdots\\y_n\end{pmatrix}$ \emph{stetig} partiell
 differenzierbar. Dann genügt $f$ in $G$ lokal einer Lipschitzbedingung.\\
-Beweis: $(a,b)\in G:\exists r>0$, so dass $U:=\{(x,y)\in\R\times\R^n:
+Beweis: $(a,b)\in G\colon \exists r>0$, so dass $U\coloneqq \{(x,y)\in\R\times\R^n\colon 
 |x-a\leq r, ||y-b||\leq r\}\subset G$. $U$ ist in $\R\times\R^n$
 abgeschlossen und beschränkt und somit also kompakt. Somit ist wegen
 Stetigkeit von $\frac{\partial f}{\partial y}=\begin{pmatrix}
   \frac{\partial f_1}{\partial y_1} & \dots & \frac{\partial f_1}{\partial y_n}\\
   \vdots & & \vdots\\
   \frac{\partial f_n}{\partial y_1} & \dots & \frac{\partial f_n}{\partial y_n}
-\end{pmatrix}$ auf $U$: $L:=\sup\{\left|\left|\frac{\partial f}{\partial y}
-(x,y)\right|\right|:(x,y)\in U\}<\infty$.\\
-Nach dem Mitelwertsatz %Satz II.3.2
+\end{pmatrix}$ auf $U$: $L\coloneqq \sup\{\left|\left|\frac{\partial f}{\partial y}
+(x,y)\right|\right|\colon (x,y)\in U\}<\infty$.\\
+Nach dem Mittelwertsatz %Satz II.3.2
 gilt:
 \[f(x,y)-f(x,\tilde{y})=\left(\int_0^1 \frac{\partial f}{\partial y}
 (x,y+t(\tilde{y}-y))dt\right)(\tilde{y}-y)\]
@@ -2996,32 +3062,32 @@ wir unter der Ausgangsnorm $||\cdot||$: $||f(x,y)-f(x,\tilde{y}||\leq
 
 \subsection{Satz von Picard-Lindelöf}
 \begin{theorem}
-  Sei $G\subset\R\times\R^n$ offen und $f:G\rightarrow\R^n$ stetig, die
+  Sei $G\subset\R\times\R^n$ offen und $f\colon G\rightarrow\R^n$ stetig, die
   lokal einer Lipschitzbedingung genügt. Dann gilt, dass für alle $(a,c)
-  \in G$ ein $\varepsilon>0$ existiert und genau eine Lösung $\varphi:
+  \in G$ ein $\varepsilon>0$ existiert und genau eine Lösung $\varphi\colon 
   [a-\varepsilon,a+\varepsilon]\rightarrow\R^n$ vom 
   Anfangswertproblem $y'=f(x,y)$ mit $\varphi(a)=c$.\\
   \textbf{Beweis}:  
   \begin{enumerate}[1. Schr{i}tt]
     \item Raum der stetigen Funktionen\\
       Sei $I$ ein abgeschlossenes und beschränktes Intervall (=kompakt).
-      $\mathcal{C}(I,\R^n):=\{\varphi:I\rightarrow\R^n:\varphi\text{ stetig}\},
-      ||\varphi||:=\sup_{x\in I}||\varphi(x)||_2$. Der Raum $[\CC(I,\R^n),
+      $\mathcal{C}(I,\R^n)\coloneqq \{\varphi\colon I\rightarrow\R^n\colon \varphi\text{ stetig}\},
+      ||\varphi||\coloneqq \sup_{x\in I}||\varphi(x)||_2$. Der Raum $[\CC(I,\R^n),
       ||\cdot||]$ ist ein vollständiger normierter Raum. Sei $I_\varepsilon
-      :=[a-\varepsilon,a+\varepsilon], \varepsilon>0$. Wählen $\varepsilon,r>0$
-      so, dass $U=\{(x,y)\in I_\varepsilon\times\R^n: ||y-c||_2\leq r\}
+      \coloneqq [a-\varepsilon,a+\varepsilon], \varepsilon>0$. Wählen $\varepsilon,r>0$
+      so, dass $U=\{(x,y)\in I_\varepsilon\times\R^n\colon  ||y-c||_2\leq r\}
       \subset G$ und $f$ auf $U$ einer Lipschitzbedingung genügt, d.h.
-      $\exists L\geq 0\,\forall (x,y),(x,\tilde{y})\in U:||f(x,y)-f(x,
+      $\exists L\geq 0\,\forall (x,y),(x,\tilde{y})\in U\colon ||f(x,y)-f(x,
       \tilde{y})||_2\leq ||y-\tilde{y}||_2$. $U$ ist kompakt und $f$
-      stetig auf $U$. Man setzt $B_r^\varepsilon(c):=\{\varphi\in\CC(
-      I_\varepsilon,\R^n):||\varphi-c||\leq r\}$ (ist i.a. nicht kompakt).
+      stetig auf $U$. Man setzt $B_r^\varepsilon(c)\coloneqq \{\varphi\in\CC(
+      I_\varepsilon,\R^n)\colon ||\varphi-c||\leq r\}$ (ist i.a. nicht kompakt).
       $B_r^\varepsilon$ ist als abgeschlossene Kugel $\CC(I_\varepsilon,
       \R^n)$ ein vollständiger metrischer Raum mit der Metrik $(d(
       \varphi,\psi)=||\varphi-\psi||)$.
     \item Kontrahierende Abbildung\\
       Wir definieren die Abbildung 
-      \[T:B_r^\varepsilon(c)\rightarrow\CC(I_\varepsilon,\R^n)\]
-      durch den Ansatz $(T\varphi)(x):=c+\int_a^x
+      \[T\colon B_r^\varepsilon(c)\rightarrow\CC(I_\varepsilon,\R^n)\]
+      durch den Ansatz $(T\varphi)(x)\coloneqq c+\int_a^x
       f(t,\varphi(t))dt$.
       \begin{enumerate}
     \item Es gilt die Abschätzung
@@ -3031,7 +3097,7 @@ wir unter der Ausgangsnorm $||\cdot||$: $||f(x,y)-f(x,\tilde{y}||\leq
     & \leq & |x-a|M\leq \varepsilon M\quad \forall x\in I_\varepsilon
       \end{align*}
       Hieraus folgt: 
-      \[\boxed{\forall \varphi\in B_r^\varepsilon(c):||T\varphi-
+      \[\boxed{\forall \varphi\in B_r^\varepsilon(c)\colon ||T\varphi-
       c||=\sup_{x\in I_\varepsilon}||(T\varphi)(x)-c||_2\leq \varepsilon M}\]
       \item
     \begin{align*}
@@ -3043,20 +3109,20 @@ wir unter der Ausgangsnorm $||\cdot||$: $||f(x,y)-f(x,\tilde{y}||\leq
       &\leq & \varepsilon L ||\varphi-\tilde{\varphi}||\quad x\in I_\varepsilon
     \end{align*}
     \[\Rightarrow\boxed{\forall \varphi,\tilde{\varphi}\in
-    B_r^\varepsilon(c):||T\varphi-T\tilde{\varphi}||\leq\varepsilon L
+    B_r^\varepsilon(c)\colon ||T\varphi-T\tilde{\varphi}||\leq\varepsilon L
     ||\varphi-\tilde{\varphi}||}\]
     \end{enumerate}
     Man wählt $\varepsilon>0$ so, dass $\varepsilon\leq \min\{
     \frac{r}{M},\frac{1}{2L}\}$. Dann gilt:
     \begin{enumerate}
       \item $T(B_r^\varepsilon(c))\subset B_r^\varepsilon(c)$
-      \item $\forall \varphi,\tilde{\varphi}\in B_r^\varepsilon(c):
+      \item $\forall \varphi,\tilde{\varphi}\in B_r^\varepsilon(c)\colon 
     ||T\varphi-T\tilde{\varphi}||\leq \frac{1}{2}||\varphi-\tilde{\varphi}||$
     \end{enumerate}
   \item Anwendung des Banachschen Fixpunktsatzes\\
-    Man setzt $X:=B_r^\varepsilon(c)$ (vollständiger metrischer Raum)
-    und $T:X\rightarrow X$ ist kontrahierend. Nach dem Banachschen
-    Fixpunktsatzes existiert genau ein $\varphi\in X=B_r^\varepsilon(c):
+    Man setzt $X\coloneqq B_r^\varepsilon(c)$ (vollständiger metrischer Raum)
+    und $T\colon X\rightarrow X$ ist kontrahierend. Nach dem Banachschen
+    Fixpunktsatzes existiert genau ein $\varphi\in X=B_r^\varepsilon(c)\colon 
     T\varphi=\varphi$.
   \end{enumerate}
   Der Hauptsatz der Differential- und Integralrechnung impliziert
@@ -3066,10 +3132,10 @@ wir unter der Ausgangsnorm $||\cdot||$: $||f(x,y)-f(x,\tilde{y}||\leq
 
 Beispiele für Anfangswertprobleme:
 \begin{enumerate}[(a)]
-  \item $y'=\sqrt[3]{y^2}, y=\varphi(a)=c, f=f(x,y)=\sqrt[3]{y^2}, f:
+  \item $y'=\sqrt[3]{y^2}, y=\varphi(a)=c, f=f(x,y)=\sqrt[3]{y^2}, f\colon 
     \R\times\R\rightarrow\R$
     \begin{enumerate}[1. F{a}ll]
-      \item $a\in\R,c\neq 0:\varphi(a)=c$\\
+      \item $a\in\R,c\neq 0\colon \varphi(a)=c$\\
     $\frac{\partial f}{\partial y}(x,y)=\frac{2}{3}y^{\frac{2}{3}-1}
     =\frac{2}{3}y^{-\frac{1}{3}}\Rightarrow f$ erfüllt lokal eine
     Lipschitzbedingung in $\R\times(\R\backslash\{0\})$. Nach dem
@@ -3126,7 +3192,7 @@ Iterationsverfahren zu genau einer Lösung mit $\varphi(0)=c$.
   \vdots\\
   \varphi_k&=& c(1+x+\frac{x^2}{2!}+\cdots+\frac{x^k}{k!})
 \end{align*}
-Induktion: $k\rightarrow k+1$:\\
+Induktion: $k\rightarrow k+1$: \\
 $\varphi_{k+1}(x)=c+\int_0^x \varphi_k(t)dt=c+c\int_0^x (1+t+\frac{t^2}{2!}
 +\cdots+\frac{t^k}{k!})dt=c+c(t+\frac{t^2}{2!}+\cdots+\frac{t^{k+1}}{(k+1)!})|_0^x=
 c+c(x+\frac{x^2}{2}+\cdots+\frac{x^{k+1}}{(k+1)!})=c(1+x+\frac{x^2}{2}
@@ -3142,16 +3208,16 @@ $y'=A(x)y+b(x), A(x)=(a_{ij}(x))_{i,j=1}^n, b(x)=\begin{pmatrix}
 \subsection{Existenz- und Eindeutigkeitssatz}
 \begin{theorem}
   %Satz III.5.1.1
-  Sei $I\subset\R$ ein offenes Intervall und $A:I\rightarrow\MM_n(\K), b:
+  Sei $I\subset\R$ ein offenes Intervall und $A\colon I\rightarrow\MM_n(\K), b\colon 
   I\rightarrow\K^n$ stetige Abbildungen. Dann gilt: 
   \[\forall x_n\in I\,\forall c\in\K^n\,\exists^1 \text{Lösung }
-  \varphi:I\rightarrow\K^n: y'=A(x)y+b(x), \varphi(x_0)=c\]
+  \varphi\colon I\rightarrow\K^n\colon  y'=A(x)y+b(x), \varphi(x_0)=c\]
   \textbf{Beweis}: Setzen $f(x,y)=A(x)y+b(x)$. Man zeigt, dass für jedes
   kompakte Intervall $J\subset I$ ein $L\geq 0$ existiert mit $\forall x\in J\,
-  \forall y,\tilde{y}\in\K^n: ||f(x,y)-f(x,\tilde{y})||\leq
+  \forall y,\tilde{y}\in\K^n\colon  ||f(x,y)-f(x,\tilde{y})||\leq
   L||y-\tilde{y}||$\\
   $A(x)=(a_{ij}(x))$ ist stetig. Daher ist auch $a_{ij}(x)$ stetig. Aus
-  der Tatsache, dass $J$ kompakt ist, folgt $M_J:=\max_{i,j=1,\dots,n}
+  der Tatsache, dass $J$ kompakt ist, folgt $M_J\coloneqq \max_{i,j=1,\dots,n}
   \sup_{x\in J} |a_{ij}(x)|<\infty$. Für $y=\begin{pmatrix}y_1\\\vdots\\y_n
   \end{pmatrix}, \tilde{y}=\begin{pmatrix}\tilde{y_1}\\\vdots\\\tilde{y_n}
   \end{pmatrix}$ gilt:
@@ -3175,9 +3241,9 @@ $y'=A(x)y+b(x), A(x)=(a_{ij}(x))_{i,j=1}^n, b(x)=\begin{pmatrix}
 \end{theorem}
 
 \subsection{Lösungstheorie}
-Dazu wird $\LL_h$ für homogene Lösungen eingeführt: $\LL_h:=\{\varphi:I
-\rightarrow\K^n: \varphi \text{Lösung von } y'=A(x)y\}$\\
-$\LL_{inh}:=\{\varphi:I\rightarrow\K^n: \varphi \text{Lösung von } y'=A(x)
+Dazu wird $\LL_h$ für homogene Lösungen eingeführt: $\LL_h\coloneqq \{\varphi\colon I
+\rightarrow\K^n\colon  \varphi \text{Lösung von } y'=A(x)y\}$\\
+$\LL_{inh}\coloneqq \{\varphi\colon I\rightarrow\K^n\colon  \varphi \text{Lösung von } y'=A(x)
 y+b(x)\}$
 
 \begin{theorem}
@@ -3208,17 +3274,17 @@ y+b(x)\}$
 \begin{definition}
   \begin{enumerate}[(i)]
     \item $k$ stetige Funktionen $\varphi_1,\dots,\varphi_k\in\CC(I,\K^n)$
-      heissen \emph{linear unabhängig}, g.d.w.:
+      heissen \emph{linear unabhängig}, g.\,d.\,w.:
       \[\forall \alpha_1,\dots,\alpha_k\in\K (\sum_{i=1}^k \alpha_i\varphi_i
       =0\Rightarrow \alpha_1=\cdots=\alpha_k=0\]
     \item $k$ stetige Funktionen $\varphi_1,\dots,\varphi_k\in\CC(I,\K^n)$
-      heissen \emph{linear abhängig}, g.d.w.:
-      \[\exists\alpha_1,\dots,\alpha_k\in\K:\sum_{i=1}^k \alpha_i\varphi_i
+      heissen \emph{linear abhängig}, g.\,d.\,w.:
+      \[\exists\alpha_1,\dots,\alpha_k\in\K\colon \sum_{i=1}^k \alpha_i\varphi_i
       =0\wedge\sum_{i=1}^k|\alpha_i|>0\]
   \end{enumerate}
 \end{definition}
 
-Bemerkung: $\sum_{i=1}^k \alpha_i\varphi_i=0:\forall x \in I: \sum_{i=1}^k
+Bemerkung: $\sum_{i=1}^k \alpha_i\varphi_i=0\colon \forall x \in I\colon  \sum_{i=1}^k
 \alpha_i\varphi_i(x)=0$
 
 \begin{theorem}
@@ -3229,22 +3295,22 @@ Bemerkung: $\sum_{i=1}^k \alpha_i\varphi_i=0:\forall x \in I: \sum_{i=1}^k
       \begin{enumerate}[(i)]
     \item $\varphi_1,\dots,\varphi_k$ sind linear unabhängig über
       $\K$.
-    \item $\exists x_0\in I:\varphi_1(x_0),\dots,\varphi_k(x_0)\in
+    \item $\exists x_0\in I\colon \varphi_1(x_0),\dots,\varphi_k(x_0)\in
       \K^n$ sind linear unabhängige Vektoren über $\K$.
-    \item $\forall x\in I: \varphi_1(x),\dots,\varphi_k(x)\in\K^n$
+    \item $\forall x\in I\colon  \varphi_1(x),\dots,\varphi_k(x)\in\K^n$
       sind linear unabhängige Vektoren über $\K$.
       \end{enumerate}
       \textbf{Beweis}: Der Beweis von (iii) nach (ii) nach (i) ist 
       trivial. Zu zeigen ist daher noch die Richtung von (i) nach (iii).
       Hier erfolgt der Beweis indirekt. Seien $\varphi_1,\dots,\varphi_k
-      \in\LL_h$. Annahme: $\exists x_0\in I: \varphi_1(x_0),\dots,
+      \in\LL_h$. Annahme: $\exists x_0\in I\colon  \varphi_1(x_0),\dots,
       \varphi_k(x_0)$ sind linear abhängig, d.h. $\exists\alpha_1,\dots,
-      \alpha_k\in\K:\sum_{i=1}^k |\alpha_i|>0\wedge \sum_{i=1}^k \alpha_i
+      \alpha_k\in\K\colon \sum_{i=1}^k |\alpha_i|>0\wedge \sum_{i=1}^k \alpha_i
       \varphi_i(x_0)=0$. Es gilt $\varphi=\sum_{i=1}^k \alpha_i
       \varphi_i\in\LL_h$ mit $\varphi(x_0)=\sum_{i=1}^k \alpha_i\varphi_i
       (x_0)=0$. Wegen des Existenz- und Eindeutigkeitssatz von
       Picard-Lindelöf des AWP $y'=A(x)y, y=\varphi(x_0)=0$ folgt
-      $\varphi=0$ ist die einzige Lösung des AWP, d.h. $\forall x\in I:
+      $\varphi=0$ ist die einzige Lösung des AWP, d.h. $\forall x\in I\colon 
       \varphi(x)=\sum_{i=1}^k \alpha_i\varphi_i(x)=0\Rightarrow
        \varphi_1,\dots,\varphi_k$ sind linear abhängig. \lightning zu (i)
     \item $\dim \LL_h=n$\\
@@ -3311,8 +3377,8 @@ sind linear unabhängig. Aber $\varphi_1(1)=\varphi_2(1)=\begin{pmatrix}
 Bemerkungen:
 \begin{enumerate}[(a)]
   \item Nach Satz \ref{satz:linAbh} gilt: $\varphi_1,\dots,\varphi_n$
-    linear unabhängig, g.d.w. $\exists x_0\in I:\det\Phi(x_0)\neq
-    0\Leftrightarrow\forall x \in I:\det \Phi(x)\neq 0$
+    linear unabhängig, g.d.w. $\exists x_0\in I\colon \det\Phi(x_0)\neq
+    0\Leftrightarrow\forall x \in I\colon \det \Phi(x)\neq 0$
   \item Ist $\Phi=(\varphi_1,\dots,\varphi_n)$ ein Lösungsfundamentalsystem
     von $y'=A(x)y$, so lässt sich die allgemeine Lösung von $y'=A(x)y$ 
     in der Form
@@ -3324,9 +3390,9 @@ Bemerkungen:
 
 \subsection{Die inhomogene Differentialgleichung $y'=A(x)y+b(x)$}
 \begin{theorem}
-  Sei $I\subset\R$ ein offenes Intervall und $A:I\rightarrow\MM_n(\K),
-  b:I\rightarrow\K^n$ stetig. Dann gilt für $\psi_0\in\LL_{inh}:\LL_{inh}
-  =\psi_0+\LL_h:=\{\psi_0+\varphi:\varphi\in\LL_j\}$, d.h. $\psi(x)=\psi_0
+  Sei $I\subset\R$ ein offenes Intervall und $A\colon I\rightarrow\MM_n(\K),
+  b\colon I\rightarrow\K^n$ stetig. Dann gilt für $\psi_0\in\LL_{inh}\colon \LL_{inh}
+  =\psi_0+\LL_h\coloneqq \{\psi_0+\varphi\colon \varphi\in\LL_j\}$, d.h. $\psi(x)=\psi_0
   (x)+\varphi(x)+c, c\in\K^n$, wobei $\Phi$ eine Lösungsfundamentalmatrix
   ist.\\
   Allgemeine Lösung des inhomogenen DGL ist die allgemeine Lösung der
@@ -3335,9 +3401,9 @@ Bemerkungen:
   \begin{enumerate}[1. Schr{i}tt]
     \item Zu zeigen ist $\LL_{inh}\subset\psi_0+\LL_h$. Sei $\psi\in\LL_{inh}$.
       Daraus folgt nach Satz \ref{satz:LTheorie} $\psi-\psi_0\in\LL_h
-      \Rightarrow\exists\varphi\in\LL_h:\psi-\psi_0=\varphi$.
+      \Rightarrow\exists\varphi\in\LL_h\colon \psi-\psi_0=\varphi$.
     \item Zu zeigen ist $\psi_0+\LL_h\subset\LL_{inh}$. Sei $\psi\in\psi_0
-      +\LL_h$, d.h. $\exists\varphi\in\LL_h:\psi=\psi_0+\varphi
+      +\LL_h$, d.h. $\exists\varphi\in\LL_h\colon \psi=\psi_0+\varphi
       \Rightarrow\psi\in\LL_{inh}\Rightarrow\psi_0+\LL_h\in\LL_{inh}$
   \end{enumerate}
   \qed
@@ -3346,7 +3412,7 @@ Bemerkungen:
 \subsubsection{Lösen der inhomogenen DGL $y'=A(x)y+b(x)$ mit der Methode
 der Variation der Konstanten}
 Sei $\Phi=(\varphi_1,\dots,\varphi_n)$ ein Lösungsfundamentalsystem von
-$y'=A(x)y$. Dann gilt für die allgemeine Lösung von $y'=A(x)y:\varphi(x)
+$y'=A(x)y$. Dann gilt für die allgemeine Lösung von $y'=A(x)y\colon \varphi(x)
 =\Phi(x), c\in\K^n$.\\
 Variation der Konstanten: Der Ansatz ist $\psi(x)=\Phi(x)c(x)$. Man muss
 nun differenzieren: $\psi'(x)=\Phi'(x)c(x)+\Phi(x)c'(x)=A(x)\Phi(x)c(x)
@@ -3388,7 +3454,7 @@ Einsetzen in die erste Gleichung:
   =\frac{3}{4}\pm\frac{1}{4}\\
   & \Rightarrow & \alpha_1=1\wedge\alpha_2=\frac{1}{2}
 \end{align*}
-$\alpha=1: \varphi_1(x)=(1,x)^T$ und $\alpha=\frac{1}{2}:\varphi_2(x)=
+$\alpha=1\colon  \varphi_1(x)=(1,x)^T$ und $\alpha=\frac{1}{2}\colon \varphi_2(x)=
 \begin{pmatrix}\frac{1}{2}x^{-\frac{1}{2}}\\x^{\frac{1}{2}}
 \end{pmatrix}$. Daher sind $\varphi_1,\varphi_2$ linear unabhängig: Denn
 für $\Phi(x)=(\varphi_1(x),\varphi_2(x))=\begin{pmatrix}
@@ -3442,7 +3508,7 @@ $y_2=y_2(x)=c_1x+c_2x^{\frac{1}{2}}+x^2-x$
 Übertragung der Resultate über lineare DGL 1.~Ordnung auf lineare
 DGL $n$-ter Ordnung. Sei $I\subset\R$ ein Intervall, $a_k, f\in\CC(I,\K)$
 seien stetige Funktionen zwischen $0\leq k\leq n-1$. Dann heißt
-$L(y):=y^{(n)}+a_{n-1}(x)y^{(n-1)}+\cdots+a_1(x)y'+a_0(x)y=f(x)$ 
+$L(y)\coloneqq y^{(n)}+a_{n-1}(x)y^{(n-1)}+\cdots+a_1(x)y'+a_0(x)y=f(x)$ 
 \emph{homogene lineare Differentialgleichung $n$-ter Ordnung\index{Differentialgleichung!homogene}\index{Differentialgleichung!lineare}},
 falls $f=0$. Ansonsten heißt es inhomogen. $L$ heißt
 \emph{linearer Differentialausdruck\index{Differentialausdruck!linearer}},
@@ -3450,22 +3516,22 @@ d.h. $L(c_1y_1+c_2y_2)=c_1L(y_1)+c_2L(y_2)$.
 
 \begin{theorem}
   \begin{enumerate}[(i)]
-    \item Sei $\LL_h:=\{\varphi:I\rightarrow \K:L(\varphi)=0\}$ die Menge
+    \item Sei $\LL_h\coloneqq \{\varphi\colon I\rightarrow \K\colon L(\varphi)=0\}$ die Menge
       der Lösungen des homogenen DGL. Dann ist $\dim \LL_h=n$
-    \item Sei $\LL_{inh}:=\{\varphi:I\rightarrow\K:L(\varphi)=f(x)\}$
+    \item Sei $\LL_{inh}\coloneqq \{\varphi\colon I\rightarrow\K\colon L(\varphi)=f(x)\}$
       die Menge der Lösungen der inhomogenen DGL. Dann gilt für ein 
-      $\psi_0\in\LL_{inh}:\LL_{inh}=\psi_0+\LL_h$.
+      $\psi_0\in\LL_{inh}\colon \LL_{inh}=\psi_0+\LL_h$.
     \item $n$-Lösungen $\varphi_1,\dots,\varphi_n\in\LL_h$ der homogenen
-      DGL sind genau dann linear unabhängig, wenn $\exists x_0\in I:
-      W(x)\footnote{heißt Wronskideterminante\index{Wronskideterminante}}:=\det\begin{pmatrix}
+      DGL sind genau dann linear unabhängig, wenn $\exists x_0\in I\colon 
+      W(x)\footnote{heißt Wronskideterminante\index{Wronskideterminante}}\coloneqq \det\begin{pmatrix}
 	\varphi_1(x) & \dots & \varphi_n(x)\\
 	\varphi_1'(x) & & \varphi_n'(x)\\
 	\vdots & & \vdots\\
 	\varphi_1^{(n-1)}(x) & \dots & \varphi_n^{(n-1)}(x)
-      \end{pmatrix}\neq 0\Leftrightarrow \forall x \in I:W(x)\neq 0$
+      \end{pmatrix}\neq 0\Leftrightarrow \forall x \in I\colon W(x)\neq 0$
   \end{enumerate}
   \textbf{Beweis}: Die DGL $L(y)=f(x)$ ist äquivalent zu dem inhomogenen
-  DGL-System 1.~Ordnung $y_0:=y$.
+  DGL-System 1.~Ordnung $y_0\coloneqq y$.
   \begin{alignat*}{2}
     y_0' & = y_1 & y_0' & = y_1\\
     y_1' & = y_2 & y_0''& =y_2\\
@@ -3473,17 +3539,17 @@ d.h. $L(c_1y_1+c_2y_2)=c_1L(y_1)+c_2L(y_2)$.
     y_{n-2}' & = y_{n-1} & y_0^{(n-1)} & = y_{n-1}\\
     y_{n-1}' & = -a_0(x)y_0-a_1(x)y_1-& \cdots a_{n-1}(x)y_{n-1}+f(x)
   \end{alignat*}
-  Jeder Lösung $\varphi:I\rightarrow\K$ von $L(y)=f(x)$ entspricht einer
+  Jeder Lösung $\varphi\colon I\rightarrow\K$ von $L(y)=f(x)$ entspricht einer
   Lösung $y=\begin{pmatrix}y_0\\y_1\\\vdots\\y_{n-1}
   \end{pmatrix}=\begin{pmatrix}\varphi\\ \varphi'\\\vdots\varphi^{(n-1)}
-  \end{pmatrix}:I\rightarrow\K^n$ des Systems oben. Damit folgen die
+  \end{pmatrix}\colon I\rightarrow\K^n$ des Systems oben. Damit folgen die
   obenstehenden Behauptungen aus den Sätzen %III.5.2.1, III.5.2.2, III.5.3.1
 \end{theorem}
 
 \begin{definition}
   Eine Basis $\varphi_1,\dots,\varphi_n\in\LL_h$ der homogenen DGL
   $L(y)=0$ heißt \emph{Lösungsfundamentalsystem\index{Lösungsfundamentalsystem}}.
-  Also: Allgemeine Lösung von $L(y)=0: \varphi(x)=c_1\varphi_1(x)+
+  Also: Allgemeine Lösung von $L(y)=0\colon  \varphi(x)=c_1\varphi_1(x)+
   c_2\varphi_2(x)+\cdots+c_n\varphi_n(x)$ 
 \end{definition}
 
@@ -3541,7 +3607,7 @@ Methode der Variation der Konstanten}
       \varphi_1^{(n-1)}(x) & \dots & \varphi_{i-1}^{(n-1)}(x) & 0 & \varphi_{i+1}^{(n-1)} & \dots
     \end{pmatrix}$\\
     Integration: $c_i(x)=\int_{x_0}^x \frac{W_i(t)}{W(t)}dt$\\
-    Spezielle Lösung von $L(y)=f(x): \psi_0(x)=\sum_{i=1}^n c_i(x)
+    Spezielle Lösung von $L(y)=f(x)\colon  \psi_0(x)=\sum_{i=1}^n c_i(x)
     \varphi_i(x)$, wobei $c_i(x)=\int_{x_0}^x \frac{W_i(t)}{W(t)}dt$\\
     Das Anfangswertproblem 
     \[L(y)=f(x), \varphi(x_0)=y_0, \varphi'(x_0)
@@ -3553,7 +3619,7 @@ Methode der Variation der Konstanten}
 \subsection{Reduktion der Ordnung einer Differentialgleichung $L(y)=0$ bei Kenntnis einer Lösung}
 Ansatz: $\psi(x)=\varphi(x)u(x)$, wobei $L(\varphi(x))=0$.\\
 Demonstration der Methode anhand einer linearen Differentialgleichung
-2.~Ordnung:
+2.\,Ordnung:
 \begin{equation}
   \label{eq:Red}
   y''+a(x)y'+b(x)=0
@@ -3562,12 +3628,12 @@ Sei $\varphi\neq 0$ eine Lösung von Gleichung \ref{eq:Red}.\\
 Einsetzen in DGL:\\
 $\varphi u''+(2\varphi'+a(x)\varphi)u'+\underbrace{u(\varphi''+a(x)
 \varphi'+b(x)\varphi)}_{=0}=0\Leftrightarrow u''+\left( \frac{2\varphi'}{\varphi}
-+a(x)\right)u'=0$. Setzen $v:=u'$. Dann ist
++a(x)\right)u'=0$. Setzen $v\coloneqq u'$. Dann ist
 \begin{equation}
   \label{eq:Redv}
 \boxed{v'+\left( \frac{2\varphi'}{\varphi}+a(x)\right)v=0}
 \end{equation}
-eine lineare DGL 1.~Ordnung. Es gilt: Ist $v\neq 0$ Lösung der
+eine lineare DGL 1.\,Ordnung. Es gilt: Ist $v\neq 0$ Lösung der
 Gleichung \ref{eq:Redv}, so ist $\psi(x)=\varphi(x)u(x)$, wobei
 $u(x)=\int_{x_0}^x v(t)dt$, eine von $\varphi$ unabhängige Lösung von
 $y''+a(x)y'+b(x)y=0$. Denn es gilt 
@@ -3588,7 +3654,7 @@ $y''+a(x)y'+b(x)y=0$. Denn es gilt
 \subsection{Praktisches Vorgehen beim Lösen von linearen DGL 2.~Ordnung mit nichtkonstanten Koeffizienten}
 \[L(y)=y''+a(x)y'+b(x)y=f(x)\]
 Der Lösungsweg ist wie folgt:
-\begin{enumerate}[1. Schr{i}tt]
+\begin{enumerate}[1.\,Schr{i}tt]
   \item Finden einer Lösung der homogenen DGL $L(y)=0$ durch
     Potenzreihenansatz.
     \[\varphi(x)=\sum_{k=-\infty}\infty a_kx^k \quad \varphi(x)=x^\alpha, \alpha\in\R\]
@@ -3603,23 +3669,23 @@ Der Lösungsweg ist wie folgt:
 wobei $a_i$ konstant ist.
 
 \begin{theorem}
-  Besitzt das Polynom $P_L(\lambda):=\lambda^n+a_{n-1}\lambda^{n-1}+\cdots+
+  Besitzt das Polynom $P_L(\lambda)\coloneqq \lambda^n+a_{n-1}\lambda^{n-1}+\cdots+
   a_1\lambda+a_0$ die paarweise voneinander verschiedenen Nullstellen
   $\lambda_k\in\C, k=1,\dots,s$ mit den Vielfachheiten $n_k, 1\leq k\leq s$.
   Dann besitzt die homogene DGL $L(y)=0$ ein Lösungsfundamentalsystem
   aus folgenden Funktionen
-  \[\varphi_{km}(x):=x^me^{\lambda_kx}\quad m=0,1,\dots,n_k-1\quad k=1,\dots,s\]
+  \[\varphi_{km}(x)\coloneqq x^me^{\lambda_kx}\quad m=0,1,\dots,n_k-1\quad k=1,\dots,s\]
 \end{theorem}
 \begin{proof}
   \begin{enumerate}[1. Schr{i}tt]
   \item Man zeigt, dass $\varphi_{km}(x)=x^me^{\lambda_kx}$ 
     Lösungen von $L(y)=0$ sind.\\
-    Ansatz: $\varphi(x):=e^{\lambda x}$. Dann gilt $\varphi^{(k)}(x)=
+    Ansatz: $\varphi(x)\coloneqq e^{\lambda x}$. Dann gilt $\varphi^{(k)}(x)=
     \lambda^ke^{\lambda x}$.
     \[L(\varphi(x))=(\lambda^n+a_{n-1}\lambda^{n-1}+\cdots+a_1\lambda
     +a_0)e^{'\lambda x}=0\]
     Die obige Gleichung ist genau dann 0, wenn 
-    \[P_L(\lambda):=\lambda^n+a_{n-1}\lambda^{n-1}+\cdots+a_1\lambda
+    \[P_L(\lambda)\coloneqq \lambda^n+a_{n-1}\lambda^{n-1}+\cdots+a_1\lambda
     +a_0=0\] Somit sind $\varphi_k(x)=e^{\lambda_k x}$ Lösungen von
     $L(y)=0$,
     wobei $\lambda_k$ Nullstellen von dem Polynom $P_L$ sind.\\
@@ -3668,7 +3734,7 @@ wobei $a_i$ konstant ist.
       $P_1,\dots,P_r$ Polynome auf einem offenen Intervall $I\subset\R$.
       Dann gilt:
       \[\sum_{j=1}^r P_j(x)e^{\lambda_j x}=0\,\forall x\in I \Rightarrow
-      P_1=P_2=\cdots=P_r=0\] Beweis durch Induktion: $r=1:
+      P_1=P_2=\cdots=P_r=0\] Beweis durch Induktion: $r=1\colon 
       P_1(x)e^{\lambda_1x}=0\,\forall
       x\in I\Rightarrow P_1(x)=0\,\forall x\in I\Rightarrow P_1=0$.\\
       Induktionsschritt mit $(r-1)\Rightarrow r$: Sei $\sum_{j=1}^r
@@ -3714,8 +3780,8 @@ Ansatz: $\varphi(t)=e^{\lambda t}, \varphi'(t)=\lambda e^{\lambda t},
 \varphi''(\lambda^2e^{\lambda t})$ Einsetzen in DGL $L(\varphi(t))=
 (\lambda^2+2\mu\lambda+\omega_0^2)e^{\lambda t}=0\Leftrightarrow\lambda^2
 +2\mu\lambda+\omega_0^2$. Nullstellen: $\lambda=-\mu\pm\sqrt{\mu^2-\omega_0^2}$.
-\begin{enumerate}[1. F{a}ll]
-  \item $0\leq \mu<\omega_0: \lambda_{1,2}=-\mu\pm i\omega, \omega=
+\begin{enumerate}[1.\,F{a}ll]
+  \item $0\leq \mu<\omega_0\colon  \lambda_{1,2}=-\mu\pm i\omega, \omega=
     \sqrt{\omega_0^2-\mu^2}>0$\\
     Lösungsfundamentalsystem: $\varphi_1(t)=e^{\lambda_1t}=e^{-\mu t}
     e^{i\omega t}, \varphi_2(t)=e^{\lambda_2 t}=e^{-\mu t}e^{-i\omega t}$\\
@@ -3748,7 +3814,7 @@ Ansatz: $\varphi(t)=e^{\lambda t}, \varphi'(t)=\lambda e^{\lambda t},
 \item $\mu=\omega_0$: Nullstellen $\lambda_1=\lambda_2=-\mu$. Damit ist
   $\varphi_1(t)= e^{-\mu t}, \varphi_2(t)=te^{-\mu t}$ ein Fundamentalsystem.
 \item $\mu>\omega_0$: Dann ist $\lambda_1=-+\sqrt{\mu^2-\omega_0^2}, 
-  \lambda_2=-\mu-\sqrt{\mu_2-\omega_0^2}<0$. Man setzt: $\mu_j:=-\lambda_j
+  \lambda_2=-\mu-\sqrt{\mu_2-\omega_0^2}<0$. Man setzt: $\mu_j\coloneqq -\lambda_j
   >0, j=1,2$. Dann ist $\varphi_1(t)=e^{\lambda_1t}=e^{-\mu_1t},
   \varphi_2(t)=e^{\lambda_2t}e^{-\mu_2t}$ ist Fundamentalsystem.
 \end{enumerate}
@@ -3765,9 +3831,9 @@ Zusammenfassend hat man für die allgemeine Lösung von $x''+2\mu x'+
 
 \begin{theorem}
   %Satz IV.3.1
-  Sei $G\subset\R^n$ ein Gebiet\index{Gebiet} und $f:G\rightarrow\R^n$
+  Sei $G\subset\R^n$ ein Gebiet\index{Gebiet} und $f\colon G\rightarrow\R^n$
   ein Gradientenfeld. Dann erhält man alle Skalarfelder 
-  (Stammfunktionen) $\Phi:G\rightarrow\R$ von $f$, d.h. $f=\text{ grad}
+  (Stammfunktionen) $\Phi\colon G\rightarrow\R$ von $f$, d.h. $f=\text{ grad}
   \Phi$, in der Form
   \[\Phi=\Phi_0+c \qquad c\in\R\]
   mit $f=\text{ grad}\Phi_0$.\\
@@ -3781,14 +3847,14 @@ Zusammenfassend hat man für die allgemeine Lösung von $x''+2\mu x'+
 
 \begin{theorem}
   %VI.3.2
-  Sei $G\subset\R^n$ ein Gebiet und $f:G\rightarrow\R^n$ ein stetiges
+  Sei $G\subset\R^n$ ein Gebiet und $f\colon G\rightarrow\R^n$ ein stetiges
   Vektorfeld. Dann gilt, dass $f$ genau dann ein Gradientenfeld ist,
   $\int_\gamma f(x)gx$ wegunabhängig ist.\\
   \textbf{Beweis}: 
   \begin{itemize}
     \item["`$\Rightarrow$"'] Sei $f=\text{ grad}\Phi=\Phi'$. Seien 
       $A,B\in G$ zunächst zwei Punkte, die durch einen stetig differenzierbaren
-      Weg $\gamma:[a,b]\rightarrow\R^n$ mit $\gamma(a)=A$ und $\gamma(b)=
+      Weg $\gamma\colon [a,b]\rightarrow\R^n$ mit $\gamma(a)=A$ und $\gamma(b)=
       B$ verbunden sind. Dann ist: $\int_\gamma f(x)dx=\int_a^b f(\gamma
       (t))\gamma'(t)dt=\int_a^b \Phi'(\gamma(t))\gamma'(t)dt=\int_a^b
       \frac{d}{dt} (\Phi(\gamma(t)))dt=\Phi(\gamma(b))-\Phi(\gamma(a))=
@@ -3802,14 +3868,14 @@ Zusammenfassend hat man für die allgemeine Lösung von $x''+2\mu x'+
     \item["`$\Leftarrow$"'] Sei $\xi\in G$ und $B_\varepsilon(\xi)\subset
       G$ eine offene $\varepsilon$-Kugel. Für beliebige $h\in\R^n$ mit
       $\xi+h\in B_\varepsilon(\xi)$ ist $\sigma(t)=\xi+th\in B_\varepsilon
-      (\xi)$ für $0\leq t\leq 1$. Setzen $\Phi(x):=\int_A^x f(y)dy, A\in G$
+      (\xi)$ für $0\leq t\leq 1$. Setzen $\Phi(x)\coloneqq \int_A^x f(y)dy, A\in G$
       fest, $x\in G$ beliebig. Dann ist $\Phi(\xi+h)-\Phi(\xi)=\int_A^{\xi+h}
       f(y)dy-\int_A^\xi f(y)dy=\int\xi^{\xi+h} f(y)dy=\int_\sigma f(y)dy
       =\int_0^1 f(\sigma(t))\sigma'(t)dt=\int_0^1 f(\xi+th)hdt$. Ferner
       hat man $\int_\sigma f(\xi)dy=\int_0^1 f(\xi)\sigma'(t)dt=\int_0^1
       f(\xi)hdt=f(\xi)h$. Somit hat man $|\Phi(\xi+h)-\Phi(\xi)-f(\xi)h|
-      =|\int_\sigma f(y)-f(\xi))dy|\leq \max_{y\in \{\xi+th:0\leq t\leq 1}
-      ||f(y)-f(\xi)||_2 L(\sigma)$. Da $f$ stetig ist, folgt $\max_{y\in \{\xi+th:0\leq t\leq 1}
+      =|\int_\sigma f(y)-f(\xi))dy|\leq \max_{y\in \{\xi+th\colon 0\leq t\leq 1}
+      ||f(y)-f(\xi)||_2 L(\sigma)$. Da $f$ stetig ist, folgt $\max_{y\in \{\xi+th\colon 0\leq t\leq 1}
       ||f(y)-f(\xi)||_2\xrightarrow{h\rightarrow 0} 0$. Damit gilt
       $f(\xi)=\Phi(\xi)=\text{ grad}\Phi(\xi)$.
   \end{itemize}
@@ -3825,14 +3891,14 @@ Ein praktisches Differenzierbarkeitskriterium dafür, dass ein
 Vektorfeld ein Gradientenfeld ist:
 \begin{enumerate}[(i)]
   \item Notwendiges Kriterium\\
-    Sei $f:
+    Sei $f\colon 
     \begin{pmatrix}
       f_1\\\cdots\\f_n
-    \end{pmatrix}:G\rightarrow\R^n$ ein stetig differenzierbares
+    \end{pmatrix}\colon G\rightarrow\R^n$ ein stetig differenzierbares
     Gradientenfeld auf einer offenen Menge $G$. Dann gilt notwendigerweise:
     $\frac{\partial f_j}{\partial x_k}=\frac{\partial f_k}{\partial x_j},
     k_{xj}=1,\dots,n$. (Integrabilitätskriterien)\\
-    Beweis: (Schwatzscher Satz): $f=\text{ grad }\Phi=\Phi'$, da $f$
+    Beweis: (Schwartzscher Satz): $f=\text{ grad }\Phi=\Phi'$, da $f$
     stetig differenzierbar. Damit ist $\Phi$ zweimal stetig differenzierbar.
     Wegen dem Schwatzschen Satz folgt nun, $\frac{\partial f_j}{\partial x_k}
     =\frac{\partial^2 \Phi}{\partial x_k\partial x_j}=\frac{\partial^2 \Phi}{\partial x_j \partial x_k}
@@ -3840,15 +3906,15 @@ Vektorfeld ein Gradientenfeld ist:
     Gradientenfeld.
   \item Hinreichende Bedingungen\\
     Sei $G\subset\R^n$ eine offene und sternförmige Menge\index{Menge!sternförmig},
-    d.h. $\exists a \in G\,\forall x \in G\,\forall t\in[0,1]:a+tx\in G$,
+    d.h. $\exists a \in G\,\forall x \in G\,\forall t\in[0,1]\colon a+tx\in G$,
     und $f=
     \begin{pmatrix}
       f_1\\\cdots\\f_n
-    \end{pmatrix}:G\rightarrow\R^n$ ein stetig differenzierbares
+    \end{pmatrix}\colon G\rightarrow\R^n$ ein stetig differenzierbares
     Vektorfeld mit $\frac{\partial f_j}{\partial x_k}=\frac{\partial f_k}{\partial x_j},
-    j,k=1,\dots,n$. Dann ist $f$ ein Gradientenfeld, d.h. $\exists\Phi:
-    G\rightarrow\R:f=\text{ grad }\Phi$.\\
-    Beweis: Sei o.B.d.A. $a=0, \sigma(t)=tx$, wobei $t$ zwischen 0 und
+    j,k=1,\dots,n$. Dann ist $f$ ein Gradientenfeld, d.h. $\exists\Phi\colon 
+    G\rightarrow\R\colon f=\text{ grad }\Phi$.\\
+    Beweis: Sei o.\,B.\,d.\,A. $a=0, \sigma(t)=tx$, wobei $t$ zwischen 0 und
     1 liegt. $\Phi(x)$ sei $\int_\sigma f(y)dy$.
     \begin{align*}
     \Phi(x) &=\int_0^1 f(tx)xdt=\int_0^1 \sum_{j=1}^n f_j(tx)x_jdt\\
