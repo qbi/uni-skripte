@@ -1580,6 +1580,7 @@ Seite~225 verschiedene Kriterien festgelegt. Dazu zählen:
 \end{description}
 
 \subsection{Relationenalgebra}
+\label{sec:relationenalgebra}
 
 Der Begriff der \highl{Relationenalgebra} stammt vom Begriff der Algebra aus
 der Mathematik. Es ist eine nicht leere Menge mit Operationen, die auf
@@ -1750,7 +1751,7 @@ gab es folgende Schritte:
 \end{itemize}
 
 \subsection{Datendefinition mit SQL}
-\lstset{language=SQL}
+\lstset{language=SQL,extendedchars=false}
 Innerhalb von SQL sind Datendefinition und -manipulation
 vereinheitlicht. Einige Anweisungen getrennt nach der jeweiligen Ebene
 finden sich in \autoref{tab:dd-sql}.
@@ -2015,15 +2016,72 @@ SQL"=Anweisung aus?
 \paragraph{\lstinline{SELECT FROM}}
 Die oben vorgestellten Aktionen waren allesamt Schreibzugriffe auf die
 Datenbank. Nun soll es um Lesezugriffe gehen. Fundamental ist das so
-genannte \lstinline-SELECT FROM WHERE--Konstrukt. Diese Konstrukt kann
-um weitere Klauseln erweitert werden. Die Klausel \lstinline{SELECT}
-legt die Ergebnisstruktur (Projektionsliste) einer Abfrage fest. Woher
-das DBMS die Daten holen soll, erfährt es durch die Angabe im
+genannte \lstinline-SELECT FROM WHERE--Konstrukt
+(\highl{SFW-Konstrukt}). Diese Konstrukt kann um weitere Klauseln
+erweitert werden. Die Klausel \lstinline{SELECT} legt die
+Ergebnisstruktur (Projektionsliste) einer Abfrage fest. Woher das DBMS
+die Daten holen soll, erfährt es durch die Angabe im
 \lstinline{FROM}. Das heißt, welche Relationen werden zur Anfrage
 benötigt. Schließlich legt die \lstinline{WHERE}"=Klausel die
-Selektionsbedingung und eventuell eine Datenverknüpfung fest. 
+Selektionsbedingung und eventuell eine Datenverknüpfung fest. Seit
+SQL:1992 gibt es hierfür einen eigenen \lstinline-JOIN--Operator, wie
+wir bereits in der Relationenalgebra (\autoref{sec:relationenalgebra})
+kennen gelernt haben.\todo{Syntax der Anweisung als Grafik einbinden}
 
+Es sei unsere Angestellten"=Projekt"=Datenbank gegeben. Gesucht sind
+alle Angestellten mit Name und Wohnort, die in einer Abteilung mit
+einer Nummer größer als 3 arbeiten. Die Ausgabe soll nach Name
+absteigend sortiert werden und alle Duplikate sind zu erhalten. Die
+Anfrage könnte folgendermaßen aussehen:
+\begin{lstlisting}
+  SELECT ALL Name, Wohnort
+  FROM Angest
+  WHERE AbtNr > 3
+  ORDER BY Name DESC
+\end{lstlisting}
+Dabei ist \lstinline-ALL- ein Standardwert und kann weggelassen
+werden. Das Ergebnis der Abfrage liegt streng genommen nicht mehr im
+relationen Modell. Denn der Mengencharakter wird durch die Duplikate
+verletzt.
 
+Nun wollen wir eine Selektion in SQL darstellen. Dazu soll die Anfrage
+alle Angestellten ausgeben, die von Beruf "`Hundezüchter"' sind.
+\begin{lstlisting}
+  SELECT *
+  FROM Angest
+  WHERE Beruf = 'Hundezüchter'
+\end{lstlisting}
+Der Stern in der Anweisung sorgt dafür, dass alle Attribute ausgegeben
+werden. Alternativ liessen sich alle einzeln angeben.
+
+Wie sieht ein Projektion aus? Wir wollen für alle Angestellten den
+Beruf und den Wohnort wissen.
+\begin{lstlisting}
+  SELECT Beruf,Wohnort
+  FROM Angest
+  WHERE true
+\end{lstlisting}
+Die \lstinline-WHERE--Klausel wird üblichweise weggelassen und ist
+unnötig, da Informationen zu \emph{allen} Angestellten abgefragt
+werden. Die Reihenfolge der Attribute in der Ergebnisrelation ist
+eigentlich bedeutungslos. Jedoch kann sie in der Ausgabe aus Gründen
+der Lesbarkeit wesentlich sein. Die Angabe von \lstinline-DISTINCT-
+würde dafür sorgen, dass Duplikate eliminiert werden.
+
+Im nächsten Schritt wollen wir Projektion und Selektion
+kombinieren. Die Anfrage soll die Namen aller Angestellten ausgeben,
+deren Abteilungsnummer zwischen 2 und 6 liegt.
+\begin{lstlisting}
+  SELECT Name
+  FROM Angest
+  WHERE AbtNr >= 2 AND AbtNr <= 6
+  % oder
+  WHERE AbtNr BETWEEN 2 AND 6
+  % oder
+  WHERE AbtNr IN (2,3,4,5,6)
+\end{lstlisting}
+Nach \lstinline-IN- folgt eine Multimenge atomarer Werte. Diese darf
+auch leer oder einelementig sein. 
 
 \todo[inline]{Weitere Anweisungen einfügen. Die weiteren
   SQL-Anweisungen werden eventuell später nachgetragen. Details bitte vorerst
