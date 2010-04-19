@@ -62,7 +62,7 @@
                          % auch für \help (s.u.) verwendet
 \usepackage{tikz-er2}
 \usepackage{braket}
-\usepackage{listings}
+\usepackage[final]{listings}
 \usepackage{booktabs}
 
 \lstdefinelanguage{IMS}%
@@ -2081,7 +2081,127 @@ deren Abteilungsnummer zwischen 2 und 6 liegt.
   WHERE AbtNr IN (2,3,4,5,6)
 \end{lstlisting}
 Nach \lstinline-IN- folgt eine Multimenge atomarer Werte. Diese darf
-auch leer oder einelementig sein. 
+auch leer oder einelementig sein. Typischerweise wird sie als Ersatz
+für die \lstinline-OR--Verknüpfung benutzt. So kann man statt
+\lstinline-AbtNr=12 OR AbtNr=23 OR AbtNr=27- besser
+\lstinline-AbtNr IN (12,23,27)- schreiben. Nach \lstinline{IN} darf
+ein SFW"=Ausdruck stehen. Dieser wird \highl{Subquery} oder
+\highl{Subselect} genannt und Gegenstand späterer Betrachtungen sein. 
+
+Nun ist es recht nützlich, sortierte Ergebnisse einer Anfrage zu
+erhalten. Beispielsweise möchten wir die Attribute Name und Wohnort
+aus der Relation Angest ausgegeben haben. Dabei soll die Ausgabe nach
+dem Namen sortiert sein.
+\begin{lstlisting}
+SELECT Name, Wohnort
+FROM Angest
+ORDER BY Name ASC
+\end{lstlisting}
+Die Angabe von \lstinline{ASC} kann auch weggelassen werden, da dies
+der Standardfall ist. Absteigend können die Werte mittels
+\lstinline{DESC} sortiert werden.  Nun stelle man sich vor, es gibt
+mehrere gleiche Namen und unterschiedliche Wohnorte. Da liegt die
+Frage nahe, wie wohl die Wohnorte sortiert werden. Ohne besondere
+Anweisungen werden diese unsortiert ("`zufällig"') ausgegeben. Wenn
+jedoch mehrere Angaben in der \lstinline-ORDER BY--Klausel stehen,
+legt dies eine Priorität fest. Das heißt, wenn eine Sortierung nach
+Wohnort gewünscht ist, könnte der Nutzer dies als zweiten Wert
+angeben. Statt des Attributnamens kann eine Attributnummer, also die
+Position des Attributs, verwendet werden. Das bietet sich insbesondere
+an, wenn der Name lang ist oder es sich um ein berechnetes Feld
+handelt. Gegebenenfalls gibt es hierfür besser geeignete Methoden.
+
+Neben den oben vorgestellten Funktionen gibt es weitere eingebaute
+Funktionen. Unter anderem handelt es sich dabei um 
+\lstinline-COUNT, SUM, AVG, MIN, MAX-. So kann die Fragen nach der
+aktuellen Anzahl der Angestellten der Firma einfach beantwortet
+werden:
+\begin{lstlisting}
+SELECT COUNT(*)
+FROM Angest
+\end{lstlisting}
+Recht nützlich erweisen sich die eingebauten Funktionen in
+Zusammenhang mit der \lstinline-ORDER BY--Klausel. Eine Liste aller
+Wohnorte mit dem durchscnittlichen Resturlaub der Angestellten, die in
+dem Ort wohnen, erzeugt man mit:
+\begin{lstlisting}
+SELECT Wohnort, AVG(Resturlaub)
+FROM Angest
+ORDER BY Wohnort
+\end{lstlisting}
+Das DBMS wendet die Bildung des Durchschnitts nicht auf die komplette
+Liste an, sondern gruppiert sie in gleiche Wohnorte. Gerade beim
+Durchschnitt ist es unter Umständen sinnvoll, Werte zu betrachen, die
+eine bestimmte Mindestanzahl besitzen. Im folgenden Beispiel werden
+mindestens drei Einträge verlangt.
+\begin{lstlisting}
+SELECT Wohnort, AVG(Resturlaub)
+FROM Angest
+ORDER BY Wohnort
+HAVING COUNT (*) >= 3
+\end{lstlisting}
+
+Nun wollen wir gern den oder die Angestellten wissen, die den
+geringsten Resturlaub besitzen. Die einfachste Variante wäre eine nach
+dem Resturlaub sortierte Liste auszugeben. Bei einer großen Zahl
+Angestellten kann die Ausgabe entsprechend lange dauern. Somit ist es
+sinnvoll, mittels der \lstinline{WHERE}-Klausel die Anfrage
+einzuschränken. Hier kommen die oben angesprochenen Subquerys ins
+Spiel. Wie der Name vermuten lässt, sind diese ebenfalls Abfragen, die
+innerhalb einer Abfrage ausgeführt werden. Das Ergebnis wird in der
+Originalabfrage weiter verwendet. Die korrekte Anfrage könnte so
+aussehen:
+\begin{lstlisting}
+SELECT *
+FROM Angest
+WHERE Resturlaub = (SELET MIN (Resturlaub) FROM Angest)
+\end{lstlisting}
+
+Innerhalb einer neue Anfrage, wollen wir alle Angestellten wissen, die
+in Hamburg, Heidecksburg oder Heinzburg wohnen. Im Rahmen der obigen
+Darstellungen haben wir bereits \lstinline{OR} kennengelernt und
+könnten dies hier anwenden. Eine weitere Möglichkeit für eine
+"`unscharfe"' Suche sind Wildcards in Verbidung mit dem
+Vergleichsoperator \lstinline{LIKE}. Der Prozentzeichen (\lstinline{%})
+umfasst beliebig viele Zeichen und der Unterstrich (\lstinline{_})
+umfasst genau ein Zeichen. Somit lässt sich die obige Anfrage wie
+folgt festlegen:
+\begin{lstlisting}
+SELECT *
+FROM Angest
+WHERE Wohnort LIKE 'H%burg'
+\end{lstlisting}
+Der Vergleichsoperator \lstinline{LIKE} darf negiert werden und kennt
+keine Wortsemantik. Das heißt, Wortgrenzen sind dem Operator nicht
+bekannt.
+
+Das Kreuzprodukt der Tabellen Angest und Projekt lässt sich über
+\lstinline-SELECT * FROM Angest, Projekt- ausgeben. Das DBMS erzeugt
+ein Ergebnis, welches alle Spalten der beteiligten Relationen
+enthält und jedes Tupel der einen Relation mit jedem Tupel der anderen
+Relation verknüpft. In der Regel wird man das Kreuzprodukt kaum
+benötigen. Stattdessen werden Bedingungen angegeben, unter der die
+Tupel verknüpft werden. Bespielsweise kann für jeden Angestellten
+ausgegeben werden, in welchen Projekt er zu wieviel Prozent arbeitet:
+\begin{lstlisting}
+SELECT a.name, m.pronr, m.prozent
+FROM Angest a, Mitarb m
+WHERE a.AngNr = m.AngNr
+\end{lstlisting}
+Nun wollen  die obige Ausgabe für Mitarbeiter aus Erfurt und für
+Projekte, deren Beschreibung nicht "`Wartburg"' enthält
+\begin{lstlisting}
+SELECT ... FROM ...
+WHERE a.Wohnort = 'Erfurt' AND p.Beschr NOT LIKE '%Wartburg'
+\end{lstlisting}
+
+Der Inner Join ist die am häufigstens verwendete Join"=Operation und
+muss daher in SQL nicht explizit angegeben werden. Damit erhält der
+Abfragende nur Werte für die es in den jeweiligen Relationen ein
+"`Gegenstück"' gibt. Ist dies nicht der Fall, so erfolgt keine
+Ausgabe. Beispielsweise lassen sich die Mitarbeiter, die in keinem
+Projekt mitarbeiten bzw. Projekte ohne Mitarbeiter nicht mittels einem
+Inner Join ausgeben. Seit SQL92 gibt es hierfür eine Lösung, den Outer Join.
 
 \todo[inline]{Weitere Anweisungen einfügen. Die weiteren
   SQL-Anweisungen werden eventuell später nachgetragen. Details bitte vorerst
