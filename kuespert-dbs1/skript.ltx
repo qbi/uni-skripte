@@ -2291,6 +2291,73 @@ müsste der außen angegebene Wert mit \emph{allen} Werten aus dem
 Zwischenergebnis übereinstimmen. Sollte keines der beiden verwendet
 worden sein, so muss die Subquery genau ein Tupel zurückliefern.
 
+\subsubsection{Sichten in SQL}
+
+Mit Sichten lassen sich virtuelle Relationen erzeugen. Diese gehen aus
+Basisrelationen oder aus bereits erzeugten Sichten hervor. Dabei ist
+eine Basisrelation eine solche, die mittels \lstinline{CREATE TABLE}
+erzeugt werden kann. Dieses Sprachmittel wurd geschaffen, um die
+externe Ebene gemäß der ANSI/SPARC"=Architektur (siehe
+\ref{sec:ansi-sparc-arch}) nachzukommen. Der Benutzer der Datenbank
+ist somit entkoppelt von den tiefer liegenden Ebenen. Mit Sichten
+lassen sich für verschiedene Nutzergruppen zugeschnittene Ergebnisse
+produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
+
+\begin{figure}[htb]
+  \centering
+  \tikzset{%
+  >=stealth',
+  punkt/.style={coordinate},tip/.style={->,shorten >=1pt},
+  hv path/.style={to path={-| (\tikztotarget)}},
+  vh path/.style={to path={|- (\tikztotarget)}},
+  klausel/.style={rectangle,minimum
+    size=6mm,thick,draw=black!70,font=\ttfamily,color=blue},
+  beding/.style={rectangle,minimum size=6mm,thick,draw=black!34,color=black}}
+
+\begin{tikzpicture}
+  \matrix[column sep=5mm, row sep=2mm]{
+    \node (p1) [punkt] {};         & \node (crview) [klausel] {CREATE VIEW}; &
+    \node (sicht) [beding] {sicht}; & \node (p2) [punkt] {}; &
+    & & & & & \node (p3) [punkt] {}; &
+    \node (as) [klausel] {AS};       & \node (subsel) [beding] {subselect};  &
+    \node (p4) [punkt] {};         & \\
+                                     &                     &
+                                     &                     &
+    \node (aufklam) [klausel] {(};   & \node (p21) [punkt] {}; &
+    \node (attri) [beding] {attribut};& \node (p22) [punkt] {}; &
+    \node (zuklam) [klausel] {)}; & \\
+    & & & & & &
+    \node (komma) [klausel] {,}; \\
+  };
+
+  {[start chain]
+    \chainin (p1);
+    \chainin (crview) [join=by tip];
+    \chainin (sicht)  [join=by tip];
+    \chainin (p2) [join];
+    {[start branch=att]
+      \chainin (aufklam)  [join=by {vh path,tip}];
+    }
+    \chainin (as) [join=by tip];
+    \chainin (subsel) [join=by tip];
+    \chainin (p4) [join=by tip];
+    \chainin (aufklam);
+    \chainin (p21) [join];
+    {[start branch=komma]
+      \chainin (komma) [join=by {vh path,tip}];
+      \chainin (p22) [join=by {hv path,tip}];
+    }
+    \chainin (attri) [join=by tip];
+    \chainin (zuklam) [join=by tip];
+    {[start branch=att2]
+      \chainin (p3)  [join=by {hv path,tip}];
+    }
+  }
+\end{tikzpicture}
+  \caption{Syntaxdiagramm zur Definition von Sichten in SQL}
+  \label{fig:syntax-sicht}
+\end{figure}
+
 \todo[inline]{Weitere Anweisungen einfügen. Die weiteren
   SQL-Anweisungen werden eventuell später nachgetragen. Details bitte vorerst
   der Dokumentation entnehmen}
