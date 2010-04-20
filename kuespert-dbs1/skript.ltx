@@ -2201,7 +2201,48 @@ Abfragende nur Werte für die es in den jeweiligen Relationen ein
 "`Gegenstück"' gibt. Ist dies nicht der Fall, so erfolgt keine
 Ausgabe. Beispielsweise lassen sich die Mitarbeiter, die in keinem
 Projekt mitarbeiten bzw. Projekte ohne Mitarbeiter nicht mittels einem
-Inner Join ausgeben. Seit SQL92 gibt es hierfür eine Lösung, den Outer Join.
+Inner Join ausgeben. Seit SQL92 gibt es hierfür eine Lösung, den Outer
+Join. Dieser lässt sich in die drei Teile aus \autoref{fig:outer-join}
+zerlegen.
+
+\begin{figure}[htb]
+  \centering
+\begin{tikzpicture}[sibling distance=40mm]
+  \node {Outer Join}
+  child {node {Left Outer Join}}
+  child {node {Full Outer Join}}
+  child {node {Right Outer Join}};
+\end{tikzpicture}  
+  \caption{Verschiedene Ausprägungen des Outer Join}
+  \label{fig:outer-join}
+\end{figure}
+
+Der Left Outer Join sei hier an den Relationen Angest und Mitarbeit
+durchgeführt. Wenn der Mitarbeiter mit der AngNr~205 in keinem Projekt
+tätig ist, so erscheint er trotzdem im Ergebnis der Abfrage. Die
+undefinierten Werte für ProNr und Prozent sind mit \lstinline{NULL}
+belegt. Laut der Syntax von SQL92 sieht die Abfrage wie folgt aus:
+\begin{lstlisting}
+SELECT a.AngNr, a.Name, a.Wohnort, a.Beruf, a.AbtNr,
+ m.ProNr, m.Prozent
+FROM (Angest a LEFT OUTER JOIN Mitarbeit m ON a.AngNr = m.AngNr)
+\end{lstlisting}
+
+Für den Right Outer Join nehmen wir an, dass das Projekt mit der
+ProNr~94 neu initiiert wurde und noch über keine Mitarbeiter
+verfügt. Im Ergebnis der Abfrage wird dann das Feld AngNr mit
+\lstinline{NULL} belegt. Die Abfrage gestaltet sich folgendermaßen:
+\begin{lstlisting}
+SELECT m.AngNr, m.ProNr, p.PName
+FROM (Mitarbeit m RIGHT OUTER JOIN Projekt p ON m.ProNr = p.ProNr)
+\end{lstlisting}
+Für den Full Outer Join finden sich in unseren Beispieltabellen keine
+Anwendungen. In dem Falle bleiben die Tupel sowohl aus dem linken wie
+auch aus dem rechten Operanden bestehen. Weitere Joins in SQL92 sind
+\lstinline{CROSS JOIN}, \lstinline{UNION JOIN} und
+\lstinline{NATURAL JOIN}. Das Ergebnis der Abfragen kann auch anders
+modelliert werden. Jedoch erspart die explizite Notation in der Regel
+Schreibarbeit und vermeidet Fehler. 
 
 \todo[inline]{Weitere Anweisungen einfügen. Die weiteren
   SQL-Anweisungen werden eventuell später nachgetragen. Details bitte vorerst
