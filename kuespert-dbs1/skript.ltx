@@ -2244,8 +2244,52 @@ auch aus dem rechten Operanden bestehen. Weitere Joins in SQL92 sind
 modelliert werden. Jedoch erspart die explizite Notation in der Regel
 Schreibarbeit und vermeidet Fehler. 
 
+\subsubsection{Subquerys}
 
-
+Eine \highl{Subquery} ist eine Anfrage, in dessen
+\lstinline{WHERE}"=Klausel wieder ein SFW"=Konstrukt auftritt. Dies
+kann beliebig tief geschachtelt werden. Die Syntax kann in drei
+Ausprägungen auftreten:
+\begin{enumerate}
+\item \lstinline-SELECT .. FROM .. WHERE [NOT] EXISTS (Subquery)-
+\item \lstinline-SELECT .. FROM .. WHERE op {ANY,ALL} (Subquery)-;
+  dabei steht op für eines der Zeichen aus $\{<,\leq,=\neq,\geq,>\}$.
+\item \lstinline-SELECT .. FROM .. WHERE IN (Subquery)-
+\end{enumerate}
+Man kann zwischen \highl[Subquery!korrelierte]{korrelierten} und
+\highl[Subquery!unkorrelierte]{unkorrelierten Subquerys}
+unterscheiden. Bei einer korrelierten Subquery nimmt die innere
+Abfrage Bezug auf die äußere. Ein Beispiel lässt sich über die Ausgabe
+aller Nummern und Namen von Angestellten konstruieren, die in einem
+Projekt zu 100\,\% mitarbeiten:
+\begin{lstlisting}
+SELECT a.AngNr, a.Name
+FROM Angest a
+WHERE EXISTS
+  (SELECT *
+   FROM Mitarbeit m
+   WHERE a.AngNr = m.AngNr AND m.Prozent = 100)
+\end{lstlisting}
+In dem Fall nimmt das a Bezug zur außen. Durch \lstinline{EXISTS} wird
+getestet, ob das Ergebnis der Subquery nicht leer ist. Selbiges
+Ergebnis liesse sich ebenfalls durch eine unkorrelierte Subquery
+erreichen:
+\begin{lstlisting}
+SELECT a.AngNr, a.Name
+FROM Angest a
+WHERE a.AngNr = ANY
+  (SELECT AngNr
+   FROM Mitarbeit
+   WHERE Prozent = 100)
+\end{lstlisting}
+Hier wird innerhalb der Subquery kein Bezug zu außen genommen und im
+Gegensatz zu oben wird die innere Anfrage nur einmal durchlaufen. Mit
+diesem Zwischenergebnis wird wegen der Angabe von \lstinline{ANY}
+geprüft, ob \emph{irgendein} Wert der Subquery mit dem außen
+angegebenen Wert übereinstimmt. Würde dort \lstinline{ALL} stehen, so
+müsste der außen angegebene Wert mit \emph{allen} Werten aus dem
+Zwischenergebnis übereinstimmen. Sollte keines der beiden verwendet
+worden sein, so muss die Subquery genau ein Tupel zurückliefern.
 
 \todo[inline]{Weitere Anweisungen einfügen. Die weiteren
   SQL-Anweisungen werden eventuell später nachgetragen. Details bitte vorerst
