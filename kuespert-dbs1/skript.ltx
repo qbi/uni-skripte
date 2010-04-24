@@ -1008,12 +1008,24 @@ Der Entitytyp müsste eigentlich mehrfach, also in verschiedenen
 Hierarchien auftreten. Dies ist in dem Modell jedoch
 verboten. Erweiterungen versuchen, den Konflikt zu lösen.
 
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[every node/.style={rectangle,thick,draw=black}]
+    \node at (0,0) {Abteilung}
+    child {node {Angestellter}};
+    \node at (4,0) {Position}
+    child {node {Angestellter}};
+  \end{tikzpicture}
+  \caption{Mehrfacher Entitytyp}
+  \label{fig:hdm-mehrfach-enttyp}
+\end{figure}
+
 \subsection{Einführung von Redundanz}
 
 Man könnte verschiedene Hierarchien erlauben, in denen Entitytypen
 mehrfach vorkommen.
 
-\begin{tikzpicture}
+\begin{tikzpicture}[every node/.style={rectangle,thick,draw=black}]
   \node at (0,0) {Abteilung}
   child {node {Angestellter}};
   \node at (4,0) {Position}
@@ -1033,7 +1045,90 @@ Hierbei existieren die "`doppelten"' Entitäten in nur einer Hierarchie
 physisch. Aus anderen Hierarchien wird auf diese Entität per Zeiger
 verwiesen. Benutzer sehen diese Realisierung nicht. Das
 Datenbanksystem kann in diesem Modell wieder seine Stärken
-ausspielen.
+ausspielen. Die \autoref{fig:virt-enttyp} zeigt eine Ausprägung eines
+virtuellen Entitytyps. Analog könnte der virtuelle Angestellte sich
+auch links befinden.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[>=stealth',tip/.style={->,dotted},voll/.style={rectangle,draw}, gepunk/.style={dotted,draw=blue}]
+    \matrix[row sep=6mm,column sep=15mm]{
+      \node (abt) [voll] {Abteilung}; & \node (pos) [voll] {Position};\\
+      \node (vang) [voll] {virtueller Angestellter}; & \node (ang)  [gepunk] {Angestellter};\\
+    };
+
+    { [start chain]
+      \chainin (abt);
+      {[start branch=foo]
+       \chainin (vang) [join]; 
+      }
+      \chainin (pos);
+      {[start branch]
+        \chainin (ang) [join];
+      }
+      \chainin (ang);
+      \chainin (vang) [join=by tip];
+    }
+  \end{tikzpicture}
+  \caption{Virtuelle Entitytypen}
+  \label{fig:virt-enttyp}
+\end{figure}
+
+Mit dieser Konstruktion lassen sich alle Angestellten einer bestimmten
+Abteilung oder einer bestimmten Position effizient auffinden. Jedoch
+ist die Position oder Abteilung eines bestimmten Angestellten
+ineffizient zu finden.
+
+Nun sei folgende $n\colon m$"=Beziehung gegeben und wir suchen eine
+Repräsentation über ein hierarchisches Modell bei dem der Einstieg
+sowohl über den Lieferanten wie auch über den Artikel erfolgen
+kann. Das heißt, beide sollen gleichberechtigt dargestellt werden.
+
+\begin{center}
+  \begin{tikzpicture}[node distance=10em]
+  \node[entity] (lief) {Lieferant};
+  \node[relationship] (liefert) [right of=lief] {liefert} edge node[auto,swap] {$(0,*)$} (lief);
+  \node[entity] (art) [right of=liefert] {Artikel} edge   node[auto,swap] {$(0,*)$} (liefert);
+\end{tikzpicture}
+\end{center}
+
+
+Die Lösung liegt hier darin, zwei virtuelle Entitytypen zu
+definieren. Diese verweisen jeweils auf den gegenüberliegenden
+Entitytypen.
+\begin{center}
+  \begin{tikzpicture}[>=stealth',tip/.style={->,dotted},voll/.style={rectangle,draw}, gepunk/.style={dotted,draw=blue}]
+  \matrix[row sep=6mm,column sep=15mm]{
+    \node (abt) [voll] {Lieferant}; & \node (pos) [voll] {Artikel};\\
+    \node (vang) [gepunk] {virtueller Lieferant}; & \node (ang)
+    [gepunk] {virtueller Artikel};\\
+  };
+  
+  { [start chain]
+    \chainin (abt);
+    {[start branch=foo]
+      \chainin (vang) [join]; 
+    }
+    \chainin (pos);
+    {[start branch]
+      \chainin (ang) [join];
+    }
+    \chainin (ang);
+    {[start branch]
+      \chainin (abt) [join=by tip];
+    }
+    \chainin (vang);
+    {[start branch]
+      \chainin (pos) [join=by tip];
+    }
+  }
+\end{tikzpicture}
+\end{center}
+
+Was passiert nun, wenn der Beziehungstyp "`liefert"' Attribute, wie
+beispielsweise eine Menge, besitzt? Dann werden die Werte zusammen mit
+den Zeigern in der Ausprägungen der virtuellen Satztypen
+gespeichert. Also gibt es hierbei Redundanz.
 
 \section{IMS als Beispiel eines hierarchischen Datenbanksystems}
 
