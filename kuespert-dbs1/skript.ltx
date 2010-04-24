@@ -1135,7 +1135,9 @@ gespeichert. Also gibt es hierbei Redundanz.
 \highl{IMS} ist eine Abkürzung und steht für \highl{Information
   Management System}. Es wurde zwischen 1966 und 1968 von IBM,
 Rockwell und Caterpillar für das Apollo"=Mondprogramm
-entwickelt. Seit 1969 wird es von IBM bis heute weiterentwickelt.
+entwickelt. Seit 1969 wird es von IBM bis heute
+weiterentwickelt.\footnote{Tiefergehende Informationen zu IMS ist im
+  IBM Redbook unter \cite{imsprimer}.}
 
 IMS speichert die Daten durch ein hierarchisches Modell. Dies wird
 durch Datenblöcke, die \highl{Segment} genannt sind, realisiert. Jedes
@@ -1149,7 +1151,9 @@ umsatzstärksten Produkten des Konzerns.
 
 \begin{defini}[Segment]
   Ein Knoten in der  Typhierarchie wurde bisher als Entitytyp
-  bezeichnet. Innerhalb von IMS heißt der \highl{Segment}.
+  bezeichnet. Innerhalb von IMS heißt der \highl{Segment}. Ein Segment
+  besteht in der Implementation aus Metaangaben (Typecode, Pointer
+  etc.) und den eigentlichen Anwendungsdaten.
 \end{defini}
 
 \begin{defini}[Feld]
@@ -1205,10 +1209,17 @@ Beschreibung der konzeptionellen und der internen Ebene. In der DBD
 können nur 1:n"=Beziehungstypen modelliert werden.
 
 \begin{bsp}
-  Eine Definition des Physical Database Record Type könnte so
-  aussehen.
-\lstset{numbers=left,language=IMS}
-\begin{lstlisting}[caption={Definition des Physical Database Record Type}]
+  Nun sei eine Datenbank mit Informationen zu Kursen (Seminar,
+  Schulung) gegeben. Das erste Segment enthält Informationen zu dem
+  Namen des Kurses sowie dessen Nummer. Weiterhin wird modelliert,
+  welche Voraussetzungen zur Teilnahme an einem Kurs vorliegen müssen
+  sowie wie ein Angebot konkret aussieht. Bei letzterem ist die
+  Angebotsnummer, das Datum und der Ort Teil des Segments. Unterhalb
+  des Angebots finden sich spezielle Informationen zum Leiter des
+  Kurses sowie zu den Teilnehmern.  Eine Definition des Physical
+  Database Record Type könnte so aussehen.
+  \lstset{numbers=left,language=IMS}
+\begin{lstlisting}[caption={Definition des Physical Database Record Type},captionpos=b]
 DBD   NAME=KursDB
 SEGM  NAME=Kurs, BYTES=36
 FIELD NAME=(KursNr,SEQ), BYTES=3, START=1
@@ -1234,6 +1245,14 @@ Felder sind nicht typisiert und besitzen eine feste Länge. Die Angabe
 \lstinline{SEQ} legt fest, dass die Segmentausprägungen nach diesen
 Feldwerten \emph{aufsteigend} sortiert sind. Damit die Felder mit
 \lstinline{SEQ} gleichzeitig Schlüsselfelder.
+
+In \lstinline{SEGM} erkennen wir die Segmente wieder und die
+nachgeordneten \lstinline{FIELD}"=Einträge sind die entsprechenden
+Felder.
+
+Die ausführliche Variante einer solchen Definition ist bei IMS
+wesentlich komplizierter. Hier wurden nur die wichtigen Punkte
+zusammengetragen. 
 \end{bsp}
 
 \subsubsection{Externe Schemas}
@@ -2610,6 +2629,9 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
 \bibitem{sahesa05} \textsc{Gunter Saake}, \textsc{Andreas Heuer},
   \textsc{Kai"=Uwe Sattler}: Datenbanken:
   Implementierungstechniken. mitp"=Verlag, 2005.
+\bibitem{imsprimer} \textsc{Rick Long}, \textsc{Mark Harrington},
+  \textsc{Robert Hain}, \textsc{Geoff Nichols}: IMS Primer. IBM,
+  2000. \url{http://www.redbooks.ibm.com/redbooks/pdfs/sg245352.pdf}
 \end{thebibliography}
 
 \clearpage
