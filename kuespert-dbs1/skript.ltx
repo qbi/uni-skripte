@@ -2595,7 +2595,82 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
 \part{Datenbanksysteme 2}
 \label{part:dbs2}
 
+\chapter{Transaktionsverwaltung und Fehlerbehandlung}
 
+\section{Transaktionen}
+
+\begin{defini}[Transaktion]
+  Eine \highl{Transaktion} ist eine Folge zusammengehöriger
+  Operationen auf der Datenbank für die bestimmte Eigenschaften
+  gelten.\footnote{\textsc{Jim Gray} gilt als der Erfinder des
+    Transaktionskonzeptes und lieferte in den siebziger Jahren erste
+    wissenschaftliche Veröffentlichungen zu dem Thema.}
+\end{defini}
+
+\begin{bemerk}
+  Bei einer Transaktion kann es sich um Lese- oder Schreiboperationen
+  handeln. Man kann sich das als Klammerung von Operationen
+  vorstellen. Beginn und Ende der Transaktion werden entweder vom
+  Benutzer oder von der Anwendung markiert. Operationen finden auf
+  Datenbanken ausschließlich im Rahmen von Transaktionen statt. Im
+  Extremfal ist jede Operation eine Transaktion.
+  \begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[>=stealth']
+      \draw[->] (0,0) -- (10,0);
+      \draw[thick] (.75,1) -- (.5,1) -- (.5,-1) -- (.75,-1)
+      node[below] {Beginn der Transaktion};
+      \draw (1.1,-.25) -- (1.1,.25) node [anchor=south] {OP1};
+      \draw (1.9,-.25) -- (1.9,.25) node [anchor=south] {OP2};
+      \draw (3,-.25) -- (3,.25) node [anchor=south] {OP3};
+      \draw (4.3,-.25) -- (4.3,.25) node [anchor=south] {OP4};
+      \draw (5.2,-.25) -- (5.2,.25) node [anchor=south] {OP5};
+      \draw (7,-.25) -- (7,.25) node [anchor=south] {OP6};
+      \draw (8.5,-.25) -- (8.5,.25) node [anchor=south] {OP7};
+      \draw[thick] (8.75,1) -- (9,1) -- (9,-1) -- (8.75,-1)
+      node[below] {Ende der Transaktion};
+    \end{tikzpicture}
+    \caption{Folge von Operationen innerhalb einer Transaktion}
+    \label{fig:transak-folge-op}
+  \end{figure}
+\end{bemerk}
+
+\begin{defini}[Eigenschaften von Transaktionen]
+  \begin{description}
+  \item[Atomarität\index{Atomarität}] Eine Transaktion wird entweder
+    komplett oder gar nicht durchgeführt.
+  \item[Konsistenz\index{Konsistenz}] Eine Transaktion überführt die
+    Datenbank von einem logisch konsisten Zustand in einen logisch
+    konsisten Zustand, d.\,h. alle Integritätsbedingungen gelten.
+  \item[Isolation\index{Isolation}]  Die Operationen innerhalb einer
+    Transaktion werden erst nach Abschluss der Transaktion nach außen
+    sichtbar.
+  \item[Dauerhaftigkeit\index{Dauerhaftigkeit}] Die Änderungen nach
+    dem Abschluss einer Transaktion müssen vom DBMS rekonstruierbar
+    sein.
+  \end{description}
+  Die obigen Regeln werden gemäß ihrer englischsprachigen Initialen
+  als \highl{ACID}"=Eigenschaften bezeichnet.\footnote{Die
+    ACID"=Eigenschaften wurden erstmalig 1983 von den Forschern
+    \textsc{Theo Härder} und \textsc{Andreas Reuter} in den ACM
+    Computing Surveys formuliert.}
+\end{defini}
+
+\begin{bemerk}
+  Die Atomarität soll garantieren, dass eine Transaktion nicht in
+  einem halbfertigem Zustand verbleibt. Denn bei einem Absturz des
+  Rechners, Stromausfall o.\,ä. könnte es passieren, dass einige
+  Änderungen ausgeführt werden und andere nicht.
+
+  Die Isolation ist insbesondere im Mehrbenutzerbetrieb
+  nützlich. Würde jede Operation sofort wirksam werden, so könnte es
+  sein, dass ein gleichzeitig zugreifender Benutzer mit inkonsistenten
+  Daten weiterarbeitet.
+
+  Die Dauerhaftigkeit sichert, dass Daten den Fehlerfall überleben. So
+  kann sich der Benutzer darauf verlassen, dass seine Änderungen
+  Bestand haben, sobald das DBMS diese verarbeitet (Commit) hat.
+\end{bemerk}
 
 \clearpage
 \appendix
