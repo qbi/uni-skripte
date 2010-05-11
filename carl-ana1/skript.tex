@@ -25,13 +25,12 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{amsmath}
+\usepackage[intlimits,leqno]{amsmath}
 \usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
                                        % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
 \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
-
-\usepackage{amsfonts}
-\usepackage{amsthm}
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
 \usepackage{wasysym}
 \usepackage{fancyhdr}
 \usepackage{enumerate}
@@ -43,6 +42,9 @@
 \usepackage[draft=false,colorlinks,urlcolor=blue,breaklinks]{hyperref}
 \usepackage{paralist}
 \usepackage{ellipsis}
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+
 
 \usetikzlibrary{calc}
 
@@ -58,20 +60,42 @@
 % Befehl für die Darstellung der Gliederungsüberschriften im Index
 \newcommand*{\lettergroup}[1]{\minisec{#1}}
 
-\theoremstyle{plain}
-%\newtheorem{satz}{Satz}[section]
-% \newtheorem*{satz*}{Satz o.\,B.}
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Satz}[section]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{Folg}{Folgerung}[chapter]
 
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}
-%\newtheorem{proof}{Beweis}
-\newtheorem{Folg}{Folgerung}
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+%\newtheorem{fakt}{Fakt}
+\newtheorem{remark}{Bemerkung}
+\newtheorem{beispiel}{Beispiel}
 
-\theoremstyle{remark}
-\newtheorem*{remark}{Bemerkung}
-\newtheorem*{beispiel}{Beispiel}
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
 
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
@@ -79,6 +103,10 @@
 \renewcommand*{\theoremautorefname}{Satz}
 \newcommand*{\definitionautorefname}{Definition}
 \newcommand*{\Folgautorefname}{Folgerung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
@@ -330,7 +358,10 @@ Damit kommen wir zum ersten Satz:
 \begin{lemma}
   Sei $m$ eine natürliche Zahl, so dass $m^2$ eine gerade Zahl
   ist. Dann ist $m$ auch eine gerade Zahl.
-  \begin{gather*}\forall m \in \N (m^2 \text{ gerade}\Rightarrow m \text{ gerade})\end{gather*}
+  \begin{gather*}
+    \forall m \in \N (m^2 \text{ gerade}\Rightarrow m \text{
+      gerade})
+  \end{gather*}
   \begin{proof}
     Nehmen wir an, $m$ sei ungerade. Dann gibt es für ein $k \in\N$
     die folgende
