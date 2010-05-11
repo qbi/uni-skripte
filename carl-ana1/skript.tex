@@ -49,7 +49,7 @@
                          % auch für \help (s.u.) verwendet
 \usepackage{mathtools}   % Zur Definition von \abs und \norm
 
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,shapes.geometric}
 
 \newcommand*{\N}{\mathbb{N}}
 \newcommand*{\Z}{\mathbb{Z}}
@@ -141,6 +141,9 @@
 \newcommand*{\lsofint}[1]{\mathopen{]}#1]}   % linksseitig offenes Intervall
 \newcommand*{\rsofint}[1]{[#1\mathclose{[}}  % rechtsseitig offenes Intervall
 \newcommand*{\bsofint}[1]{\mathopen{]}#1\mathclose{[}} % beidseitig off. Int.
+
+\DeclareMathOperator{\graph}{graph}
+\DeclareMathOperator{\id}{id}
 
 \makeindex
 
@@ -281,8 +284,8 @@ Prädikatenlogik.
 
 \section{Abbildungen (Funktionen)}
 
-\begin{definition}
-  Seien $X,Y$ zwei nichtleere Mengen. Eine \highl{Teilmenge}
+\begin{definition}[Teilmenge, Abbildung]
+  Seien $X$ und $Y$ zwei nichtleere Mengen. Eine \highl{Teilmenge}
   $f\subseteq X\times Y\coloneqq \{(x,y)\colon x\in X \wedge y\in Y\}$ mit der
   Eigenschaft
   \begin{gather*}
@@ -292,15 +295,51 @@ Prädikatenlogik.
   heißt \highl{Abbildung} oder \highl{Funktion} von $X$ in $Y$.
 \end{definition}
 
-Wir schreiben hierfür: $f\colon X\rightarrow Y, x\mapsto f(x)$
+Wir schreiben hierfür: $f\colon X\rightarrow Y, x\mapsto f(x)$.
 
 In Worten: Unter einer Abbildung (Funktion) $f$ von $X$ in $Y$
 versteht man eine Vorschrift, die jedem $x\in X$ \emph{genau ein} $y
 \in Y$ zuordnet und nennen es \highl{Bild} oder
 \highl{Wert} der Abbildung $f$ an der Stelle $x$. Die Menge
-$X$ heißt \highl{Urbildmenge} oder \highl{Definitionsbereich}.
+$X$ heißt \highl{Urbildmenge} oder \highl{Definitionsbereich} und
+$f(X)\coloneqq\{y\in Y\colon\exists x\in X\colon y=f(x)\}$ ist der
+\highl[Bildbereich]{Bild-} oder \highl{Wertebereich}. Der \highl{Graph} von
+$f$ ist die Menge $\graph(f)\coloneqq\{(x,f(x))\colon x\in X\}$.
 
-\paragraph{Komposition (Hintereinanderausführung, Verkettung)}
+Sei nun $A\subseteq X$. Dann ist $f(A)\coloneqq\{f(x)\colon x\in A\}$ das
+\highl{Bild} von $A$ unter der Abbildung $f$. Für $B\subseteq Y$ ist
+$f^{-1}(B)\coloneqq\{x\in X\colon f(x)\in B\}$ das \highl{Urbild} von $B$
+unter der Abbildung $f$. Es gilt: $f(\emptyset)= f^{-1}(\emptyset)=\emptyset$.
+
+\begin{definition}[injektiv,surjektiv]
+  Eine Abbildung $f\colon X\rightarrow Y$ heißt genau dann
+  \highl{surjektiv\index{Abbildung!surjektive}}, wenn $f(X)=Y$ gilt. Eine
+  Abbildung $f\colon X\rightarrow Y$ heißt genau dann
+  \highl{injektiv\index{Abbildung!injektive}} oder
+  \highl{eineindeutig\index{Abbildung!eineindeutige}}, wenn gilt: $\forall
+  x_{1}\in X\,\forall x_{2}\in X\colon f(x_{1})=f(x_{2})\Rightarrow
+  x_{1}=x_{2}$.
+
+  Schließlich heißt eine Abbildung
+  \highl{bijektiv\index{Abbildung!bijektive}}, wenn sie injektiv und surjektiv
+  ist bzw. eine eineindeutige Abbildung von $X$ auf $Y$ ist.
+\end{definition}
+
+\begin{theorem}
+  Sei $f\colon X\rightarrow Y$ eine Abbildung. Dann gelten die folgenden
+  Beziehungen:
+  \begin{align*}
+    \forall A,B\subseteq X \colon& f(A\cup B)= f(A)\cup f(B)\\
+    & f(A\cap B)= f(A)\cap f(B)\\
+    \forall A,B\subseteq Y \colon& f^{-1}(A\cup B)= f^{-1}(A)\cup f^{-1}(B)\\
+    & f^{-1}(A\cap B)= f^{-1}(A)\cap f^{-1}(B)
+  \end{align*}
+  \begin{proof}
+    Der Beweis der Aussage verbleibt zur Übung.
+  \end{proof}
+\end{theorem}
+
+\subsection{Komposition (Hintereinanderausführung, Verkettung)}
 \begin{definition}
   Seien $X,Y,Z$ nichtleere Mengen und $f\colon X\rightarrow Y,
   g\colon Y\rightarrow Z$ zwei Abbildungen. Dann heißt die Abbildung $g\circ
@@ -309,13 +348,35 @@ $X$ heißt \highl{Urbildmenge} oder \highl{Definitionsbereich}.
   Abbildung $f$ und $g$.
 \end{definition}
 
-\paragraph{Inverse Abbildungen (Funktionen)}
+\subsection{Inverse Abbildungen}
 \begin{definition}
   Seien $X,Y$ zwei nichtleere Mengen und $f\colon X\rightarrow Y$
   bijektiv. Dann heißt $f^{-1}\colon Y\rightarrow X, f(x)\mapsto x$
   \highl[Abbildung!inverse]{inverse Abbildung} oder
   \highl{Umkehrabbildung}.
 \end{definition}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \path (0,0) node(a) [shape=ellipse,minimum height=3cm,minimum width=2.3cm,draw] {}
+          (5,0) node(b) [shape=ellipse,minimum height=2.6cm,minimum
+          width=1.8cm,draw] {};
+    \node (X) [above of=a] {$X$};
+    \node (Y) [above of=b] {$Y$};
+    \fill (.31,.31) circle (1pt) node [anchor=west] {$x$};
+    \fill (5.2,.4) circle (1pt) node [anchor=east] {$f(x)$};
+    \draw [->] (.31,.4) to [out=90,in=90] node
+    [anchor=north] {$f$} (5.2,.5);
+    \draw [->] (5.2,.3) to [out=270,in=270]  node
+    [anchor=north] {$f^{-1}$} (.31,.2);
+  \end{tikzpicture}
+  \caption{Funktion $f$ mit Umkehrabbildung}
+  \label{fig:umkehrabb}
+\end{figure}
+
+Es gilt, $f\circ f^{-1}=\id_{Y}$ und $f^{-1}\circ f=\id_{X}$. Dabei ist $\id$
+die identische Abbildung.
 
 \chapter{Zahlen}
 
