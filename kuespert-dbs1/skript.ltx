@@ -2979,6 +2979,149 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
   Sie nicht gewährte Sperren hier durch Unterstreichen.
 \end{exe}
 
+
+\section{Übungsblatt 4}
+
+\begin{exe}[Sperr-/Wartegraph und Sperrtabelle]
+  Gegeben sei die Hashfunktion $h(Rx)\equiv x\mod{3}$ sowie folgender
+  Sperr-/Wartegraph: \todo{Graf zeichnen}
+  \begin{enumerate}[a)]
+  \item Stellen Sie die zugehörige Sperrtabelle auf. Beschränken Sie
+    sich dabei auf S und X als zu betrachtende Sperrmodi.
+  \item Gibt es verschiedene Möglichkeiten ("`Freiheitsgrade"'), die
+    Sperrtabelle zu erstellen? Welche Informationen enthält sie
+    gegebenenfalls, die der Sperr-/Wartegraph nicht enthält?
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Wartebeziehungen]
+  Sie haben in der Vorlesung Sperrtabellen und Sperr-/Wartegraphen
+  kennen gelernt. Die Information, welche Transaktion auf welche
+  Transaktion wartet, kann aber auch mittels sogenannter Bitmatrizen
+  dargestellt werden. Gegeben sei folgende Bitmatrix
+  (\autoref{tab:bitmatrix}), die angibt, welche Transaktion auf welche
+  wartet. Beispielsweise besagt die "`1"' am Schnittpunkt der Zeile
+  "`TA1"' mit der Spalte "`TA2"', dass TA1 auf TA2 wartet. (Genauer
+  gesagt wartet TA1 auf die Freigabe einer Ressource, die von TA2
+  gesperrt ist.)
+  \begin{table}[htb]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+      \toprule
+      & TA1 & TA2 & TA3 & TA4 & TA5 & TA6 & TA7 & TA8 & TA9\\
+      \midrule
+      TA1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\
+      \midrule
+      TA2 & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0\\
+      \midrule
+      TA3 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0\\
+      \midrule
+      TA4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+      \midrule
+      TA5 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0\\
+      \midrule
+      TA6 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0\\
+      \midrule
+      TA7 & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0\\
+      \midrule
+      TA8 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\
+      \midrule
+      TA9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+      \bottomrule
+    \end{tabular}
+    \caption{Bitmatrix}
+    \label{tab:bitmatrix}
+  \end{table}
+  \begin{enumerate}[a)]
+  \item Stellen Sie den zugehörigen Sperr-/Wartegraphen auf! (Die
+    Ressourcennamen mögen hier keine Rolle spielen und sollen deshalb
+    weggelassen werden.)
+  \item Können Sie die Bitmatrix in die Darstellung als Sperrtabelle
+    gemäß Vorlesungsfolie~38\todo{Verweis einbauen} transformieren?
+  \item In der obigen Bitmatrix wird nur direktes Warten
+    berücksichtigt. Kann man an dieser Bitmatrix (direkt) ablesen, ob
+    ein Deadlock vorliegt?
+  \item Wenn eine Transaktion TAi auf die Transaktion TAj wartet, die
+    wiederum auf die Transaktion TAk wartet, so wartet TAi indirekt
+    auf TAk. Geben Sie nun eine Bitmatrix an, die auch indirektes
+    Warten berücksichtigt (transitive Hülle).
+  \item Woran erkennt man an dieser neuen Bitmatrix, ob ein Deadlock vorliegt?
+  \item Woran erkennt man im Sperr-/Wartegraphen (1.\,Teilaufgabe), ob
+    ein Deadlock vorliegt?
+  \item Liegt im konkreten Fall ein Deadlock vor? Wenn ja, wie kann
+    dieser aufgelöst werden?
+  \item Woran erkennt man in der Bitmatrix, ob eine Transaktion
+    aktuell arbeitsfähig ist, d.\,h. nicht auf die Freigabe einer
+    Ressource wartet?
+  \item Woran erkennt man im Sperr-/Wartegraphen, ob eine Transaktion
+    aktuell arbeitsfähig ist?
+  \item Welche Transaktionen sind im konkreten Fall aktuell
+    arbeitsfähig?
+  \item Welche Transaktionen werden arbeitsfähig, wenn TA6 die von ihr
+    belegten Ressourcen wieder freigibt?
+  \item Angenommen, die Transaktion TA7 gibt ihre Ressourcen wieder
+    frei. Welche weiteren Transaktionen müssen ihre Ressourcen
+    ebenfalls freigeben, bevor TA6 arbeitsfähig wird?
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Sperrtabelle und Sperr-/Wartegraph]
+  Gegeben sei die folgende (natürlich stark verkleinert gewählte)
+  Sperrtabelle. \todo{Grafik einbauen}
+
+  \emph{Hinweis zur Implementatierung}: Im Primärbereich der
+  Hashtabelle (links im Bild, also in der eigentlichen Hashtabelle)
+  befinden sich nur Pointer, sie ist somit sehr kompakt
+  speicherbar. (In der Realität würde man natürlich in einem viel
+  größeren Bereich als nur $\{0,1\}$ hashen.) Auch die
+  Sperrkontrollblöcke (Ri im Bild) bestehen im Grunde nur jeweils aus
+  drei Pointern, wie man sieht, plus dem Ressourcennamen bzw. intern
+  als ID/Nummer dargestellt (es werden also nicht "`die Ressourcen
+  selbst"' hier gespeichert natürlich). Kompaktheit der Sperrtabelle
+  insgesamt ist wichtig, weil sie u vom DBMS im \emph{Hauptspeicher}
+  gehalten werden muss und sich diese rare Ressource mit anderen
+  wichtigen DBMS"=Ressourcen teilt (insb. Systempuffer (Cache),
+  Log"=Puffer, Sort"=Heaps etc.).
+  \begin{enumerate}[a)]
+  \item Sind die angegebenen Sperrmodi zulässig? Wenn nein, wo liegt
+    der Fehler?
+  \item Stellen Sie den zugehörigen Sperr-/Wartegraphen auf.
+  \item Liegt im konkreten Fall ein Deadlock vor? Wenn ja, welcher?
+  \item Angenommen, Sie würden die Wartebeziehungen in einer Bitmatrix
+    darstellen, die außer direktem Warten auch indirektes Warten
+    berücksichtigt. Wieviele Einsen enthielte die Hauptdiagonale
+    dieser Bitmatrix? (Hinweis: Sie brauchen die Bitmatrix
+    \emph{nicht} aufschreiben. Die Hauptdiagonale verläuft von oben
+    links nach unten rechts.)
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Latches]
+  Damit sich mehrere DBMS"=Server"=Prozesse oder -Threads z.\,B. beim
+  Zugriff auf die Sperrtabelle nicht gegenseitig "`ins Gehege
+  kommen"', werden \highl[Kurzzeitsperre]{Kurzzeitsperren}
+  genutzt. Die Realisierung der Kurzzeitsperren erfolgt als
+  \highl{Latches} (Schnappschlösser) beispielsweise mit folgender
+  (vereinfachter) Programmlogik:\\
+  Falls der Latch frei ist, wird der auf belegt gesetzt und auf der
+  Sperrtabelle gearbeitet. Am Ende der Bearbeitung wird der Latch auf
+  frei gesetzt. Sollte der Latch anfangs belegt sein, wird gewartet
+  (ggf. Busy Wait).
+
+  Welche Probleme können auftreten, wenn mehrere Prozesse parallel auf
+  einer Maschine arbeiten wollen und das if/then \emph{nicht} atomar
+  über \emph{eine} Maschinenistruktion realisiert ist?
+\end{exe}
+
+
+
+
+
+
+
+
+
+
 \begin{thebibliography}{99}
 \bibitem{sasahe07} \textsc{Gunter Saake}, \textsc{Kai-Uwe Sattler},
   \textsc{Andreas Heuer}: Datenbanken: Konzepte und
