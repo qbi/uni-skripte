@@ -66,6 +66,7 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{chains,positioning,scopes,trees}
+\usepackage[alsoload=binary]{siunitx}
 
 \lstdefinelanguage{IMS}%
 {morekeywords={DBD, SEGM, FIELD, END,PCB,SENSEG,SENFLD,PSBGEN}}
@@ -98,6 +99,7 @@
 \newtheorem{bemerk}{Bemerkung}[chapter]
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{exe}{Aufgabe}
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -118,6 +120,7 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\exeautorefname}{Übungsaufgabe}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -2674,6 +2677,121 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
 
 \clearpage
 \appendix
+
+\chapter{Übungsaufgaben in DBS2}
+
+\section{Übungsblatt 2}
+
+\begin{exe}[Zusammenspiel von DB-Puffer und Log-Puffer]
+  Gegeben seien (alles stark vereinfacht und "`verkleinert"') die
+  DB"=Seiten $S1, S2, S3$ und $S4$. Die Seitengröße betrage
+  \SI{4}{\kilo\byte}. Der Log"=Puffer habe eine Kapazität von einer
+  Seite. Der DB"=Puffer kann max.\,2~Seiten aufnehmen. Des Weiteren
+  setzen wir eine konstante Tupellänge von \SI{1}{\kilo\byte} und eine
+  Log"=Eintrags"=Größe von \SI{2}{\kilo\byte} voraus.
+
+  Als Seitenverdrängungsstrategie des DB"=Puffers nehmen wir
+  \textit{FIFO} (\textit{first in first out}) an, d.\,h., verdrängt
+  wird bei Bedarf diejenige Seite, die als erste in den Puffer geladen
+  wurde. Wir setzen ferner voraus, dass eine Seite nur dann auf Platte
+  ausgeschrieben wird, wenn dies (aus irgendeinem Grund) notwendig
+  ist, also kein Einsatz von proaktiven Page Cleaner. Des Weiteren
+  werde eine Seite nur dann in den DB"=Puffer geladen, wenn auf diese
+  Seite zugegriffen wird (also kein "`vorausschauendes"' Puffern,
+  Prefetching). Für den DB"=Puffer werde \textit{STEAL} sowie
+  \textit{NO FORCE} angenommen.
+
+  Betrachten Sie die folgende Sequenz von Operationen und ermitteln
+  Sie nach jedem Schritt jeweils den Inhalt von Log"=Puffer und
+  DB"=Puffer. Beide Puffer seien zu Beginn leer.
+  \begin{enumerate}[1.]
+  \item Lies Tupel~$t1$ in Seite~$S1$.
+  \item Ändere Tupel~$t1$.
+  \item Lies Tupel~$t2$ in Seite~$S2$.
+  \item Erneuter Lesezugriff auf Tupel~$t2$.
+  \item Lies Tupel~$t3$ in Seite~$S3$.
+  \item Ändere Tupel~$t3$.
+  \item Commit.
+  \item Lies Tupel~$t4$ in Seite~$S4$.
+  \item Ändere Tupel~$t4$.
+  \item Lies Tupel~$t5$ in Seite~$S4$.
+  \item Ändere Tupel~$t5$.
+  \item Lies Tupel~$t6$ in Seite~$S4$.
+  \item Ändere Tupel~$t6$.
+  \item Commit.
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Fehlerbehandlung nach Externspeicherversagen]
+  \begin{enumerate}[a)]
+  \item Stellen Sie sich vor, Sie haben Ihr Studium erfolgreich
+    abgeschlossen und arbeiten jetzt als DBA in einem großen Jenaer
+    Unternehmen. Es ist Montagmorgen, 5:30~Uhr und Sie kommen gerade
+    fröhlich pfeifend ins Büro. Noch bevor Sie Ihre Jacke ausgezogen
+    und im Kleiderschrank verstaut haben, müssen Sie zu Ihrem blanken
+    Entsetzen feststellen, dass eine Festplatte das letzte Wochenende
+    nicht "`überlebt"' hat. Dabei handelt es sich ausgerechnet um die
+    Platte, auf der die Daten der wichtigsten Datenbank liegen
+    (bzw. gelegen haben). Zum Glück haben Sie aber letzte Woche
+    Freitag eine Vollkopie Ihrer Datenbank erstellt. Was ist jetzt zu
+    tun, d.\,h. welche Schritte (Aktionen) müssen Sie durchführen
+    bzw. veranlassen?
+  \item Wie bei a), aber wir nehmen an, dass die letzte Vollkopie der
+    Datenbank sieben Tage alt ist und danach mehrfach inkrementelle
+    Kopien der Datenbank erstellt wurden.
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Inkrementelles Backup]
+  Wir greifen nun den Sachverhalt der Teilaufgabe 2b) nochmals an
+  einem stark vereinfachten und verkleinerten Beispiel auf. Wie nehmen
+  dabei an, die zu betrachtende Datenbank bestehe aus den Blöcken $1,
+  2, \dotsc, 9$ und $10$. Die Blockgröße betrage
+  \SI{4}{\kilo\byte}. Ferner unterstellen wir, dass während der
+  letzten Woche die folgenden Ereignisse stattgefunden haben:
+  \begin{enumerate}[1.]
+  \item \textit{(letzte Woche) Montag, 7:00 Uhr}: Komplett"=Backup der DB wurde erstellt.
+  \item \textit{im Laufe des Montags}: Änderungen an den Blöcken 5 und 7.
+  \item \textit{Dienstag früh}: Änderungen an den Blöcken 2 und 7.
+  \item \textit{Dienstagmittag}: Inkrementelles Backup der DB wurde erstellt.
+  \item \textit{Dienstagabend}: Änderungen an den Blöcken 5 und 7.
+  \item \textit{Mittwoch früh}: Änderungen an den Blöcken 7 und 8.
+  \item \textit{Mittwochmittag}: Inkrementelles Backup der DB wurde erstellt.
+  \item \textit{Mittwochabend}: Änderungen an den Blöcken 2 und 9.
+  \item \textit{Donnerstag früh}: Änderungen an den Blöcken 7 und 9.
+  \item \textit{Donnerstagmittag}: Inkrementelles Backup der DB wurde erstellt.
+  \item \textit{Donnerstagabend}: Änderungen an den Blöcken 1 und 4.
+  \item \textit{Freitag}: Wegen Feierlichkeiten zum Firmenjubiläum
+    kein Zugriff auf die DB.
+  \item \textit{Samstag, 2:59 Uhr}: Die Platte geht kaputt.
+  \item \textit{Sonntag}: Niemand hat gemerkt, dass die Platte kaputt ist.
+  \end{enumerate}
+  \begin{enumerate}[a)]
+  \item Welche Blöcke wurden bei den einzelnen Backups jeweils gesichert?
+  \item Wie groß ist das Gesamt"=Datenvolumen (in \si{\kilo\byte})
+    aller Backups?
+  \item Wie groß wäre das Gesamt"=Datenvolumen aller Backups, wenn
+    anstatt der inkrementellen Backups stets Komplett"=Backups
+    durchgeführt worden wären?
+  \item In welcher Reihenfolge müssen die Backups wieder eingespielt werden?
+  \item Wie groß ist das Gesamt"=Datenvolumen (in \si{\kilo\byte})
+    aller einzuspielenden Backups?
+  \item Wie groß wäre das Gesamt"=Datenvolumen aller einzuspielenden
+    Backups, wenn anstatt der inkrementellen Backups stets
+    Komplett"=Backups durchgeführt worden wären?
+  \item Wie oft wurde der Block~7 wieder eingespielt?
+  \item Wie oft wäre der Block~7 wieder eingespielt worden, wenn
+    anstatt der inkrementellen Backups stets Komplett"=Backups
+    durchgeführt worden wären?
+  \item Könnte man im konkreten Fall auf das Wiedereinspielen eines
+    oder mehrerer inkrementeller Backups verzichten?
+  \item Wie könnte man für den Backup"=Fall Vorkehrungen treffen,
+    damit die inkrementellen Backups nicht (zeitaufwendig) der Reihe
+    nach eingespielt werden müssen?
+  \end{enumerate}
+\end{exe}
+
+
 \begin{thebibliography}{99}
 \bibitem{sasahe07} \textsc{Gunter Saake}, \textsc{Kai-Uwe Sattler},
   \textsc{Andreas Heuer}: Datenbanken: Konzepte und
