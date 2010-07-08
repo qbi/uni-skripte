@@ -67,6 +67,7 @@
 \usepackage{tikz}
 \usetikzlibrary{chains,positioning,scopes,trees}
 \usepackage[alsoload=binary]{siunitx}
+\usepackage{tabularx}
 
 \lstdefinelanguage{IMS}%
 {morekeywords={DBD, SEGM, FIELD, END,PCB,SENSEG,SENFLD,PSBGEN}}
@@ -2791,6 +2792,192 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
   \end{enumerate}
 \end{exe}
 
+\section{Übungsblatt 3}
+
+\begin{exe}[Sperreskalation]
+  Gegeben seien die in \autoref{fig:hier-dbo} dargestellte (verkürzte)
+  Sperrgranulathierarchie und die zwei Transaktionen T1 und T2 mit den
+  ebenfalls dargestellten Operationsfolgen (R=read, W=write). Wenn
+  einer Transaktion mehr als 3~Sperren auf Tupelebene innerhalb einer
+  Seite gewährt werden, so werden diese auf die Seitenebene eskaliert
+  (vereinfachende Annahme, in der Realität wird natürlich nicht so
+  "`simpel"' -- und früh -- eskaliert).
+  \begin{figure}[H]
+    \centering
+  \begin{tikzpicture}[level 1/.style={sibling distance=13em},
+                      level 2/.style={sibling distance=2.5em}]
+    \tikzstyle{every node}=[shape=circle,draw,inner sep=1pt]
+    \node{$r1$}
+    child{node {$p11$}
+      child{node {$t111$}}
+      child{node {$t112$}}
+      child{node {$t113$}}
+      child{node {$t114$}}
+      child{node {$t115$}}
+    }
+    child{node {$p12$}
+      child{node {$t121$}}
+      child{node {$t122$}}
+      child{node {$t123$}}
+      child{node {$t124$}}
+      child{node {$t125$}}
+    }
+    child{node {$p13$}
+      child{node {$t131$}}
+      child{node {$t132$}}
+      child{node {$t133$}}
+      child{node {$t134$}}
+      child{node {$t135$}}
+    };
+  \end{tikzpicture}    
+    \caption{Hierarchie von Datenbankobjekten}
+    \label{fig:hier-dbo}
+  \end{figure}
+  \begin{enumerate}[a)]
+  \item Beschreiben Sie den Vorgang der Sperreskalation am Beispiel
+    der Transaktion~T1 (ohne Berücksichtigung von T2) und erläutern
+    Sie die Vorteile dieses Verfahrens. Zeichnen Sie die
+    Sperranforderungen/-gewährungen in den Baum ein. Wie viele Sperren
+    hält T1 am Ende? Wie viele wären es ohne Sperreskalation?
+  \item Betrachten Sie nun T1 und T2 mit der gegebenen zeitlichen
+    Operationsabfolge (Nebenläufigkeit). Zeichnen Sie wiederum die
+    Sperranforderungen/-gewährungen in den Baum ein. Welcher
+    schröckliche Effekt tritt dabei auf? Welche Möglichkeiten des
+    DBMS"=Verhaltens gäbe es dabei prinzipiell? Diskutieren Sie an
+    diesem Beispiel Nachteile der Sperreskalation.
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Transaktionen und Zweiphasensperrprotokoll (2PL)]
+  Der Mehrbenutzerbetrieb erfordert Maßnahmen zur Synchronisation von
+  Transaktionen, um die ACID"=Eigenschaften abzusichern. Prüfen Sie
+  durch Beanwortung folgender Fragen Ihr Wissen auf diesem Gebiet.
+  \begin{enumerate}[a)]
+  \item Was versteht man unter Serialisierbarkeit und unter dem
+    Zweiphasensperrprotokoll?
+  \item Wie beginnen und wie enden Transaktionen in SQL?
+  \item In der Vorlesung wurden verschiedene Sperr- und
+    Freigabestrategien des Zweiphasensperrprotokolls
+    angesprochen. Eine davon ist im Hinblick auf die
+    ACID"=Eigenschaften bedenklich. Welche ist es und welcher
+    Sperrmodus (S, X) bereitet Probleme? Erläutern Sie an einem
+    Beispiel, was passieren kann.
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Serialisierbarkeit]
+  Die Transaktionen T1, T2 und T3 sollen auf einem Wert~A in einer
+  Datenbank folgende Operationen ausführen:
+  \begin{itemize}
+  \item[T1:] Addiere 1 zu A.
+  \item[T2:] Verdopple A.
+  \item[T3:] Gebe A aus und setze A danach auf 1.
+  \end{itemize}
+  Die Transaktionen sind intern wie folgt strukturiert:
+  \begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|X|X|}
+      \toprule
+      T1 & T2 & T3\\
+      \midrule
+      \begin{compactitem}
+      \item[R1:] Retrieve $A$ into $t1$\newline
+        $t1\coloneqq t1+1$
+      \item[U1:] Update $A$ from $t1$
+      \end{compactitem} &
+      \begin{compactitem}
+      \item[R2:] Retrieve $A$ into $t2$\newline
+        $t2\coloneqq t2\star 2$
+      \item[U2:] Update $A$ from $t2$
+      \end{compactitem} &
+      \begin{compactitem}
+      \item[R3:] Retrieve $A$ into $t3$\newline
+        Display $t3$
+      \item[U3:] Update $A$ from $1$
+      \end{compactitem} \\
+      \bottomrule
+    \end{tabularx}
+  \end{table}
+  \begin{enumerate}[a)]
+  \item Angenommen, die drei Transaktionen werden konkurrierend
+    ausgeführt, also (annähernd) gleichzeitig initiiert. $A$ habe zu
+    Beginn den Wert~$0$. Geben Sie alle möglichen \emph{korrekten} Resultate
+    der Ausführung an. (Welche Resultate ergäben sich übrigens bei
+    einem Anfangswert von 2010?)
+  \item Geben Sie eine Ausführungsreihenfolge der sechs Operationen
+    an, die für den Anfangswert~$0$ ein korrektes Resultat liefert
+    (eines der Resultate von Teilaufgabe~a), aber nicht serialisierbar
+    ist.
+  \item Gibt es eine Ausführungsreihenfolge, die serialisierbar ist,
+    aber nicht gewählt werden kann, wenn alle Transaktionen dem
+    Zweiphasensperrprotokoll genügen sollen? Erläutern Sie Ihre
+    Antwort.
+  \item Wieviele mögliche Ausführungsreihenfolgen (schedules) der
+    sechs Datenbankoperationen gäbe es \emph{ohne} Sperren? Versuchen Sie,
+    eine allgemeine Berechnungsvorschrift für das Problem zu
+    finden. Was sagt deren Größenordnung uber Möglichkeiten aus,
+    Scheduling-Fragen problemabhängig zur Laufzeit zu entscheiden und
+    zu optimieren?
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Sperrhierarchien]
+  In der Vorlesung wurden Sperrhierarchien und Intention Locks
+  besprochen. Betrachten Sie die Hierarchie physischer
+  Datenbankobjekte in \autoref{fig:hier-phy-dbo}. Wir betrachten nun die
+  Sperranforderungen verschiedener Transaktionen. Kennzeichnen Sie in
+  jeder Teilaufgabe die Datenbankobjekte in der Form ($T_{i}$ , SP),
+  wobei SP die Art der Sperre (z.\,B. IS oder X) und $T_{i}$ die
+  zugehörige Transaktion kennzeichnet. Geben Sie zusätzlich die
+  Reihenfolge der Sperrvergabe mit an.
+  \begin{figure}[htb]
+    \centering
+    \begin{tikzpicture}[level 1/.style={sibling distance=13em},
+                      level 2/.style={sibling distance=7em},
+                      level 3/.style={sibling distance=3em}]
+    \tikzstyle{every node}=[shape=circle,draw,inner sep=1pt]
+      \node{$D$}
+      child{node {$a_{1}$}
+        child{node {$p_{1}$}
+          child{node {$s_{1}$}}
+          child{node {$s_{2}$}}
+        }
+        child{node {$p_{2}$}
+          child{node {$s_{3}$}}
+          child{node {$s_{4}$}}
+        }
+      }
+      child{node {$a_{2}$}
+        child{node {$p_{3}$}
+          child{node {$s_{5}$}}
+          child{node {$s_{6}$}}
+        }
+      };
+    \end{tikzpicture}
+    \caption{Hierarchie physischer Datenbankobjekte}
+    \label{fig:hier-phy-dbo}
+  \end{figure}
+  \begin{enumerate}[a)]
+  \item $T_{1}$ will die Seite $p_{1}$ exklusiv sperren.
+  \item $T_{2}$ will die Seite $p_{2}$ mit einer S"=Sperre belegen.
+  \item $T_{3}$ will den Table Space $a_{2}$ mit X sperren.
+  \item $T_{4}$ will den Datensatz $s_{3}$ exklusiv sperren.
+  \item $T_{5}$ will eine S"=Sperre auf $s_{5}$ erwerben.
+  \item Da $T_{4}$ und $T_{5}$ nicht alle Sperranforderungen erfüllt
+    bekommen, sind sie blockiert. Liegt eine Verklemmung vor?
+  \item Wenn man in \autoref{fig:hier-phy-dbo} noch Tabellen als
+    weitere Objektebene aufnehmen wollte, wo käme dies in den Baum rein?
+  \item Welche möglichen weiteren Objektebenen wurden in der Vorlesung
+    angesprochen?
+    \begin{itemize}
+    \item Direkt unterhalb der Tabellenebene
+    \item "`und noch darunter liegend"'?
+    \end{itemize}
+  \end{enumerate}
+  Die Sperranforderungen der beiden folgenden Transaktionen können
+  nicht mehr vollständig erfüllt werden (warum nicht?). Kennzeichnen
+  Sie nicht gewährte Sperren hier durch Unterstreichen.
+\end{exe}
 
 \begin{thebibliography}{99}
 \bibitem{sasahe07} \textsc{Gunter Saake}, \textsc{Kai-Uwe Sattler},
