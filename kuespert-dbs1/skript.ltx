@@ -2681,6 +2681,116 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
 
 \chapter{Übungsaufgaben in DBS2}
 
+\section{Übungsblatt 1}
+
+\begin{exe}[Transaktionen und Geld]
+  In Datenbanksystemen werden zusammengehörige Änderungen stets zu
+  Transaktionen zusammengefasst. D.\,h. ein Benutzer ändert nicht
+  einfach (z.\,B. mit \texttt{UPDATE}, \texttt{DELETE},
+  \texttt{INSERT}) auf der Datenbank, sondern er macht dies innerhalb
+  einer Transaktion. Das DBMS garantiert ihm, dass die Transaktion
+  entweder komplett oder gar nicht ausgeführt wird
+  (All"=or"=Nothing"=Prinzip, Atomarität), was vor allem für den
+  Fehlerfall — z.\,B. "`Absturz"' des Anwendungsprogramms, das die
+  Transaktion veranlasst hat, oder Stromausfall während der
+  Transaktionsausführung — wichtig ist.\\
+  Beispiel (Umbuchung vom Konto Küspert zum Konto Rabinovitch):
+  \begin{enumerate}[1.]
+  \item \texttt{BEGIN TRANSACTION}
+  \item Lese Kontostand Küspert, um zu prüfen, ob Geld vorhanden ist.
+  \item Ziehe 1000~\euro{} von Konto Küspert ab
+  \item Erhöre Kontostand Küspert um 1000~\euro{}
+  \item \texttt{END TRANSACTION}
+  \end{enumerate}
+  Diskutieren Sie an diesem Beispiel, was passieren könnte, wenn die
+  Änderungsoperationen nicht in Transaktionsklammern eingeschlossen
+  wären. An welchen Stellen können Fehler auftreten und welche
+  Auswirkungen ergeben sich?
+\end{exe}
+
+\begin{exe}[Checkpoints und Fehlerfall]
+  Im Fehlerfall muss ein DBMS die ACID"=Eigenschaften von
+  Transaktionen sichern. Wir betrachten das folgende Szenario:
+  \todo{Grafik einbinden}
+  \begin{enumerate}[a)]
+  \item Welche Fehlerbehandlung ist beim Wiederanlauf nach einem
+    Systemversagen (Crash) für die einzelnen Transaktionen nötig?
+    Begründen Sie Ihre Antwort.
+  \item Versuchen Sie, die Fehlerbehandlung algorithmisch zu
+    beschreiben. Beachten Sie bei Ihren Überlegungen, dass auch
+    unbeendete Transaktionen ("`schmutzige"') Daten auf die Festplatte
+    schreiben können (z.\,B. aus Platzmangel im Puffer). Andererseits
+    müssen ("`saubere"') Daten beendeter Transaktionen auch nicht
+    sofort auf Festplatte in der DB gesichert werden. (Welche beiden
+    Schreibstrategien werden also zugrundegelegt?)
+
+  \item Was wären die Implikationen für die Fehlerbehandlung, wenn
+    abweichend von Teilaufgabe b
+    \begin{itemize}
+    \item geänderte Daten nie vor Transaktionsende auf Festplatte
+      gesichert (in die DB (zurück)geschrieben) werden, oder wenn
+    \item geänderte Daten (spätestens) bei erfolgreichem
+      Transaktionsende automatisch auf Festplatte in die DB
+      geschrieben werden?
+    \end{itemize}
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Häufigkeit von Checkpoints]
+  \begin{enumerate}[a)]
+  \item Beim Setzen von Checkpoints im laufenden Datenbankbetrieb
+    spielt die Frequenz (Checkpoint"=Intervall"=Länge) eine bedeutende
+    Rolle. Man kann Checkpoints selten oder auch häufig setzen. Der
+    DBA bestimmt die Checkpoint"=Intervall"=Länge. Was spricht für,
+    was gegen die jeweiligen Varianten?
+  \item Kann im Fehlerfall alles, was vor dem Checkpoint passierte,
+    außer acht gelassen werden? Begründen Sie Ihre Antwort.
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Log-Dateien]
+  Ein Ziel bei Log"=Dateien ist es, diese möglichst klein zu
+  halten. Diskutieren Sie, welcher Abschnitt des Logs in den
+  Fehlerbehandlungsfällen R1---R4 jeweils benötigt wird und welcher
+  Abschnitt nicht benötigt wird.
+\end{exe}
+
+\begin{exe}[Optimierung des Logging, Log-Puffer-Verwendung etc.]
+  Bei der Durchführung von SQL"=Operationen vom System erzeugte
+  Log"=Einträge werden nicht sofort auf Sekundärspeicher geschrieben,
+  sondern gelangen zunächst in einen seitenstrukturierten Log"=Puffer
+  im Hauptspeicher. (Die Begriffe \emph{Seite} und \emph{Block} seien
+  hier und im Folgenden der Einfachheit halber synonym verwendet.)
+  Beantworten Sie bitte die folgenden Fragen:
+  \begin{enumerate}[a)]
+  \item \emph{Wann} (spätestens) müssen Log"=Puffer"=Inhalte auf
+    Sekundärspeicher geschrieben werden und aus welchem Grunde
+    geschieht dies jeweils?
+  \item Wir nehmen an, dass eine Transaktion mehrere Tupel ändert und
+    dann mit Commit beendet wird. Wie viele I/O"=Operationen pro
+    Transaktion(s"=Commit) werden mindestens benötigt und wozu? Läßt
+    sich diese Zahl an I/O"=Operationen weiter reduzieren / durch
+    welches Verfahren ist dies möglich? Was ist der (kleine) Nachteil
+    hiervon?
+  \item Wann ist eine Transaktion "`wirklich (erfolgreich) beendet"' /
+    wann kann der Anwender von Durability"=Eigenschaft der Änderungen
+    ausgehen?
+  \item Was unterscheidet Datenbank"=I/O"=Operationen in
+    Performance"=Dingen prinzipiell von Log"=I/O"=Operationen?
+  \item Was ist das Hauptproblem von no-steal?
+  \item Welche Vorteile/Nachteile hätte man bei Verwendung mehrerer Logs?
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Verschiedenes]
+  \begin{enumerate}[a)]
+  \item Was machen die beiden ACID"=Erfinder heute, d.\,h. wo sind sie
+    tätig?
+  \item Wer war der Vater der Transaktionsthematik? Was macht er
+    heute? Wo war er zuletzt tätig?
+  \end{enumerate}
+\end{exe}
+
 \section{Übungsblatt 2}
 
 \begin{exe}[Zusammenspiel von DB-Puffer und Log-Puffer]
