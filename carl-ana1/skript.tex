@@ -25,24 +25,31 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{amsmath}
+\usepackage[intlimits,leqno]{amsmath}
 \usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
                                        % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
 \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
-
-\usepackage{amsfonts}
-\usepackage{amsthm}
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
 \usepackage{wasysym}
 \usepackage{fancyhdr}
 \usepackage{enumerate}
 \usepackage{index}
-\usepackage{pst-plot}
+\usepackage{tikz}
 \usepackage{nicefrac}
 \usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
                          % SVN-Schlüsselwörter (s. vor \begin{document})
 \usepackage[draft=false,colorlinks,urlcolor=blue,breaklinks]{hyperref}
 \usepackage{paralist}
 \usepackage{ellipsis}
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
+                         % Markierungen für offene Aufgaben zu setzen; wird
+                         % auch für \help (s.u.) verwendet
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+
+\usetikzlibrary{calc,shapes.geometric}
 
 \newcommand*{\N}{\mathbb{N}}
 \newcommand*{\Z}{\mathbb{Z}}
@@ -56,20 +63,42 @@
 % Befehl für die Darstellung der Gliederungsüberschriften im Index
 \newcommand*{\lettergroup}[1]{\minisec{#1}}
 
-\theoremstyle{plain}
-%\newtheorem{satz}{Satz}[section]
-% \newtheorem*{satz*}{Satz o.\,B.}
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Satz}[section]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{Folg}{Folgerung}[chapter]
 
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}
-%\newtheorem{proof}{Beweis}
-\newtheorem{Folg}{Folgerung}
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+%\newtheorem{fakt}{Fakt}
+\newtheorem{remark}{Bemerkung}
+\newtheorem{beispiel}{Beispiel}
 
-\theoremstyle{remark}
-\newtheorem*{remark}{Bemerkung}
-\newtheorem*{beispiel}{Beispiel}
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
 
 % Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
 % \newtheorem definiert wurden
@@ -77,6 +106,10 @@
 \renewcommand*{\theoremautorefname}{Satz}
 \newcommand*{\definitionautorefname}{Definition}
 \newcommand*{\Folgautorefname}{Folgerung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
 
 % Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
 % Markup), sollte dieser Befehl verwendet werden. Das Argument wird
@@ -90,19 +123,14 @@
 % einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
 % macht es leichter sie alle zu finden und auch ganz einfach
 % auszublenden, indem man den Befehl einfach leer definiert
-\newcommand*{\help}[1]{\textcolor{green}{help: #1}}
-\newcommand*{\todo}[1]{\textcolor{red}{todo: #1}}
+\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
 
-% Um sicherzustellen, dass jeder Betrag-/jede Norm links und rechts die
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
-% rechten Striche vergessen und es wird etwas übersichtlicher. (Vorschlag
-% ist aus amsldoc) \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
-\newcommand*{\abs}[2][]{#1\lvert#2#1\rvert}
-%\newcommand*{\norm}[2][]{#1\lVert#2#1\rVert}
-
-% ordentliches :=
-\newcommand*{\coloneqq}{\mathrel{\mathop:}=}
-
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
 
 % In der Vorlesung werden offene Intervallenden durch umgekehrte Klammern
 % dargestellt. In TeX hat wohnt aber dem Klammerzeichen bereits eine Bedeutung
@@ -113,6 +141,9 @@
 \newcommand*{\lsofint}[1]{\mathopen{]}#1]}   % linksseitig offenes Intervall
 \newcommand*{\rsofint}[1]{[#1\mathclose{[}}  % rechtsseitig offenes Intervall
 \newcommand*{\bsofint}[1]{\mathopen{]}#1\mathclose{[}} % beidseitig off. Int.
+
+\DeclareMathOperator{\graph}{graph}
+\DeclareMathOperator{\id}{id}
 
 \makeindex
 
@@ -178,13 +209,14 @@ Diese Beziehungen erlernt man durch das Studium der Logik.
 
 \section{Aussagen}
 
-Das grundlegende Element in der Mengenlehre ist eine \highl{Aussage}. Dies ist
-ein Satz, der wahr oder falsch sein kann. In der Regel bezeichnet man eine
-Aussage mit $p$ oder den folgenden Buchstaben im Alphabet und weist einer
-wahren Aussage den Buchstaben $w$ oder einer falschen Aussage den Buchstaben
-$f$ zu. In Formeln heißt das $p\equiv w$ oder $p\equiv f$. Wenn wir nun zwei
-Aussagen $p$ und $q$ betrachten, lassen sich durch Verbindung dieser neue
-Aussagen gewinnen:\index{Aussageverbindung}
+Das grundlegende Element in der Mengenlehre ist eine
+\highl{Aussage}. Dies ist ein Satz, der wahr oder falsch sein kann. In
+der Regel bezeichnet man eine Aussage mit $p$ oder den folgenden
+Buchstaben im Alphabet und weist einer wahren Aussage den Buchstaben
+$w$ wie wahr oder einer falschen Aussage den Buchstaben $f$ wie falsch
+zu. In Formeln heißt das $p\equiv w$ oder $p\equiv f$. Wenn wir nun
+zwei Aussagen $p$ und $q$ betrachten, lassen sich durch Verbindung
+dieser neue Aussagen gewinnen:\index{Aussageverbindung}
 
 \begin{description}
 \item[\highl{Negation}] Als Negation wird die Verneinung einer Aussage
@@ -219,27 +251,27 @@ man einen Satz, in dem eine oder mehrere Variablen $x,y,\dotsc$
 auftreten. Wenn man für die Variablen Objekte einer festliegenden
 Gesamtheit einsetzt, erhält man immer eine Aussage.
 
-\paragraph{Quantifizierung von Aussageformen}
+\subsection{Quantifizierung von Aussageformen}
 Durch folgende sprachliche Gebilde wird die Aussageform
 quantifiziert:
 \begin{itemize}
-\item $\forall\,x$: für alle (wird manchmal auch mit $\bigwedge$ bezeichnet)
-\item $\exists\,x$: es gibt (mind.) ein (wird manchmal auch mit $\bigvee$
+\item $\forall x$: für alle (wird manchmal auch mit $\bigwedge$ bezeichnet)
+\item $\exists x$: es gibt (mindestens) ein (wird manchmal auch mit $\bigvee$
   bezeichnet)
 \end{itemize}
 
-\paragraph{Bausteine der Prädikatenlogik (Quantorenlogik)}
+\subsection{Bausteine der Prädikatenlogik (Quantorenlogik)}
 Diese Bausteine erlauben es uns, Aussagen zu formalisieren und dann auf
 Gültigkeit zu prüfen. Die einzelnen Aussagen werden so zu größeren Einheiten
 verbunden.
 \begin{itemize}
-\item $\forall x (p(x)\Rightarrow q(x))$ Bedeutung: Für jedes $x$ mit der
+\item $\forall x (p(x)\Rightarrow q(x))$ bedeutet, für jedes $x$ mit der
   Eigenschaft $p(x)$ folgt die Eigenschaft $q(x)$.
-\item $\exists x (p(x)\wedge q(x))$ Bedeutung: Es gibt ein $x$ mit der Eigenschaft
-  $p(x)$ \emph{und} der Eigenschaft $q(x)$.
+\item $\exists x (p(x)\wedge q(x))$ bedeutet, es gibt ein $x$ mit der
+  Eigenschaft $p(x)$ \emph{und} der Eigenschaft $q(x)$.
 \end{itemize}
 
-\paragraph{Negation quantorenlogischer Aussagen}
+\subsection{Negation quantorenlogischer Aussagen}
 Es ist sehr oft sinnvoll, die Negation der obigen Aussagen zu betrachten.
 Unten finden sich die aussagenlogischen Äquivalente der Bausteine der
 Prädikatenlogik.
@@ -252,8 +284,8 @@ Prädikatenlogik.
 
 \section{Abbildungen (Funktionen)}
 
-\begin{definition}
-  Seien $X,Y$ zwei nichtleere Mengen. Eine \highl{Teilmenge}
+\begin{definition}[Teilmenge, Abbildung]
+  Seien $X$ und $Y$ zwei nichtleere Mengen. Eine \highl{Teilmenge}
   $f\subseteq X\times Y\coloneqq \{(x,y)\colon x\in X \wedge y\in Y\}$ mit der
   Eigenschaft
   \begin{gather*}
@@ -263,15 +295,51 @@ Prädikatenlogik.
   heißt \highl{Abbildung} oder \highl{Funktion} von $X$ in $Y$.
 \end{definition}
 
-Wir schreiben hierfür: $f\colon X\rightarrow Y, x\mapsto f(x)$
+Wir schreiben hierfür: $f\colon X\rightarrow Y, x\mapsto f(x)$.
 
 In Worten: Unter einer Abbildung (Funktion) $f$ von $X$ in $Y$
 versteht man eine Vorschrift, die jedem $x\in X$ \emph{genau ein} $y
 \in Y$ zuordnet und nennen es \highl{Bild} oder
 \highl{Wert} der Abbildung $f$ an der Stelle $x$. Die Menge
-$X$ heißt \highl{Urbildmenge} oder \highl{Definitionsbereich}.
+$X$ heißt \highl{Urbildmenge} oder \highl{Definitionsbereich} und
+$f(X)\coloneqq\{y\in Y\colon\exists x\in X\colon y=f(x)\}$ ist der
+\highl[Bildbereich]{Bild-} oder \highl{Wertebereich}. Der \highl{Graph} von
+$f$ ist die Menge $\graph(f)\coloneqq\{(x,f(x))\colon x\in X\}$.
 
-\paragraph{Komposition (Hintereinanderausführung, Verkettung)}
+Sei nun $A\subseteq X$. Dann ist $f(A)\coloneqq\{f(x)\colon x\in A\}$ das
+\highl{Bild} von $A$ unter der Abbildung $f$. Für $B\subseteq Y$ ist
+$f^{-1}(B)\coloneqq\{x\in X\colon f(x)\in B\}$ das \highl{Urbild} von $B$
+unter der Abbildung $f$. Es gilt: $f(\emptyset)= f^{-1}(\emptyset)=\emptyset$.
+
+\begin{definition}[injektiv,surjektiv]
+  Eine Abbildung $f\colon X\rightarrow Y$ heißt genau dann
+  \highl{surjektiv\index{Abbildung!surjektive}}, wenn $f(X)=Y$ gilt. Eine
+  Abbildung $f\colon X\rightarrow Y$ heißt genau dann
+  \highl{injektiv\index{Abbildung!injektive}} oder
+  \highl{eineindeutig\index{Abbildung!eineindeutige}}, wenn gilt: $\forall
+  x_{1}\in X\,\forall x_{2}\in X\colon f(x_{1})=f(x_{2})\Rightarrow
+  x_{1}=x_{2}$.
+
+  Schließlich heißt eine Abbildung
+  \highl{bijektiv\index{Abbildung!bijektive}}, wenn sie injektiv und surjektiv
+  ist bzw. eine eineindeutige Abbildung von $X$ auf $Y$ ist.
+\end{definition}
+
+\begin{theorem}
+  Sei $f\colon X\rightarrow Y$ eine Abbildung. Dann gelten die folgenden
+  Beziehungen:
+  \begin{align*}
+    \forall A,B\subseteq X \colon& f(A\cup B)= f(A)\cup f(B)\\
+    & f(A\cap B)= f(A)\cap f(B)\\
+    \forall A,B\subseteq Y \colon& f^{-1}(A\cup B)= f^{-1}(A)\cup f^{-1}(B)\\
+    & f^{-1}(A\cap B)= f^{-1}(A)\cap f^{-1}(B)
+  \end{align*}
+  \begin{proof}
+    Der Beweis der Aussage verbleibt zur Übung.
+  \end{proof}
+\end{theorem}
+
+\subsection{Komposition (Hintereinanderausführung, Verkettung)}
 \begin{definition}
   Seien $X,Y,Z$ nichtleere Mengen und $f\colon X\rightarrow Y,
   g\colon Y\rightarrow Z$ zwei Abbildungen. Dann heißt die Abbildung $g\circ
@@ -280,13 +348,35 @@ $X$ heißt \highl{Urbildmenge} oder \highl{Definitionsbereich}.
   Abbildung $f$ und $g$.
 \end{definition}
 
-\paragraph{Inverse Abbildungen (Funktionen)}
+\subsection{Inverse Abbildungen}
 \begin{definition}
   Seien $X,Y$ zwei nichtleere Mengen und $f\colon X\rightarrow Y$
   bijektiv. Dann heißt $f^{-1}\colon Y\rightarrow X, f(x)\mapsto x$
   \highl[Abbildung!inverse]{inverse Abbildung} oder
   \highl{Umkehrabbildung}.
 \end{definition}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \path (0,0) node(a) [shape=ellipse,minimum height=3cm,minimum width=2.3cm,draw] {}
+          (5,0) node(b) [shape=ellipse,minimum height=2.6cm,minimum
+          width=1.8cm,draw] {};
+    \node (X) [above of=a] {$X$};
+    \node (Y) [above of=b] {$Y$};
+    \fill (.31,.31) circle (1pt) node [anchor=west] {$x$};
+    \fill (5.2,.4) circle (1pt) node [anchor=east] {$f(x)$};
+    \draw [->] (.31,.4) to [out=90,in=90] node
+    [anchor=north] {$f$} (5.2,.5);
+    \draw [->] (5.2,.3) to [out=270,in=270]  node
+    [anchor=north] {$f^{-1}$} (.31,.2);
+  \end{tikzpicture}
+  \caption{Funktion $f$ mit Umkehrabbildung}
+  \label{fig:umkehrabb}
+\end{figure}
+
+Es gilt, $f\circ f^{-1}=\id_{Y}$ und $f^{-1}\circ f=\id_{X}$. Dabei ist $\id$
+die identische Abbildung.
 
 \chapter{Zahlen}
 
@@ -306,7 +396,7 @@ Für die Mathematik und insbesondere für die Analysis sind die reellen Zahlen
 der wichtigste Zahlenbereich. Ohne diese wäre die Analysis in der weiterhin
 vorgestellten Form kaum denkbar. Bildlich gesprochen ist das der erste
 Zahlenbegriff, der keine Lücken aufweist. Hierdurch wird insbesondere
-eine sinnvolle Definition des Limes möglich.
+eine sinnvolle Definition des Grenzwerts möglich.
 
 Neben den reellen Zahlen gibt es noch die natürlichen Zahlen $\N$, die
 ganzen Zahlen $\Z$ sowie die rationalen Zahlen $\Q$. Unten sind
@@ -318,16 +408,19 @@ beispielhaft die Zahlenmengen aufgeführt.
 \end{align*}
 
 Damit kommen wir zum ersten Satz:
-\begin{theorem}[$\sqrt{2}\notin \Q$]
+\begin{theorem}
   \label{the:2-11}
   Es existiert keine rationale Zahl $x\in \Q$ mit der Eigenschaft
-  $x^2=2$.
+  $x^2=2$ oder $\sqrt{2}\notin \Q$.
 \end{theorem}
 
 \begin{lemma}
   Sei $m$ eine natürliche Zahl, so dass $m^2$ eine gerade Zahl
   ist. Dann ist $m$ auch eine gerade Zahl.
-  \begin{gather*}\forall m \in \N (m^2 \text{ gerade}\Rightarrow m \text{ gerade})\end{gather*}
+  \begin{gather*}
+    \forall m \in \N (m^2 \text{ gerade}\Rightarrow m \text{
+      gerade})
+  \end{gather*}
   \begin{proof}
     Nehmen wir an, $m$ sei ungerade. Dann gibt es für ein $k \in\N$
     die folgende
@@ -339,15 +432,45 @@ Damit kommen wir zum ersten Satz:
   \end{proof}
 \end{lemma}
 
+\begin{proof}[zu \autoref{the:2-11}]
+  Zum Beweis der Aussage nehmen wir an, dass es ein $x\in\Q$ mit $x^{2}=2$
+  gibt. Das heißt, für $a,b\in\Z$ und $b\neq0$ gibt es die Darstellung
+  $x=\frac{a}{b}$. Ferner nehmen wir an, dass sich der Bruch $\frac{a}{b}$
+  nicht weiter kürzen lässt. Also sind $a$ und $b$ teilerfremd. Einsetzen
+  ergibt: $x^{2}= (\frac{a}{b})^{2}= \frac{a^{2}}{b^{2}}=2$ und durch die
+  Multiplikation von $b^{2}$ haben wir: $a^{2}= 2b^{2}$. Durch das vorige
+  Lemma wissen wir, dass $a$ eine gerade Zahl ist. Also hat $a$ die
+  Darstellung $a=2c$ für eine ganze Zahl $c$. Somit erhalten wir, $a^{2}=
+  (2c)^{2}= 4c^{2}= 2b^{2}$. Jetzt können wir beide Seiten um $2$ kürzen und
+  erhalten im Ergebnis, dass auch $b$ eine gerade Zahl ist. Das heißt, beide
+  Zahlen $a$ und $b$ sind gerade und könnten daher zu Anfang doch gekürzt
+  werden. Das steht im Widerspruch zu unserer Annahme. Daher kann $x\notin\Q$
+  sein.
+\end{proof}
+
 \subsection{Körperaxiome}
 
 Eine ausführliche Diskussion zu Körpern und deren Eigenschaften wird
 in der linearen Algebra durchgeführt. Unten sind nur einige wichtige
-Ergebnisse für den Zahlkörper $\R$ aufgelistet:
+Ergebnisse für den Zahlkörper $\R$ aufgelistet. In dem Körper sind zwei
+Abbildungen, Addition und Multiplikation, definiert:
+\begin{align*}
+  +&\colon\R\times\R&\rightarrow\R& (a,b)&\rightarrow a+b\\
+  \cdot&\colon\R\times\R&\rightarrow\R& (a,b)&\rightarrow a\cdot b
+\end{align*}
+Dabei gelten bezüglich der Addition folgende Eigenschaften:
 \begin{description}
-\item[Kommutativgesetz] $a \cdot{} b = b \cdot{} a$
-\item[Assoziativgesetz] $(a \cdot{} b) \cdot{} c = a \cdot{} (b
-  \cdot{} c)$
+ \item[Kommutativgesetz] $a+b=b+a$
+ \item[Assoziativgesetz] $(a+b)+c=a+(b+c)$
+ \item[Existenz und Eindeutigkeit des neutralen Elements] Es existiert genau
+  eine Zahl $0$, so dass für alle $a\in\R$ gilt: $a+0=a$.
+ \item[Eindeutigkeit der Lösbarkeit der Gleichung] Zu allen $a\in\R$ gibt es
+  genau ein $x\in \R$ mit $a+x=0$.
+\end{description}
+bezüglich der Multiplikation gelten folgende Eigenschaften:
+\begin{description}
+\item[Kommutativgesetz] $a \cdot b = b \cdot a$
+\item[Assoziativgesetz] $(a \cdot b) \cdot c = a \cdot (b\cdot c)$
 \item[Existenz und Eindeutigkeit des neutralen Elements] Es gibt eine
   von $0$ verschiedene Zahl $1$, so dass für alle reellen Zahlen $a$
   gilt: $a \cdot 1 = a$
@@ -363,11 +486,12 @@ In $\R$ gibt es eine "`Kleinerbeziehung"' $<$ mit folgenden
 Eigenschaften:
 \begin{itemize}
 \item Entweder gilt $a=b$ oder $a<b$ oder $b<a$.
-\item Transitivgesetz: $a<b \wedge b<c \Rightarrow a<c$
-\item Monotoniegesetz der Addition: $a<b \Rightarrow a+c<b+c$
+\item \highl{Transitivgesetz}: $a<b \wedge b<c \Rightarrow a<c$
+\item \highl{Monotoniegesetz} der Addition: $a<b \Rightarrow a+c<b+c$
 \item Monotoniegesetz der Multiplikation: $a<b \wedge 0<c \Rightarrow
   a \cdot c < b \cdot c$\\
-  Gilt $0<a$, so heißt $a$ positiv. Gilt $a<0$, so heißt $a$ negativ.
+  Gilt $0<a$, so heißt $a$ \highl{positiv}. Gilt $a<0$, so heißt $a$
+  \highl{negativ}.
 \end{itemize}
 
 \begin{description}
@@ -391,7 +515,7 @@ bezeichnet. Unten stehen die verschiedenen Arten von Intervallen:
 \item $\lsofint{a,b} \coloneqq \{x \in \R \colon a < x \leq b\}= (a,b]$
 \item $\bsofint{a,b} \coloneqq \{x \in \R \colon a<x<b\}= (a,b)$ \highl[Intervall!offenes]{offenes
   Intervall}
-\item $b-a$ Länge des Intervalls
+\item $b-a$ Länge des Intervalls\index{Intervall!Länge}
 \item $\rsofint{a,\infty} \coloneqq \{x \in \R \colon x \geq a\}$
 \item $\lsofint{\infty,a} \coloneqq \{x \in \R \colon x \leq a\}$
 \end{itemize}
@@ -402,8 +526,8 @@ Der Betrag einer reellen Zahl stellt den Abstand zur Null dar. Für $a \in \R$
 gilt:
 \begin{gather*}\abs{a} \coloneqq
 \begin{cases}
-  a & \text{falls } a \geq 0 \\
-  -a & \text{falls } a<0
+  a &  a \geq 0 \\
+  -a & a<0
 \end{cases}\end{gather*}
 
 Man nennt $\abs{a}$ den \highl[Betrag!absoluter]{absoluten Betrag} oder einfach
@@ -415,10 +539,10 @@ und entspricht dem Maximum von $a$ und $-a$.
 \begin{enumerate}
 \item $\abs{a} =0 \Leftrightarrow a=0$. Dies ergibt sich sofort aus
   der obigen Definition.
-\item Homogenität: $\abs{ab} = \abs{a}\abs{b}$. Dazu machen wir klar,
+\item \highl{Homogenität}: $\abs{ab} = \abs{a}\abs{b}$. Dazu machen wir klar,
   dass die Beziehung $\abs{a} = \abs{-a}$ gilt. Denn $\abs{a}=
   \max\{a,-a\}=\max\{-a,-(-a)\}=\abs{-a}$.
-  \begin{enumerate}[1.~F{a}ll]
+  \begin{enumerate}[1.\,F{a}ll]
   \item Seien $a$ und $b$ eine reelle Zahlen, die beide größer oder
     gleich Null sind. Dann gilt: $\abs{ab}=ab=\abs{a}\abs{b}$.
   \item Sei nun $a<0$ und $b \geq 0$. Dann gilt, $\abs{ab} =-(ab)
@@ -453,18 +577,20 @@ und entspricht dem Maximum von $a$ und $-a$.
 \end{enumerate}
 
 \subsection{Vollständigkeitsaxiom}
-\begin{definition}
+\begin{definition}[nach oben beschränkt]
   Eine Menge $M \subset \R$ heißt genau dann \highl[beschränkt!nach oben]{nach oben
     beschränkt}, wenn es eine reelle Zahl $S \in \R$ gibt, dass  $x \leq S$
   für alle $x \in M$ gilt:
-  \begin{gather*}M\subset\R\perdef\,\exists S\in\R\,\forall x \in M\colon x\leq S\end{gather*}
+  \begin{gather*}
+    M\subset\R\perdef\,\exists S\in\R\,\forall x \in M\colon x\leq S
+  \end{gather*}
 \end{definition}
 
-\begin{definition}
+\begin{definition}[Obere Schranke]
   In dem Fall heißt $S$ \highl[Schranke!obere]{obere Schranke} von $M$.
 \end{definition}
 
-\begin{definition}
+\begin{definition}[Supremum]
   Weiterhin heißt $S \in \R$ genau dann \highl{Supremum}\footnote{Bezeichnung:
   $S=\sup M$} oder \highl[Schranke!kleinste obere]{kleinste obere Schranke}
   von $M$, wenn gilt:
@@ -484,7 +610,7 @@ auch $S_2 \leq S_1$. Daraus folgt nun aber $S_1= S_2$.
   \Rightarrow \sup M \in \R)$
 \end{theorem}
 
-\begin{remark}
+\begin{remark}[Maximum]
   Über die Zugehörigkeit von $S=\sup M$ zur Menge $M$ wird nichts
   ausgesagt. Gilt $S \in M$, so schreibt man auch $\max M$ und $S$
   heißt \highl{Maximum} von $M$ oder formal  $S=\max M
@@ -529,8 +655,8 @@ unten]{nach unten beschränkt}, wenn für alle $x\in M$ ein $s\in\R$
 existiert, dass gilt: $x \geq s$. Das $s$ heißt genau dann
 \highl{Infimum}\footnote{Schreibweise: $s=\inf M$}, wenn gilt:
 \begin{enumerate}
-\item Die Zahl $s$ ist untere Schranke
-\item Die Zahl $s$ ist größte untere Schranke
+\item Die Zahl $s$ ist untere Schranke.
+\item Die Zahl $s$ ist größte untere Schranke.
 \end{enumerate}
 
 \begin{theorem}
@@ -547,9 +673,10 @@ loszuklettern. Da die Leiter kein Ende hat, kann man also nie sicher sein, ob
 da nicht doch kaputte Stufen enthalten sind. Also wendet man das Prinzip der
 vollständigen Induktion an. Zunächst probiert man, ob man die Leiter überhaupt
 besteigen kann (Induktionsanfang). Danach zeigt man, dass man von jeder Stufe
-auf die nächste steigen kann (Induktionsbeweis).
+auf die nächste steigen kann (Induktionsbeweis). Da beliebige Stufen getestet
+werden, kann man sicher sein, jede Stufe zu erklimmen.
 
-\begin{definition}
+\begin{definition}[Induktive Menge]
   Eine Menge $I \subseteq \R$ heißt \highl{induktiv}$\perdef$
   \begin{enumerate}
   \item $1 \in I$
@@ -562,11 +689,13 @@ auf die nächste steigen kann (Induktionsbeweis).
   Menge aller induktiven Mengen aus $\R$.
 \end{beispiel}
 
-\begin{definition}
-  Die natürlichen Zahlen $\N$ sind der Durchschnitt über die oben definierten
-  $J$:
-  \begin{gather*}\N \coloneqq \bigcap J \coloneqq \bigcap_{I \in J} I = \{x \in \R \colon
-  \forall I \in J x \in J\}\end{gather*}
+\begin{definition}[Natürliche Zahlen]
+  Die natürlichen Zahlen $\N$ sind der Durchschnitt über das oben definierte
+  Mengensystem $J$:
+  \begin{gather*}
+    \N \coloneqq \bigcap J \coloneqq \bigcap_{I \in J} I = \{x \in \R \colon
+  \forall I \in J x \in J\}
+  \end{gather*}
 \end{definition}
 
 \begin{theorem}
@@ -610,10 +739,14 @@ dass $\N$  induktiv ist.
   Da wir wissen, dass $\R$ nicht beschränkt ist, genügt es zu zeigen,
   dass es für jedes $a\geq 0$ aus $\R$ ein $n$ aus $\N$ mit der
   Eigenschaft $n\geq a$ gibt:
-  \begin{gather*}\forall a \in \R\text{ mit } a  \geq 0 \exists n \in \N\colon n \geq a\end{gather*}
+  \begin{gather*}
+    \forall a \in \R\text{ mit } a  \geq 0 \exists n \in \N\colon n \geq a
+  \end{gather*}
   Zum Beweis nehmen wir das Gegenteil an und müssen nach den Gesetzen
   der Logik auf einen Widerspruch stossen:
-  \begin{gather*}\exists a \in \R \text{ mit } a \geq 0\forall n \in \N\colon n < a\end{gather*}
+  \begin{gather*}
+    \exists a \in \R \text{ mit } a \geq 0\forall n \in \N\colon n < a
+  \end{gather*}
   Damit folgt, dass $\N$ beschränkt und nach dem Vollständigkeitsaxiom
   muss es ein $b=\sup\N \in \R$ geben. Sei nun $\varepsilon =
   \nicefrac{1}{2}$. Dann existiert ein $n_0 \in \N$ mit
@@ -633,7 +766,7 @@ dass $\N$  induktiv ist.
     $A=\N$.
   \end{enumerate}
 \begin{proof}
-  $A \subseteq \N$ ist induktiv. Da  $\N$ die kleinste induktive Menge
+  Die Menge $A \subseteq \N$ ist induktiv. Da  $\N$ die kleinste induktive Menge
   ist, gilt  $A=\N$.
 \end{proof}
 \end{theorem}
@@ -644,17 +777,17 @@ dass $\N$  induktiv ist.
   \Z$ formuliert werden.
 \end{remark}
 
-\begin{definition}
+\begin{definition}[Folge]
   Sei $A$ eine Menge. Eine Abbildung $a\colon\N \rightarrow A$ heißt
   \highl{Folge}\footnote{Schreibweise: $(a_k)_{k \in \N},
     (a_k), (a_1,a_2,a_3, \ldots)$}.
 \end{definition}
 
-Eine Folge der form $(a_n)\colon\N \rightarrow \R$ wird als
+Eine Folge der Form $(a_n)\colon\N \rightarrow \R$ wird als
 \highl[Zahlenfolge!reelle]{reelle Zahlenfolge} bezeichnet. Folgen werden
 üblicherweise als Summe oder Produkt formuliert:
 \begin{align*}
-  \sum_{k=m}^{n} a_k & \coloneqq a_m+a_{m+1}+\cdots + a_n &
+  \sum_{k=m}^{n} a_k & \coloneqq a_m+a_{m+1}+\dotsb + a_n &
   \prod_{k=m}^{n} a_k & \coloneqq a_m \cdot a_{m+1} \cdot \ldots \cdot a_n
 \end{align*}
 
@@ -701,7 +834,7 @@ Weiterhin haben wir die aus der Schule bekannte
 \end{beispiel}
 
 \subsection{Endliche und unendliche Teilmengen von \texorpdfstring{$\R$}{R}}
-\begin{definition}
+\begin{definition}[Endliche, unendliche Menge]
   Sei $A$ eine nichtleere Teilmenge von $\R$. Formal schreiben wir hierfür:
   $\emptyset \neq A \subset \R$. Dann heißt diese Menge:
   \begin{enumerate}
@@ -711,7 +844,7 @@ Weiterhin haben wir die aus der Schule bekannte
   \end{enumerate}
 \end{definition}
 
-\begin{definition}
+\begin{definition}[abzählbar, überabzählbar]
   \begin{enumerate}
   \item Eine Teilmenge $\emptyset \neq A \subset \R$ heißt abzählbar
     $\perdef \exists \varphi \colon \N \rightarrow A$ surjektiv. Also mit
@@ -733,11 +866,14 @@ Weiterhin haben wir die aus der Schule bekannte
 \begin{theorem}
   Die Vereinigung abzählbar vieler abzählbarer Mengen $A_n$ mit $n \in \N$
   ist wieder abzählbar, d.\,h.
-  \begin{gather*}\bigcup_{n \in \N} A_n \coloneqq \{x \colon \exists n \in \N \colon x \in
-  A\}\end{gather*}
+  \begin{gather*}
+    \bigcup_{n \in \N} A_n \coloneqq \{x \colon \exists n \in \N \colon x \in A\}
+  \end{gather*}
 \begin{proof}
-  \begin{gather*}A_n \coloneqq\{a_{nm}\colon m\in \N\} \qquad \varphi_n(m)\coloneqq a_{nm} \qquad
-  \varphi_n\colon\N \rightarrow A_n\end{gather*}
+  \begin{gather*}
+    A_n \coloneqq\{a_{nm}\colon m\in \N\} \qquad \varphi_n(m)\coloneqq a_{nm} \qquad
+    \varphi_n\colon\N \rightarrow A_n
+  \end{gather*}
 \end{proof}
 \end{theorem}
 
@@ -762,15 +898,20 @@ Dann ist $c=0,c_{1}c_{2}c_{3}\ldots \in \R$ mit $\forall n \in \N\colon
 f(n) \neq c$. Das
 $c$ und $f(n)$ unterscheiden sich mindestens in der $n$-ten Stelle
 nach dem Komma. Also gilt:
-\begin{gather*}\forall f\colon \N \rightarrow \R \colon f(\N) \subset \R\end{gather*}
+\begin{gather*}
+  \forall f\colon \N \rightarrow \R \colon f(\N) \subset \R
+\end{gather*}
 \end{proof}
 \end{theorem}
 
 \chapter{Konvergenz}
-\todo{evtl. etwas zum Inhalt des Kapitels schreiben}
+Im Zentrum dieses Kapitels stehen Betrachtungen zur Konvergenz von Folgen. Das
+heißt, unter welchen Bedingungen streben Folgen gegen einen Grenzwert und wie
+lässt sich der Grenzwert überhaupt sinnvoll definieren.
+
 \section{Metrische Räume}
 
-\begin{definition}
+\begin{definition}[Metrik, Abstand]
   Sei $X$ eine nichtleere Menge oder formal $X\neq\emptyset$. Eine Abbildung
   $d\colon X \times X \rightarrow \rsofint{0,\infty}$ heißt \highl{Metrik} oder
   \highl{Abstand} auf $X$, wenn folgende drei Eigenschaften erfüllt sind:
@@ -798,7 +939,7 @@ nach dem Komma. Also gilt:
   Abstand einen metrischen Raum $(\R^n,d)$. Dabei ist $\R^n=\R \times \cdots
   \times \R \coloneqq \{x=(\xi_{1}, \ldots ,\xi_{n})\colon\xi_{i} \in \R\},
   x=(\xi_{1},\xi_{2},\ldots ,\xi_{n})$ und $y=(\eta_{1},\eta_{2},\ldots
-  ,\eta_{n}) \in \R^n$. Der \highl[Abstand!euklidischer]{euklidischer Abstand}
+  ,\eta_{n}) \in \R^n$. Der \highl[Abstand!euklidischer]{euklidische Abstand}
   ist wie folgt definiert:
   \begin{gather*}d(x,y)=\sqrt{\left( \sum_{i=1}^n \abs{\xi_{i}-\eta_{i}}^2 \right)}\end{gather*}
   Nachweis der Eigenschaften:
@@ -830,13 +971,12 @@ nach dem Komma. Also gilt:
     Verlauf dieser Vorlesung sowie auch in weiteren Vorlesungen immer wieder
     begegnen.
     \begin{description}
-    \item[Cauchy-Schwartzsche Ungleichung]\footnote{Augustin Louis Cauchy (*
-      1789-08-21, \textdagger 1857-05-23), französischer Mathematiker}
-      \footnote{Laurent Schwartz (* 1915-03-05, \textdagger 2002-07-04),
+    \item[Cauchy-Schwartzsche Ungleichung]\footnote{\textsc{Augustin Louis
+      Cauchy} (* 1789-08-21, \textdagger{} 1857-05-23), französischer Mathematiker}
+      \footnote{\textsc{Laurent Schwartz} (* 1915-03-05, \textdagger{} 2002-07-04),
 	französischer Mathematiker und Träger der \textsc{Fields}"~Medaille}
       Für alle $n\in\N$ und alle $a_1 ,\ldots ,a_n \in \R$ sowie
-      $b_{1},\dotsc, ,b_n \in \R$
-      gilt:
+      $b_{1},\dotsc, ,b_n \in \R$ gilt:
       \begin{gather*}
 	\abs[\bigg]{\sum_{i=1}^n a_i b_i} \leq \sqrt{\sum_{i=1}^n a_i^2}
 	   \sqrt{\sum_{i=1}^n a_i^2}
@@ -894,16 +1034,18 @@ nach dem Komma. Also gilt:
 
 \subsubsection{Geometrische Interpretation der Metrik im $(\R^2,d)$}
 
-\setlength{\unitlength}{1cm}
-\begin{picture}(-10,2.5)
-\put(0.5,0.5){\line(3,2){1.5}}
-\put(0.5,0.5){\circle*{0.1}}
-\put(0.4,0.2){x}
-\put(2,1.5){\circle*{0.1}}
-\put(1.9,1.2){y}
-\put(0,0){\vector(1,0){2.5}}
-\put(0,0){\vector(0,1){2.5}}
-\end{picture}
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \draw[->] (0,0) -- (2,0);
+    \draw[->] (0,0) -- (0,2);
+    \draw (.2,.6) -- (1.7,1.3);
+    \draw[fill,black] (.2,.6) circle (1pt) node[below] {$x$};
+    \draw[fill,black] (1.7,1.3) circle (1pt) node[below] {$y$};
+  \end{tikzpicture}
+  \caption{Interpretation des Abstands}
+  \label{fig:inter-abstand}
+\end{figure}
 
 Seien $x=(\xi_1 ,\xi_2), y=(\eta_1 ,\eta_2)$ zwei Punkte im $\R^{2}$. Dann ist
 $d(x,y)$ die Länge der Strecke zwischen beiden Punkten. Man kann sich die
@@ -912,31 +1054,36 @@ Wenn dieses die Kantenlängen $a$ und $b$ hat, ergibt sich für die Länge nach
 dem Satz des Pythagoras: $a^{2}+b^{2}= (d(x,y))^{2}\Rightarrow d(x,y) =
 \sqrt{a^{2}+ b^{2}}$.
 
-Die Aussage der Dreiecksungleichung ergibt sich aus der untenstehenden
-Abbildung. Sie besagt, dass sich der Abstand zwischen den Punkten $x$ und $y$
-verlängert oder bestenfalls gleich bleibt, wenn man die Strecke von $x$ nach
-$y$ mit einem "`Umweg"' vermisst: $d(x,y) \leq d(x,z)+d(z,y)$
-\begin{picture}(0,3)
-\put(8,1){\line(-1,0){5}}
-\put(3,1){\line(1,1){2}}
-\put(5,3){\line(3,-2){3}}
+Die Aussage der Dreiecksungleichung ergibt sich aus der
+\autoref{fig:dreiecksungl}. Sie besagt, dass sich der Abstand zwischen den
+Punkten $x$ und $y$ verlängert oder bestenfalls gleich bleibt, wenn man die
+Strecke von $x$ nach $y$ mit einem "`Umweg"' vermisst: $d(x,y) \leq
+d(x,z)+d(z,y)$.
 
-\put(3,0.7){x}
-\put(8,0.7){y}
-\put(5,3.3){z}
-
-\put(5,0.7){d(x,y)}
-\put(6.4,2.1){d(y,z)}
-\put(3.1,2.1){d(x,z)}
-\end{picture}
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}
+    \coordinate [label=left:{$x$}] (x) at (0+0.5*rand,0+0.5*rand);
+    \coordinate [label=right:{$y$}] (y) at (2.5+0.5*rand,0+0.5*rand);
+    \coordinate [label=above:{$z$}] (z) at (1.25+0.5*rand,1.3+0.5*rand);
+    \draw[black] (x) -- node[anchor=north] {$d(x,y)$} (y) --
+    node[anchor=west] {$d (y,z)$} (z) -- node[anchor=east] {$d (x,z)$}(x);
+  \end{tikzpicture}
+  \caption{Dreiecksungleichung}
+  \label{fig:dreiecksungl}
+\end{figure}
 
 \begin{definition}[Kugel]
   Sei $(X,d)$ ein metrischer Raum mit $a \in X$ und $r \geq 0$. Dann
   ist
-  \begin{gather*}B_r(a) \coloneqq \{x \in X \colon d(a,x) \leq r\}\end{gather*}
+  \begin{gather*}
+    B_r(a) \coloneqq \{x \in X \colon d(a,x) \leq r\}
+  \end{gather*}
   eine \highl[Kugel!abgeschlossene]{abgeschlossene Kugel} mit Mittelpunkt $a$
   und Radius $r$ sowie 
-  \begin{gather*}\stackrel{\circ}{B_{r}}(a) \coloneqq \{x \in X \colon d(a,x) < r\}\end{gather*}
+  \begin{gather*}
+    \mathring{B_{r}}(a) \coloneqq \{x \in X \colon d(a,x) < r\}
+  \end{gather*}
   eine \highl[Kugel!offene]{offene Kugel} mit Mittelpunkt $a$ und
   Radius $r$.
 \end{definition}
@@ -970,7 +1117,7 @@ Kugel im bekannten Sinne mehr sein.
 
 
 \subsection{Konvergente Folgen}
-\begin{definition}
+\begin{definition}[Konvergenz]
   Sei $(X,d)$ ein metrischer Raum. Eine Folge $(a_n) \subset X$ heißt
   genau dann \highl[Folge!konvergente]{konvergent\index{Konvergenz}}, wenn es
   ein $a \in X$ gibt, dass für alle $\varepsilon > 0$ ein $n_{\varepsilon} \in
@@ -981,8 +1128,6 @@ Kugel im bekannten Sinne mehr sein.
 \end{definition}
 Man sagt $(a_n)$ konvertiert gegen $a$. Das Gegenteil von konvergenten
 Folgen sind \highl[Folge!divergente]{divergente Folgen}.
-
-\todo{eventuell Beispiel einfügen}
 
 Die Konvergenz lässt sich geometrisch so interpretieren, dass in jeder
 $\varepsilon$-Kugel $B_{\varepsilon}(a)$ unendlich viele Glieder der Folge
@@ -1018,9 +1163,9 @@ Glieder der Folge $(a_n)$ sind.
 \end{theorem}
 
 
-\paragraph{Teilfolgen}
+\subsection{Teilfolgen}
 
-\begin{definition}
+\begin{definition}[monoton wachsend/""fallend]
   Sei $X$ eine nichtleere Menge und $(a_{n})\subset X$ eine Folge. Diese heißt
   \begin{itemize}
    \item monoton wachsend, wenn gilt, $a_{n}\leq a_{n+1}$,
@@ -1035,7 +1180,7 @@ Glieder der Folge $(a_n)$ sind.
   steigend bzw. monoton nicht fallend.
 \end{remark}
 
-\begin{definition}
+\begin{definition}[Teilfolge]
   Sei $X$ eine nichtleere Menge, $(a_n) \subset X$ eine Folge und $\varphi
   \colon \N \rightarrow \N$ streng monoton wachsend. Dann heißt die Folge
   $(a_{\varphi(k)})_{k \in \N}$ \highl{Teilfolge}\footnote{Schreibweise: $n_k
@@ -1061,11 +1206,12 @@ Glieder der Folge $(a_n)$ sind.
 \end{proof}
 \end{theorem}
 
-\begin{definition}
+\begin{definition}[Beschränkte Folge]
   Sei $(X,d)$ ein metrischer Raum. Die Folge $(a_n) \subset X$ heißt
   genau dann \highl[Folge!beschränkte]{beschränkt}, wenn gilt:
-  \begin{gather*}\exists a \in X\ \exists M \geq 0\ \forall n \in \R \colon d(a,a_n)
-  \leq M\end{gather*}
+  \begin{gather*}
+    \exists a \in X\ \exists M \geq 0\ \forall n \in \R \colon d(a,a_n) \leq M
+  \end{gather*}
 \end{definition}
 
 \begin{theorem}
@@ -1113,7 +1259,7 @@ vorigen Abschnitt folgt:
   \nicefrac{1}{n_{\varepsilon}} \leq \varepsilon$.
 \end{beispiel}
 
-\paragraph{Rechenregeln für konvergente Folgen}
+\subsubsection{Rechenregeln für konvergente Folgen}
 \begin{theorem}
   \label{satz:rechenregel}
   Seien $(a_n),(b_n) \subset \R$ konvergent, $a\coloneqq\lim a_n$ und
@@ -1275,7 +1421,7 @@ vorigen Abschnitt folgt:
 
 \subsubsection{Monotone Folgen}
 \begin{definition}[monotone Folgen] Eine Zahlenfolge $(a_n) \subset \R$
-  heißt \emph{monoton wachsend (fallend)}\index{monoton}
+  heißt \highl{monoton wachsend (fallend)}\index{monoton}
   \index{Folge!monotone} $\perdef \forall n,m \in \N\colon n<m \Rightarrow a_n
   \leq a_m (a_n \geq a_m)$.
 \end{definition}
@@ -1307,7 +1453,7 @@ vorigen Abschnitt folgt:
   \lim_{n \rightarrow \infty} \sum_{k=0}^n \frac{1}{k!} &= e & a_n=
   1+1+\frac{1}{2!}+\frac{1}{3!}+\cdots + \frac{1}{n!}\\
   \lim_{n \rightarrow \infty} \left(1+\frac{1}{n}\right)^n &= \lim_{n \rightarrow
-    \infty} \sum_{k=0}^n \frac{1}{k!}=e
+    \infty} \sum_{k=0}^n \frac{1}{k!}=e\approx2,7182818
 \end{align*}
 \end{beispiel}
 \begin{proof}
@@ -1383,14 +1529,14 @@ als eine Verallgemeinerung des Begriffs Grenzwert verstanden werden.
 \begin{definition}[Häufungspunkt einer Folge]
   Sei $(X,d)$ ein metrischer Raum und $(a_n) \subset X$ eine
   Folge. Ein Punkt $a \in X$ heißt
-  \emph{Häufungspunkt\index{Häufungspunkt}} von $(a_n)
+  \highl{Häufungspunkt} von $(a_n)
   \perdef \forall \varepsilon > 0 \forall m \in \N
   \exists n>m\colon d(a,a_n) \leq \varepsilon$
 \end{definition}
 
-\textbf{geometrische Interpretation} In jeder $\varepsilon$-Kugel
-$B_\varepsilon (a)$ liegen unendlich viele Glieder der Folge
-$(a_n)$. Ausserhalb können ebenfalls unendlich viele liegen.
+Geometrisch lässt sich das so interpretieren, dass in jeder $\varepsilon$-Kugel
+$B_\varepsilon (a)$ unendlich viele Glieder der Folge
+$(a_n)$ liegen.  Ausserhalb können ebenfalls unendlich viele liegen.
 
 \begin{theorem}
 \label{satz:hp}
@@ -1401,9 +1547,7 @@ $(a_n)$. Ausserhalb können ebenfalls unendlich viele liegen.
 \item Jede konvergente Folge besitzt genau einen Häufungspunkt und
   zwar den Grenzwert.
 \end{enumerate}
-\end{theorem}
-
-\textbf{Beweis}:
+  \begin{proof}
 \begin{enumerate}
   \item
     \begin{itemize}
@@ -1421,25 +1565,29 @@ $(a_n)$. Ausserhalb können ebenfalls unendlich viele liegen.
 	$\Rightarrow (a_{n_k})\subset (a_n)\colon\lim a_{n_k}=a$
       \item[$\Leftarrow$] Sei $\varepsilon > 0$ und $k \in \N \Rightarrow \exists n_k>k\colon d(a,a_{n_k})\leq \varepsilon$
     \end{itemize}
-    \qed
   \item Sei $\lim a_n =a \overset{(1)}{\Rightarrow} a$ ist Häufungspunkt von $(a_n)$\\
     Eindeutigkeit des Häufungspunktes: Sei $b$ ebenfalls Häufungspunkt von $(a_n)$
     \begin{gather*}\overset{(1)}{\Rightarrow} \exists \text{ Teilfolge } (a_{n_k})\subset (a_n)\colon\lim_{k\rightarrow \infty}a_{n_k}=b\end{gather*}
     Da jede Teilfolge einer konvergenten Folge den gleichen Grenzwert hat, gilt $b=a$. \qed
-\end{enumerate}
+\end{enumerate}    
+  \end{proof}
+\end{theorem}
 
-\textbf{Beispiel} $X=\R \quad d=\abs{\cdot} \quad a_n=(-1)^n$ besitzt die Häufungspunkte -1 und +1. Denn $a_{2n}=(-1)^{2n}
-=1\rightarrow 1$ und $a_{2n+1}=(-1)^{2n+1}=-1\rightarrow -1$. Aber $(a_n)$ ist nicht konvergent.
+\begin{beispiel}
+  $X=\R \quad d=\abs{\cdot} \quad a_n=(-1)^n$ besitzt die Häufungspunkte -1
+  und +1. Denn $a_{2n}=(-1)^{2n}=1\rightarrow 1$ und
+  $a_{2n+1}=(-1)^{2n+1}=-1\rightarrow -1$. Aber $(a_n)$ ist 
+  nicht konvergent. 
+\end{beispiel}
 
-\subsection[Häufungspunkte von reellen Zahlenfolgen\texorpdfstring{\\}{} und der Satz von Bolzano/Weierstrass]{Häufungspunkte von reellen Zahlenfolgen und der Satz von Bolzano/Weierstrass}
+\subsection[Häufungspunkte von reellen Zahlenfolgen und der Satz von Bolzano/Weierstrass]{Häufungspunkte von reellen Zahlenfolgen und der Satz von Bolzano/Weierstrass}
 \begin{lemma}
 \label{lemma:bw}
 Jede reelle Zahlenfolge $(a_n) \subset \R$ enthält eine monotone Teilfolge.
-\end{lemma}
 \begin{proof}
   Sei $(a_n) \subset \R$. Setzen $M\coloneqq\{k \in \N \colon \forall n \in \N
   \colon a_{k+n}\leq a_k\}$
-  \begin{enumerate}[1. F{a}ll]
+  \begin{enumerate}[1.\,F{a}ll]
   \item $M$ ist unendlich. $M=\{n_k\colon n_1<n_2<n_3<\ldots\}$
     \begin{align*}
       n_1 \in M & \Rightarrow \forall n \in M\colon a_{n_1}\geq a_{n_1+n} &
@@ -1458,15 +1606,15 @@ Jede reelle Zahlenfolge $(a_n) \subset \R$ enthält eine monotone Teilfolge.
     n_3>n_2 \wedge a_{n_3}>a_{n_2}$\\
     $a_{n_1}<a_{n_2}<a_{n_3}<\ldots$
   \item $M=\emptyset$, d.\,h. $\forall k \in \N \exists n \in \N \colon
-    a_{k+n}>a_k$ siehe 2. Fall
+    a_{k+n}>a_k$ siehe 2.\,Fall
 \end{enumerate}
 \end{proof}
+\end{lemma}
 
 \begin{theorem}[Satz von Bolzano/Weierstrass\index{Bolzano/Weierstrass!Satz von}]
 \label{satz:bw}
 Jede beschränkte Folge $(a_n)\subset \R$ besitzt einen
 Häufungspunkt\index{Häufungspunkt}.
-\end{theorem}
 \begin{proof}
   Aus dem \autoref{lemma:bw} folgt: Es existiert eine Teilfolge
   $(a_{n_k})\subset (a_n)$. $(a_{n_k})$ ist monoton und
@@ -1474,38 +1622,51 @@ Häufungspunkt\index{Häufungspunkt}.
   a_{n_k}=a \in \R$ und \autoref{satz:hp} legt den Schluss nahe, dass
   $a$ Häufungspunkt ist.
 \end{proof}
+\end{theorem}
 
-\textbf{Folgerung} Eine Zahlenfolge in $\R$ ist genau dann konvergent, wenn sie beschränkt ist und höchstens einen Häufungspunkt besitzt.
+\begin{Folg}
+  Eine Zahlenfolge in $\R$ ist genau dann konvergent, wenn sie beschränkt ist
+  und höchstens einen Häufungspunkt besitzt.
+\end{Folg}
 
-\paragraph{Limes superior\index{Limes superior} und Limes inferior\index{Limes inferior}}
-\begin{definition}
-Sei $(a_n) \subset \R$. Dann heißt $\lim_{n\rightarrow \infty} \sup a_n\coloneqq\lim(\sup\{a_k\colon k\geq n\})$\emph{Limes superior} und $\lim \inf a_n \coloneqq 
-\lim (\inf\{a_k\colon k\geq n\})$ \emph{Limes inferior}.
+\paragraph{Limes superior und Limes inferior}
+\begin{definition}[Limes superior/""inferior]
+Sei $(a_n) \subset \R$. Dann heißt $\lim_{n\rightarrow \infty} \sup
+  a_n\coloneqq\lim(\sup\{a_k\colon k\geq n\})$ \highl{Limes superior} und
+  $\liminf a_n \coloneqq \lim (\inf\{a_k\colon k\geq n\})$ \highl{Limes
+  inferior}.
 \end{definition}
 
-Schreibweise: $\overline{\lim}=\lim \sup \qquad \underline{\lim}=\lim \inf$
+Wir schreiben $\overline{\lim}=\limsup$ und $\underline{\lim}=\liminf$.
 
-Beispiel: $a_n=(-1)^n \quad \sup \{(-1)^k\colon k\geq n\}=1 \Rightarrow \lim \sup (-1)^n=1$\\
-$\inf\{(-1)^k\colon k\geq n\} \Rightarrow \lim \inf (-1)^n=-1$
+\begin{beispiel}
+  $a_n=(-1)^n \quad \sup \{(-1)^k\colon k\geq n\}=1 \Rightarrow \limsup
+  (-1)^n=1$\\
+$\inf\{(-1)^k\colon k\geq n\} \Rightarrow \liminf (-1)^n=-1$
+\end{beispiel}
 
 \begin{remark}
-Die Folge $b_n\coloneqq\sup \{a_k\colon k\geq n\}$ ist monoton fallend oder $+\infty$. Die Folge $c_n\coloneqq\inf\{a_k\colon k\geq n\}$ ist
-monoton wachsend oder $-\infty$. Daher existieren $\lim\sup a_n=\lim b_n$ und $\lim \inf a_n=\lim c_n$ immer eigentlich
-oder uneigentlich, d.\,h. es gilt $\lim \sup a_n \in \R$ oder $\lim \sup a_n=+\infty/-\infty$ und 
-$\lim \inf a_n \in \R$ oder $\lim \inf a_n=+\infty/-\infty$.
+Die Folge $b_n\coloneqq\sup \{a_k\colon k\geq n\}$ ist monoton fallend oder
+  $+\infty$. Die Folge $c_n\coloneqq\inf\{a_k\colon k\geq n\}$ ist monoton
+  wachsend oder $-\infty$. Daher existieren $\limsup a_n=\lim b_n$ und
+  $\liminf a_n=\lim c_n$ immer eigentlich oder uneigentlich, d.\,h. es gilt
+  $\limsup a_n \in \R$ oder $\limsup a_n=+\infty/-\infty$ und $\liminf a_n \in
+  \R$ oder $\liminf a_n=+\infty/-\infty$.
 \end{remark}
 
 \begin{theorem}
 Sei $(a_n) \subset \R$ beschränkt. Dann ist $\overline{\lim} a_n$ grösster
   Häufungspunkt von $(a_n)$ und $\underline{\lim} a_n$ kleinster Häufungspunkt
   von $(a_n)$.
-\end{theorem}
-
-\textbf{Beweis} Nach dem \autoref{satz:bw} (Satz von Bolzano/Weierstrass) besitzt $(a_n)$ einen Häufungspunkt.
-\begin{gather*}\inf \{a_n\}\leq \overline{\lim}\ a_n \leq \sup \{a_n\}\end{gather*}
-\begin{enumerate}[1. Schr{i}tt]
-  \item Zu zeigen: $a=\overline{\lim}\ a_n$ ist Häufungspunkt von $(a_n)$\\
-    Setzen $b_n\coloneqq\sup \{a_k\colon k\geq n\}$ ist monoton fallend und nach unten beschränkt. Daraus folgt nach
+  \begin{proof}
+    Nach dem \autoref{satz:bw} (Satz von Bolzano/Weierstrass) besitzt $(a_n)$
+    einen Häufungspunkt.
+    \begin{gather*}
+      \inf \{a_n\}\leq \overline{\lim}\ a_n \leq \sup \{a_n\}
+    \end{gather*}
+    \begin{enumerate}[1.\,Schr{i}tt]
+     \item Zu zeigen: $a=\overline{\lim}\ a_n$ ist Häufungspunkt von $(a_n)$\\
+      Setzen $b_n\coloneqq\sup \{a_k\colon k\geq n\}$ ist monoton fallend und nach unten beschränkt. Daraus folgt nach
     \autoref{satz:monotoneFolge}: $a=\lim b_n=\inf \{b_n\}=\overline{\lim}\ a_n$\\
     Für $k \in \N \exists m_k \in \N \colon a\leq b_{m_k}<a+\frac{1}{k}\Rightarrow \exists n_k\geq m_k\colon b_{m_k}-\frac{1}{k}
     <a_{n_k}\leq b_{m_k}$\\
@@ -1517,41 +1678,47 @@ Sei $(a_n) \subset \R$ beschränkt. Dann ist $\overline{\lim} a_n$ grösster
     {\Longrightarrow} \exists \text{Teilfolge } (a_{n_k})\colon\lim a_{n_k}=a'$\\
     $b_{n_k}=\sup \{a_l\colon l\geq n_k\} \geq a_{n_k}\Rightarrow a=\lim b_{n_k}\geq \lim a_{n_k}=a'$
 \end{enumerate}
-\qed
+  \end{proof}
+\end{theorem}
 
 \subsection{Cauchyfolgen}
-\begin{definition}
-Sei $(X,d)$ ein metrischer Raum. Eine Folge $(a_n) \subset X$ heißt \emph{Cauchy\-fol\-ge}\index{Cauchyfolge} $\perdef$
-\begin{gather*}\forall \varepsilon > 0 \exists n_{\varepsilon}\in \N \forall n,m \geq
-  n_{\varepsilon}\colon d(a_n,a_m)\leq \varepsilon\end{gather*}
+\begin{definition}[Cauchyfolge]
+Sei $(X,d)$ ein metrischer Raum. Eine Folge $(a_n) \subset X$ heißt genau dann
+  \highl{Cauchyfolge}, wenn
+  \begin{gather*}
+    \forall \varepsilon > 0 \exists n_{\varepsilon}\in \N \forall n,m \geq
+       n_{\varepsilon}\colon d(a_n,a_m)\leq \varepsilon
+  \end{gather*}
 \end{definition}
 
-\begin{theorem}
-\label{satz:cf}
-Sei $(X,d)$ ein metrischer Raum und $(a_n)\subset X$ eine konvergente Folge.
-  Dann ist $(a_n)$ eine Cauchyfolge.\\
-\textbf{Beweis} Sei $a=\lim a_n$ und $\varepsilon>0$. Dann existiert
-  $n_{\varepsilon}\in \N \forall n\geq n_{\varepsilon}
-\colon d(a,a_n)\leq \frac{\varepsilon}{2}$ . Für $n,m\geq n_{\varepsilon}\colon d(a_n,a_m)\leq d(a_n,a)+d(a,a_m)=\frac{\varepsilon}{2}
-+\frac{\varepsilon}{2}=\varepsilon \Rightarrow a_n$ ist eine Cauchyfolge.\qed
+\begin{theorem}\label{satz:cf}
+  Sei $(X,d)$ ein metrischer Raum und $(a_n)\subset X$ eine konvergente Folge.
+  Dann ist $(a_n)$ eine Cauchyfolge.
+  \begin{proof}
+    Sei $a=\lim a_n$ und $\varepsilon>0$. Dann existiert ein
+    $n_{\varepsilon}\in \N \forall n\geq n_{\varepsilon}\colon d(a,a_n)\leq
+    \frac{\varepsilon}{2}$ . Für $n,m\geq n_{\varepsilon}\colon d(a_n,a_m)\leq
+    d(a_n,a)+d(a,a_m)=\frac{\varepsilon}{2} +\frac{\varepsilon}{2}=\varepsilon
+    \Rightarrow a_n$ ist eine Cauchyfolge.
+  \end{proof}
 \end{theorem}
 
 \begin{remark}
-In einem beliebigen metrischen Raum ist \emph{nicht} jede Cauchyfolge konvergent.\\
-\textbf{Beispiel}: $(\Q,\abs{\cdot })$ ist ein metrischer Raum. $a_{n+1}=\frac{1}{2}(a_n+\frac{2}{a_n})\quad a_0\coloneqq1$\\
-$(a_n)\subset \Q, \lim a_n =\sqrt{2}\notin \Q$
+  In einem beliebigen metrischen Raum ist \emph{nicht} jede Cauchyfolge
+  konvergent. Zum Beispiel ist $(\Q,\abs{\cdot })$ ein metrischer Raum. Die
+  Folge $a_{n+1}=\frac{1}{2}(a_n+\frac{2}{a_n})$ und $a_0\coloneqq1$ liegt in
+  $\Q$. Aber der Grenzwert ist $\sqrt{2}\notin \Q$.
 \end{remark}
 
 \begin{theorem}[Cauchysches Konvergenzkriterium in $\R$\index{Konvergenzkriterium!Cauchysches}]
 \label{satz:CKonv}
- Eine Folge $(a_n)\subset \R$ 
-ist genau dann konvergent, wenn sie eine Cauchyfolge ist.
-\end{theorem}
-\textbf{Beweis}
-\begin{itemize}
-  \item["`$\Rightarrow$"'] siehe \autoref{satz:cf}
-  \item["`$\Leftarrow$"'] Sei $(a_n)\subset \R$ eine
-    Cauchyfolge. $(a_n)$ ist beschränkt für $\varepsilon=1$
+  Eine Folge $(a_n)\subset \R$ ist genau dann konvergent, wenn sie eine
+  Cauchyfolge ist.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] siehe \autoref{satz:cf}.
+     \item["`$\Leftarrow$"'] Sei $(a_n)\subset \R$ eine Cauchyfolge. Dann ist
+      $(a_n)$ beschränkt. Für $\varepsilon=1$
     \begin{align*}
       & \exists n_1\in \N \forall n,m >n_1 \colon&\abs{a_n-a_m}\leq\varepsilon =1\\  
       &\Rightarrow \abs{a_n}=\abs{a_n-a_m+a_m}\leq \abs{a_n-a_m}+\abs{a_m}\leq 1+\abs{a_m}
@@ -1569,20 +1736,22 @@ ist genau dann konvergent, wenn sie eine Cauchyfolge ist.
     \abs{a_n-a_{n_{k_0}}}+\abs{a_{n_{k_0}}-a}\leq \frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon \Rightarrow (a_n)$
     ist konvergent.
 \end{itemize}
-\qed
+  \end{proof}
+\end{theorem}
 
 \begin{remark}
-Um die Konvergenz einer Folge in $\R$ nachzuweisen, genügt es, zu zeigen, dass die Folge Cauchyfolge ist. Dabei braucht 
-man den Grenzwert nicht zu kennen.
+  Um die Konvergenz einer Folge in $\R$ nachzuweisen, genügt es, zu zeigen,
+  dass die Folge Cauchyfolge ist. Dabei braucht man den Grenzwert nicht zu
+  kennen.
 \end{remark}
 
-\subsection{Vollständigkeit und kompakte metrische Räume}
+\subsection{Vollständige und kompakte metrische Räume}
 
 \begin{theorem}
 In $\R$ sind folgende Aussagen äquivalent:
 \begin{enumerate}[(1)]
-  \item \textbf{Vollständigkeitsaxiom\index{Vollständigkeitsaxiom}}: Jede nichtleere nach oben beschränkte Menge besitzt
-    ein Supremum\index{Supremum}.
+  \item \textbf{\highl{Vollständigkeitsaxiom}}: Jede nichtleere nach oben
+  beschränkte Menge besitzt ein Supremum.
   \item \textbf{Satz über monotone Folgen\index{monotone Folgen!Satz über}}: Nach \autoref{satz:monotoneFolge} Jede 
     nach oben beschränkte mo\-no\-ton wachsende Folge besitzt einen Grenzwert.
   \item \textbf{Satz von Bolzano/Weierstrass\index{Bolzano/Weierstrass!Satz von}}: Jede beschränkte Folge hat eine 
@@ -1590,9 +1759,8 @@ In $\R$ sind folgende Aussagen äquivalent:
   \item Jede Cauchyfolge hat einen Grenzwert.
   \item Intervallschachtelungsprinzip (\autoref{satz:Ischachtelung})
 \end{enumerate}
-\end{theorem}
-\textbf{Beweis}
-\begin{itemize}
+  \begin{proof}
+    \begin{itemize}
   \item[(1)$\Rightarrow$(2)] $\lim (a_n)=\sup \{a_n\}$ nach \autoref{satz:monotoneFolge}
   \item[(2)$\Rightarrow$(3)] siehe Beweis zu \autoref{satz:bw}
   \item[(3)$\Rightarrow$(4)] siehe Beweis zu \autoref{satz:CKonv}
@@ -1614,11 +1782,11 @@ In $\R$ sind folgende Aussagen äquivalent:
   \item[(5)$\Rightarrow$(1)] zu zeigen: Sei $\emptyset \neq M \subset \R$ nach oben beschränkt. $\Rightarrow \sup M 
     \subset \R$\\
     Sei $b \in \R$ obere Schranke und $a \in M$
-    \begin{enumerate}[1. F{a}ll]
+    \begin{enumerate}[1.\,F{a}ll]
       \item $a$ ist obere Schranke von $M \Rightarrow a = \sup M$
       \item $a$ ist keine obere Schranke von $M$. Wir setzen $a_1\coloneqq a,
       b_1\coloneqq b$ und bilden das Mittel $\frac{a_1+b_1}{2}$
-      \begin{enumerate}[{2}.1. F{a}ll]
+      \begin{enumerate}[{2}.1.\,F{a}ll]
         \item $\frac{a_1+b_1}{2}$ ist obere Schranke von $M$, so setzen wir
 	$a_2\coloneqq a_1, b_2\coloneqq\frac{a_1+b_1}{2}$
 	\item $\frac{a_1+b_1}{2}$ ist keine obere Schranke $\Rightarrow M \cap [\frac{a_1+b_1}{2},b_1]\neq \emptyset$
@@ -1640,54 +1808,61 @@ In $\R$ sind folgende Aussagen äquivalent:
       \end{enumerate}
     \end{enumerate}
 \end{itemize}
-\qed
+  \end{proof}
+\end{theorem}
 
-Die Aussagen (3) und (4) haben grosse Bedeutung in der Mathematik und dienen zur Einführung der Begriffe
-\emph{Kompaktheit\index{Kompaktheit}} und \emph{Vollständigkeit\index{Vollständigkeit} von metrischen Räumen}.
+Die Aussagen (3) und (4) haben grosse Bedeutung in der Mathematik und dienen
+zur Einführung der Begriffe \emph{Kompaktheit} und \emph{Vollständigkeit} von
+metrischen Räumen. 
 
-\begin{definition}
-\label{def:vollst}
+\begin{definition}[vollständig, kompakt]\label{def:vollst}
 Sei $(X,d)$ ein metrischer Raum
 \begin{enumerate}[(1)]
-  \item $X$ heißt \emph{vollständiger metrischer Raum\index{Raum!vollständiger metrischer}} $\perdef$ jede Cauchyfolge 
-    in $X$ hat einen Grenz\-wert in $X$.
-  \item $X$ heißt \emph{kompakter metrischer Raum\index{Raum!kompakter metrischer}} $\perdef$ Jede Folge aus $X$ 
-    enthält eine konvergente Teilfolge mit Grenzwert in $X$.
-\end{enumerate}
-\textbf{Beispiel} $d=\abs{\cdot }$
-\begin{enumerate}[(1)]
-  \item $[a,b]$ ist ein vollständiger metrischer Raum und ein kompakter metrischer Raum.
-  \item $\R$ ist ein vollständiger metrischer Raum, allerdings kein kompakter.
-  \item $[a,b]\in \Q$ ist keines von beiden
+  \item $X$ heißt genau dann \highl[Raum!vollständiger
+  metrischer]{vollständiger metrischer Raum}, wenn jede Cauchyfolge in $X$
+  einen Grenzwert in $X$ hat.
+  \item $X$ heißt genau dann \highl[Raum!kompakter metrischer]{kompakter
+  metrischer Raum}, wenn jede Folge aus $X$ eine konvergente Teilfolge mit
+  Grenzwert in $X$ enthält.
 \end{enumerate}
 \end{definition}
+
+\begin{beispiel}
+  Sei $d=\abs{\cdot }$. Dann gilt:
+\begin{enumerate}[(1)]
+  \item $[a,b]$ ist ein vollständiger und ein kompakter metrischer Raum.
+  \item $\R$ ist ein vollständiger metrischer Raum, allerdings kein kompakter.
+  \item $[a,b]\cap \Q$ ist keines von beiden.
+\end{enumerate}
+\end{beispiel}
 
 \section{Reihen}
 
-\begin{definition}
-\label{def:reihe}
-Sei $(a_n) \subset \R$ eine reelle Zahlenfolge. Die Folge
-\begin{gather*}s_n\coloneqq\sum_{k=1}^n a_k \qquad a_k \in \N\end{gather*} der
-Partialsummen\index{Partialsumme} heißt
-\emph{Reihe\index{Reihe}}\footnote{Schreibweise: $\sum_{n=1}^\infty
-  (a_n), (\sum_{k=1}^n a_k)_{n\in \N}, \sum_{k=1}^\infty a_k$}.
-Konvergiert $(s_n)$, so heißt $\sum_{k=1}^\infty a_k\coloneqq\lim s_n$
-\emph{Summe\index{Reihe!Summe}} oder \emph{Wert\index{Summe!Wert}} der
-Reihe.
+\begin{definition}[Reihe]\label{def:reihe}
+  Sei $(a_n) \subset \R$ eine reelle Zahlenfolge. Die Folge
+  \begin{gather*}
+    s_n\coloneqq\sum_{k=1}^n a_k \qquad a_k \in \N
+  \end{gather*}
+  der \highl[Partialsumme]{Partialsummen} heißt
+  \highl{Reihe}\footnote{Schreibweise: $\sum_{n=1}^\infty (a_n), (\sum_{k=1}^n
+  a_k)_{n\in \N}, \sum_{k=1}^\infty a_k$}. Konvergiert $(s_n)$, so heißt
+  $\sum_{k=1}^\infty a_k\coloneqq\lim s_n$ \highl[Reihe!Summe]{Summe} oder
+  \highl[Summe!Wert]{Wert} der Reihe.
 \end{definition}
 
-
 \subsection{Rechenregeln für konvergente Reihen}
-\begin{theorem}
-\label{satz:RechenregelReihe}
+\begin{theorem}\label{satz:RechenregelReihe}
 \begin{enumerate}[(1)]
-  \item $\sum a_n$ ist konvergent $\Rightarrow \sum ca_n$ konvergiert $c\in \R =c\sum a_n$
-  \item $\sum a_n, \sum b_n$ sind konvergent $\Rightarrow \sum(a_n+b_n)$ konvergent
-  \item $\sum_{n=1}^\infty a_n$ konvergent $\Rightarrow \sum_{k+1}^\infty (\sum_{j=k}^{n_k+1} a_j)$ konvergent $1=n_1<n_2<\ldots$
+  \item Wenn $\sum a_n$ konvergent ist, so konvergiert auch $\sum ca_n$ für
+  $c\in \R$. Außerdem gilt $\sum_{k=1}^{\infty} c\cdot a_{k}
+  =c\sum_{k=1}^{\infty} a_k$.
+  \item Wenn $\sum a_n, \sum b_n$ konvergent sind, so auch $\sum(a_n+b_n)$. Es
+  gilt, $\sum(a_{n}+n_{n})= \sum a_{n}+\sum b_{n}$.
+  \item $\sum_{n=1}^\infty a_n$ konvergent $\Rightarrow \sum_{k=1}^\infty
+  (\sum_{j=n_{k}}^{n_{k+1}-1} a_j)$ konvergent $1=n_1<n_2<\ldots$
 \end{enumerate}
-\end{theorem}
-\textbf{Beweis}
-\begin{enumerate}[(1)]
+  \begin{proof}
+    \begin{enumerate}[(1)]
   \item $s_n=\sum_{k=1}^n a_k, \lim s_n=\sum_{k=1}^\infty a_k$\\
     $\sum_{k=1}^\infty ca_k =\lim(cs_n)=c\lim s_n =c\sum_{k=1}^\infty a_k$
   \item $s_n=\sum_{k=1}^n a_k, t_n=\sum_{k=1}^n b_k, s_n+t_n=\sum_{k=1}^n (a_n+ b_k)$\\
@@ -1696,18 +1871,26 @@ Reihe.
     $\lim s_n$ existiert $\Rightarrow \lim_{l\rightarrow \infty}
     s_{\stackrel{n-1}{l+1}}$ (Jede Teilfolge hat gleichen Grenzwert.)
 \end{enumerate}
-\textbf{Beispiele}:
-\begin{description}
+  \end{proof}
+\end{theorem}
+
+\begin{beispiel}
+  \begin{description}
   \item[geometrische Reihe\index{Reihe!geometrische}] $a_n=q^n \quad n=0,1,2,\ldots \quad \sum_{n=0}^\infty q^n=1+q^1+q^2\cdots$
-    kon\-ver\-giert für $\abs{q}<1$ und divergiert für $\abs{q}\geq 1$\\
-    Beweis: $s_n =1+q+\cdots +q^n=\frac{1-q^{n-1}}{1-q}, q\neq 1$\\
+    kon\-ver\-giert für $\abs{q}<1$ und divergiert für $\abs{q}\geq 1$
+    \begin{proof}
+      $s_n =1+q+\cdots +q^n=\frac{1-q^{n-1}}{1-q}, q\neq 1$\\
     Für $\abs{q}<1 \quad \lim s_n=\frac{1}{1-q}$\\
     Für $\abs{q}>1$ ist $s_n$ divergent.\\
     Für $q=-1 \quad s_n=\begin{cases}1 \quad n=2k\\0 \quad n=2k+1\end{cases}$ divergent.\\
     Für $q=1 \quad s_n=n+1$ divergent.
-  \item[harmonische Reihe\index{Reihe!harmonische}] $\sum_{n=1}^\infty \frac{1}{n}$ divergent
-  \item[alternierende harmonische Reihe\index{Reihe!alternierende harmonische}]  $\sum_{n=1}^\infty (-1)^n\frac{1}{n}$ konvergent
+    \end{proof}
+  \item[harmonische Reihe\index{Reihe!harmonische}] $\sum_{n=1}^\infty
+    \frac{1}{n}$ divergent.
+  \item[alternierende harmonische Reihe\index{Reihe!alternierende
+    harmonische}]  $\sum_{n=1}^\infty (-1)^n\frac{1}{n}$ konvergent.
 \end{description}
+\end{beispiel}
 
 \subsection{Einige Konvergenzkriterien für Reihen}
 
@@ -1729,79 +1912,100 @@ $\sum a_n$ ist konvergent, wenn  $\lim a_n=0$ ist.
 
 \begin{theorem}[Cauchykriterium\index{Cauchykriterium}]
 \label{satz:CKrit}
- $\sum a_n$ konvergent $\perdef$
-\begin{gather*}\forall \varepsilon >0 \exists n_{\varepsilon}\in \N \forall n>m>n_{\varepsilon}\colon\abs{\sum_{k=m}^n a_k}
-\leq \varepsilon\end{gather*}
+ Die Summe $\sum a_n$ ist genau dann konvergent, wenn
+  \begin{gather*}
+    \forall \varepsilon >0 \exists n_{\varepsilon}\in \N \forall n>m>n_{\varepsilon}\colon\abs{\sum_{k=m}^n a_k}\leq \varepsilon
+  \end{gather*}
+  \begin{proof}
+    Für die Partialsummen gilt: $s_n-s_m=\sum_{k=m+1}^n a_k$. Die Summe $\sum
+    a_k$ ist nach \autoref{def:reihe} genau dann konvergent, wenn auch $(s_n)$
+    konvergent ist. Dies ist nach \autoref{satz:CKonv} genau dann der Fall,
+    wenn $(s_n)$ eine Cauchyfolge ist.
+  \end{proof}
 \end{theorem}
-\textbf{Beweis}: $s_n-s_m=\sum_{k=m+1}^n a_k\quad \sum a_k$ konvergent
-$\stackrel{\text{\hyperref[def:reihe]{Def.\,\ref*{def:reihe}}}}{\Leftrightarrow}
-(s_n)$ konvergent $\stackrel{\text{\autoref{satz:CKonv}}}{\Leftrightarrow}(s_n)$ ist Cauchyfolge.
 
-\begin{definition}
-\textbf{Absolute Konvergenz\index{Konvergenz!absolute}} Eine Reihe $\sum a_k$ heißt \emph{absolut konvergent\index{absolut konvergent}}
-$\perdef \sum \abs{a_k}$ konvergiert.
+\begin{definition}[Absolute Konvergenz\index{Konvergenz!absolute}]
+  Eine Reihe $\sum a_k$ heißt genau dann \highl{absolut konvergent}, wenn
+  $\sum \abs{a_k}$ konvergiert.
 \end{definition}
 
-\textbf{Korollar}: $\sum a_n$ sei absolut konvergent. Dann ist auch $\sum a_k$ konvergent.
-Zum Beweis nutzt man das Cauchykriterium: Sei $\varepsilon >0$. Dann existiert $n\in \N \colon \abs{\sum_{k=m+1}^n a_k}\leq 
-\sum_{k=m+1}^n \abs{a_k}\leq \varepsilon$ für $n>m>n_{\varepsilon}$\qed\\
-\textbf{Bemerkung}: Es gibt konvergente Reihen, die nicht absolut konvergent sind. Bsp.: al\-ter\-nie\-rende harmonische
-Reihe
+\begin{lemma}
+  Sei $\sum a_n$ absolut konvergent. Dann ist auch $\sum a_k$ konvergent.
+  \begin{proof}
+    Zum Beweis nutzt man das Cauchykriterium: Sei $\varepsilon >0$. Dann
+    existiert $n\in \N \colon \abs{\sum_{k=m+1}^n a_k}\leq \sum_{k=m+1}^n
+    \abs{a_k}\leq \varepsilon$ für $n>m>n_{\varepsilon}$.
+  \end{proof}
+\end{lemma}
 
-\begin{theorem}
-\label{satz:wkonvkrit}
-\textbf{weitere Konvergenzkriterien}
+\begin{beispiel}
+  Es gibt konvergente Reihen, die nicht absolut konvergent sind. Ein Beispiel
+  ist die alternierende harmonische Reihe.
+\end{beispiel}
+
+\begin{theorem}[weitere Konvergenzkriterien]\label{satz:wkonvkrit}
 \begin{enumerate}[(1)]
-  \item \textbf{Monotoniekriterium\index{Monotoniekrit.}} Sei $a_n\geq 0$. Dann $\sum a_n$ konvergent $\Leftrightarrow
-    (s_n)$ beschränkt.
-  \item \textbf{Vergleichskriterium\index{Vergleichskrit.}}:
+  \item \highl{Monotoniekriterium} Sei $a_n\geq 0$. Dann $\sum a_n$ konvergent
+  $\Leftrightarrow (s_n)$ beschränkt.
+  \item \highl{Vergleichskriterium}:
   \begin{enumerate}[({2}.1)]
-    \item \textbf{Majorantenkriterium\index{Majorantenkrit.}} Sei $\abs{a_n}\leq c_n, n\geq n_0$. Dann $\sum c_n$ konvergent
-      $\Rightarrow \sum a_n$ absolut konvergent
-    \item \textbf{Minorantenkriterium\index{Minorantenkrit.}} Sei $a_n\geq d_n\geq 0$ für $n\geq n_0$. Dann $\sum d_n$
-      divergent $\Rightarrow \sum a_n$ divergent
+    \item \highl{Majorantenkriterium} Sei $\abs{a_n}\leq c_n, n\geq n_0$. Dann $\sum c_n$ konvergent
+      $\Rightarrow \sum a_n$ absolut konvergent.
+    \item \highl{Minorantenkriterium} Sei $a_n\geq d_n\geq 0$ für $n\geq n_0$. Dann $\sum d_n$
+      divergent $\Rightarrow \sum a_n$ divergent.
   \end{enumerate}
-  \item \textbf{Teleskopsummenkriterium\index{Teleskopsummenkrit.} / Verdichtungskriterium\index{Verdichtungskrit.}} 
+  \item \highl{Teleskopsummenkriterium} oder \highl{Verdichtungskriterium} 
     Seien $a_1\geq a_2\geq \ldots \geq a_n\geq 0$. Dann $\sum a_n$ konvergent $\Leftrightarrow \sum 2^n a_{2^n}$ konvergent
-  \item \textbf{Wurzelkriterium\index{Wurzelkrit.}} Sei $\alpha \coloneqq\overline{\lim}\sqrt[n]{\abs{a_n}}$. Dann ist $\sum a_n$
+  \item \highl{Wurzelkriterium} Sei $\alpha \coloneqq\overline{\lim}\sqrt[n]{\abs{a_n}}$. Dann ist $\sum a_n$
     konvergent für $\alpha <1$ und divergent für $\alpha >1$. Für $\alpha=1$ existieren sowohl konvergente als auch
     divergente Reihen.
-  \item \textbf{Quotientenkriterium\index{Quotientenkrit.}} Seien $\underline{\beta}\coloneqq\underline{\lim}\abs{\frac{a_{n+1}}{a_n}},
+  \item \highl{Quotientenkriterium} Seien $\underline{\beta}\coloneqq\underline{\lim}\abs{\frac{a_{n+1}}{a_n}},
     \overline{\beta}\coloneqq\overline{\lim}\abs{\frac{a_{n+1}}{a_n}}$. Dann folgt für $\overline{\beta}<1$, dass $\sum a_n$
     konvergent ist und für $\underline{\beta}>1$, dass $\sum a_n$ divergent ist.
 \end{enumerate}
-\end{theorem}
-\textbf{Beweis}
-\begin{enumerate}[(1)]
-  \item $a\geq 0 \Rightarrow s_{n+1}=s_n+a_{n+1} \geq s_n, (s_n)$ nach oben beschränkt und monoton wachsend $\Rightarrow (s_n)$
-    konvergent
-  \item
-    \begin{enumerate}[1)]
-      \item $\abs{\sum_{k=m+1}^n a_k}\leq \sum_{k=m+1}^n \abs{a_k}\leq \sum_{k=m+1}^n c_k <\varepsilon$ für $n>m\geq n_{\varepsilon}
-        \stackrel{\text{Cauchykrit.}}{\Longrightarrow} \sum \abs{a_k}$ absolut konvergent
-      \item Wäre $\sum a_n$ konvergent, folgt darus, dass auch $\sum d_n$ konvergent ist
-    \end{enumerate}
-  \item $s_n<a_1+a_2+\cdots +a_n, t_k\coloneqq a_1+2a_2+2^2a_{2^2}+\cdots +2^ka_{2^k}$\\
-    Für $n\leq 2^k$ gilt $s_n\leq t_k$.\\
-    Denn $s_n\leq a_1+(a_2+a_3)+\cdots +(a_{2^k}+a_{2^k+1}+\cdots +a_{2^{k+1}-1})\leq
-    a_1+2a_2+\cdots +2^ka_{2^k}=t_k$. Für $n\geq 2^k$ gilt $s_n\geq \frac{1}{2}t_k$.\\
-    Denn $s_n\geq a_1 + a_2+(a_3+a_4)+\cdots +(a_{2^{k-1}+1}+\cdots +a_{2^k})\geq \frac{a_1}{2}+a_2+2a_4+\cdots +2^{k-1}
-    a_{2^k}=\frac{1}{2}(a_1+2a_2+2^2a_{2^2}+\cdots +2^ka_{2^k})=\frac{1}{2}t_k$. Somit gilt nach (1) $(s_n)$ ist
-    konvergent, genau dann wenn $(t_k)$ konvergent ist.
-  \item
-    \begin{enumerate}[1. F{a}ll]
-      \item Sei $\alpha >1, \alpha=\overline{\lim}\sqrt[n]{\abs{a_n}}>1$. Dann existiert eine Teilfolge $(a_{n_k}) \subset (a_n)\colon
-        \lim \sqrt[n_k]{\abs{a_{n_k}}}=\alpha$. Wähle $\varepsilon_0>0\colon\alpha >1+\varepsilon_0$. Dann existiert ein $k_0 \in \N \colon
-	\abs{\sqrt[n_k]{\abs{a_{n_k}}} -\alpha }<\varepsilon_0$ für
-        $k\geq k_0$. Somit ist $-\varepsilon_0 <\sqrt[n_k]{\abs{a_{n_k}}}< 
-	\varepsilon_0 \Rightarrow 1<\alpha-\varepsilon_0<\sqrt[n_k]{\abs{a_{n_k}}}\Rightarrow 1<\abs{a_{n_k}}$ für $k\geq k_0$
-	Daraus folgt, dass $a_{n_k}$ nicht gegen 0 streben. Daher strebt auch $a_n$ nicht gegen 0. Nach \autoref{satz:konvkrit}
+  \begin{proof}
+    \begin{enumerate}[(1)]
+     \item $a\geq 0 \Rightarrow s_{n+1}=s_n+a_{n+1} \geq s_n, (s_n)$ nach oben
+      beschränkt und monoton wachsend $\Rightarrow (s_n)$ konvergent.
+     \item
+      \begin{enumerate}[({2}.1)]
+       \item $\abs{\sum_{k=m+1}^n a_k}\leq \sum_{k=m+1}^n \abs{a_k}\leq
+	\sum_{k=m+1}^n c_k <\varepsilon$ für $n>m\geq n_{\varepsilon}
+        \stackrel{\text{Cauchykrit.}}{\Longrightarrow} \sum \abs{a_k}$ absolut
+	konvergent.
+       \item Wäre $\sum a_n$ konvergent, folgt daraus, dass auch $\sum d_n$
+	konvergent ist.
+      \end{enumerate}
+     \item Die Partialsumme ist $s_n = a_1+a_2+\dotsb +a_n,
+     $ und wird definieren $t_k\coloneqq a_1+2a_2+2^2a_{2^2}+\dotsb+
+      +2^ka_{2^k}$.  Für $n\leq 2^k$ gilt, $s_n\leq t_k$. Denn $s_n\leq
+      a_1+(a_2+a_3)+\dotsb +(a_{2^k}+a_{2^k+1}+\dotsb +a_{2^{k+1}-1})\leq
+      a_1+2a_2+\dotsb +2^ka_{2^k}=t_k$. Für $n\geq 2^k$ gilt $s_n\geq
+      \frac{1}{2}t_k$. Denn $s_n\geq a_1 + a_2+(a_3+a_4)+\dotsb
+      +(a_{2^{k-1}+1}+\dotsb +a_{2^k})\geq \frac{a_1}{2}+a_2+2a_4+\dotsb
+      +2^{k-1} a_{2^k}=\frac{1}{2}(a_1+2a_2+2^2a_{2^2}+\dotsb +2^ka_{2^k})=
+      \frac{1}{2} t_k$. Somit gilt nach (1), dass $(s_n)$ genau dann
+      konvergent ist, wenn $(t_k)$ konvergent ist.
+     \item
+      \begin{enumerate}[1.\,F{a}ll]
+      \item Sei $\alpha >1$ und $\alpha=\overline{\lim}\sqrt[n]{\abs{a_n}}>1$.
+	Dann existiert eine Teilfolge $(a_{n_k}) \subset (a_n)\colon
+        \lim \sqrt[\uproot{3}n_k]{\abs{a_{n_k}}}=\alpha$. Wähle
+	$\varepsilon_0>0\colon\alpha >1+\varepsilon_0$. Dann existiert ein
+	$k_0 \in \N \colon \abs{\sqrt[\uproot{3}n_k]{\abs{a_{n_k}}}
+	-\alpha}<\varepsilon_0$ für $k\geq k_0$. Somit ist $-\varepsilon_0
+	<\sqrt[\uproot{3}n_k]{\abs{a_{n_k}}}< \varepsilon_0 \Rightarrow
+	1<\alpha-\varepsilon_0<\sqrt[\uproot{3}n_k]{\abs{a_{n_k}}}\Rightarrow
+	1<\abs{a_{n_k}}$ für $k\geq k_0$.
+	Daraus folgt, dass $a_{n_k}$ nicht gegen 0 streben. Daher strebt auch
+	$a_n$ nicht gegen 0. Nach \autoref{satz:konvkrit}
 	folgt, dass auch $\sum a_n$ divergiert.
-      \item Sei $\alpha =\overline{\lim}\sqrt[n]{\abs{a_n}}<1$. Wähle $\beta \colon\alpha<\beta <1, b_n\coloneqq\sup\{\sqrt[k]{\abs{a_k}}\colon k\geq n\}$
+      \item Sei $\alpha<1$ und $\alpha =\overline{\lim}\sqrt[n]{\abs{a_n}}<1$.
+	Wähle $\beta$ mit $\alpha<\beta <1$ und
+	$b_n\coloneqq\sup\{\sqrt[k]{\abs{a_k}}\colon k\geq n\}$.
         Für $b_n$ gilt $\lim b_n=\alpha$. Wähle
       $\varepsilon_0\colon\alpha+\varepsilon_0<\beta$. Dann existiert ein $n_0
-      \in \N\,\forall n\geq n_0\colon\alpha
-      -b_n|<\varepsilon_0$\todo{Was macht das Pipe hier?}. Somit ist $-\varepsilon_0<\alpha -b_n<\varepsilon_0$ für $n\geq n_0
+      \in \N\,\forall n\geq n_0\colon\abs{\alpha -b_n}<\varepsilon_0$. Somit ist $-\varepsilon_0<\alpha -b_n<\varepsilon_0$ für $n\geq n_0
 	\Rightarrow b_n<\alpha +\varepsilon_0$ für $n\geq n_0$. Insobesondere gilt für $n=n_0\colon b_{n_0}<\alpha +\varepsilon_0<
 	\beta$, d.\,h. $\sqrt[k]{\abs{a_k}}\leq b_{n_0}<\beta \quad \forall k\geq n_0 \Rightarrow \abs{a_k}<\beta^k, k\geq n_0
 	\stackrel{\beta <1}{\Rightarrow} \sum \beta^k$ ist konvergent $\stackrel{(2)}{\Rightarrow} \sum \abs{a_n}$ konvergent.
@@ -1821,73 +2025,77 @@ Reihe
     \frac{b_1+\cdots +b_n}{n}=\lim \frac{b_1+\cdots +b_n}{n}=\lim b_n=\overline{\lim} \abs{\frac{a_{n+1}}{a_n}}$\\
     Der Beweis für $\underline{\lim}\abs{\frac{a_{n+1}}{a_n}}\leq \underline{\lim} \sqrt[n]{\abs{a_n}}$ geht analog.
 \end{enumerate}
-\qed
+  \end{proof}
+\end{theorem}
 
-\textbf{Beispiele}: Sei $0\leq \alpha <\infty$ und $\sum_{n=1}^\infty \frac{1}{n^\alpha}$ eine Reihe. Diese ist
-konvergent für $\alpha>1$ und divergent für $0\leq \alpha \leq 1$. Nach dem Quotientenkriterium gilt:\\
-$a_n=\frac{1}{n^\alpha}, \abs{\frac{a_{n+1}}{a_n}}=\frac{a_{n+1}}{a_n}=\frac{1}{(n+1)^\alpha}\cdot \frac{n^\alpha}{1}=
-(\frac{n}{n+1})^\alpha=(1-\frac{1}{n+1})^\alpha$\\
-$\lim \frac{a_{n+1}}{a_n}=\lim_n (1-\frac{1}{n+1})^\alpha=1^\alpha=1$\\
-Daraus folgt, dass nach dem Quotientenkriterium keine Entscheidung zu treffen ist, ob diese Reihe konvergiert oder nicht.\\
-Nach dem Teleskopsummenkriterium gilt:\\
-$a_1\geq a_2\geq \cdots \geq a_n\geq \cdots \geq 0, \lim a_n=\lim_{n\rightarrow \infty}\frac{1}{n^\alpha}=0$ für $0<
-\alpha<\infty$. Die Summe $\sum a_n$ konvergiert genau dann, wenn die Summe $\sum 2^na_{2^n}$ konvergiert.\\
-$a_{2^n}=\frac{1}{(2^n)^\alpha}=\frac{1}{2^{n\alpha}}=(\frac{1}{2^\alpha})^n$\\
-$\sum 2^na_{2^n}=\sum2^n(2^{-\alpha})^n=\sum (2^{1-\alpha})^n\Rightarrow \sum 2^na_{2^n}$ ist konvergent für $\alpha>1$
-und divergent für $\alpha \leq 1$.
+\begin{beispiel}
+  Sei $0\leq \alpha <\infty$ und $\sum_{n=1}^\infty \frac{1}{n^\alpha}$ eine
+  Reihe. Diese ist konvergent für $\alpha>1$ und divergent für $0\leq \alpha
+  \leq 1$. Nach dem Quotientenkriterium gilt, $a_n= \frac{1}{n^\alpha},
+  \abs{\frac{a_{n+1}}{a_n}}=\frac{a_{n+1}}{a_n}=\frac{1}{(n+1)^\alpha}\cdot
+  \frac{n^\alpha}{1}= (\frac{n}{n+1})^\alpha=(1-\frac{1}{n+1})^\alpha$. Der
+  Grenzwert ist$\lim \frac{a_{n+1}}{a_n}=\lim_{n\rightarrow\infty}
+  (1-\frac{1}{n+1})^\alpha=1^\alpha=1$. Daraus folgt, dass nach dem
+  Quotientenkriterium keine Entscheidung zu treffen ist, ob diese Reihe
+  konvergiert oder nicht.
+  
+  Nach dem Teleskopsummenkriterium gilt, $a_1\geq a_2\geq \cdots \geq a_n\geq
+  \cdots \geq 0, \lim a_n=\lim_{n\rightarrow \infty}\frac{1}{n^\alpha}=0$ für
+  $0< \alpha<\infty$. Die Summe $\sum a_n$ konvergiert genau dann, wenn die
+  Summe $\sum 2^na_{2^n}$ konvergiert. Umstellen ergibt
+  $a_{2^n}=\frac{1}{(2^n)^\alpha}=\frac{1}{2^{n\alpha}}=(\frac{1}{2^\alpha})^n$.
+  Somit ist $\sum 2^na_{2^n}=\sum2^n(2^{-\alpha})^n=\sum
+  (2^{1-\alpha})^n\Rightarrow \sum 2^na_{2^n}$ ist konvergent für $\alpha>1$
+  und divergent für $\alpha \leq 1$.
 
-$\sum_{n=1}^\infty \frac{n!}{n^n}$ ist konvergent.\\
-Beweis nach dem Wurzelkriterium: $a_n=\frac{n!}{n^n} \quad \sqrt[n]{\abs{a_n}}=\sqrt[n]{a_n}=\sqrt[n]{\frac{n!}{n^n}}=
-\frac{1}{n}\sqrt[n]{n!}$ Dies ist kompliziert zu berechnen. Daher ein Versuch mit dem Quotientenkriterium:\\
-$\abs{\frac{a_{n+1}}{a_n}}=\frac{a_{n+1}}{a_n}=\frac{(n+1)!}{(n+1)^{n+1}}\cdot \frac{n^n}{n!}=\frac{n!(n+1)n^n}{(n+1)^n(n+1)n!}
-=\frac{n^n}{(n+1)^n}=\frac{1}{(1+\frac{1}{n})^n}\Rightarrow \lim \abs{\frac{a_{n+1}}{a_n}}=\lim \frac{1}{(1+\frac{1}{n})^n}=
-\frac{1}{e}<1\Rightarrow$  Summe ist konvergent.
+  Die Summe $\sum_{n=1}^\infty \frac{n!}{n^n}$ ist konvergent. Wir führen den
+  Beweis nach dem Wurzelkriterium: $a_n=\frac{n!}{n^n}$ und
+  $\sqrt[n]{\abs{a_n}}=\sqrt[n]{a_n}=\sqrt[n]{\frac{n!}{n^n}}=
+  \frac{1}{n}\sqrt[n]{n!}$ Dies ist kompliziert zu berechnen. Daher ein
+  Versuch mit dem Quotientenkriterium:
+  $\abs{\frac{a_{n+1}}{a_n}}=\frac{a_{n+1}}{a_n}=\frac{(n+1)!}{(n+1)^{n+1}}\cdot
+  \frac{n^n}{n!}=\frac{n!(n+1)n^n}{(n+1)^n(n+1)n!}
+  =\frac{n^n}{(n+1)^n}=\frac{1}{(1+\frac{1}{n})^n}\Rightarrow \lim
+  \abs{\frac{a_{n+1}}{a_n}}=\lim \frac{1}{(1+\frac{1}{n})^n}=
+  \frac{1}{e}<1\Rightarrow$  Summe ist konvergent.
+\end{beispiel}
 
-\subsubsection{Alternierende Reihen}
-\begin{definition}
-Die Reihe $\sum_{n=0}^\infty (-1)^na_n$ heißt genau dann \emph{alternierende Reihe\index{Reihe!alternierende}}, wenn
-entweder $a_n\geq 0$ für $n \in \N$ oder $a_n\leq 0$ für $n \in \N$.
+\subsection{Alternierende Reihen}
+\begin{definition}[Alternierende Reihe]
+  Die Reihe $\sum_{n=0}^\infty (-1)^na_n$ heißt genau dann
+  \highl[Reihe!alternierende]{alternierende Reihe}, wenn entweder $a_n\geq 0$
+  für $n \in \N$ oder $a_n\leq 0$ für $n \in \N$.
 \end{definition}
 
-\begin{theorem}
-\label{satz:LeibKrit}
-\textbf{Leibnitzsches Kriterium\index{Leibnitzsches Kriterium}} Sei $a_0\geq a_1\geq a_2\geq \cdots \geq a_n\geq \cdots
-\geq 0$ und $\lim a_n=0$. Dann ist $\sum_{n=0}^\infty (-1)^na_n$ konvergent.
-\end{theorem}
-\textbf{Beweis}: $s_n=\sum_{k=0}^n (-1)^ka_k=a_0-a_1+a_2+\cdots +(-1)^na_n$ Wegen der Monotone gilt:\\
-$\left.
-\begin{array}{rcl}
-  s_{2n+2}-s_{2n}=-a_{2n+1}+a_{2n+2} & \leq & 0\\
-  s_{2n+3}-s_{2n+1}=a_{2n+2}-a_{2n+3} & \geq & 0
-\end{array}
-\right\} \Rightarrow
-\begin{array}{rcl}
-  s_0\geq s_2\geq s_2\geq & \ldots & \geq s_{2n}\geq \ldots\\
-  s_1\leq s_3\leq s_5\leq & \ldots & \leq s_{2n+1}\leq \ldots
-\end{array}$ und $s_{2n+1}-s_n=-a_{2n+1}\leq 0$\\
-$\Rightarrow s_{2n+1}\leq 2_{2n}$\\
-$\Rightarrow
-\begin{array}{rcl}
-  s_{2n} &\geq & s_1\\
-  s_{2n+1}&\leq & s_0
-\end{array}$
-für alle $n=0,1,2,\ldots \Bigg\}\stackrel{\text{\autoref{satz:monotoneFolge}}}{\Longrightarrow}
-\begin{array}{rcl}
-  \lim s_{2n} & = & s\\
-  \lim s_{2n+1} & = & s'
-\end{array}$\\
-$s_{2n+1}=s_n-a_{2n+1}\stackrel{n\rightarrow\infty}{\Longrightarrow} s'=s-0\Rightarrow s'=s$\\
-noch zu zeigen: $\lim s_n=s$\\
-Sei $\varepsilon>0$. Dann existiert ein $n_0, n_1 \in \N \colon
-\begin{array}{rcl}
-  \abs{s_{2n}-s} & \leq & \varepsilon \text{ für } n\geq n_0\\
-  \abs{s_{2n+1}-s} &< & \varepsilon \text{ für } n\geq n_1
-\end{array}$\\
-Für $N\coloneqq\max\{2n_0,2n_1+1\}$ gilt: $\abs{s_n-s}<\varepsilon$ für $n\geq N$, d.\,h. $\lim s_n=s$
-\qed
+\begin{theorem}[Leibnitzsches Kriterium\index{Leibnitzsches Kriterium}]\label{satz:LeibKrit}
+  Sei $a_0\geq a_1\geq a_2\geq\dotsb\geq a_n\geq \dotsb\geq 0$ und $\lim
+  a_n=0$. Dann ist $\sum_{n=0}^\infty (-1)^na_n$ konvergent.
+  \begin{proof}
+    Die Partialsummen lassen sich aufschreiben als:
+    \begin{gather*}
+      s_n=\sum_{k=0}^n (-1)^ka_k=a_0-a_1+a_2+\dotsb +(-1)^na_n
+    \end{gather*}
+    Wegen der Monotone gilt, $s_{2n+2}- s_{2n}= -a_{2n+1}+a_{2n+2} \leq 0$ und
+    $s_{2n+3} -s_{2n+1}= a_{2n+2}-a_{2n+3} \geq 0$. Somit folgt, $s_{0}\geq
+    s_{2}\geq s_{4}\geq\dotsb\geq s_{2n}\geq\dotsb$ und $s_{1}\leq s_{3}\leq
+    s_{5}\leq\dotsb\leq s_{2n+1}\leq\dotsb$. Weiter ist $s_{2n+1}- s_{2n}=
+    -a_{2n+1}\leq0$ und damit $s_{2n+1}\leq s_{2n}$ für $n\geq0$.  Die Folge
+    der $s_{2n}$ ist nach unten beschränkt durch $s_{1}$ und die Folge der
+    $s_{2n+1}$ ist nach oben beschränkt durch $s_{0}$. Nach dem
+    \autoref{satz:monotoneFolge} folgt, $\lim s_{2n} = s$ und $\lim s_{2n+1}
+    =s'$. Für $s_{2n+1}= s_{2}-a_{2n+1}$ folgt im Grenzprozess mit
+    $n\rightarrow\infty$, dass $s'=s-0$, also $s'=s$ ist.
 
-\textbf{Beispiel} 
-\begin{enumerate}
+    Nun ist noch zu zeigen, dass $\lim s_n=s$. Sei $\varepsilon>0$. Dann
+    existiert ein $n_0, n_1 \in \N$ mit $\abs{s_{2n}-s} \leq \varepsilon$ für
+    $n\geq n_0$ und $\abs{s_{2n+1}-s} < \varepsilon$ für  $n\geq n_1$. Wir
+    setzen $N\coloneqq\max\{2n_0,2n_1+1\}$ und es gilt:
+    $\abs{s_n-s}<\varepsilon$ für $n\geq N$, d.\,h. $\lim s_n=s$.
+  \end{proof}
+\end{theorem}
+
+\begin{beispiel}
+  \begin{enumerate}
   \item $\sum_{n=1}^\infty (-1)^{n-1}\frac{1}{n}$ konvergiert. $a_n=\frac{1}{n}, a_1\geq a_2\geq \ldots \geq 
     a_n\geq \ldots \geq0, \lim a_n=0$\\
     $\stackrel{\text{\autoref{satz:LeibKrit}}}{\Longrightarrow} \sum (-1)^{n-1}\frac{1}{n}$ ist konvergent.
@@ -1899,46 +2107,57 @@ Für $N\coloneqq\max\{2n_0,2n_1+1\}$ gilt: $\abs{s_n-s}<\varepsilon$ für $n\geq
     $(n+1)^{2n}=((n+1)^2)^n=(n^2+2n+1)^n\geq (n(n+2))^n=(n^2+2n)^n \Rightarrow$ monoton fallend\\
     $\Rightarrow \sum \frac{(n+1)^{n-1}}{(-n)^n}$ ist konvergent.
 \end{enumerate}
+\end{beispiel}
 
-\subsubsection{Umordnung und Produkt von Reihen}
-\begin{definition}
+\subsection{Umordnung und Produkt von Reihen}
+\begin{definition}[Umordnung]
 Sei $\pi \colon\N\rightarrow \N$ bijektiv. Dann heißt
-\begin{gather*}\sum_{k=1}^\infty a_{\pi(k)}\end{gather*}
-eine \emph{Umordnung\index{Umordnung}} der Reihe $\sum_{k=1}^\infty a_k$.
+\begin{gather*}
+  \sum_{k=1}^\infty a_{\pi(k)}
+\end{gather*}
+eine \highl{Umordnung} der Reihe $\sum_{k=1}^\infty a_k$.
 \end{definition}
 
-\begin{theorem}
-\label{satz:umordnung}
-Seien $c_n\geq 0$ und $\sum_{n=1}^\infty c_n$ konvergent. Dann gilt $\forall \pi \colon\N\rightarrow \N$ bijektiv
-$\Rightarrow \sum_{k=1}^\infty c_{\pi(k)}$ konvergent und es gilt $\sum_{k=1}^\infty c_k=\sum_{k=1}^\infty c_{\pi(k)}$
+\begin{theorem}\label{satz:umordnung}
+  Seien $c_n\geq 0$ und $\sum_{n=1}^\infty c_n$ konvergent. Dann gilt $\forall
+  \pi \colon\N\rightarrow \N$ bijektiv $\Rightarrow \sum_{k=1}^\infty
+  c_{\pi(k)}$ konvergent und es gilt $\sum_{k=1}^\infty c_k=\sum_{k=1}^\infty
+  c_{\pi(k)}$.
+  \begin{proof}
+    Sei $n \in \N, M\coloneqq\max\{\pi(1),\ldots ,\pi(n)\}$. Dann ist $n\leq
+    M$ und es gilt $\sum_{k=1}^n c_{\pi(k)}\leq \sum_{k=1}^M c_k\leq
+    \sum_{k=1}^\infty c_k<\infty \stackrel{c_k\geq 0}{\Rightarrow}
+    \sum_{k=1}^\infty c_{\pi(k)}\leq \sum_{k=1}^\infty c_k$. Obige Aussage auf
+    $\sum_1^\infty c_k=\sum_1^\infty c_{\pi^{-1}(\pi(k))}\leq \sum_1^\infty
+    c_{\pi(k)} \Rightarrow \sum_1^\infty c_k=\sum_1^\infty c_{\pi(k)}$.
+  \end{proof}
 \end{theorem}
-\textbf{Beweis}: Sei $n \in \N, M\coloneqq\max\{\pi(1),\ldots ,\pi(n)\}$\\
-Dann ist $n\leq M$ und es gilt $\sum_{k=1}^n c_{\pi(k)}\leq \sum_{k=1}^M c_k\leq \sum_{k=1}^\infty c_k<\infty 
-\stackrel{c_k\geq 0}{\Rightarrow} \sum_{k=1}^\infty c_{\pi(k)}\leq \sum_{k=1}^\infty c_k$\\
-Obige Aussage auf $\sum_1^\infty c_k=\sum_1^\infty c_{\pi^{-1}(\pi(k))}\leq \sum_1^\infty c_{\pi(k)} \Rightarrow
-\sum_1^\infty c_k=\sum_1^\infty c_{\pi(k)}$\qed
 
-\begin{theorem}
-\label{satz:absUmordnung}
-$\sum a_n$ ist absolut konvergent $\Leftrightarrow \forall \pi \colon\N \rightarrow \N$ bijektiv\\
-$\sum_1^\infty a_{\pi(k)}$ konvergent.
-\end{theorem}
-Ferner gilt: $\sum_{k=1}^\infty a_{\pi(k)}=\sum_{k=1}^\infty a_k \qquad \forall \pi$\\
-\textbf{Beweis}:
-\begin{itemize}
-  \item["`$\Rightarrow$"'] Sei $\sum a_n$ absolut konvergent.
-    $\begin{array}{rcl}
-      0\leq a_n^+\coloneqq\max\{a_n,0\} & = & \frac{\abs{a_n}+a_n}{2}\leq \abs{a_n}\\
-      0\leq a_n^-\coloneqq\min\{a_n,0\} & = & \frac{\abs{a_n}-a_n}{2}\leq \abs{a_n}
-    \end{array}$\\
-    $\stackrel{\text{Maj.-krit.}}{\Rightarrow} \sum a_n^+, \sum a_n^-$ konvergent\\
-    $\stackrel{\text{\autoref{satz:umordnung}}}{\Rightarrow} \sum_1^\infty \sum_1^\infty a_{\pi(k)}^+=\sum_1^\infty a_k^+,
-    \sum_1^\infty a_{\pi(k)}^-=\sum_1^\infty a_k^-$\\
-    $\Rightarrow \sum_1^\infty a_{\pi(k)}=\sum_1^\infty (a_{\pi(k)}^+-a_{\pi(k)}^-)=\sum_1^\infty a_{\pi(k)}^+-
-    \sum_1^\infty a_{\pi(k)}^- =\sum_1^\infty a_k^+ -\sum_1^\infty a_k^-
-  =\sum_1^\infty (a_k^+ -a_k^-)=\sum_1^\infty a_k$
-  \item["`$\Leftarrow$"'] Sei $\sum \abs{a_n}$ divergent. Sei o.\,B.\,d.\,A. $\sum a_n$ konvergent (sonst $\pi=id$)\\
-    Feststellung: $a_k=a_k^+-a_k^- \quad \abs{a_k}=a_k^++a_k^-$\\
+\begin{theorem}\label{satz:absUmordnung}
+  Die Summe $\sum a_n$ ist genau dann absolut konvergent, wenn $\forall \pi
+  \colon\N \rightarrow \N$ bijektiv $\sum_1^\infty a_{\pi(k)}$ konvergent ist.
+  Ferner gilt $\sum_{k=1}^{\infty} a_{\pi(k)}= \sum_{k=1}^{\infty} a_{k}$ für
+  alle $\pi$.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $\sum a_n$ absolut konvergent.
+      \begin{align*}
+	0 &\leq a_n^+\coloneqq\max\{a_n,0\} = \frac{\abs{a_n}+a_n}{2}\leq
+	   \abs{a_n}\\
+        0 &\leq a_n^-\coloneqq\min\{a_n,0\} = \frac{\abs{a_n}-a_n}{2}\leq
+	   \abs{a_n}
+      \end{align*}
+      Nach dem Majorantenkriterium sind $\sum a_n^+, \sum a_n^-$ konvergent.
+      Weiterhin wissen wir wegen \autoref{satz:absUmordnung}, dass
+      $\sum_1^\infty a_{\pi(k)}^+ =\sum_1^\infty a_k^+, \sum_1^\infty
+      a_{\pi(k)}^- =\sum_1^\infty a_k^-$. Also folgt, $\sum_1^\infty
+      a_{\pi(k)} =\sum_1^\infty (a_{\pi(k)}^+-a_{\pi(k)}^-) =\sum_1^\infty
+      a_{\pi(k)}^+ - \sum_1^\infty a_{\pi(k)}^- =\sum_1^\infty a_k^+
+      -\sum_1^\infty a_k^- =\sum_1^\infty (a_k^+ -a_k^-) =\sum_1^\infty a_k$.
+  \item["`$\Leftarrow$"'] Sei $\sum \abs{a_n}$ divergent. Sei o.\,B.\,d.\,A.
+      $\sum a_n$ konvergent (sonst ist $\pi$ die identische Abbildung). Es
+      lässt sich folgende Feststellung treffen: $a_k =a_k^+ -a_k^-$ und
+      $\abs{a_k}=a_k^+ +a_k^-$.
     $\left.\begin{array}{rcl}
       \sum \abs{a_n} \text{ divergent}\\
       \sum a_n \text{ konvergent}
@@ -1949,104 +2168,149 @@ Ferner gilt: $\sum_{k=1}^\infty a_{\pi(k)}=\sum_{k=1}^\infty a_k \qquad \forall 
   a_{\varphi_\pm(k)}$\\
     $s_n^+\leq t_n^+$ (da $t_n^+$ nur positiv, bei $s_n^+$ kann auch die 0 enthalten sein)\\
     $s_n^-=-t_n^- \Rightarrow \lim_{n\rightarrow \infty}=\sum_1^\infty a_{\varphi_+(k)}=\infty, \lim_{n\rightarrow \infty}
-    t_n^-=\sum_1^\infty a_{\varphi_-(k)}=-\infty$ %weitere Beweisfolge mit einbauen
+    t_n^-=\sum_1^\infty a_{\varphi_-(k)}=-\infty$ \todo{weitere Beweisfolge
+      mit einbauen}
 \end{itemize}
+  \end{proof}
+\end{theorem}
 
-\begin{definition}
+\begin{definition}[Bedingte/""unbedingte Konvergenz]
 \begin{enumerate}[(1)]
-  \item Eine konvergente Reihe heißt genau dann \emph{unbedingt kon\-ver\-gent\index{konvergent!unbedingt}
-    \index{unbedingt konvergent}}, wenn alle Umordnungen konvergent sind.
-  \item Eine konvergente Reihe heißt \emph{bedingt konvergent\index{konvergent!bedingt}\index{bedingt konvergent}}, wenn
-    sie nicht unbedingt kon\-ver\-gent ist.
+  \item Eine konvergente Reihe heißt genau dann \highl{unbedingt konvergent},
+  wenn alle Umordnungen konvergent sind.
+  \item Eine konvergente Reihe heißt \highl{bedingt konvergent}, wenn
+    sie nicht unbedingt konvergent ist.
 \end{enumerate}
 \end{definition}
 
-\autoref{satz:absUmordnung} besagt, dass unbedingt konvergente Reihen vorhanden sind, wenn diese absolut konvergieren.
+Das \autoref{satz:absUmordnung} besagt, dass unbedingt konvergente Reihen
+vorhanden sind, wenn diese absolut konvergieren.
 
-\begin{theorem}
-\textbf{Riemannsche Umordnungssatz\index{Umordnungssatz!Riemannsche}\index{Riemannsche Umordnungssatz}} Sei $\sum_1^\infty
-a_k$ bedingt konvergent. Dann 
-\begin{gather*}\forall S \in \R \exists \pi \colon\N\rightarrow\N \text{ Bijektion }\colon\sum_1^\infty a_{\pi(k)}=S\end{gather*}
+\begin{theorem}[Riemannscher Umordnungssatz\index{Umordnungssatz!Riemannscher}]
+  Sei $\sum_1^\infty a_k$ bedingt konvergent. Dann
+  \begin{gather*}
+    \forall S \in \R \exists \pi \colon\N\rightarrow\N \text{ Bijektion }\colon\sum_1^\infty a_{\pi(k)}=S
+  \end{gather*}
+  \begin{proof}
+    siehe Heuser S.\,197--199
+  \end{proof}
 \end{theorem}
-\textbf{Beweis}: siehe Heuser S.\,197--199
 
-\paragraph{Produkte von Reihen}
+\subsection{Produkte von Reihen}
 
-$\sum_{n=0}^\infty a_n, \sum_{n=0}^\infty b_n$ seien Reihen in $\R$
-\begin{gather*}\left(\sum_{i=0}^M a_i\right)\left( \sum_{j=0}^N\right) =\sum_{i=0}^M \sum_{j=0}^N a_ib_j\end{gather*}
-Ordnet man alle $a_jb_k$ (Reihenfolge der Glieder spielt keine Rolle) zu einer Folge $(p_n)_{n=0}^\infty$ an, so wird
-die Reihe $\sum_0^\infty p_n$ als \emph{Produktreihe\index{Produktreihe}} der Reihen $\sum a_n \sum b_n$ bezeichnet.
+Seien $\sum_{n=0}^\infty a_n$ und $\sum_{n=0}^\infty b_n$ Reihen in $\R$
+\begin{gather*}
+  \left(\sum_{i=0}^M a_i\right)\left( \sum_{j=0}^N\right) =\sum_{i=0}^M \sum_{j=0}^N a_ib_j
+\end{gather*}
+Ordnet man alle $a_j b_k$ (Reihenfolge der Glieder spielt keine Rolle) zu
+einer Folge $(p_n)_{n=0}^\infty$ an, so wird die Reihe $\sum_0^\infty p_n$ als
+\highl{Produktreihe} der Reihen $\sum a_n \sum b_n$ bezeichnet.
 
-\begin{theorem}
-\label{satz:abskonvReihe}
-Seien $\sum_{n=0}^\infty a_n, \sum_{b=0}^\infty b_n$ absolut konvergent. Dann ist auch $\sum_{n=0}^\infty p_n$ absolut
-konvergent und es gilt
-\begin{gather*}\sum_{n=0}^\infty p_n=\left(\sum_{n=0}^\infty a_n\right)\left(\sum_{n=0}^\infty b_n\right)\end{gather*}
-\end{theorem}
-\textbf{Beweis}:
-\begin{enumerate}[1. Schr{i}tt]
-  \item Zu zeigen ist, dass $\sum \abs{p_n}$ konvergent ist. Nach dem Monotoniekriterium reicht es zu zeigen, dass
-    $\exists K \geq 0 \forall n \in \N \cup \{0\}\colon\sum_{k=0}^\infty \abs{p_k}\leq K$.\\
-    Sei $n \in \N \Rightarrow \exists m \in \N \colon \sum_{k=0}^n \abs{p_k}\leq (\sum_{k=0}^m \abs{a_k})(\sum_{k=0}^m \abs{b_k})$\\
-    $\leq
-    (\sum_0^\infty \abs{a_k})(\sum_0^\infty \abs{b_k})=:K$
-  \item Beweis der Summenformel
-    %Matrixformel einfuegen
-    $q_0+q_1+\cdots +q_{(n+1)^2-1}=(\sum_{k=0}^n a_k)(\sum_{k=0}^n b_k)\stackrel{n\rightarrow \infty}{\rightarrow}
-    (\sum_{k=0}^\infty a_k)(\sum_{k=0}^\infty b_k)$\\
-    $\sum_{k=0}^\infty q_k=(\sum_{k=0}^\infty a_k)(\sum_{k=0}^\infty b_k)$\\
-    Da $\sum q_n$ eine Umordnung von $\sum p_n$ ist, folgt nach \autoref{satz:absUmordnung} und dem ersten Schritt, dass
-    $\sum p_n=\sum q_n = (\sum a_n)(\sum b_n)$
+\begin{theorem}\label{satz:abskonvReihe}
+  Seien $\sum_{n=0}^\infty a_n, \sum_{b=0}^\infty b_n$ absolut konvergent.
+  Dann ist auch $\sum_{n=0}^\infty p_n$ absolut konvergent und es gilt
+  \begin{gather*}
+    \sum_{n=0}^\infty p_n=\left(\sum_{n=0}^\infty
+       a_n\right)\left(\sum_{n=0}^\infty b_n\right)
+  \end{gather*}
+  \begin{proof}
+    \begin{enumerate}[1.\,Schr{i}tt]
+     \item Zu zeigen ist, dass $\sum \abs{p_n}$ konvergent ist. Nach dem
+      Monotoniekriterium reicht es zu zeigen, dass $\exists K \geq 0 \forall n
+      \in \N \cup \{0\}\colon \sum_{k=0}^n \abs{p_k}\leq K$.
+
+      Sei $n \in \N \Rightarrow$. Dann existiert ein $m \in \N$ mit
+      \begin{gather*}
+	\sum_{k=0}^n \abs{p_k}
+      \leq \left(\sum_{k=0}^m \abs{a_k}\right)\left(\sum_{k=0}^m
+      \abs{b_k}\right) \leq \left(\sum_0^\infty
+      \abs{a_k}\right)\left(\sum_0^\infty \abs{b_k}\right)=\colon K
+      \end{gather*}
+      
+  \item Beweis der Summenformel:
+    $q_0+q_1+\cdots +q_{(n+1)^2-1} =(\sum_{k=0}^n a_k)(\sum_{k=0}^n
+      b_k)\xrightarrow{n\rightarrow \infty} (\sum_{k=0}^\infty
+      a_k)(\sum_{k=0}^\infty b_k) =\sum_{k=0}^\infty q_k$. Da $\sum q_n$ eine
+      Umordnung von $\sum p_n$ ist, folgt nach \autoref{satz:absUmordnung} und
+      dem ersten Schritt, dass $\sum p_n=\sum q_n = (\sum a_n)(\sum b_n)$.
 \end{enumerate}
-\qed
+  \end{proof}
+\end{theorem}
 
-\begin{definition}
-\textbf{Cauchy-Produkt} %%pstricks einfuegen
-Die Produktreihe $\sum c_n$ heißt \emph{Cauchyprodukt\index{Cauchyprodukt}} der Reihen $\sum a_n, \sum b_n$.
+\begin{definition}[Cauchy-Produkt]
+  Die Produktreihe $\sum c_n$ heißt \emph{Cauchyprodukt\index{Cauchyprodukt}}
+  der Reihen $\sum a_n, \sum b_n$.
+  \begin{gather*}
+    \begin{matrix}
+      c_{0}& c_{1}& c_{3}&\\
+      a_{0}b_{0}& a_{0}b_{1}& a_{0}b_{2}& \dotso\\
+      c_{2}& c_{4}& c_{7}&\\
+      a_{1}b_{0}& a_{1}b_{1}& a_{1}b_{2}& \dotso \\
+      c_{5}& c_{8}& c_{12}& \\
+      a_{2}b_{0}& a_{2}b_{1}& a_{2}b_{2}& \dotso \\
+      \vdots& \vdots& \vdots
+    \end{matrix}
+  \end{gather*}
 \end{definition}
 
 \begin{theorem}
-Seien $\sum a_n, \sum b_n$ absolut konvergent. Dann ist das Cauchyprodukt $\sum c_n$ absolut konvergent und es gilt:
-\begin{gather*}\sum_{n=0}^\infty c_n = \sum_{n=0}^\infty \left(\underbrace{\sum_{k=0}^n a_k b_{n-k}}_{=:d_n}\right) = \left(\sum a_n\right)\left(\sum b_n\right)\end{gather*}
+  Seien $\sum a_n, \sum b_n$ absolut konvergent. Dann ist das Cauchyprodukt
+  $\sum c_n$ absolut konvergent und es gilt:
+  \begin{gather*}
+    \sum_{n=0}^\infty c_n = \sum_{n=0}^\infty \left(\underbrace{\sum_{k=0}^n
+       a_k b_{n-k}}_{=\colon d_n}\right) = \left(\sum a_n\right)\left(\sum
+       b_n\right)
+  \end{gather*}
+  \begin{proof}
+    Die Summe $\sum c_n=(\sum a_n)(\sum b_n)$ ist nach
+    \autoref{satz:abskonvReihe} absolut konvergent. Da $\sum d_n$ eine
+    spezielle Klammerung von $\sum c_n$ ist, gilt $\sum_{n=0}^\infty c_n=
+    \sum_{n=0}^\infty d_n$ nach \autoref{satz:RechenregelReihe} Punkt~3.
+  \end{proof}
 \end{theorem}
-\textbf{Beweis}: $\sum c_n=(\sum a_n)(\sum b_n)$ ist nach \autoref{satz:abskonvReihe} absolut konvergent. Da $\sum d_n$ eine
-spezielle Klammerung von $\sum c_n$ ist, gilt $\sum_{n=0}^\infty c_n=\sum_{n=0}^\infty d_n$ nach
-\autoref{satz:RechenregelReihe} Punkt 3.\qed
 
-\paragraph{Bemerkungen zum Cauchyprodukt} für $n\in \N\cup \{0\}$ sei
-$a_n\coloneqq b_n\coloneqq\frac{(-1)^n}{\sqrt{n+1}}$ und 
-$d_n=\sum_{k=0}^n a_kb_{n-k}$. Die Reihen $\sum a_n, \sum b_n$ konvergieren nach dem Leibnitzkriterium. Ihr 
-Cau\-chy\-pro\-dukt konvergiert nicht, denn 
+\begin{remark}[zum Cauchyprodukt]
+  Sei $a_n\coloneqq b_n\coloneqq\frac{(-1)^n}{\sqrt{n+1}}$ und
+  $d_n=\sum_{k=0}^n a_kb_{n-k}$ für $n\in \N\cup \{0\}$. Die Reihen $\sum a_n,
+  \sum b_n$ konvergieren nach dem Leibnitzkriterium. Ihr Cauchyprodukt
+  konvergiert nicht, denn
 \begin{align*}
-  d_n &= \sum_{k=0}^n a_k b_{n-k}\\
-  &= \sum_{k=0}^n \frac{(-1)^k}{\sqrt{k+1}}\cdot \frac{(-1)^{n-k}}{\sqrt{n-k+1}}\\
+  d_n &= \sum_{k=0}^n a_k b_{n-k}= \sum_{k=0}^n \frac{(-1)^k}{\sqrt{k+1}}\cdot
+     \frac{(-1)^{n-k}}{\sqrt{n-k+1}}\\
   &= (-1)^n \sum_{k=0}^n \frac{1}{\sqrt{(k+1)(n-k+1)}}\\
-  \\
-  \abs{d_n} &= \sum_{k=0}^n \frac{1}{\sqrt{(k+1)(n-k+1)}}\\
-  &\geq \sum_{k=0}^n \frac{\frac{1}{(k+1)(n-k+1)}}{2}\\
-  &= \sum_{k=0}^n \frac{2}{n+2}\\
-  &= \frac{2n+2}{n+2}\\
-  &\geq 1
+  \abs{d_n} &= \sum_{k=0}^n \frac{1}{\sqrt{(k+1)(n-k+1)}} \geq \sum_{k=0}^n
+     \frac{\frac{1}{(k+1)(n-k+1)}}{2}\\
+  &= \sum_{k=0}^n \frac{2}{n+2}= \frac{2n+2}{n+2}\geq 1
 \end{align*}
 $\Rightarrow \abs{d_n}$ konvergiert nicht gegen $0\Rightarrow d_n \not\rightarrow 0\Rightarrow \sum d_n$ ist divergent. Daraus
 folgt, dass auch $\sum c_n$ divergent ist.
+\end{remark}
 
-Ein Beispiel für das Cauchyprodukt ist die \emph{Exponentialreihe\index{Exponentialreihe}}:
-\begin{gather*}e^x \coloneqq \exp(x)\coloneqq\sum_{n=0}^\infty \frac{x^n}{n!}=1+x+\frac{x^2}{2}+\frac{x^3}{3!}+\cdots +\frac{x^n}{n!}\end{gather*}
-Dann gilt $\exp(x+y)=\exp(x)\cdot \exp(y)$.\\
-\textbf{Beweis}: $\sum_0^\infty \frac{x^n}{n!}$ ist nach dem Quotientenkriterium absolut konvergent für alle $x\in \R$
-\begin{align*}
-  \exp(x)\cdot \exp(y) & = & \left(\sum_{k=0}^\infty \frac{x^k}{k!}\right)\left(\sum_{j=0}^\infty \frac{x^j}{j!}\right)\\
-  & = & \sum_{n=0}^\infty \left(\sum_{k=0}^n a_k b_{n-k}\right)\\
-  & = & \sum_{n=0}^\infty \left(\sum_{k=0}^n \frac{x^k}{k!}\cdot \frac{y^{n-k}}{(n-k)!}\right)\\
-  & = & \sum_{n=0}^\infty \frac{1}{n!} \left(\sum_{k=0}^n \underbrace{\frac{n!}{k!(n-k)!}}_{=\binom{n}{k}} x^k y^{n-k}\right)\\
-  & = & \sum_{n=0}^\infty \frac{1}{n!}(x+y)^n\\
-  & = & \exp(x+y)
+\begin{beispiel}[Exponentialreihe]
+  Ein Beispiel für das Cauchyprodukt ist die \highl{Exponentialreihe}:
+  \begin{gather*}
+    e^x \coloneqq \exp(x)\coloneqq\sum_{n=0}^\infty
+       \frac{x^n}{n!}=1+x+\frac{x^2}{2}+\frac{x^3}{3!}+\cdots +\frac{x^n}{n!}
+  \end{gather*}
+  Dann gilt $\exp(x+y)=\exp(x)\cdot \exp(y)$.
+  \begin{proof}
+    $\sum_0^\infty \frac{x^n}{n!}$ ist nach dem Quotientenkriterium absolut
+    konvergent für alle $x\in \R$.
+    \begin{align*}
+      \exp(x)\cdot \exp(y) &= \left(\sum_{k=0}^\infty
+	 \frac{x^k}{k!}\right)\left(\sum_{j=0}^\infty \frac{x^j}{j!}\right) =
+	 \sum_{n=0}^\infty \left(\sum_{k=0}^n a_k b_{n-k}\right)\\
+      &= \sum_{n=0}^\infty \left(\sum_{k=0}^n \frac{x^k}{k!}\cdot
+	 \frac{y^{n-k}}{(n-k)!}\right) = \sum_{n=0}^\infty \frac{1}{n!}
+	 \left(\sum_{k=0}^n \underbrace{\frac{n!}{k!(n-k)!}}_{=\binom{n}{k}}
+	 x^k y^{n-k}\right)\\
+      &= \sum_{n=0}^\infty \frac{1}{n!}(x+y)^n = \exp(x+y)
 \end{align*}
-\qed
+  \end{proof}
+\end{beispiel}
 
-\textbf{Korollar:}
-\begin{enumerate}[(1)]
+\begin{lemma}
+  \begin{enumerate}[(1)]
   \item $\forall x \in \R \colon \exp(x)>0$\\
     $\forall x\geq 0\colon \exp(x)\geq 1>0$\\
     $\forall x<0\colon(-x)>0\Rightarrow \exp(-x)>0\Rightarrow \exp(x)>0$
@@ -2058,143 +2322,204 @@ Dann gilt $\exp(x+y)=\exp(x)\cdot \exp(y)$.\\
     $n\Rightarrow n+1\colon \exp(n+1)=\exp(n)\cdot \exp(1)=e^n\cdot e=e^{n+1}$\\
     $n\in \Z , n<0, (-n)\in \N, e^{-n}=\exp(-n)=\frac{1}{\exp(n)}\Rightarrow \exp(n)=e^n$
 \end{enumerate}
-\qed
+\end{lemma}
 
 \chapter{Funktionen und Stetigkeit}
-Seien $(X,d), (Y,\tilde{d})$ metrische Räume und $D\subset X, f\colon D\rightarrow Y$ eine Funktion.
+Im folgenden betrachten wir zwei metrische Räume  $(X,d)$ und $(Y,\tilde{d})$.
+Dabei ist $D$ eine Teilmenge von $X$ und $f$ eine Funktion $f\colon
+D\rightarrow Y$.
 
 \section{Grenzwerte und Stetigkeit}
-\begin{definition}
+\begin{definition}[Grenzwert]
 Sei $a\in X$ mit folgenden Eigenschaften: $\exists (a_n)\subset D\colon a_n\rightarrow a$. Die Funktion $f\colon D\rightarrow Y$
 hat in $a$ den Grenzwert 
 \begin{gather*}c\perdef \forall x_n \subset D\colon\lim_{n\rightarrow \infty} x_n=a\Rightarrow \lim_{n\rightarrow \infty} f(x_n)=c\end{gather*}
-Dann heißt $c$ \emph{Grenzwert\index{Grenzwert!Funktion} an der Stelle $a$}.
+Dann heißt $c$ \highl{Grenzwert} an der Stelle $a$.
 \end{definition}
-Schreibweise: $\lim_{x\rightarrow a} f(x)=c, 
-\lim_{\stackrel{x\rightarrow a}{x \in D}} f(x)=c$\\
-Beispiel:
-\begin{enumerate}[(1)]
-  \item Seien $X=Y=\R$ und der Abstand definiert durch $d(x,y)=\abs{x-y}$. Wie ermittelt man $\lim_{x\rightarrow 1} f(x)$
-    mit $f\colon D=\R \backslash \{1\}\rightarrow \R, f(x)=\frac{x^2-1}{x-1}$? $a=1\notin D, a_n=1+\frac{1}{n} \in \R\backslash
-    \{1\}$.\\
-    Sei $(x_n)\subset D \subset \R \backslash \{1\}$ mit $x_n\rightarrow 1$.\\
-    $f(x)=\frac{x_n^2 -1}{x_n-1}=x_n+1 \stackrel{n\rightarrow \infty}{\rightarrow} 1+1=2 \Rightarrow \lim_{x \rightarrow 1}
-    f(x)=2$\\
-    $a\neq 1, x_n\rightarrow a, f(x_n)=x_n+1 \stackrel{n \rightarrow \infty}{\rightarrow} a+1$
-  \item $X=Y=\R \quad f\colon D=\R\backslash \{0\}\rightarrow \R \quad f(x)=\frac{\exp(x)-1}{x}$\\
-    Es gilt $\lim_{x\rightarrow 0} \frac{\exp(x)-1}{x}=1$\\
-    Beweis: 
-    \begin{align*}
-      \exp(x)-1-x &= \frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}+\cdots\\
-      \abs{\exp(x)-1-x} &\leq \frac{\abs{x}^2}{2!}
-      +\frac{\abs{x}^3}{3!} +\frac{\abs{x}^4}{4!}+\cdots\\
-      &= \abs{x}^2\left(\frac{1}{2!} +\frac{\abs{x}}{3!}
-        +\frac{\abs{x}^2}{4!} +\cdots\right)\\
-      &\leq \abs{x}^2\left(\underbrace{\frac{1}{2!} +\frac{1}{3!}
-          +\frac{1}{4!} +\cdots}_{=e-2}\right) \text{für } \abs{x}\leq 1\\
-      &= (e-2)\abs{x}^2\\
-      \abs{\frac{\exp(x)-1}{x}-1} &\leq (e-2)\abs{x} \text{für } x\neq
-        0, \abs{x}\leq 1
+
+\begin{remark}
+  Schreibweise: $\lim_{x\rightarrow a} f(x)=c, \lim_{\stackrel{x\rightarrow
+  a}{x \in D}} f(x)=c$
+\end{remark}
+
+\begin{beispiel}
+  \begin{enumerate}[(1)]
+  \item Seien $X=Y=\R$ und der Abstand definiert durch $d(x,y)=\abs{x-y}$. Wie
+    ermittelt man $\lim_{x\rightarrow 1} f(x)$ für die Funktion $f\colon D=\R
+    \backslash \{1\}\rightarrow \R, f(x)=\frac{x^2-1}{x-1}$? Es ist $a=1\notin
+    D$. Wir definieren eine Folge $a_n=1+\frac{1}{n} \in \R\backslash
+    \{1\}$, die gegen $a$ strebt.
+
+    Sei $(x_n)\subset D \subset \R \backslash \{1\}$ mit $x_n\rightarrow 1$.
+    Dann gilt, $f(x)=\frac{x_n^2 -1}{x_n-1}=x_n+1 \xrightarrow{n\rightarrow
+    \infty} 1+1=2 \Rightarrow \lim_{x \rightarrow 1} f(x)=2$. Für
+    $a\neq 1$ und $x_n\rightarrow a$ gilt $f(x_n)=x_n+1 \xrightarrow{n
+    \rightarrow \infty} a+1$.
+  \item Sei $X=Y=\R$ und $f\colon D=\R\backslash \{0\}\rightarrow \R$ mit
+    $f(x)=\frac{\exp(x)-1}{x}$. Es gilt: $\lim_{x\rightarrow 0}
+    \frac{\exp(x)-1}{x}=1$.
+    \begin{proof}
+      \begin{align*}
+	\exp(x)-1-x &= \frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}+\dotsb\\
+	\abs{\exp(x)-1-x} &\leq \frac{\abs{x}^2}{2!} +\frac{\abs{x}^3}{3!}
+	   +\frac{\abs{x}^4}{4!}+\dotsb\\
+	&= \abs{x}^2\left(\frac{1}{2!} +\frac{\abs{x}}{3!}
+	   +\frac{\abs{x}^2}{4!} +\dotsb\right)\\
+	&\leq \abs{x}^2\left(\underbrace{\frac{1}{2!} +\frac{1}{3!}
+	   +\frac{1}{4!} +\dotsb}_{=e-2}\right) \text{für } \abs{x}\leq 1\\
+	&= (e-2)\abs{x}^2\\
+	\abs[\bigg]{\frac{\exp(x)-1}{x}-1} &\leq (e-2)\abs{x} \text{ für }
+	   x\neq 0, \abs{x}\leq 1
     \end{align*}
-    Sei $x_n\stackrel{x_n\neq 0}{\rightarrow} 0 \Rightarrow 0\leq \abs{\frac{\exp(x_n)-1}{x_n}-1}\leq (e-2)x_n
-    \stackrel{n\rightarrow \infty}{\rightarrow} 0 \Rightarrow \frac{\exp(x_n)-1}{x_n}\rightarrow 1$
+    Sei $x_n\xrightarrow{x_n\neq 0} 0 \Rightarrow 0\leq
+      \abs{\frac{\exp(x_n)-1}{x_n}-1}\leq (e-2)x_n \xrightarrow{n\rightarrow
+      \infty} 0 \Rightarrow \frac{\exp(x_n)-1}{x_n}\rightarrow 1$
     \begin{gather*}\lim \frac{\exp(x)-1}{x}=1\end{gather*}
-  \item $X=Y=\R \quad f(x)=\begin{cases}1 & x \geq 0\\-1 & x<0\end{cases}$\\
-    Vermutung: $f(x)\not\rightarrow c \perdef \exists (x_n) \subset D\colon x_n\rightarrow a \wedge f(x_n)\not\rightarrow c$\\
-    $x_n=(-1)^n\frac{1}{n}\rightarrow 0 \wedge f(x_n)=\begin{cases}1 & n \text{ gerade}\\-1 & n \text{ ungerade}\end{cases}
-    \Rightarrow \lim f(x_n)$ existiert nicht.
+    \end{proof}
+  \item Sei $X=Y=\R$ und $f(x)=\begin{cases}1 & x \geq 0\\-1 &
+				 x<0\end{cases}$. Wir vermuten:
+    $f(x)\not\rightarrow c \perdef \exists (x_n) \subset D\colon
+    x_n\rightarrow a \wedge f(x_n)\not\rightarrow c$. Wir setzen
+    $x_n=(-1)^n\frac{1}{n}\rightarrow 0 \wedge f(x_n)=\begin{cases}1 & n
+							\text{ gerade}\\-1 & n
+							\text{
+							  ungerade}\end{cases}$.
+    Somit existiert der $\lim f(x_n)$ nicht.
 \end{enumerate}
+\end{beispiel}
 
-\begin{definition}
-Sei $f\colon D\rightarrow Y$ und $a \in D$. $f$ heißt genau dann stetig in $a$, wenn $\lim_{x\rightarrow a} 
-f(x)=f(a)$. $f$ heißt genau dann stetig in $D$, wenn $f$ in jedem Punkt $a$ aus $D$ stetig ist.
+\begin{definition}[Stetigkeit]
+Sei $f\colon D\rightarrow Y$ und $a \in D$. Die Funktion $f$ heißt genau dann
+  \highl{stetig}\index{Stetigkeit} im Punkt $a$, wenn $\lim_{x\rightarrow a}
+  f(x)=f(a)$. Die Funktion $f$ heißt genau dann
+  \highl{stetig}\index{Funktion!Stetigkeit} in $D$, wenn $f$ in jedem Punkt
+  $a$ aus $D$ stetig ist.
 \end{definition}
-Beispiel: Die konstante Funktion $f(x)=b$ und die identische Funktion sind stetige Funktionen.\\
-$f(x)=\begin{cases}\frac{x^2-1}{x-1} & x \neq 1\\1 & x=1\end{cases} f\colon\R\rightarrow \R$\\
-$lim_{x\rightarrow 1}f(x)=2\neq 1=f(1)$ Dies heißt, dass $f$ nicht stetig in 1 ist.
 
-\begin{theorem}
-Rechenregeln:
+\begin{beispiel}
+  Die konstante Funktion $f(x)=b$ und die identische Funktion $\id\colon
+  X\rightarrow X, \id(x)=x$ sind stetige Funktionen. Dies sind triviale
+  Beispiele für Stetigkeit.
+
+  Die Funktion
+  \begin{gather*}
+    f\colon\R\rightarrow \R\qquad f(x)=\begin{cases}\frac{x^2-1}{x-1} & x \neq
+					 1\\1 & x=1\end{cases}
+  \end{gather*}
+  ist im Punkt $x=1$ \emph{nicht} stetig. Denn $lim_{x\rightarrow 1}f(x)=2\neq
+  1=f(1)$. Setzt man den Funktionswert $2$ für $x=1$, so wäre die Funktion
+  stetig.
+\end{beispiel}
+
+\begin{theorem}[Rechenregeln]
 \begin{enumerate}[(1)]
-  \item Sei $(X,d)$ und $D \subset X$. Dann gilt:\\
-    sind $f,g\colon D\rightarrow\R$ stetig in $a \in D$, so sind $f+g, f\cdot g, \lambda f (\lambda \in \R)$
-    stetig in $a$. Ist $g(a)\neq 0$, so ist auch $\frac{f}{g}\colon D'\rightarrow \R (D'=\{x\in D\colon g(x)\neq 0\})$
-    stetig in $a$.\\
-    \textbf{Beweis}: Siehe hierzu \autoref{satz:wkonvkrit}. z.\,B. Sei $(x_n)$ eine Folge mit $x_n\rightarrow a
-    \stackrel{f,g \text{ stetig}}{\Longrightarrow} f(x_n)\rightarrow f(a), g(x_n)\rightarrow g(a)$\\
-    $\Rightarrow (f+g)(x_n)=f(x_n)+g(x_n)\rightarrow f(a)+g(a)=(f+g)(a)$\\
+  \item Sei $(X,d)$ ein metrischer Raum und $D \subset X$. Dann gilt: Sind
+  $f,g\colon D\rightarrow\R$ stetig in $a \in D$, so sind $f+g, f\cdot g,
+  \lambda f$ mit $\lambda \in \R$ stetig in $a$. Ist $g(a)\neq 0$, so ist auch
+  $\frac{f}{g}\colon D'\rightarrow \R$ stetig in $a$. Dabei ist $D'=\{x\in
+  D\colon g(x)\neq 0\}$.
+  \begin{proof}
+    Siehe hierzu den \autoref{satz:wkonvkrit}. Sei beispielsweise $(x_n)$ eine
+    Folge mit $x_n\rightarrow a$. Wegen der Stetigkeit von $f$ und $g$ folgt,
+    $f(x_n)\rightarrow f(a)$ und $g(x_n)\rightarrow g(a)$. Also ist
+    $(f+g)(x_n)=f(x_n)+g(x_n)\rightarrow f(a)+g(a)=(f+g)(a)$.
     Daraus folgt, dass $f+g$ stetig in $a$ sind.
-  \item Seien $X,Y,Z$ metrische Räume mit $D\subset X, E\subset Y, f\colon D\rightarrow Y, g\colon E\rightarrow Z,
-    f(D)\subset E$. Ist $f$ in $a\in D$ und $g$ in $f(a)$ stetig, so ist $g\circ f$ in $a$ stetig.\\
-    \textbf{Beweis}:$x_n\rightarrow a \stackrel{f \text{ stetig}}{\Longrightarrow} f(x_n)\rightarrow f(a)
-    \stackrel{g \text{ stetig}}{\Longrightarrow} (g \circ f)(x_n)=g(f(x_n))\rightarrow g(f(a))=(g\circ f)
-    (a)$
+  \end{proof}
+  \item Seien $X,Y,Z$ metrische Räume mit $D\subset X, E\subset Y, f\colon
+  D\rightarrow Y, g\colon E\rightarrow Z, f(D)\subset E$. Ist $f$ in $a\in D$
+  und $g$ in $f(a)$ stetig, so ist $g\circ f$ in $a$ stetig.
+  \begin{proof}
+    Aus $x_n\rightarrow a$ folgt wegen der Stetigkeit von $f$, dass
+    $f(x_n)\rightarrow f(a)$. Weiterhin ist $g$ stetig und es folgt, $(g \circ
+    f)(x_n)=g(f(x_n))\rightarrow g(f(a))=(g\circ f) (a)$.
+  \end{proof}
 \end{enumerate}
-\qed
 \end{theorem}
 
-\section{\texorpdfstring{$\varepsilon$-$\delta$}{epsisol-delta}-Stetigkeit}
-\begin{theorem}
-\label{satz:e-d-stetig}
-Sei $D\subset X, f\colon D\rightarrow Y$. $f$ ist genau dann im Punkt $a\in D$ stetig, wenn:
-\begin{gather*}\forall \varepsilon >0 \exists \delta_{\varepsilon}(a)>0 \forall x \in D\colon d(x,a)<\delta_{\varepsilon}
-(a)\Rightarrow  \tilde{d}(f(x),f(a))<\varepsilon\end{gather*}
-In Worten: $f(x)$ weicht beliebig wenig von $f(a)$ ab, falls nur $x$ hinreichend nahe bei $a$ liegt oder 
-zu jeder $\varepsilon$-Kugel $\mathring{B_{\varepsilon}}(f(a))$ existiert eine $\delta_{\varepsilon}$
--Kugel relativ zu $D$ mit $f(\mathring{B_{\varepsilon}}\cap D)\subset \mathring{B_{\varepsilon}}
-(f(a))$.
-\begin{gather*}\forall \varepsilon >0 \exists \delta_{\varepsilon}>0\colon
-  f(\mathring{B_{\delta_{\varepsilon}}}(a)
-\cap D) \subset \mathring{B_{\varepsilon}}(f(a))\end{gather*}
-\end{theorem}
-\textbf{Beweis}
-\begin{itemize}
-  \item["`$\Rightarrow$"'] Voraussetzung: $\forall (x_n)\subset D\colon x_n\rightarrow a \Rightarrow f(x_n)
-    \rightarrow f(a)$\\
-    zu zeigen: $\forall \varepsilon >0 \exists \delta_{\varepsilon} >0 \forall x\ in D\colon d(x,a)<
-    \delta_{\varepsilon}\Rightarrow \tilde{d}(f(x),f(a))<\varepsilon$\\
-    Der Beweis wird indirekt geführt. Annahme: $\exists \varepsilon >0 \forall \delta >0 \exists
-    x \in D\colon d(x,a)<\delta \wedge \tilde{d} (f(x),f(a))\geq \varepsilon$\\
+\section{\texorpdfstring{$\varepsilon$-$\delta$}{Epsilon-Delta}-Stetigkeit}
+\begin{theorem}[$\epsilon$"~$\delta$"~Definition der Stetigkeit]\label{satz:e-d-stetig}
+  Sei $D\subset X, f\colon D\rightarrow Y$. Die Funktion $f$ ist genau dann im
+  Punkt $a\in D$ stetig, wenn:
+  \begin{gather*}
+    \forall \varepsilon >0 \exists \delta_{\varepsilon}(a)>0 \forall x \in
+       D\colon d(x,a)<\delta_{\varepsilon} (a)\Rightarrow
+       \tilde{d}(f(x),f(a))<\varepsilon
+  \end{gather*}
+  In Worten: $f(x)$ weicht beliebig wenig von $f(a)$ ab, falls nur $x$
+  hinreichend nahe bei $a$ liegt oder zu jeder $\varepsilon$-Kugel
+  $\mathring{B_{\varepsilon}}(f(a))$ existiert eine
+  $\delta_{\varepsilon}$-Kugel relativ zu $D$ mit
+  $f(\mathring{B_{\varepsilon}}\cap D)\subset \mathring{B_{\varepsilon}}
+  (f(a))$.
+  \begin{gather*}
+    \forall \varepsilon >0 \exists \delta_{\varepsilon}>0\colon
+       f(\mathring{B_{\delta_{\varepsilon}}}(a) \cap D) \subset
+       \mathring{B_{\varepsilon}}(f(a))
+  \end{gather*}
+  \begin{proof}
+    \begin{itemize}
+  \item["`$\Rightarrow$"'] Für alle $(x_n)\subset D$ setzen wir voraus, dass
+      $x_n\rightarrow a \Rightarrow f(x_n)\rightarrow f(a)$. Dann  ist
+    zu zeigen: $\forall \varepsilon >0 \exists \delta_{\varepsilon} >0 \forall
+      x \in D\colon d(x,a)< \delta_{\varepsilon}\Rightarrow
+      \tilde{d}(f(x),f(a))<\varepsilon$.
+    Der Beweis wird indirekt geführt. Annahme: $\exists \varepsilon >0 \forall
+      \delta >0 \exists x \in D\colon d(x,a)<\delta \wedge \tilde{d}
+      (f(x),f(a))\geq \varepsilon$.
     Insbesondere gilt: $\forall n \in \N \exists x_n \in D\colon d(x_n,a)<\frac{1}{n} \wedge \tilde{d}(f(x_n),
     f(n))\geq \varepsilon \stackrel{n\rightarrow \infty}{\Longrightarrow} x_n \rightarrow a \wedge 
     f(x_n)\not\rightarrow f(a)$
    \lightning
-  \item["`$\Leftarrow$"'] zu zeigen: $\forall (x_n) \subset D$ mit $x_n\rightarrow a$ gilt $f(x_n)
-    \rightarrow f(a)$\\
-    Sei $(x_n)\subset D$ mit $x_n\rightarrow a$ und $\varepsilon >0$. Nach Voraussetzung existiert ein
-    $\delta >0$, so dass $\tilde{d}(f(x),f(a))<\varepsilon \forall x \in D$ mit $d(x,a)<\delta$. Da
-    $x_n\rightarrow a$ gibt es ein $n_0\in \N$, so dass $d(x_n,a)<\delta \forall n\geq n_0
-    \Rightarrow \tilde{d}(f(x_n),f(a))<\varepsilon$ für alle $n\geq n_0$.
+  \item["`$\Leftarrow$"'] zu zeigen: $\forall (x_n) \subset D$ mit
+      $x_n\rightarrow a$ gilt $f(x_n) \rightarrow f(a)$.
+    Sei $(x_n)\subset D$ mit $x_n\rightarrow a$ und $\varepsilon >0$. Nach
+      Voraussetzung existiert ein $\delta >0$, so dass
+      $\tilde{d}(f(x),f(a))<\varepsilon \forall x \in D$ mit $d(x,a)<\delta$.
+      Da $x_n\rightarrow a$ gibt es ein $n_0\in \N$, so dass $d(x_n,a)<\delta
+      \forall n\geq n_0 \Rightarrow \tilde{d}(f(x_n),f(a))<\varepsilon$ für
+      alle $n\geq n_0$.
 \end{itemize}
-\qed
+  \end{proof}
+\end{theorem}
 
-Beispiel: $f\colon\Q\rightarrow\R , f(x)\coloneqq\begin{cases}0 & x<\sqrt{2}\\1 & x>\sqrt{2}\end{cases}$\\
-$f(x)$ ist stetig auf $\Q$.\\
-Beweis: Sei $a\in \Q$. Zeige $\lim_{x\rightarrow a} f(x)=f(a)$
-\begin{enumerate}[1. F{a}ll]
-\item Sei $a>\sqrt{2}$ und $(x_n)\subset \Q$, so dass $x_n\rightarrow a$.\\
-  Setze $\varepsilon \coloneqq a-\sqrt{2}>0$. Für $\varepsilon$ gibt es ein
-  $n_0\in \N$, so dass $\abs{x_n-a} <\varepsilon$ für alle $n\geq
-  n_0$. Ferner gilt $x_n>\sqrt{2}$ für $n\geq n_0$, denn $-\varepsilon
-  <x_n-a<\varepsilon$ für $n\geq n_0 \Rightarrow
-  \underbrace{a-\varepsilon}_{\sqrt{2}} <x_n
-  \Rightarrow f(x_n)=1 \forall n\geq n_0$\\
-  $\lim_{n\rightarrow \infty} f(x)=1=f(a)$
-\item Sei $a<\sqrt{2}$: analog
-\end{enumerate}
+\begin{beispiel}
+  Die Funktion $f\colon\Q\rightarrow\R$ mit $f(x)\coloneqq\begin{cases}0 &
+							    x<\sqrt{2}\\1 &
+							    x>\sqrt{2}\end{cases}$
+  ist auf $\Q$ stetig.
+  \begin{proof}
+    Sei $a\in \Q$. Zeige $\lim_{x\rightarrow a} f(x)=f(a)$.
+    \begin{enumerate}[1.\,F{a}ll]
+     \item Sei $a>\sqrt{2}$ und $(x_n)\subset \Q$, so dass $x_n\rightarrow a$.
+      Setze $\varepsilon \coloneqq a-\sqrt{2}>0$. Für $\varepsilon$ gibt es
+      ein $n_0\in \N$, so dass $\abs{x_n-a} <\varepsilon$ für alle $n\geq
+      n_0$. Ferner gilt $x_n>\sqrt{2}$ für $n\geq n_0$, denn $-\varepsilon
+      <x_n-a<\varepsilon$ für $n\geq n_0 \Rightarrow
+      a-\varepsilon=a-(a-\sqrt{2})=\sqrt{2} <x_n\Rightarrow f(x_n)=1$ für alle
+      $n\geq n_0$. Also ist $\lim_{n\rightarrow \infty} f(x)=1=f(a)$.
+     \item Sei $a<\sqrt{2}$: analog
+    \end{enumerate}
+  \end{proof}
+\end{beispiel}
 
 \section{Grenzwerte und Häufungspunkte von Mengen}
-\begin{definition}
+\begin{definition}[Häufungspunkt einer Menge]
   Sei $X$ ein metrischer Raum und $D\subset X$. Ein Punkt $a\in X$
-  heißt genau dann Häufungspunkt von $D$, wenn:
+  heißt genau dann
+  \highl[Menge!Häufungspunkt]{Häufungspunkt\index{Häufungspunkt}} von $D$,
+  wenn:
   \begin{gather*}\forall \varepsilon >0\colon
-  \left(\stackrel{o}{B_{\varepsilon}}(a)\backslash \{a\} \right)\cap D
-  \neq \emptyset\end{gather*}
+  \left(\mathring{B_{\varepsilon}}(a)\backslash \{a\} \right)\cap D
+  \neq \emptyset
+  \end{gather*}
 \end{definition}
-\emph{Achtung}: Die Häufungspunkte einer Folge $(x_n)$ stimmen
-i.\,a. \emph{nicht} mit dem Häufungspunkt der entsprechenden Menge
-$\{x_n\colon n\in\N\}$ überein. Zum Beispiel hat die konstante Folge $(a)_n$
-hat den Häufungspunkt $a$. $a$ selbst hat keinen Häufungspunkt.
+
+\begin{remark}
+  \emph{Achtung}: Die Häufungspunkte einer Folge $(x_n)$ stimmen i.\,A.
+  \emph{nicht} mit dem Häufungspunkt der entsprechenden Menge $\{x_n\colon
+  n\in\N\}$ überein. Zum Beispiel hat die konstante Folge $(a)_n$ hat den
+  Häufungspunkt $a$. Aber $a$ selbst hat keinen Häufungspunkt. 
+\end{remark}
 
 \begin{theorem}
   Sei $f\colon D\rightarrow Y, D\subset Y$ und $a\in X$ ein Häufungspunkt
@@ -2213,8 +2538,8 @@ hat den Häufungspunkt $a$. $a$ selbst hat keinen Häufungspunkt.
   Häufungspunkt von $D$, wenn es eine $\varepsilon$-Kugel um $a$ gibt,
   die kein Element aus $D$ enthält, ausser eventuell $a$ selbst.
   \begin{gather*}\exists \varepsilon >0\colon(B_{\varepsilon}(a)\backslash \{a\})\cap D=\emptyset\end{gather*}
-\item[isolierter Punkt] $a\in D$ heißt \emph{isolierter
-    Punkt\index{Punkt!isolierter}}
+\item[isolierter Punkt] $a\in D$ heißt \highl[Punkt!isolierter]{isolierter
+    Punkt}
   \begin{gather*}\perdef \exists \varepsilon>0\colon(B_{\varepsilon}(a)\backslash
   \{a\})\cap D=\emptyset\end{gather*}
 \item[Korollar] Sei $D\subset X, f\colon D\rightarrow Y$. Dann gilt
@@ -2229,10 +2554,11 @@ hat den Häufungspunkt $a$. $a$ selbst hat keinen Häufungspunkt.
 \end{remark}
 
 \section{Stetigkeit, offene und abgeschlossene Mengen}
-\begin{definition}
+\begin{definition}[Offene, abgeschlossene Menge]
 Sei $X$ ein metrischer Raum.
 \begin{enumerate}[(1)]
-\item $O\subset X$ heißt genau dann \emph{offen\index{Menge!offene}},
+\item Eine Menge $O\subset X$ heißt genau dann
+  \highl[Menge!offene]{offen\index{offen}},
   wenn es zu jedem Element in $O$ eine $\varepsilon$-Kugel um dieses
   Element gibt, die ebenfalls ganz in $O$ liegt.
   \begin{gather*}\forall x\in O\colon\mathring{B_{\varepsilon}}(x)\subset O\end{gather*}
@@ -2241,98 +2567,105 @@ Sei $X$ ein metrischer Raum.
   $X\backslash A$ offen ist.
 \end{enumerate}
 \end{definition}
-Beispiele:
-\begin{enumerate}[(i)]
+
+\begin{beispiel}
+  \begin{enumerate}[(i)]
   \item $\emptyset, X$ sind offen und abgeschlossen
     \begin{itemize}
       \item $X$ offen: klar!
       \item $\emptyset$ offen: Sei $\emptyset$ nicht offen, dann gilt
         $\exists x_0\in \emptyset$ \lightning $\forall \varepsilon>0\colon
-        \stackrel{o}{B_{\varepsilon}}(x_0)\cap (X\backslash
+        \mathring{B_{\varepsilon}}(x_0)\cap (X\backslash
         \emptyset)\neq \emptyset$\lightning 
       \item $X$ ist abgeschlossen, da $X\backslash X=\emptyset$. Die leere Menge ist offen.
       \item $\emptyset$ ist abgeschlossen, da $X\backslash \emptyset=X$. $X$ ist offen.
     \end{itemize}
-  \item $r\geq 0\quad \stackrel{o}{B_r}(a)$ ist offen und $B_r(a)$ ist abgeschlossen.
+  \item Für $r\geq 0$ ist $\mathring{B_r}(a)$ offen und $B_r(a)$ abgeschlossen.
 \end{enumerate}
+\end{beispiel}
 
-\begin{theorem}
-\label{satz:abgTeilmenge}
-Eine Teilmenge $A\subseteq X$ ist genau dann abgeschlossen, wenn $\forall (x_n) \subset A\colon(x_n)$
-konvergent $\Rightarrow \lim x_n \in A$.\\
-\textbf{Beweis}
-\begin{itemize}
-  \item["`$\Rightarrow$"'] Der Beweis erfolgt durch Kontraposition: Sei $A$ abgeschlossen\\
-    Annahme: $\exists (x_n)\subset A\colon(x_n) \text{ konvergent} \Rightarrow \lim x_n \notin A$\\
-    $a\coloneqq\lim x_n$\\
-    $\Rightarrow a \in X\backslash A$ offen, da $A$ nach Voraussetzung abgeschlossen.\\
-    $\Rightarrow \exists \varepsilon >0 \stackrel{o}{B_{\varepsilon}}(a)\subset X\backslash A$\\
-    Da $x_n$ gegen $a$ strebt, existiert ein $n_0\in \N$, so dass $d(x_n,a)<\varepsilon$ für $n\geq n_0$\\
-    $\Rightarrow x_n \in \stackrel{o}{B_{\varepsilon}}(a)$\textnormal{\lightning}
-  \item["`$\Leftarrow$"'] Sei $\forall (x_n)\subset A\colon x_n \text{ konvergent} \Rightarrow \lim x_n \in A$\\
-    Annahme: $A$ ist offen. Dann ist zu zeigen:
+\begin{theorem}\label{satz:abgTeilmenge}
+  Eine Teilmenge $A\subseteq X$ ist genau dann abgeschlossen, wenn $\forall
+  (x_n) \subset A\colon(x_n)$ konvergent $\Rightarrow \lim x_n \in A$.
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Der Beweis erfolgt durch Kontraposition: Sei $A$
+      abgeschlossen. Dann nehmen wir an, dass $\exists (x_n)\subset
+      A\colon(x_n) \text{ konvergent} \Rightarrow \lim x_n \notin A$. Wir
+      setzen $a\coloneqq\lim x_n$ und es folgt, $a \in X\backslash A$ ist
+      offen, da $A$ nach Voraussetzung abgeschlossen ist. Also existiert ein
+      $\varepsilon >0 \mathring{B_{\varepsilon}}(a)\subset X\backslash A$. Da
+      $x_n$ gegen $a$ strebt, existiert ein $n_0\in \N$, so dass
+      $d(x_n,a)<\varepsilon$ für $n\geq n_0$ und es folgt, $x_n \in
+      \mathring{B_{\varepsilon}}(a)$\lightning
+     \item["`$\Leftarrow$"'] Sei $\forall (x_n)\subset A\colon x_n$ konvergent
+      $\Rightarrow \lim x_n \in A$. Wir nehmen an, $A$ ist offen. Dann ist zu
+      zeigen:
     \begin{align*}
-      A \text{ abgeschlossen} & \Leftrightarrow & X\backslash A \text{ offen}\\
-      & \Leftrightarrow & \forall x \in X\backslash A \exists \varepsilon >0\colon\stackrel{o}{B_{\varepsilon}}
+      A \text{ abgeschlossen} &\Leftrightarrow X\backslash A \text{ offen}\\
+      &\Leftrightarrow \forall x \in X\backslash A \exists \varepsilon >0\colon\mathring{B_{\varepsilon}}
       (x)\subseteq X\backslash A\\
-      & \Leftrightarrow & \forall x \in X\backslash A \exists \varepsilon >0\colon\stackrel{o}{B_{\varepsilon}}
+      &\Leftrightarrow \forall x \in X\backslash A \exists \varepsilon >0\colon\mathring{B_{\varepsilon}}
       (x)\cap A = \emptyset
     \end{align*}
-    $\Rightarrow \exists x_0 \in X\backslash A \forall \varepsilon >0\colon\stackrel{o}{B_{\varepsilon}}(x_0)
-    \cap A \neq \emptyset$\\
-    Insbesondere existiert ein $x_n \in A \colon d(x_n,x_0)<\frac{1}{n}$\\
-    $\stackrel{Voraussetzung}{\Longrightarrow}x_0=\lim x_n \in A$\textnormal{\lightning}
-\end{itemize}
-\qed
+    $\Rightarrow \exists x_0 \in X\backslash A \forall \varepsilon
+      >0\colon\mathring{B_{\varepsilon}}(x_0) \cap A \neq \emptyset$.
+      Insbesondere existiert ein $x_n \in A \colon d(x_n,x_0)<\frac{1}{n}$.
+      Nach Voraussetzung folgt, $x_0=\lim x_n \in A$\lightning
+    \end{itemize}
+  \end{proof}
 \end{theorem}
 
-\textbf{Korollar} Sei $A'$ die Menge der Häufungspunkte von $A$. Dann ist $A$ genau dann abgeschlossen, wenn
-$A'$ eine Teilmenge von $A$ ist.\\
-\textbf{Beweis}
-\begin{itemize}
-  \item["`$\Rightarrow$"'] Sei $a\in A'$. Dann existiert $x_n \subset A, x_n\neq a, x_n\rightarrow a
-    \Rightarrow a \in A$
-  \item["`$\Leftarrow$"'] Annahme: $A$ ist nicht abgeschlossen.\\
-    $\Rightarrow \exists (x_n) \subset A, (x_n)$ ist konvergent, aber $\lim x_n\in A$\\
-    $\Rightarrow a$ ist Häufungspunkt von $A$\\
-    $\Rightarrow A'\not\subset A$\lightning
+\begin{lemma}
+  Sei $A'$ die Menge der Häufungspunkte von $A$. Dann ist $A$ genau dann
+  abgeschlossen, wenn $A'$ eine Teilmenge von $A$ ist
+  \begin{proof}
+    \begin{itemize}
+     \item["`$\Rightarrow$"'] Sei $a\in A'$. Dann existiert $x_n \subset A,
+      x_n\neq a, x_n\rightarrow a \Rightarrow a \in A$.
+  \item["`$\Leftarrow$"'] Annahme: $A$ ist nicht abgeschlossen. Dann existiert
+      $(x_n) \subset A, (x_n)$ ist konvergent, aber $\lim x_n\in A$. Also ist
+      $a$ Häufungspunkt von $A$ und $A'\not\subset A$\lightning
 \end{itemize}
-\qed
+  \end{proof}
+\end{lemma}
 
-\begin{theorem}
-\label{satz:fkt-aquiv}
-Seien $X,Y$ metrische Räume und $f\colon D\rightarrow Y$. Dann sind folgende Aussagen äquivalent:
-\begin{enumerate}[(1)]
-  \item $f$ ist stetig auf $X$.
-  \item $\forall O \subset Y$ offen $\colon f^{-1}(O)$ offen
-  \item $\forall A \subset Y$ abgeschlossen $\colon f^{-1}(A)$ abgeschlossen
-\end{enumerate}
-\end{theorem}
-\textbf{Beweis}
-\begin{itemize}
-  \item[$(1)\Rightarrow (2)$] Sei $O\subset Y$ offen, $x\in f^{-1}(O)\Leftrightarrow f(x)\in O$\\
-    $\stackrel{O \text{ offen}}{\Longrightarrow} \exists \varepsilon >0\colon\stackrel{o}{B_{\varepsilon}}
-    (f(x))\subset O$\\
-    $\stackrel{f \text{ stetig}}{\Longrightarrow} \exists \delta >0\colon f(\stackrel{o}{B_{\delta}}(x))\subset
-    \stackrel{o}{B_{\varepsilon}}(f(x))\subset O$\\
-    $\Longrightarrow \stackrel{o}{B_{\delta}}(x)\subset f^{-1}(O)$
-  \item[$(2)\Rightarrow (1)$] Sei $x\in X, \varepsilon
-    >0\stackrel{(2)}{\Rightarrow} f^{-1}(\stackrel{o}
-    {B_{\varepsilon}}(f(x)))$ offen\\
-    $\Rightarrow \exists \delta >0\colon\stackrel{o}{B_{\delta}}(x)\subset
-    f^{-1}(\stackrel{o}
-    {B_{\varepsilon}}(f(x)))$\\
-    $\Rightarrow f(\stackrel{o}{B_{\delta}}(x))\subset
-    \stackrel{o}{B_{\varepsilon}} (f(x)) \Rightarrow f$ stetig
-  \item[$(2)\Leftrightarrow (3)$] $f^{-1}(Y\backslash M)=f^{-1}(Y)\backslash f^{-1}(M)=x\backslash f^{-1}(M)$
-  \item[$(2)\Rightarrow (3)$] Sei $A$ abgeschlossen. $O=Y\backslash A$ offen $\Leftrightarrow A=Y
-    \backslash O$\\
-    $f^{-1}(A)=f^{-1}(Y)\backslash f^{-1}(O)=X\backslash \underbrace{f^{-1}(O)}_{offen} \Rightarrow$
-    abgeschlossen
-  \item[$(3)\Rightarrow (2)$] Sei $O$ offen. Dann ist $A=Y\backslash O$ abgeschlossen. $\Rightarrow f^{-1}
-    (A)=X\backslash \underbrace{f^{-1}(O)}_{offen} \Rightarrow$ abgeschlossen.
+\begin{theorem}\label{satz:fkt-aquiv}
+  Seien $X,Y$ metrische Räume und $f\colon D\rightarrow Y$. Dann sind folgende
+  Aussagen äquivalent:
+  \begin{enumerate}[(1)]
+   \item $f$ ist stetig auf $X$.
+   \item $\forall O \subset Y$ offen $\colon f^{-1}(O)\coloneqq\{x\in X\colon
+    f(x)\in O\}$ offen.
+   \item $\forall A \subset Y$ abgeschlossen $\colon f^{-1}(A)$ abgeschlossen.
+  \end{enumerate}
+  \begin{proof}
+    \begin{itemize}
+     \item[(1)$\Rightarrow$ (2)] Sei $O\subset Y$ offen, $x\in
+      f^{-1}(O)\Leftrightarrow f(x)\in O$. Da $O$ offen ist, gibt es ein
+      $\varepsilon >0\colon\mathring{B_{\varepsilon}} (f(x))\subset O$. Wegen
+      der Stetigkeit von $f$ haben wir $\exists \delta >0\colon
+      f(\mathring{B_{\delta}}(x))\subset
+      \mathring{B_{\varepsilon}}(f(x))\subset O \Longrightarrow
+      \mathring{B_{\delta}}(x)\subset f^{-1}(O)$.
+     \item[(2)$\Rightarrow$ (1)] Sei $x\in X, \varepsilon >0$. Aus der zweiten
+      Aussage folgt, $f^{-1}(\mathring {B_{\varepsilon}}(f(x)))$ ist offen.
+      Damit existiert ein $\delta >0\colon\mathring{B_{\delta}}(x)\subset
+      f^{-1}(\mathring {B_{\varepsilon}}(f(x)))\Rightarrow
+      f(\mathring{B_{\delta}}(x))\subset \mathring{B_{\varepsilon}} (f(x))
+      \Rightarrow f$ stetig.
+     \item[(2)$\Leftrightarrow$ (3)] $f^{-1}(Y\backslash
+      M)=f^{-1}(Y)\backslash f^{-1}(M)=x\backslash f^{-1}(M)$
+     \item[(2)$\Rightarrow$ (3)] Sei $A$ abgeschlossen. Dann ist
+      $O=Y\backslash A$ offen $\Leftrightarrow A=Y\backslash O$. Also ist
+      $f^{-1}(A)=f^{-1}(Y)\backslash f^{-1}(O)=X\backslash
+      \underbrace{f^{-1}(O)}_{\text{offen}}$ abgeschlossen.
+     \item[(3)$\Rightarrow$ (2)] Sei $O$ offen. Dann ist $A=Y\backslash O$
+      abgeschlossen. Also folgt, $f^{-1}(A) =X\backslash
+      \underbrace{f^{-1}(O)}_{\text{offen}}$ abgeschlossen.
 \end{itemize}
-\qed
+  \end{proof}
+\end{theorem}
 
 \section{Stetigkeit und kompakte Mengen}
 \begin{definition}
@@ -3654,14 +3987,21 @@ mit
 Die Integralrechnung umfasst die klassische Problemstellung, 
 dass man eine Fläche unterhalb einer Kurve berechnen möchte:
 
-\begin{pspicture}(-1,-1)(5,4)
-   \psaxes{->}(0,0)(-1,-1)(5,4)
-   \psplot[linewidth=2pt]{0.8}{4.2}{x 0.85 mul 2 sub dup mul 1.5 add}
-   \pscustom[linewidth=0.5pt,fillstyle=solid,fillcolor=lightgray]{%
-     \psplot[linewidth=2pt]{1}{4}{x 0.85 mul 2 sub dup mul 1.5 add}
-     \psline(4,0)(1,0)(1,2.8225)%
-   }
-\end{pspicture} 
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[domain=0.5:4]
+    \draw[->] (-0.2,0) -- (6.2,0) node[right] {$x$};
+    \draw[->] (0,-1.2) -- (0,6.2) node[above] {$f(x)$};
+    \draw plot (\x,\x*\x-4*\x+5.5) node[right] {$f(x)=
+      (x-2)^{2}+1,5$};
+    \draw[thick] (1,0) -- (1,2.5);
+    \draw[thick] (3,0) -- (3,2.5);
+    \draw[black,fill] (1,2.5) circle (2pt);
+    \draw[black,fill] (3,2.5) circle (2pt);
+  \end{tikzpicture}
+  \caption{Schematische Darstellung der Fläche unterhalb einer Kurve}
+  \label{fig:riemann}
+\end{figure}
 
 Zur Untersuchung dieses Problems braucht man diverse Variablen:
 \begin{description}
@@ -3912,8 +4252,11 @@ Funktion $f(x)=x^\alpha$.
 
 \clearpage
 \begin{thebibliography}{99}
-
- \bibitem{barner} \textsc{Barner}, \textsc{Flohr}. Analysis, Band I
+\bibitem{foster} \textsc{Otto Foster}: Analysis~I.
+\bibitem{kaballo} \textsc{Winfried Kaballo}: Einführung in die Analysis~I.
+\bibitem{behrends} \textsc{Ehrhardt Behrends}: Analysis~I.
+\bibitem{heuser} \textsc{Harro Heuser}: Lehrbuch der Analysis~I.
+\bibitem{barner} \textsc{Barner}, \textsc{Flohr}: Analysis, Band I.
 \end{thebibliography}
 
 \printindex
