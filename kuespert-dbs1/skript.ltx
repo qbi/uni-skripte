@@ -68,6 +68,7 @@
 \usetikzlibrary{chains,positioning,scopes,trees}
 \usepackage[alsoload=binary]{siunitx}
 \usepackage{tabularx}
+\usepackage{eurosym}
 
 \lstdefinelanguage{IMS}%
 {morekeywords={DBD, SEGM, FIELD, END,PCB,SENSEG,SENFLD,PSBGEN}}
@@ -2653,8 +2654,10 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
     dem Abschluss einer Transaktion müssen vom DBMS rekonstruierbar
     sein.
   \end{description}
-  Die obigen Regeln werden gemäß ihrer englischsprachigen Initialen
-  als \highl{ACID}"=Eigenschaften bezeichnet.\footnote{Die
+  Die obigen Regeln werden gemäß ihrer englischsprachigen
+  Initialen\footnote{\emph{A}tomicity, \emph{C}onsistency,
+    \emph{I}solation, \emph{D}urability} als
+  \highl{ACID}"=Eigenschaften bezeichnet.\footnote{Die
     ACID"=Eigenschaften wurden erstmalig 1983 von den Forschern
     \textsc{Theo Härder} und \textsc{Andreas Reuter} in den ACM
     Computing Surveys formuliert.}
@@ -2676,10 +2679,291 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
   Bestand haben, sobald das DBMS diese verarbeitet (Commit) hat.
 \end{bemerk}
 
+\section{Fehlerszenarien}
+
+Mit zunehmendem Desaster unterscheidet man Transaktions-, System- und
+Externspeicherversagen. Im folgenden sollen diese Begriffe erklärt
+werden.
+
+\begin{defini}[Transaktionsversagen]
+  Ein \highl{Transaktionsversagen} liegt vor, wenn eine
+  \emph{einzelne} Transaktion nicht ihr normales Ende erreicht,
+  sondern abbricht.
+\end{defini}
+
+\begin{bemerk}
+  Der Abbruch kann durch den Benutzer, die Anwendung oder durch das
+  DBMS geschehen. Die Gründe für den Abbruch sind in der Regel
+  vielfältig:
+  \begin{itemize}
+  \item Benutzer hat einen Fehler bemerkt.
+  \item Anwendungsprogramm ist "`abgestürzt"'.
+  \item Eingabedaten waren inkorrekt und die Anwendung bricht ab.
+  \item Deadlock (Verklemmung)
+  \end{itemize}
+\end{bemerk}
+
+\begin{defini}[Systemversagen]
+  Ein \highl{Systemversagen} liegt vor, wenn das DBMS "`abstürzt"',
+  d.\,h. die gesamte Verarbeitung in der Datenbank wird unterbrochen.
+\end{defini}
+
+\begin{bemerk}
+  Bei einem Systemversagen sind alle laufenden Transaktionen und
+  eventuell mehr (bereits abgeschlossene Transaktionen) betroffen. Die
+  Gründe liegen in einem Fehler des DBMS, des Betriebssystems oder
+  einem Hardwarefehler. Daraus resultiert, dass die Inhalte des
+  Hauptspeichers verloren sind. Bereits auf der Festplatte
+  gespeicherte Inhalte bleiben erhalten.
+\end{bemerk}
+
+\begin{defini}[Externspeicherversagen]
+  Ein \highl{Externspeicherversagen} liegt vor, wenn Daten auf dem
+  Externspeicher verloren sind. Die Datenbank ist ganz oder teilweise
+  zerstört.
+\end{defini}
+
+Wie wollen nun herausfinden, wie sich die ACID"=Eigenschaften dennoch
+erhalten lassen. Insbesondere die Atomarität und die Dauerhaftigkeit
+sind von Interesse.
+
+\section{Klassifikation von Fehlerbehandlungsmaßnahmen}
+
+\subsection{Fehlerbehandlung für Transaktionsversagen}
+
+Im Falle des Transaktionsversagens setzt das DBMS alle betroffenen
+Transaktionen auf ihren Anfangszustand zurück. Änderungen am Zustand
+der Datenbank werden zurückgenommen. Dies wird als
+\highl[Transaktion!Rollback]{Rollback der Transaktion} oder
+\highl[Rollback]{Transaction Rollback} bezeichnet. Die Maßnahme dient
+dazu, die Atomarität zu garantieren.
+
+Zur Umsetzung protokolliert das DBMS Änderungen am Zustand der
+Datenbank in Form von Tupel vor der Änderung (\highl{Before Image})
+und Tupel nach der Änderung (\highl{After Image}). Diese werden als
+\highl{Log-Datei} auf die Festplatte geschrieben. Die Tupel vor einer
+Änderung können dann zum Rollback verwendet werden. Ein Rollback
+geschieht automatisch durch das DBMS.
+
+\subsection{Fehlerbehandlung für Systemversagen}
+
+Ein DBMS führt verschiedene Transaktionen durch. Bei der Ausführung
+zweier Transaktionen kommt es zu einem Absturz des Systems. Was ist
+bei einem Neustart zutun?
+
+Die Transaktionen, die während des Absturzes aktiv waren, müssen zur
+Erhaltung der Atomarität zurückgesetzt werden. Hierzu bedient sich das
+System, wie oben beschrieben, der Tupel vor Änderung. Unter Umständen
+müssen bereits abgeschlossene Transaktionen "`nachgefahren"',
+d.\,h. wieder ausgeführt werden. In der Regel bezeichnet man dies als
+\texttt{REDO}.
+
+Betriebssysteme schreiben Änderungen nicht sofort auf die
+Festplatte. Vielmehr werden die Daten in einem Puffer  gehalten und
+erst geschrieben, wenn der Puffer voll ist bzw. wenn das
+Betriebssystem "`Zeit dazu hat"'. Daher könnte es sein, dass
+Transaktionen, die das DMS als abgeschlossen markiert hat, vor dem
+Crash noch nicht persistent geschrieben wurden. Die After Images
+helfen, Transaktionen nachzufahren.
+
+Jedoch ist unklar, wie weit in der Vergangenheit mit dem Nachfahren
+begonnen werden muss. Die todsichere Variante wäre den Startpunkt des
+DBMS selbst anzusetzen. Jedoch war das System unter Umständen mehrere
+Tage oder Wochen aktiv und hat viele Transaktionen abgeschlossen. Ein
+\texttt{REDO}  wäre in dem Falle sehr aufwändig.
+
+Eine Lösung heißt \highl{Checkpoint} oder
+\highl{Sicherungspunkt}. In regelmäßigen Abständen wird der
+Pufferinhalt komplett in die Datenbank geschrieben. Beim Nachfahren
+muss das DBMS somit nicht über den aktuellsten Sicherungspunkt in die
+Vergangenheit gehen.
+
+In der Praxis erfolgt das Schreiben sowohl an den Sicherungspunkten
+wie auch zu anderen nicht vorhersehbaren Zeitpunkten. Verschiedene
+DBMS schreiben proaktiv Daten auf den Speicher. Die Daten umfassen
+sowohl abgeschlossene wie noch offene Transaktionen. Daten aus offenen
+Transaktionen bezeichnet man als \highl[Daten!schmutzige]{"`schmutzige
+Daten"'}. Diese "`stehlen"' sich durch das Schreiben davon. Daher
+heißt die Strategie \highl{Steal-Strategie}.
+
+\highl{Write-Ahead-Logging} (\highl{WAL}) ist das Schreiben eines
+Log"=Eintrags \emph{vor} dem Datenblock. Dies sichert die
+Rücksetzbarkeit der Transaktion.
+
+\subsection{Fehlerbehandlung für Externspeicherversagen}
+
+Die Fehlerbehandlung für Externspeicherversagen erfolgt durch das
+Anlegen von Kopien der Datenbank (\highl{Backup}) sowie durch das
+Protokollieren aller Änderungen durch After Images.
+
+Im Fehlerfall lädt der Datenbankadministrator die Kopie der Datenbank
+und lässt darauf alle abgeschlossenen Transaktionen nachfahren. Nach
+Abschluss befindet sich das DBMS wieder in einem konsistenten
+Zustand. 
+
+\subsection{Größe der Log-Dateien}
+
+Eine Log"=Datei kann theoretisch beliebig groß werden. Die natürliche
+Grenze ist die Größe des Datenspeichers. Unter ungünstigen Umständen
+reagiert das Betriebssystem mit Stillstand oder Absturz auf
+vollständig gefüllte Datenspeicher. Eventuell verweigert auch das DBMS
+seinen Dienst. Daher ist der Zustand nicht erstrebenswert. Wie lässt
+sich das verhindern?
+
+Die Log"=Daten für einen \texttt{UNDO} (Before Images) von
+abgeschlossenen Transaktionen werden nicht mehr benötigt. Denn
+abgeschlossene Transaktionen können nicht mehr zurückgerollt
+werden. Auch Log"=Daten für einen \texttt{REDO} (After Images), die
+vor dem letzten Sicherungspunkt angelegt wurden, werden nicht mehr
+gebraucht. Können die Log"=Dateien unter Beachtung der vorstehenden
+Regeln verworfen werden?
+
+Eine Antwort fällt nicht ganz eindeutig aus. In der praktischen
+Umsetzung werden die Before und After Images in einer Datei
+geführt. Das erschwert das selektive Verwerfen. Weiterhin braucht man
+\texttt{REDO}"=Dateien für das Externspeicherversagen. Daher können
+diese nicht so schnell verworfen werden.
+
+DB2 löst dies durch langfristiges Aufheben der
+\texttt{REDO}"=Dateien. Sie werden auf einen langsamen Tertiärspeicher
+kopiert und aufbewahrt. Kurzfristiger benötigte Dateien verbleiben auf
+dem Speichermedium und werden regelmäßig überschrieben oder gelöscht.
+
+\subsection{Schreibstrategien eines DBMS}
+
+Untenstehend wurde einige Merkmale zur Klassifikation aus
+\cite{haereu83} herausgegriffen:
+\begin{description}
+\item[force/no force] Bei \highl{force} werden die Daten spätestens
+  beim Ende der Transaktion auf die Platte geschrieben. Dagegen
+  geschieht das Schreiben bei \highl{no force} zu einem nicht
+  definierten Zeitpunkt. Produkte bevorzugen die No"=Force"=Strategie.
+\item[steal/no steal] Bei \highl{steal} "`stehlen"' sich die Daten
+  schon im Verlauf einer Transaktion aus dem Puffer. Schreiben nach
+  dem Ende der Transaktion ("`saubere"' Daten) heißt \highl{no
+    steal}. In der Praxis ist steal verbreitet.
+\item[atomic/not atomic] Hierbei geht es um das Schreiben der Daten
+  auf die Datenbank, nicht um das "`A"' aus den
+  ACID"=Eigenschaften. Punktuelles Wegschreiben der Daten heißt
+  \highl{atomic}. Damit befindet sich der Speicher immer in einem
+  wohldefinierten Zustand. Das kontinuierliche Schreiben heißt
+  \highl{not atomic}.
+\end{description}
+
 \clearpage
 \appendix
 
 \chapter{Übungsaufgaben in DBS2}
+
+\section{Übungsblatt 1}
+
+\begin{exe}[Transaktionen und Geld]
+  In Datenbanksystemen werden zusammengehörige Änderungen stets zu
+  Transaktionen zusammengefasst. D.\,h. ein Benutzer ändert nicht
+  einfach (z.\,B. mit \texttt{UPDATE}, \texttt{DELETE},
+  \texttt{INSERT}) auf der Datenbank, sondern er macht dies innerhalb
+  einer Transaktion. Das DBMS garantiert ihm, dass die Transaktion
+  entweder komplett oder gar nicht ausgeführt wird
+  (All"=or"=Nothing"=Prinzip, Atomarität), was vor allem für den
+  Fehlerfall — z.\,B. "`Absturz"' des Anwendungsprogramms, das die
+  Transaktion veranlasst hat, oder Stromausfall während der
+  Transaktionsausführung — wichtig ist.\\
+  Beispiel (Umbuchung vom Konto Küspert zum Konto Rabinovitch):
+  \begin{enumerate}[1.]
+  \item \texttt{BEGIN TRANSACTION}
+  \item Lese Kontostand Küspert, um zu prüfen, ob Geld vorhanden ist.
+  \item Ziehe 1000~\euro{} von Konto Küspert ab
+  \item Erhöre Kontostand Küspert um 1000~\euro{}
+  \item \texttt{END TRANSACTION}
+  \end{enumerate}
+  Diskutieren Sie an diesem Beispiel, was passieren könnte, wenn die
+  Änderungsoperationen nicht in Transaktionsklammern eingeschlossen
+  wären. An welchen Stellen können Fehler auftreten und welche
+  Auswirkungen ergeben sich?
+\end{exe}
+
+\begin{exe}[Checkpoints und Fehlerfall]
+  Im Fehlerfall muss ein DBMS die ACID"=Eigenschaften von
+  Transaktionen sichern. Wir betrachten das folgende Szenario:
+  \todo{Grafik einbinden}
+  \begin{enumerate}[a)]
+  \item Welche Fehlerbehandlung ist beim Wiederanlauf nach einem
+    Systemversagen (Crash) für die einzelnen Transaktionen nötig?
+    Begründen Sie Ihre Antwort.
+  \item Versuchen Sie, die Fehlerbehandlung algorithmisch zu
+    beschreiben. Beachten Sie bei Ihren Überlegungen, dass auch
+    unbeendete Transaktionen ("`schmutzige"') Daten auf die Festplatte
+    schreiben können (z.\,B. aus Platzmangel im Puffer). Andererseits
+    müssen ("`saubere"') Daten beendeter Transaktionen auch nicht
+    sofort auf Festplatte in der DB gesichert werden. (Welche beiden
+    Schreibstrategien werden also zugrundegelegt?)
+
+  \item Was wären die Implikationen für die Fehlerbehandlung, wenn
+    abweichend von Teilaufgabe b
+    \begin{itemize}
+    \item geänderte Daten nie vor Transaktionsende auf Festplatte
+      gesichert (in die DB (zurück)geschrieben) werden, oder wenn
+    \item geänderte Daten (spätestens) bei erfolgreichem
+      Transaktionsende automatisch auf Festplatte in die DB
+      geschrieben werden?
+    \end{itemize}
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Häufigkeit von Checkpoints]
+  \begin{enumerate}[a)]
+  \item Beim Setzen von Checkpoints im laufenden Datenbankbetrieb
+    spielt die Frequenz (Checkpoint"=Intervall"=Länge) eine bedeutende
+    Rolle. Man kann Checkpoints selten oder auch häufig setzen. Der
+    DBA bestimmt die Checkpoint"=Intervall"=Länge. Was spricht für,
+    was gegen die jeweiligen Varianten?
+  \item Kann im Fehlerfall alles, was vor dem Checkpoint passierte,
+    außer acht gelassen werden? Begründen Sie Ihre Antwort.
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Log-Dateien]
+  Ein Ziel bei Log"=Dateien ist es, diese möglichst klein zu
+  halten. Diskutieren Sie, welcher Abschnitt des Logs in den
+  Fehlerbehandlungsfällen R1---R4 jeweils benötigt wird und welcher
+  Abschnitt nicht benötigt wird.
+\end{exe}
+
+\begin{exe}[Optimierung des Logging, Log-Puffer-Verwendung etc.]
+  Bei der Durchführung von SQL"=Operationen vom System erzeugte
+  Log"=Einträge werden nicht sofort auf Sekundärspeicher geschrieben,
+  sondern gelangen zunächst in einen seitenstrukturierten Log"=Puffer
+  im Hauptspeicher. (Die Begriffe \emph{Seite} und \emph{Block} seien
+  hier und im Folgenden der Einfachheit halber synonym verwendet.)
+  Beantworten Sie bitte die folgenden Fragen:
+  \begin{enumerate}[a)]
+  \item \emph{Wann} (spätestens) müssen Log"=Puffer"=Inhalte auf
+    Sekundärspeicher geschrieben werden und aus welchem Grunde
+    geschieht dies jeweils?
+  \item Wir nehmen an, dass eine Transaktion mehrere Tupel ändert und
+    dann mit Commit beendet wird. Wie viele I/O"=Operationen pro
+    Transaktion(s"=Commit) werden mindestens benötigt und wozu? Läßt
+    sich diese Zahl an I/O"=Operationen weiter reduzieren / durch
+    welches Verfahren ist dies möglich? Was ist der (kleine) Nachteil
+    hiervon?
+  \item Wann ist eine Transaktion "`wirklich (erfolgreich) beendet"' /
+    wann kann der Anwender von Durability"=Eigenschaft der Änderungen
+    ausgehen?
+  \item Was unterscheidet Datenbank"=I/O"=Operationen in
+    Performance"=Dingen prinzipiell von Log"=I/O"=Operationen?
+  \item Was ist das Hauptproblem von no-steal?
+  \item Welche Vorteile/Nachteile hätte man bei Verwendung mehrerer Logs?
+  \end{enumerate}
+\end{exe}
+
+\begin{exe}[Verschiedenes]
+  \begin{enumerate}[a)]
+  \item Was machen die beiden ACID"=Erfinder heute, d.\,h. wo sind sie
+    tätig? \highl{foo}.
+  \item Wer war der Vater der Transaktionsthematik? Was macht er
+    heute? Wo war er zuletzt tätig?
+  \end{enumerate}
+\end{exe}
 
 \section{Übungsblatt 2}
 
@@ -3288,6 +3572,9 @@ produzieren. In \autoref{fig:syntax-sicht} ist das Syntaxdiagramm dargestellt.
 \bibitem{imsprimer} \textsc{Rick Long}, \textsc{Mark Harrington},
   \textsc{Robert Hain}, \textsc{Geoff Nichols}: IMS Primer. IBM,
   2000. \url{http://www.redbooks.ibm.com/redbooks/pdfs/sg245352.pdf}
+\bibitem{haereu83} \textsc{Theo Härder}, \textsc{Andreas Reuter}:
+  Principles of Transaction-oriented Database Recovery. ACM Computing
+  Surveys, Vol.\,15, No.\,4, Dezember 1983.
 \end{thebibliography}
 
 \clearpage
