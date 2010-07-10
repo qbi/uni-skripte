@@ -2850,6 +2850,79 @@ Untenstehend wurde einige Merkmale zur Klassifikation aus
   \highl{not atomic}.
 \end{description}
 
+\chapter{Synchronisation im Mehrbenutzerbetrieb}
+
+Auf Datenbanken ist Mehrbenutzerbetrieb unbedingt erforderlich. Man
+stelle sich nur vor, jede Benutzeranfrage würde nacheinander
+bearbeitet werden. Im ungünstigsten Falle müsste ein Benutzer sehr
+lange warteb, bis seine Anfrage beantwortet wird. Der Durchsatz an
+Daten würde dramatisch sinken. Andererseits führt unkontrollierter
+Mehrbenutzerbetrieb zu vielfältigen Fehlersituationen und im
+schlimmsten Falle zu "`Chaos"'. 
+
+\section{Probleme bei unkontrolliertem Mehrbenutzerbetrieb}
+
+\begin{description}
+\item[Lost-Update-Problem] Gegeben seien zwei Transaktionen $T1$ und
+  $2$. Die erste Transaktion liest den Wert $A=30$ aus der
+  Datenbank. Ein Anwendungsprogramm ändert den Wert in $40$ und
+  schreibt diesem nach dem Start der Folgetransaktion in die
+  Datenbank. In diesem Moment startet Transaktion $T2$, liest
+  ebenfalls $A$ aus und das Programm ändert den Wert von $A$ in
+  $10$. Schließlich wird $A=0$ in die Datenbank geschrieben. Das
+  bedeutet, die Änderung von Transaktion $T1$ ist verloren
+  gegangen. Bei der oben beschriebenen seriellen Ausführung wäre stets
+  $A=10$ gewesen.
+\item[Inkonsistente Analyse] Zwei Transaktionen beginnen gleichzeitig
+  und lesen den Familienstand der Ehefrau aus. Die erste Transaktion
+  ändert nun den Familienstand von verheiratet auf geschieden und
+  macht selbiges mit dem Familienstand des Ehemannes. Anschließend
+  werden die Transaktionen in die Datenbank geschrieben. Während der
+  Zeit wartet die zweite Transaktion. Diese will nun ihrerseits den
+  Familienstand des Ehemannes ebenfalls auf geschieden setzen. Dabei
+  sieht die zweite Transaktion eine vermeintliche Inkonsistenz. Denn
+  die Ehefrau ist als verheiratet markiert, während der Ehemann schon
+  geschieden ist. Die Analyse der zweiten Transaktion bezieht sich auf
+  zwei verschiedene konsistente Zustände der Datenbank.
+\item[Phantomproblem] Die Integritätsregel einer Datenbank besagt,
+  dass die Anzahl der Konten immer gerade sein muss. Eine Transaktion
+  fängt an, die Konten aller Kunden mit dem Anfangsbuchstaben "`A"'
+  auszulesen. Danach fügt eine zweite Transaktion das Konto für
+  Familie Adam ein. Die erste Transaktion fährt mit den
+  Anfangsbuchstaben "`B"' und "`C"' fort. Nun fügt die zweite
+  Transaktion ein Konto für Herr Zylinski ein und bestätigt die
+  Änderungen mit einem \texttt{COMMIT}. Die andere Transaktion liest
+  alle Konten bis zum Anfangsbuchstaben "`Z"' ein. Schließlich meldet
+  sie, dass die Zahl der Konten ungerade ist. Denn das Einfügen von
+  Zylinski hat sie registriert, währenddessen das Einfügen des ersten
+  Kontos unbemerkt an ihr vorüber gegangen ist. Das Phantomproblem ist
+  ein Problem, welches nicht einfach zu lösen ist. Es lässt sich am
+  besten durch eine Sperre der betreffenden Tabelle lösen.
+\item[Nicht wiederholbares Lesen] Bei diesem Problem handelt es sich
+  um einen Spezialfall der inkonsistenten Analyse. Eine Transaktion
+  bestimmt die Summe aller Kontostände. In der Zwischenzeit erhöht
+  eine andere Transaktion den Kontostand eines Kunden und bestätigt
+  diese. Wenn die erste Transaktion wiederum die Summe aller
+  Kontostände bestimmt, erhält sie ein anderes Ergebnis. Unter
+  Umständen wird bei jeder Ausführung der ersten Transaktion ein
+  anderes Ergebnis geliefert.
+\item[Abhängigkeit von nicht freigegebenen Änderungen] Eine
+  Transaktion verändert den Wert von $A$ und schreibt diesen in die
+  Datenbank zurück. Eine zweite Transaktion liest den Wert von $A$ aus
+  der Datenbank und zeigt diesen an. Schließlich wird auch hier ein
+  \texttt{COMMIT} durchgeführt. Nun erkennt die erste Transaktion
+  einen logischen Fehler und führt einen \texttt{ROLLBACK} durch. Der
+  Benutzer, der die zweite Transaktion ausführte, sah einen Zustand
+  den es so nie gab. Dies ist hochgradig unerwünscht. Im obigen Fall
+  ist das nicht durchführbar, da die erste Transaktion die Änderungen
+  schon committet hatte.
+\end{description}
+
+Insgesamt lässt sich sagen, dass Synchronisation im
+Mehrbenutzerbetrieb benötigt wird. Das Sperren ist \emph{eine}
+Möglichkeit, die Probleme zu lösen.
+
+
 \clearpage
 \appendix
 
