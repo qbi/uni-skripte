@@ -2984,7 +2984,54 @@ der Parallelität zu bevorzugen. Diese kosten jedoch Performance und
 sind schwerer umzusetzen. Daher ist von der Betrachtungsweise eher ein
 gröberes Granulat zu bevorzugen. Derzeit sind Tupel bzw. Indexeinträge
 die kleinsten Granulate und es gibt eine Hierarchie. Darin folgt dem
-Tupel eine Relation und darauf ein Segment. Die größte Stufe ist die Datenbank.
+Tupel eine Relation und darauf ein Segment. Die größte Stufe ist die
+Datenbank.
+
+\section{Sperrmodi}
+\label{sec:sperrmodi}
+
+In der Regel finden sich in DBMS zwei Sperrmodi, nämlich
+\highl[Schreibsperre]{Schreib-} und
+\highl[Lesesperre]{Lesesperren}. Eine Schreibsperre wird manchmal als
+X"=Sperre\footnote{Das "X" steht für eXecute.} oder Exclusive Lock
+bezeichnet. Diese Sperre kann nur von einer Transaktion für ein
+Datenbankobjekt gehalten werden. Daher kommt der Name exklusiv. Andere
+Transaktionen müssen warten. Hingegen können mehrere Transaktionen
+eine Lesesperre (S"=Sperre, Shared Lock) auf einem Objekt
+besitzen. Dabei ist zu beachten, dass eine Schreibsperre nicht mit
+einer Lesesperre verträglich ist. Im Rahmen einer Sperrhierarchie kann
+es einen so genannten Intention Lock (IS, IX) geben. Dieser drückt
+aus, dass auf "`tieferer Ebene"' mit S oder X gesperrt werden
+soll. Sperren müssen immer hierarchisch angefordert und
+entsprechend wieder freigegeben werden. Unterhalb von IS darf wieder
+IS oder S kommen. Unterhalb von IX darf IX, IS, S, oder X
+kommen. Unterhalb einer S- oder X"=Sperre kommt hingegen nichts
+mehr. Diese stellen das Ende der Sperranforderungen dar.
+
+\begin{bsp}[Sperrhierarchie bzw. Intention Lock]
+  Die Sperrgranulate seien Relation und Tupel. Eine
+  Transaktion~$T_{i}$ will einige Tupel der Relation~$R_{j}$
+  ändern. Was ist zu tun? Die einfache Lösung ist die Sperrung der
+  ganzen Relation. Dies verhindert jedoch sämtliche
+  Parallelität. Daher könnten genau die Tupel gesperrt werden, die
+  verändert werden sollen. Was passiert aber, wenn eine parallele
+  Transaktion~$T_{k}$ "`unbemerkt"' $R_{j}$ sperrt? Die
+  Transaktion~$T_{i}$ muss sich an das hierarchische Sperrprotokoll
+  halten. Das heißt, zuerst setzt $T_{i}$ eine IX"=Sperre auf $R_{j}$
+  und danach X"=Sperren auf die einzelnen zu verändernden Tupel. Die
+  Verträglichkeitsmatrix sieht folgendermaßen aus:
+  \begin{tabular}{c|cccc}
+    & IS & IX & S X\\
+    \midrule
+    IS & + & + & + & -\\
+    IX & + & + & - & -\\
+    S & + & - & + & -\\
+    X & - & - & - & -
+  \end{tabular}
+\end{bsp}
+
+Neben den hier vorgestellten Sperrmodi gibt es weitere. Diese spielen
+im Rahmen der Vorlesung keine Rolle. 
 
 \clearpage
 \appendix
