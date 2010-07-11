@@ -3096,6 +3096,38 @@ eingesetzt. Für konfliktarme Anwendungen kann das jedoch das richtige
 Verfahren sein. Im Idealfall ließe sich das DBMS diesbezüglich
 anpassen. Derzeit ist das nicht möglich.
 
+\section{Kurzzeitsperren}
+\label{sec:kurzzeitsperren}
+
+Wir haben kennen gelernt, dass Sperren über den Sperrverwalter
+angefordert und in die Sperrtabelle eingetragen werden. Sollte die
+Sperre nicht gewährt werden, wartet die Transaktion. Gegebenenfalls
+müssen Deadlocks erkannt und aufgelöst werden. Diese
+Transaktionssperren dienen der Gewährleistung der Isolation im
+ACID"=Prinzip. Solche eine "`schwergewichtige"' Sperre ist in der
+Regel lange (Sekunden oder länger) vorhanden. Im Unterschied dazu
+stehen die \highl{Kurzzeitsperren}. Sehr oft arbeiten verschiedene
+Prozesse oder Threads gemeinsam an der Abarbeitung der diversen
+Aufgaben der Datenbank. Sie können sich wechselseitig ins Gehege
+kommen, wenn sie gemeinsam interne Datenstrukturen nutzen. Dies
+betrifft insbesondere Systempuffer, Log"=Puffer aber auch die
+Sperrtabelle selbst. Kurzzeitsperren sind leichgewichtige Sperren für
+Prozesse. Die Realisierung erfolgt als so genannte
+\highl[Latch]{Latches}\footnote{Vom englischen Wort für
+  Schnappschloss} mittels einer Variable im gemeinsam genutzten
+Hauptspeicher.
+
+\begin{bsp}
+  Ein Prozess analysiert für die Transaktion 1 die
+  Sperrtabelle. Parallel fügt ein anderer Prozess für eine zweite
+  Transaktion etwas in die Sperrtabelle ein und löst unter Umständen
+  Chaos aus.
+\end{bsp}
+
+Latches werden wegen des hohen Behinderungspotenzials nur für sehr
+kurze Zeiträume (wenige 10 oder 100 Instruktionen) gehalten und sind
+billig. Bei belegter Kurzzeitsperre kommt es zum Busy Wait, im
+Gegensatz zu Lazy Wait bei normalen Sperren.
 
 \clearpage
 \appendix
