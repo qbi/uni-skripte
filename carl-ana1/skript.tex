@@ -4517,8 +4517,10 @@ möglichst einfache Funktionen (Polynome).
 
 \chapter{Integration}
 \section{Das Riemannsche Integral}
-Die Integralrechnung umfasst die klassische Problemstellung, 
-dass man eine Fläche unterhalb einer Kurve berechnen möchte:
+Die Integralrechnung umfasst die klassische Problemstellung, für eine
+reelle und nicht negative Funktion $f\colon[a,b]\rightarrow\R$ den
+Inhalt der so genannten "`Ordinatenmenge"' (Fläche) $\{(x,y)\colon
+a\leq x\leq b, 0\leq y\leq f(x)\}$ zu berechnen.
 
 \begin{figure}[htb]
   \centering
@@ -4536,242 +4538,314 @@ dass man eine Fläche unterhalb einer Kurve berechnen möchte:
   \label{fig:riemann}
 \end{figure}
 
-Zur Untersuchung dieses Problems braucht man diverse Variablen:
+Zur Untersuchung dieses Problems braucht man diverse Begriffe:
 \begin{description}
-  \item[Zerlegung\index{Zerlegung}] $\ZZ\coloneqq\{I_1,\cdots,I_n\}$\\
-    $I_i\coloneqq[x_{i-1},x_i]$ mit $a=x_0<x_1<\cdots<x_n=b$
+  \item[Zerlegung\index{Zerlegung}] $\ZZ\coloneqq\{I_1,\cdots,I_n\}$
+    mit dem Intervall
+    $I_i\coloneqq[x_{i-1},x_i]$ und $a=x_0<x_1<\cdots<x_n=b$
   \item[Verfeinerung\index{Verfeinerung}] $\ZZ'\perdef\forall
-    I'\in\ZZ'\,\exists I\in\ZZ\colon I'\subset I$\\
+    I'\in\ZZ'\,\exists I\in\ZZ\colon I'\subset I$, 
     Schreibweise: $\ZZ\prec\ZZ'$
   \item[Länge des Intervalls] $I=[c,d]\colon l(I)\coloneqq d-c$
   \item[Durchmesser der Zerlegung] $d(\ZZ)\coloneqq\max\{l(I)\colon
     I\in\ZZ\}$
-  \item[Überlagerung von zwei Zerlegungen] $\ZZ\coloneqq\{I=I'\cap I''\colon
-    I'\in\ZZ_1, I''\in\ZZ_2, l(I)>0\}$\\
-    $\ZZ$ ist wieder eine Zerlegung und $\ZZ_1,\ZZ_2\prec\ZZ$\\
+  \item[Überlagerung zweier Zerlegungen] $\ZZ\coloneqq\{I=I'\cap I''\colon
+    I'\in\ZZ_1, I''\in\ZZ_2, l(I)>0\}$, 
+    $\ZZ$ ist wieder eine Zerlegung und $\ZZ_1,\ZZ_2\prec\ZZ$,
     Schreibweise: $\ZZ=\ZZ_1\vee\ZZ_2$
   \item[Menge der beschränkten Funktionen] $B[a,b]\coloneqq\{f\colon
     [a,b]\rightarrow\R\colon f\text{ beschränkt}\}$
   \item[Infimum/Supremum\index{Infimum!Integration}\index{Supremum!Integration}]
-    Sei $M\subset[a,b]$\\
-    \begin{gather*}\underline{f}(M)\coloneqq\inf\{f(x)\colon x\in M\}\end{gather*}
-    \begin{gather*}\overline{f}(M)\coloneqq\sup\{f(x)\colon x\in M\}\end{gather*}
+    Sei $M\subset[a,b]$.
+    \begin{align*}
+      \underline{f}(M) &\coloneqq\inf\{f(x)\colon x\in M\}\\
+      \overline{f}(M) &\coloneqq\sup\{f(x)\colon x\in M\}
+    \end{align*}
   \item[Flächeninhalt]
-    \emph{Untersumme\index{Untersumme}}:
-    \begin{gather*}\underline{S}(f;\ZZ)=\sum_{I\in\ZZ}\underline{f}(I)l(I)\end{gather*}
-    \emph{Obersumme\index{Obersumme}}:
-    \begin{gather*}\overline{S}(f;\ZZ)=\sum_{I\in\ZZ}\overline{f}(I)l(I)\end{gather*}
+    \highl{Untersumme}:
+    \begin{gather*}
+      \underline{S}(f;\ZZ)=\sum_{I\in\ZZ}\underline{f}(I)l(I)
+    \end{gather*}
+    \highl{Obersumme}:
+    \begin{gather*}
+      \overline{S}(f;\ZZ)=\sum_{I\in\ZZ}\overline{f}(I)l(I)
+    \end{gather*}
     Es gilt:
-    \begin{gather*}\underline{S}(f;\ZZ)\leq\overline{S}(f;\ZZ)\end{gather*}
+    \begin{gather*}
+      \underline{S}(f;\ZZ)\leq\overline{S}(f;\ZZ)
+    \end{gather*}
 \end{description}
 
-\begin{lemma}
-  \label{lemma:int}
+% Lemma 1.1
+\begin{lemma}\label{lemma:int}
   Sei $f\in B[a,b]$ und $\ZZ\prec \ZZ'$. Dann gilt
   \begin{enumerate}[(i)]
-    \item $\underline{S}(f;\ZZ')\geq \underline{S}(f;\ZZ)$
-      bzw. $\underline{S}(f;\ZZ) \leq \underline{S}(f; \ZZ')$\\
-      \textit{Beweis}: Annahme: $\ZZ'$ enthält genau einen Punkt $x'$ mehr
-      als $\ZZ$ mit $x_{i-1}<x'<x_i$. Es gilt:
-      \begin{gather*}\underline{f}([x_{i-1},x']),\underline{f}([x',x])\geq \underline{f}
-      ([x_{i-1},x_i])\end{gather*}
+  \item $\underline{S}(f;\ZZ')\geq \underline{S}(f;\ZZ)$
+    bzw. $\underline{S}(f;\ZZ) \leq \underline{S}(f; \ZZ')$.
+    \begin{proof}
+      Wir nehmen an, dass $\ZZ'$ genau einen Punkt $x'$ mehr als
+      $\ZZ$ mit $x_{i-1}<x'<x_i$ enthält. Es gilt:
+      \begin{gather*}
+        \underline{f}([x_{i-1},x']),\underline{f}([x',x])\geq \underline{f}
+        ([x_{i-1},x_i])
+      \end{gather*}
       Also ist $\underline{f}([x_{i-1},x_i])l([x_{i-1},x_i])\leq 
       \underline{f}([x_{i-1},x'])l([x_{i-1},x'])+\underline{f}([x',x_i])
       l([x',x_i])$ und somit
-      \begin{gather*}\underline{S}(f;\ZZ)\leq \underline{S}(f;\ZZ')\end{gather*}
+      \begin{align*}
+        \underline{S}(f;\ZZ) &= \underline{f} ([x_{i-1}, x']) l
+        ([x_{i-1}, x'])+ \sum_{\substack{k=1\\ k\neq i}} f (I_{k})l
+        (I_{k})\\
+        &\leq \underline{f} ([x_{i-1}, x']) l([x_{i-1}, x'])+
+        \underline{f} ([x', x_{i}]) l (x', x_{i})+
+        \sum_{\substack{k=1\\ k\neq i}} f (I_{k})l(I_{k})\\
+        &= \sum_{\substack{k=1\\ k\neq i}} f(I_{k}) l(I_{k})= \underline{S}(f;\ZZ')
+      \end{align*}
       Falls $\ZZ'$ mehr als einen Punkt ($p>1$) hat, wendet man den Schluss
-      $p$-mal an.
-    \item $\overline{S}(f;\ZZ')\leq \overline{S}(f;\ZZ)$\\
-      \textit{Beweis}: Der Beweis erfolgt analog zu oben.
-    \item $\overline{S}(f;\ZZ')-\underline{S}(f;\ZZ')\leq \overline{S}(f;\ZZ)
-      -\overline{S}(f;\ZZ)$\\
-      \textit{Beweis}: Der Schluss folgt aus den obigen Aussagen.
-    \item $\forall \ZZ_1,\ZZ_2 \underline{S}(f;\ZZ_1)\leq \overline{S}
-      (f;\ZZ_2)$\\
-      \textit{Beweis}: Sei $\ZZ=\ZZ_1\prec \ZZ_2$. Dann ist $\underline{S}
+      $p$"=mal an.
+    \end{proof}
+  \item $\overline{S}(f;\ZZ')\leq \overline{S}(f;\ZZ)$
+    \begin{proof}
+      Der Beweis erfolgt analog zu oben.
+    \end{proof}
+  \item $\overline{S}(f;\ZZ')-\underline{S}(f;\ZZ')\leq \overline{S}(f;\ZZ)
+    -\overline{S}(f;\ZZ)$
+    \begin{proof}
+      Der Schluss folgt aus den obigen Aussagen.
+    \end{proof}
+  \item $\forall \ZZ_1,\ZZ_2\colon \underline{S}(f;\ZZ_1)\leq \overline{S}
+    (f;\ZZ_2)$.
+    \begin{proof}
+      Sei $\ZZ=\ZZ_1\prec \ZZ_2$. Dann ist $\underline{S}
       (f;\ZZ_1)\leq \underline{S}(f;\ZZ)\leq \overline{S}(f;\ZZ)\leq
       \overline{S}(f;\ZZ_2)$
+    \end{proof}
   \end{enumerate}
 \end{lemma}
 
-\begin{definition}
-  Sei $f$ eine beschränkte Funktion auf $[a,b]$. Dann heissen die Größen
-  \begin{gather*}\int_{\underline{a}}^b fdx \coloneqq \sup_\ZZ \underline{S}(f;\ZZ)\end{gather*}
-  und
-  \begin{gather*}\int_a^{\overline{b}} fdx \coloneqq \inf_\ZZ \overline{S}(f;\ZZ)\end{gather*}
+\begin{definition}[Darbouxsches Integral]
+  Sei $f$ eine beschränkte Funktion auf $[a,b]$. Dann heissen die
+  Größen
+  \begin{gather*}
+    \int_{\underline{a}}^b f\,dx \coloneqq \sup_\ZZ
+    \underline{S}(f;\ZZ)\\
+    \int_a^{\overline{b}} f\,dx \coloneqq \inf_\ZZ \overline{S}(f;\ZZ)
+  \end{gather*}
   wobei $\ZZ$ die Menge aller Zerlegungen von $[a,b]$ durchläuft, unteres
-  und oberes \emph{Darbouxsches Integral\index{Integral!Darbouxsches}}.
+  und oberes \highl[Integral!Darbouxsches]{Darbouxsches Integral}.
 \end{definition}
 
 \begin{remark}
   Nach \autoref{lemma:int} Punkt (iv) gilt immer
-  $\int_{\underline{a}}^b fdx\leq \int_a^{\overline{b}}fdx$. Es gibt
-  beschränkte Funktionen für die $\int_{\underline{a}}^b fdx<
-  \int_a^{\overline{b}}fdx$.
+  $\int_{\underline{a}}^b f\,dx\leq \int_a^{\overline{b}}f\,dx$. Es
+  gibt beschränkte Funktionen für die $\int_{\underline{a}}^b f\,dx<
+  \int_a^{\overline{b}}f\,dx$.
 \end{remark}
 
 \begin{beispiel}
-$f(x)\coloneqq
-\begin{cases}
-  1 & x\in [0,1], x \text{ irrational}\\
-  0 & x\in [0,1], x \text{ rational}
-\end{cases} \in B[0,1]$
+  \begin{gather*}
+    f(x)\coloneqq
+    \begin{cases}
+      1 & x\in [0,1], x \text{ irrational}\\
+      0 & x\in [0,1], x \text{ rational}
+    \end{cases} \in B[0,1]   
+  \end{gather*}
 
-Sei $\ZZ$ eine beliebige Zerlegung von $[0,1]$ und $I\in \ZZ$ ein Intervall.
-Dann gilt $\underline{f}(I)=0, \overline{f}(I)=1$.
-\begin{align*}
-  \underline{S}(f;\ZZ)&= \sum_{I\in\ZZ} \underline{f}(I)l(I)=0&
-  \overline{S}(f;\ZZ)&= \sum_{I\in\ZZ} \overline{f}(I)l(I)=l([0,1])=1\\
-  &\Rightarrow \int_{\underline{a}}^b fdx =0 < 1= \int_a^{\overline{b}} fdx
-\end{align*}
+  Sei $\ZZ$ eine beliebige Zerlegung von $[0,1]$ und $I\in \ZZ$ ein
+  Intervall.  Dann gilt $\underline{f}(I)=0$ und
+  $\overline{f}(I)=1$. Denn in jedem beliebigen Intervall liegen
+  rationale und irrationale Zahlen.
+  \begin{align*}
+    \underline{S}(f;\ZZ)&= \sum_{I\in\ZZ} \underline{f}(I)l(I)=0&
+    \overline{S}(f;\ZZ)&= \sum_{I\in\ZZ} \overline{f}(I)l(I)=l([0,1])=1\\
+    &\Rightarrow \int_{\underline{a}}^b f\,dx =0 < 1= \int_a^{\overline{b}} f\,dx
+  \end{align*}
 \end{beispiel}
 
-\begin{definition}
-  Eine Funktion $f\in B[a,b]$ heißt genau dann Riemann-integrierbar
-  (R-integrierbar), wenn gilt:
-  \begin{gather*}\int_{\underline{a}}^b fdx = \int_a^{\overline{b}} fdx\end{gather*}
-  $\int_a^b$ heißt \emph{Riemannsches Integral\index{Integral!Riemannsches}}.
+\begin{definition}[Riemannsches Integral]
+  Eine Funktion $f\in B[a,b]$ heißt genau dann Riemann"=integrierbar
+  (R"=integrierbar), wenn gilt:
+  \begin{gather*}
+    \int_{\underline{a}}^b f\,dx = \int_a^{\overline{b}} f\,dx
+  \end{gather*}
+  Man bezeichnet $\int_a^b$ als das
+  \highl[Integral!Riemannsches]{Riemannsche Integral}.
 \end{definition}
 
-\begin{theorem}
-  \textbf{Riemannsches Integrabilitätskriterium}\\
-  $f\in B[a,b]$ ist R-integrierbar $\perdef$
-  \begin{gather*}\forall \varepsilon>0\,\exists \ZZ \colon \overline{S}(f;\ZZ)-
-  \underline{S}(f;\ZZ)\leq \varepsilon\end{gather*}
-  \textbf{Beweis}:
-  \begin{itemize}
-    \item["`$\Rightarrow$"'] Sei $f\in B[a,b]$ R-integrierbar. Dann folgt
-      $\int_a^b fdx=\int_{\underline{a}}^b fdx = \int_a^{\overline{b}} fdx$,
+\begin{theorem}[Riemannsches Integrabilitätskriterium]
+  Die Funktion $f\in B[a,b]$ ist genau dann R"=integrierbar, wenn
+  \begin{gather*}
+    \forall \varepsilon>0\,\exists \ZZ \colon \overline{S}(f;\ZZ)-
+    \underline{S}(f;\ZZ)\leq \varepsilon
+  \end{gather*}
+  \begin{proof}
+    \begin{itemize}
+    \item["`$\Rightarrow$"'] Sei $f\in B[a,b]$ R"=integrierbar. Dann folgt
+      $\int_a^b f\,dx=\int_{\underline{a}}^b f\,dx = \int_a^{\overline{b}} f\,dx$,
       d.\,h.
-      \begin{align}
-        &\Rightarrow& \forall\varepsilon>0\,\exists\ZZ_1,\ZZ_2\colon\int_a^b fdx
-        -\underline{S}(f;\ZZ_1)<\frac{\varepsilon}{2}\\
-        & & \qquad \overline{S}(f;\ZZ_2)-\int_a^b fdx < \frac{\varepsilon}{2}
-      \end{align}
-      Für $\ZZ=\ZZ_1\prec\ZZ_2$ gilt: $\overline{S}(f;\ZZ)-\underline{S}(f;\ZZ)
-      \leq \overline{S}(f;\ZZ_2)-\underline{S}(f;\ZZ_2) = 
-      \overline{S}(f;\ZZ_2)+\int_a^b fdx-\int_a^b fdx-\underline{S}(f;\ZZ_2)
-      <\frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon$
-    \item["`$\Leftrightarrow$"'] Sei $\varepsilon>0$. Dann gilt: $0\leq
+      \begin{gather*}
+        \forall\varepsilon>0\,\exists\ZZ_1,\ZZ_2\colon\int_a^b fdx
+        -\underline{S}(f;\ZZ_1)<\frac{\varepsilon}{2},
+        \overline{S}(f;\ZZ_2)-\int_a^b fdx < \frac{\varepsilon}{2}
+      \end{gather*}
+      Für $\ZZ=\ZZ_1\prec\ZZ_2$ gilt:
+      $\overline{S}(f;\ZZ)-\underline{S}(f;\ZZ) \leq
+      \overline{S}(f;\ZZ_2)-\underline{S}(f;\ZZ_2) =
+      \overline{S}(f;\ZZ_2)+\int_a^b f\,dx-\int_a^b
+      f\,dx-\underline{S}(f;\ZZ_2)
+      <\frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon$.
+    \item["`$\Leftarrow$"'] Sei $\varepsilon>0$. Dann gilt: $0\leq
       \int_a^{\overline{b}} fdx - \int_{\underline{a}}^b fdx\leq
-      \overline{S}(f;\ZZ)-\underline{S}(f;\ZZ)<\varepsilon$\\
-      Daher folgt für alle positiven $\varepsilon$: $0\leq
-      \int_a^{\overline{b}} fdx - \int_{\underline{a}}^b fdx\leq \varepsilon
-      \Rightarrow \overline{\int}=\underline{\int}$. Womit klar ist, dass $f$ 
-      R-integrierbar ist.
-  \end{itemize}
-  \qed
+      \overline{S}(f;\ZZ)-\underline{S}(f;\ZZ)<\varepsilon$.  Daher
+      folgt für alle positiven $\varepsilon\colon0\leq
+      \int_a^{\overline{b}} f\,dx - \int_{\underline{a}}^b f\,dx\leq
+      \varepsilon \Rightarrow \overline{\int}=\underline{\int}$. Womit
+      klar ist, dass $f$ R"=integrierbar ist.
+    \end{itemize}
+  \end{proof}
 \end{theorem}
 
-\subsection{Definition des Riemannsches Integrals über ZWS}
+\subsection{Definition des Riemannsches Integrals über Zwischensummen}
 
-Auswahlfunktion: Sei $\ZZ$ eine Zerlegung von $[a,b]$.
-\begin{gather*}\xi\colon\ZZ\rightarrow[a,b] \text{ mit } \xi(I)=\xi\in I\in\ZZ\end{gather*}
-heißt \emph{Auswahlfunktion\index{Auswahlfunktion}}. Sie ordnet jedem
-Intervall $I$ ein Element $\xi(I)$ des Intervalls zu.
+\begin{definition}[Auswahlfunktion]
+  Sei $\ZZ$ eine Zerlegung von $[a,b]$. Dann heißt die Funktion
+  \begin{gather*}
+    \xi\colon\ZZ\rightarrow[a,b] \text{ mit } \xi(I)=\xi\in I\in\ZZ
+  \end{gather*}
+  \highl{Auswahlfunktion}. Sie ordnet jedem Intervall $I$ ein Element
+  $\xi(I)$ des Intervalls zu.
+\end{definition}
 
-Zwischensumme:
-\begin{gather*}S(f;\ZZ;\xi)\coloneqq\sum_{I\in\ZZ} f(\xi(I)) l(I)\end{gather*}
-heißt \emph{Zwischensumme\index{Zwischensumme}} von $f$ mit der Zerlegung
-$\ZZ$ und der Auswahlfunktion $\xi\colon\ZZ\rightarrow[a,b]$.
+\begin{definition}[Zwischensumme]
+  Man bezeichnet
+  \begin{gather*}
+    S(f;\ZZ;\xi)\coloneqq\sum_{I\in\ZZ} f(\xi(I)) l(I)
+  \end{gather*}
+  als \highl{Zwischensumme} von $f$ mit der Zerlegung
+  $\ZZ$ und der Auswahlfunktion $\xi\colon\ZZ\rightarrow[a,b]$.  
 
-Wegen $\underline{f}\leq f(\xi(I))\leq\overline{f}(I)$ gilt $\underline{S}
-(f;\ZZ)\leq S(f;\ZZ;\xi)\leq\overline{S}(f;\ZZ)$.
+  Wegen $\underline{f}\leq f(\xi(I))\leq\overline{f}(I)$ gilt
+  $\underline{S} (f;\ZZ)\leq S(f;\ZZ;\xi)\leq\overline{S}(f;\ZZ)$.
+\end{definition}
 
+% Lemma 1.3
 \begin{lemma}
   Sei $f\in B[a,b]$ und $\ZZ\prec\ZZ'$. Dann gilt für alle Auswahlfunktionen
   $\xi\colon\ZZ\rightarrow[a,b]$ und $\xi'\colon\ZZ'\rightarrow
-  [a,b]\colon \abs{S(f;\ZZ;\xi)
-  -S(f;\ZZ';\xi')}\leq\max_{I\in\ZZ} (\overline{f}(I)-\underline{f}(I))
-  \underbrace{l([a,b])}_{=b-a}$
+  [a,b]$:
+  \begin{gather*}
+    \abs{S(f;\ZZ;\xi) -S(f;\ZZ';\xi')}\leq\max_{I\in\ZZ}
+    (\overline{f}(I)-\underline{f}(I)) \underbrace{l([a,b])}_{=b-a}
+  \end{gather*} 
 \end{lemma}
 
+%Lemma 1.4
 \begin{theorem}
-  Sei $f\in B[a,b]$. Dann ist $f$ genau dann R-integrierbar, wenn gilt:
-  \begin{gather*}\exists A\in\R \forall\varepsilon>0 \exists\delta_\varepsilon>0
-  \forall\ZZ(d(\ZZ)<\delta_\varepsilon) \forall \xi(\xi\colon\ZZ\rightarrow
-  [a,b])\colon\abs{S(f;\ZZ;\xi)-A}\leq \varepsilon\end{gather*}
+  Sei $f\in B[a,b]$. Dann ist $f$ genau dann R"=integrierbar, wenn gilt:
+  \begin{gather*}
+    \exists A\in\R\,\forall\varepsilon>0\,\exists\delta_\varepsilon>
+    0\,\forall \ZZ(d(\ZZ)<\delta_\varepsilon)\,\forall \xi(\xi\colon\ZZ\rightarrow
+    [a,b])\colon\abs{S(f;\ZZ;\xi)-A}\leq \varepsilon\end{gather*}
 \end{theorem}
 
+% Lemma 1.5
 \begin{theorem}
-  Sei $f\in B[a,b]$. Dann ist $f$ genau dann R-integrierbar, wenn
-  \begin{gather*}\forall (\ZZ_n)\,\forall (\xi_n)\,(d(\xi_n)\rightarrow 0)\colon
-  \lim_{n\rightarrow\infty} S(f;\ZZ_n;\xi_n)\end{gather*}
+  Sei $f\in B[a,b]$. Dann ist $f$ genau dann R"=integrierbar, wenn
+  \begin{gather*}
+    \forall (\ZZ_n)\,\forall (\xi_n)\,(d(\xi_n)\rightarrow 0)\colon
+    \lim_{n\rightarrow\infty} S(f;\ZZ_n;\xi_n)
+  \end{gather*}
   existiert und es gilt $\lim_{n\rightarrow\infty} S(f;\ZZ_n;\xi_n)=\int_a^b
-  fdx$.
+  f\,dx$.
 \end{theorem}
 
 \subsection{Beispiele von R-integrierbaren Funktionen}
 
+% Lemma 1.6
 \begin{theorem}
   \begin{enumerate}[(i)]
-    \item Jede \emph{monotone} Funktion $f\in B[a,b]$ ist R-integrierbar.\\
-      \textit{Beweis}: O.\,B.\,d.\,A. sei $f(b)\neq f(a)$ und $f$ monoton wachsend.
-      $\ZZ=\{I_1,\dots,I_n\}, I_k=[x_{k-1},x_k], x_0=a,x_n=b$\\
-      Es ist
+  \item Jede \emph{monotone} Funktion $f\in B[a,b]$ ist
+    R"=integrierbar.
+    \begin{proof}
+      Sei o.\,B.\,d.\,A. $f(b)\neq f(a)$ und $f$ monoton wachsend.
+      $\ZZ=\{I_1,\dots,I_n\}, I_k=[x_{k-1},x_k], x_0=a,x_n=b$ und $d (
+      \ZZ)= \max_{I\in\ZZ} l (I)$. Es ist
       \begin{align*}
-        \overline{S}(f;\ZZ)-\underline{S}(f;\ZZ)&= \sum_{I\in\ZZ} \overline{f}
-        (I)l(I)-\underline{f}(I)l(I)
-        &= \sum_{i=1}^n (f(x_i)-f(x_{i-1}))l(I_i)\\
-        &\leq \left( \sum_{i=1}^n (f(x_i)-f(x_{i-1})) \right)d(\ZZ)
-        &= (f(b)-f(a))(d(\ZZ))
+        \overline{S}(f;\ZZ)-\underline{S}(f;\ZZ) &= \sum_{I\in\ZZ}
+        \overline{f}(I) l(I)-\underline{f}(I)l(I) = \sum_{i=1}^n
+        (f(x_i)-f(x_{i-1}))l(I_i)\\
+        &\leq \left( \sum_{i=1}^n (f(x_i)-f(x_{i-1})) \right)d(\ZZ)=
+        (f(b)-f(a))(d(\ZZ))
       \end{align*}
       Für $\varepsilon>0$ wählt man $\ZZ$ derart, dass $d(\ZZ)\leq
       \frac{\varepsilon}{f(b)-f(a)}$. Dann gilt, $\overline{S}(f;\ZZ)-
       \underline{S}(f;\ZZ)\leq f(b)-f(a)d(\ZZ)\leq \varepsilon\Rightarrow f$
-      ist R-integrierbar.
-    \item Jede \emph{stetige} Funktion $f\in B[a,b]$ ist R-integrierbar.\\
-      \textit{Beweis}: $f$ sei auf $[a,b]$ stetig. Dann ist $f$ auch beschränkt
-      und gleichmässig stetig und es gilt:
-      $\forall\varepsilon>0\,\exists\delta_\varepsilon>0\,\forall x_1,x_2\in
-      [a,b]\colon \abs{x_1-x_2}\leq\delta_\varepsilon\Rightarrow\abs{f(x_1)-f(x_2)}\leq
-      \frac{\varepsilon}{b-a}$. Man wählt $\ZZ$ mit $d(\ZZ)\leq
-      \delta_\varepsilon$. Dann gilt $\overline{f}(I)-\underline{f}(I)\leq
-      \frac{\varepsilon}{b-a}$ für $I \in\ZZ$. Somit ist
-      \begin{align*}
-        \overline{S}(f;\ZZ)-\underline{S}(f;\ZZ)&=& \sum_{I\in\ZZ}
-        (\overline{f}(I)-\underline{f}(I))l(I)\\
-        &\leq& \sum_{I\in\ZZ} \frac{\varepsilon}{b-a} l(I)=\left( \sum_{I\in\ZZ}
-        \right)\frac{\varepsilon}{b-a}\\
-        &=& b-a\frac{\varepsilon}{b-a}=\varepsilon
-      \end{align*}
+      ist R"=integrierbar.
+    \end{proof}
+
+    \item Jede \emph{stetige} Funktion $f\in B[a,b]$ ist
+      R"=integrierbar.
+      \begin{proof}
+        Sei $f$ auf $[a,b]$ stetig. Dann ist $f$ auch beschränkt
+        und gleichmässig stetig. Das heißt, 
+        $\forall\varepsilon>0\,\exists\delta_\varepsilon>0\,\forall
+        x_1, x_2\in [a,b]\colon \abs{x_1-x_2}\leq \delta_\varepsilon
+        \Rightarrow\abs{f(x_1)-f(x_2)}\leq
+        \frac{\varepsilon}{b-a}$. Man wählt $\ZZ$ mit $d(\ZZ)\leq 
+        \delta_\varepsilon$. Dann gilt $\overline{f}(I)-\underline{f}(I)\leq
+        \frac{\varepsilon}{b-a}$ für $I \in\ZZ$. Somit ist
+        \begin{align*}
+          \overline{S}(f;\ZZ)-\underline{S}(f;\ZZ)&= \sum_{I\in\ZZ}
+          (\overline{f}(I)-\underline{f}(I))l(I)\leq \sum_{I\in\ZZ}
+          \frac{\varepsilon}{b-a} l(I)=\left( \sum_{I\in\ZZ} 
+          \right)\frac{\varepsilon}{b-a}\\
+          &= b-a\frac{\varepsilon}{b-a}=\varepsilon
+        \end{align*}
+      \end{proof}
   \end{enumerate}
-  \qed
 \end{theorem}
 
+% Lemma 1.7
 \begin{theorem}
-  Ändert man eine R-integrierbare Funktion $f\in B[a,b]$ an endlich vielen
+  Ändert man eine R"=integrierbare Funktion $f\in B[a,b]$ an endlich vielen
   Stellen ab, so ist die neu entstandene Funktion $\tilde{f}$ ebenfalls
-  R-integrierbar und es gilt
-  \begin{gather*}\int_a^b fdx = \int_a^b \tilde{f}dx\end{gather*}
+  R"=integrierbar und es gilt
+  \begin{gather*}
+    \int_a^b f\,dx = \int_a^b \tilde{f}\,dx
+  \end{gather*}
 \end{theorem}
 
-Ein Beispiel zur numerischen Auswertung eines R-Integrals über ZWS ist die
-Funktion $f(x)=x^\alpha$.
+Ein Beispiel zur numerischen Auswertung eines Riemannschen Integrals
+über Zwischensummen ist die Funktion $f(x)=x^\alpha$.
 
 \subsection{Eigenschaften des R-Integrals}
-\begin{gather*}\RR[a,b]\coloneqq\{f\in B[a,b] | f \text{ ist R-integrierbar}\}\end{gather*}
+\begin{gather*}
+  \RR[a,b]\coloneqq\{f\in B[a,b] | f \text{ ist R-integrierbar}\}
+\end{gather*}
 
+% Satz 1.8
 \begin{theorem}
   \begin{enumerate}
-    \item $f\in\RR[a,b]$. Dann gilt $\underline{f}([a,b])(b-a)\leq\int_a^b
-      fdx\leq \overline{f}([a,b])(b-a)$.
-    \item $f\in\RR[a,b], c\in\R\Rightarrow cf\in\RR[a,b]$\\
-      $\int_a^b cfdx=c\int_a^b fdx$
-    \item Additivität: $f_1,f_2\in\RR[a,b]\Rightarrow f_1+f_2\in\RR[a,b]$\\
-      $\int_a^b (f_1+f_2)dx=\int_a^b f_1dx + \int_a^b f_2dx$
-    \item $f_1,f_2\in\RR[a,b], f_1\leq f_2\Rightarrow \int_a^b f_1dx\leq 
-      \int_a^b f_2dx$
-    \item Sei $a<c<b$ und $f_i[a,b]\rightarrow\R$. Dann gilt $f\in\RR[a,b]
-      \Leftrightarrow f_{[a,c]}\in\RR[a,c]\wedge f_{[c,b]}\in\RR[c,b]
-      \int_a^b fdx=\int_a^c fdx + \int_c^b fdx$
-    \item Sei $f\in\RR[a,b], m\leq f\leq M, \varphi\colon[m,M]\rightarrow\R$ stetig.
-      Dann gilt $h=\varphi\circ f\in\RR[a,b]$
-    \item $f,g\in\RR[a,b]\Rightarrow f\circ g \in\RR[a,b]$
-    \item $f\in\RR[a,b]\Rightarrow \abs{f}\in\RR[a,b], \abs{\int_a^b fdx}\leq\int_a^b
-      \abs{f}dx$
+  \item Sei $f\in\RR[a,b]$. Dann gilt $\underline{f}([a,b])(b-a)\leq
+    \int_a^b f\,dx\leq \overline{f}([a,b])(b-a)$.
+  \item Sei $f\in\RR[a,b]$ und $c\in\R$. Dann folgt, $c\cdot
+    f\in\RR[a,b]$ und $\int_a^b cf\,dx =c\int_a^b f\,dx$.
+  \item Additivität: $f_1,f_2\in\RR[a,b]\Rightarrow
+    f_1+f_2\in\RR[a,b]$ und $\int_a^b (f_1+f_2)\,dx= \int_a^b f_1\,dx
+    + \int_a^b f_2\,dx$
+  \item $f_1,f_2\in\RR[a,b], f_1\leq f_2\Rightarrow \int_a^b f_1\,dx\leq 
+    \int_a^b f_2\,dx$
+  \item Sei $a<c<b$ und $f_i[a,b]\rightarrow\R$. Dann gilt $f\in\RR[a,b]
+    \Leftrightarrow f_{[a,c]}\in\RR[a,c]\wedge f_{[c,b]}\in\RR[c,b], 
+    \int_a^b f\,dx=\int_a^c f\,dx + \int_c^b f\,dx$
+  \item Sei $f\in\RR[a,b], m\leq f\leq M,
+    \varphi\colon[m,M]\rightarrow\R$ stetig. Dann gilt $h=\varphi\circ
+    f\in\RR[a,b]$.
+  \item $f,g\in\RR[a,b]\Rightarrow f\circ g \in\RR[a,b]$
+  \item $f\in\RR[a,b]\Rightarrow \abs{f}\in\RR[a,b], \abs{\int_a^b
+      f\,dx}\leq\int_a^b \abs{f}\,dx$
   \end{enumerate}
-  %Beweis noch einfügen
+  \todo{Beweis noch einfügen}
 \end{theorem}
 
 \section{Integration und Differentiation}
