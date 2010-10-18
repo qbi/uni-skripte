@@ -70,7 +70,7 @@
   \frametitle{Vorlesung}
   \begin{itemize}
   \item Hauptinhalte auf Folien
-  \item erhältlich unter \url{http://uni-skripte.lug-jena.de/skripte.html?id=kubieziel-itsich}
+  \item erhältlich im CAJ oder unter \url{http://uni-skripte.lug-jena.de/skripte.html?id=kubieziel-itsich}
   \item ggf. diverse Veröffentlichungen zum Download
   \end{itemize}
 \end{frame}
@@ -103,6 +103,7 @@
   \begin{itemize}
   \item Abgabe der Übungen ist fakultativ. \smiley{}
   \item Aber dringend angeraten!
+  \item Wichtig ist die Mitarbeit an Übungsterminen.
   \end{itemize}
 \end{frame}
 
@@ -115,12 +116,14 @@
     \item einfache Aufgaben
     \item schriftlich zu lösen
     \item 50\,\% der Punkte qualifizieren zur Teilnahme an der Prüfungsklausur
+    \item Termin: 11.\,Februar 2011 (voraussichtlich)
     \end{itemize}
   \item Schriftliche Prüfungsklausur
     \begin{itemize}
     \item anspruchsvollere Aufgaben
     \item 50\,\% der Punkte zum Bestehen
     \item Bearbeitung der Vorlesung \emph{und} Übung zum Bestehen notwendig
+    \item Termin: 25.\,Februar 2011 (voraussichtlich)
     \end{itemize}
   \end{enumerate}
 \end{frame}
@@ -138,6 +141,133 @@
   \begin{center}
     Gibt es weitere Fragen?
   \end{center}
+\end{frame}
+
+\subsection{Ein Beispiel}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \begin{itemize}
+  \item hoch spezialisierter Computerwurm
+  \item greift SCADA-Systeme an
+  \item nutzt mindestens vier 0day-Lücken
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Geschichte}
+  \begin{itemize}
+  \item 17.\,Juni 2010: VirusBlokAda meldet Trojan-Spy.0485 erstmals
+  \item Mitte Juli: Siemens gibt Warnung heraus, andere Varianten
+    werden gefunden, Advisorys von MSFT und CERTs
+  \item Ende Juli: VB-Viren nutzen die LNK-Lücke
+  \item seitdem: weitere Untersuchungen
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Verbreitung}
+  \begin{enumerate}
+  \item LNK-Schwachstelle
+  \item Print Spooler
+  \item Freigegebene Ordner
+  \item \texttt{Win32k.sys}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{LNK-Schwachstelle}
+  Eine LNK-Datei ist eine Verknüpfung in Windows. Das Icon der
+  Verknüpfung wird aus einer CPL-Datei geladen.
+
+  \includegraphics[width=.5\textwidth]{bilder/lnk-hexdump}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{LNK-Schwachstelle}
+  Sechs Dateien sind mindestens auf dem USB-Stick enthalten:
+  \begin{itemize}
+  \item \texttt{Copy of Shortcut to.lnk}
+  \item \texttt{Copy of Copy of Shortcut to.lnk}
+  \item \texttt{Copy of Copy of Copy of Shortcut to.lnk}
+  \item \texttt{Copy of Copy of Copy of Copy of Shortcut to.lnk}
+  \item \texttt{~WTR4141.TMP} -- ist in Wirklichkeit eine DLL.
+  \item \texttt{~WTR4132.TMP} -- wird von obiger Datei geladen.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Printer Spooler}
+  Es werden Druckerfreigaben benutzt, sich als Gast angemeldet und die
+  Rechte so erweitert, dass der Angreifer nach \texttt{\%SYSTEM\%}
+  schreiben kann.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Freigegebene Ordner}
+  \begin{itemize}
+  \item Durchsucht Netzwerk nach \texttt{c\$}- und \texttt{amdin\$}-Freigaben
+  \item installiert Datei \texttt{DEFRAG<num>.TMP}
+  \item Plant Aufgabe für folgenden Tag
+  \item dem Wurm Conficker sehr ähnlich
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Win32k.sys}
+  Stuxnet versucht, seine Rechte auf die des \texttt{SYSTEM}-Nutzers
+  zu erhöhen. Es lädt speziell präpariertes Tastaturlayout.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Nach dem Befall}
+  \begin{itemize}
+  \item Hauptmodul hat 21~Funktionen
+  \item Module als DLLs
+  \item injizieren Code in laufende Prozesse
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Funktionen im Hauptmodul}
+  \begin{itemize}
+  \item[1] Start des RPC-Server
+  \item[2] Beobachtung von S7P-Dateien
+  \item[4, 18] Bereinigung des Systems
+  \item[6] Stuxnet-Version
+  \item[9, 10] kompiliert und startet Schadcode
+  \item[16] installiert Treiber, speichert Konfiguration, injiziert Code
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \framesubtitle{Kommunikation}
+  Der Wurm kommuniziert mit \url{www.mypremierfutbol.com} und
+  \url{www.todaysfutbol.com}. URLs haben die Form \url{http://
+    www.mypremierfutbol.com/index.php?data=data_to_send}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stuxnet}
+  \begin{itemize}
+  \item etwa 8--10 Entwickler, sechs Monate Entwicklung
+  \item "`teure"' Sicherheitslücken
+  \item Wer war das Ziel? (Bushehr, Natanz, Satellit, Deepwater Horizon)
+  \item "`So etwas bauen große Staaten zusammen, wenn die Alternative
+    bei einem Misserfolg wäre, einen Krieg anzufangen."'
+    (\href{http://www.faz.net/s/RubCEB3712D41B64C3094E31BDC1446D18E/Doc~E8A0D43832567452FBDEE07AF579E893C~ATpl~Ecommon~Scontent.html}{FAZ:
+    Der digitale Erstschlag ist erfolgt})
+  \end{itemize}
 \end{frame}
 
 \section{Kryptographie}
