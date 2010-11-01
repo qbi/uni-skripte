@@ -1,0 +1,178 @@
+\input{kopfteil.ltx}
+\usepackage{fancyvrb}
+
+\begin{document}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+  Ein Fremder mit schwarzem Trenchcoat kommt auf Sie zu und drückt Ihnen
+einen Zettel in die Hand. Darauf steht:
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.
+0010  00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......
+0020  02 01 c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....
+0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.
+0040  64 65 00 00 01 00 01                              de.....
+\end{Verbatim}
+Was möchte der Mann und wie lautet Ihre Antwort?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Aufgabe 2}
+  Hierbei handelt es sich um den Hexdump (Angaben in
+  Hexadezimalnotation) einer DNS"=Anfrage. Der Fremde möchte gern
+  Informationen (IP"=Adresse) zu der Domain \url{uni-jena.de} von Ihnen.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Aufgabe 2}
+  \framesubtitle{Analyse des Pakets}
+  Das Paket besteht aus vier Teilen:
+  \begin{itemize}
+  \item \textcolor{blue}{Ethernetheader}
+  \item \textcolor{green}{IP"=Header}
+  \item \textcolor{yellow}{UDP"=Header}
+  \item \textcolor{red}{DNS"=Paket}
+  \end{itemize}
+  \begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+0000  \textcolor{blue}{00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00} \textcolor{green}{45 00}   ...\}e....;....E.
+0010  \textcolor{green}{00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8}   .9....@.Vw......
+0020  \textcolor{green}{02 01} \textcolor{yellow}{c3 de 00 35 00 25 e3 a2} \textcolor{red}{00 63 01 00 00 01}   .....5.%...c....
+0030  \textcolor{red}{00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02}   .......uni-jena.
+0040  \textcolor{red}{64 65 00 00 01 00 01}                              de.....
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item MAC"=Adresse des \textcolor{blue}{Empfängers} bzw. des \textcolor{green}{Absenders}
+\item \textcolor{red}{Typ des versandten Pakets} (0800 entspricht IP)
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+0000  \textcolor{blue}{00 15 0c 7d 65 e4} \textcolor{green}{00 1f c6 3b c4 f8} \textcolor{red}{08 00} 45 00   ...\}e....;....E.
+\textcolor{gray}{0010  00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......}
+\textcolor{gray}{0020  02 01 c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....}
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item \textcolor{blue}{Nummer der Protokollversion (IPv4)}
+\item \textcolor{green}{Gesamtlänge des IP"=Headers} (5~Words zu je
+  4~Byte Länge)
+\item \textcolor{red}{Type of Service}
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 \textcolor{blue}{4}\textcolor{green}{5} \textcolor{red}{00}   ...\}e....;....E.
+\textcolor{gray}{0010  00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......}
+\textcolor{gray}{0020  02 01 c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....}
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item \textcolor{blue}{Länge des IP"=Teils} (Header plus Daten)
+\item \textcolor{green}{ID}
+\item \textcolor{red}{Flags und Fragmentationsoffset}
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+\textcolor{gray}{0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.}
+0010  \textcolor{blue}{00 39} \textcolor{green}{9e d2} \textcolor{red}{00 00} 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......
+\textcolor{gray}{0020  02 01 c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....}
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item \textcolor{blue}{TTL}
+\item \textcolor{green}{Protokollnummer} (siehe \url{http://www.iana.org/assignments/protocol-numbers})
+\item \textcolor{red}{Prüfsumme}
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+\textcolor{gray}{0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.}
+0010  00 39 9e d2 00 00 \textcolor{blue}{40} \textcolor{green}{11} \textcolor{red}{56 77} c0 a8 02 19 c0 a8   .9....@.Vw......
+\textcolor{gray}{0020  02 01 c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....}
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+IP"=Adresse von \textcolor{blue}{Absender} bzw. \textcolor{green}{Empfänger}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+\textcolor{gray}{0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.}
+0010  00 39 9e d2 00 00 40 11 56 77 \textcolor{blue}{c0 a8 02 19} \textcolor{green}{c0 a8}   .9....@.Vw......
+0020  \textcolor{green}{02 01} c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item \textcolor{blue}{Quellport}
+\item \textcolor{green}{Zielport}
+\item \textcolor{red}{Länge des UDP"=Pakets}
+\item \textcolor{yellow}{Prüfsumme}
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+\textcolor{gray}{0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.}
+\textcolor{gray}{0010  00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......}
+0020  02 01 \textcolor{blue}{c3 de} \textcolor{green}{00 35} \textcolor{red}{00 25} \textcolor{yellow}{e3 a2} 00 63 01 00 00 01   .....5.%...c....
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item \textcolor{blue}{Transaktionsnummer}
+\item \textcolor{green}{DNS"=Flags}
+\item \textcolor{red}{Anzahl der Anfragen}
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+\textcolor{gray}{0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.}
+\textcolor{gray}{0010  00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......}
+0020  02 01 c3 de 00 35 00 25 e3 a2 \textcolor{blue}{00 63} \textcolor{green}{01 00} \textcolor{red}{00 01}   .....5.%...c....
+\textcolor{gray}{0030  00 00 00 00 00 00 08 75 6e 69 2d 6a 65 6e 61 02   .......uni-jena.}
+\textcolor{gray}{0040  64 65 00 00 01 00 01                              de.....}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Aufgabe 2}
+\framesubtitle{Analyse des Pakets}
+\begin{itemize}
+\item \textcolor{blue}{Domainname}
+\item \textcolor{green}{Leerbyte (Ende des Domainnamens)}
+\item \textcolor{red}{Typ und Klasse des Eintrags (RR)}
+\end{itemize}
+\begin{Verbatim}[commandchars=\\\{\},fontsize=\scriptsize]
+\textcolor{gray}{0000  00 15 0c 7d 65 e4 00 1f c6 3b c4 f8 08 00 45 00   ...\}e....;....E.}
+\textcolor{gray}{0010  00 39 9e d2 00 00 40 11 56 77 c0 a8 02 19 c0 a8   .9....@.Vw......}
+\textcolor{gray}{0020  02 01 c3 de 00 35 00 25 e3 a2 00 63 01 00 00 01   .....5.%...c....}
+0030  00 00 00 00 00 00 \textcolor{blue}{08 75 6e 69 2d 6a 65 6e 61 02}   .......uni-jena.
+0040  \textcolor{blue}{64 65} \textcolor{green}{00} \textcolor{red}{00 01 00 01}                              de.....
+\end{Verbatim}
+\end{frame}
+\end{document}
