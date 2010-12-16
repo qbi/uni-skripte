@@ -398,4 +398,160 @@ Weitere wurden später entwickelt und spezifiziert. Beispiele sind der
   \end{itemize}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Der AES-Algorithmus}
+  \framesubtitle{Grundlagen}
+  \begin{itemize}
+  \item<+-> Block in 16~Teile zu 8~Bit=1~Byte aufgeteilt
+  \item<+-> Operation in $\FF_{2^{8}}= \FF_{2}[x]/g\FF_{2}[x]$  mit
+    dem irreduziblen Polynom
+    \begin{gather*}
+      g = x^{8}+ x^{4}+ x^{3}+x+ 1
+    \end{gather*}
+  \item<+-> Byte $b_{7}b_{6}b_{5}b_{4}b_{3}b_{2}b_{1}b_{0}$
+    repräsentiert durch ein Polynom aus $\FF_{2^{8}}$
+  \item<+-> Schreibweise als $4\times4$"=Matrix:
+    \begin{gather*}
+      M=
+      \begin{pmatrix}
+        a_{00} & a_{01} & a_{02} & a_{03}\\
+        a_{10} & a_{11} & a_{12} & a_{13}\\
+        a_{20} & a_{21} & a_{22} & a_{23}\\
+        a_{30} & a_{31} & a_{32} & a_{33}\\
+      \end{pmatrix}\qquad a_{ij}\in\FF_{2^{8}}
+    \end{gather*}
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{Rundentransformation}
+    Insgesamt gibt es neun Runden mit den Operationen:
+    \begin{enumerate}
+    \item<+-> \texttt{AddRoundKey}
+    \item<+-> \texttt{SubBytes}
+    \item<+-> \texttt{ShiftRows}
+    \item<+-> \texttt{MixColumns}
+    \end{enumerate}\pause{}
+    und eine Abschlussrunde \emph{ohne} die obige Operation
+    \texttt{MixColumns}.\pause{}
+    Weiterhin werden für jede Runde separate Schlüssel errechnet.
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{SubBytes}}
+    Sei $a_{ij}\in\FF_{2^{8}}$ aus der Matrix $M$ und $S=g\circ f$
+    mit $f(a) =
+      \begin{cases}
+        a^{-1} & x\neq0\\
+        0 & x=0
+      \end{cases}$ und\pause{}
+    \begin{align*}      
+g
+\begin{pmatrix}
+  a_{7}\\ a_{6}\\ a_{5}\\ a_{4}\\ a_{3}\\ a_{2}\\ a_{1}\\ a_{0}\\
+\end{pmatrix} &=
+\begin{pmatrix}
+  1 & 1 & 1 & 1 & 1 & 0 & 0 & 0\\
+  0 & 1 & 1 & 1 & 1 & 1 & 0 & 0\\
+  0 & 0 & 1 & 1 & 1 & 1 & 1 & 0\\
+  0 & 0 & 0 & 1 & 1 & 1 & 1 & 1\\
+  1 & 0 & 0 & 0 & 1 & 1 & 1 & 1\\
+  1 & 1 & 0 & 0 & 0 & 1 & 1 & 1\\
+  1 & 1 & 1 & 0 & 0 & 0 & 1 & 1\\
+  1 & 1 & 1 & 1 & 0 & 0 & 0 & 1\\
+\end{pmatrix}
+\begin{pmatrix}
+  a^{7}\\ a^{6}\\ a^{5}\\ a^{4}\\ a^{3}\\ a^{2}\\ a^{1}\\ a^{0}\\
+\end{pmatrix} +
+\begin{pmatrix}
+  0\\ 1\\ 1\\ 0\\ 0\\ 0\\ 1\\1
+\end{pmatrix}
+    \end{align*}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{ShiftRows}}
+    \begin{gather*}
+      \begin{pmatrix}
+        a_{00} & a_{01} & a_{02} & a_{03}\\
+        a_{10} & a_{11} & a_{12} & a_{13}\\
+        a_{20} & a_{21} & a_{22} & a_{23}\\
+        a_{30} & a_{31} & a_{32} & a_{33}\\
+      \end{pmatrix}\rightarrow
+      \begin{pmatrix}
+        a_{00} & a_{01} & a_{02} & a_{03}\\
+        a_{11} & a_{12} & a_{13} & a_{10}\\
+        a_{22} & a_{23} & a_{20} & a_{21}\\
+        a_{33} & a_{30} & a_{31} & a_{32}\\
+      \end{pmatrix}
+      \end{gather*}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{MixColumns}}
+    Jede Eingabespalte $a_{i.}$ wird mit einem Polynom $c(x)= 03\cdot
+    x^{3}+ 01\cdot x^{2}+ 01\cdot x+ 02$ modulo $x^{4}+1$
+    multipliziert.\pause{}
+    Schreibweise als Matrixmultiplikation:
+    \begin{gather*}
+      \begin{pmatrix}
+        b_{i0}\\ b_{i1}\\ b_{i2}\\ b_{i3}
+      \end{pmatrix}=
+      \begin{pmatrix}
+        02 & 03 & 01 & 01\\
+        01 & 02 & 03 & 01\\
+        01 & 01 & 02 & 03\\
+        03 & 01 & 01 & 02
+      \end{pmatrix}\cdot
+      \begin{pmatrix}
+        a_{i0}\\ a_{i1}\\ a_{i2}\\ a_{i3}
+      \end{pmatrix}
+    \end{gather*}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{AddRoundKey}}
+    Addition der Matrix $M$ mit dem Rundenschlüssel modulo $2$
+  \end{frame}
+
+\subsection{Angriffe gegen AES}
+
+\begin{frame}
+  \frametitle{Der effektivste Weg}
+  \includegraphics[width=\textwidth]{security}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Mögliche Angriffe}
+  \begin{itemize}
+  \item<+-> Lineare und differenzielle Kryptoanalyse
+  \item<+-> XSL-Angriff
+  \item<+-> Darstellung als Kettenbruch
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Mögliche Angriffe}
+  \framesubtitle{Darstellung als Kettenbruch}
+\begin{gather*}
+  a_{i,j}^{(6)} = K+ \sum\limits_{\substack{e_{5}\in\mathcal{E}\\
+      d_{5}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{4}\in\mathcal{E}\\
+      d_{4}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{3}\in\mathcal{E}\\
+      d_{3}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{2}\in\mathcal{E}\\
+      d_{2}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{1}\in\mathcal{E}\\
+      d_{1}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+p_{*}^{*}}}}}}
+\end{gather*}
+\end{frame}
+
+
 \end{document}
