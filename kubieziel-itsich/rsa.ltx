@@ -1,0 +1,233 @@
+\documentclass[ngerman]{scrartcl}
+
+\usepackage{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumerate}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{charter}
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[scaled=.96]{helvet}
+\usepackage{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+\usepackage{braket}
+
+
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+\ihead{Prof.\,Dr.\,E.\,Zehendner, J.\,Kubieziel}
+\ohead{IT-Sicherheit}
+\chead{WS10/11}
+
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[section]
+\newtheorem{bemerk}{Bemerkung}[section]
+\newtheorem{defini}{Definition}[section]
+\newtheorem{bsp}{Beispiel}[section]
+\newtheorem{festl}{Festlegung}[section]
+
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\satzautorefname}{Satz}
+
+\theoremstyle{nonumberbreak}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+\newtheorem{proof}{Beweis:}
+
+
+\renewcommand*{\phi}{\varphi}
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\PP}{\mathbb{P}}     % Primzahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclareMathOperator{\ggt}{ggT}
+
+\begin{document}
+\section{Der RSA-Algorithmus}
+
+Das folgende Dokument ist eine kurze Zusammenfassung der Inhalte der
+Vorlesungen vom 15.\,November und 22.\,November~2010.
+
+\subsection{Vorbemerkungen}
+
+\begin{defini}[\textsc{Euler}sche $\phi$-Funktion]
+  Sei $n\in\N$. Dann bezeichnet man
+  \begin{gather*}
+    \phi(n) \coloneqq\abs{\Set{a\in\N | \ggt (a,n)=1, 1\leq
+        a\leq n}}
+  \end{gather*}
+  als die \textsc{Euler}sche $\phi$-Funktion.
+\end{defini}
+
+\begin{bemerk}
+  \begin{itemize}
+  \item Für $n,m\in\N$ gilt, $\phi (n\cdot m)= \phi
+    (n)\cdot\phi (m)$.
+  \item Für eine Primzahl $p\in\PP$ gilt $\phi (p)= p-1$.
+  \end{itemize}
+\end{bemerk}
+
+\begin{defini}[Erweiterter \textsc{Euklid}ischer Algorithmus]
+  Seien $a, b \in \N$. Setze
+  \begin{gather*}
+    (x_{0}, y_{0}, z_{0}) \coloneqq (1, 0, a)\\
+    (x_{1}, y_{1}, z_{1}) \coloneqq (0, 1, b)
+  \end{gather*}
+  und $i \coloneqq 1$. Im Fall $z_{i} = 0$ brechen wir ab. Im Fall $z_{i}
+  \neq 0$ liefert Division mit Rest $q_{i}, r_{i} \in \Z$ mit $z_{i-1}
+  = q_{i}z_{i} + r_{i}$ und  $0 \leq r_{i} < z_{i}$. Wir setzen
+  \begin{gather*}
+    (x_{i+1}, y_{i+1}, z_{i+1}) \coloneqq (x_{i-1} - q_{i}x_{i}, y_{i-1} -
+    q_{i}y_{i}, z_{i-1} - q_{i}z_{i}),
+  \end{gather*}
+  erhöhen $i$ um 1 und iterieren. Dieses Verfahren bricht ab, und am
+  Ende ist
+  \begin{gather*}
+    \ggt(a, b)  = z_{i-1} = x_{i-1}a + y_{i-1}b.
+  \end{gather*}
+\end{defini}
+
+\begin{bsp}\label{bsp:1}
+  Wir wählen $a=1440$ und $b=11$. Dann ergibt sich:
+  \begin{align*}
+    (x_{0}, y_{0}, z_{0}) &= (1,0,1440) &\\
+    (x_{1}, y_{1}, z_{1}) &= (0,1,11) &\\
+    (x_{2}, y_{2}, z_{2}) &= (1, -1,10) & 1440 &= 130\cdot11+10\\
+    (x_{3}, y_{3}, z_{3}) &= (-1,131,1) & 11 &= 1\cdot10+1\\
+    (x_{4}, y_{4}, z_{4}) &= (11,1440,0)& 10 &= 10\cdot1 +0
+  \end{align*}
+  Also ist $\ggt (1440,11)= 1 = -1\cdot1440 + 131\cdot11$.
+\end{bsp}
+
+\subsection{Erzeugung des öffentlichen und privaten Schlüssels}
+
+\begin{enumerate}
+\item Wähle zwei Primzahlen $q,p\in\PP$ mit $p\neq q$.
+\item Berechne  $n=p\cdot q$ und $\varphi(n)=
+  \varphi(p)\varphi(q)= (p-1)(q-1)$
+\item Wähle ein $e\in\mathbb{N}$ mit $1<e<\varphi(n)$ und $e\nmid \varphi(n)$
+\item Berechne $d\in\mathbb{N}$ mit
+  \begin{align*}
+    ed\equiv 1\mod \varphi(n)
+  \end{align*}
+\item $\checkmark$
+\end{enumerate}
+
+Das Paar $(n,e)$ bildet den öffentlichen Schlüssel und das Paar
+$(n,d)$ bildet den privaten (geheimen) Schlüssel.
+
+\begin{bsp}\label{bsp:2}
+  \begin{enumerate}
+  \item Wir wählen $p=37$ und $q=41$.
+  \item Dann ist $n=1517$ und $\phi (n)= (p-1) (q-1)= 36\cdot40=1440$.
+  \item $e=11$
+  \item Aus dem \autoref{bsp:1} wissen wir, dass $1440= -1\cdot1440+
+    131\cdot11$, also $11\cdot131\equiv1\mod{1440}$. Damit ist $d=131$.
+  \item Somit ist der öffentliche Schlüssel $(1517,11)$ und der
+    private Schlüssel $(1517,131)$.
+  \end{enumerate}
+\end{bsp}
+
+\subsection{Ver- und Entschlüsselung}
+
+Die Ver- und Entschlüsselung einer Nachricht mittels des
+RSA-Algorithmus ist wie folgt festgelegt:
+\begin{itemize}
+  \item Verschlüsseln:
+    \begin{align*}
+      e_B&\colon \mathbb{Z}_n\rightarrow\mathbb{Z}_n & x\mapsto
+      y=x^e\mod n
+    \end{align*}
+  \item Entschlüsseln:
+    \begin{align*}
+      d_B&\colon \mathbb{Z}_n\rightarrow\mathbb{Z}_n & y\mapsto
+      y^d\mod n
+    \end{align*}
+\end{itemize}
+
+\begin{bsp}
+  Seien die Schlüssel wie in \autoref{bsp:2} und die Nachricht
+  $m=42$. Dann lautet die verschlüsselte Botschaft $c=
+  42^{11}\mod{1517}= 1149$. Der Empfänger entschlüsselt diese mittels
+  $1149^{131}\mod{1517}=42$ und erhält damit den Klartext.
+\end{bsp}
+
+\subsection{Allgemeine Gültigkeit des Verfahrens}
+
+Schließlich muss man sich fragen, ob RSA allgemein funktioniert. Das
+Ergebnis liefert der \autoref{satz:rsa}. Zur Vorbereitung benötigen wir den
+\begin{satz}[Satz von \textsc{Euler}]\label{satz:euler}
+  Seien $n\in\N$ und $a\in\Z$ mit $\ggt (a,n)=1$. Dann ist
+  \begin{gather*}
+    a^{\phi (n)}\equiv 1\mod{n}.
+  \end{gather*}
+\end{satz}
+
+\begin{satz}\label{satz:rsa}
+  Für alle $x\in\Z_{n}$ gilt:
+  \begin{gather*}
+    d_{\text{Bob}}(e_{\text{Bob}}(x))=x
+  \end{gather*}
+  \begin{proof}
+    Für alle Zahlen $x\in \Z$ gilt:
+    $d_{\text{Bob}}(e_{\text{Bob}}(x))=d_{\text{Bob}}(x^{e}\mod{n})=
+    (x^{e}\mod{n})^{d}\mod{n}= x^{ed}\mod{n}$. Im Fall $x=0$ ist alles
+    klar. Daher muss nur der Fall $x\neq0$ betrachtet werden. Hierfür
+    müssen wieder zwei Fälle unterschieden werden.
+    \begin{enumerate}[1.\,F{a}ll]
+    \item Sei $p\nmid x$ und $q\nmid x$. Im vierten Schritt des
+      Algorithmus wurde die Zahl $d$ mit $ed\equiv1\mod{\phi(n)}$
+      bestimmt. Die Äquivalenz lässt sich auch als $ed=1+z\phi(n)$ für
+      eine natürliche Zahl $z$ schreiben. Damit gilt, $x^{ed}=
+      x^{1+z\phi(n)}= x(x^{\phi(n)})^{z}$. Der Satz von \textsc{Euler} (\autoref{satz:euler})
+      besagt für eine natürliche Zahl $n$ und eine ganze Zahl $x$,
+      dass $x^{\phi(n)}\equiv1\mod{n}$ gilt. Diese Bedingung lässt
+      sich anwenden und es ergibt sich, $x^{ed}=
+      x(x^{\phi(n)})^{z}\equiv x(1\mod{n})^{z}\equiv x(1\mod{n})\equiv
+      x\mod{n}=x$.
+    \item Sei nun $p\mid x$ und $q\nmid x$. Es lässt sich die
+      Gleichung $\phi(n)= \phi(q)\phi(p)$ und der Satz von
+      \textsc{Euler} nacheinander anwenden. Insgesamt ergibt sich:
+      $x^{ed}= x(x^{\phi(n)})^{z}= x(x^{\phi(q)})^{\phi(p)z}\equiv
+      x(1\mod{q})^{\phi(p)z}\equiv x\mod{q}$. Wegen $p\mid x$ folgt,
+      $p\mid x^{ed}-x$ und damit auch $n=pq \mid x^{ed}-x$. Damit
+      ergibt sich insgesamt, $x^{ed}\equiv x\mod{n}$. Aus
+      Symmetriegründen kann man die Teilbarkeitseigenschaft
+      vertauschen und alle Fälle sind betrachtet.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\end{document}
