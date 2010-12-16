@@ -403,13 +403,13 @@ Weitere wurden später entwickelt und spezifiziert. Beispiele sind der
   \framesubtitle{Grundlagen}
   \begin{itemize}
   \item<+-> Block in 16~Teile zu 8~Bit=1~Byte aufgeteilt
-  \item<+-> Operation in $\FF_{2^{8}}= \FF_{2}[x]/g\FF_{2}[x]$  mit
+  \item<+-> Operation in $\mathbb{F}_{2^{8}}= \mathbb{F}_{2}[x]/g\mathbb{F}_{2}[x]$  mit
     dem irreduziblen Polynom
     \begin{gather*}
       g = x^{8}+ x^{4}+ x^{3}+x+ 1
     \end{gather*}
   \item<+-> Byte $b_{7}b_{6}b_{5}b_{4}b_{3}b_{2}b_{1}b_{0}$
-    repräsentiert durch ein Polynom aus $\FF_{2^{8}}$
+    repräsentiert durch ein Polynom aus $\mathbb{F}_{2^{8}}$
   \item<+-> Schreibweise als $4\times4$"=Matrix:
     \begin{gather*}
       M=
@@ -418,7 +418,7 @@ Weitere wurden später entwickelt und spezifiziert. Beispiele sind der
         a_{10} & a_{11} & a_{12} & a_{13}\\
         a_{20} & a_{21} & a_{22} & a_{23}\\
         a_{30} & a_{31} & a_{32} & a_{33}\\
-      \end{pmatrix}\qquad a_{ij}\in\FF_{2^{8}}
+      \end{pmatrix}\qquad a_{ij}\in\mathbb{F}_{2^{8}}
     \end{gather*}
   \end{itemize}
   \end{frame}
@@ -441,7 +441,7 @@ Weitere wurden später entwickelt und spezifiziert. Beispiele sind der
   \begin{frame}
     \frametitle{Der AES-Algorithmus}
     \framesubtitle{\texttt{SubBytes}}
-    Sei $a_{ij}\in\FF_{2^{8}}$ aus der Matrix $M$ und $S=g\circ f$
+    Sei $a_{ij}\in\mathbb{F}_{2^{8}}$ aus der Matrix $M$ und $S=g\circ f$
     mit $f(a) =
       \begin{cases}
         a^{-1} & x\neq0\\
@@ -546,5 +546,101 @@ g
 \end{gather*}
 \end{frame}
 
+\subsubsection{Public-Key-Kryptographie}
+
+\begin{frame}
+  \frametitle{Schlüsselverteilung}
+  Lösung des Problems durch unterschiedliche Schlüssel:
+  \begin{description}
+  \item[Public key] Öffentlicher Schlüssel kann überall hinterlegt
+    werden und wird dazu benutzt, Nachrichten an Alice zu verschlüsseln.
+  \item[Private key] Geheimer Schlüssel kennt nur Alice und wird
+    benutzt, um eingehende Nachrichten zu entschlüsseln.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zur Geschichte}
+  \begin{itemize}
+  \item<+-> entdeckt durch GCHQ (zufälliges Rauschen)
+  \item<+-> öffentlich bekannt durch \textsc{Rivest}, \textsc{Shamir}
+    und \textsc{Adleman} bzw. \textsc{Diffie} und \textsc{Hellman}
+  \item<+-> Algorithmen: RSA, ElGamal etc.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Einwegfunktion}
+  \begin{definition}
+    Seien $X$ und $Y$ Mengen. Eine injektive Funktion $f\colon
+    X\rightarrow Y$ heißt \emph{Einwegfunktion}, falls man für jedes
+    $x\in X$ den Wert $y=f(x)$ schnell berechnen kann und für jedes
+    beliebige $y\in\text{Bld }f\subseteq Y$ das Urbild $f^{-1}(y)=x$
+    nicht in vertretbarer Zeit finden kann.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Public-Key-Kryptosystem}
+  \begin{definition}
+    Ein Kryptosystem $\mathbb{K}$ heißt
+    \emph{Public-Key-Kryptosystem}, wenn jede Chiffrierfunktion
+    $e_k\colon \mathcal{P}\rightarrow\mathcal{C}$ mit $k\in
+    \mathcal{K}$ eine Einwegfunktion ist.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Public-Key-Kryptosystem}
+  \framesubtitle{Beispiele}
+  \begin{itemize}
+  \item Berechnung des diskreten Logarithmus
+  \item Faktorisierung großer Zahlen
+  \end{itemize}
+\end{frame}
+
+\subsection{RSA}
+
+\begin{frame}
+  \frametitle{Der Algorithmus}
+  \begin{enumerate}
+  \item<+-> Wähle $p,q\in\mathbb{P}$ mit $p\neq q$
+  \item<+-> Berechne $n=p\cdot q$ und $\varphi(n)=
+    \varphi(p)\varphi(q)= (p-1)(q-1)$
+  \item<+-> Wähle $e\in\mathbb{N}$ mit $1<e<\varphi(n)$ und $e\nmid \varphi(n)$
+  \item<+-> Berechne $d\in\mathbb{N}$ mit
+    \begin{align*}
+      ed\equiv 1\mod \varphi(n)
+    \end{align*}
+  \item<+-> Fertig $\checkmark$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schlüssel}
+  \begin{itemize}
+  \item<+-> öffentlicher Schlüssel: $(n,e)$
+  \item<+-> privater Schlüssel: $(n,d)$
+  \item<+-> Verschlüsseln:
+    \begin{align*}
+      e_B&\colon \mathbb{Z}_n\rightarrow\mathbb{Z}_n & x\mapsto
+      y=x^e\mod n
+    \end{align*}
+  \item<+-> Entschlüsseln:
+    \begin{align*}
+      d_B&\colon \mathbb{Z}_n\rightarrow\mathbb{Z}_n & y\mapsto
+      y^d\mod n
+    \end{align*}
+  \end{itemize}
+\pause{}
+Funktioniert das?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Satz über die Entschlüsselung}
+  \begin{theorem}[Satz]
+    Es gilt, $d_B (e_B(x))=x$ für alle $x\in\mathbb{Z}_n$.
+  \end{theorem}
+\end{frame}
 
 \end{document}
