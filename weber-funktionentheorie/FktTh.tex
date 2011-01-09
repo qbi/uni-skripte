@@ -1,0 +1,1041 @@
+\documentclass[ngerman,halfparskip]{scrartcl}
+
+\usepackage{babel} %Umlaute, neue deutsche Rechtschreibung
+\usepackage[utf8]{inputenc} %Kodierung festlegen
+\usepackage[T1]{fontenc} % font encoding festlegen
+\usepackage{amsmath,amsfonts,amssymb,amsthm} %math. Symbole und Umgebungen
+\usepackage{hyperref}
+\usepackage{mathrsfs} 
+\usepackage{enumerate}
+
+\newtheorem{satz}{Satz}[section]
+\newtheorem*{satz*}{Satz}
+\newtheorem{folg}{Folgerung}[section]
+\theoremstyle{definition}
+\newtheorem{defin}{Definition}[section]
+\def\R{\mathbb R}
+\def\C{\mathbb C}
+\def\Z{\mathbb Z}
+\def\N{\mathbb N}
+
+\def\Res{\text{Res}}
+
+
+\begin{document}
+\huge Funktionentheorie \normalsize
+\paragraph{Literatur:} 
+\begin{enumerate}
+\item Fischer / Kaul: Mathematik für Physiker 1 (Primärliteratur)
+\item Remmert: Funktionentheorie 1,2
+\end{enumerate}
+
+\section{Holomorphe Funktionen}
+\begin{defin}
+$\Omega \subseteq \C$ Gebiet (offen, zusammenhängend) $f:\Omega \rightarrow \C \quad z\mapsto f(z)$ \textbf{komplexe Funktion}, also: $f:x+iy\mapsto u(x,y)+iv(x,y)$
+\end{defin}
+\paragraph*{Beispiel} $f(z)=e^z \quad z\in\C \quad z=x+iy\mapsto e^z=e^x\cos y +ie^x \sin y$
+
+\begin{defin}[Grenzwert] ($\C$ mit $|\cdot|,+,\cdot$ normierter Raum)
+
+$U$ Umgebung von $\alpha \in\C\quad D(f)\supseteq U \backslash \{a\}$ (oder $a$ Häufungspunkt von $D(f)$)
+
+$\lim\limits_{ z\rightarrow a} f(z)=b \Leftrightarrow \forall (z_n)$ in $U \backslash \{a\}$ mit $z_n\rightarrow a \qquad \lim\limits_{ n\rightarrow \infty}f(z_n)=b$
+
+\end{defin}
+
+\paragraph*{Bemerkung} \begin{itemize}
+\item $\lim\limits_{ z\rightarrow a} f(z)=b \quad\Leftrightarrow\quad \forall \varepsilon >0 \exists \delta >0: |f(z)-b|<\varepsilon$ für $0<|z-a|<\delta$
+\item $\lim\limits_{ z\rightarrow a} f(z)=b \quad\Leftrightarrow\quad \lim\limits_{k\rightarrow 0; k\in\R} f(a+h)=b, \quad \lim\limits_{k\rightarrow 0; k\in\R} f(a+ih)=b$
+\end{itemize}
+
+\paragraph*{Beispiel} $\lim\limits_{ z\rightarrow 0} \frac{e^z-1}{z}=1 \qquad (e^z:=\sum\limits_0^\infty \frac {z^k}{k!}\qquad |\frac{e^z-1}{z}-1|=|\frac{e^z-1-z}{z}|=|\sum\limits_2^\infty \frac {z^{k-1}}{k!}|\leq \sum\limits_2^\infty |z^{k-1}|=\sum\limits_1^\infty |z^k|=\frac{|z|}{1-|z|}$
+
+\begin{satz}
+$\lim\limits_{ z\rightarrow a} f(z)=b\quad \lim\limits_{ z\rightarrow a} g(z)=c \qquad\Rightarrow \quad\lim\limits_{ z\rightarrow a} |f(z)|=|b|,  \quad \lim \Re f(z)=\Re (b),\quad \lim(\alpha f(z)+\beta g(z))=\alpha b+\beta c$ (Ebenso Multiplikation und gegebenenfalls Division)
+\end{satz}
+
+\begin{defin}
+$a\in D(f), \quad f$ stetig an Stelle $a \Leftrightarrow \forall (z_n)$ in $D(f)$ mit $z_n\to a$ gilt: $f(z_n)\to f(a)$
+\end{defin}
+\paragraph{Bemerkung} auch betrag, Produkt, Summe und Verkettung von stetigen Sunktionen ist stetig.
+
+\begin{defin}(komplexe Differenzierbarkeit) 
+
+$f: \Omega \to \C$ an Stelle $a\in\Omega$ differenzierbar, wenn existiert: $\lim\limits_{z\to a} \frac{f(z)-f(a)}{z-a}=:f'(a)= \frac {df}{dz}(a)$ Ableitung
+
+\end{defin}
+\begin{satz}
+\begin{enumerate}[a)]
+\item $f,g$ an Stelle $a$ differenzierbar $\Rightarrow f$ in $a$ stetig (Summenregel, Produktregel, Quotientenregel für Differentiation)
+\item $g: \Omega \to \Omega'$ in $a$ differenzierbar, $f:\Omega'\to\C$ in $g(a)$ differenzierbar, dann Kettenregel
+\end{enumerate}
+\end{satz}
+
+\begin{defin}
+$f:\Omega \to \C$ \textbf{holomorph} $\Leftrightarrow f$ in jedem Punkt von $\Omega$ stetig differenzierbar ($f\in C^1(\Omega)$)\\(differenzierbar $\Leftrightarrow$ stetig differenzierbar in $\C$)
+\end{defin}
+\begin{satz}
+$f,g: \Omega \to \C$ holomorph, dann auch Summe, Produkt, Quotient.
+\end{satz}
+
+\begin{satz}
+$f: z= x+iy\mapsto u(x,y)+iv(x,y)$ ist holomorph $\Leftrightarrow$
+
+$u,v$ als reellwertige Funktionen auf $\Omega\subseteq \R^2 ~ C^1$-differenzierbar und $\frac{\partial u}{\partial x}=\frac{\partial v}{\partial y}\quad \frac{\partial v}{\partial x}=-\frac{\partial u}{\partial y}$ (Cauchy-Riemann-Differentialgleichungen)
+
+\begin{proof}
+\begin{itemize}
+\item
+$f$ holomorph, dann: \\
+$f'(z)=\lim\limits_{h\rightarrow 0} \frac{u(x+h,y)-u(x,y)}{h}+i\lim\limits_{h\rightarrow 0} \frac{v(x,y+h)-v(x,y)}{h}=u_x(x,y)+iv_x(x,y)$
+
+$f'(z)=\lim\limits_{h\rightarrow 0} \frac{u(x,y+h)-u(x,y)}{ih}+i\lim\limits_{h\rightarrow 0} \frac{v(x,y+h)-v(x,y)}{ih}=-iu_y(x,y)+v_y(x,y)$
+
+$\Rightarrow$ Cauchy-Riemann-Dgln.
+
+$f'\in C \Rightarrow u_x(=v_y),~ v_x (=-u_y)\in C \Rightarrow u,v \in C^1$
+
+\item Sei: $u,v \in C^1(\Omega),$ und C-R-Dgln. seien erfüllt. 
+
+$z=x+iy\in \Omega, \quad h=s+it, \quad |s|,|t|\ll1.$
+
+$\Rightarrow f(z+h)=u(x+s,y+t)+iv(x+s,y+t) $\\
+$= u(x,y)+D_xu(x,y)s+D_yu(x,y)t+r_1(s,t)$\\
+$+i\left [ v(x,y)+D_x v(x,y)s+D_y v(x,y)t+r_2(s,t)\right ], $ mit \\
+$\lim\limits_{h\rightarrow 0}\frac{r_1(s,t)}{|h|}=\lim\limits_{h\rightarrow 0}\frac{r_2(s,t)}{|h|}=0$
+
+[Wiederholung Taylorentwicklung]
+
+\begin{tabular}{|l}
+$u(x+s,y+t)=u(x,y)+D_x u(x+\theta s,y+\theta t)s + D_y u(x+\theta s, y+\theta t)t,$\\
+$|D_x u(x+\theta s,y+\theta t)s - D_x u(x,y)s| \leq \varepsilon |s| \leq \varepsilon |h|$, ($u\in C^1$) 
+\end{tabular}
+
+$r(\underbrace{s+it}_h):=r_1(s,t)+ir_2(s,t)$
+
+$f'(z+h)=f(z)+\left[ u_x(x,y)+iv_x(x,y)\right]\underbrace {(s+it)}_h+r(h)$
+
+[dabei: $u_x=v_y, u_y=-v_x$]
+
+mit $\lim\limits_{h\rightarrow 0}\frac {r(h)}h=0$
+
+$\frac {f(z+h)-f(z)}h=u_x(x,y)+iv_x(x,y)+\frac {r(h)}h$
+
+$\Rightarrow f'(z)=u_x+iv_x=v_y-iu_x \Rightarrow f'$ stetig.
+\end{itemize} 
+\end{proof}
+\end{satz}
+
+\begin{satz} $f$ holomorph in $\Omega$ (Gebiet), $f'=0$ in $\Omega$
+
+$\Rightarrow f$ konstant
+\begin{proof}
+\begin{align*}f=u+iv &\Rightarrow f'=u_x+iv_x=v_y-iu_y=0 \\
+&\Rightarrow u_x=u_y=v_x=v_y=0\\
+&\Rightarrow u=const, v=const\end{align*}
+\end{proof}
+\end{satz}
+
+\section{Komplexe Kurvenintegrale}
+\paragraph{Bemerkung 1} $\gamma: t\mapsto z(t)=x(t)+iy(t), \quad a\leq t\leq b, $ sei stückweise glatter Jordanweg- ($z\in C^1, z'\neq 0$ auf Teilintervallen, $\gamma$ doppelpunktfrei, da Jordanweg)
+
+Jede positive Umparametrisierung: ebenfalls mit $\gamma$ bezeichnet.
+
+identifizieren $\gamma$ je  mit Kurve also $\gamma$: orientierte Kurve (aus $C^1_s$)
+
+$-\gamma$: umgekehrt durchlaufene Kurve
+
+$\Rightarrow L(\gamma )=\int\limits _a^b\sqrt{x'(t)^2+y'(t)^2}dt=\int\limits _a^b|z'(t)|dt$
+
+$z'(t):=x'(t)+iy'(t)$ Tangentialvektor
+
+Kurve oder Weg: im folgenden immer orientiert, $\in C_s^1$
+
+\paragraph{Erläuterung} Generell im $\R^n:$
+
+Weg im $\R: \varphi (t)=(\varphi_1(t),\ldots,\varphi_n(t)); \quad t\in [\alpha,\beta], \quad \varphi$ stetig
+
+$\varphi$ glatt $\Leftrightarrow \varphi\in C^1$ (d.h. $\varphi_i\in C^1$) und $\varphi'\neq 0$ überall 
+
+$\varphi$ glatt $\Rightarrow$ überall Tangente
+
+$\varphi\in C^1 \underset{\text{i.A.}}{\not\Rightarrow}$ überall Tangente
+
+\paragraph{Beispiel 1} $C_r(z_0): t\mapsto z_0+re^{it}, \quad 0\leq
+t\leq 2\pi$ \\
+Kreislinie $|z-z_0|=r$ im positiven Sinn durchlaufen "= $C_r(z_0)$: im Uhrzeigersinn
+
+\paragraph*{Kettenregel} $f$ holomorph ($f\in C^1(\Omega)$), $z(t) \quad C^1$-differenzierbar, mit $z(t)\in\Omega$ 
+
+$\Rightarrow \frac d {dt} f(z(t))=f'(z(t))\cdot z'(t)$
+\begin{proof}
+$f=u+iv,\quad z(t)=x(t)+iy(t) \Rightarrow \frac d {dt} f(z(t))=\frac d {dt}\left [u(x(t),y(t))+iv(x(t),y(t)) \right]=u_x\cdot x'+u_y \cdot y'+i\left(v_x\cdot x' + v_y \cdot y' \right ) = (u_x+iv_x)(x'+iv')=f'(z(t))\cdot z'(t)$ 
+\end{proof}
+
+\begin{defin}
+$F(t)=U(t)+iV(t),\quad U,V\in C[a,b]$
+
+$\int\limits_a^bF(t)dt:=\int\limits_a^bU(t)dt+i\int\limits_a^bV(t)dt$
+\end{defin}
+
+\begin{satz}
+$F=U+iV, \quad U,V\in C^1[a,b] \Rightarrow $
+
+$\int\limits_a^bF'(t)dt=F(b)-F(a)$
+\begin{proof}
+Hauptsatz
+\end{proof}
+\end{satz}
+
+\begin{defin}{Komplexe Kurvenintegrale} $f\in C(\Omega), \gamma C^1$-Kurve, $z:[a,b]\rightarrow C$ Parametrisierung.
+
+$\int\limits_\gamma f(z)dz:=\int\limits_a^bf(z(t))\cdot z'(t)dt$ (Unabhängigkeit von Parametrisierung, wie im Reellen)
+
+$\gamma= \gamma_1\oplus \ldots \oplus \gamma_n$ stückweise stetig differenzierbarer Weg (Kurve):
+
+$\int\limits_\gamma f(z)dz=\sum\int\limits_{\gamma_i}$
+\end{defin}
+
+[WDH Wegintegrale im $\R^n$ ähnlich]
+
+\begin{folg} $\int\limits_\gamma(af+bg)dz=a\int f+b\int g$ (Linerarität)\end{folg}
+
+\paragraph{Integralabschätzung} $|f(z)|\leq M$ auf $\gamma \Rightarrow |\int\limits_\gamma f(z)|\leq M L(\gamma)$
+\begin{proof}
+O.B.d.A.: $C^1$-Kurve. $F(t):=f(z(t))z'(t)=U(t)+iV(t)$
+
+$\int\limits_\gamma f(z)dz\overset{*}{=}re^{i\varphi}\Rightarrow$
+
+$|\int\limits_\gamma f(z)dz|=|\int\limits_a^b F(t)dt|=r=\Re r \overset{*}{=}\Re(e^{-i\varphi}\int\limits_a^b F(t)dt)= \int\limits_a^b\Re(e^{-i\varphi}F(t))dt\leq \int\limits_a^b|e^{-i\varphi}F(t)|dt=\int\limits_a^b |F(t)|dt$
+
+$\leq \int\limits _a^b M|z'(t)|dt=M\cdot L(\gamma)$
+
+
+\end{proof}
+
+
+\begin{satz}[2]{Zurückführung auf Kurvenintegrale im $\R^2$}
+\begin{enumerate}
+\item [a)]$\int\limits_\gamma f(z)dz=\int\limits_\gamma (udx-vdy)+i\int\limits_\gamma(vdx+udy)$
+
+$=\int\limits_\gamma g\cdot d(x,y)+ i\int\limits_\gamma h\cdot d(x,y)$ mit $g=(u,-v), \quad h=(v,u)$
+
+\item [b)] $f$ holomorph in $\Omega \Rightarrow$ Vektorfelder $g$ und $h$ erfüllen Integrabilitätsbedingung in $\Omega$
+
+($\Rightarrow$ auf sternförmigem Gebiet $\Omega$ gilt: $g$ und $h$ Gradientenfelder (es existieren Stammfunktionen) $\Rightarrow$ Wegunabhängigkeit der Kurvenintegrale)
+\end{enumerate}
+\begin{proof}\begin{enumerate}
+\item [a)]
+Merken: $\int (u+iv)(dx+idy)=\ldots$
+
+$\int\limits_\gamma\underbrace{(u+iv)}_fdz=\int\limits_a^b[ u(\underbrace{x(t),y(t)}_{z(t)})+iv(x(t),y(t)) ]\cdot (\underbrace{x'(t)+iy'(t)}_{z'(t)})dt=\ldots$
+\item [a)]$f$ holomorph $\Rightarrow u_x=v_y, \quad v_x=-u_y$
+
+$\frac{\partial g_1}{\partial y}=u_y=-v_x=\frac{\partial g_2}{\partial x}, \quad \frac{\partial h_1}{\partial y}=\ldots$
+\end{enumerate}
+\end{proof}
+
+\end{satz}
+\paragraph*{Erläuterung} Ein sternförmiges Gebiet ist ein Gebiet in dem ein Punkt existiert, so dass für jeden Punkt des Gebiets die Strecke zwischen dem einem und diesem Punkt im Gebiet liegt. 
+
+Integrabilitätsbedingung: $\frac{\partial f_j}{\partial x_k}=\frac{\partial f_k}{\partial x_j} \quad \forall j,k=1,\ldots, n$. 
+
+Def: wegunabhängig, wenn nur von Anfangs- und Endpunkt abhängig. (sternf. Gebiet integrabilitätsbed, dann Wegunabhängigkeit)
+
+\begin{folg} (Grundformeln der Funktionentheorie) 
+
+$\int\limits_{C_r(z_0)}\frac{dz}{z-z_0}=2\pi i, \quad \int\limits_{C_r(z_0)}(z-z_0)^ndz=0; \qquad n\in\mathbb Z \backslash \{-1\}$
+
+Speziell: $\int\limits_{C_r(0)}(z)^ndz=\begin{cases}2\pi i, \quad n=-1 \\ 0, \quad n\in \mathbb Z, n\neq -1\end{cases}$
+
+\begin{proof}
+$\int\limits_{C_r(z_0)}\underbrace{(z-z_0)^n}_{f(z)}dz=\int\limits_0^{2\pi}(re^{it})^nire^{it}dt=$
+[$Z=z_0+re^{it} \quad z'=ire^{it}=r(-\sin + i\cos)=ir(\cos +i\sin)$]
+$=ir^{n+1} \int\limits_0^{2\pi}e^{it(n+1)}dt=ir^{n+1}\int\limits_0^{2\pi}(\cos(n+1)t+i\sin(n+1)t)dt=\begin{cases}
+0, \quad n+1\neq 0\\
+2\pi i, n+1=0
+\end{cases}$  
+\end{proof}
+\end{folg}
+
+\begin{satz}(Stammfunktionen)
+$f:\Omega\rightarrow \C$ stetig, Kurvenintegral sei wegunabhängig d.h. $\int\limits_\gamma f(z)dz$ nur von Anfangs- und Endpunkt abhängig.
+
+$F(z):=\int\limits_{z_0}^z f(w)dw=\int\limits_\gamma f(w)dw, ~ \gamma$ Weg von $z_0$ nach $z$ ($z_0$ fest).
+
+$\Rightarrow F$ holomorph und Stammfunktion von $f$, d.h. $F'=f$.
+\begin{proof}
+$F(x+iy)=U(x,y)+i(x,y) \Rightarrow F=\int\limits_{z_0}^z f(w)dw=\underbrace{\int\limits_{z_0}^z (udx-vdy)}_U+i\underbrace{\int\limits_{z_0}^z (vdx+udy)}_V$ beide rechten Integrale wegunabhängig $\Rightarrow U$ zu $(u,-v), V$ zu $(v,u)$ Stammfunktion $\Rightarrow U_x=u, U_y=-v, V_x=v,V_y=u \Rightarrow U,V\in C^1$, C-R-Dgln. $\Rightarrow F$ holomorph, $F'=U_x+iV_x=u+iv=f$
+\end{proof}
+\end{satz}
+
+\begin{folg} $\Omega$ sternförmiges Gebiet (oder einfaches Gebiet, d.h. $C^2$-diffeomorphes Bild eines Sternförmigen Gebietes), $f$ holomorph in $\Omega \Rightarrow$
+
+$f$ besitzt Stammfunktion $F$ in $\Omega$ und $\int\limits _\gamma f(z)dz=0$ für jeden geschlossenen Weg in $\Omega$.
+
+\begin{proof}
+$f=u+iv$ erfüllt D-R-Dgln. $\Rightarrow$ Vektorfelder $(u,-v),(v,u)$ erfüllen Integrabilitätsbedingungen [$(P,Q):P_y=Q_x$] $\Omega$ sternförmig $\Rightarrow \int\limits_\gamma f(z)dz=\int (udx-vdy)+\int (vdx+udy)$ wegunabhängig $\Rightarrow$ (S.3) es gibt Stammfunktion $F$
+\end{proof}
+\end{folg}
+\begin{defin}[komplexer Lograrithmus] $\Omega=\C \setminus \R_- =\{z=re^{i\varphi}: r>0, -\pi < \varphi < \pi \}$ geschlitzte Ebene (sternförmig). $f(z)=\frac 1z$ in $\Omega$ holomorph $\Rightarrow$ (F.3) es existiert Stammfunktion $F$ in $\Omega$ mit $F(1)=0$:
+
+$F(z)[=\int\limits_\gamma \frac{dz}{z}=]=\int\limits_1^r\frac {dt}t +\int\limits _0^\varphi \frac{ire^{it}}{re^{it}}dt=$
+
+[$z_1(t)=t, z_1'=1 \quad z_2(t)=re^{it}; z_2'=ire^{it}$]
+
+$=\log r +i\varphi$ Stammfunktion zu $f$.
+
+$\log z:=\int\limits _1^z\frac{dw}w=\log r+i\varphi$ für $z=re^{i\varphi}, ~r>0, -\pi<\varphi<\pi$ heißt Hauptzweig des Logarithmus (und ist Stammfunktion zu $\frac 1z$ mit $\log 1=0$)
+
+\end{defin}
+
+\paragraph{Bemerkung}
+\begin{itemize}
+\item [a)] $e^{\log z}=z, z\in\C \setminus \R_-. [e^{\log re^{i\varphi}}=re^{i\varphi}]$
+\item  [b)] $\log e^w=w$ für $ |\Im w| < \pi $ (aus Def von Log)
+
+\end{itemize}
+
+\begin{defin}
+Sei $\Omega$ einfaches Gebiet $0\notin \Omega, F$ holomorph in $\Omega$
+
+$F$ heißt Zweig des Logarithmus, wenn $e^{F(z)}=z, ~z\in\Omega$.
+\end{defin}
+
+\begin{satz} Zu jedem einfachen Gebiet $\Omega$ mit $0\notin\Omega$ gibt es unendlich viele Zweige des Logarithmus. Sie unterscheiden sich um ganzzahlige Vielfache von $2\pi i$.
+\end{satz}
+\paragraph{Bemerkung} (Zweige der Quadratwurzel)
+
+In $\Omega=\C \setminus \R_-$ gibt es genau zwei holomorphe Funktionen $f_1,f_2$ mit $f_k^2(z)=z, k=1,2$
+
+[$\approx: (f(z)=\sqrt z=z^{\frac 12}=)e^{\frac 12 \log z}=e^{\frac 12( \log r+i\varphi)}=\sqrt r e^{i\frac \varphi 2}$
+oder $=\underbrace{e^{\frac 12 (\log z+2\pi i)}}_{\text{holomorph}}=e^{\frac 12 (\log r+i\varphi+2\pi i)}=\sqrt r e^{i\frac{\varphi+2\pi}{2}}$]
+
+(unendlich viele Zweige, auch wenn Argument reell)
+
+\begin{defin}
+$f_n:\Omega \rightarrow\C$ stetig, $f_n\rightarrow f$ gleichmäßig auf jeder kompakten Teilmenge von $\Omega$: \textbf{kompakte Konvergenz} auf $\Omega$
+\end{defin}
+
+\begin{satz}
+$f_n$ (stetig)$\rightarrow f$ kompakt Konvergent auf $\Omega \Rightarrow$
+
+$f$ stetig auf $\Omega$ und $\int\limits_\gamma f_n(z)dz \rightarrow \int\limits_\gamma f(z) dz$ (für jeden Weg $\gamma$)
+\end{satz}
+
+\section{Analytische Funktionen}
+\begin{satz}
+$f(z)=\sum\limits_{n=0}^\infty a_n(z-z_0)^n$ für $|z-z_0|<R$ (konvergent), $0<R\leq \infty \Rightarrow$
+
+$f$ beliebig oft differenzierbar, Ableitungen durch gliedweise Differentiation.  (Konvergenzradius)
+\end{satz}
+
+\begin{defin}
+$f:\Omega\rightarrow \C$ heißt \textbf{analytisch} $\Leftrightarrow$
+
+$\forall z_0 \in\Omega \exists R > 0 : f$ in $K_r(z_0)$ (offene Kreis) Potenzreihenentwicklung
+
+$f(z):=\sum\limits_{n=0}^\infty a_n (z-z_0)^n$
+\end{defin}
+
+\paragraph{Bemerkung 1}
+\begin{itemize}
+\item [a)] $f$ analytisch in $\Omega\Rightarrow f\in C^\infty (\Omega)$
+
+$a_n=\frac{f^{(n)}(z_0)}{n!}~~(\forall n)$ eindeutig bestimmt (Koeffizienten)
+
+[$f^{(n)}(z)=\sum\limits_{k=n}^\infty k(k-1)\cdot\ldots\cdot(k-n+1)a_k(z-z_0)^ {k-n}, \quad |z-z_0<R \Rightarrow f^{(n)}(z_0)=n!a_n$]
+
+\item [b)] $f,g$ analytisch in $\Omega \Rightarrow \lambda f + \mu g, ~f\cdot g$ analytisch in $\Omega$.
+\end{itemize}
+
+\begin{satz*}[Identitätssatz für analytische Funktionen]
+$f,g$ analytisch auf $\Omega, f(z_n)=g(z_n)$ für $z_n\rightarrow z_0\in\Omega, z_n\neq z_0\quad \Rightarrow
+\qquad f\equiv g$.
+\end{satz*}
+
+\paragraph{Beispiel 1}\begin{enumerate}[a)]
+\item $f(z)=\frac 1{w-z}$ analytisch in $\Omega=\C\setminus \{w\}:$
+Sei $z_0\in\Omega: $ für $|z-z_0|<R:=|w-z_0|: \frac 1 {w-z}=\frac 1 {w-z_0+z_0-z}=\frac 1 {w-z_0}\cdot \frac 1 {1-\frac{z-z_0}{w-z_0}}=\sum\limits_{n=0}^\infty \frac {(z-z_0)^n}{(w-z_0)^{n+1}}$
+\item  $e^z$ analytisch in $\C:$
+
+$e^z=e^{z_0}e^{z-z_0}=\sum\limits_0^\infty \frac{e^{z_0}}{n!}(z-z_0)^n$
+\end{enumerate}
+
+\begin{satz}[Nullstellen analytischer Funktionen]
+$f$ auf $\Omega$ analytische und nicht konstant $\Rightarrow$
+\begin{enumerate}[a)]
+\item $f(z_0)=0 \Rightarrow \exists k\in\mathbb N\setminus \{0\}$ und Umgebung von $z_0$ mit $f(z)=(z-z_0)^kg(z), \quad g(z)\neq 0$
+\item $f$ an der Stelle $z_0$ Nullstelle $k$-ter Ordnung $\Leftrightarrow f(z_0)=f'(z_0)=\ldots=f^{(k-1)}(z_0)=0, \quad f^{(k)}(z_0)\neq 0$
+\item In jeder komplexen Teilmenge von $\Omega$ hat $f$ höchstens endlich viele Nullstellen.
+\end{enumerate}
+\begin{proof}
+Mit letzten Sätzen.
+\end{proof}
+\end{satz}
+
+\begin{satz*}[Cauchyscher Integralsatz für einfache Gebiete]
+$f$ holomorph in sternförmigem (oder allgemein einfachem) Gebiet $\Omega$, $\gamma$  geschlossener Weg $\Rightarrow$
+\begin{gather*}\tag{$*$}
+\int\limits_\gamma f(z)dz=0
+\end{gather*}
+(Folg. 2.3)
+\end{satz*}
+
+\begin{folg}
+$(*)$ gilt auch für einfach gelagerten Weg $\gamma$ (d.h. $\gamma \subseteq \Omega'\subseteq \Omega, \quad  \Omega '$ einfach)
+\end{folg}
+
+\paragraph{Bemerkung 1} Kreisring: kein einfaches Gebiet, denn: $\int\limits_{C_r(0)}\frac{dz}z=2\pi i \neq 0$
+
+\paragraph*{Bemerkung} $f$ holomorph in $\Omega$. Cauchyscher Integralsatz gilt auch für allgemeinere Gebiete z.B.: $\int\limits_{\partial M} f(z)dz=0$
+
+\paragraph{Bemerkung 2} $f$ in $\Omega=\C \setminus \{z_0\}$ holomorph.
+
+$\int\limits_\gamma f(z)dz +\int\limits_{-C_r(z_0)}f(z)dz=\int\limits_\gamma-\int\limits_{C_r(z_0)}=\int\limits_{\partial M}=0$
+
+$\Rightarrow \boxed{\int\limits _\gamma f(z)dz=\int\limits_{C_r(z_0)}f(z)dz}$
+
+Hierbei: $\gamma$ umläuft $z_0$ einfach positiv, d.h. Strahl $\{z_0+te^{i\varphi}: t\geq 0\}$ trifft $z(t)$ (Parametrisierung von $\gamma$) in genau einem Punkt.
+
+
+\paragraph{Beispiel 2} $\int\limits_\gamma \frac 1 {z-z_0} dz =2\pi i$  ($\gamma$ wie oben)
+
+\begin{satz*}[Homologiesatz]
+$\Omega$ Gebiet, $f$ in $\Omega\setminus \{z_0\} $ holomorph, $\gamma$ umlaufe $z_0$ einfach positiv $\Rightarrow$
+
+$\int\limits_\gamma f(z)dz =\int\limits_{C_r(z_0)}f(z)dz$ falls Inneres von $\gamma$ und $C_r(z_0)$ in $\Omega$.
+\end{satz*}
+
+\begin{defin}
+$\gamma_1,\gamma_2$ (geschlossene Wege) \textbf{homolog} in $\Omega \Leftrightarrow$
+
+$\int\limits_{\gamma_1}fdz=\int\limits_{\gamma_2}fdz$ für jedes $f\in C^1(\Omega)$.
+
+(z.B. in Homologiesatz: $\gamma$ und $C_r(z_0)$ homolog in $\Omega\setminus\{z_0\}$
+\end{defin}
+
+\section{Cauchysche Integralformel}
+\begin{satz}[Cauchysche Integralformel für Kreise]
+$f$ holomorph in $\Omega,\quad \overline{K_r(z_0)}\subseteq\Omega \Rightarrow$
+
+$f(z)=\frac 1{2\pi i } \int \limits _{C_r(z_0)}\frac {f(w)}{w-z}dw, \qquad \forall z\in K_r(z_0)$
+\end{satz}
+
+\begin{satz}[Cauchysche Integralformel für einfach positiv umlaufende Wege] 
+$\gamma$ geschlossener Weg, der jeden von ihm umschlossenen Punkt einfach postitiv umläuft, $\gamma$ und sein Inneres seien in $\Omega$ enthalten, $f$ in $\Omega$ holomorph $\Rightarrow$
+
+$f(z)=\frac 1 {2\pi i} \int\limits_\gamma \frac {f(w)}{w-z}dw, \qquad \forall z$ im Inneren von $\gamma$.
+ 
+\end{satz}
+
+\begin{satz}[Potenzreihenentwicklung holomorpher Funktionen]
+$f$ in $\Omega$ holomorph $\Rightarrow$
+\begin{enumerate}[a)]
+\item $f$ in $\Omega$ analytisch ($\Rightarrow f\in C^\infty(\Omega)$)
+\item $f(z)=\sum\limits_{k=0}^\infty a_n (z-z_0)^n$ Potenzreihenentwicklung um $z_0 \in \Omega$
+
+$\Rightarrow$ Konvergenzradius der Reihe mindestens $R=\text{dist} ~ (z_0,\partial\Omega)$.
+
+$a_n=\frac {f^{(n)}(z_0)}{n!}=\frac 1{2\pi i} \int\limits _{C_r(z_0)} \frac{f(z)}{(z-z_0)^{n+1}}dz, \quad \forall r: 0<r<R.$
+
+\end{enumerate}
+(Cauchy-Formeln)  zur Klausur auswendig können
+
+\begin{proof}
+Sei $0<r<R \Rightarrow \overline{K_r(z_0)}\subseteq \Omega$
+
+$f(z)=\frac 1{2\pi i} \int\limits _{C_r(z_0)}\frac {f(w)}{w-z}dw$ für $|z-z_0|<r$
+
+$\frac 1 {w-z}=\sum\limits_{n=0}^\infty \frac{(z-z_0)^n}{(w-z_0)^{n+1}}$ für $|z-z_0|<\underbrace{|w-z_0|}_{=r, w\in C_r(z_0)}$
+
+$|z-z_0|<r$ gleichmäßig konvergent bezüglich $w$ auf Kreislinie $|w-z_0|=r$, denn: 
+
+$\left| \frac {f(w) \cdot (z-z_0)^n} {(w-z_0)^{n+1}} \right |\leq \frac Mr\varrho^n, \quad \varrho =\frac {|z-z_0|}r<1, \quad M=\max\limits_{w\in C_r(z_0)} |f(w)| $
+
+$\Rightarrow$ gliedweise Integration erlaubt:
+
+$f(z)=\frac 1 {2\pi i }\int\limits _{C_r(z_0)}\frac {f(w)}{w-z}dw=\sum (z-z_0)^n\frac 1 {2\pi i}\int\limits _{C_r(z_0)}\frac {f(w)~dw}{(w-z_0)^{n+1}}$ 
+
+\end{proof}
+
+\begin{satz*}[Identitätssatz für holomorphe Funktionen]
+$f,g$ in $\Omega$ holomorph, $z_n\rightarrow z_0 \in\Omega,~ z_n\neq z_0, ~f(z_n)=g(z_n) \Rightarrow f\equiv g$ in $\Omega$
+\begin{proof}
+$f,g$ analytisch $\Rightarrow$ Behauptung.
+\end{proof}
+
+\end{satz*}
+
+\paragraph{Bemerkung 1}(Fortsetzung reeller analytischer Funktionen) 
+\begin{enumerate}[a)]
+\item Einzige holomorphe Fortsetzung von $e^x, ~x\in\R$ ins Komplexe: $e^z=e^{x+iy}=e^x(\cos y +i \sin y)=\sum\limits _0^\infty\frac{z^n}{n!}, \quad z\in\C$.
+
+Begründung: $e^z$ holomorph in $\C$, andere holomorphe Fortsetzungen nicht möglich, da "`$=$"' auf $\R$.
+\end{enumerate}
+
+
+\end{satz}
+
+
+
+\paragraph{Fortsetzung reeller analytischer Funktionen}
+\begin{enumerate}[a)]
+\item Eintige holom. Fortsetz. von $e^x, x\in\R$ ...
+\item eindeut. bestimmte analyt Fortsetz von $\sin, \cos$ ins komplexe:
+
+$\sin z=\frac{e^{iz}-e^{-iz}}{2i}=\sum\limits_{k=0}^\infty (-1)^n\frac {z^{2n+1}}{(2n+1)!}$
+
+$\cos z=\frac{e^{iz}+e^{-iz}}{2}=\sum\limits_{k=0}^\infty (-1)^n\frac {z^{2n}}{(2n)!}$
+
+Denn: für $x\in\R $beide Reihen konvergent $ \Rightarrow R=\infty $ (in $\C$) $\Rightarrow $ holomorph in $\C$.
+
+$\sin^2z+\cos^2z=1$
+
+$\cos(z+2k\pi)=\cos z, \quad \sin(z+2k\pi)=\sin z, \quad k\in\Z$ (Nach Identitätssatz, erst für $z\in\R$ (bekannt)).
+
+$\sin(z+w)=\sin z\cos w + \cos z \sin w$ (erst $w$ fest und $z\in\R $ variabel dann $z\in\C$  ...)
+
+\item $\log(1+z)=\sum\limits_{n=1}^{\infty} (-1)^{n+1}\frac{z^n}{n}, \quad |z|<1$.
+
+Denn: $=$ für $z\in\R, \quad |z|<1$. beide Seiten holom. für $|z|<1$.
+\end{enumerate}
+
+
+
+\section{Ganze Funktionen}%%Abschnitt 16.5
+\begin{satz}
+$f=\sum\limits_0^\infty a_n(z-z_0)^n$ für $|z-z_0|<R$.
+
+$M(f,r):=\max\{|f(z)| :~ |z-z_0|=r\} $ für $0<r<R$
+
+$\Rightarrow |a_n|\leq \frac{M(f,r)}{r^n}$ für $n=0,1,\ldots$
+
+\begin{proof}
+$|a_n|=\frac{1}{2\pi}\left | \int\limits_{C_r(z_0)} \frac{f(z)}{(z-z_0)^{n+1}} dz \right | \leq \frac 1 {2\pi} \cdot 2 \pi r \frac{M(f,r)}{r^{n+1}}$ (Cauchysche-Integral-Formel)
+\end{proof}
+
+\end{satz}
+
+\begin{defin}
+$f$ auf ganz $\C $ holom.: $f$ \textbf{ganze Funktion}.
+
+[$\Rightarrow f(z)=\sum\limits_0^\infty a_n z^n, \quad z\in\C \quad (r=\infty) $ (Satz 4.3)]
+\end{defin}
+
+\paragraph{Bsp. 1} Polynome, $e^z,\sin,\cos:$ ganze Funktionen
+
+\begin{satz*}[Satz von Liouville]
+Jede beschränkte ganze Funktion ist konstant.
+\begin{proof}
+$f(z)=\sum\limits_0^\infty a_n z^n, \quad z\in\C \quad |f(z)|\leq M.$
+
+$\Rightarrow |a_n|\leq \frac M {r^n} \quad \forall r> 0. \quad r\rightarrow \infty $
+
+$\Rightarrow a_n=0 \quad \forall n\geq 1 \Rightarrow f(z)=a_0$
+\end{proof}
+\end{satz*}
+
+\begin{satz*}[Fundamentalsatz der Algebra] $p(z)$ nichtkonstantes Polynom mit kompl. Koeffizienten
+
+$\Rightarrow p$ besitzt wenigstens eine Nullstelle in $\C$. 
+
+($\Rightarrow$ Fundamentalsatz der Algebra)
+
+\begin{proof}
+
+\begin{enumerate}[a)]
+	\item Sei $p(z)=a_0+\ldots+a_nz^n$ mit $a_n\neq 0, \quad n\geq 1.$
+	
+	$\lim\limits_{|z|\rightarrow \infty} \left | \frac{p(z)}{z^n} \right| =|a_n|>0.$
+	
+	$\Rightarrow \exists R>0: \left | \frac{p(z)}{z^n} \right| \geq \frac 12 |a_n $ für $|z|\geq R$. 
+	
+	\begin{gather*}\tag{1}\Rightarrow \frac{1}{|p(z)|}\leq \frac{2}{|a_n|R^n}=:M, \quad |z|\geq R\end{gather*}
+	
+	Ann.: $p(z)\neq 0, \quad z\in\C\quad \Rightarrow f=\frac 1p$ ganze Funktion.
+	
+	$f$ beschränkt für $|z|\geq R$ (wegen (1))
+	
+	$f$ beschränkt fpr $|z|\leq R$ (da stet.)
+	
+	$\Rightarrow f$ beschr. $\Rightarrow $ konstant $\Rightarrow p$ konstant $\Rightarrow$ Widerspr.
+	
+	$\Rightarrow p(\lambda_1)=0$ für ein $\lambda_1\in\C$.
+	
+	\item Fall $\text{Grad} (p)\geq 2$
+	
+	$\rightarrow p(z)=(z-\lambda_1)q(z) $ mit $\text{Grad}(q)\geq 1$
+	
+	$\Rightarrow q(\lambda_2)=0$ nach a)
+	
+	u.s.w.: $p(z)=a_n(z-\lambda_1)\cdot\ldots\cdot (z-\lambda_n).$
+\end{enumerate}
+
+\end{proof}
+\end{satz*}
+
+\begin{satz*}[Satz von Morera]
+
+$f$ in $\Omega$ stet. und $\int\limits_\gamma f(z)dz=0 $ für jed. geschlossenen, einfach gelagerten Weg $\gamma$ in $\Omega$ 
+
+(ausreichend: für jeden geschlossenen Weg, der in einem sternförmigen Gebiet $\Omega'\subseteq\Omega$ liegt)
+
+$\Rightarrow f$ holomorph.
+
+\begin{proof}
+bel. Kreisscheibe $K_r(z_0)\subseteq\Omega$.
+
+$f$ besitzt Stammfunktion $F$ auf $K_r(z_0)$ (Satz 2.3)
+
+$F$ holom. $\Rightarrow f=F'$ holom. auf $K_r(z_0)$ 
+\end{proof}
+
+\end{satz*}
+
+\begin{satz*}[Satz über Vertauschung von Differentiation und Grenzübergang]
+$f_n$ in $\Omega$ holom. u. komp. konv. gegen $f$ (d.h. $f_n(z)\rightarrow f(z)$ glm. auf jed. komp. Teilmenge von $\Omega$)
+
+$\Rightarrow f$ holom. in $\Omega$ und
+
+$f_n^{(k)}(z)\rightarrow f^{(k)}(z), \quad k\in\N$, im Sinne d. komp. Konv.
+\end{satz*}
+
+\begin{folg}
+Eine komp. konv. Reihe aus holom. Fktn. ist bel. oft gliedweise diffb.
+\end{folg}
+
+\paragraph{Zusammenfassung der Hauptsätze}$f$ stet. auf $\Omega$ Dann äquivalent:
+\begin{enumerate}[a)]
+\item $f$ holom. in $\Omega$
+\item $f$ analyt. in $\Omega$
+\item $f(x+iy)=u(x,y)+iv(x,y)$ mit $u,v:\Omega\rightarrow \R, \quad C^1$-Fktn. mit $u_x=v_y, \quad v_x=-u_y$
+\item $\int\limits_\gamma f(z)dz=0$ für jed. geschlossenen einfach gelagerten Weg $\gamma $in $\Omega$ 
+\end{enumerate}
+
+
+\section{Laurent-Entwicklungen}
+\begin{defin}
+$f$ holom., $D(f)=\Omega\setminus \{z_o\} \quad z_0\in\Omega:$
+
+$z_0$ heißt \textbf{isolierte Singularität}
+
+$z_0$ \textbf{hebbare Singularität} $\Leftrightarrow \exists$ holom. Fkt. $g$ in $K_\varepsilon(z_0): ~ f(z)=g(z) $ in $K_\varepsilon(z_0)\setminus\{z_0\}$
+
+$z_0$\textbf{Polstelle (Pol)} $\Leftrightarrow \lim\limits_{z\rightarrow z_0}|f(z)|=\infty.$
+
+$z_0$ \textbf{wesentliche Singularität} $\Leftrightarrow$ weder hebare Sing. noch Polstelle
+\end{defin}
+
+
+
+
+
+
+\paragraph*{Beispiel 1}\begin{enumerate}[a)]
+\item $\frac {\sin z}z: \quad z_0 =0$ hebbare Singularität:
+
+$\frac {\sin z}z=1-\frac{z^2}{3!}+\frac{z^4}{5!}-\ldots =:g(z)$ Reihe konvergent $\forall z; \quad g$ ganze Funktion
+
+$g(z)=\begin{cases}
+\frac{\sin z}z,\quad z\neq 0 \\
+1, \quad z=0
+\end{cases}$
+\item $\underbrace{\frac{z^3-1}{z-1}}_{z^2+z+1}$ bei $z_0=1, \quad \underbrace{\frac{e^z-1}z}_{1+\frac z2 + \frac {z^2}{3!}+\ldots}$ bei $z_0=0:$ hebbare Singularität
+
+\item $\frac 1z: \quad z_0=0$ Polstelle
+\item $f(z)=e^{\frac 1z}, \quad z\neq 0. \quad z_0=0$ wesentliche Singularität: 
+
+$\lim\limits_{n\rightarrow\infty}f(\frac 1n)=\lim e^n=\infty, \quad \lim\limits_{n\rightarrow\infty}f(-\frac 1n)=e^{-n}=0,$
+
+$\lim\limits_{n\rightarrow\infty}f(\frac 1{2\pi i n})=\lim e^{2\pi i n}=1.$
+\end{enumerate}
+
+\paragraph*{Beispiel 2!} $\frac 1{w-z}$
+\begin{enumerate}[a)]
+\item $\frac 1{w-z}=\sum\limits_0^\infty \frac{(z-z_0)^n}{(w-z_0)^{n+1}}=\sum a_n(z-z_0)^n$ konvergiert für $|z-z_0|<|w-z_0|$
+
+gleichmäßig konvergent für $\left|\frac{z-z_0}{w-z_0}\right|\leq \rho<1$ (d.h. komplexe Kreisscheibe)
+
+\item $|z-z_0|>|w-z_0|:$
+
+$\frac 1{w-z}=-\frac 1 {z-w}\overset{\text{a)}}{=}-\sum\limits_{n=0}^\infty \frac {(w-z_0)^n}{(z-z_0)^{n+1}}=\sum \frac{a_{-n}}{(z-z_0)^n}$ konvergiert gleichmäßig für $1<r\leq \left|\frac{z-z_0}{w-z_0}\right|$
+\end{enumerate}
+
+\begin{defin}
+Reihe $\sum\limits_{n=-\infty}^{\infty}a_n(z-z_0)^n$: \textbf{Laurentreihe}.
+
+konvergiert an Stelle $z \Leftrightarrow r(z)=\sum\limits_0^\infty a_n (z-z_0)^n$ und $h(z)=\sum\limits_{n=-\infty}^{-1} a_n (z-z_0)^n:=\sum\limits_{n=1}^\infty a_{-n}\frac 1{(z-z_0)^n}$ konvergent
+
+Dann: $\sum\limits_{-\infty}^\infty a_n(z-z_0)^n:=h(z)+r(z)$
+
+$h(z):$ singulärer Teil, Hauptteil; $r(z)$ regulärer Teil, Nebenteil
+\end{defin}
+
+\begin{satz}$\sum\limits_{n=1}^\infty a_{-n}\frac 1{(z-z_0)^n}$
+\begin{enumerate}[a)]
+\item konvergiert für $z=z_1 \Rightarrow$ absolut konvergent $\forall z: |z-z_0|>|z_1-z_0|$
+\item divergiert für $z=z_2 \Rightarrow$ divergent $\forall z: |z-z_0|<|z_2-z_0|$
+\end{enumerate}
+
+\begin{proof}
+$w:=\frac 1{z-z_0}. \quad \sum\limits_{n=1}^\infty a_{-n}\frac 1{(z-z_0)^n}=\sum a_{-n}w^n$.
+\begin{enumerate}[a)]
+\item $\sum a_{-n}\underbrace{\left(\frac 1{z_1-z_0} \right)^n}_{w_1}$ konvergent $\rightarrow \sum\limits_{n=1}^\infty a_{-n}\underbrace{\frac 1{(z-z_0)^n}}_{w}$ absolut konvergent für $|w|<|w_1|$
+\item $\sum a_{-n}\underbrace{\left(\frac 1{z_2-z_0} \right)^n}_{w_2}$ divergent $\rightarrow \sum a_{-n}\underbrace{\frac 1{(z-z_0)^n}}_{w}$ divergent für $|w|>|w_2|$
+\end{enumerate}
+\end{proof}
+
+\end{satz}
+
+\paragraph*{Folgerung 1} Hauptteil konvergiert für $z_1$, regulärer Teil konvergiert für $z_2$, $\rho:=|z_1-z_0|<R:=|z_2-z_0| \Rightarrow$
+
+Laurentreihe konvergiert im Ringgebiet $\rho<|z-z_0|<R$
+
+\begin{satz}
+$\sum\limits_{n=-\infty}^\infty a_{n}{(z-z_0)^n}=f(z)$ (konvergent) für $\rho < |z-z_0|<R, \quad 0\leq \rho<R\leq\infty$.
+
+$\Rightarrow$ gleichmäßig konvergent für $\rho+\varepsilon\leq|z-z_0|\leq r, \quad \varepsilon>0, \quad r<R$ (kompakte Kreisring) [$\Rightarrow f$ holomorph]
+
+$a_n=\frac 1 {2\pi i} \int\limits_{C_r(z_0)}\frac {f(w)}{(w-z_0)^{n+1}}dw$ (für $\rho<r<R$).
+\end{satz}
+
+\begin{satz*}[Identitätssatz für Laurentreihe] $\sum\limits_{n=-\infty}^\infty a_{n}{(z-z_0)^n}=\sum\limits_{n=-\infty}^\infty b_{n}{(z-z_0)^n}$ für $\rho<|z-z_0|<R$
+
+$\Rightarrow a_n=b_n \quad \forall n\in\Z$ (wegen Formel für $a_n$ Satz 2)
+
+\end{satz*}
+
+\begin{satz}
+$f$ holomorph in Ringgebiet, $\Omega=\{z\in\C:\rho<|z-z_0|<R\}$ mit $0\leq\rho<R\leq\infty$.
+
+$\Rightarrow f$ besitzt Reihenentwicklung
+
+$f(z)=\sum\limits_{n=-\infty}^\infty a_{n}{(z-z_0)^n}$ in jeder kompakten Teilmenge von $\Omega$ gleichmäßig konvergent und $a_n=\frac 1 {2\pi i} \int\limits_{C_r(z_0)}\frac {f(w)}{(w-z_0)^{n+1}}dw$ ($\rho<r<R$) Cauchy-Formeln
+\end{satz}
+
+\begin{satz}
+$f$: Laurentreihe wie in Satz 2. 
+
+$M(f,r):=\max \{|f(z)|: ~|z-z_0|=r\}, \quad \rho<r<R$
+
+$\Rightarrow |a_n|\leq \frac {M(f,r)}{r^n} \qquad \forall n\in\Z$
+\begin{proof}
+wie ensprechender Satz für Potenzreihen.
+\end{proof}
+
+\end{satz} 
+
+
+\paragraph{Beispiel 3} (Entwicklung des Kotangens) 
+
+$\cot z=\frac {\cos z}{\sin z}, \quad z\neq n\pi, \quad n\in\Z,$ holomorph
+
+($\sin z=\frac{e^{iz}-e^{-iz}}{2i}\neq 0,\quad \Im z\neq 0:$\\
+$e^{iz}-e^{-iz}=0 \Leftrightarrow e^{2iz}=1 \Rightarrow \Im z=0$\\
+$e^z=e^x\cdot \underbrace {e^{iy}}_{|\cdot|=1}=1 \Rightarrow e^x=1 \Rightarrow x=0$)
+
+Laurententwicklung für $0<|z|<\pi:$
+
+$z\cdot \cot z=\frac z{\sin z}\cdot \cos z:$ an Stelle $0$ hebbare Singularität.
+
+[$\frac{\sin z}z=1-\frac{z^2}{3!}+\frac{z^4}{5!}-\ldots=:g(z), \quad g(0)\neq 0 \quad$
+$g$ analytisch in $\C; \quad g\neq 0$ für $|z|<\pi \Rightarrow g_1=\frac 1g$ analytisch für $|z|<\pi$ ($\sin z = 0 \Leftrightarrow z=k\pi, \quad k\in\Z$)\\
+$\Rightarrow z\cdot \cot z= \frac z{\sin z} \cdot \cos z= g_1(z)\cdot \cos z, \quad 0<|z|<\pi$]
+
+$\Rightarrow z\cot z = \sum\limits_{n=0}^\infty a_nz^n, \qquad |z|<\pi$.
+
+($\tan z= \sum\limits_1^\infty (-1)^{n-1}\frac{b_{2n}}{(2n)!}4^n(4^n-1)z^{2n-1}, \quad |z|<\frac \pi 2$\\
+$z\cot z=\sum\limits_0^\infty(-1)^n\frac{B_{2n}}{(2n)!}4^nz^{2n}, \quad |z|<\pi$\\
+$\sum_{i=0}^n \binom{n+1}{i}B_i=0, \quad n=1,2,\ldots ; \quad B_0=1$)
+
+\begin{gather*} z\cos z =z-\frac{z^3}{2!}+\frac{z^5}{4!}-\frac{z^7}{6!}\pm \ldots =z\cot z \sin z \\
+=(a_0z+a_1 z^2 +(a_2-\frac{a_0}{3!})z^3+(a_3-\frac{a_1}{3!})z^4+(a_4-\frac{a_2}{3!}+\frac{a_0}{5!})z^5+ (a_6-\frac{a_4}{3!}+\frac{a_2}{5!}-\frac{a_0}{7!})z^7+\ldots\\
+\Rightarrow a_1=a_3=a_5=\ldots =0, \quad a_0=1,\quad a_2=-\frac 13, \quad a_4=-\frac 1{45},\quad a_6=-\frac 2{945}, \ldots\\
+\cot z=\frac 1z-\frac 13z-\frac 1{45}z^3-\frac 2{945}z^5-\ldots
+\end{gather*}
+für $0<|z|<\pi$
+
+\begin{satz*}[Satz von Riemann]
+$f$ holomorph, beschränkt für $0<|z-z_0|<R$
+$\Rightarrow z_0$ hebbare Singularität.
+\begin{proof}
+$f=\sum\limits_{-\infty}^\infty a_n(z-z_0)^n, \quad |f|\leq M$\\ 
+$\Rightarrow |a_n|\leq \frac M{r^n}, \quad 0<r<R. ~\Rightarrow ~|a_{-n}|\leq Mr^n, ~n\in\N\setminus \{0\}$\\
+$r\rightarrow 0 \Rightarrow a_{-n}=0 \Rightarrow f(z)=\sum_{n=0}^\infty a_n(z-z_0)^n, 0<|z-z_0|<R$,\\ rechte Seite: holomorph für $|z-z_0|<R$
+\end{proof}
+\end{satz*}
+
+\begin{satz}[Charakterisierung von Polstellen]
+$f$ holomorph, $0<|z-z_0|<R$. \\
+$f$ Pol in $z_0 \Leftrightarrow f$ von der Form
+\begin{gather*}
+f(z)=\sum\limits_{n=-m}^\infty a_n(z-z_0)^n, \quad m\in\N\setminus\{0\}, \quad a_{-n}\neq 0.
+\end{gather*}
+($m$: Ordnung des Pols $z_0$)
+\end{satz}
+
+\begin{satz*}[Kriterien für Polstellen]~
+
+\begin{enumerate}[a)]
+\item isolierte Singularität $z_0$ von $f$ ist Pol $m$-ter Ordnung $\Leftrightarrow \lim\limits_{z\rightarrow z_0} (z-z_0)^mf(z)$ existiert und $\neq 0$.
+\item $g$ holomorph in Umgebung von $z_0$ und $z_0$ Nullstelle $m$-ter Ordnung von $g$
+
+$\Rightarrow \frac 1g$ in $z_0$ Pol $m$-ter Ordnung.
+
+\end{enumerate}
+\begin{proof}
+mit bisherigen Betrachtungen
+\end{proof}
+\end{satz*}
+
+\begin{satz*}[von Casorati-Weierstraß]
+$z_0$ wesentliche Singularität von $f \Rightarrow$
+\begin{enumerate}
+\item $\forall a\in\C \exists (z_n): \quad z_n\rightarrow z_0 \land f(z_n)\rightarrow a$.
+\item $\exists (w_n): \quad w_n\rightarrow z_0 \land |f(w_n)|\rightarrow\infty$.
+\end{enumerate}
+\end{satz*}
+
+\begin{defin}
+ganze Funktionen, kein Polynom: \textbf{ganz-transzendent}.
+\end{defin}
+
+\paragraph{Bemerkung 1} \begin{enumerate}[a)]
+\item $f$ ganz-transzendent $\rightarrow f(\frac 1z)$ an der Stelle $0$ eine wesentliche Singularität.
+\item $p$ Polynom von Grad $n\geq 1 \Rightarrow p(\frac 1z)$ an der Stelle $0$ ein Pol $n$-ter Ordnung.
+\end{enumerate}
+\begin{proof}
+\begin{enumerate}[a)]
+$f(z)=\sum\limits_{n=0}^\infty a_nz^n, \quad z\in\C$ (nicht $a_n=0$ für $n\geq n_0$) ($\Rightarrow f$ nicht beschränkt, Satz von Lionville)
+
+$\Rightarrow f(\frac 1z)=\sum\limits_{n=0}^\infty a_n\frac 1{z^n}=\sum\limits_{n=-\infty}^0 \underbrace{a_{-n}}_{b_n}\frac 1{z^n},\quad z\neq 0$.
+
+Es ist nicht $b_n=0$ für $n\leq n_1$, somit $0$ keine Polstelle
+
+\item entsprechend
+\end{enumerate}
+\end{proof}
+
+ \begin{satz*}[von Casorati-Weierstraß für ganz-transzendente Funktionen]
+ $f$ ganz-transzendente Funktion $\Rightarrow$
+ \begin{enumerate}
+\item $\forall a\in\C\exists (z_n):\quad |z_n|\rightarrow \infty \quad \land \quad f(z_n)\rightarrow a.$
+\item $\exists (w_n):\quad |w_n|\rightarrow \infty \land |f(w_n)|\rightarrow \infty$.
+\end{enumerate}
+\end{satz*}
+
+\begin{satz*}[von Picard]
+$f$ an der Stelle $z_0$ wesentliche Singularität $\Rightarrow$
+
+$\exists a\in\C: \quad f$ nimmt in jeder Umgebung von $z_0$ alle Werte von $\C\setminus\{a\}$ an.
+\end{satz*}
+
+
+
+
+\section{Residuenkalkül}
+\begin{defin}
+$f$ holomorph in $\Omega \setminus \{z_0\}, ~z_0$ sei isolierte Singularität. 
+
+$\Rightarrow f(z)=\sum\limits_{n=-\infty}^\infty a_n(z-z_0)^n,\quad 0<|z-z_0|<R.\quad R>0$.
+
+$a_{-1}$: \textbf{Residuum} von $f$ an der Stelle $z_0$.
+
+$\Res (f,z_0):=a_{-1}$.
+\end{defin}
+
+$\Rightarrow \Res (f,z_0)=a_{-1}=\frac 1{2\pi i }\int\limits_{C_r(z_0)}f(z)dz=\frac 1{2\pi i }\int\limits_{\gamma}f(z)dz$\hfill (*)
+
+für $0<r<R$ und $\gamma$ Weg, der $z_0$ einfach positiv umläuft und mit seinem Inneren ganz in $\Omega$ liegt. (einfachste Form des Residuensatzes)\\
+((*) folgt aus Formel für Koeffizienten von Laurentreihen)
+
+\begin{satz}~\\
+\begin{enumerate}[a)]
+\item $\Res (f,z_0)=\lim\limits_{z\rightarrow z_0 }(z-z_0) f(z)$, falls GW existiert (d.h. falls $z_0$ hebbare Singularität oder Pol $1.$ Ordnung
+\item $\Res (\alpha f+\beta g,z_0)=\alpha \Res(f,z_0)+\beta \Res (g,z_0), \quad \alpha,\beta\in\C$.
+\item $f$ in $z_0$ Pol $1.$ Ordnung, $g$ holomorph in Umgebung von $z_0$
+
+$\Rightarrow \Res (f\cdot g, z_0)=g(z_0)\Res (f,z_0)$.
+\item $z_0$ einfache Nullstelle von $f \Rightarrow \Res (\frac 1z, z_0) =\frac 1 {f'(z_0)}$
+\end{enumerate}
+\begin{proof}
+a), b) folgen aus Laurent-Entwicklung, c), d) folgen aus a).
+\end{proof}
+\end{satz}
+
+\paragraph{Beispiel 1} $f(z)=\frac 1 {1+z^4}=\frac 1 {(z-z_0)(z-z_1)(z-z_2)(z-z_3)}$, $z_k=e^{\frac {i \pi}{4}(1+2k)}, \quad k=0,1,2,3$. $~g(z)=1+z^4$. $\quad\Res(f,z_k)=\frac 1{g'(z_k)}=\frac 1 {4z_k^3}=-\frac 14 z_k$, da $z_k^4=-1$.
+
+\begin{satz*}[Residuensatz]
+$f$ holomorph in $\Omega$ mit Ausnahme isolierter Singularitäten. Geschlossener Weg $\gamma$ in $\Omega$ treffe keine Singularitäten, dann:
+
+$\int\limits_\gamma f(z) dz=2\pi i \sum\limits_{k=1}^N \Res (f,z_k)$
+
+wobei $z_1,\ldots z_N$ die von $\gamma$ umschlossenen Singularitäten. 
+
+(Allgemeiner und genauer: $\gamma$ sei Rand eines Gebietes $M\subseteq \Omega$, $M$ lasse sich in $M_1,\ldots,M_m$ zerlegen, $\overline M=\bigcup\limits _1^m\overline M_i,~M_i\cap M_j=\emptyset, i\neq j, ~\partial M_j$ umlaufe $M_j$ einfach positiv, in jedem $M_j$ höchstens eine Singularität.)
+\begin{proof}
+Falls in $M_j$ keine Singularität: $\int\limits_{\partial M_j}f(z)dz=0$ (Cauchysche Integralsatz).
+
+Falls in $M_j$ Singularität $z_k$ enthalten: $\int\limits_{\partial M_j} f(z)dz=2\pi i \Res (f,z_k)$ (nach (*))
+
+$\Rightarrow \int\limits_{\partial M} f(z)dz=\sum\limits_{j=1}^n \int\limits_{\partial M_j} f(z)dz=2\pi i \sum\limits_{k=1}^n \Res (f,z_k)$
+\end{proof}
+\end{satz*}
+
+\paragraph{Bemerkung 1} (Hilfsfunktion $f(z)=\pi \cot \pi z$)
+
+$f(z)=\frac 1z- \frac{\pi^2}3z-\frac{\pi^4}{45} z^3-\frac{2\pi^6}{945}z^5-\ldots,\quad 0<|z|<\pi $. 
+
+$\cot z$: einfache Pole an den Stellen $k\pi, \quad k\in\Z$, sonst holomorph ($\cot z$: Periode $\pi$)
+
+$\Rightarrow f$ einfache Pole an Stellen $k\in\Z$, sonst holomorph. $\Res (f,k) =1, \quad k\in\Z$.
+
+\begin{satz}
+$p,q$ teilerfremde Polynome, $\text{Grad}(q)\geq \text{Grad}(p)+2,\quad f(z)=\pi\cot\pi z. \Rightarrow$
+
+$\sum\limits_{n=-\infty}^\infty \frac{p(n)}{q(n)}=-\sum_{q(a)=0}\Res(\frac pq f,a)$. $\quad q\neq 0$ (Summation über Nst. von $q$)
+\end{satz}
+
+\paragraph{Beispiel}$\sum\limits_{-\infty}^\infty \frac 1{n^2} [\quad q(z)=z^z=0\Leftrightarrow z=0] =-\sum\limits_{a=0}\Res(\frac 1{z^2}\pi\cot\pi z,a)=-\Res(\frac 1{z^2}\pi\cot\pi z,0)$
+
+$\Rightarrow \sum\limits_1^\infty \frac 1{n^2}=-\frac 12 \Res (\frac 1 {z^2}\pi\cot\pi z,0)=\frac {\pi^2}6$
+
+\paragraph{Beispiel 2} $\sum\limits_1^\infty\frac 1{n^4}=\frac {\pi^4}{90}, \qquad \sum\limits_1^\infty\frac 1{n^6}=\frac {\pi^6}{945}$
+\begin{proof}
+$p(z)=1, \quad q(z)=z^2.$ Nach Bem 1: $\underbrace{\frac{\pi\cot\pi z}{z^2}}_{g=\frac pqf}=\frac 1{z^3}-\frac {\pi^2}3\frac 1z -\frac {\pi^4}{45}z -\ldots$\\
+$\underbrace{\Res(g,0)}_{=\sum\limits_{q(a)=0}\Res(g,0)}=-\frac{\pi^2}{3}\Rightarrow \sum\limits_{0\neq n\in\Z}\frac 1 {n^2}=\frac {\pi^2}3 \Rightarrow\sum\limits^1_{\infty}\frac 1 {n^2}=\frac {\pi^2}3$. Rest mit $q(z)=z^4$ bzw. $q(z)=z^6$.
+\end{proof}
+
+\begin{satz}
+$f$ holomorph in $\C$ mit Ausnahme endlich vieler Singularitäten $z_1,\ldots,z_N$ die nicht auf der rellen Achse liegen. \\
+$|f(z)|\leq \frac C{|z|^2}$ für $|z|\geq r, \Im z\geq 0$.
+
+$\Rightarrow \int\limits_{-\infty}^\infty f(x)dx=2\pi i \sum\limits_{\Im z_k >0}\Res (f,z_k)$.
+
+\begin{proof}
+Integral konvergiert (Majorantenkriterium). $R>r$ so groß, daß alle $z_k$ in $K_R(0)$. 
+
+$\int\limits_{\gamma_R} f(z)dz= 2\pi i \sum\limits_{\Im z_k >0}\Res (f,z_k)$.
+
+$\int\limits_{\gamma_R} f(z)dz=\underbrace{\int\limits_{-R}^RT f(z)dz}_{\rightarrow\int\limits_{-\infty}^\infty}+\underbrace{\int\limits_{\gamma^*} f(z)dz}_{\rightarrow 0} \qquad R\rightarrow \infty \Rightarrow |\int\limits_{\gamma^*} f(z)dz|\geq \frac C{R^2}\pi R$
+
+$\Rightarrow 2\pi i \sum\limits_{\Im z_k>0}\Res(f,z_k)=\lim\limits_{R\rightarrow \infty } \int\limits_{\gamma_R}f(z)dz=\int\limits_{-\infty}^\infty f(x)dx$.
+
+\end{proof}
+
+\end{satz}
+
+\paragraph{Bemerkung 2} Falls für $f$ Abklingbedingung in unterer Halbebene $\Im z \leq 0$: ähnliche Formel.
+\paragraph{Beispiel 3} $\int\limits_{-\infty}^\infty \frac{dx}{1+x^4}=\frac {\pi}{\sqrt 2}$\\
+$f(z)=\frac {1}{\sqrt 2}$ in oberer Halbebene einfache Pole. \\
+$z_1=e^{\frac {\pi i}4}, \quad z_2=e^{\frac{3\pi i}4}$\\
+$\Res(f,z_1)=-\frac 14 z_1=-\frac 14 (\cos \frac \pi 4 + i \sin \frac \pi 4)$\\
+$\Res(f,z_2)=-\frac 14 z_2=-\frac 14 (cos \frac \pi 4 + i \sin \frac \pi 4)$\\
+$2\pi i \sum _1^2 \Res(f,z_k)=\frac \pi {\sqrt 2}$
+
+\begin{satz}[Berechnung von Fourierintegralen $\int\limits_{-\infty}^\infty f(t)e^{ixt}dt$]
+$f$ gleiche Vorraussetzungen wie in Satz 3, aber $|f(z)|\leq \frac C{|z|^2}, \quad |z|\geq r$
+
+$g(z):=f(z)e^{ixz}$, dabei $x\in\R$ fest $\Rightarrow$
+
+$$\int\limits_{-\infty}^\infty f(t)e^{ixt}dt=\begin{cases}
+2\pi i \sum\limits_{\Im z_k>0}\Res(g,z_k) \text{ für } x>0\\
+-2\pi i \sum\limits_{\Im z_k>0}\Res(g,z_k) \text{ für } x<0
+\end{cases}$$
+Zusatz: Falls statt $|f(z)|\leq \frac C{|z|^2}, \quad |z|\geq r$ ...
+\end{satz}
+
+\section{Konforme Abbildungen}
+\paragraph{Bemerkung 1} (Geometrische Bedeutung der Argumente der Ableitung)\\
+$f(z)=f(x+iy)=u(x,y)+iv(x,y)$ sei analytisch im Gebiet $\Omega$\\
+$z_0\in\Omega, \quad w_0:=f(z_0).$ \\
+$C$: Kurve mit Anfangspunkt $z_0$, besitze Tangente in $z_0$. Sei $f'(z_0)\neq 0$.\\
+$\Gamma$: Bild von $C$; $C$ Parameterdarstellung. $z=z(t), 0\leq t\leq 1$.\\
+$\Rightarrow \Gamma: w=f(z(t))=w(t), \quad 0\leq t\leq 1$.\\
+Sei $f'(z_0)=r(\cos\alpha+i\sin\alpha)=re^{i\alpha}$
+
+...
+
+Der Winkel zwischen Tangenten an zwei Kurven mit gleichem Anfangspunkt bleiben bei Abbildung $f$ erhalten (einschließlich Orientierung).
+
+\begin{satz}
+$f$ analytisch in Gebiet $\Omega$. Dann bleiben Winkel in allen Punkten erhalten in denen $f'(z)\neq 0$ 
+\end{satz}
+
+\paragraph{Bemerkung 2} (Geometrische Bedeutung des Betrags der Ableitung)
+$f$ weiter analytisch in $\Omega$, $|f'(z_0)|>0$. 
+
+$\Rightarrow \lim\limits_{\Delta z_0\to 0}\frac{|\Delta w_0|}{|\Delta z_0|}=r=|f'(z_0)|$ 
+
+${|\Delta w_0|},{|\Delta z_0|}$: Länge der Vektoren $\Delta w_0,\Delta z_0$. Verhältnis der Längen im Grenzfall ($=r$) hängt nicht von Richtung der Kurve $C$ ab. $\Rightarrow r=|f'(z_0)|$: kann als Maßstab (Verzerrung) der Abbildung $f$ an der Stelle $z_0$ aufgefaßt werden. 
+
+$r>1$: Dilatation, $r<1$: Kontraktion, $r=1$ Maßstab bleib ungeändert.
+
+\begin{satz}
+$f$ analytisch im Gebiet $\Omega \Rightarrow $\\
+in jedem Punkt $z$ mit $f'(z)\neq 0$ besitzt Abbildung $f$ eine von der Richtugn unabhängige Verzerrung $|f'(z)|$. 
+
+\end{satz}
+\paragraph{Folgerung 1}$f$ analytisch in $\Omega \Rightarrow$
+in jedem Punkt $z_0$ mit $f'(z_0)\neq 0$ besitzt $f$ zwei Eigenschaften:
+\begin{enumerate}
+\item Konstanz der Winkel (einschließlich Orientierung)
+\item Konstanz der Verzerrung
+\end{enumerate}
+
+Wählen in $z$-Ebene infinitesimales Dreieck mit einem Eckpunkt $z_0$. Infinitesimales Bilddreieck mit Eckpunkt $w_0$ (fast ein Dreieck wenn es klein ist). Winkel bei $z_0$ und $w_0$ gleich groß, Verhältnisse der entsprechenden Seiten gleich $r\neq 0$
+
+$\Rightarrow$ beide infinitesimalen Deiecke ähnlich
+
+$\Rightarrow f$ an jeder Stelle $z$ mit $f'(z)\neq 0$ eine Ähnlichkeitstransformation (infinitesimal)
+
+\begin{defin}
+$f$ im Gebiet $\Omega$ \textbf{konforme Abbildung} $\Leftrightarrow f$ besitzt an jeder Stelle $z\in\Omega$ die Eigenschaften aus Folgerung 1. 
+\end{defin}
+
+\paragraph{Bemerkung 3} $f$ sei im Gebiet $\Omega$ konforme Abbildung $\Rightarrow f$ an jeder Stelle differenzierbar, $f'(Z)\neq 0$
+
+Man kann zeigen: $f$ differenzierbar $\Rightarrow f$ analytisch in $\Omega$
+
+\begin{satz}
+$f$ ist konforme Abbildung im Gebiet $\Omega \Leftrightarrow f$ analytisch in $\Omega$ und $f'(z)\neq 0$ in $\Omega$.
+\end{satz}
+
+\begin{defin}
+$f$ konforme Abbildung zweiter Art in $\Omega \Leftrightarrow$ 
+\begin{enumerate}
+\item Konstanz des Betrags des Winkels, aber Orientierung ändert sich
+\item Konstanz der Verzerrung
+\end{enumerate}
+\end{defin}
+
+\paragraph{Bemerkung 4} $f$ ist konforme Abbildung 2. Art $\Leftrightarrow \bar f$ konforme Abbildung 1. Art (konjugiert komplex, d.h. $\bar f$ analytisch und $\bar f'\neq 0$).
+(Beweis graphisch)
+\begin{proof}
+$\bar f$ sei konforme Abb. $w=f(z)=\bar{\bar f}(z)$ konforme Abb. 2. Art. $w=h(z)=g(\overline{f(z)})=f(z)$ mit $g(z)=\bar z$.\\
+ $\bar f$: Winkel bleibt erhalten, $g$: Orientierung -> engegengesetzte Orientierung\\
+ $\Rightarrow h$: Winkel bleibem dem Betrag nach erhalten, Orientierung wird umgekehrt.
+ ... rest analog
+\end{proof}
+
+\begin{satz*}
+$\Omega$ einfach zusammenhängendes Gebiet in $\C$, das mindestens 2 verschiedene Randpunkte bestitzt. $z_o\in\Omega, \quad 0\leq \varphi <2\pi \Rightarrow $ Es existiert genau eine konforme Abbildung $f(z)$ von $\Omega$ auf Einheitskreis $K_1(0)$ mit $f(z_0)=0$ und $f'(z_0)=|f'(z_0)|e^{i\varphi}$. 
+\end{satz*}
+
+
+
+
+
+
+
+
+
+
+Klausur \\
+	Theorieteil (auch weniger wichtige Sätze; holomorph definieren)\\
+	Aufgaben: Übungsaufgaben (wen wunderts)\\
+	
+	Ergebnisse im Netz, oder an Tür nach 2-3 Wochen.
+
+\end{document}
