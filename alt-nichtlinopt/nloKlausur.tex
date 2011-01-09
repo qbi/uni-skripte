@@ -1,0 +1,564 @@
+
+\documentclass[ngerman,halfparskip]{scrartcl}
+
+\usepackage{babel} %Umlaute, neue deutsche Rechtschreibung
+\usepackage[utf8]{inputenc} %Kodierung festlegen
+\usepackage[T1]{fontenc} % font encoding festlegen
+\usepackage{amsmath,amsfonts,amssymb,amsthm} %math. Symbole und Umgebungen
+\usepackage{hyperref}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{amsmath} 
+\usepackage{enumerate}
+
+
+\newtheorem*{satz}{Satz}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{korollar}{Korollar}
+\theoremstyle{definition}
+\newtheorem*{defin}{Definition}
+\def\R{\mathbb R}
+\def\C{\mathbb C}
+\def\N{\mathbb N}
+
+\pagestyle{empty}
+
+\begin{document}
+\huge Einführung in die nichtlineare Optimierung \normalsize
+
+\section{Optimierungsaufgaben}
+\begin{defin}[1.1.4] (zu Aufgabenstellung (P)) ein Punkt $x\in F$ heißt lokaler Minimalpunkt von $f$ auf $F$ oder lokale Lösung von (P), wenn es ein $r>0$ gibt, mit $f(x)\geq f(\tilde x)\forall x\in F \Cap B(\tilde x,r)$ Ein Punkt $\tilde x\in F$ heißt strikter lokaler Minimalpunkt von $f$ auf $F$ oder strikt lokale Lösung von (P), wenn es ein $r>0$ gibt mit $f(x)>f(\tilde x)\forall x F\Cap B(\tilde x,r), x\neq \tilde x$ \\
+Ein Punkt $\tilde{x} \in F$ heißt globaler Minimalpunkt von $f$ auf $F$, wenn gilt $f(x)\geq f(\tilde{x})\forall x\in F$\\
+Ei Punkt $ \tilde x \in F$ heißt strikter globaler Minimalpunkt von $f$ auf $F$ wenn gilt $ f(x) >f(\tilde x) \forall x\in F, x\neq \tilde x$.\\
+Ist $\tilde x$ lokale oder globale Lösung von (P), dann heißt $f(\tilde x)$ lokaler bzw. globaler Optimalwert.
+\end{defin}
+\paragraph*{Spezialfall} quadratischen Funktionen. $H$ symm. $n\times n$-Matrix, $b\in\R^n, f: \R^n\rightarrow \R$ ist definiert durch $f(x)=\frac 12 x^THx+b^Tx$ (eindim $\frac 12 x^2 +bx$)\\
+$x^THx>0, \forall x\in \R^n x\neq 0_n$ positiv definit, auch wenn $\exists\alpha >0: x^THx \geq \alpha ||x||^2\forall x\in\R^n$\\
+$\nabla f(x)=(\frac{\delta f(x)}{\delta x_1} \ldots \frac{\delta f(x)}{\delta x_n})=f'(x)$.
+
+\subsection*{Existenz von Lösungen}
+$f:D\rightarrow \R, D\subset\R^n$ offen, $K\subset D$ kompakt, $f$ stetig auf $D$
+Satz von Weierstraß
+\begin{satz}[1.2.2] Sei $D\subset\R^n$. Die Fkt. $f:D\rightarrow\R$ sei stetig und für ein $\omega\in D$ sei die Niveaumenge $N(f,f(\omega))=\{x\in D| f(x)\leq f(\omega)\}$ kompakt. Dann gibt es (mindestens) ein globales Minimum von $f$ auf $D$.
+\begin{proof} Nach Satz von Weierstraß gibt es ein $\tilde x\in N(f,f(\omega))$ mit $f(\tilde x)\leq f(x)\forall x\in N(f,f(\omega))$. Für $x\notin N(f,f(\omega))$ gilt: $f(x)>f(\omega)\geq f(\tilde x)$\\
+$\Rightarrow f(\tilde x)\leq f(x)\forall x\in D$.
+\end{proof}
+\end{satz}
+
+\begin{korollar}[1.2.3]
+Die Funktion $f:\R^n\rightarrow\R$ sei stetig und es gelte:
+\begin{gather*}\tag{1.2.1}
+\lim\limits_{||x||\rightarrow \infty}f(x)=+\infty.
+\end{gather*}
+Dann ist für beliebiges $w\in\R^n$ die Niveaumenge $N(f,f(w))$ kompakt, d.h. es gibt (mindestens) ein globales Minimum von $f$.
+\end{korollar}
+
+
+\subsection*{Konvexe Optimierungsaufgaben}
+\begin{defin}[1.3.1] Die Menge $C\subseteq \R^n$ heißt \textbf{konvex}, falls für beliebige Punkte $x,y\in C$ gilt: $\{ (1-t)x+ty|0\leq t\leq 1\}\subseteq C$, d.h. für die Verbindungsstrecke gilt $[x,y]\subseteq C$.
+\end{defin}
+
+\begin{defin}[1.3.3] Es sei $D\subseteq \R^n$, und $C\subseteq D$ sei nichtleer und konvex. Die Funktion $f:D\rightarrow \R$ heißt \textbf{konvex auf $C$}, wenn 
+\begin{gather*}
+f((1-t)x+ty)\leq (1-t)f(x)+tf(y)
+\end{gather*}
+für alle $x,y\in C$ und alle $t\in[0,1]$ gilt. Die Funktion $f$ heißt \textbf{strikt konvex auf C}, wenn 
+\begin{gather*}
+f((1-t)x+ty)< (1-t)f(x)+tf(y)
+\end{gather*}
+für alle $x,y\in C$ und alle $t\in]0,1[$ gilt.
+\end{defin}
+
+\begin{satz}[1.3.5]
+Es sei $D\subseteq \R^n, f\subset D$ sei nichtleer und konvex, und $f:D\rightarrow \R$ sei konvex auf $F$. Dann ist jedes lokale Minimum von $f$ auf $F$ ein globales Minimum, und die Menge der Lösungen von (P) (Minimalpunkte): $S=\{x\in F| f(x)\leq f(y) \forall y\in F\}$ ist konvex.
+\begin{proof}
+(Lösungsmenge konvex) Seien $x,z\in S$ und $t\in[0,1]$ beliebig. Dann ist $f(x)=f(y)$ und daher $f((a-t)x+tz)\leq (1-t)f(x)+tf(z)=f(x)$ Also ist auch $(1-t)x+tz\in S$.
+\end{proof}
+\end{satz}
+
+
+\begin{satz}[1.3.6]
+Es sei $D\subseteq\R^n, f:D\rightarrow \R, F\subseteq D$ nichtleer und konvex, und $f$ sei strikt konvex auf $F$. Hat das Problem (P) eine Lösung $\tilde x$, dann ist $\tilde x$ eindeutig bestimmt und striktes globales Minimum von $f$ auf $F$. 
+
+\begin{proof}
+Sei $\tilde x \in F$ Minimum von $f$, und $y\in F$ sei ebenfalls Minimum von $f$. Nach Satz 1.3.5 sind $\tilde x$ und $y$ globale Minima von $f$ auf $F$, es gilt also $f(\tilde x)=f(y)$. Da $F$ konvex ist folgt $z:=\frac 12 (\tilde x+y)\in F$. Wäre $y\neq x$, so würde die strikte Konvexität von $f$ wegen $f(\tilde x)=f(y)$ implizieren $f(z)<\frac 12 (f(\tilde x)+f(y))=f(\tilde x)$. Hier ist ein Widerspruch zur Optimalität, also $\tilde x = y$ und für $z\in F, z\neq \tilde x \Rightarrow f(y)>f(\tilde x)$.
+\end{proof}
+\end{satz}
+
+
+\paragraph{Beispiel 1.3.7} Quadratisches Problem. $f(x)= \frac 12 x^THx+b^Tx$ ist konvex, wenn $H$ positiv semidefinit (Lösungsmenge konvex) und strikt konvex, wenn $H$ positiv definit (Lösung eindeutig).
+
+
+\section{Anwendungen}
+\section{Unrestringierte Optimierungsprobleme: Theorie}
+Ein Einschub mit Theorie aus 1.7
+\subsection*{Optimalitätbedingungen}
+\subsubsection*{Notwendige Bedingungen 1. Ordnung}
+\begin{satz}[3.1.1] $f$ in $x\in D$ differenzierbar, $\tilde x$ lokales Minimum, dann:\\
+\begin{gather}\tag{3.1.1} \nabla f(\tilde x)^T d \geq 0; \qquad \forall d\in \R^n \end{gather}
+
+\begin{proof}
+Da $D$ offen und $\tilde x$ ein lokales Minimum von $f$ ist, gibt es ein $r>0$ mit $B(\tilde x,r)\subseteq D$ und \begin{gather*}
+f(x)\geq f(\tilde x) \qquad \forall x\in B(\tilde x,r).
+\end{gather*}
+Sei $d\in\R^n$ eine beliebige Richtung. Da $f$ in $\tilde x$  differenzierbar ist, existiert der Grenzwert $$ \nabla f(\tilde x)^Td=\lim\limits_{t\to 0+}\frac{f(\tilde x + td) - f(\tilde x)}t.$$
+Für hinreichend kleines $t>0$ ist $\tilde x+td\in B(\tilde x,r)$ und wegen (3.1.1) gilt $f(\tilde x +td)-f(\tilde x)\geq 0$. Für $t\to 0+$ folgt damit $\nabla f(\tilde x)^Td\geq 0$. 
+\end{proof}
+\end{satz}
+
+
+\paragraph{Bemerkung} Ist in einem $x\in D$ mit $\nabla f(\tilde x)^T d < 0$ dann $d$ \textbf{Abstiegsrichtung}. 
+
+Aus (3.1.1) folgt $\nabla f(\tilde x)^T d \geq -\nabla f(\tilde x)^T d \geq 0\qquad \forall d \in \R^n$\\
+$\Rightarrow \nabla f(\tilde x)^T d =0 \Rightarrow \nabla f(\tilde x)=0_n$.
+
+Dann ist (3.1.1) äquivalent zu $\nabla f(\tilde x)=0_n$ also ist folgender Satz äquivalent zu Satz 3.1.1
+\begin{satz}[3.1.2] $f$ sei in $\tilde x$ differenzierbar. Ist $\tilde x$ lokales Minimum von $f$,  dann gilt
+\begin{gather}\tag{3.1.2}\nabla f(\tilde x)=f'(\tilde x)^T=0\end{gather}
+\end{satz}
+
+
+\begin{defin}[3.1.4]  $f$ sei in $\tilde x \in D $ differenzierbar. Ist $\nabla f(\tilde x)=0_n$, dann heißt $\tilde x$ \textbf{stationärer Punkt} von $f$.
+\end{defin}
+
+\paragraph{Beispiel 3.1.8} Quadratisches Problem (QU) mit $f(x)=\frac12 x^THx+b^Tx$. Wenn $H$ symmetrisch ist gilt: $$f''(\tilde x)=H$$ Gibt es ein lokales Minimum von $f$, dann muss $H$ positiv definit sein.
+
+\begin{satz}[3.1.10] $f$ in Umgebung von $\tilde x \in D$ 2mal stetig differenzierbar. Die notwendige Optimalitätbedingung (3.1.2)($\nabla f(\tilde x)=0_n$) sei erfüllt, und mit einem $\delta >0$ gelte $\forall z\in B(\tilde x, \delta)$:
+\begin{gather}\tag{3.1.4} x^Tf''(z)x \geq 0 \quad \forall x\in\R^n\end{gather} (d.h. $f''(z)$ ist in einer Umgebung $B(\tilde x, \delta)$ von $\tilde x$ positiv semidefinit). 
+
+Dann ist $\tilde x$ lokales Minimum von $f$.
+
+\begin{proof}
+Sei $x\in B(\tilde x,\delta)$ beliebig. Taylorentwicklung liefert: $$f(x)-f(\tilde x)=f'(\tilde x)(x-\tilde x)+\frac 12 (x-\tilde x)^Tf''(\tilde x + t(x-\tilde x))(x-\tilde x)$$ mit $0<t<1$. Sei $z:=\tilde x+t(x-\tilde x)$. Wegen $f'(\tilde x)=0_n^T$ und $z\in B(\tilde x,\delta)$ folgt aus (3.1.4) $f(x)-f(\tilde x)\geq 0$. Da $x\in B(\tilde x, \delta)$ beliebig, folgt die Behauptung.
+\end{proof}
+\end{satz}
+
+\begin{satz}[3.1.14]
+Die Funktion $f$ sei in einer Umgebung von $\tilde x \in D$ zweimal stetig differenzierbar. Die notwendige Optimalitätbedingung (3.1.2), also $\nabla f(\tilde x)=0_n$, sei erfüllt, und $f''(\tilde x)$ sei positiv definit, d.h. es gelt \begin{gather*}\tag{3.1.5}
+x^Tf''(\tilde x)x >0 \quad \forall x\in \R^n,\quad x\neq 0
+\end{gather*}
+Dann gibt es $r>0,\quad \beta >0$ mit $$ f(x)\geq f(\tilde x) + \beta ||x-\tilde x||^2 \qquad \forall x\in B(\tilde x,r),$$ d.h. $\tilde x$ ist striktes lokales Minimum von (PU).
+\begin{proof}
+etwas länger? Bonus...
+\end{proof}
+
+\end{satz}
+
+
+
+\subsection*{Konvexe Optimierungsaufgaben}
+\begin{satz}[3.2.1] $ D\subseteq \R^n $ offen $ f:D\rightarrow \R $ sei differenzierbar, $ F\subseteq D $ nichtleer und konvex. Dann gilt: 
+
+$ f $ ist konvex auf $ F \quad \Leftrightarrow$
+\begin{gather}\tag{3.2.1} f(y)\geq f(x)+f'(x)(y-x) \qquad \forall x,y\in F\end{gather}
+\begin{proof}
+Bild
+\end{proof}
+
+\end{satz}
+
+
+\begin{satz}[3.2.2]
+Sei $f$ differenzierbar auf $D$ und $\tilde x\in F$. Dann gilt: $\tilde x$ ist Lösung der konvexen Optimierungsaufgabe (P), also globales Minimum von $f$ auf $F$, genau dann, wenn 
+\begin{gather*}\tag{3.2.2}
+f'(\tilde x)(x-x\tilde x)\geq 0 \qquad \forall x\in F
+\end{gather*}
+
+\begin{proof}
+Sei $\tilde x$ globales Minimum von $f$ auf $F$. Weiter sei $x\in F$ beliebig. Da $F$ konvex ist, gilt $\tilde x + t(x-\tilde x)\in F$ für alle $t\in [0,1]$. Daher ist $$f(\tilde x +t(x-\tilde x))\geq f(\tilde x)\qquad \forall t\in [0,1]$$ Mit der differenzierbarkeit von $f$ in $\tilde x$ folgt weiter (wie schon gezeigt Satz 3.1.1) $$ f'(\tilde x)(x-\tilde x) =\lim\limits _{t\to 0+}\frac{f(\tilde x + td) - f(\tilde x)}t\geq 0.$$ Da $x\in F$ beliebig, gilt (3.2.2).
+
+Rückrichtung: Es gilte (3.2.2). Nach Satz 3.2.1  ist $ f(x)\geq f(\tilde x)+f'(\tilde x)(x-\tilde x) \quad \forall x\in F$. Aus (3.2.2) folgt daher $f(x)\geq f(\tilde x)$ für alle $x\in F$.
+\end{proof}
+\end{satz}
+
+\begin{satz}[3.2.4]
+Sei $D\subseteq \R^n$ offen, $F\subseteq D$ sei nichtleer udn konvex, und $f:D\to\R$ sei differenzierbar auf $D$. Dann gilt:\\ $f$ ist strikt konvex auf $F \quad \Leftrightarrow$
+\begin{gather*}\tag{3.2.3}
+f(y)>f(x)+f'(x)(y-x) \qquad \forall x,y\in F, \quad x\neq y
+\end{gather*}
+\begin{proof}
+Bild
+\end{proof}
+\end{satz}
+
+
+\begin{satz}[3.2.5]
+Sei $f$ differenzierbar auf $D$ und strikt konvex auf $F$. Weiter sei $\tilde x \in F$. Dann gilt: \\
+$\tilde x$ ist strikte globale Lösung der konvexen Optimierungsaufgabe (P), also striktes globales Minimum von $f$ auf $F$, genau dann wenn (3.2.2) ,also $f'(\tilde x)(x-x\tilde x)\geq 0 \qquad \forall x\in F$
+\begin{proof}
+Ist $\tilde x$ striktes globales Minimum von $f$ auf $F$, dann gilt (3.2.2) nach Satz 3.2.2
+
+Sei (3.2.2) erfüllt. Nach Satz 3.2.4 ist $f(x)>f(\tilde x)+f'(\tilde x)(x-\tilde x) \qquad \forall x\in F, \quad x\neq \tilde x$ woraus zusammen mit (3.2.2) folgt, dass $\tilde x$ strikte globale Lösung von (P) ist.
+\end{proof}
+\end{satz}
+
+\begin{satz}[3.2.7]
+Sei $D\subseteq \R^n$ offen, $F\subseteq D$ sei nichtleer und konvex, und $f:D\to\R$ sei zweimal stetig differenzierbar auf $D$ dann gilt:
+\begin{enumerate}[(i)]
+\item Ist $f''(x)$ positiv semidefinit für alle $x\in F$, dann ist $f$ konvex auf $F$. Ist $F$ offen, dann gilt auch die Umkehrung dieser Aussage.
+\item Ist $f''(x)$ positiv definit für alle $x\in F$, dann ist $f$ strikt konvex auf $F$
+\end{enumerate}
+\begin{proof}
+Seien $x,y\in F$. Dann gilt mit einem $t\in ]0,1[$ $$f(y)-f(x)-f'(x)(y-x)=\frac 12 (y-x)^Tf''(x+t(y-x))(y-x).$$ 
+
+zu (i): Ist $f''$ positiv semidefinit für alle $x\in F$, dann folgt aus Taylorgleichung oben $$f(y)-f(x)-f'(x)(y-x)\geq 0, \quad \forall x,y\in F$$ Nach Satz 3.2.1 ist $f$ konvex.
+
+zu (ii): Ist $f''(x)$ positiv definit für alle $x\in F$, dann folgt aus Taylorgleichung oben $$f(y)-f(x)-f'(x)(y-x)\geq 0, \quad \forall x,y\in F, x\neq y$$ Nach Satz 3.2.4 ist $f$ strikt konvex.
+\end{proof}
+\end{satz}
+
+
+\begin{satz}[3.2.8]
+$f$ zweimal stetig differenzierbar, für $\tilde x  \in F$ gelte notwendige Optimalitätbedingung (3.1.2) ($\nabla f (\tilde x)=0_n$) und $f''$ posotiv definit auf $F$ d.h. 
+\begin{gather}\tag{3.2.4}
+\forall z\in F: \quad x^Tf''(z)x>0 \qquad \forall x\in\R^n, x\neq 0_n
+\end{gather}
+das ist $\tilde x$ striktes globales Minimum von $f$ auf $F$.
+
+\begin{proof}Wegen $f'(\tilde x)=0$ gilt mit Taylorentwicklung für alle $x\in F, x\neq \tilde x$: 
+$$f(x)-f(\tilde x)=\frac 12 f''(\tilde x+t(x-\tilde x))(x-\tilde x)>0 \qquad t\in]0,1[$$ Wegen (3.2.4) folgt $f(x)>f(\tilde x)$
+\end{proof}
+\end{satz}
+
+\begin{defin}[3.2.10]
+$D\subseteq\R^n, f:D\rightarrow\R, F\subseteq D$ nichtleer und konvex. Die Funktion $f$ heißt \textbf{gleichmäßig konvex} auf $F$, wenn es ein $\alpha > 0$ gibt, mit 
+
+$(1-t)f(x)+tf(y)\geq f((1-t)x+ty)+t(1-t)\alpha ||x-y||^2 \qquad\forall x,y \in F \quad \forall f \in [0,1]$.
+\end{defin}
+
+\begin{satz}[3.2.11]
+$D\subseteq\R^n$ offen, $F\subseteq D$ nichtleer und konvex, $f:D\rightarrow\R$ sei differenzierbar. Dann ist $f$ gleichmäßig konvex auf $F$ genau dann wenn gilt:
+\begin{gather}\tag{3.2.5}
+f(y)-f(x)\geq \nabla f (x)^T(y-x)+\alpha||x-y||^2 \quad \forall x,y\in F
+\end{gather}
+\end{satz}
+
+\begin{satz}[3.2.12]
+Sei $D\subseteq \R^n$ offen, $F\subseteq D$ nichtleer und konvex.  $f:D\rightarrow\R$ sei zweimal stetig differenzierbar. Ist $f''$ gleichmäßig positiv definit auf $F$, d.h. es gibt ein $\beta >0$ (unabhängig von $x\in F$), so dass gilt:
+\begin{gather}\tag{3.2.6}
+y^Tf''(x)y\geq \beta ||y||^2\quad \forall y\in\R^n
+\end{gather}
+dann ist $f$ gleichmäßig konvex auf $F$. Ist $F$ offen, dann folgt aus der gleichmäßigen Konvexität von $f$ auf $F$ auch (3.2.6).
+\end{satz}
+\paragraph{Beispiel 3.2.14}
+Betrachte das unrestringierte quadratische Optimierungsproblem \begin{gather*}\tag{QU}
+\min\limits_{x\in\R^n}f(x)=\frac 12x^THx+b^Tx
+\end{gather*}
+Wobei $H$ symmetrisch ist. 
+
+Für alle $x\in \R^n$ gilt: $\nabla f(x)=Hx+b, \quad f''(x)=H$.
+
+Ist $H$ positiv semidefinit, dann ist $f$ konvex (also jede Lösung auch globale Lösung). Ist $H$ positiv definit, so ist $f$ strikt konvex und die globale Lösung ist eindeutig bestimmt ($\tilde x=-H^{-1}b$). 
+
+
+\section{Unrestringierte Optimierungsprobleme: Verfahren}
+Betrachtet wird das Problem:
+\begin{gather*}\tag{PU}
+\min f(x)\\
+f:\R^n\rightarrow \R (D=\R^n)
+\end{gather*}
+\subsection*{Gundlagen}
+Standardvorraussetzung:
+\begin{gather*}\tag{4.1.1}
+\text{Mit einem gegebenen }x^{(0)}\in\R^n \text{ ist die Niveaumenge }\\ N(f,f(x^{(0)}))=\{x\in\R^n | f(x)\leq f(x^{(0)})\} \text{ kompakt.}\\\text{ Die Zielfunktion }f \text{ ist auf einer konvexen, offenen Obermenge }D_0 \text{ von }N(f,f(x^{(0)}))
+\end{gather*}
+
+\paragraph{Bemerkung} Ist (4.1.1) erfüllt, dann gibt  es nach Satz 1.2.2. mindestens eine lokale Lösung von (P), und für jede lokale Lösung $\tilde x$ gilt es nach Satz 3.1.2:
+\begin{gather}
+\tag{4.1.2} \nabla f (\tilde x)=0_n
+\end{gather}
+
+
+
+\begin{lemma}[4.1.1] $f:\R^n\rightarrow \R$ sei differenzierbar in $x\in\R^n$. Weiter sei $d\in\R^n$ eine Richtung mit 
+\begin{gather}
+\tag{4.1.3} \nabla f(x)^Td<0
+\end{gather}
+Dann gibt es ein $\bar \sigma >0$ mit $f(x+\sigma d)< f(x) \quad \forall \sigma \in ]0,\bar \sigma]$.
+\begin{proof}
+Da $f$ in $x$ differenzierbar ist, gilt: $$ \nabla f(x)^Td=f'(x)d=\lim\limits_{\sigma\to 0}\frac {f(x+\sigma d)-f(x)}{\sigma}$$ ist $d\in\R^n$ eine Richtung mit (4.1.3) so folgt also $f(x+\sigma d)<f(x)$ für hinreichend kleines $\sigma>0$.
+\end{proof}
+\end{lemma}
+
+\begin{defin}
+[4.1.2] Sei $f:\R^n\rightarrow \R$ differenzierbar in $x\in\R^n$. Dann heißt $d\in\R^n$ \textbf{Abstiegsrichtung} von $f$ in $x$, wenn (4.1.3) gilt.
+\end{defin}
+
+\paragraph*{Abstiegsrichtung} $d=-f''(x)^{-1}\nabla f(x)$ Newton-Richtung. Allgemeiner: $d=-A^{-1}\nabla f(x^{(k)}$ mit $A$ positiv definit. 
+
+\subsection*{Verfahren 4.1.4} Allgemeines Konzept für ein Abstiegsverfahren mit Schrittweitensteuerung
+\begin{enumerate}
+\item Wähle Startpunkt $x^{(0)}$; Setzt $k=0$
+\item Ist $\nabla f (x^{(k)})=0_n$. STOPP
+\item Berechne eine Abstiegsrichtung $d^{(k)}$ von $f$ in $x^{(k)}$ und eine Schrittweite $\sigma_k>0$ mit $f(x^{(k)}+\sigma_kd^{(k)}<f(x^{(k)})$ und setze $x^{(k-1)}:=x^{(0)}+\sigma_kd^{(k)}$
+\item Setze $k:=k+1$; gehe zu 2.
+\end{enumerate}
+
+\paragraph*{Bemerkung 4.1.5} Für Verfahren 4.1.4 gilt $f(x^{(k+1)})<f(x^{(k)})\quad \forall k=0,1,\ldots \Rightarrow f(x^{(k)})<f(x^{(0)})$ d.h. $x^{(k)}\in N(f,f(x^{(0)}))$.
+Ist die Vorraussetzung 4.1.1 erfüllt, dann ist $N(f,f(x^{(0)}))$ beschränkt $\Rightarrow$ die Folge $\{x^{(k)}\}_{k\in\mathbb N}$ ist beschränkt. $\Rightarrow$ die Folge $\{f(x^{(k)})\}_{k\in\mathbb N}$ ist beschränkt. 
+\subsection*{Das Newtonverfahren}
+Gegeben eine Abbildung $F:\R^n\rightarrow\R^n$ Aufgabe: Berechne eine (lokale) Lösung $\tilde x$ von $F(x)=0_n$. $F$ sei differenzierbar.
+\paragraph{Newtonverfahren}
+\begin{itemize}
+\item wähle Startpunkt $x^{(0)}$
+\item Ist $x^{(k)}$ berechnet dann erhält man $x^{(k+1)}$ durch lösen des Gleichungssystems:
+\begin{gather*}\tag{4.3.1}
+F(x^{(k)})+F'(x^{(k)})(x-x^{(k)})=0_n
+\end{gather*}
+Dann sollte $F'(x^{(k)})$ invertierbar sein. Dann ist:
+\begin{gather*}\tag{4.3.2}
+x^{(k+1)}=x^{(k)}-F'(x^{(k)})^{-1}F(x^{(k)})
+\end{gather*}
+\end{itemize}
+
+\begin{defin}[4.3.5]
+Sei $\{x^{(k)}\}\subset\R^n$ eine Folge mit Grenzwert $\tilde x$. Die Folge heißt \textbf{linear konvergent}, wenn es ein $0<L<1$ gibt, mit $||x^{(k+1)}-\tilde x||\leq L||x^{(k)}-\tilde x||$ für $k\geq 0$. 
+
+Die Folge $\{x^{(k)}\}$ heißt \textbf{quadratisch konvergent}, wenn es ein $c>0$ gibt, mit $||x^{(k+1)}-\tilde x||\leq c||x^{(k)}-\tilde x||^2$ für $k\geq 0$.
+
+Die Folge $\{x^{(k)}\}$ heißt \textbf{superlinear konvergent}, wenn gilt:  $\lim\limits_{k\to \infty}\frac {||x^{(k+1)}-\tilde x||}{||x^{(k)}-\tilde x||}=0$.
+\end{defin}
+
+\begin{satz}[4.3.7]
+Sei $D\subseteq \R^n$ offen und die Funktion $f:D\to\R$ besitze ein Minimum $\tilde x\in D$. Weiter gelte:
+\begin{enumerate}[a)]
+\item $f$ ist zweimal differenzierbar auf $D$ und $f''$ ist stetig bzw. Lipschitzstetig auf $D$, d.h. $\exists L\geq 0: \quad ||f''(x)-f''(y)||\leq L||x-y|| \quad \forall x,y\in D$.
+\item $f''(\tilde x)$ ist nichtsingulär.
+\end{enumerate}
+Dann gibt es ein $\delta >0$ und eine Konstante $c\leq 0$, s.d. das Newton-Verfahren 4.1.4\begin{gather*}\tag{4.3.5}x^{(k+1)}=x^{(k)}-f''(x^{(k)})^{-1}\nabla f (x^{(k)})
+\end{gather*} für jeden Startpunkt $x^{(0)}\in B(\tilde x,\delta)$ eine Folge $\{x^{(k)}\}$ definiert, die superlinear bzw. quadratisch gegen $\{\tilde x\}$ konvergiert.
+
+(Füpr b) sollte $f''(\tilde x)$ positiv definit sein. 
+\end{satz}
+
+\paragraph{Newtonverfahren in quadratischer Form} Praktisch nicht mit (4.3.5) sondern durch lösen von linearem Gleichungssystem $\nabla f(x^{(k)})+f''(x^ {(k)})(x-x^{(k)})=0_n$ mit $d^{(k)}=x-x^{(k)}$ ergibt sich:
+\begin{gather*}\tag{Q$_k$}
+\min\limits_{d\in\R^n}\nabla f(x^{(k)})d+\frac 12 d^Tf''(x^{(k)})d
+\end{gather*}
+
+
+
+\subsection*{Konstruktion von Abstiegsverfahren}
+\subsubsection*{Effiziente Schrittweiten}
+\paragraph{Ziel} Bedingungen an Schrittweite und an Suchrichtung so dass:
+\begin{gather*}\tag{4.4.1}
+\nabla f(x^{(k)})\xrightarrow[k\rightarrow \infty]{} 0_n
+\end{gather*}
+Zunächt Bedingung an Schrittweite so dass:
+\begin{gather*}\tag{4.4.2}
+\frac{f(x^{(k)})^Td^{(k)}}{||d^{(k)}||}\xrightarrow[k\rightarrow \infty]{} 0
+\end{gather*}
+Im folgenden sei $x^{(k)}$ der aktuelle Iterationspunkt und $d^{(k)}$ die Suchrichtung und $\sigma_k$ die Schrittweite. Erste Näherung:
+\begin{gather*}\tag{4.4.3}
+f(x^{(k+1)})-f(x^{(k)})=f(x^{(k)}+\sigma_kd^{(k)})-f(x^{(k)})
+\end{gather*}
+Wegen (4.4.1) ist $\{f(x^{(k)})\}$ nach unten beschränkt, also konvergiert für $k\rightarrow\infty$ die linke Seite von (4.4.3) gegen $0$.
+\begin{defin}[4.4.2]
+Seien $x\in N(f,f(x^{(k)}))$ und $d\in\R^n, \quad \nabla f (x)^t d<0$ eine Schrittweite $\sigma_k>0$ erfüllt das Prinzip des \textbf{hinreichenden Abstiegs}, wenn gilt:
+\begin{gather*}\tag{4.4.7}
+f(x+\sigma d)\leq f(x)+c_1\sigma\nabla f(x)^Td\\
+\tag{4.4.8} \sigma \geq -c_2 \frac{\nabla f(x^{(k)})^Td^{(k)}}{||d^{(k)}||^2} \qquad c_1,c_2>0
+\end{gather*}
+Eine Schrittweite heißt \textbf{effizient}, wenn gilt:
+\begin{gather*}
+\tag{4.4.9} f(x+\sigma d)\leq f(x)-c\left( \frac{\nabla f(x^{(k)})^Td^{(k)}}{||d^{(k)}||} \right)^2 \qquad c>0
+\end{gather*}
+\end{defin}
+
+Weitere Forderungen (zusätzlich zu (4.4.1)):
+\begin{gather*}
+\tag{4.4.10} f\text{ auf } N(f,f(x^{(k)})) \text{ Lipschitzstetig, d.h.:}\\
+\exists L>0: \quad ||f'(x)-f'(y)||\leq L||x-y||
+\end{gather*}
+
+Wenn (4.4.7) gilt dann folgt:
+
+\begin{gather*}
+\sigma_k\nabla f(x^{(k)})d^{(k)}\xrightarrow[k\rightarrow \infty]{}0
+\end{gather*}
+
+
+Die Bedingung (4.4.7) und (4.4.8) implizieren:
+\begin{gather*}\tag{4.4.6}
+f(x^{(k)}+\sigma_kd^{(k)})\leq f(x^{(k)}) - c\left( \frac{\nabla f(x^{(k)})^Td^{(k)}}{||d^{(k)}||} \right)^2 \qquad c=c_1c_2
+\end{gather*}
+
+\subsubsection*{Gradientenbezogene Suchrichtungen}
+Sei $\beta_k:=\frac{\nabla f(x^{(k)})^Td^{(k)}}{||\nabla f(x^{(k)})^T||~||d^{(k)}||}=\cos(\angle(\nabla f(x^{(k)}),d^{(k)}))$
+
+Dann gilt: $\frac{\nabla f(x^{(k)})^Td^{(k)}}{||d^{(k)}||}=\beta_k ||\nabla f(x^{(k)})||$
+
+Daher folgt (4.4.1) aus (4.4.2), wenn gilt $-\beta_k \geq c>0$
+
+Das bedeutet, dass der Winkel zwischen $\nabla f(x^{(k)})$ und $d^{(k)}))$ gleichmäßig kleiner als $90^\circ$ sein muss.
+
+\begin{defin}[4.4.4]
+Es seien $x\in N(f,f(x^{(k)}))$ und $d=d(x)\in\R^n$. Die Richtung $d$ heißt \textbf{gradientenbezogen} in $x$ wenn gilt:
+
+\begin{gather*}
+\tag{4.4.11}-\nabla f(x^{(k)})^Td\geq c_3 ||\nabla f(x)^T||\cdot ||d|| \quad c_3>0
+\end{gather*}
+Richtung $d$ heißt \textbf{streng gradientenbezogen} in $x$, wenn zusätzlich gilt:
+\begin{gather*}
+\tag{4.4.12}c_4||\nabla f(x)||\leq ||d||\leq \frac 1{c_4}||\nabla f(x)|| \quad c_4>0
+\end{gather*}
+\end{defin}
+
+Die Richtung $d=-\nabla f(x)$ des Gradientenverfahrens ist streng gradientenbezogen in $x$ mit $c_3=c_4=1$.
+Die Newton-Richtung $d^{(k)}=-f''(x^{(k)})^{-1}\nabla f(x^{(k)}$ ist streng gradientenbezogen unter der Vorraussetzung:
+\begin{gather*}
+\tag{4.4.13} f:\R^n\rightarrow\R \text{ stetig, }x^{(0)}\in\R^n, ~D\supseteq N(f,f(x^{(k)})) \text{ nichtleer, offen, konvex, }
+\\ \text{$f$ sei zweimal stetig differenzierbar auf $D$ und mit Konstante $\alpha>0$ gelte:}\\
+y^Tf''(x)y\geq \alpha ||y||^2 \quad \forall y\in D
+\end{gather*}
+(d.h. $f''$ ist gleichmäßig positiv definit auf $D$)
+
+\begin{satz}[4.4.14] 
+Die Vorraussetzung (4.4.13) sei erfüllt. Beim allgemeinen Abstiegsverfahren 4.1.4 seien die Suchrichtungen $d^{(k)}$ gradientenbezogen in $x^{(k)}$ und die Schrittweitenfolge $\{\sigma_k\}$ sei effizient. Stoppt das Verfahren nicht nach endlich vielen Schritten, dann konvergiert die Folge $\{x^{(k)}\}$ gegen das eindeutig bestimmte globale Minimum $\tilde x$ von $f$.\\
+Weiter gibt es eine Konstante $q\in]0,1[$ mit \begin{gather*}\tag{4.4.8}
+f(x^{(k)})-f(\tilde x)\leq q^k(f(x^{(0)}-f(\tilde x))
+\end{gather*}
+und \begin{gather*}\tag{4.4.9}
+||x^{(k)}-\tilde x||\leq \frac 2{\alpha_1}q^k\left[ f(x^{(0)})-f(\tilde x) \right].
+\end{gather*}
+für $k\geq 0$. (R-lineare Konvergenz)
+
+\end{satz}
+\begin{defin}
+$\sigma_E$ ist \textbf{exakte Schrittweite}, wenn es die kleinste positive Nullstelle von $\varphi '(s)=\nabla f(x+sd)^Td$ ist.
+\end{defin}
+
+\paragraph{exakte Schrittweite für quadratische Optimierungsprobleme} Ist bei einem quadratischen Optimierungsproblem $f''(X)=H$ positiv definit dann ist die Exakte Schrittweite:
+$$\sigma_E=-\frac{\nabla f(x)^Td}{d^THd}.$$
+
+
+
+
+
+\subsubsection*{Schrittweitenverfahren von Armijo} 
+
+Das Verfahren versucht zu gegebenem $\delta \in ]0,1[$ eine Schrittweite $\sigma=\sigma_A$ zu berechnen mit:
+\begin{gather*}\tag{4.5.6}
+f(x+\sigma d)\leq f(x)+\delta \sigma \nabla f(x)^Td
+\end{gather*}
+und 
+\begin{gather*}\tag{4.5.7}
+\sigma \geq -c_2\frac{\nabla f(x)^Td}{||d||^2}
+\end{gather*}
+mit einer von $x$ unabhängigen Konstante $c_2$.
+
+\paragraph{Verfahren 4.5.4} Armijo-Verfahren
+
+Vorg.: $0<\delta <1, \quad \gamma>0$ und $0<\beta_1\leq \beta _2<1$ (alle unabhängig von $x$ und $d$)
+\begin{enumerate}
+\item Wähle eine Schrittweite $\sigma_0\geq -\gamma \frac{\nabla f(x)^Td}{||d||^2}$, setze $j:=0$
+\item Ist (4.5.6) erfüllt mit $\sigma=\sigma_j$, d.h. gilt:
+
+$f(x+\sigma_j d)\leq f(x)+\delta\sigma_j \nabla f(x)^Td$
+
+dann setze $\sigma_A=\sigma_j$ und stoppe das Verfahren.
+\item Wähle $\sigma_{j+1}\in [\beta_1\sigma_j,\beta_2\sigma_j]$
+\item Setze $j:=j+1$, gehe zu 2.
+\end{enumerate}
+
+\begin{satz}[4.5.5]
+Die Vorraussetzungen (4.1.1), (4.4.10) seien erfüllt. Weiter sei $x\in N(f,f(x^{(0)}))$ und $d\in\R^n$ mit $\nabla f(x)^Td<0$. Dann berechnet das Armijo-Verfahren nach endlich vielen Iterationen eine Schrittweite $\sigma=\sigma_A$, die (4.4.6), (4.5.7) erfüllt, also effizient ist.
+\end{satz}
+
+\subsubsection*{Zusammenfassung:}
+\begin{satz}[4.5.11]
+Die Vorraussetzungen (4.1.1), (4.4.10) seien erfüllt. Für das allgemeine Abstiegsverfahren 4.1.4 gelte:
+
+$x^{(k)}\in N(f,f(x^{(0)}), \qquad \nabla f (x^{(k)})^Td<0, \quad k=0, 1, \ldots$
+
+Werden die Schrittweiten $\sigma_k$ als exakte Schrittweite oder als Armijo-Schrittweite gewählt, dann sind die Schrittweiten effizient. (Siehe Satz 4.5.2 und Satz 4.5.5)
+\end{satz}
+
+\subsection*{Das Gradientenverfahren}
+in $x^{(k)}$ wählt man $-\nabla f(x^{(k)})$ als Suchrichtung. $\Rightarrow$ Suchrichtungen streng gradientenbezogen.
+
+\subsubsection*{Richtung des steilsten Abstiegs} 
+$f:\R^n\rightarrow \R$ sei differenzierbar. Im Punkt $x\in\R^n$ sei $\nabla f(x)\neq 0_n$.\\
+Richtung des steilsten Abstiegs in Punkt $x$.
+\begin{gather*}\tag{4.6.1}
+\min\limits_{d\in\R^n}\nabla f(x)^td \qquad \text{Nb.: }||d||=1
+\end{gather*}
+
+\begin{lemma}[4.6.1]
+Vorraussetzungen wie oben. Dann ist 
+$$\bar d = - \frac {\nabla f(x)}{||\nabla f(x)||}$$
+Lösung von (4.6.1)
+\end{lemma}
+Gradientenverfahren: Verfahren des steilsten Abstiegs
+
+Wählt man vei allgemeinem Abstiegsverfahren 4.1.4 $d^{(k)}=-\nabla f(x^{(k)}) \Rightarrow$
+\paragraph{Verfahren 4.6.2 - Gradientenverfahren} 
+\begin{enumerate}
+\item Wähle einen Startpunkt $x^{(0)}$, setze $k:=0$.
+\item Ist $\nabla f (x^{(k)})=0_n$. STOPP
+\item Benutze als Suchrichtung $d^{(k)}=-\nabla f(x^{(k)})$, berechne eine effiziente Schrittweite $\sigma_k$\\
+Exakte Schrittweite, Armijo-Schrittweie) und setze $x^{(k+1)}=x^{(k)}+\sigma_k d^{(k)}$.
+\item Setze $k:=k+1$, gehe zu 2.
+\end{enumerate}
+
+Allgemeine Konvergenzsätze: 4.4.9, 4.4.11, 4.4.12 anwendbar 4.4.14:R-lineare Konvergenz
+
+\subsection*{Das gedämpfte Newtonverfahren}
+Beim algemeinen Abstiegsverfahren wählt man als Suchrichtung die Newton-Richtung $d^{(k)}=-f''(x^{(k)})^{-1}\nabla f(x^{(k)})$. Vorraussetzung (4.4.13) $\Rightarrow$ Richtungen sind streng gradientenbezogen.
+
+\paragraph{Verfahren 4.7.1} Gedämpftes Newtonverfahren
+
+\begin{enumerate}
+\item Wähle Startpunkt $x^{(0)}$, setze $k:=0$
+\item Ist $\nabla f(x^{(k)})=0$, dann STOPP
+\item Berechne $d^{(k)}$ durch lösen des linearen Gleichungssystems $f''(x^{(k)})d=-\nabla f(x^{(k)})$ eine effiziente Schrittweite $\sigma_k$, setze $x^{(k+1)}=x^{(k)}+\sigma_kd^{(k)}$
+\item Seite $k:=k+1$, gehe zu 2.
+\end{enumerate}
+
+Unter Bedingung (4.4.13) nach Satz 4.4.14 R-lineare Konvergenz, lokal quadratische Konvergenz mit Armijo-Verfahren und Startschrittweite 1, oder exakte Schrittweite.
+
+\subsubsection*{Gauß-Newton-Verfahren} 
+Spezialfall: $f:\R^n\to \R$ definiert durch: $f(x)=\frac 12 ||F(x)||^2=\sum\limits_1^mF_i(x)^2$ wobei $F:\R\to\R^m \quad x\mapsto \begin{pmatrix}
+F_1(x)\\ \vdots \\ F_m(x)
+\end{pmatrix}$. Z.B. bei linearer Regression. 
+
+\paragraph{Bemerkung} Man möchte eine Lösung $F(x)=0$ berechnen. Da oft $m>>n$ gibt es keine Lösung $\tilde x: F(\tilde x)=0_m$ also $\tilde x$ so dass $||F(\tilde x)||$ minimal. 
+\begin{gather*}\tag{4.7.7}
+\min\limits_{x\in\R^n}f(x)=\frac 12 || F(x)||^2
+\end{gather*}
+$f$ ist zweimal stetig differenzierbar. Es gilt: $\nabla f=F'^TF$ und $f''=F'^TF'+R(x)$ mit $R(x)=\sum F_i(x)F_i''(x)$. Um die 2. Ableitung zu vermeiden ersetzt man $f''$ durch $F'^TF'$ und wendet dies auf das gedämpfte Newtonverfahren an: $$\min_d \nabla f(x^{(k)})^Td+\frac 12 d^TF'(x^{(k)})^TF'(x^{(k)})d$$ und man bekommt das äquivalente Problem: $$\min_d \frac 12 ||F(x^{(k)})+F'(x^{(k)})d||^2$$ vom Typ lineares Ausgleichsproblem mit global linearer und lokal superlinearer Konvergenz (mit zus. Vorraussetzungen).
+
+\subsection*{Variable-Metrik-Verfahren}
+\paragraph{Verfahren 4.8.1} Variable Metrik Verfahren
+\begin{enumerate}
+\item Wähle Startpunkt $x^{(0)}\in\R^n$ setze $k:=0$.
+\item Ist $\nabla f(x^{(k)})=0$ dann STOPP
+\item Berechne positiv definite symmetrische Matrix $A^{(k)}$ und Suchrichtung $d^{(k)}=-(A^{(k)})^{-1}\nabla f(x^{(k)})$.
+\item Berechne eine effiziente Schrittweite $\sigma_k$ und setze $x^{(k+1)}:=x^{(k)}+\sigma d^{(k)}$
+\item Setze $k:=k+1$ und gehe zu Schritt 2.
+\end{enumerate}
+
+Die Suchrichtung ist Richtung des steilsten Abstiegs $d=-\frac{A^{-1}\nabla f(x)}{||A^{-1}\nabla f(x)||_A}$
+
+\begin{lemma}[4.8.3]
+Die Vorraussetzung (4.1.1) sei erfüllt. Die Matrizen $A^ {(k)}$ des Variable-Metrik-Verfahrens seien gleichmäßig positiv definit und beschränkt. Dann sind die Suchrichtungen $d^{(k)}$ streng gradientenbezogen in $x^{(k)}$.
+\begin{proof}
+Wir zeigen dass die Bedingungen (4.4.11) und (4.4.12) erfüllt sind. Wegen $d^{(k)}=-(A^{(k)})^{-1}\nabla f(x^{(k)})$ ist $||d^{(k)}|| \leq ||(A^{(k)})||~||\nabla f(x^{(k)})||\leq \alpha_1^-1 ||\nabla f(x^{(k)})||$ ($A^{(k)}$ beschränkt), und wegen $A^{(k)}d^{(k)}=-\nabla f(x^{(k)})$ ist $||\nabla f(x^{(k)})||\leq  ||(A^{(k)})||~||d^{(k)}||\leq \alpha_2 ||d^{(k)}||$ Hierraus folgt Bedingung (4.4.12) mit $C_4=\alpha_2$ oder $c_4=\alpha_1^{-1}$ 
+
+Da dann $-\nabla f(x^{(k)})^Td^{(k)}=\nabla f(x^{(k)})^T(A^{(k)})^{-1}f(x^{(k)})\geq \alpha_2^{-1}||\nabla f(x^{(k)})||^2\geq \alpha_2^{-1}\alpha_1 ||\nabla f(x^{(k)})||~||d^{(k)}||$ ist auch Bedingung (4.4.11) erfüllt.
+\end{proof}
+\end{lemma}
+
+\begin{satz}[4.8.4]
+Die Vorraussetzung (4.1.1) sei erfüllt. Die Matrizen $A^{(k)}$ des Variable-Metrik-Verfahrens seien gleichmäßig positiv definit und beschränkt und die Schrittweiten $\sigma_k$ seien effizient. Stoppt das Verfahren nicht nach endlich vielen Schritten, dann gilt $\nabla f(x^{(k)})\to 0$ für $k\to\infty$, die Folge $\{x^{(k)}\}$ hat mindestens einen Häufungspunkt und für jeden Häufungspunkt $\tilde x$ gilt $\nabla f(\tilde x)=0$.
+
+Ist zusätzlich die Schrittweitenfolge $\{\sigma_k\}$ beschränkt und die Menge $M=\{\tilde x \in N(f,f(x^{(0)})) | \nabla f(\tilde x)=0\}$ endlich und stoppt das Verfahren nicht nach endlich vielen Schritten, dann konvergiert die Folge $\{x^{(k)}\}$ gegen eine Nullstelle von $\nabla f$.
+
+Hat $f$ genau einen stationären Punkt $\tilde x$ in $N(f,f(x^{(0)}))$ und stoppt das Verfahren nicht nach endlich vielen Schritten, dann konvergiert die Folge $\{x^{(0)}\}$ gegen $\tilde x$.
+
+Ist die Vorraussetzung (4.4.13) erfüllt und stoppt das Verfahren nicht nach endlich vielen Schritten, dann konvergiert die Folge $\{x^{(k)}\}$ gegen das eindeutig bestimmte globale Minimum $\tilde x$ von $f$. Weiter gibt es eine Konstante $q\in]0,1[$ mit: $f(x^{(k)})-f(\tilde x)\leq q^k(f(x^{(0)})-f(\tilde x)$ (R-linearität) und $||x^{(k)}-\tilde x||^2 \leq \frac 2{\alpha_1}q^k\left[ f(x^{(0)})-f(\tilde x) \right]$
+\end{satz}
+
+
+
+\end{document}
