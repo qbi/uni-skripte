@@ -82,7 +82,7 @@
 \newcommand*{\folgerautorefname}{Folgerung}
 \newcommand*{\vereinautorefname}{Vereinbarung}
 \newcommand*{\algocflineautorefname}{Algorithmus}
-\newcommand*{\AlgoLineautorefname}{Zeile}
+%\newcommand*{\AlgoLineautorefname}{Zeile}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -146,7 +146,7 @@
 
 \title{Parallele Algorithmen}
 \author{Prof.\,Dr.\,Hans-Dietrich Hecker}
-\date{SS 2005 / 2007}
+\date{SS 2005 / 2007, WS 2010}
 \maketitle
 
 \clearpage
@@ -188,6 +188,8 @@
    \item Fred Thiele (2005)
    \item Christian Raschka (2005)
    \item Michael Preiss (2007)
+   \item \href{mailto:joerg.bader@wurzel.org}{Jörg Bader
+    \texttt{<joerg.bader@wurzel.org>}} (2011)
   \end{itemize}
 }
 
@@ -293,7 +295,7 @@ innere Knoten.
   \label{fig:dag}
 \end{figure}
 
-In \autoref{fig:dag} sind zwei verschidene Graphen für die parallele
+In \autoref{fig:dag} sind zwei verschiedene Graphen für die parallele
 Berechnung der Summe von $n$~Zahlen dargestellt, wobei eine der beiden
 Darstellungen keine Parallelität aufweist.
 
@@ -382,7 +384,7 @@ Problemstelle die jeweilige Topologie betrachtet werden muss.
 Eine direkte Erweiterung der random access machine ist die parallel random
 access machine (\highl{PRAM}), bei der mehrere RAMs über einen unbegrenzt
 großen, gemeinsamen Speicher (\highl{globaler Speicher} oder \highl{shared
-memory}) verfügen, den sie unabhängig voneinander in einer Zeiteinheit lesen und verändern können.
+memory}) verfügen, den sie unabhängig voneinander in einer Zeiteinheit lesen und verändern können. Dabei wird in unserem abstrakten Modell die Zugriffszeit auf den globalen Speicher vernachlässigt. Ein Forscherteam in Ontario, Kanada, hat für spezielle Probleme und Algorithmen die Zugriffszeit mitberücksichtigt und keine wesentlich anderen Ergebisse erhalten.
 Untereinander sind die Prozessoren nicht verbunden, so dass jegliche
 Kommunikation über den globalen Speicher erfolgen muss. Die Prozessoren
 arbeiten mit einem gemeinsamen Zeitsignal (\highl{synchron}), d.\,h. jede
@@ -484,7 +486,7 @@ zulassen:
   \end{gather*}
 
   \begin{algorithm}
-    \dontprintsemicolon
+    \DontPrintSemicolon
     \caption{Das Programm für den $i$.\,Prozessor zur Berechnung von $A\cdot x$}
     \label{alg:matrix-mult}
     \KwIn{$A_{(n,n)}, \vec{x}$, Prozessorzahl $i$, $p$ Anzahl der
@@ -571,7 +573,7 @@ Prozessorallokation berücksichtigt wird.
   mehrere Datensätze bearbeiten müssen.
 
   \begin{algorithm}
-    \dontprintsemicolon
+    \DontPrintSemicolon
     \caption{Summation von Zahlen -- auf niedrigem Abstraktionsniveau}
     \label{alg:sum-niedrig}
     \KwIn{Ein Feld~$A$ mit $n$~Zahlen}
@@ -877,9 +879,13 @@ Ansatz zur Berechnung der Präfixsummen.
   \KwOut{Feld S der Länge n mit Partialsummen $s_{i}$}
   \uIf{n=1}{$s_{1}:=x_{1}$ und exit}
   \Forpar{i:= 1 \KwTo $\frac{n}{2}$}{$y_{i}:=x_{2i-1}+x_{2i}$}
-  Berechne rekursiv prefixsums ($y_{1},\dotsc,y_{\frac{n}{2}}$) und speichere %
-  sie in $z_{1}$, ..., $z_{\frac{n}{2}}$
-  \Forpar{i:=1 \KwTo n}{}
+  Berechne rekursiv Präfixsummen ($y_{1},\dotsc,y_{\frac{n}{2}}$) und speichere sie in $z_{1}$, ..., $z_{\frac{n}{2}}$ %
+
+  \Forpar{i := 1 \KwTo n}{
+    \uIf{i gerade}{$s_{i} := z_{\frac{i}{2}}$}
+    \uElseIf{i=1}{$s_{1} := z_{1}$}
+    \Else{$s_{i} := z_{\frac{i-1}{2}} + x_{i}$}
+  }
   \caption{Präfixsumme}
   \label{alg:praefix_rek}
 \end{algorithm}
@@ -1012,7 +1018,7 @@ selbst. \autoref{fig:wald}
 \begin{algorithm}
   \caption{Pointer jumping}
   \label{alg:ptr-jmp}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \KwIn{$n$-dimensionales Feld~$F$, wobei $F[i]=j$, wenn $j$ der Vater
     von $i$ ist}
   \KwOut{$n$-dim.\,Feld~$S$, wobei $S[i]=j$, wenn $j$ die Wurzel des
@@ -1047,7 +1053,7 @@ Prozessoren auf diese Ergebnisse zu, so dass sie nicht den Vorgänger der
 4.\,Generation. \autoref{fig:ptr-jump} Im \textit{dritten} Schritt ist dann
 der Vorgänger des Vorgängers (der 4.\,Generation) der Vorgänger der
 8.\,Generation. So springt der Zeiger durch den Baum und bewegt sich nicht von
-Knoten zu Knoten.
+Knoten zu Knoten. Da die Anzahl der Zugriffe auf eine einzelne Zelle des Vorfahrenfeldes~$S$ nicht durch eine Konstante beschränkt ist, wird für den Algorithmus echtes concurrent read benötigt.
 
 $h$ sei die maximale Höhe eines Baums im Wald. Auf einer CREW-PRAM liefert der
 Algorithmus in $O(\log h)$~\Time und $O(n\cdot\log h)$~\Work die Wurzel zu
@@ -1068,7 +1074,7 @@ Wurzelknoten die erste Zahl und der Blattknoten die letzte Zahl ist.
 \begin{algorithm}
   \caption{Pointer Jumping mit Knotengewichten}
   \label{alg:par-pref}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \todo{Algorithmus auf Feldschreibweise ($[]$ statt Index) umstellen}\;
   \KwIn{zwei $n$-dim.\,Felder~$F,W$, wobei $w_i$ das Gewicht am Knoten~$i$
     ist und $f_{i}=j$, wenn $j$ der Vater von $i$ ist}
@@ -1091,7 +1097,7 @@ springt/verweist.
 
 Mit parallel Prefix kann man also in $O(\log n)$~\Time und $O(n\log n)$~\Work
 sie Präfixsummen einer verketteten Liste berechnen.
-Da die Präfixsummenberechnung im seriellen mit $O(n)$~\Time funktioniert, ist
+Da die Präfixsummenberechnung im Seriellen mit $O(n)$~\Time funktioniert, ist
 der Algorithmus nicht optimal.
 
 In einem nicht entarteten Wald kann mit diesem Algorithmus für jeden Knoten
@@ -1131,7 +1137,7 @@ Punkte~$x_{1}$ und $x_{2}$ aus $M$ auch die Strecke zwischen $x_{1}$ und
 $x_{2}$ zu $M$ gehört: $\forall x_{1},x_{2}\in M, \forall\lambda\in[0,1]\colon
 (\lambda x_{1}+ (1-\lambda)x_{2})\in M$} umfasst.
 
-Das Problem lässt sich im seriellen in $O(n\log n)$~\Time lösen, wobei
+Das Problem lässt sich im Seriellen in $O(n\log n)$~\Time lösen, wobei
 $\Omega(n\log n)$ die untere Schranke für die Laufzeit ist, da man aus der
 konvexen Hülle, die Sortierung der Punkte herleiten kann und dafür ist
 $\Omega(n\log n)$ bekanntlich die untere Schranke.
@@ -1139,7 +1145,7 @@ $\Omega(n\log n)$ bekanntlich die untere Schranke.
 O.\,B.\,d.\,A. seien die $x$- und die $y$-Koordinaten der Punkte von $S$
 paarweise verschieden. Die Punktmenge~$S$ sei aufsteigend nach der
 $x$-Koordinate geordnet. Der Punkt mit der kleinsten und der mit der größten
-$x$-Koordinate gehören zu konvexen Hülle und teilen sie in eine obere und eine
+$x$-Koordinate gehören zur konvexen Hülle und teilen sie in eine obere und eine
 untere konvexe Hülle. Wir betrachten nur die Konstruktion der oberen konvexen
 Hülle~$UCH$ (engl. upper convex hull), die der unteren konvexen Hülle~$LCH$
 verläuft analog.
@@ -1166,11 +1172,6 @@ Der Algorithmus (\autoref{alg:conv-hull}) verläuft in zwei Phasen:
   $S_{2}=\{p_{\frac{n}{2}+1}, p_{n}\}$ bis die Konstruktion der oberen konvexen
   Hülle trivial ist. Das Bestimmen von $UCH(S_{2})$ wird dabei an einen
   anderen Prozessor abgegeben.
-
-  \help{Könnte man nicht auch die Menge in $\frac{n}{4}$ Teilmengen zerlegen
-    und davon mit $\frac{n}{4}$ Prozessoren in $O(1)$~\Time und $O(1)$~\Work
-    die konvexen Hüllen bestimmen?}
-
  \item in der Bottom-Up-Phase wird für je zwei oberen konvexen Hüllen die
   gemeinsame obere konvexe Hülle bestimmt, indem man die gemeinsame obere
   Tangente an beide Hüllen findet und sie so verbindet.
@@ -1277,7 +1278,7 @@ Siehe \autoref{fig:konv-h4}.
 \highl{Partitioning} oder auch \highl{Zerlegunsstrategie} genannt, ähnelt
 dem Teile-und-Herrsche-Ansatz (\autoref{sec:teile-herrsch}). Ein Problem wird
 in unabhängige Teilprobleme zerlegt, diese werden einzeln gelöst und aus deren
-Teillösugen die Gesamtlösung konstruiert. Der Unterschied zum
+Teillösungen die Gesamtlösung konstruiert. Der Unterschied zum
 Teile-und-Herrsche-Ansatz ist, dass beim Partitioning die Zerlegung in
 Teilprobleme kompliziert, aber der Aufbau der Gesamtlösung einfach ist.
 
@@ -1297,7 +1298,7 @@ oder \highl{Mischen} bezeichnet.
   Menge~$A=\{a_{1},\dotsc, a_{m}\}$ bezeichnet man die Anzahl der Elemente aus
   $A$, die kleiner oder gleich $x$ sind.
   \begin{gather*}
-    Rang(x:A) := \card\{ a\colon a\in A \wedge x\leq a\}
+    Rang(x:A) := \card\{ a\colon a\in A \wedge a\leq x\}
   \end{gather*}
 
   Als den \highl{Rang} einer Folge~$B=(b_{1},\dotsc, b_{n})$ bezüglich einer
@@ -1354,12 +1355,7 @@ Um den Rang eines Elements~$x$ bezüglich einer sortierten Folge~$B$ mit $n$~Elem
 zu bestimmen, kann man auf die sequentielle, binäre Suche zurückgreifen, womit
 sich $Rang(x:B)$ in $O(\log n)$~\Time bestimmen lässt.
 
-Da beide Aufgaben ($Rang(A:B)$ und $Rang(B:A)$) symetrisch sind, genügt es den
-Vorgang $Rang(A:B)$ zu analysieren: Da die Folge~$B$ sortiert ist, kann man
-für ein Element~$x\in A$ mit binärer Suche in $O(\log n)$~\Time mit einem
-Prozessor $Rang(x:B)$ bestimmen. Da alle Operationen parallel auf einer
-CREW-PRAM ausgeführt werden können, erhält man so für die gesamte Folge
-$O(\log n)$~\Time und $O(m\log n)$~\Work.
+Da die Aufgaben ($Rang(A:B)$ und $Rang(B:A)$ bestimmen) symmetrisch zueinander sind, genügt es den Vorgang $Rang(A:B)$ zu analysieren: Da die Folge~$B$ sortiert ist, kann man für ein Element~$x\in A$ mit binärer Suche in $O(\log n)$~\Time mit einem Prozessor $Rang(x:B)$ bestimmen. Da alle Operationen parallel auf einer CREW-PRAM ausgeführt werden können, erhält man so für die gesamte Folge $O(\log n)$~\Time und $O(m\log n)$~\Work.
 
 Analog erhält man für $Rang(B:A)$ $O(\log m)$~\Time und $O(n\log m)$~\Work.
 Für den gesamten Algorithmus ergibt sich somit $O(\log(m+n))$~\Time und
@@ -1370,12 +1366,11 @@ Um einen optimalen Algorithmus zu erhalten, kann man das Problem mit der
 \highl{Partitioning}-Strategie angehen:
 \begin{enumerate}
  \item Zerlegung (Partitioning) von $A$ in $\frac{m}{\log m}$~Abschnitte
-  der Länge~$\log m$.
- \item Für die Elemente an den Abschnittsgrenzen ihre Position innerhalb der
-  Folge~$B$ bestimmen.
+  der Länge~$\log m$: $A_1,A_2,\dots,A_{\nicefrac{m}{\log m}}$.
+ \item Für die Elemente an den Abschnittsgrenzen $a_{\log m},a_{2\log m}, \dots,a_{1+m-\log m}$ ihre Positionen $j(1),j(2),\dots,j(\nicefrac{m}{\log m}-1)$ innerhalb der Folge~$B$ bestimmen.
  \item Damit ergeben sich Paare von Abschnitten von $A$ und $B$ die unabhängig
   voneinander mit einem sequentiellen Algorithmus, der in Linearzeit arbeitet,
-  gemicht werden können. Das Mischen der Abschnitte geschieht parallel.
+  gemischt werden können. Das Mischen der Abschnitte $(A_i,B_i)$, $i=1,2,\dots,\nicefrac{m}{\log m}$, geschieht parallel.
  \item Aneinanderhängen der gemischten Abschnitte zur Folge~$C$.
 \end{enumerate}
 
@@ -1391,8 +1386,8 @@ Beim Mischen der Paare~$(A_{i}, B_{i})$ muss darauf geachtet werden, dass
 beide Abschnitte höchstens $\log m$ bzw. $\log n$~Elemente enthalten, damit der
 Mischvorgang nicht länger als $(\log m+\log n)$~\Time braucht. Unter
 ungünstigsten Umständen sind alle Elemente aus $A$ größer als alle Elemente
-aus $B$, so dass der Prozessor für das Paar $(A_{0}, B_{0})$ alle Elemente von
-$B$ behandelt, weil $B_{0}=B$ ist.
+aus $B$, so dass der Prozessor für das Paar $(A_{1}, B_{1})$ alle Elemente von
+$B$ behandelt, weil $B_{1}=B$ ist.
 
 Für die Abschnitte~$A_{i}$ ist die Größenbeschränkung bereits gegeben. Sollte
 ein Abschnitt~$B_{i}$ mehr als $\log n$~Elemente enthalten, so teilt man ihn
@@ -1411,7 +1406,7 @@ dem letzten Element in $A_{i}$ ist. Anschaulich gesprochen: Die Pfeile können
 sich nicht überschneiden.
 
 \begin{algorithm}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \caption{Zerlegen zweier sortierten Folgen in Paare von Teilfolgen zum
     Mischen}
   \label{alg:mischen}
@@ -1426,8 +1421,8 @@ sich nicht überschneiden.
     $j[i] := Rang(A[i\cdot \log m] : B)$\tcc*{mit binärer Suche}
   }
   \Forpar{$i:= 0$ \KwTo $k-1$}{
-    $A_i := \bigl[A[(i\cdot \log m)+1],\dotsc,A[(i+1)\cdot \log m]\bigr]$\;
-    $B_i := \bigl[B[j[i]+1],\dotsc,B[j[i+1]]\bigr]$\;
+    $A_{i+1} := \bigl[A[(i\cdot \log m)+1],\dotsc,A[(i+1)\cdot \log m]\bigr]$\;
+    $B_{i+1} := \bigl[B[j[i]+1],\dotsc,B[j[i+1]]\bigr]$\;
   }
 \end{algorithm}
 
@@ -1445,8 +1440,7 @@ sich nicht überschneiden.
     Schritt $O(\frac{m}{\log m}\cdot\log n)=O(m+n)$~\Work. Die Rechenzeit ist
     $O(\log n)$~\Time.
 
-    Da $\lim_{z\rightarrow\infty}\frac{z}{\log z} = \infty$ ist, gilt für
-    $m<m+n$
+    Da $\frac{z}{\log z}$ für $z>2$ monton wachsend ist, gilt für $m<m+n$
     \begin{gather*}
       \frac{m}{\log m} < \frac{m+n}{\log(m+n)} \quad\Rightarrow\quad
          \frac{m}{\log m} \log n < \frac{m}{\log m} \log(m+n) < m+n
@@ -1626,7 +1620,7 @@ in \autoref{line:max} alle Prozessoren das gleiche schreiben. Dieser
 Algorithmus ist aber nicht optimal.
 
 \begin{algorithm}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \caption{schnelle, nicht optimale Bestimmung des Maximums von $n$~Elementen}
   \label{alg:max-konst}
   \KwIn{Ein Feld~$A$ mit $n$ verschiedenen Elementen}
@@ -1883,7 +1877,7 @@ Algo. Pointer Jumping
 \begin{algorithm}
 \KwIn{Nachfolgerarray S}
 \KwOut{$\forall i: R(i)\ldots$ Abstand zum Ende}
-\dontprintsemicolon
+\DontPrintSemicolon
 \caption{Algorithmus: List-Ranking}
   \Forpar {i := 1 \KwTo n}{
      if $S(i) \ne 0$ then $R(i) := 1$ \;
@@ -1909,7 +1903,7 @@ begin
 \KwIn{Nachfolgerarray S, Vorgängerarray P, Teilliste I, $\forall i: R(i)$}
 \KwOut{Gesamtliste ohne I (independent set)}
 \caption{Algorithmus: Entferne I}
-\dontprintsemicolon
+\DontPrintSemicolon
   Bestimme Seriennummern $N(i) \forall i \in I$: %
   $1 \leq N(i) \leq |I| =: n'$ geht in $O(\log n)$ \Time optimal %
   mit Hilfe des Präfixsummen-Algo über den Array \;
@@ -1957,15 +1951,13 @@ reduzieren von n Elementen auf höchstens $\frac45n$ Elemente
 
 \subsection{Optimales Listranking}
 
-Um es ein wenig vorweg zu nehmen: der folgende Algorithmus benötigt
-zwar wie Pointer Jumping ebenfalls $O(\log n)$ \Time, jedoch nur
-$O(n)$ \Work.
+Beim Listranking mittels Pointer Jumping haben wir $O(\log n)$ \Time, $O(n\log n)$ \Work bewiesen. Da Listranking seriell in $O(n)$ läuft, ist dies nicht optimal. Der folgende Algorithmus benötigt $O(\log n\log\log n)$ \Time, $O(n)$ \Work (optimal), ist allerdings nicht W-T optimal.
 
 \begin{algorithm}
 \KwIn{$S^{n}$}
 \KwOut{$\forall$ Knoten Abstand zur Wurzel}
 \caption{Algorithmus: Allgemeines einfaches optimales Listranking}
-\dontprintsemicolon
+\DontPrintSemicolon
   $n_{0} := n$ \;
   $k := 0$ \;
   \While{$n_{k}>\frac{n}{\log n}$}{
@@ -2029,31 +2021,33 @@ damit
 
 \section{Eulertour-Technik}
 
-\begin{defini}
-  Sei $G=(V,E)$ ein gerichteter Graph. $G$ ist genau dann ein
-  \highl[Kreis!gerichteter]{gerichteter Kreis}, wenn für jeden Knoten~$v\in V$
-  es genau zwei Kanten $(u,v)\in E$ und $(v,w)\in E$ gibt, wobei $u\ne v$ und
-  $w\ne v$. Der Knoten~$u$ heißt \highl{Vorgänger} von $v$ und der Knoten~$w$
-  heißt \highl{Nachfolger}.
-\end{defini}
+% Die folgenden Definitionen sind wahrscheinlich kaum zu retten. Da der Baum ein Eulergraph sein soll, aber i.A. nicht jeder Knoten genau einmal, sondern öfter besucht wird, ist das "...es genau zwei Kanten..." für diesen nicht zutreffend.
+%\begin{defini}
+%  Sei $G=(V,E)$ ein gerichteter Graph. $G$ ist genau dann ein
+%  \highl[Kreis!gerichteter]{gerichteter Kreis}, wenn für jeden Knoten~$v\in V$
+%  es genau zwei Kanten $(u,v)\in E$ und $(v,w)\in E$ gibt, wobei $u\ne v$ und
+%  $w\ne v$. Der Knoten~$u$ heißt \highl{Vorgänger} von $v$ und der Knoten~$w$
+%  heißt \highl{Nachfolger}.
+%\end{defini}
 
 $\Rightarrow$ Kreise sind immer zusammenhängende Graphen.
 
-\begin{defini}
-  Ein (ungerichteter) Graph~$G=(V,E)$ heißt genau dann \highl{Eulergraph}, wenn es
-  einen gerichteten Kreis~$\tilde{G}$ gibt, der jede Kante von $G$ genau
-  einmal durchläuft. $\tilde{G}$ heißt \highl{Eulerkreis}.
-  \help{Ist dann $\tilde{G}$ isomorph zu $G$?}
-\end{defini}
+%\begin{defini}
+%  Ein (ungerichteter) Graph~$G=(V,E)$ heißt genau dann \highl{Eulergraph}, wenn 
+%  es einen gerichteten Kreis~$\tilde{G}$ gibt, der jede Kante von $G$ genau
+%  einmal durchläuft. $\tilde{G}$ heißt \highl{Eulerkreis}.
+%\end{defini}
 
-Ein ungerichteter Baum~$T=(V,E)$ kann leicht in einen gerichteten
-Baum~$T'=(V,E')$ überführt werden, indem man jede Kante~$e=(u,v)\in E$ durch
-zwei gerichtete Kanten~$\{<u,v>,<v,u>\}\subset E'$ ersetzt.
+Ein gerichteter Graph $G$ heißt Eulergraph, wenn es eine Anordnung (Permutation) aller seiner Kanten gibt, die einen geschlossenen Weg in $G$ bildet. 
 
 \begin{satz}
   Ein zusammenhängender gerichteter Graph~$G=(V,E)$ ist genau dann ein
   Eulergraph, wenn für alle Knoten~$v\in V: Indegree(v)=Outdegree(v)$ gilt.
 \end{satz}
+
+Ein ungerichteter Baum~$T=(V,E)$ kann leicht in einen gerichteten
+Baum~$T'=(V,E')$ überführt werden, indem man jede Kante~$e=(u,v)\in E$ durch
+zwei gerichtete Kanten~$\{<u,v>,<v,u>\}\subset E'$ ersetzt. Dann ist $T'$ ein Eulergraph.
 
 ungerichteter Graph gegeben als Menge von Adjazenzlisten, $<v,L[v]>\in
 V\times\mathfrak{P}(V)$, wobei $L[v]$ die Nachbarn von $v$ sind.
@@ -2157,7 +2151,7 @@ Verbesserung gegenüber dem Seriellen darstellt.
 \KwIn{Binärbaum T, jeder innere Knoten hat genau 2 Söhne und 
    für alle Knoten v: parent(v) und brother(v)}
 \KwOut{Reduktion auf Wurzel und linkestes und rechtestes Blatt}
-\dontprintsemicolon
+\DontPrintSemicolon
 \caption{Algorithmus: Baumkontraktion}
   markiere alle Blätter von A (Array der Blätter) (ohne linkestes %
    und rechtestes) wachsend von links nach rechts; über parallel %
@@ -2251,7 +2245,7 @@ Man unterscheidet 2 Fälle, für die LCA-Anfragen trivial sind:
 \KwIn{$u,v$}
 \KwOut{$LCA(u,v)$}
 \caption{Algorithmus von Spillner}
-\dontprintsemicolon
+\DontPrintSemicolon
   Berechne $k_{u}$, $k_{v}$: letzte '1' von links \;
   \While {Durchlaufe die Ziffern von u, v von links nach rechts} {
     Falls $k_{u}$ oder $k_{v}$ noch nicht erreicht, aber Ja'Ja hat Ergebnis, dann OUTPUT Ja'Ja \;
@@ -2323,10 +2317,10 @@ Suchen: Minimum(Minumum(\{$b_{i},\ldots,b_{p}\})$,
 Minimum(\{$b_{p+1},\ldots,b_{j}\}))$
 
 Vorteil dieses Mal: Die Minuma liegen am Rand. Min($b_{i},\ldots,b_{p})$
-ist ein Suffix-Minimum, Min($b_{p+1},\ldots,b_{j})$ ist ein Prefix-Minimum
+ist ein Suffix-Minimum, Min($b_{p+1},\ldots,b_{j})$ ist ein Präfix-Minimum
 
 \begin{algorithm}
-\dontprintsemicolon
+\DontPrintSemicolon
   \caption{Rang-Min}
   \KwIn{$B^{n}, n=2^{l}$}
   \KwOut{vollständiger Binärbaum mit den Arrays P,S}
@@ -2372,7 +2366,7 @@ Standardtechnik:
  \item Zerlege B in Blöcke gleicher Länge $\log n$
  \item Preprocessing mit seriellem Algorithmus parallel für alle Blöcke
  \item berechne für jeden Block das Minimum $x_{i}
-  (i=1,\ldots,\frac{n}{\log n})$ und die Prefix- und
+  (i=1,\ldots,\frac{n}{\log n})$ und die Präfix- und
   Suffix-Minima innerhalb der Blöcke
  \item wende den Algorithmus Range-Minima auf Array
   B'=($x_{1},\ldots,x_{\frac{n}{\log n}})$
@@ -2388,8 +2382,8 @@ Analyse:
 
 Algo:
 
-MIN($b_{i},\ldots,b_{j}) = MIN(Suffixmin_{B_{s-1}}(b_{i}),
-min(x_{s},\ldots,x_{t}), Präfixmin_{B_{t+1}}(b_{j})$
+$MIN(b_{i},\ldots,b_{j}) = MIN(\text{Suffixmin}_{B_{s-1}}(b_{i}),
+\min(x_{s},\ldots,x_{t}), \text{Pr\"afixmin}_{B_{t+1}}(b_{j})$
 
 Ergebnis: Satz * geht auch mit O(n) \Work.
 
@@ -2500,7 +2494,7 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 \end{satz}
 
 \begin{algorithm}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \caption{Parallele Suche in einer sortierten Folge nach \highl{Kruskal}}
   \KwIn{Ein aufsteigend sortiertes Feld $A$ von $n$~Zahlen und ein gesuchtes
     Element~$x$}
@@ -2562,7 +2556,7 @@ $O(\log n)$~\Time mit binärer Suche) lösen.
 \end{satz}
 
 \begin{algorithm}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \caption{Rangbestimmung einer Folge bezüglich einer wesentlich größere Folge}
   \label{alg:rang}
   \KwIn{$A^{n}$ und $B^{m}$, wobei $\sqrt{m}$ ganzzahlig}
@@ -2878,7 +2872,7 @@ bis es voll ist. Anschließend ist $Sample(L_{s}[x])$ die Teilliste aus jedem zwe
 im Schritt $3alt(x)+1$ und schließlich die vollständige Liste im Schritt $3alt(x)+2$.
 
 \begin{algorithm}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \caption{Algorithmus von Richard Cole}
   \label{alg:rcole}
   \KwIn{$\forall v:L_{s}[v]$ $v$ voll, wenn s$\geq$ 3 alt(v)}
@@ -2944,7 +2938,7 @@ Schranke gilt für den Median.
 
 
 \begin{algorithm}
-  \dontprintsemicolon
+  \DontPrintSemicolon
   \caption{Algorithmus: Parallele Selektion}
   \label{alg:parsel}
   \KwIn{$A=(a_{1},\ldots,a_{n}), k: 1 \leq k \leq n$}
@@ -3233,7 +3227,7 @@ Das letzte Gatter sei $g_{n} = C(1,1,T(n))$, d.\,h. $g_{n}$ ist genau dann
 eins, wenn die Turingmaschine nach $T(n)$~Schritten eine Eins in die erste
 Zelle geschrieben hat.
 
-\todo{Das ganze muss nochmal überarbeitet werden. Herr Hecker hat dazu auch
+\todo{Das ganze muss nochmal überarbeitet werden. Professor Hecker hat dazu auch
   eine Kopie des Beweises aus dem Ja'Ja ausgeteilt. Es sollte noch erklärt
   werden, dass die Gatter für $H$ in $O(1)$~\Time mit $O(T^{2}(n))$~\Work, die
   Gatter für $C$ in $O(1)$~\Time mit $O(T^{2}(n))$~\Work und die Gatter für
