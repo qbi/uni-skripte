@@ -1,0 +1,358 @@
+\documentclass[ngerman]{scrartcl}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumerate}
+\usepackage[colorlinks=true]{hyperref}
+% \usepackage{charter}
+% \usepackage[bitstream-charter]{mathdesign}
+% \usepackage[scaled=.96]{helvet}
+\usepackage{bera}
+\usepackage{berasans}
+\usepackage{beraserif}
+\usepackage{beramono}
+\usepackage{mathpazo}
+% \usepackage{fouriernc}
+% \usepackage{tgschola}
+%\DeclareMathSymbol{\nmid}{\mathbin}{AMSb}{"2D}{}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+%                                        % amsmath-Umgebungen z.\,B. $$...$$
+% %\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+% \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+% \usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+% \usepackage[alsoload=binary]{siunitx}
+\usepackage{booktabs}
+
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+\ihead{Prof.\,Dr.\,E.\,Zehendner, J.\,Kubieziel}
+\ohead{IT-Sicherheit}
+\chead{WS10/11}
+
+\begin{document}
+\section*{Lösungen zu ausgewählten Übungsaufgaben}
+
+\subsection*{Übungsblatt 2}
+
+\subsubsection*{Aufgabe 2}
+In der Aufgabe~2 waren Modulo-Operationen, also rechnen mit Rest,
+aufzuführen. Für die erste Teilaufgabe gilt: $1383\cdot 27 = 37341$
+und $37357-37341= 16$, also $37357= 27\cdot1383+16$. Also ist $16$ die
+Lösung.
+
+Die zweite Teilaufgabe ist nach dem selben Schema zu errechnen:
+$-1384\cdot27= -37368$ und $-37357- (-37368)= 11$, also $-37357=
+26\cdot (-1384)+ 11$.
+
+Die dritte Teilaufgabe besteht im wesentlichen aus einer Subtraktion:
+$37357-27= 37330$.
+
+Die vierte Teilaufgabe lässt sich entweder nach dem obigen Schema
+errechnen. Mit ein wenig Nachdenken finden sich Ansätze, um die
+Aufgabe schneller zu bearbeiten.
+
+Die Lösung der letzten Teilaufgabe habe ich bereits in der Vorlesung
+präsentiert.
+
+\subsubsection*{Aufgabe 3}
+
+In beiden Aufgaben ging es um verschlüsselte Texte. Der ersten Aufgabe
+war mit einer Häufigkeitsanalyse beizukommen. Das heißt, alle
+Buchstaben des Geheimtextes werden ausgezählt und anhand der
+Erkenntnisse versucht der Angreifer das Original zurückzugewinnen.
+
+Einige wollten genauer wissen, welche Programme bzw. Befehle ich in
+den einzelnen Übungen genutzt habe. Daher möchte ich kurz darauf
+eingehen.
+
+Zum Zählen der Häufigkeiten nutzte ich die Kommandoeingabe und
+verknüpfte diverse Befehle miteinander. Das \autoref{sedreg} zeigt die
+komplette Befehlszeile.
+
+\lstset{language=bash}
+\begin{lstlisting}[caption={Auswertung der Häufigkeiten in der Shell},label={sedreg}]
+sed 's,\(.\),\1\n,g' dateiname | sort | uniq -c | sort -n
+\end{lstlisting}
+
+Der Befehl~\lstinline{sed} startet einen Editor, der auf einem
+Datenstrom arbeitet. Die Anweisung \lstinline{s,\(.\),\1\n,g} fordert
+das Programm auf, nach einem regulären Ausdruck zu suchen und
+Ersetzungen vorzunehmen. Nach dem ersten Komma steht der Ausdruck,
+nach dem gesucht wird. Der Punkt steht dabei für ein beliebiges
+Zeichen, welches in einem Zwischenpuffer gespeichert wird. Nach dem
+zweiten Komma definiere ich die Ersetzung. Dabei soll der Wert aus dem
+ersten Zwischenpuffer wieder gedruckt werden (\lstinline{\1}). Dem
+Wert folgt dann ein Zeilenumbruch (\lstinline{\n}).  Im folgenden wird
+die Ausgabe des Programms durch das Zeichen~\lstinline{|} an den
+Befehl~\lstinline{sort} weitergegeben. Dieses führt genau die
+Operation aus, die der Name vermuten lässt. Der folgende Befehl
+\lstinline{uniq} verwirft alle Dopplungen und die
+Option~\lstinline{-c} weist das Programm an, Dopplungen zu
+zählen. Dadurch sehe ich, wie oft welcher Buchstabe vorhanden war. Der
+letzte Befehl in der Kette sortiert die Ausgabe numerisch.
+
+Die Programmfolge verrät mir, dass der Buchstabe~C mit 45~Vorkommen
+der häufigste war. Die Vermutung, dass das C im Klartext dem
+Buchstaben~e entspricht liegt nahe.
+
+\begin{lstlisting}[caption={Ersetze C durch e}, label={sedce}]
+sed 's,C,e,g' dateiname
+\end{lstlisting}
+
+Das \autoref{sedce} führt die Ersetzung innerhalb der Datei durch und
+ergibt:
+\begin{Verbatim}[commandchars=\\\{\}]
+FPETWWJTMTWeJ TEM \textcolor{red}{DTe} UeJPKEUeXeTYRQPQZ KPeJ \textcolor{red}{eTQe} GeJEHQ, \textcolor{red}{DTe}
+JeXeQETHQeQ PQD UeEGJeYRPQZeQ X. U. PeUeJ TQEMJPFeQMSV- PQD
+HJYReEMeJOeJWe, HGeJQ, HGeJeMMeQ, FPETYSVE HDeJ SQDeJe FPETWSVTEYRe
+UPeRQeQOeJWe UXO. AHWSV- PQD YRHJOeJWe EHOTe JHYW, GHG HDeJ NSXX PQD
+SQDeJe AeJOSQDMe EMTVJTYRMPQZeQ AeJKSEEM.
+\end{Verbatim}
+Die rot markierten Worte fallen aus meiner Sicht besonders ins
+Auge. In Verbindung mit den Häufigkeiten liegt der Verdacht nahe, dass
+aus dem T ein i und aus dem Q ein n werden muss. Daneben wird das D zu
+einem d überführt. Die neue Ausgabe lautet dann:
+\begin{Verbatim}[commandchars=\\\{\}]
+FPEiWW\textcolor{green}{J}iMiWe\textcolor{green}{J} iEM die Ue\textcolor{green}{J}PKEUeXeiYRnPnZ KPe\textcolor{green}{J} eine Ge\textcolor{green}{J}EHn, die
+\textcolor{green}{J}eXenEiHnen \textcolor{red}{Pnd} UeEG\textcolor{green}{J}eYRPnZen X. U. PeUe\textcolor{green}{J} inEM\textcolor{green}{J}PFenMSV- \textcolor{red}{Pnd}
+H\textcolor{green}{J}YReEMe\textcolor{green}{J}Oe\textcolor{green}{J}We, HGe\textcolor{green}{J}n, HGe\textcolor{green}{J}eMMen, FPEiYSVE Hde\textcolor{green}{J} Snde\textcolor{green}{J}e FPEiWSViEYRe
+UPeRnenOe\textcolor{green}{J}We UXO. AHWSV- \textcolor{red}{Pnd} YRH\textcolor{green}{J}Oe\textcolor{green}{J}We EHOie \textcolor{green}{J}HYW, GHG Hde\textcolor{green}{J} NSXX \textcolor{red}{Pnd}
+\textcolor{blue}{SndeJe} Ae\textcolor{green}{J}OSndMe EMiV\textcolor{green}{J}iYRMPnZen Ae\textcolor{green}{J}KSEEM.
+\end{Verbatim}
+Hier fällt das häufige Vorkommen von Pnd auf. Das deutet darauf hin,
+dass das P für ein u steht. Weiterhin taucht das Wort SndeJe auf. Der
+Buchstabe~J kommt insgesamt 25~Mal im Text vor. Derartig große
+Häufigkeiten haben insbesondere die Buchstaben r, n, s, t und l. In
+Verbindung mit dem Anfangsbuchstaben~S liegt es nahe, dass das
+Klartextwort "`andere"' lautet.
+\begin{Verbatim}[commandchars=\\\{\}]
+FuEiWWriMiWer iEM die UeruKEUeXeiYRnunZ \textcolor{red}{Kuer} eine GerEHn, die
+reXenEiHnen und UeEGreYRunZen X. U. \textcolor{red}{ueUer} inEMruFenMaV- und
+HrYReEMerOerWe, HGern, HGereMMen, FuEiYaVE Hder andere FuEiWaViEYRe
+UueRnenOerWe UXO. AHWaV- und YRHrOerWe EHOie rHYW, GHG \textcolor{red}{Hder} NaXX und
+andere AerOandMe EMiVriYRMunZen AerKaEEM.
+\end{Verbatim}
+Die markierten Worte liefern aus meiner Sicht weitere gute
+Hinweise. Danach lässt sich der Text schon fast so lesen. Das Ergebnis
+ist die Einleitung des Lemmas "`Musikkritiker"' aus der deutschen Wikipedia.
+\begin{Verbatim}[commandchars=\\\{\}]
+musikkritiker ist die berufsbezeichnung fuer eine person, die
+rezensionen und besprechungen z. b. ueber instrumental- und
+orchesterwerke, opern, operetten, musicals oder andere musikalische
+buehnenwerke bzw. vokal- und chorwerke sowie rock, pop oder jazz und
+andere verwandte stilrichtungen verfasst.
+\end{Verbatim}
+
+\subsubsection*{Aufgabe 4}
+
+Die Buchstaben I, T, S, C, H, E und R werden durch die Zahlen $8$,
+$19$, $18$, $2$, $7$, $4$ und $17$ repräsentiert.\footnote{Die Zählung
+beginnt beim A mit $0$.} Nach der
+Verschlüsselung im ECB-Modus werden die Zeichen durch folgende
+Geheimtextzeichen dargestellt.
+\begin{align*}
+  E (8) &= (8+11)\pmod{26} = 19 & E (19) &= (19+11)\pmod{26}= 4\\
+  E (18)&= (18+11)\pmod{26}= 3  & E (2)  &= (2+11)\pmod{26} =13\\
+  E (7) &= (7+11)\pmod{26} = 18 & E (4)  &= (4+11)\pmod{26} =15\\
+  E (17)&= (17+11)\pmod{26}= 2 & &
+\end{align*}
+Die Zahlen lassen sich dann wieder Buchstaben zuordnen (siehe \autoref{tab:ecb-itsich}).
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{l|*{13}{c}}
+    \toprule
+    Klartext   & I & T & - & S& I & C & H & E & R & H & E & I & T\\
+    Zahlendarstellung & $8$ & $19$ & - & $18$ & $8$ & $2$ & $7$ & $4$
+    & $17$ & $7$ & $4$ & $8$ & $19$\\
+    des Klartextes \\
+\midrule
+    Zahlendarstellung \\
+    des Geheimtextes & $19$ & $4$ & - & $3$ & $19$ & $13$ & $18$ &
+    $15$ & $2$ & $18$ & $15$ & $19$ & $4$\\
+    Geheimtext & T & E & - & D & T & N & S & P & C & S & P & T & E\\
+    \bottomrule
+  \end{tabular}
+  \caption{Verschlüsselung des Wortes IT-SICHERHEIT}
+  \label{tab:ecb-itsich}
+\end{table}
+
+Für den CBC-Modus aus der zweiten Teilaufgabe sei der Wert von $c_{0}$
+auf $5$ festgelegt. Dann ergibt sich die folgende Berechnung.
+\begin{align*}
+  c_{0} &= 5\\
+  c_{1} &= E (8+5)  = (13+11)\pmod{26}= 24\\
+  c_{2} &= E (19+24)= (43+11)\pmod{26}= 2\\
+  c_{3} &= E (18+2) = (20+11)\pmod{26}= 5\\
+  c_{4} &= E (8+5)  = (13+11)\pmod{26}= 24\\
+  c_{5} &= E (2+24) = (26+11)\pmod{26}=11\\
+  c_{6} &= E (7+11) = (18+11)\pmod{26}= 3\\
+  c_{7} &= E (4+3)  = (7+11)\pmod{26} =18\\
+  c_{8} &= E (17+18)= (35+11)\pmod{26}=20\\
+  c_{9} &= E (7+20) = (27+11)\pmod{26}=12\\
+  c_{10}&= E (4+12) = (16+11)\pmod{26}= 1\\
+  c_{11}&= E (8+1)  = (9+11)\pmod{26} =20\\
+  c_{12}&= E (19+20)= (39+11)\pmod{26}=24
+\end{align*}
+Sollten Sie andere Werte für $c_{0}$ werden Sie natürlich auf andere
+Ergebnisse kommen.
+
+Zur Entschlüsselung aus der Teilaufgabe~3 sind die Geheimtexte und der
+Initialisierungswert bekannt. Dieses Wissen lässt sich auf den
+Geheimtext~$c_{1}$ anwenden. Mit $24-11=13$ ist der Klartext inklusive
+des Initialisierungswertes klar. Nun muss noch dieser noch
+substrahiert werden: $13-5=8=m_{1}$. Für den zweiten Schritt benutzen
+wir den Wert von $c_{1}$ als Initialisierungswert und $c_{2}$ als
+Geheimtext. Zunächst wird die Verschlüsselung "`zurückgespielt"':
+$2-11=-9\equiv 17\pmod{26}$. Wie vorher muss noch der
+Initialisierungswert berücksichtigt werden:
+$17-24=-7\equiv19\pmod{26}$. Die weiteren Geheimtexte werden nach
+demselben Schema entschlüsselt.
+
+\subsection*{Übungsblatt 3}
+
+\subsubsection*{Aufgabe 2}
+
+Die ersten beiden Teilaufgaben sollten schnell mittels alter
+Unterlagen lösbar sein. Für die letzte Aufgabe müssen die Zahlen in
+die entsprechende Darstellung umgerechnet werden.
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{c|c|l}
+    \toprule
+    Hexadezimal & Binär & Polynom\\
+    \midrule
+    \texttt{07} & $0000\,0111$ & $x^{2}+x+1$\\
+    \texttt{1D} & $0001\,1101$ & $x^{4}+x^{3}+x^{2}+1$\\
+    \texttt{8B} & $1000\,1011$ & $x^{7}+x^{3}+x+1$\\
+    \bottomrule
+  \end{tabular}
+  \caption{Umrechnung der Hexadezimalzahlen}
+  \label{tab:hexa}
+\end{table}
+
+
+\subsubsection*{Aufgabe 3}
+Gegeben ist der öffentliche RSA"=Schlüssel $(n,e)= (667,67)$. Um den
+privaten Schlüssel dazu zu errechnen, muss versucht werden, $n$ zu
+faktorisieren. Für diese Aufgabe eignet sich ein einfaches Programm
+(Sofern man die Lösung nicht sofort sieht.)
+
+\lstset{language=python}
+\begin{lstlisting}
+import math
+
+for i in xrange(1,math.sqrt(667)+1):
+  if 667 % i == 0:
+    print i, 667/i
+\end{lstlisting}
+Das Programm iteriert durch alle Zahlen von $1$ bis zu
+$\sqrt{667}+1$. Diese Bedingung beschleunigt die
+Ausführung. Schließlich wird getestet, ob eine Division ohne Rest
+möglich ist. Falls das der Fall ist, wurde ein Teiler von $667$
+gefunden und ausgegeben. Das Programm liefert $1$ und $667$ sowie $23$
+und $29$ als Ausgabe. Also ist $p=23$ und $q=29$. Damit berechnen wir
+$\varphi(n)= (p-1) (q-1)= 22\cdot28=616$. Wir kennen $e=67$ und können
+$d$ berechnen. Es gilt, $ed+k\varphi(n)= 1=\text{ggT} (e,\varphi(n))$,
+also $67d+k616=1$. Der erweiterte \textsc{Euklid}ische Algorithmus
+(\autoref{tab:eea}) hilft bei der Berechnung von $d$.
+
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{r|r|r|r}
+    \toprule
+    $a$ & $b$ & $r$ & $q$\\
+    \midrule
+    $1$ & $0$ & $616$ & \\
+    $0$ & $1$ & $67$ & $9$\\
+    $1$ & $-9$ & $13$ & $5$\\
+    $-5$ & $46$ & $2$ & $6$\\
+    $31$ & $-285$ & $1$ & $0$\\
+    \bottomrule
+  \end{tabular}
+  \caption{Erweiterter \textsc{Euklid}ischer Algorithmus}
+  \label{tab:eea}
+\end{table}
+
+Somit haben wir $67\cdot (-285)+ 31\cdot616=1$ bzw. $67\cdot
+(-285)\equiv1\pmod{616}$. Für die weiteren Rechenschritte sollte $d$
+eine positive Zahl sein. Wegen $-285\equiv331\pmod{616}$ ist $d=331$.
+Also ist der private Schlüssel $(n,d)= (667,331)$.
+
+Das Ergebnis der Verschlüsselung ist:
+\begin{itemize}
+\item $0^{67}\mod{667}= 0$
+\item $1^{67}\mod{667}=1$
+\item $11^{67}\mod{667}=126$
+\item $67^{67}\mod{667}= 573$
+\end{itemize}
+
+\subsection*{Übungsblatt 4}
+
+\subsubsection*{Aufgabe 2}
+
+Angenommen die Zahlen $p$ und $q$ sind natürliche Zahlen. Dann fehlen
+die Zusatzinformationen zur Berechnung der \textsc{Euler}schen
+$\varphi$"=Funktion. Das heißt, um diesen Wert zu bestimmen, müsste
+$n$ oder beide Zahlen faktorisiert werden. Dies ist natürlich mit
+entsprechenden Einbußen in der Performance zu "`bezahlen"'. Hingegen
+ist die Bestimmung bei Primzahlen einfach möglich.
+
+Weiterhin hilft eventuell ein Beispiel die Problematik zu verstehen.
+Sei $p=6$ und $q=9$. Dann ist $n=q\cdot p= 9\cdot6=54$ und $\varphi
+(n)=\varphi(p)\varphi(q)$. Die Werte von $\varphi(p)$ und $\varphi(q)$
+lassen einfach berechnen. Wir haben
+$\varphi(p)\varphi(q)=2\cdot6=12$. Weiter wählen wir $e=5$. Die Zahl
+erfüllt die Voraussetzungen ($1<e<\varphi(n)$, $e\nmid\varphi(n)$) aus
+dem Algorithmus. Für $d=17$ gilt,
+$ed=5\cdot17=85\equiv1\pmod{12}$. Damit sind die Schlüssel $(n,e)=
+(54,5)$ und $(n,d)= (54,17)$ bekannt.
+
+Es soll die Nachricht~$2$ verschlüsselt werden: $2^{5}\pmod{54}=
+32$. Eine Entschlüsselung des Geheimtextes erbringt das Ergebnis:
+$32^{17}\pmod{54}= 38$. Aber es ist $2\neq38$.
+
+
+\subsubsection*{Aufgabe 3}
+Für den Hashalgorithmus \textsc{Hash3000} waren diverse Werte zu
+berechnen. Der Hashwert der leeren Eingabe sollte trivial sein. In der
+zweiten Teilaufgabe sollte der Wert der Folge von ASCII"=Ziffern
+\verb|0123456789| gebildet werden. Dazu muss über die Zahlen zwischen
+30 und 39 iteriert werden. Die untenstehende Tabelle
+(\autoref{tab:hash09}) gibt den Vorgang im Überblick wieder:
+\begin{table}[htb]
+  \centering
+  \begin{tabular}{l|c|c}
+    \toprule
+    Eingabe & $l$ & $h$\\
+    \midrule
+    & 0 & 0\\
+    30 & 30 & 30\\
+    31 & 61 & 91\\
+    32 & 93 & 184\\
+    33 & 126 & 54\\
+    34 & 160 & 214\\
+    35 & 195 & 153\\
+    36 & 231 & 128\\
+    37 & 12 & 140\\
+    38 & 50 & 190\\
+    39 & 89 & 23\\
+    \bottomrule
+  \end{tabular}
+  \caption{Hashwert der Zahlen 0--9}
+  \label{tab:hash09}
+\end{table}
+
+Die Werte von \verb|Sicherheit| und \verb|SicherHeit| berechnen sich
+ähnlich. Das Ergebnis ist $8140$ bzw. $23212$.
+
+Aufgrund der Struktur des Hashalgorithmus' bietet es sich an,
+Zweierpotenzen zu testen. Ich hatte mich für $64$ entschieden. Die
+einmalige Eingabe führt zu dem Hashwert $6464$. Die neunmalige Eingabe
+führt zum selben Ergebnis. Für die Eingabe von $128$ reicht die
+einmalige und fünfmalige Eingabe um eine Kollision zu erzeugen.
+
+\end{document}
