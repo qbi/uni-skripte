@@ -1,4 +1,15 @@
 \input{kopfteil.ltx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
 \title{Sicherheitsmodelle}
 \date{24.\,Januar~2011}
 \begin{document}
@@ -99,7 +110,7 @@
 \begin{frame}
   \frametitle{Zugriffsbeschränkungen}
   \framesubtitle{Beispiele}
-  \begin{exampleblock}
+  \begin{exampleblock}{Beispiele}
     \begin{itemize}
     \item<+-> Zugriff nur zwischen 10--22~Uhr erlaubt (globale Regel)
     \item<+-> Regeln beim Geldabheben (objektlokale Regel)
@@ -158,6 +169,117 @@
   \begin{itemize}
   \item Kontrolle, welche Informationsflüsse zulässig sind
   \end{itemize}
+\end{frame}
+
+\section{Zugriffskontrollmodelle}
+\label{sec:zugr}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \begin{definition}
+    Der Schutzzustand eines Systems zu einem Zeitpunkt~$t$ wird durch
+    eine $\abs{S_{t}}\times\abs{O_{t}}$-Matrix~$M_{t}$ modelliert. Es
+    gilt:
+    \begin{itemize}
+    \item $O_{t}$ bezeichnet die endliche Menge der Objekte zum
+      Zeitpunkt~$t$ (Spalten der Matrix)
+    \item $S_{t}$ bezeichnet die endliche Menge der Subjekte zum
+      Zeitpunkt~$t$ (Zeilen der Matrix)
+    \item $M_{t}\colon S_{t}\times O_{t}\rightarrow \mathfrak{P}(R)$
+      mit $R$ als der Menge der Zugriffsrechte
+    \end{itemize}
+  \end{definition}
+  \pause{}
+  Ein Eintrag~$M_{t} (s,o)$ ist die Menge der Rechte, die ein Subjekt
+  zu einem Zeitpunkt~$t$ an einem Objekt besitzt.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Beispiel für eine Zugriffsmatrix}
+\scriptsize{\begin{tabularx}{\textwidth}{c|X|X|X|X|X|X|}
+    \toprule
+              & Datei 1 & Datei 2 & Prozess 1 & Prozess 2 & Prozess 3 & Prozess
+    4\\
+    \midrule
+    Prozess 1 &         &       &             & control, send &  &
+    control\\
+    \midrule
+    Prozess 2 &         &       &  wait, signal &             &
+    control &\\
+    \midrule
+    Prozess 3 & read, write & write, owner & & receive & & send\\
+    \midrule
+    Prozess 4 &         & read, write &       &          & send & \\
+    \bottomrule
+  \end{tabularx}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Statische und dynamische Matrix}
+  \begin{itemize}
+  \item Bei einer statischen Matrix ist keine Änderung der
+    Rechtevergabe möglich.
+  \item Rechte müssen im vornherein bekannt und über lange Zeiträume
+    konstant sein.
+  \item<2-> Bei einer dynamischen Matrix werden Zustandsübergänge
+    durch Ausführungen von Kommandos modelliert.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Sicherheitseigenschaften}
+  \begin{enumerate}
+  \item Safety-Problem
+  \item Soll-Ist-Vergleich
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Safety-Problem}
+  \begin{exampleblock}{Problemstellung}
+    Das \emph{Safety-Problem} behandelt die Frage, ob ausgehend von
+    einem Zustand~$M_{t}$ ein Subjekt~$s$ das Recht~$r$ am Objekt~$o$
+    erhalten kann, wenn es das Recht in $M_{t}$ noch nicht besitzt.
+  \end{exampleblock}
+  \pause{}
+  Anders ausgedrückt: Es ist zu zeigen, dass, ausgehend von $M_{t}$ mit
+  $r\notin M_{t} (s,o)$, ein Zustand~$M_{t'}$ mit $t'>t$ erreichbar
+  ist, für den $r\in M_{t'} (s,o)$ gilt.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Safety-Problem}
+  \begin{definition}
+    Eine Konfiguration~$K_{t}$ zum Zeitpunkt~$t$ ist durch den
+    Schutzzustand~$M_{t}$ und die Mengen $S_{t}$ und $O_{t}$
+    festgelegt, also $K_{t}= (M_{t}, O_{t}, S_{t})$.
+    Mit $K_{t}\models_{\textop} K_{t+1}$ wird der
+    Konfigurationsübergang durch das Kommando \texttt{op}
+    bezeichnet. Sei $K_{0}$ eine Ausgangskonfiguration und für $K_{t}$
+    gelte, $r\notin M_{t} (s,o)$.
+
+    Das \emph{Safety-Problem} ist also die Frage, ob, ausgehend von
+    $K_{t}$, eine Konfiguration~$K_{t+n}$ mit $K_{0}\models_{*}
+    K_{t}\models_{\text{op}_{1}} K_{t+1}\models_{\text{op}_{2}}
+    \dotso\models_{\text{op}_{n}} K_{t+n}$ und $r\in M_{t+n} (s,o)$.
+  \end{definition}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Soll-Ist-Vergleich}
+  Beim \emph{Soll-Ist-Vergleich} ist ein Modell mit einer Menge
+  Kommandos und einem Schutzzustand~$M_{t}$ gegeben. Die erwünschten
+  Sicherheitseigenschaften des modellierten Systems sind gegeben und
+  es ist zu prüfen, ob das System (Ist-Zustand) den Anforderungen
+  (Soll-Zustand) genügt.
 \end{frame}
 
 \end{document}
