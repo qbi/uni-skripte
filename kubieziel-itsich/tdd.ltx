@@ -1,0 +1,193 @@
+\documentclass[ngerman]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{charter}
+\usepackage[scaled=.96]{helvet}
+
+\begin{document}
+\section*{Test-getriebene Entwicklung}
+
+In der Übung und Vorlesung hatte ich die testgetriebene Entwicklung
+angesprochen. Dabei kam ein Beispiel zum Einsatz. In dem Beispiel ging
+es um die Berechnung einer perfekten Zahl. Dabei heißt eine Zahl
+\emph{perfekt} oder \emph{vollkommen}, wenn sie der Summe ihrer Teiler
+entspricht. Die kleinste Zahl ist $6=1+2+3$. Danach folgen die Zahlen
+$28, 496$ und $8128$. Perfekte Zahlen sind vergleichsweise selten. Die
+zehnte Zahl in der Folge hat bereits 55~Stellen. Einige Informationen
+zu der Folge finden Sie auf der Seite
+\href{http://oeis.org/A000396}{A000396} bei der
+\href{http://oeis.org/}{On-Line Encyclopedia of Integer Sequences}.
+Wenn nun ein Algorithmus zum Finden von perfekten Zahlen implementiert
+werden soll, könnte der untenstehende Code (\autoref{java1}) herauskommen.
+
+\lstset{language=java,columns=fullflexible}
+\begin{lstlisting}[caption={Java-Code zum Finden perfekter Zahlen},label=java1]
+public class PerfectNumberFinder {
+    public class boolean isPerfect(int number) {
+	List<Integer> factors = new ArrayList<Integer>();
+	factors.add(1);
+	factors.add(number);
+	for (int i = 2; i < Math.sqrt(number) + 1; i++)
+	    if (number % i == 0) {
+		factors.add(i);
+		if (number / i != 1)
+		    factors.add(number / i);
+	    }
+
+	int sum = 0;
+	for (Integer i : factors)
+	    sum += i;
+
+	return sum - number == number;
+    }
+}
+\end{lstlisting}
+
+Eine Besonderheit, die ich bereits in der Übung erwähnt hatte, ist die
+Kondition innerhalb der \lstinline{for}"=Schleife. Hier werden nicht
+alle Zahlen von $1$ bis \lstinline{number} getestet. Stattdessen geht
+die Schleife bis $\sqrt{\text{number}}+1$. Denn wir suchen Paare
+$a\cdot b=\text{number}$ und wegen der Kommutativität reichen die
+Tests bis zur Wurzel der Zahl. Ein weiterer Fall, der abgefangen
+werden muss, sind Quadratzahlen. Wenn bespielsweise 25 geprüft wird,
+so würde zweimal die Zahl~5 in die Liste aufgenommen werden. Daher
+wurde die Bedingung \lstinline|if (number / i != 1)| aufgenommen.
+
+In dieser oder einer ähnlichen Form könnte der Code das Ergebnis einer
+Aufgabe sein. Wer aber mit den Methoden der testgetriebenen
+Entwicklung herangeht, wird wahrscheinlich ein anderes Resultat
+erzielen.
+
+Für Unittests unter Java wird häufig das Framework
+\href{http://www.junit.org/}{JUnit} verwendet. Die Bibliothek
+\href{https://code.google.com/p/hamcrest/}{Hamcrest} ermöglicht
+lesbare Konstruktionen, wie 
+\lstinline{assertThat(foo, is(equalTo(bar)))}.
+
+Der erste Test sollte nun so einfach wie möglich sein. Der Hauptzweck
+ist der Test der Funktionsfähigkeit der Umgebung. Man denke an den
+Klassenpfad, Abhängigkeiten und anderes. Wenn also der erste einfache
+Test schon fehlschlagen sollte, handelt es sich wahrscheinlich um
+tiefer gehende Probleme. Im obigen Fall liegt es nahe, die Faktoren
+von 1 zu prüfen.
+
+\begin{lstlisting}
+@Test public void factors_for_1() {
+    List<Integer> expected = new ArrayList<Integer>(1);
+    expected.add(1);
+    Classifier c = new Classifier(1);
+    assertThat(c.getFactors(), is(expected));
+}
+\end{lstlisting}
+
+Die nächste naheliegende Idee ist es, Faktoren einer Zahl zu
+testen. Die Zahl~6 als perfekte Zahl bietet sich an.
+
+\begin{lstlisting}
+@Test public void factors_for_6() {
+    List<Integer> expected = new ArrayList<Integer>(
+			    Array.asList(1,2,3,6));
+    Classifier c = new Classifier(6);
+    assertThat(c.getFactors(), is(expected));
+}
+\end{lstlisting}
+
+Nachdem nun dieser Testfall geschrieben ist, sollten beim
+Programmierer die Alarmglocken läuten. Denn in diesem Test steckt sehr
+viel an Logik. Das Programm muss wissen, wie Faktoren berechnet
+werden, ob eine bestimmte Zahl ein Faktor ist, wie Faktoren addiert
+werden  etc. Es ist daher sinnvoll, diese Informationen in separaten
+Funktionen festzuschreiben und zu testen.
+
+\begin{lstlisting}
+@Test public void is_factor() {
+    assertTrue(Classifier.isFactor(1, 12));
+    assertTrue(Classifier.isFactor(3, 12));
+    assertFalse(Classifier.isFactor(7, 12));
+}
+@Test public void add_factors() {
+    Classifier c = new Classifier(20);
+    c.addFactor(2);
+    c.addFactor(4);
+    c.addFactor(5);
+    c.addFactor(10);
+    List<Integer> expected = new ArrayList<Integer>(
+                   Arrays.asList(1,2,4,5,10,20));
+    assertThat(c.getFactors(), is(expected));
+}
+\end{lstlisting}
+
+Das heißt in dem obigen Fall hat der Ansatz der testgetriebenen
+Entwicklung geholfen, Komplexität zu erkennen und diese zu
+reduzieren. Wenn das dann weiter getrieben wird, könnte letztlich der
+folgende Code entstehen.
+
+\begin{lstlisting}[caption={Java-Code zum Finden perfekter Zahlen nach Einsatz von Unittests},label=java2]
+public class Classifier {
+    private int _number;
+    private Set<Integer> _factors;
+    public Classifier(int number) {
+	if (number < 0) throw new InvalidNumberException();
+	setNumber(number);
+    }
+
+    public Classifier() {}
+    public Set<Integer> getFactors() {
+	return _factors;
+    }
+
+    public boolean isPerfect() {
+	return sumOfFactorsFor(_number) - _number == _number;
+    }
+
+    public void calculateFactors() {
+	for (int i = 2; i < Math.sqrt(_number) + 1; i++)
+	    addFactor(i);
+    }
+
+    private void addFactor(int i) {
+	is (isFactor(i)) {
+	    _factors.add(i);
+	    _factors.add(_number / i);
+	}
+    }
+
+    private int sumOfFactorsFor(int number) {
+	calculateFactors();
+	int sum = 0;
+	for (int i : _factors)
+	    sum += i;
+	return sum;
+    }
+
+    private boolean isFactor(int factor) {
+	return _number % factor == 0;
+    }
+
+    public int getNumber() {
+	return _number;
+    }
+
+    public void setNumber(int value) {
+	_number = value;
+	_factors = new HashSet<Integer>();
+	_factors.add(i);
+	_factors.add(_number);
+    }
+}
+\end{lstlisting}
+
+Das entstandene Programm ist knapp dreimal so lang wie der Code aus
+\autoref{java1}. Allerdings besteht das neue Programm aus einer
+Vielzahl kleiner Methoden. Bei jeder dieser Methoden wird recht
+schnell klar, was deren Aufgabe ist. Dadurch wird das Programm besser
+wartbar. Wenn es Änderungen an der Datei gibt, werden die Tests
+durchgeführt und eventuell Fehler bzw. Abweichungen schnell gefunden.
+
+Das obige Beispiel habe ich dem Buch "`Produktiv programmieren"' von
+\textsc{Neal Ford} (O'Reilly Verlag, 1.\,Auflage 2009) entnommen.
+\end{document}
