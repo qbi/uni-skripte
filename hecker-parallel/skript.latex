@@ -979,14 +979,14 @@ Operationen erweitert werden.
   s_{k} = x_{1} \star x_{2} \star\dotsb\star x_{k-1} \star x_{k}
 \end{gather*}
 
-Beide Schritte benötigen jeweils $O(\log n)$~\Time und $O(n)$~\Work. Der
-Algorithmus braucht also insgesamt $O(\log n)$~\Time und $O(n)$~\Work und ist
-daher optimal. Da ein serieller Algorithmus für die Berechnung der
-$n$.\,Präfixsumme mindestens einmal alle Folgenglieder betrachten muss,
-benötigt er $O(n)$~\Time. Der parallele Präfixsummenalgorithmus ist also auch
-streng optimal.
-\todo{Prüfen! Diese Aussage stimmt IMO nicht, da wir später noch einen
-  schnelleren Algorithmus bekommen.}
+Für beide Schritte ergeben sich jeweils die folgenden Rekurrenzen:
+
+\Time: $T(n)=T(\frac{n}{2})+O(1)$, \Work: $W(n)=W(\frac{n}{2})+O(n)$
+
+Kurze Rechnung oder Anwendung des Master-Theorems (erster bzw. dritter Fall) ergibt somit insgesamt $O(\log n)$~\Time und $O(n)$~\Work.
+
+Da ein serieller Algorithmus für die Berechnung der $n$.\,Präfixsumme mindestens einmal alle Folgenglieder betrachten muss, benötigt er $O(n)$~\Time. Der parallele Präfixsummenalgorithmus ist also optimal.
+Für EREW und CREW PRAMs können keine schnelleren Algorithmen zum Lösen des Problems gefunden werden, deswegen ist der Algorithmus für diese beiden Rechnermodelle auch streng optimal.
 
 Wenn die Zahlen in Form einer verketteten Liste gegeben sind, kann dieser
 Algorithmus nicht verwendet werden, da die Zuordnung des $n$.\,Element auf den
@@ -1096,7 +1096,7 @@ Summe der Gewichte von ihm bis zu seinem Vorgängerknoten, auf den er gerade
 springt/verweist.
 
 Mit parallel Prefix kann man also in $O(\log n)$~\Time und $O(n\log n)$~\Work
-sie Präfixsummen einer verketteten Liste berechnen.
+die Präfixsummen einer verketteten Liste berechnen.
 Da die Präfixsummenberechnung im Seriellen mit $O(n)$~\Time funktioniert, ist
 der Algorithmus nicht optimal.
 
@@ -1615,7 +1615,7 @@ Die Bestimmung des Maximums einer Folge von $n$~Elementen geht mit dem
 Binärbaumparadigma in $O(\log n)$~\Time mit $O(n)$~\Work. Das ist optimal, da
 das serielle Optimum $T^{*}(n)=\Theta(n)$ ist, aber es geht schneller.
 \autoref{alg:max-konst} bestimmt das Maximum in konstanter Zeit mit
-$O(n^{2})$~\Work und kann auf einer common CRCW-PRAM implementiert werden, da
+$O(n^{2})$~\Work und muss auf einer common CRCW-PRAM implementiert werden, da
 in \autoref{line:max} alle Prozessoren das gleiche schreiben. Dieser
 Algorithmus ist aber nicht optimal.
 
@@ -1635,7 +1635,7 @@ Algorithmus ist aber nicht optimal.
 \end{algorithm}
 
 Das Problem an \autoref{alg:max-konst} ist, dass er zu viele Prozessoren
-verwendent, wärend beim Binärbaum von Stufe zu Stufe weniger Prozessoren
+verwendet, während beim Binärbaum von Stufe zu Stufe weniger Prozessoren
 verwendet werden. Kombiniert man beide Algorithmen in dem Sinne, dass man die
 Berechnung stufenweise ablaufen lässt und immer größere Gruppen von
 Prozessoren mit dem nicht optimalen Algorithmus zusammenfasst, so bekommt man
@@ -1714,6 +1714,7 @@ Farbe verbindet. Geht seriell in O(n) \Time
 Basisalgortihmus.
 INPUT: Array der n Knoten (Kreis), zulässige Farbung $c_{n}$
 OUTPUT: c' neue Färbung, zulässig
+\todo{Algorithmus-Schreibweise anpassen} 
 begin
 \begin{Verbatim}
 for 1 $\leq$ i $\leq$ n pardo
@@ -1810,6 +1811,7 @@ Ziel: optimaler Algrotihmus in $O(\log n)$ Zeit.
 Optimale Färbung:
 INPUT: Di-Kreis mit n Knoten, S
 OUTPUT: 3-Färbung
+\todo{Algorithmus-Schreibweise anpassen}
 begin
 \begin{Verbatim}
 for i \le i \le n pardo C(i) := i
@@ -1827,7 +1829,7 @@ end.
 
 \chapter{Listen und Bäume}
 \section{List-Ranking}
-verkettete Liste $L$ , Nachfolgerarray $S$ $i\rightarrow S(i)$, $S(i)=0$
+verkettete Liste $L$ , Nachfolgerarray $S$: $i\mapsto S(i)$, $S(i)=0$
 Ende der Liste bei Knoten $i$
 
 List-Ranking-Problem: $\forall i$ bestimme den Abstand von $i$ zum Ende der
@@ -2030,7 +2032,7 @@ damit
 %  heißt \highl{Nachfolger}.
 %\end{defini}
 
-$\Rightarrow$ Kreise sind immer zusammenhängende Graphen.
+Es gilt: Kreise sind immer zusammenhängende Graphen.
 
 %\begin{defini}
 %  Ein (ungerichteter) Graph~$G=(V,E)$ heißt genau dann \highl{Eulergraph}, wenn 
@@ -2038,7 +2040,9 @@ $\Rightarrow$ Kreise sind immer zusammenhängende Graphen.
 %  einmal durchläuft. $\tilde{G}$ heißt \highl{Eulerkreis}.
 %\end{defini}
 
-Ein gerichteter Graph $G$ heißt Eulergraph, wenn es eine Anordnung (Permutation) aller seiner Kanten gibt, die einen geschlossenen Weg in $G$ bildet. 
+%\begin{defini}
+Ein zusammenhängender gerichteter Graph $G$ heißt Eulergraph, wenn es eine Anordnung (Permutation) aller seiner Kanten gibt, die einen geschlossenen Weg in $G$ bildet. 
+%\begin{defini}
 
 \begin{satz}
   Ein zusammenhängender gerichteter Graph~$G=(V,E)$ ist genau dann ein
@@ -2046,8 +2050,7 @@ Ein gerichteter Graph $G$ heißt Eulergraph, wenn es eine Anordnung (Permutation)
 \end{satz}
 
 Ein ungerichteter Baum~$T=(V,E)$ kann leicht in einen gerichteten
-Baum~$T'=(V,E')$ überführt werden, indem man jede Kante~$e=(u,v)\in E$ durch
-zwei gerichtete Kanten~$\{<u,v>,<v,u>\}\subset E'$ ersetzt. Dann ist $T'$ ein Eulergraph.
+Baum~$T'=(V,E')$ überführt werden, indem man für jede Kante~$e=(u,v)\in E$ zwei gerichtete Kanten~$<u,v>,<v,u>$ der Kantenmenge $E'$ hinzufügt. Dann ist $T'$ ein Eulergraph.
 
 ungerichteter Graph gegeben als Menge von Adjazenzlisten, $<v,L[v]>\in
 V\times\mathfrak{P}(V)$, wobei $L[v]$ die Nachbarn von $v$ sind.
@@ -2254,13 +2257,13 @@ Man unterscheidet 2 Fälle, für die LCA-Anfragen trivial sind:
   }
 \end{algorithm}
 
-Vereinbarung: Sei v ein Knoten und l(v) das linkeste Vorkommen im Level- bzw. Eulerarray. Analog
-r(v) als rechtestes Vorkommen.
+\todo{Eulerarray definieren}
+Vereinbarung: Sei v ein Knoten und $l(v)$ das linkeste Vorkommen im Level- bzw. Eulerarray. Analog $r(v)$ als rechtestes Vorkommen.
 
 \begin{lemma}
-  Sei T=(V,E) ein Wurzelbaum \
-  Eulerarray A, Levelarray B, r(v) und l(v) seien definiert \
-  seien u und v zwei verschiedene Knoten \
+  Sei $T=(V,E)$ ein Wurzelbaum. \par
+  Sei weiterhin das Eulerarray $A$, das Levelarray $B$ sowie $r(v)$ und $l(v)$ für alle Knoten $v\in V$ gegeben.\par
+  Seien $u$ und $v$ zwei verschiedene Knoten. \par
   Dann gilt:
 
   \begin{enumerate}
@@ -2282,25 +2285,23 @@ r(v) als rechtestes Vorkommen.
 \end{proof}
 
 \begin{folger}
-  Ist Levelarray B bekannt und können wir das Range-Minima-Problem lösen, haben wir die LCA-Bestimmung
-  gelöst!
+  Ist Levelarray~$B$ bekannt und können wir das Range-Minima-Problem lösen, haben wir die LCA-Bestimmung gelöst!
 \end{folger}
 
 \section{Das Range-Minima-Problem}
  
-Wir beginnen mit der Bestimmung der Eulertour von T (setzen voraus, dass der 
+Wir beginnen mit der Bestimmung der Eulertour von $T$ (setzen voraus, dass der 
 Baum in einer wohl-verarbeitbaren Form vorliegt) und erhalten sowohl das 
-Eulerarray A als auch das Levelarray B.
+Eulerarray~$A$ als auch das Levelarray~$B$.
 
-Zusätzlich kennen wir für jeden Knoten v l(v) und r(v) (linkestes und rechtestes 
-Vorkommen von v im Eulerarray).
+Zusätzlich kennen wir für jeden Knoten $v$ die Zahlen $l(v)$ und $r(v)$ (linkestes und rechtestes Vorkommen von $v$ im Eulerarray).
 
 Zur Bestimmung des Range-Minimas reicht es nicht, die Minima der Blätter der
 Teilbäume in den Knoten zu speichern!
 
 \begin{defini}
   Die Präfixminima eines Arrays $(c_{1}, \ldots, c_{m})$ sind die Werte
-  $(e_{1}, \ldots, e_{m})$ mit $e_{i} = min\{ c_{1}, \ldots, c_{i} \}$
+  $(e_{1}, \ldots, e_{m})$ mit $e_{i} = \min\{ c_{1}, \ldots, c_{i} \}$
 \end{defini}
 
 Idee: Speichere in jedem Knoten die Suffix- und Präfixminima
@@ -2337,7 +2338,7 @@ ist ein Suffix-Minimum, Min($b_{p+1},\ldots,b_{j})$ ist ein Präfix-Minimum
 }
 \end{algorithm}
 
-Entscheidend: wie funktioniert das mischen $\ldots$
+Entscheidend: wie funktioniert das Mischen $\ldots$
 
 Analyse: \Time: $O(\log n)$
 \Work: $O(n\log n)$ ($O(n)$ pro Stufe)
@@ -2421,16 +2422,19 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 
      \item[$k-1\rightarrow k$:] Verteilt man die $p$~Prozessoren gleichmäßig
       auf die $n$~Elemente, so dass sich $p+1$~Abschnitte der
-      Länge~$\frac{n+1}{p+1}$\footnote{Ergebnis der Kombinatorik} ergeben, und
-      ordnet dem $j$.\,Prozessor ($j=1,\dotsc,p$) den $j$.\,Abschnitt zu, kann
-      jeder Prozessor das letzte Element~$j\frac{n+1}{p+1}$ in seinem
-      Abschnitt untersuchen.
+      Länge~$\frac{n+1}{p+1}$ ergeben, und ordnet dem $j$.\,Prozessor
+     ($j=1,\dotsc,p$) die Untersuchung des
+     Elements~$j\cdot\frac{n+1}{p+1}=j\cdot(p+1)^{k-1}$ zu, ergibt sich 
+     folgende Situation:
       \begin{enumerate}[1.\,{Fall:}]
-       \item Das Element ist das gesuchte $\rightarrow$ fertig.
-       \item Wenn das Element nicht gefunden wird, hat man aber einen
-	Abschnitt bestimmt, in dem sich das Element befinden muss. Da in dem
-        Abschnitt bereits ein Element untersucht wurde, verbleiben noch
-        $\frac{n+1}{p+1}-1$~Elemente.
+       \item Eines der Element ist das gesuchte $\rightarrow$ fertig.
+       \item Wenn das Element nicht gefunden wird, hat man aber eindeutig einen
+        der $p+1$~Abschnitte bestimmt, in dem sich das gesuchte Element befinden
+        muss (Achtung: Durch die Untersuchung von $p$ Zwischenelementen 
+        erhält man $p+1$ Abschnitte der Ausgangsfolge). Zwischen zwei 
+        Elementen mit Index $j\cdot\frac{n+1}{p+1}$ und $(j+1)\cdot\frac{n+1}{p+1}$
+        befinden sich im $(j+1)$.Abschnitt noch $\frac{n+1}{p+1}-1$~Elemente, 
+        die durchsucht werden müssen.
         \begin{gather*}
           \frac{n+1}{p+1}-1 = \frac{(p+1)^{k}-1 +1 -p-1}{p+1}
              = (p+1)^{k-1} -1
@@ -2447,9 +2451,9 @@ Ergebnis: Satz * geht auch mit O(n) \Work.
 \begin{satz}[Satz von Kruskal (1984)]
   \label{satz:kruskal}
   Um eine Folge von $n$~Elementen mit $p$~Prozessoren zu durchsuchen, sind
-  $T_{p}(n)$~Schritte notwendig und hinreichend.
+  $T_{p}(n)$~Vergleichsoperationen notwendig und hinreichend, dabei ist
   \begin{gather*}
-    T_{p}(n) = \Theta\bigg(\frac{\log(n+1)}{\log(p+1)}\bigg)
+    T_{p}(n) = \ceil[\bigg]{\frac{\log(n+1)}{\log(p+1)}}\;\text{.}
   \end{gather*}
 
   \begin{proof}
@@ -2638,8 +2642,6 @@ Leider ist das Ergebnis noch nicht WT-optimal, da das Mischen im seriellen
 Fall in $T^{*}(n,m)=O(n+m)$~\Time geht. Zur Vereinfachung sei im Folgenden
 immer $n=m$.
 
-\todo{Der Rest dieses Abschitts ist wahrscheinlich falsch.}
-
 Mit Accellerated Cascading können wir auch hier zu einem optimalen Algorithmus
 kommen.
 
@@ -2653,7 +2655,7 @@ kommen.
   Beispiel ergibt sich, dass $B'[j]$ zwischen $A'[k]$ und $A'[k+1]$ kommt.
   $A'[k]$ und $A'[k+1]$ ist der Abschnitt $A_{k}$
  \item Man kennt also zu jedem Grenzelement von $A$ einen Abschnitt $B_{j}$
-  der Länge $\log\log n$, in den man das Element liegen muss. Innerhalb dessen
+  der Länge $\log\log n$, in den das Element liegen muss. Innerhalb dessen
   kann man die genaue Position seriell mit binärer Suche bestimmen. Ebenso
   kann man in die umgekehrte Richtung für die Grenzelemente von $B$ ihre
   genaue Position bestimmen.
@@ -2694,11 +2696,10 @@ Zeit- und Aufwandsanalyse:\\
 \end{enumerate}
 
 \begin{bemerk}
-  Die Klasse $\PP$ der in polynomeller Zeit lösbaren Algorithmen zerfällt für
-  parallele Ansätze in drei Klassen:
+  Die Klasse $\PP$ der in polynomeller Zeit seriell lösbaren Algorithmen zerfällt für parallele Ansätze in drei \Time-Klassen:
   \begin{itemize}
    \item $O(1)$, z.\,B. Eulertour-Technik
-   \item $O(\log n)$, vielzahl der Probleme
+   \item $O(\log n)$, Vielzahl der behandelten Probleme
    \item $O(\log\log n)$, z.\,B. Merge
   \end{itemize}
 \end{bemerk}
@@ -2893,7 +2894,7 @@ im Schritt $3alt(x)+1$ und schließlich die vollständige Liste im Schritt $3alt(x
 \begin{description}
  \item[Hinweis:]
   es fehlen an dieser Stelle zwei Vorlesungen. Diese beinhalteten 180 Minuten
-  Beweise und Lemmas zum Richard-Cole-Algo und sind nicht Prüfungsrelevant. Es
+  Beweise und Lemmas zum Richard-Cole-Algo und sind nicht prüfungsrelevant. Es
   reicht ein Verständnis dessen, was passiert. Natürlich absolut inoffiziell.
   Es sei hiermit auf Ja'Ja (Seiten 164 ff) verwiesen.
 \end{description}
@@ -2908,7 +2909,7 @@ im Schritt $3alt(x)+1$ und schließlich die vollständige Liste im Schritt $3alt(x
 % nachträglich eingefügt %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\highl{Input}: $A=(a_{1}, \ldots, a_{n})$, $k := 1 \leq k \leq n$ \\
+\highl{Input}: unsortierte Liste~$A=(a_{1}, \ldots, a_{n})$, $k := 1 \leq k \leq n$ \\
 \highl{Output}: Element $a_{i}$ mit $Rang(a_{i}:A)=k$ \\
 
 
@@ -3007,39 +3008,35 @@ Algorithmus zu finden, der das Problem schneller löst.
 
 
 \begin{defini}
-  Die Menge~\highl{$\NC$}\footnote{$\NC$: Nick's class, nach seinem Erfinder
-  Nick Pipenger benannt} ist die Klasse der Sprachen, die sich in
-  polylogarithmischer\footnote{\highl{polylogarithmisch}: $O\bigl( (\log
-  n)^{k}\bigr)$ für ein festes $k$} Zeit mit
+  Die Menge~\highl{$\NC$} ist die Klasse der Sprachen\footnote {$\NC$: Nick's
+  class, nach seinem Erfinder Nick Pipenger benannt}, die sich in
+  polylogarithmischer\footnote{\highl{polylogarithmische Laufzeit}: $O\bigl( (\log
+  n)^{c}\bigr)$ für ein festes $c$} Zeit mit
   polynomiell\footnote{\highl{polynomiell}: $O(n^{k})$ für ein festen $k$}
   vielen Prozessoren auf einer PRAM entscheiden\footnote{Eine
-  Sprach~$L\subset\Sigma^{*}$ heißt genau dann \highl{entscheidbar}, wenn sich
-  ihre \highl{charakteristische Funktion}~$\chi_{L}$\footnotemark{} berechnen lässt} lassen.
-  \footnotetext{$\chi_{L}(w)=1$, wenn $w\in L$, sonst $\chi_{L}(w)=0$}
+  Sprache~$L\subset\Sigma^{*}$ heißt \highl{entscheidbar}, wenn sich
+  ihre \highl{charakteristische Funktion}~$\chi_{L}$ berechnen lässt. Dabei ist $\chi_{L}(w)=1$, wenn $w\in L$, und sonst $\chi_{L}(w)=0$} lassen.
   \begin{multline*}
-    \NC = \{ L\subset \Sigma^{*} \colon \forall w\in\Sigma^{n} \text{~ist
-       $\chi_{L}(w)$ in $O\bigl( (\log n)^{k}\bigr)$~\Time}\\
-      \text{mit $O(n^{k})$~Prozessoren (für festes $k$) auf einer PRAM
-        berechenbar}\}
+    \NC = \{ L\subset \Sigma^{*} \colon \exists $c,k$\; \exists\text{PRAM $P$ mit $O(n^{k})$~Prozessoren}\; \forall w\in\Sigma^{n} \\ \text{ berechnet $P$ die Funktion $\chi_{L}(w)$ in $O\bigl( (\log n)^{c}\bigr)$~\Time}\}
   \end{multline*}
-
-  Eine Sprache~$L$ heißt genau dann \highl{hochgradig parallelisierbar} oder
-  \highl{$\NC$-berechenbar}, wenn $L\in\NC$.
+\end{defini}
+\begin{defini}
+  Eine Sprache~$L$ heißt \highl{hochgradig parallelisierbar} oder \highl{$\NC$-berechenbar}, wenn $L\in\NC$.
 \end{defini}
 
 \begin{defini}
   Seien $L_{1}$ und $L_{2}$ zwei Sprachen. $L_{1}$ heißt
-  \highl{$\NC$-reduzierbar} auf $L_{2}$ (Schreibweise: $L_{1}\preceq_{\NC}L_{2}$),
+  \highl{$\NC$-reduzierbar} auf $L_{2}$ (Schreibweise: $L_{1}\leq_{\NC}L_{2}$),
   wenn es eine hochgradig parallelisierbare Funktion~$f\colon
   \Sigma^{*}\rightarrow \Sigma^{*}$ gibt, so dass für alle $w\in\Sigma^{*}$
   gilt: $w\in L_{1}$ dann und nur dann, wenn $f(w)\in L_{2}$
 \end{defini}
 
 \begin{defini}
-  Eine Sprache~$L$ heißt genau dann \highl{$\PP$-vollständig}, wenn $L$ in
+  Eine Sprache~$L$ heißt \highl{$\PP$-vollständig}, wenn $L$ in
   polynomieller Zeit auf einer deterministischen Turingmaschine berechenbar
   ist ($L\in\PP$) und alle Sprachen~$L'\in\PP$ $\NC$-reduzierbar auf $L$ sind:
-  $L'\preceq_{\NC}L$.
+  $L'\leq_{\NC}L$.
 \end{defini}
 
 \begin{satz}
@@ -3049,14 +3046,13 @@ Algorithmus zu finden, der das Problem schneller löst.
   $\NC\subset\PP$.
 
   \begin{proof}
-    über serielle Modellierung der Rechnung
-    \todo{machen}
+    serielle Simulation der PRAM-Rechnung auf RAM mit Laufzeit $O((\log n)^c\cdot n^k)$ (polynomiell), also auch polynomielle Laufzeit für eine Turingmaschine
   \end{proof}
 \end{satz}
 
 \begin{satz}
-  Wenn $L_{1}\preceq_{\NC}L_{2}$ und $L_{2}\preceq_{\NC}L_{3}$, dann ist auch
-  $L_{1}\preceq_{\NC}L_{3}$ (Transitivität).
+  Wenn $L_{1}\leq_{\NC}L_{2}$ und $L_{2}\leq_{\NC}L_{3}$, dann ist auch
+  $L_{1}\leq_{\NC}L_{3}$ (Transitivität).
 
   \begin{proof}
     Hintereinanderausführung zweier NC-berechenbarer Funktionen; trivial
@@ -3102,10 +3098,10 @@ f^{+}(t)$.
 %\end{figure}
 
 Im Seriellen existieren Algorithmen mit $O(n^{3})$ TIME, die dieses Problem
-lösen, jedoch ist kein paralleler Algorithmus mit $O(log^{k} n)$ TIME bekannt,
+lösen, jedoch ist kein paralleler Algorithmus mit $O(\log^{c} n)$ TIME bekannt,
 der mit polynomiell vielen Prozessoren auskommt. Es wird zudem angenommen,
 dass es einen solchen Algorithmus generell nicht gibt; einen Beweis dafür,
-dass Max-Flow nicht in NC liegt, hat bisher noch niemand erbracht.
+dass Max-Flow nicht in \NC liegt, hat bisher noch niemand erbracht.
 
 
 
@@ -3113,16 +3109,13 @@ dass Max-Flow nicht in NC liegt, hat bisher noch niemand erbracht.
 
 \begin{defini}
   Als ein \highl{lineares Optimierungsproblem} bezeichnet man die Aufgabe, zu
-  einer gegebenen Matrix~$A\in\R^{n\times m}$ und zwei Vektoren $b\in\R^{m},
+  einer gegebenen Matrix~$A\in\R^{m\times n}$ und zwei Vektoren $b\in\R^{m},
   c\in\R^{n}$ einen Vektor $x\in\R^{n}$ zu finden, so dass $c^{T}x$ maximal
   ist, wobei $x_{i} \geq 0$ und $Ax \leq b$ gilt.
   \begin{gather*}
-    \max\{ c^{T}x \colon Ax\leq b, 0 \leq x\}
+    \max\{ c^{T}x \colon Ax\leq b, x \geq 0_n\}
   \end{gather*}
 \end{defini}
-
-\help{Warum ist das jetzt in $\PP\setminus\NC$?}
-
 
 
 \subsection{Das circuit value problem}
@@ -3143,7 +3136,7 @@ dass Max-Flow nicht in NC liegt, hat bisher noch niemand erbracht.
   Schaltkreis~$c=\lrangle{g_{1},\dotsc,g_{n}}$ der Wert des letzten
   Gatters~$g_{n}=1$ ist.
   \begin{gather*}
-    CPV(c) = \begin{cases}
+    CVP(c) = \begin{cases}
                0& g_{n}=0\\
                1& g_{n}=1
              \end{cases}
@@ -3155,7 +3148,7 @@ dass Max-Flow nicht in NC liegt, hat bisher noch niemand erbracht.
 
 Um zu zeigen, dass das circuit value problem $\PP$-vollständig ist, muss man
 für jede beliebige Sprache~$L\in\PP$ zeigen, dass sie sich auf $CVP$
-reduzieren lässt ($L\preceq_{NC}CVP$) und dass $CVP\in\PP$ liegt.
+reduzieren lässt ($L\leq_{\NC}CVP$) und dass $CVP\in\PP$ liegt.
 
 \begin{description}
   \item[Beweisskizze] $CVP \in \PP$? Klar, linear über die $g_{i}$ laufen und
@@ -3163,7 +3156,7 @@ reduzieren lässt ($L\preceq_{NC}CVP$) und dass $CVP\in\PP$ liegt.
 \end{description}
 
 \begin{description}
-  \item[Behauptung] Sei $L \in \PP$ und $L \preceq_{\NC} CVP$
+  \item[Behauptung] Sei $L \in \PP$ und $L \leq_{\NC} CVP$
 \end{description}
 
 Da $L\in\PP$ liegt, gibt es eine Turingmaschine~$M$, die nach polynomiell
@@ -3290,7 +3283,7 @@ Diese Aussagen wollen wir jetzt nutzen, um zu zeigen, dass auch DFS
 schwer ist.
 
 Um zu zeigen, dass $DFS$ $\PP$-vollständig ist, verwendet man den folgenden
-\autoref{satz:hauptsatz} und zeigt, dass $CVP\preceq_{NC}DFS$ und
+\autoref{satz:hauptsatz} und zeigt, dass $CVP\leq_{\NC}DFS$ und
 $DFS\in\PP$. Da $CVP\in\PP$ folgt aus \autoref{satz:hauptsatz}, dass
 $DFS\notin\NC$ ist.
 
@@ -3298,7 +3291,7 @@ $DFS\notin\NC$ ist.
   \label{satz:hauptsatz}
   Seien $L_{1}, L_{2}\in \Sigma^{\ast}$ zwei Sprachen und $L_{1}$ sei
   $\NC$-reduzierbar auf $L_{2}$. Dann ist $L_{1}\in\NC$, wenn $L_{2}\in\NC$
-  ist: $L_{1}\preceq_{NC} L_{2}\wedge L_{2}\in\NC \Rightarrow L_{1}\in\NC$.
+  ist: $L_{1}\leq_{\NC} L_{2}\wedge L_{2}\in\NC \Rightarrow L_{1}\in\NC$.
 
   \begin{proof}
     Da $L_{1}$ $\NC$-reduzierbar auf $L_{2}$ ist, existiert eine
@@ -3327,13 +3320,13 @@ dass DFS schwerer ist, als CVP und damit auch schwer entscheidbar ist.
 
 Dafür brauchen wir noch folgenden Satz:
 \begin{satz}[Satz über Transitivität]
-  Die Relation $\preceq_{\NC}$ ist transitiv, d.\,h. wenn
-  $L_{1}\preceq_{NC}L_{2}$ und $L_{2}\preceq_{NC}L_{3}$, so ist auch
-  $L_{1}\preceq_{NC}L_{3}$.
+  Die Relation $\leq_{\NC}$ ist transitiv, d.\,h. wenn
+  $L_{1}\leq_{\NC}L_{2}$ und $L_{2}\leq_{\NC}L_{3}$, so ist auch
+  $L_{1}\leq_{\NC}L_{3}$.
 
   \begin{proof}
-    \todo{machen} Sollte einfach sein. $L_{1}\preceq_{NC}L_{2}$ $\Rightarrow$
-    $\exists f\in\NC$, $L_{2}\preceq_{NC}L_{3}$ $\Rightarrow$ $\exists
+    \todo{machen} Sollte einfach sein. $L_{1}\leq_{\NC}L_{2}$ $\Rightarrow$
+    $\exists f\in\NC$, $L_{2}\leq_{\NC}L_{3}$ $\Rightarrow$ $\exists
     g\in\NC$, dann ist $f\circ g\in\NC$.
   \end{proof}
 \end{satz}
