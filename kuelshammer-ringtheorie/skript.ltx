@@ -73,6 +73,7 @@
                             % (df/dx). Das d wird korrekt in roman
                             % gesetzt. Verwendung: \diff{f}{x} oder
                             % \diffp{f}{x} für partielle Ableitungen
+\usepackage{braket}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -182,14 +183,23 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-\newenvironment*{mdescription}%
-                {\renewcommand*{\descriptionlabel}[1]%
- 			       {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		{\end{description}}
+% Frakturbuchstaben
+\newcommand*{\FC}{\mathfrak{C}}
+\newcommand*{\FD}{\mathfrak{D}}
+\newcommand*{\FP}{\mathfrak{P}}
+
+% Menge Set
+\newcommand*{\textset}{\underline{Set}}
+\newcommand*{\bigtimes}{\mathop{\raisebox{-.5ex}{\hbox{\huge{$\times$}}}}}
+
+
+\DeclareMathOperator{\id}{id}             % Identität
+\DeclareMathOperator{\Abb}{Abb}           % Abbildungen
+\DeclareMathOperator{\Id}{Id}             
+\DeclareMathOperator{\GL}{GL}             % allgemeine lineare Gruppe
+
+
+
 
 \makeindex
 
@@ -263,6 +273,235 @@
 \listtheorems{defini,festl}
 
 \todo[inline]{Vorlesungen vom 4. und 8. April 2011}
+
+\chapter{Natürliche Transformationen und Äquivalenzen}
+
+% Vorlesung vom 11.4.2001
+
+%satz 2.4
+\begin{satz}
+  Seien $\FC\rightleftarrows\FD$ Funktoren, $\Psi\circ\Phi\sim\Id_{\FD}$. Für
+  $A,B\in\FC$ ist dann $\Phi_{AB}\colon\FC(A,B)\rightarrow\FD(\Phi A, \Phi
+  B)$, $f\mapsto\Phi f$ bijektiv. Für $f\in\FC(A,B)$ gilt dabei, $f$ mono
+  (epi) $\Leftrightarrow\Phi f$ mono (epi).
+  \begin{proof}
+    \todo{ergänzen}
+  \end{proof}
+\end{satz}
+
+%def 2.5
+\begin{defini}[Äquivalente Kategorien]
+  Zwei Kategorien $\FC, \FD$ heißen
+  \highl[Kategorien!äquivalente]{äquivalent}, falls Funktoren
+  $\FC\rightleftarrows_{\Psi}^{\Phi}\FD$ existieren mit $\Psi\circ\Phi\sim
+  \Id_{\FC}$ und $\Phi\circ\Psi\sim\Id_{\FD}$.
+
+  Wir schreiben, $\FC\approx\FD$.
+\end{defini}
+
+\begin{bemerk}
+  Man zeigt leicht, dass die Äquivalenz $\approx$ eine Äquivalenzrelation ist.
+\end{bemerk}
+
+%def 2.6
+\begin{defini}
+  Seien $\FC\rightleftarrows_{\Psi}^{\Phi}\FD$ Funktoren. Man nennt $\Phi$
+  \highl{linksadjungiert} zu $\Psi$ und $\Psi$ \highl{rechtadjungiert} zu
+  $\Phi$, falls es Bijektionen $\nu_{AB}\colon\FD(\Phi A,B)\rightarrow
+  \FC(A,\Psi B)$ für $A\in\FC$ und $B\in\FD$ existieren derart, dass für alle
+  Morphismen $f\colon A\rightarrow A'$ in $\FC$ und $g\colon B\rightarrow B'$
+  folgende Diagramme kommutieren:\todo{Diagramm zeichnen}
+  $\FD(\Phi A',B)\xrightarrow{\nu_{A'B}} \FC(A',\Psi B)$
+  |Pfeil $\FD(\Phi f,B)$                        |Pfeil $\FC(f,\Psi B)$
+  $\FD(\Phi A,B)\xrightarrow{\nu_{AB}} \FC(A,\Psi B)$
+\end{defini}
+
+\begin{bemerk}
+  Das bedeutet, dass für $s\in\FD(\Phi A',B)$ und $t\in\FD(\Phi A,B)$ gilt:
+  $\nu_{AB}(s\circ\Phi f)=\nu_{A'B}(s)\circ f$ und $\nu_{AB'}(g\circ t)= \Psi
+  g\circ\nu_{AB}(t)$.
+\end{bemerk}
+
+\begin{bsp}
+  Seien $\FC\coloneqq \FD\coloneqq\textset$ und $S\in\textset$. Sei
+  $\Phi\colon\FC\rightarrow\FD$ der Funktor mit $\Phi A\coloneqq A\times S$
+  für $A\in\textset$ und $\Phi f\coloneqq f\times\id_{S}$ für jeden Morphismus
+  $f$ in $\textset$. Außerdem sei
+  $\Psi\coloneqq\Abb(S,?)\colon\FD\rightarrow\FC$ wie in Beispiel 1.3
+  \todo{Link einbauen}. Es ist zu zeigen, dass $\Phi$ linksadjungiert zu
+  $\Psi$ ist. Dann brauhen wir für $A,B\in\textset$ eine Bijektion
+  $\nu_{AB}\colon\Abb(A\times S,B)\rightarrow \Abb(A,\Abb(S,B))$ mit
+  $f\mapsto\nu_{AB}(f)$.
+
+  Für $a\in A$ sei also $(\nu_{AB}(f))(a)\colon S\rightarrow B$ mit $s\mapsto
+  f(a,s)$. Man rechnet nach, dass alles funktioniert.
+\end{bsp}
+
+\chapter{Ringe, Teilringe und Ideale}
+
+%3.1 def
+\begin{defini}[Ring]
+  Ein \highl{Ring} $R$ ist ein Tripel $R=(R,+,\cdot)$ mit
+  \begin{enumerate}
+   \item $(R,+)$ ist eine abelsche Gruppe. mit dem neutralen Element~$0$, das
+    \highl{Nullelement}.
+   \item $(R,\cdot)$ ist ein \highl{Monoid}, d.\,h. assoziativ mit $1$, das
+    \highl{Einselement}.
+   \item Die Distributivgesetze gelten: $a(b+c)=ab+ac$ und $(a+b)c=ac+bc$ für
+    alle $a,b,c\in R$.
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  \begin{itemize}
+   \item Das Null- und Einselement sind eindeutig.
+   \item Setze $a-b\coloneqq a+(-b)$.
+   \item Manche Bücher verlangen die Existenz von $1$ nicht.
+   \item Wie üblich: $0x=0=x0$ und $(-x)y=-(xy)=x(-y)$, $(-x)(-y)=xy$.
+   \item Ist $ab=ba$ für alle $a,b\in R$, dann heißt der Ring
+    \highl[Ring!kommutativer]{kommutativ}\index{kommutativ}.
+  \end{itemize}
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item $\Z,\Q, \R, \C, \{0\}$ (Letzteres wird als \highl{Nullring}
+    bezeichnet).
+   \item Sei $M$ eine Menge. Dann ergibt sich der \highl{Potenzmengenring}
+    $\FP(M)=\Set{A | A\subseteq M}$ durch $A+B\coloneqq(A\setminus
+    B)\cup(B\setminus A)$ und $A\cdot B\coloneqq A\cap B$.
+   \item Sei $(R,+,\cdot)$. Dann erhält man einen
+    \highl[Ring!entgegengesetzter]{entgegengesetzten Ring} $(R,+,\circ)$ mit
+    $a\circ b\coloneqq ba$ mit $a,b\in R$. Man schreibt $R^{\circ}$ für
+    "`opposite"'.
+   \item Sei $R$ ein Ring und $n\in\N$. Dann ist $R^{n\times n}$ ein voller
+    \highl{Matrixring} des Grades~$n$ über $R$. Das Nullelement ist die
+    \highl{Nullmatrix} $0_{n}$ und das Einselement $1_{n}$.
+   \item Sei $(R_{i})_{i\in I}$ eine nichtleere Familie von Ringen. Dann
+    erhält mn das \highl[Produkt!direktes]{direkte Produkt} $\bigtimes_{i\in
+    I} R_{i}\coloneqq\prod_{i\in I} R_{i}\coloneqq\Set{(r_{i})_{i\in I} |
+    r_{i}\in R_{i}, i\in I}$ mit $(r_{i})_{i\in I}+(s_{i})_{i\in I}\coloneqq
+    (r_{i}+s_{i})_{i\in I}$. Speziell: $R_{i}=R$ für alle $i$ ergibt
+    $\bigtimes_{i\in I} R_{i}= \Abb(I,R)= \Set{f\colon I\rightarrow R | f
+    \text{ Abbildung}}$ mit $(f+g)(x)\coloneqq f(x)+g(x)$ für $x\in I$.
+
+    Speziell: $I=\{1,\dotsc,n\}\colon\bigtimes_{i\in I} R_{i}=
+    R_{1}\times\dotso \times R_{n}= \Set{(r_{1},\dotsc, r_{n} | r_{1}\in
+    R_{1},\dotsc, r_{n}\in R_{n}})$.)
+   \item Sei $R$ ein Ring und $M$ ein Monoid. Dann ergibt sich der
+    \highl{Monoidring} von $M$ über $R$ durch $RM\coloneqq\Set{(r_{m})_{m\in
+    M} | r_{m}\in R, m\in M, r_{m}=0 \text{ für fast alle } m\in M}$. Die
+    Addition ergibt sich durch $(r_{m})_{m\in M}+ (s_{m})_{m\in
+    M}\coloneqq(r_{m} +s_{m})$ und die Multiplikation durch $(r_{m})_{m\in
+    M}\cdot (s_{m})_{m\in M}\coloneqq(\sum_{p,q\in M, pq=m} r_{p}s_{q})_{m\in
+    M}$. Die Summe ist \emph{endlich}.
+
+    Für $m\in M$ sei $\hat{m}\coloneqq(\delta_{mn})_{m\in M}$
+    (\highl{\textsc{Kronecker}"~Delta}). Dann ist $\hat{1_{M}}$ das
+    Einselement von $RM$ und man hat $\hat{m}\cdot\hat{n}=\hat{mn}$ für
+    $m,n\in M$.
+
+    Setze $r(r_{m})_{m\in M}\coloneqq (rr_{m})_{m\in M}$ für $r\in R,
+    (r_{m})_{m\in M}\in RM$. Dann ist $(r_{m})_{m\in M}= \sum_{m\in M} r_{m}
+    \hat{m}$. Identifiziere jeweils $m$ mit $\hat{m}$. Dann ist $(r_{m})_{m\in
+    M}= \sum_{m\in M} r_{m} m$. Dabei:
+    \begin{itemize}
+     \item $\sum_{m\in M} r_{m}m= \sum_{m\in M}s_{m}m\Leftrightarrow
+      r_{m}=s_{m}$ für alle $m\in M$.
+     \item $\sum_{m\in M} r_{m} m+\sum_{m\in M}s_{m}m= \sum_{m\in M}
+      (r_{m}+s_{m})m$
+     \item $(\sum_{m\in M} r_{m}m)(\sum_{m\in M} s_{m}m)= \sum_{m\in
+      M}(\sum_{p,q\in M, pq=m} (r_{p}s_{q})m$.
+    \end{itemize}
+    Speziell: $M$ Gruppe. Dann ist $RM$ ein \highl{Gruppenring}.
+    Speziell: $R[X]$ \highl{Polynomring} in einer oder mehreren Variablen.
+  \end{enumerate}
+\end{bsp}
+
+%3.2 def
+\begin{defini}
+  Sei $R$ ein Ring und $a\in R$. Das Element $a$ heißt genau dann
+  \highl{rechtsinvertierbar}, wenn ein $b\in R$ existiert mit $ab=1$. Das $b$b
+  heißt dann \highl{rechtsinvers} zu $a$. Analog definiert man
+  \highl{linksinvertierbar} und \highl{linksinvers}. Das Element $a$ heißt
+  genau dann \highl{invertierbar} oder \highl{Einheit}, wenn es rechts- und
+  linksinvertierbar ist.
+\end{defini}
+
+\begin{bemerk}
+  $U(R)\coloneqq R^{\times}\times\Set{a\in R | a \text{ invertierbar}}$ ist
+  eine Gruppe bezüglich der Multiplikation. Sie heißt die
+  \highl{Einheitengruppe}. Für $U(R)=R\setminus\{0\}$ heißt $R$
+  \highl{Schiefkörper}. Wenn $R$ ein kommutativer Schiefkörper, so ist $R$ ein
+  Körper.
+\end{bemerk}
+
+\begin{bsp}
+  Sei $R$ ein Ring und $n\in\N$. Dann ist $\GL(n,R)\coloneqq U(R^{n\times n})$
+  der Ring der invertierbaren Matizen und heißt \highl[Gruppe!allgemeine
+  lineare]{allgemeine lineare Gruppe} des Grades~$n$ über $R$ (general linear
+  group).
+\end{bsp}
+
+%3.3 def
+\begin{defini}[Nullteiler]
+  Sei $R$ ein Ring und $a\in R$. Dann heißt $a$ \highl{Linksnullteiler}, wenn
+  ein $b\in R\setminus\{0\}$ mit $ab=0$ existiert. Analog definiert man
+  \highl{Rechtsnullteiler}. Ein Element $a$ heißt \highl{Nullteiler}, wenn es
+  Links- oder Rechtsnullteiler ist.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item
+    \begin{gather*}
+      \begin{pmatrix}
+	1 & 0\\
+	0 & 0
+      \end{pmatrix}
+	 \begin{pmatrix}
+	   0 & 0 \\
+	   0 & 1
+	 \end{pmatrix}=
+	 \begin{pmatrix}
+	   0 & 0\\
+	   0 & 0
+	 \end{pmatrix}
+    \end{gather*}
+    in $\Q^{2\times2}$.
+   \item $R\neq\{0\}\Rightarrow0$ Nullteiler in $R$.
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  Ein Ring~$R\neq\{0\}$ heißt \highl{nullteilerfrei}, wenn $0$ der einzige
+  Nullteiler in $R$ ist. Schiefkörper und $\Z$ sind nullteilerfrei.
+  Nullteilerfreie kommutative Ringe heißen \highl{Integritätsbereich}.
+  Beispiele sind Körper und $\Z$.
+\end{bemerk}
+
+%3.4 def
+\begin{defini}
+  Sei $R$ ein Ring und $a\in R$. Das Element $a$ heißt \highl{idempotent},
+  wenn $a^{2}=a$. Das Element $a$ heißt \highl{nilpotent}, wenn ein $n\in \N$
+  mit $a^{n}=0$ existiert.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Wenn $a$ idempotent, dann ist auch $1-a$ idempotent:
+    $(1-a)^{2}=1-2a+a^{2}=1-2a+a=1-a$.
+   \item Wenn $a$ nilpotent, dann $1-a\in U(R)$. Denn aus $a^{n}=0$ folgt,
+    $(1-a)(1+a+a^{2}+\dotsb+ a^{n-1})=1-a^{n}=1$ und $(1+a+a^{2}+\dotsb+
+    a^{n-1})(1-a)=1$.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  $0\mathord{,}1$ sind idempotent und $0$ ist stets nilpotent.
+\end{bsp}
+
+
 
 \clearpage
 \pdfbookmark[0]{Index}{index}
