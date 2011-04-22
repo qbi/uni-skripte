@@ -74,6 +74,8 @@
                             % gesetzt. Verwendung: \diff{f}{x} oder
                             % \diffp{f}{x} für partielle Ableitungen
 \usepackage{braket}
+\usepackage{amsfonts}
+\usepackage{wasysym}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -172,12 +174,17 @@
 % Frakturbuchstaben
 \newcommand*{\FC}{\mathfrak{C}}
 \newcommand*{\FD}{\mathfrak{D}}
+\newcommand*{\FE}{\mathfrak{E}}
+\newcommand*{\FF}{\mathfrak{F}}
 \newcommand*{\FP}{\mathfrak{P}}
 
 % Menge Set
 \newcommand*{\textset}{\underline{\text{Set}}}
 \newcommand*{\bigtimes}{\mathop{\raisebox{-.5ex}{\hbox{\huge{$\times$}}}}}
 \newcommand*{\kat}[1]{\mathbf{#1}}
+
+% Einige Kategorien haben vor der Bezeichnung einen Index.
+\newcommand*{\vorunten}[1]{{}_{#1}\!}
 
 \DeclareMathOperator{\id}{id}             % Identität
 \DeclareMathOperator{\Abb}{Abb}           % Abbildungen
@@ -263,6 +270,296 @@
 \listtheorems{defini,festl}
 
 \todo[inline]{Vorlesungen vom 4. und 8. April 2011}
+
+
+\chapter{Kategorien und Funktoren}
+%def 1.1
+\begin{defini}
+  Eine \highl{Kategorie} besteht aus
+  \begin{enumerate}
+   \item einer \highl{Klasse}~$\FC$ und die Elemente einer Klasse heißen
+    \highl{Objekt}e,
+   \item einer Menge $\FC(A,B)$ und die Elemente der Menge heißen
+    \highl[Morphismus]{Morphismen} von $A$ nach $B$. Wir schreiben
+    $A\xrightarrow{f} B$ oder $f\colon A\rightarrow B$ zu jedem Paar~$(A,B)$
+    von Objekten in $\FC$,
+   \item einer Abbildung $\FC(B,C)\times\FC(A,B)\rightarrow\FC(A,C)$ mit
+    $(g,f)\mapsto g\circ f$. Diese Abbildung heißt \highl{Komposition}. Dabei
+    verlangt man:
+    \begin{enumerate}
+     \item $\FC(A,B)\cap\FC(C,D)=\emptyset$, falls $(A,B)\neq(C,D)$.
+     \item $h\circ(g\circ f)=(h\circ g)\circ f$ für alle $A\xrightarrow{f}
+      B\xrightarrow{g} C\xrightarrow{h}D$ in $\FC$.
+     \item Für alle $A\in\FC$ existiert ein $\id_{A}\in\FC(A,A)$ mit
+      $f\circ\id_{A}=f$ und $\id_{A}\circ g=g$ für alle
+      $A\rightleftarrows^{f}_{g} B$ in $\FC$.
+    \end{enumerate}
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Sind Morphismen und Kompositionen klar, so sagt man auch, $\FC$ ist
+    eine Kategorie.
+   \item Bekanntlich ist die "`Gesamtheit"' aller Mengen keine Menge. Um
+    solche WIdersprüche zu vermeiden, spricht man von "`Klassen"'. Wir werden
+    Klassen nicht genau definieren. Aer z.\,B. ist die Gesamtheit aller Mengen
+    eine Klasse.
+   \item Für $A\in\FC$ ist die \highl{Identität}~$\id_{A}$ eindeutig bestimmt.
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}[(a)]
+   \item Mengen und Abbildungen bilden eine Kategorie~$\kat{Set}$. Für
+    $A,B\in\kat{Set}$ ist $\kat{Set}(A,B)=\Abb(A,B)$ die Menge aller
+    Abbildungen von $A$ nach $B$.
+   \item Gruppen und Gruppenhomomorphismen bilden eine Kategorie~$\kat{Gr}$.
+   \item Für jeden Körper~$K$ bilden die $K$"~Vektorräume und $K$"~linearen
+    Abbildungen eine Kategorie~$\vorunten{K}\kat{Vec}$.
+  \end{enumerate}
+\end{bsp}
+
+%def 1.2
+\begin{defini}
+  Eine Kategorie~$\FD$ heißt \highl{Teilkategorie} einer Kategorie~$\FC$,
+  falls gilt:
+  \begin{enumerate}
+   \item $A\in\FD\Rightarrow A\in\FC$
+   \item $A,B\in\FD\Rightarrow\FD(A,B)\subseteq\FC(A,B)$
+   \item Die Komposition in $\FD$ ist eine Einschränkung der Komposition in
+    $\FC$. Identitäten sind eindeutig bestimmt.
+  \end{enumerate}
+  Gilt im zweiten Punkt oben die Gleichheit, so heißt $\FD$
+  \highl[Teilkategorie!volle]{volle Teilkategorie} von $\FC$.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}[(a)]
+   \item Die endlichen Mengen bilden eine volle Teilkategorie~$\kat{set}$ von
+    $\kat{Set}$.
+   \item Die endlichen Gruppen bilden eine volle Teilkategorie~$\kat{gr}$ von
+    $\kat{Gr}$.
+   \item Die abelschen Gruppen bilden eine volle
+    Teilkategorie~$\kat{Ab}$ von  $\kat{Gr}$.
+   \item Die endlichen abelschen Gruppen bilden eine volle
+    Teilkategorie~$\kat{ab}$ von  $\kat{Ab}$.
+   \item Mengen und injektive Abbildungen bilden eine nicht volle
+    Teilkategorie von $\kat{Set}$.
+  \end{enumerate}
+\end{bsp}
+
+%def 1.3
+\begin{defini}
+  Seien $\FC$ und $\FD$ Kategorien. Ein \highl{Funktor} von $\FC$ nach $\FD$
+  besteht aus:
+  \begin{enumerate}[(1)]
+   \item einer "`Abbildung"' $\Phi\colon\FC\rightarrow\FD$ mit $A\mapsto\Phi A$
+   \item einer Abbildung$\FC(A,B)\rightarrow\FD(\Phi A,\Phi B)$ mit
+    $f\mapsto\Phi f$ zu jedem Paar $(A,B)$ von Objekten in $\FC$.
+  \end{enumerate}
+  Dabei verlangt man:
+  \begin{enumerate}
+   \item $\Phi(g\circ f)=\Phi(g)\circ\Phi(g)$ für alle
+    $A\xrightarrow{f}B\xrightarrow{g}C$ in $\FC$.
+   \item $\Phi(\id_{A})= \id_{\Phi(A)}$ für $A\in\FC$.
+  \end{enumerate}
+  Wir schreiben: $\Phi\colon\FC\rightarrow\FD$ oder $\FC\xrightarrow{\Phi}\FD$.
+\end{defini}
+
+\begin{bsp}
+  \begin{enumerate}[(a)]
+   \item Der \highl{Vergissfunktor} $\kat{Gr}\rightarrow\kat{Set}$, der jeder
+    Gruppe die zugrundeliegende Menge zuordnet. Analog hat man
+    Vergissfunktoren $\vorunten{K}\kat{Set}\rightarrow\kat{Set}$,
+    $\vorunten{K}\kat{Vec}\rightarrow\kat{Ab}$ usw.
+   \item Für jede Kategorie~$\FC$ hat man den
+    \highl{Identitätsfunktor}~$\Id_{\FC}\colon\FC\rightarrow\FC$ mit
+    $\Id_{\FC}A=A$ und $\Id_{\FC}(f)=f$ für alle $A\xrightarrow{f}B$ in $\FC$.
+   \item Für jedes Objekt~$X$ in einer Kategorie~$\FC$ der
+    Funktor~$\FC(X,?)\colon\FC\rightarrow\kat{Set}$ mit
+    $\FC(X,?)(A)\coloneqq\FC(X,A)$ und $\FC(X,?)(f)\coloneqq\FC(X,f)$, wobei
+    $\FC(X,f)\colon\FC(X,A)\rightarrow\FC(X,B)$ mit $g\mapsto f\circ g$ für
+    alle $A\xrightarrow{f}B$ gilt.\todo{nachrechnen}
+  \end{enumerate}
+\end{bsp}
+
+\begin{bemerk}
+  Ein Funktor~$\FC\xrightarrow{\Phi}\FD$ heißt \highl{treu} oder \highl{voll},
+  falls für alle $A,B\in\FC$ die Abbildung $\FC(A,B)\rightarrow\FD(\Phi A,\Phi
+  B)$ mit $f\mapsto\Phi f$ infektiv oder surjektiv ist.
+\end{bemerk}
+
+%bem 1.4
+\begin{bemerk}
+  Für Funktoren $\FC\xrightarrow{\Phi}\FD\xrightarrow{\Psi}\FE$ definiert man
+  in naheliegender Weise einen Funktor $\Psi\circ\Phi\colon\FC\rightarrow\FE$.
+  Für die so definierte \highl{Komposition} von Funktoren gilt:
+  \begin{enumerate}
+   \item $(\Omega\circ\Psi)\circ\Phi= \Omega\circ(\Psi\circ\Phi)$ für
+    Funktoren
+    $\FC\xrightarrow{\Phi}\FD\xrightarrow{\Psi}\FE\xrightarrow{\Omega}\FF$.
+   \item $\Phi\circ\Id_{\FC}=\Phi=\Id_{\FD}\circ\Phi$ für Funktoren
+    $\Phi\colon\FC\rightarrow\FD$.
+  \end{enumerate}
+\end{bemerk}
+
+%def 1.5
+\begin{defini}
+  Ein Morphismus $f\colon A\rightarrow B$ in einer Kategorie heißt
+  \highl{Isomorphismus} (iso), falls ein $g\in\FC(B,A)$ mit $g\circ f=\id_{A}$
+  und $f\circ g=\id_{B}$ existiert
+\end{defini}
+
+\begin{bemerk}
+  Gegebenenfalls ist $g$ durch $f$ eindeutig bestimmt. Man bezeichnet $g$ als
+  \highl{Inverses} von $f$ und schreibt $g=f^{-1}$. Dann ist auch $f^{-1}$ ein
+  Isomorphismus in $\FC$ und $(f^{-1})^{-1}=f$.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{enumerate}
+   \item Stets ist $\id_{A}$ ein Isomorphismus in $\FC$ und
+    $\id_{A}^{-1}=\id_{A}$.
+   \item Hat man Isomorphismen $A\xrightarrow{f}B\xrightarrow{g}C$ in $\FC$,
+    so ist $g\circ f\colon A\rightarrow C$ ein Isomorphismus in $\FC$ und
+    $(g\circ f)^{-1}=f^{-1}\circ g^{-1}$.
+   \item Die Isomorphismen in $\kat{Set}$ sind genau die Bijektionen und die
+    Isomorphismen in $\kat{Gr}$ sind genau die Gruppenhomomorphismen.
+  \end{enumerate}
+\end{bsp}
+
+\begin{satz}\label{satz:1.5}
+  Für jeden Funktor $\Phi\colon\FC\rightarrow\FD$ und jeden Isomorphismus
+  $f\colon A\rightarrow B$ in $\FC$ ist $\Phi f\colon\Phi A\rightarrow\Phi B$
+  ein Isomorphismus in $\FD$ mit $(\Phi f)^{-1}=\Phi(f^{-1})$.
+  \begin{proof}
+    $\Phi(f^{-1})\circ\Phi f= \Phi(f^{-1}\circ f)= \Phi(\id_{A})=
+    \id_{\Phi(A)}$ und $\Phi f\circ\Phi(f^{-1})=\dotsb=\id_{\Phi(B)}$.
+  \end{proof}
+\end{satz}
+
+%def 1.6
+\begin{defini}
+  Objekte $A$ und $B$ in einer Kategorie $\FC$ heißen
+  \highl[Objekte!isomorphe]{isomorph}\index{isomorph}, falls ein Isomorphismus
+  $f\in\FC(A,B)$ existiert. Wir schreiben, $A\cong_{\FC}B$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Man zeigt leicht, dass $\cong_{\FC}$ ein Äquivalenzrelation ist.
+   \item Aus dem \autoref{satz:1.5} folgt, dass für Funktoren
+    $\FC\xrightarrow{\Phi}\FD$ und Objekten $A,B\in\FC$ gilt,
+    A$\cong_{\FC}B\Rightarrow\Phi A\cong_{\FD} \Phi B$.
+  \end{enumerate}
+\end{bemerk}
+
+%def 1.7
+\begin{defini}
+  Ein Morphismus $f\colon A\rightarrow B$ in einer Kategorie $\FC$ heißt:
+  \begin{enumerate}
+   \item \highl[Morphismus!mono]{mono}\index{mono}, falls alle $g,h\colon
+    C\rightarrow A$ in $\FC$ mit $f\circ g=g\circ h$ gilt, $g=h$.
+   \item \highl[Morphismus!epi]{epi}\index{epi}, falls für alle $g,h\colon
+    B\rightarrow C$ in $\FC$ mit $g\circ f=h\circ f$ gilt, $g=h$.
+  \end{enumerate}
+\end{defini}
+
+\begin{satz}
+  Für alle Mengen und Abbildungen $f\colon A\rightarrow B$ gilt, $f$ mono
+  (epi) in $\kat{Set}\Leftrightarrow f$ injektiv (surjektiv).
+  \begin{proof}
+    \begin{enumerate}
+     \item
+      \begin{itemize}
+       \item["`$\Rightarrow$"'] Seien $x,y\in A$ mit $f(x)=f(y)$. Dann sind
+	$g\colon\{x\}\rightarrow A$ mit $x\mapsto x$ und
+	$h\colon\{x\}\rightarrow A$ mit $x\mapsto y$ Abbildungen mit $f\circ
+	g=f\circ h$. Ist $f$ mono, so folgt, $g=h$, d.\,h. $x=y$.
+       \item["`$\Leftarrow$"'] Seien $g,h\colon C\rightarrow A$ Abbildungen
+	mit $f\circ g=f\circ h$. Für $x\in C$ ist dann $f(g(x))=f(h(x))$. Ist
+	$f$ injektiv, so folgt, $g(x)=h(x)$. Also $g=h$.
+      \end{itemize}
+     \item
+      \begin{itemize}
+       \item["`$\Rightarrow$"'] Sei $f$ epi und $y=B$. Wir definieren $g\colon
+	B\rightarrow\{0,1\}$ durch $g(y)\coloneqq1$ und $g(x)\coloneqq0$
+	sonst. Weiterhin definieren wir $h\colon B\rightarrow\{0,1\}$ durch
+	$h(x)\coloneqq0$ für alle $x\in B$. Wäre $y\notin\Bld(f)$, so wäre
+	$g\circ f=h\circ f$, also $g=h$ \lightning{} Also: $y\in\Bld(f)$.
+	Daher ist $f$ surjektiv.
+       \item["`$\Leftarrow$"'] Seien $g,h\colon B\rightarrow C$ Abbildungen
+	mit $g\circ f=h\circ f$, d.\,h. $g(f(a))= h(f(a))$ für alle $a\in A$.
+	Ist $f$ surjektiv, so folgt, $g(b)= h(b)$ für alle $b\in B$, d.\,h.
+	$g=h$.
+      \end{itemize}
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Der Satz gilt \emph{nicht} in allen Kategorien, deren Objekte Mengen
+    sind.
+   \item Im Allgemeinen existieren Morphismen, die mono und epi, aber keine
+    Isomorphismen sind.
+  \end{enumerate}
+\end{bemerk}
+
+%satz 1.8
+\begin{satz}
+  Sei $\FC$ eine Kategorie und $A\xrightarrow{f}B\xrightarrow{g}C$ in $\FC$.
+  Dann folgt:
+  \begin{enumerate}
+   \item $f,g$ mono (epi) $\Rightarrow g\circ f$ mono (epi).
+   \item $g\circ f$ mono (epi) $\Rightarrow f$ mono ($g$ epi).
+  \end{enumerate}
+  \begin{proof}
+    Der Beweis erfolgt in der Übung.
+  \end{proof}
+\end{satz}
+
+%def 1.9
+\begin{defini}
+  Ein Morphismus $f\colon A\rightarrow B$ in einer Kategorie heißt
+  \highl{Sektion} oder \highl{Refraktion}, falls ein $g\in\FC(A,B)$ mit
+  $g\circ f=\id_{A}$ oder $f\circ g=\id_{B}$ existiert.
+\end{defini}
+
+\begin{satz}
+  Sei $\FC$ eine Kategorie und $f\colon A\rightarrow B$ in $\FC$. Dann gilt:
+  \begin{enumerate}
+   \item $f$ Sektion (Refraktion) $\Rightarrow$ $f$ mono (epi).
+   \item $f$ Sektion und Refraktion $\Rightarrow f$ Isomorphismus.
+  \end{enumerate}
+  \begin{proof}
+    Der Beweis erfolgt in der Übung.
+  \end{proof}
+\end{satz}
+
+%def 1.10
+\begin{defini}
+  Ein Objekt $A$ in einer Kategorie $\FC$ heißt \highl{Initialobjekt} oder
+  \highl{Finalobjekt}, falls $\abs{\FC(A,B)}=1$ oder $\abs{\FC(B,A)}=1$ für
+  alle $B\in\FC$. Ist $A\in\FC$ Initial- und Finalobjekt, so heißt $A$
+  \highl{Nullobjekt} in $\FC$.
+\end{defini}
+
+\begin{bsp}
+  In $\kat{Set}$ ist $\emptyset$ ein Initialobjekt und jede einelementige
+  Menge ist ein Finalobjekt. Jedoch enthält $\kat{Set}$ kein Nullobjekt.
+\end{bsp}
+
+\begin{satz}
+  Sind $A$ und $A'$ Initialobjekte oder Finalobjekte einer Kategorie $\FC$, so
+  ist $A\cong A'$.
+  \begin{proof}
+    Sei $\FC(A,A')=\{f\}$ und $\FC(A,A')=\{g\}$\todo{Stimmt das so?}. Wegen
+    $\FC(A,A)=\{\id_{A}\}$ ist $g\circ f=\id_{A}$. Analog ist $f\circ
+    g=\id_{A}$, d.\,h. $f$ ist ein Isomorphismus. Also $A\cong A'$.
+  \end{proof}
+\end{satz}
 
 \chapter{Natürliche Transformationen und Äquivalenzen}
 
