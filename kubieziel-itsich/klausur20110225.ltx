@@ -1,0 +1,153 @@
+\documentclass[DIV=12,ngerman]{scrartcl}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumerate}
+% \usepackage[colorlinks=true]{hyperref}
+% \usepackage{charter}
+% \usepackage[bitstream-charter]{mathdesign}
+% \usepackage[scaled=.96]{helvet}
+\usepackage{bera}
+\usepackage{berasans}
+\usepackage{beraserif}
+\usepackage{beramono}
+\usepackage{mathpazo}
+% \usepackage{fouriernc}
+% \usepackage{tgschola}
+%\DeclareMathSymbol{\nmid}{\mathbin}{AMSb}{"2D}{}
+% \usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+%                                        % amsmath-Umgebungen z.\,B. $$...$$
+% %\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+% \usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+% \usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+% \usepackage[alsoload=binary]{siunitx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{paralist}
+%\usetikzlibrary{arrows} %,placement,fit}
+
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+\ihead{Prof.\,Dr.\,E.\,Zehendner, J.\,Kubieziel}
+\ohead{IT-Sicherheit}
+\chead{WS10/11}
+
+\begin{document}
+\section*{Klausur vom 25.\,Februar~2011}
+
+\subsection*{Sicherheitsmodelle}
+
+Eine Rechtsanwaltskanzlei hat Sie als Berater engagiert. Zunächst
+möchte Ihr Auftraggeber einige Details zu Sicherheitsmodellen von
+Ihnen wissen.
+
+\begin{enumerate}
+\item In der Kanzlei soll eine Zugriffskontrollstrategie umgesetzt
+  werden. Nennen und erklären Sie die drei Arten von
+  Zugriffskontrollstrategien aus der Vorlesung.  (3P)
+\item Welcher Art von Zugriffskontrollstrategie ist das
+  Bell-LaPadula-Modell zuzuordnen und warum?  (1P)
+\item Nennen Sie alle Komponenten des rollenbasierten Zugriffsmodells
+  und erläutern Sie den Zusammenhang. Welche Mengen und Abbildungen
+  sind in diesem Modell enthalten? (5P)
+\item Welche Sicherheitseigenschaften muss das rollenbasierte Modell
+  garantieren? (3P)
+
+\item Gegeben sei folgende Modellierung nach dem RBAC"=Modell. 
+
+  \begin{tikzpicture}[./.style={>=stealth'}]
+    \node (ass) at (0,0) [shape=rectangle,draw] {Assistent};
+    \node (ra) at (-2,1.5) [shape=rectangle,draw] {Rechtsanwalt};
+    \node (ga) at (2,1.5) [shape=rectangle,draw] {Gutachter};
+    \node (aud) at (0,3) [shape=rectangle,draw] {Auditor};
+    \node (gf) at (0,4.5) [shape=rectangle,draw] {Geschäftsführer};
+    \node at (4,4.5) [shape=rectangle,draw] {Klient};
+    \draw [->,thick] (ass.north) -- (ra.south) {};
+    \draw [->,thick] (ass.north) -- (ga.south) {};
+    \draw [->,thick] (ra.north) -- (aud.south) {};
+    \draw [->,thick] (ga.north) -- (aud.south) {};
+    \draw [->,thick] (aud.north) -- (gf.south) {};
+  \end{tikzpicture}
+
+  \begin{tabular}{l|l|c|c|c|c|c}
+    \toprule
+    Rolle & Berechtigung & \multicolumn{5}{c}{Subjekt}\\
+    & & Baja & Vela & Reich & Wolff & Sobel\\
+    \midrule
+    Assistent & Schriftsätze ausfertigen &   &   & X &   &   \\
+    Rechtsanwalt & Beratung von Klienten & X &   &   &   &   \\
+    Gutachter & Gerichtsgutachten anfertigen&& X &   &   &   \\
+    Auditor & Prüfung der Gutachten      &   &   &   & X &   \\
+    Geschäftsführer & Vertretung der Kanzlei & & &   &   & X\\
+    Klient & Beratung einholen           & X &   &   &   &   \\
+    \bottomrule
+  \end{tabular}
+  Weiterhin gelten folgende Aufgabentrennungen:
+  \begin{description}
+  \item[SSD] Die Rolle \emph{Auditor} darf nie gleichzeitig mit der
+    Rolle \emph{Gutachter} eingenommen werden.
+  \item[DSD] Die Rolle \emph{Rechtsanwalt} darf nie gleichzeitig mit der
+    Rolle \emph{Klient} eingenommen werden.
+  \end{description}
+  Beantworten Sie die folgenden Fragen mit Begründung (je 1P):
+  \begin{enumerate}
+  \item Darf Herr Baja in der aktiven Rolle als \emph{Rechtsanwalt}
+    Schriftsätze ausfertigen?
+  \item Darf Herr Wolff Klienten beraten?
+  \item Darf sich Frau Vela von einem Kollegen beraten lassen?
+  \item Herr Wolff hat ein Gutachten angefertigt. Was muss er tun, um
+    dieses prüfen zu lassen?
+  \end{enumerate}
+\end{enumerate}
+
+\subsection*{Signaturen}
+Die Kanzlei plant alle Dokumente digital zu signieren. Ein Vorschlag
+sieht vor, Dokumente mittels einer RSA-Signatur zu
+unterschreiben. Hierzu muss ein RSA"=Schlüssel angelegt werden.
+\begin{enumerate}
+\item Folgende Varianten stehen für die Zahlen $p$ und $q$ zur
+  Verfügung. Begründen Sie, welche Kombination Sie für die Berechnung
+  des RSA"=Schlüssels wählen würden und warum Sie die anderen nicht
+  berücksichtigen. (3P)
+  \begin{itemize}
+  \item $p=253, q=271$
+  \item $p = 269, q = 271$
+  \item $p = 269, q = 883$
+  \end{itemize}
+\item Berechnen Sie für $p = 43$ und $q = 31$ den privaten und den
+  öffentlichen RSA-Schlüssel. Die Werte von $p$ und $q$ sind
+  unabhängig von der vorherigen Aufgabe zu sehen und wurden gewählt,
+  um die Berechnung für Sie zu vereinfachen. (4P)
+\item Erzeugen Sie die Signatur für die Nachricht $m = 2$.  (2P)
+\item Wie sieht die Verifikationsfunktion $v_k$ aus?  (1P)
+\item Die Kanzlei möchte diverse Daten digital signieren. Diese
+  Unterschrift soll einer eigenhändigen Unterschrift gleich gestellt
+  sein. Kann die Kanzlei die RSA-Signatur für eine rechtssichere
+  Unterschrift verwenden? Begründen Sie Ihre Antwort.  (2P)
+\item Welche Anforderungen stellt der Gesetzgeber an ein
+  Signaturverfahren, welches der eigenhändigen Unterschrift
+  gleichgestellt ist?  (3P)
+\item Welche (weiteren) Arten von Signaturen nach dem Signaturgesetz
+  kennen Sie?  (2P)
+\item In der Vorlesung wurden verschiedene Schutzziele
+  eingeführt. Welches der Schutzziele versucht ein Signaturverfahren
+  umzusetzen? Begründen Sie Ihre Antwort. (1P)
+\end{enumerate}
+
+\subsection*{Netzwerksicherheit}
+
+\begin{enumerate}
+\item Die Mitarbeiter der Kanzlei arbeiten innerhalb eines
+  Netzwerks. Darüber werden unter anderem E-Mails
+  ausgetauscht. Beschreiben Sie kurz zwei mögliche Angriffe, die ein
+  \emph{interner} Angreifer durchführen könnte.  (2P)
+\item Wie könnten die Kanzleimitarbeiter vertrauliche Kommunikation
+  herstellen?  (2P)
+\item Was ist ein (distributed) Denial-of-Service-Angriff?  (1P)
+\end{enumerate}
+
+
+\end{document}

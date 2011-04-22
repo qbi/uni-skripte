@@ -1,0 +1,118 @@
+#+TITLE: Lösungsvorschläge zur Prüfung vom 25. Februar 2011
+#+EMAIL: jens@kubieziel.de
+
+
+* Sicherheitsmodelle
+  1. In der Kanzlei soll eine Zugriffskontrollstrategie umgesetzt
+     werden. Nennen und erklären Sie die drei Arten von
+     Zugriffskontrollstrategien aus der Vorlesung.
+     - Benutzerbestimmbare Zugriffskontrollstrategie
+     - Systembestimmte Zugriffskontrollstrategie
+     - Rollenbasierte Zugriffskontrollstrategie
+  2. Welcher Art von Zugriffskontrollstrategie ist das
+     Bell-LaPadula-Modell zuzuordnen und warum?
+     Systembestimmte Zugriffskontrollstrategie.
+     Nach dem ersten Sichten der Klausur haben hier viele RBAC als
+     Lösung geschrieben. Das wundert mich ein wenig. Denn zum einen
+     steht die Lösung in den Folien und zum anderen haben wir recht
+     lange in der Vorlesung über diesen Fakt diskutiert. Daher nahm
+     ich beim Zusammenstellen der Fragen an, dass das für die meisten
+     ein eher leicht erworbener Punkt ist.
+  3. Nennen Sie alle Komponenten des rollenbasierten Zugriffsmodells
+     und erläutern Sie den Zusammenhang. Welche Mengen und Abbildungen
+     sind in diesem Modell enthalten?
+     Hier war das Tupel (S, O, R, P, sr, pr, session) mit der
+     entsprechenden Definition gefragt.
+  4. Welche Sicherheitseigenschaften muss das rollenbasierte Modell
+     garantieren?
+     - Ein Subjekt darf nur in Rollen aktiv sein, in denen es
+       Mitglied ist.
+     - Ein Subjekt nimmt nur die Rechte wahr, die einer Rolle
+       zugeordnet sind, in der es aktiv ist.
+     - In einem hierarchischen, rollenbasierten Modell erbt ein
+       Subjekt alle Rechte von Rollen, die von seinen aktiven Rollen
+       dominiert werden.
+  5. Gegeben war ein RBAC-Modell mit einigen Fragen.
+     1. Darf Herr Baja in der aktiven Rolle als /Rechtsanwalt/
+        Schriftsätze ausfertigen?
+	Ja, er erbt die Rechte von Assistent. Siehe vorige Frage.
+     2. Darf Herr Wolff Klienten beraten?
+	Ja, er erbt die Rechte von Rechtsanwalt.
+     3. Darf sich Frau Vela von einem Kollegen beraten lassen?
+	Ja, für sie gibt es keine Beschränkungen.
+     4. Herr Wolff hat ein Gutachten angefertigt. Was muss er tun, um
+	dieses prüfen zu lassen?
+	Entweder an einen anderen Gutachter geben (sofern vorhanden)
+        oder an den Geschäftsführer geben.
+
+* Signaturen
+  1. Folgende Varianten stehen für die Zahlen /p/ und /q/ zur
+     Verfügung. Begründen Sie, welche Kombination Sie für die Berechnung
+     des RSA-Schlüssels wählen würden und warum Sie die anderen nicht
+     berücksichtigen.
+     1. /p = 253, q = 271/
+	Meine Hoffnung war, dass Sie die Testklausur nacharbeiten und
+        sofort erkennen, dass /253 = 11 · 23/. Also ist /253/ keine
+        Primzahl.
+     2. /p = 269, q = 271/
+	Beide Zahlen sind Primzahlen und sind damit für RSA
+        geeignet. Allerdings sollten die beiden Zahlen nicht zu nahe
+        beieinander liegen. Sonst lässt sich /n/ durch Wurzelbildung
+        leicht faktorisieren.
+     3. /p = 269, q = 883/
+	Beide sind Primzahlen und liegen weit auseinander. Gesuchter
+        Kandidat.
+  2. Berechnen Sie für /p = 43/ und /q = 31/ den privaten und den
+     öffentlichen RSA-Schlüssel. Die Werte von /p/ und /q/ sind
+     unabhängig von der vorherigen Aufgabe zu sehen und wurden gewählt,
+     um die Berechnung für Sie zu vereinfachen.
+     - /n = p · q = 43 · 31 = 1333/
+     - /φ(n) = (p-1)(q-1) = 42 · 30 = 1260/
+     - Als nächstes war /e/ zu bestimmen. Dabei muss /e/ zwischen /1/
+       und /φ(n)/ liegen sowie /φ(n)/ nicht teilen. Von den korrekten
+       Varianten, die ich bislang sah, wurde 11 oder 13 gewählt.
+     - Nun ist /d/ zu berechnen. Ich habe es mal für die obigen drei
+       Varianten für /e/ getan:
+       |   x |    y |    q |   r |
+       |-----+------+------+-----|
+       |   1 |    0 | 1260 |     |
+       |   0 |    1 |   11 | 114 |
+       |   1 | -114 |    6 |   1 |
+       |  -1 |  115 |    5 |   1 |
+       |   2 | -229 |    1 |   5 |
+       | -11 | 1260 |    0 |     |
+
+       |  x |     y |    q |  r |
+       |----+-------+------+----|
+       |  1 |     0 | 1260 |    |
+       |  0 |     1 |   13 | 96 |
+       |  1 |   -96 |   12 |  1 |
+       | -1 |    97 |    1 | 12 |
+       | 13 | -1260 |    0 |    |
+
+       Also ist /d = -229 = 1031 mod 1260/ bzw. /d = 97/. 
+  3. Erzeugen Sie die Signatur für die Nachricht /m = 2/.
+     Für die Signatur gilt: /m^d mod n/, also /2^1031 mod 1333 = 684/
+     bzw. /2^97 mod 1333 = 624/. Andere korrekte Lösungen sind möglich.
+  4. Wie sieht die Verifikationsfunktion /v_k/ aus?
+     Hier sei auf die Folien verwiesen.
+  5. Die Kanzlei möchte diverse Daten digital signieren. Diese
+     Unterschrift soll einer eigenhändigen Unterschrift gleich gestellt
+     sein. Kann die Kanzlei die RSA-Signatur für eine rechtssichere
+     Unterschrift verwenden? Begründen Sie Ihre Antwort.
+     Nein, die Antwort ergibt sich aus der untenstehenden Frage.
+  6. Welche Anforderungen stellt der Gesetzgeber an ein
+     Signaturverfahren, welches der eigenhändigen Unterschrift
+     gleichgestellt ist?
+     Für die qualifizierte elektronische Signatur wird gefordert:
+     - fortgeschrittene Signatur
+     - zum Zeitpunkt der Erzeugung gültiges Zertifikat
+     - Erzeugung mit sicherer Signaturerstellungseinheit
+  7. Welche (weiteren) Arten von Signaturen nach dem Signaturgesetz
+     kennen Sie?
+     - fortgeschrittene Signatur
+     - einfache elektronische Signatur
+
+
+* Netzwerksicherheit
+  
