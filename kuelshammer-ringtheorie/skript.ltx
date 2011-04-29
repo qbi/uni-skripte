@@ -75,11 +75,14 @@
                             % \diffp{f}{x} für partielle Ableitungen
 \usepackage{braket}
 \usepackage{amsfonts}
+
 \usepackage{wasysym}
-\usepackage[all]{xypic}
  \usepackage{charter}
  \usepackage[scaled=.92]{helvet}
 \usepackage{eulervm}
+\usepackage{tikz}
+
+\usetikzlibrary{positioning,arrows}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -177,7 +180,7 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
-% Ein breiter Hut gefällt mir besse
+% Ein breiter Hut gefällt mir besser
 \renewcommand*{\hat}{\widehat}
 
 % Frakturbuchstaben
@@ -591,12 +594,18 @@
   $\tau_{A}\in\FD(\Phi A, \Psi A)$ mit $(\Psi f)\circ\tau_{A}=
   \tau_{B}\circ(\Phi f)$ für $A,B\in\FC$ und $f\in\FC(A,B)$. Wir schreiben,
   $\tau\colon\Phi\Rightarrow\Psi$.
-  \begin{gather*}
-    \xymatrix{
-      \Phi A\ar[r]^{\tau_{A}}\ar[d]^{\Phi f} & \Psi A\ar[d]^{\Psi f}\\
-      \Phi B\ar[r]^{\tau_{B}} & \Psi B
-      }
-  \end{gather*}
+
+  \begin{tikzpicture}
+    \node (phia) {$\Phi A$};
+    \node [right=2cm of phia] (psia) {$\Psi A$};
+    \node [below=1.5cm of phia] (phib) {$\Phi B$};
+    \node [below=1.5cm of psia] (psib) {$\Psi B$};
+    \draw[->]
+    (phia) edge node (ta) [above]{$\tau_{A}$} (psia)
+    (phia) edge node (phif) [right]{$\Phi f$} (phib)
+    (psia) edge node (psif) [right]{$\Psi f$} (psib)
+    (phib) edge node (tb) [above]{$\tau_{B}$} (psib);
+  \end{tikzpicture}
 \end{defini}
 
 \begin{bsp}\label{bsp:2.1}
@@ -609,12 +618,19 @@
   $\lambda\mapsto\lambda(v)$. Dann ist
   $\epsilon\coloneqq(\epsilon_{V})_{V\in\vorunten{K}\kat{Vec}}\colon\Id_{\vorunten{K}\kat{Vec}}\Rightarrow\Phi$
   eine natürliche Transformation:
-  \begin{gather*}
-    \xymatrix{
-      V \ar[r]^{\epsilon_{V}}\ar[d]^{f} & V^{**}\ar[d]^{f^{**}}\\
-      W \ar[r]^{\epsilon_{W}} & W^{**}
-      }
-  \end{gather*}
+
+  \begin{tikzpicture}
+    \node (v) {$V$};
+    \node [right=2cm of v] (vss) {$V^{**}$};
+    \node [below=1.5cm of v] (w) {$W$};
+    \node [below=1.5cm of vss] (wss) {$W^{**}$};
+    \draw[->]
+    (v) edge node (ta) [above]{$\epsilon_{V}$} (vss)
+    (v) edge node (phif) [right]{$f$} (w)
+    (vss) edge node (psif) [right]{$f^{**}$} (wss)
+    (w) edge node (tb) [above]{$\epsilon_{W}$} (wss);
+  \end{tikzpicture}
+  
   Denn für $V,W\in\vorunten{K}\kat{Vec}$ und $f\in\Hom_{K}(V,W)$ ist
   $\epsilon_{W}\circ f=f^{**}\circ\epsilon_{V}$\todo{nachrechnen}.
 \end{bsp}
@@ -626,17 +642,36 @@
     $\tau\colon\Psi\Rightarrow\Omega$ ist auch die \highl{Komposition}
     $\tau\circ\sigma\coloneqq
     (\tau_{A}\circ\sigma_{A})_{A\in\FC}\colon\Phi\Rightarrow\Omega$ eine
-    natürliche Transformation:\todo{Erste Matrix korrekt setzen}
-    \begin{gather*}
-      \xymatrix{
-	\FC \ar@/^/[r]^{\Phi} \ar[r]^{\Psi} \ar@/_/[r]^{\Omega} & \FD
-	}\\
-      \xymatrix{
-	\Phi A\ar[r]^{\sigma_{A}}\ar[d]^{\Phi f} & \Psi A\ar[r]^{\tau_{A}}
-	\ar[d]^{\Psi f} & \Omega A\ar[d]^{\Omega f}\\
-	\Phi B\ar[r]^{\sigma_{B}} & \Psi B\ar[r]^{\tau_{B}} & \Omega B
-	}
-    \end{gather*}
+    natürliche Transformation:
+    
+    \begin{tikzpicture}
+      \node (c) {$\FC$};
+      \node [right=4cm of c] (d) {$\FD$};
+      \draw[->]
+      (c) edge node[fill=white] (psi) {$\Psi$} (d)
+      (c) edge[bend left=45] node (phi) [above]{$\Phi$} (d)
+      (c) edge[bend right=45] node (om) [below]{$\Omega$} (d);
+      \draw[shorten <=2pt, shorten >=2pt, -angle 60, thin]
+      (phi) edge[double] node (s) [right]{$\sigma$} (psi)
+      (psi) edge[double] node (t) [right]{$\tau$} (om);
+    \end{tikzpicture}
+  \begin{tikzpicture}
+    \node (phia) {$\Phi A$};
+    \node [right=2cm of phia] (psia) {$\Psi A$};
+    \node [right=2cm of psia] (oma) {$\Omega A$};
+    \node [below=1.5cm of phia] (phib) {$\Phi B$};
+    \node [below=1.5cm of psia] (psib) {$\Psi B$};
+    \node [below=1.5cm of oma] (omb) {$\Omega B$};
+    \draw[->]
+    (phia) edge node (sa) [above]{$\sigma_{A}$} (psia)
+    (psia) edge node (ta) [above]{$\tau_{A}$} (oma)
+    (phia) edge node (phif) [right]{$\Phi f$} (phib)
+    (psia) edge node (psif) [right]{$\Psi f$} (psib)
+    (oma) edge node (omf) [right]{$\Omega f$} (omb)
+    (phib) edge node (sb) [above]{$\sigma_{B}$} (psib)
+    (psib) edge node (tb) [above]{$\tau_{B}$} (omb);
+  \end{tikzpicture}
+    
     Offenbar ist die Komposition von natürlichen Transformationen assoziativ.
    \item Für Funktoren $\Gamma\colon\FB\rightarrow\FC$,
     $\Phi,\Psi\colon\FC\rightarrow\FD$, $\Delta\colon\FD\rightarrow\FE$ und
@@ -645,13 +680,18 @@
     \Gamma\Rightarrow\Psi\circ\Gamma$, $\Delta\circ\tau\coloneqq
     (\Delta\tau_{C})_{C\in\FC}\colon\Delta\circ\Phi\Rightarrow
     \Delta\circ\Psi$ natürliche Transformationen:
-    \begin{gather*}
-      \xymatrix{
-	\Phi\Gamma A \ar[r]^{\tau_{\Gamma_{A}}} \ar[d]^{\Phi\Gamma f} &
-	\Psi\Gamma A \ar[d]^{\Psi\Gamma f}\\
-	\Phi\Gamma B \ar[r]_{\tau_{\Gamma_{B}}} & \Psi\Gamma B
-	}
-    \end{gather*}
+
+    \begin{tikzpicture}
+      \node (phiga) {$\Phi\Gamma A$};
+      \node [right=2cm of phiga] (psiga) {$\Psi\Gamma A$};
+      \node [below=1.5cm of phiga] (phigb) {$\Phi\Gamma B$};
+      \node [below=1.5cm of psiga] (psigb) {$\Psi\Gamma B$};
+      \draw[->]
+      (phiga) edge node (tga) [above]{$\tau_{\Gamma_{A}}$} (psiga)
+      (phiga) edge node (phigf) [right]{$\Phi\Gamma f$} (phigb)
+      (psiga) edge node (psigf) [right]{$\Psi\Gamma f$} (psigb)
+      (phigb) edge node (tgb) [below]{$\tau_{\Gamma_{B}}$} (psigb);
+    \end{tikzpicture}
   \end{enumerate}
 \end{bemerk}
 
@@ -729,30 +769,52 @@
     f= \Psi\Phi g$. Dann:
     \begin{gather*}
       f= \tau_{B}\circ\Psi\Phi f\circ\tau_{A}^{-1}= \tau_{B}\circ\Psi\Phi
-	 g\circ\tau_{A}^{-1}=g\\
-      \xymatrix{
-	\Psi\Phi A \ar[r]^{\tau_{A}} \ar[d]^{\Psi\Phi g}_{\Psi\Phi f} & A
-	\ar[d]^{g}_{f}\\
-	\Psi\Phi B \ar[r]^{\tau_{B}} & B
-	}
+	 g\circ\tau_{A}^{-1}=g
     \end{gather*}
+    \begin{tikzpicture}
+      \node (psifa) {$\Psi\Phi A$};
+      \node [right=2cm of psifa] (a) {$A$};
+      \node [below=1.5cm of psifa] (psifb) {$\Psi\Phi B$};
+      \node [below=1.5cm of a] (b) {$B$};
+      \draw[->]
+      (psifa) edge node (ta) [above]{$\tau_{A}$} (a)
+      (psifa) edge node (fifi1) [right]{$\Psi\Phi g$} (psifb)
+      (psifa) edge node (fifi2) [left]{$\Psi\Phi f$} (psifb)
+      (psifb) edge node (tb) [above]{$\tau_{B}$} (b)
+      (a) edge node (fg1) [right]{$g$} (b)
+      (a) edge node (fg2) [left]{$f$} (b);      
+    \end{tikzpicture}
+    
     Dies zeigt, $\Phi_{AB}$ is injektiv. Analog ist $\Psi_{CD}$ für alle
     $C,D\in\FD$ injektiv.
 
     Zum Beweis der Surjektivität von $\Phi_{AB}$ sei $U\in\FD(\Phi A,\Phi B)$.
     Dann ist $f\coloneqq\tau_{B}\circ\Psi U\circ\tau_{A}^{-1}\in\FC(A,B)$. Nun
-    betrachten wir die folgenden kommutativen Diagramme\todo{muss das im ersten
-    Diagramm nicht $\tau_{B}$ heißen?}:
-    \begin{gather*}
-      \xymatrix{
-	\Psi\Phi A \ar[r]^{\tau_{A}} \ar[d]^{\Psi U} & A \ar[d]^{f}\\
-	\Psi\Phi B \ar[r]^{\tau_{A}} &B
-	}\qquad
-	 \xymatrix{
-	   \Psi\Phi A \ar[r]^{\tau_{A}} \ar[d]^{\Psi\Phi f} & A \ar[d]^{f}\\
-	   \Psi\Phi B \ar[r]^{\tau_{B}} & B
-	   }
-    \end{gather*}
+    betrachten wir die folgenden kommutativen Diagramme:
+    
+    \begin{tikzpicture}
+      \node (psifa) {$\Psi\Phi A$};
+      \node [right=2cm of psifa] (a) {$A$};
+      \node [below=1.5cm of psifa] (psifb) {$\Psi\Phi B$};
+      \node [below=1.5cm of a] (b) {$B$};
+      \draw[->]
+      (psifa) edge node (ta) [above]{$\tau_{A}$} (a)
+      (psifa) edge node (pu) [right]{$\Psi U$} (psifb)
+      (a) edge node (f) [right]{$f$} (b)
+      (psifb) edge node (tb) [above]{$\tau_{B}$} (b);
+    \end{tikzpicture}
+        \begin{tikzpicture}
+      \node (psifa) {$\Psi\Phi A$};
+      \node [right=2cm of psifa] (a) {$A$};
+      \node [below=1.5cm of psifa] (psifb) {$\Psi\Phi B$};
+      \node [below=1.5cm of a] (b) {$B$};
+      \draw[->]
+      (psifa) edge node (ta) [above]{$\tau_{A}$} (a)
+      (psifa) edge node (pu) [right]{$\Psi \Phi f$} (psifb)
+      (a) edge node (f) [right]{$f$} (b)
+      (psifb) edge node (tb) [above]{$\tau_{B}$} (b);
+    \end{tikzpicture}
+
     Man erhält, $\Psi U= \tau_{B}^{-1}\circ f\circ\tau_{A}= \Psi\Phi f$. Da
     $\Psi_{\Phi A,\Phi B}$ injektiv ist, folgt, $U=\Phi f$. Damit ist die
     Surjektivität von $\Phi_{AB}$ bewiesen.
@@ -797,18 +859,29 @@
   \FC(A,\Psi B)$ für $A\in\FC$ und $B\in\FD$ existieren derart, dass für alle
   Morphismen $f\colon A\rightarrow A'$ in $\FC$ und $g\colon B\rightarrow B'$
   folgende Diagramme kommutieren:
-  \begin{gather*}
-    \xymatrix{
-      \FD(\Phi A',B) \ar[r]^{\nu_{A'B}} \ar[d]^{\FD(\Phi f,B)} & \FC(A',\Psi
-       B) \ar[d]^{\FC(f,\Psi B)}\\
-      \FD(\Phi A,B) \ar[r]^{\nu_{AB}} & \FC(A,\Psi B)
-      }\qquad
-          \xymatrix{
-      \FD(\Phi A,B) \ar[r]^{\nu_{AB}} \ar[d]^{\FD(\Phi A,g)} & \FC(A,\Psi
-       B) \ar[d]^{\FC(A,\Psi g)}\\
-      \FD(\Phi A,B') \ar[r]^{\nu_{A'B}} & \FC(A,\Psi B')
-      }
-  \end{gather*}
+
+      \begin{tikzpicture}
+      \node (psifa) {$\FD(\Phi A',B)$};
+      \node [right=2cm of psifa] (a) {$\FC(A',\Psi B)$};
+      \node [below=1.5cm of psifa] (psifb) {$\FD(\Phi A,B)$};
+      \node [below=1.5cm of a] (b) {$\FC(A,\Psi B)$};
+      \draw[->]
+      (psifa) edge node (ta) [above]{$\nu_{A'B}$} (a)
+      (psifa) edge node (fifi1) [right]{$\FD(\Phi f,B)$} (psifb)
+      (psifb) edge node (tb) [above]{$\nu_{AB}$} (b)
+      (a) edge node (fg1) [right]{$\FC(f,\Psi B)$} (b);
+    \end{tikzpicture}
+        \begin{tikzpicture}
+      \node (psifa) {$\FD(\Phi A,B)$};
+      \node [right=2cm of psifa] (a) {$\FC(A,\Psi B)$};
+      \node [below=1.5cm of psifa] (psifb) {$\FD(\Phi A,B')$};
+      \node [below=1.5cm of a] (b) {$\FC(A,\Psi B')$};
+      \draw[->]
+      (psifa) edge node (ta) [above]{$\nu_{AB}$} (a)
+      (psifa) edge node (fifi1) [right]{$\FD(\Phi A,g)$} (psifb)
+      (psifb) edge node (tb) [above]{$\nu_{A'B}$} (b)
+      (a) edge node (fg1) [right]{$\FC(A,\Psi g)$} (b);
+    \end{tikzpicture}
 \end{defini}
 
 \begin{bemerk}
@@ -1487,6 +1560,7 @@ Sei $R$ ein Ring.
     \highl[Modul!zyklisches]{zyklisch}.
   \end{enumerate}
 \end{bsp}
+
 
 \clearpage
 \appendix
