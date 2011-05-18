@@ -179,6 +179,10 @@
 \DeclareMathOperator{\conv}{conv}
 \DeclareMathOperator{\spn}{span}
 \DeclareMathOperator{\card}{card}
+\DeclareMathOperator{\cl}{cl}          % Abschluss
+\DeclareMathOperator{\inn}{int}        % Inneres
+\DeclareMathOperator{\bd}{bd}          % Rand (boundary)
+\DeclareMathOperator{\diam}{diam}      % Durchmesser
 
 \makeindex
 
@@ -812,6 +816,267 @@
     \end{itemize}
   \end{proof}
 \end{satz}
+
+% Vorlesung vom 2.5.2011
+\begin{bemerk}
+  \begin{enumerate}
+   \item Unbeschränkte abgeschlossene konvexe Mengen im
+    unendlich"=dimensionalen normierten Räumen enthalten nicht notwendig
+    Halbgeraden.
+
+    Dazu nehmen wir als Beispiel den Raum $X=\ell_{1}$ mit der unbeschränkten
+    Menge~$K=\Set{(\xi_{k})_{k\geq1}\in\ell_{1} |
+    1\geq\xi_{1}\geq\xi_{2}\geq\dotsb\geq0}$. Denn $\lim_{l\rightarrow\infty}
+    \norm{(1,1,1,\dotsc,1,0,0,\dotsc)}_{1}=\lim_{l\rightarrow\infty}l=\infty$.
+    Aber $K$ enthält keine Halbgerade, denn alle Koordinaten aller Vektoren
+    aus $K$ gleichmäßig beschränkt sind ($0\leq\xi_{k}\leq k$).
+   \item Die topologischen Forderungen an $K$ (endlich abgeschlossen bzw.
+    offen) sind in beiden Richtungen der Äquivalenz nötig:
+    \begin{enumerate}[(a)]
+     \item $K=[0,1)\subseteq\R$ ist $m$"~teilbar, aber ohne Halbgerade.
+     \item $K=(\R\times[-1,0))\cup\{(0,0)\}\subseteq\R^{2}$ enthält eine
+      Halbgerade, ist aber nicht $2$"~teilbar. Denn nehmen wir an, dass
+      $K=M_{1}\cup M_{2}= M_{1}\cup(M_{1}+t_{2})$ disjunkte Zerlegung. Sei
+      o.\,B.\,d.\,A. $(0,0)\in M_{1}$. Damit ist $t_{2}=(0,0)+ t_{2}\in
+      M_{2}\subseteq K\setminus\{(0,0)\}$. Dann wäre $\overline{K}\coloneqq
+      K\cap\Set{(0,0)+\lambda t_{2} | \lambda\in\R}$ auch $2$"~teilbar. Das
+      ist aber topologisch vom Typ~$[a,b]$ and damit ein Widerspruch zu
+      Satz\todo{Link einbauen}.
+    \end{enumerate}
+  \end{enumerate}
+\end{bemerk}
+
+\section{Isometrische (Un-)Teilbarkeit}
+
+\subsection{Begriffe}
+
+%def 6
+\begin{defini}
+  Sei $(R,\CO)$ ein topologischer Raum mit $M\subseteq R$.
+  \begin{enumerate}[a)]
+   \item $\inn(M)\coloneqq\bigcup_{G\subseteq M, G\in\CO} G= \Set{x\in M |
+    \exists G\in\CO(x\in G\subseteq M)}$ \highl{Inneres} von $M$.
+   \item $\cl(M)\coloneqq\bigcap_{M\subseteq A, R\setminus A\in\CO} A=
+    \Set{x\in R | \forall G\in\CO(x\in G\Rightarrow G\cap M\neq\emptyset)}$
+    \highl{Abschluss} von $M$.
+   \item $\bd(M)\coloneqq\cl(M)\setminus\inn(M)= \Set{x\in R | \forall
+    G\in\CO(x\in G\Rightarrow G\cap M\neq\emptyset\wedge G\setminus
+    M\neq\emptyset)}$ \highl{Rand} von $M$.
+  \end{enumerate}
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}[a)]
+   \item $\inn(M)\in\CO$ offen, $\cl(M), \bd(R)\in\Set{F\subseteq R |
+    R\setminus F\in\CO}$ abgeschlossen
+   \item $\bd(M)= \cl(M)\cap\cl(R\setminus M)$
+   \item $\inn(M_{1})\cap\inn(M_{2})= \inn(M_{1}\cap M_{2})$
+   \item $\bigcap_{\iota\in I} \inn(M_{\iota})\supseteq(\bigcap_{\iota\in
+    I}M_{\iota})$. Aber im Allgemeinen gilt die Umkehrung nicht:
+    $\bigcap_{\iota\in I} \inn(M_{\iota})\neq(\bigcap_{\iota\in
+    I}M_{\iota})$, denn $\bigcap_{i\in\N^{*}} \inn([-\nicefrac{1}{i},
+    \nicefrac{1}{i}])=\{0\}\neq\emptyset=\inn(\bigcap_{i\in\N^{*}} ([-\nicefrac{1}{i},
+    \nicefrac{1}{i}])$.
+    Weiter $\inn(M_{1})\cup\inn(M_{2})\subseteq\inn(M_{1}\cup M_{2})$. Im
+    Allgemeinen ist $\inn(M_{1})\cup\inn(M_{2})\neq\inn(M_{1}\cup M_{2})$,
+    denn $\inn([-1,0])\cup\inn([0,1])=(-1,0)\cup(0,1)\neq(-1,1)
+    =\inn([-1,0]\cup[0,1])$.$)$
+   \item analog: $\cl(M_{1})\cup\cl(M_{2})= \cl(M_{1}\cup M_{2})$,
+    $\bigcup_{\iota\in I} \cl(M_{\iota})\subseteq \cl(\bigcup_{\iota\in I}
+    M_{\iota})$, im Allgemeinen $\bigcup_{\iota\in I}
+    \cl(M_{\iota})\neq\cl(\bigcup_{\iota\in I} M_{\iota})$, denn
+    $\bigcup_{i\in\N^{*}} \cl([\nicefrac{1}{i+1}, \nicefrac{1}{i}])=
+    (0,1]\neq[0,1]= \cl(\bigcup_{i\in\N^{*}} [\nicefrac{1}{i+1},
+    \nicefrac{1}{i}])$ und $\cl(M_{1})\cap\cl(M_{2})\supseteq\cl(M_{1}\cap
+    M_{2})$, im Allgemeinen $\cl(M_{1})\cap\cl(M_{2})\neq\cl(M_{1}\cap
+    M_{2})$, denn $\cl((-1,0)\cap\cl((0,1))=\{0\}\neq\emptyset=
+    \cl((-1,0)\cap(0,1))$.$)$
+   \item $(X,d)$ ein metrischer Raum, $x_{0}\in X$, $r>0$,
+    $\mathring{B}(x_{0},r)\coloneqq\Set{x\in X | d(x,x_{0})<r}$ offene Kugel:
+    $\cl(\mathring{B}(x_{0},r))\subseteq B(x_{0},r)$. Im Allgemeinen gilt
+    nicht die Gleichheit. Diese gilt nur, falls $(X,\norm{\cdot})$ normiert.
+
+    $\inn(B(x_{0},r))\supseteq\mathring{B}(x_{0},r)$. Die Gleichheit hat man
+    wieder im normierten Fall.
+  \end{enumerate}
+\end{bemerk}
+
+%def 7
+\begin{defini}
+  Normierter Raum
+\end{defini}
+
+\begin{bsp}
+  \begin{itemize}
+   \item früher: $\ell_{1}$ und $c_{0}$
+   \item $(\R^{n}, \norm{\cdot}_{p})$ mit $\norm{(\xi_{1},\dotsc,\xi_{n}}_{p}=
+    \begin{cases}
+      (\abs{\xi_{1}}^{p}+\dotsb+\abs{\xi_{n}}^{p})^{\nicefrac{1}{p}} & p<\infty\\
+      \max\{\abs{\xi_{1}},\dotsc,\abs{\xi_{n}}\} & p=\infty
+    \end{cases})$
+    \missingfigure{Kugeln der normen}
+  \end{itemize}
+\end{bsp}
+
+\begin{bemerk}
+  $(X,\norm{\cdot})$ ist der metrische Raum $(X,d)$ mit $d(x,y)\coloneqq \norm{x-y}$
+  zugeordnet.
+\end{bemerk}
+
+%ef 8
+\begin{defini}
+  Ist $(X,d)$ ein metrischer Raum, so heißt $\phi\colon X\rightarrow X$ genau
+  dann \highl{Isometrie}, wenn $\forall x,y\in X\colon(d(\phi(x),
+  \phi(y))=d(x,y))$.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}[a)]
+   \item Isometrien sind stetig (sogar \textsc{Lipschitz}"~stetig) und
+    injektiv ($x\neq y\Rightarrow d(\phi(x), \phi(y))=d(x,y)>0$, also
+    $\phi(x)\neq\phi(y)$), aber im Allgemeinen \emph{nicht} surjektiv.
+    \begin{bsp}
+      $X=[0,\infty)$, $d(x,y)= \abs{x-y}$, $\phi\colon X\rightarrow X$ mit
+      $x\mapsto x+1$. Dabei ist $x=0$ ohne Urbild.
+    \end{bsp}
+   \item Die bijektiven Isometrien bilden eine Gruppe. Man nennt diese die
+    \highl{Isometriegruppe} von $(X,d)$.
+   \item Ist $\phi\colon X\rightarrow X$ eine bijektive Isometrie, so gilt für
+    beliebige $x_{0}\in X$ und $r>0$, dass $\phi(B(x_{0},r))=B
+    (\phi(x_{0}),r)$. Denn $x\in B(x_{0},r)\Leftrightarrow d(x,x_{0})\leq
+    r\Leftrightarrow d(\phi(x),\phi(x_{0}))\Leftrightarrow\phi(x)\in
+    B(\phi(x_{0}),r)$. Für die Rückrichtung genügt es zu zeigen, dass
+    $\phi^{-1}$ eine Isometrie ist: Sei $x,y\in X$, dann $d(x,y)=
+    d(\phi(\phi^{-1}(x)), \phi(\phi^{-1}(y)))= d(\phi^{-1}(x), \phi^{-1}(y))$.
+    Ist $\phi\colon X\rightarrow X$ eine nicht bijektive Isometrie, so gilt im
+    Allgemein \emph{nicht} die Gleichheit $\phi(B(x_{0},r))=B(\phi(x_{0}),r)$.
+    Beispielsweise sei $X=[0,\infty)$, $d(x,y)= \abs{x-y}$,
+    $\phi\colon X\rightarrow X$ mit $x\mapsto x+1$. Dann ist $\phi(B(0,1))=
+    \phi([0,1])= [1,2]\neq[0,2]= B(\phi(0),1)$.
+   \item Eine Drehung um 45°\todo{Einheit ordentlich schreiben} ist eine
+    Isometrie in $(\R^{n}, \norm{\cdot}_{p})$ mit $n\geq2$ und $1\leq
+    p\leq\infty$, genau dann, wenn $p=2$.\todo{Besser formulieren}
+  \end{enumerate}
+\end{bemerk}
+
+%satz 3
+\begin{satz}
+  Ist $(X,\norm{\cdot})$ ein normierter Raum, so bilden die Isometrien von $X$
+  \emph{auf} $X$ eine Untergruppe der Gruppe aller affinen
+  Homöomorphismen\footnote{Aller affinen Bijektionen $\psi\colon X\rightarrow
+  X$, die in beiden Richtungen stetig sind.} von $X$.  Genauer: Sind
+  $(X,\norm{\cdot})$ und $(Y,\norm{\cdot})$\todo{Normen nicht gleich}
+  normierte Räume und ist $\phi\colon X\rightarrow Y$ eine Bijektion mit
+  \begin{gather}
+    \label{eq:1}
+       \forall x,y\in X\colon(\norm{\phi(x)-\phi(y)}_{Y}=\norm{x-y}_{X})
+  \end{gather}
+  so ist $\phi$ eine affine Abbildung.
+  \begin{proof}
+    $\overline{\phi}\colon X\rightarrow Y$ mit
+    $\overline{\phi}\coloneqq\phi(x)-\phi(0)$. Hier folgt,
+    $\overline{\phi}(0)=0$, $\overline{\phi}$ ist eine Isometrie im Sinne von
+    \autoref{eq:1}. Es genügt zu zeigen\todo{Nach einer Bemerkung oben in
+    1.2}, dass $\overline{\phi}$ eine $\R$"~lineare Abbildung ist.
+
+    \begin{enumerate}[(1)]
+     \item $\forall x_{1},x_{2}\in
+      X\colon\overline{\phi}(\nicefrac{1}{2}(x_{1}+x_{2}))= \nicefrac{1}{2}
+      (\overline{\phi}(x_{1})+ \overline{\phi}(x_{2}))$. Dazu gehen wir wie
+      folgt vor: $x_{1}, x_{2}\in X$ und betrachten $X$ als metrischen Raum
+      $(X,d)$. Nun definieren wir Hilfsmengen:
+      \begin{gather}
+	\label{eq:2}
+	   H_{1}\coloneqq\Set{x\in X | d(x,x_{1})= d(x,x_{2})= \nicefrac{1}{2} d(x_{1},x_{2})}\\
+	H_{n}\coloneqq\Set{x\in H_{n-1} | \forall y\in
+	   H_{n-1}(d(x,y))\leq\nicefrac{1}{2} \diam(H_{n-1})}\qquad n\geq2
+      \end{gather}
+      Dabei ist $\diam(H_{n-1})\coloneqq
+      \begin{cases}
+	\sup\Set{d(x,y) | x,y\in H_{n-1}} & H_{n-1}\neq\emptyset\\
+	0 & H_{n-1}\neq\emptyset
+      \end{cases}$. Damit ist $\lim_{n\rightarrow\infty} \diam(H_{n})=0$, denn
+      $\diam(H_{1})\leq d(x_{1},x_{2})<\infty$, denn $x,y\in H_{1}\Rightarrow
+      d(x,y)\leq d(x,x_{1})+d(x_{1},y)\leq d(x_{1},x_{2})$. Weiter ist
+      $\diam(H_{n})\leq\nicefrac{1}{2} \diam(H_{n-1})$ für $n\geq2$. Denn für
+      $x,y\in H_{n}\Rightarrow x\in H_{n}, y\in H_{n-1}\Rightarrow
+      d(x,y)\leq\nicefrac{1}{2} \diam(H_{n-1})$. Außerdem
+      $\diam(H_{n})\leq\frac{1}{2^{n-1}}
+      d(x_{1},x_{2})\xrightarrow{n\rightarrow\infty}0$. Wegen der
+      Teilmengenbeziehung folgt,
+      \begin{gather}
+	\label{eq:3}
+	   \bigcap_{n\geq1} H_{n}=\emptyset\vee\bigcap_{n\geq1} H_{n}=\{x_{0}\}
+      \end{gather}
+      Der letzte Fall wird als das
+      \highl[Zentrum!metrisches]{metrische Zentrum} bezeichnet.
+
+      Im normierten Raum $(X,\norm{\cdot})$ sei für $x\in X$ erklärt:
+      $\overline{x}\coloneqq x_{1}+x_{2}-x$. Nun zeigen wir:
+      \begin{gather}
+	\label{eq:4}
+	   \forall
+      n\geq1\colon x\in H_{n}\Rightarrow\overline{x}\in H_{n}
+      \end{gather}
+      Für $n=1$ sei $x\in H_{1}$ folgt nach Definition: $\norm{x-x_{1}}=
+      \norm{x-x_{2}}= \nicefrac{1}{2} d(x_{1},x_{2})=
+      \norm{\overline{x}-x_{2}}= \norm{\overline{x}-x_{1}}$. Also ist
+      $\overline{x}\in H_{1}$. Nun kommen wir zum Induktionsschritt:
+      $n-1\Rightarrow n$: Sei $x\in H_{n}$ und wollen zeigen, $\overline{x}\in
+      H_{n}$. Nach Definition heißt dass, $\overline{x}\in H_{n-1}$ (klar nach
+      Induktionsvoraussetzung, da $x\in H_{n-1}$) und $\forall y\in
+      H_{n-1}\colon\norm{\overline{x}-y}\leq\nicefrac{1}{2} \diam(H_{n-1})$:
+      $\norm{\overline{x}-y}= \norm{x_{1}+x_{2}-y-x}= \norm{\overline{y}-x}$,
+      aber $\overline{y}\in H_{n-1}$ und $x\in H_{n}$. Nach der Definition ist
+      das kleiner oder gleich $\nicefrac{1}{2} \diam(H_{n-1})$. (Ende eines
+      Teilbeweises wahrscheinlich \autoref{eq:4}).
+
+      Nun ist noch zu zeigen, dass $\nicefrac{1}{2}
+      (x_{1}+x_{2})\in\bigcap_{n\geq1} H_{n}$, also $\nicefrac{1}{2}
+      (x_{1}+x_{2})= x_{0}$ (****). Dazu gehen wir wieder induktiv vor. Für
+      $n=1$ ist $\norm{\nicefrac{1}{2} (x_{1}+x_{2})-x_{1}}=
+      \norm{\nicefrac{1}{2} (x_{1}+x_{2})-x_{2}}= \nicefrac{1}{2}
+      \norm{x_{1}-x_{2}}$. Also ist nach \autoref{eq:1} in $H_{1}$. Im
+      Induktionsschritt kommen wir zu: $\nicefrac{1}{2} (x_{1}+x_{2})\in
+      H_{n-1}$ nach Induktionsvoraussetzung. Wenn wir nun ein $y\in H_{n-1}$
+      haben, dann ist $\overline{y}=x_{1}+x_{2}-y\in H_{n}$ nach (****). Also
+      ist $\norm{\nicefrac{1}{2} (x_{1}+x_{2})-y}= \nicefrac{1}{2}
+      \norm{(x_{1}+x_{2}-y)-y}= \norm{\overline{y}-y}\leq\nicefrac{1}{2}
+      \diam(H_{n-1})$ Nach \autoref{eq:1} gilt,
+      $\nicefrac{1}{2}(x_{1}+x_{2})\in H_{n}$.
+
+      Da die Konstruktion von $x_{0}$ aus $x_{1}$ und $x_{2}$ nur metrische
+      Eigenschaften benutzt, entsteht das isometrische Bild
+      $\overline{\phi}(x_{0})$ im Bildraum $Y$ analog aus
+      $\overline{\phi}(x_{1})$ und $\overline{\phi}(x_{2})$. Analoge
+      Betrachtung zu (****) in $(Y,\norm{\cdot})$ liefert
+      $\overline{\phi}(x_{0})= \nicefrac{1}{2} (\overline{\phi}(x_{1})+
+      \overline{\phi}(x_{2}))$. Damit folgt nach \autoref{eq:4}
+      $\overline{\phi}(\nicefrac{1}{2} (x_{1}+x_{2}))=
+      \nicefrac{1}{2}(\overline{\phi}(x_{1})+ \overline{\phi}(x_{2}))$.
+     \item $\forall x\in X\colon\overline{\phi}(\nicefrac{1}{2}x)=
+      \nicefrac{1}{2} \overline{\phi}(x)$ (folgt aus dem obigen Punkt mit
+      $x_{1}\coloneqq x, x_{2}\coloneqq0$).
+     \item $\forall x_{1},x_{2}\in X\colon \overline{\phi}(x_{1}+x_{2})=
+      \overline{\phi(x_{1})+ \overline{\phi}(x_{2})})$, denn
+      $\overline{\phi}(x_{1}+x_{2})= \overline{\phi}(2(\nicefrac{1}{2}
+      (x_{1}+x_{2})))= 2\overline{\phi}(\nicefrac{1}{2} (x_{1}+x_{2}))=
+      2(\nicefrac{1}{2} (\overline{\phi}(x_{1})+ \overline{\phi}(x_{2}))=
+      \overline{\phi}(x_{1})+ \overline{\phi}(x_{2})$
+     \item $\forall x\in X\,\forall\lambda\in\R\colon\phi(\lambda x)= \lambda\phi(x)$,
+      folgt aus der obigen Eigenschaft für $\lambda\in\Q$. Weiter wissen wir,
+      dass mti Stetigkeit von $\phi$ auch für $\lambda\in\R$ gilt.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  In Satz 3\todo{link} ist die Surjektivität von $\phi$ wesentlich:
+  $(X,\norm{\cdot})= (\R,\abs{\cdot}), (Y,\norm{\cdot})= (\R^{2},
+  \norm{\cdot}_{\infty})$, $\phi\colon\R\rightarrow\R^{2}$ mit
+  $x\mapsto(x,\abs{x})$ ist keine affine Isometrie im Sinne von
+  \autoref{satz:1}.
+\end{bemerk}
 
 
 \clearpage
