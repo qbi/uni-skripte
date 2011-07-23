@@ -46,7 +46,7 @@ fi
 echo "I: Verwende $src als LaTeX-Datei"
 
 if grep -q '\\documentclass *\[[^]]*draft' $src; then
-    sed -i.orig -e '/\\documentclass/ { s/draft,//; s/,draft\]//; }' $src
+    sed -i.orig -e '/\\documentclass/ { s/draft,//; s/,draft\]//; s/\[draft\]//; }' $src
 fi
 
 for ext in ps pdf; do
