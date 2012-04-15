@@ -1,0 +1,250 @@
+\input{kopfteil.ltx}
+\usepackage{mathtools}
+
+\subtitle{Schlüsselmanagement}
+
+\begin{document}
+\begin{frame}
+  \titlepage{}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Aufgaben des Schlüsselmanagement}
+  Das Schlüsselmanagement ist eine der schwierigsten Aufgaben der
+  Kryptografie und teilt sich in folgende Bereiche:\pause{}
+  \begin{itemize}
+  \item<+-> Sichere Erzeugung
+  \item<+-> Speicherung
+  \item<+-> Verteilung
+  \item<+-> Zertifizierung
+  \item<+-> Löschung
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sichere Erzeugung}
+  Gemäß den \textsc{Kerckhoffs}schen Prinzipien sollte nicht das
+  Design eines Kryptosystem ein Geheimnis sein, sondern vielmehr der
+  Schlüssel. Daher kommt diesem große Bedeutung bei.
+  \begin{itemize}
+  \item<+-> Zufallszahlengenerator (random number generator, RNG)
+    \begin{itemize}
+    \item<+-> deterministisch (PRNG, CSRNG)
+    \item<+-> nicht deterministisch (HWRNG)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sichere Erzeugung}
+  \framesubtitle{ANSI X9.17}
+  \begin{enumerate}
+  \item<+-> Vereinbarung eines Schlüssels~$k$ und eines Initialwertes~$V_{0}$
+  \item<+-> Ermittlung eines Zeitwert~$T_{0}$
+  \item<+-> Berechnung eines Zufallsschlüssels~$S_{i}$ mit Hilfe eines
+    symmetrischen Algorithmus':
+    \begin{gather*}
+      S_{i}\coloneqq E (E (T_{i}, k)\oplus V_{i},k)
+    \end{gather*}
+  \item<+-> Berechnung eines neuen Initialwertes~$V_{i+1}$ durch:
+    \begin{gather*}
+      V_{i+1}\coloneqq E (E (T_{i}, k)\oplus S_{i}, k)
+    \end{gather*}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Speicherung von Schlüsseln}
+  \framesubtitle{Beispiel: Passwort}
+  \begin{block}{Problem}
+    Verantwortung der Nutzer
+  \end{block}\pause{}
+
+  \begin{exampleblock}{Passworte}
+    \begin{itemize}
+    \item<+-> zu einfach
+    \item<+-> zu wenige
+    \item<+-> Papier
+    \end{itemize}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Speicherung von Schlüsseln}
+  Einsatz von
+  \begin{itemize}
+  \item Passwörtern,
+  \item Chipkarten oder
+  \item Biometrie
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Verteilung von Schlüsseln}
+  \begin{itemize}
+  \item insbesondere wichtig für symmetrische Algorithmen
+  \item Bei $n$~Teilnehmern sind $\frac{n (n-1)}{2}$~Tauschoperationen nötig
+  \item Schlüsselverteilungsdienste
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Verteilung von Schlüsseln}
+  \framesubtitle{Schlüsselhierarchie}
+  Üblicherweise werden verschiedene Arten von Schlüsseln benötigt:
+  \begin{itemize}
+  \item<+-> Signierschlüssel (lange Gültigkeit)
+  \item<+-> Verschlüsselungsschlüssel (lange Gültigkeit)
+  \item<+-> Sitzungsschlüssel (kurze Gültigkeit)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Verteilung von Schlüsseln}
+  \framesubtitle{Schlüsselhierarchie am Beispiel Tor}
+  \href{https://torproject.org/}{Tor} ist eine Anonymisierungssoftware
+  für TCP-Verbindungen und setzt das Prinzip einer Schlüsselhierarchie um.
+  \begin{itemize}
+  \item Verzeichnisserver, Relays etc. mit öffentlichem langlebigem Schlüssel
+  \item Proxys verhandeln kurzlebige Sitzungsschlüssel
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Verteilung von Schlüsseln}
+  \framesubtitle{Perfect Forward Secrecy}
+  \begin{definition}
+    Wenn die Kenntnis eines Schlüssels \emph{nicht} zur Aufdeckung
+    voriger bzw. folgender Schlüssel führt, wird das als \emph{Perfect
+    Forward Secrecy} bezeichnet.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Verteilung von Schlüsseln}
+  \framesubtitle{Austauschprotokolle}
+  \begin{itemize}
+  \item naiver Ansatz
+  \item auf der Basis von symmetrischen Verfahren
+  \item auf der Basis von asymmetrischen Verfahren
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Austauschprotokolle}
+  \framesubtitle{naiver Ansatz}
+  Alice und Bob möchten einen Sitzungsschlüssel austauschen. Dazu
+  nutzen sie ein Public-Key-Verfahren und
+  gehen sie wie folgt vor:
+  \begin{enumerate}
+  \item<+-> Alice erzeugt einen Schlüssel~$k_{A,B}$ und
+  \item<+-> verschlüsselt diesen mit dem öffentlichen
+    Schlüssel~$k_{B\colon e}$ und erhält $c=E (k_{A,B}, k_{B\colon e})$.
+  \item<+-> Alice sendet den Geheimtext~$c$ an Bob.
+  \item<+-> Bob entschlüsselt den Geheimtext und erhält den
+    Sitzungsschlüssel $D (c, k_{B\colon d})= k_{A,B}$ .
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Austauschprotokolle}
+  \framesubtitle{naiver Ansatz}
+  Der vorgestellte Ansatz lässt einige Problemstellungen
+  unbeantwortet:
+  \begin{itemize}
+  \item<+-> Veränderung des Geheimtextes
+  \item<+-> Wiedereinspielen der Nachricht
+  \item<+-> Der "`Mann in der Mitte"' (man in the middle)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Austauschprotokolle}
+  \framesubtitle{\textsc{Needham}-\textsc{Schroeder}-Protokoll}
+  \textsc{R.\,Needham} und \textsc{M.\,Schroeder} entwickelten 1978
+  grundlegende Protokolle zum Schlüsselaustausch.\pause{}
+
+  \begin{definition}
+    Eine \emph{Nonce} (engl. number used once) ist ein eindeutiger,
+    bisher nicht verwendeter Wert.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schlüsselaustausch mit symmetrischen Verfahren}
+  Wichtiger Akteur ist Trent~$T$. Alice vereinbart
+  einen geheimen Schlüssel~$k_{A}$ mit $T$. Dieser ist nur Alice und
+  Trent bekannt. Weiterhin wird davon ausgegangen, dass Trent
+  vertrauenswürdig ist.\pause{}
+
+  Schreibweise: Nonce~$N$, Identität von Alice~$I_{A}$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schlüsselaustausch mit symmetrischen Verfahren}
+  \framesubtitle{Ablauf}
+  \begin{enumerate}
+  \item<+-> Alice sendet an Trent das Tripel~$(I_{A}, I_{B}, N_{A})$.
+  \item<+-> Trent generiert Sitzungsschlüssel~$k_{A,B}$ und sendet an
+    Alice $E[(N_{A}, I_{B}, k_{A,B}, E[(k_{A,B}, I_{A}), k_{B}]), k_{A}]$.
+  \item<+-> Alice sendet $E[(k_{A,B},I_{A}), k_{B}]$ an Bob.
+  \item<+-> Bob sendet an Alice $E[N_{B}, k_{A,B}]$.
+  \item<+-> Bob hat mit Alice eine Funktion~$f$ verabredet und Alice
+    sendet $E[f(N_{B}), k_{A,B}]$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schlüsselaustausch mit asymmetrischen Verfahren}
+  Alice, Bob und Trent besitzen ein Schlüsselpaar.
+  \begin{enumerate}
+  \item<+-> Alice sendet das Tupel~$(I_{A}, I_{B})$ an Trent.
+  \item<+-> Trent erzeugt $E[(k_{B\colon e}, I_{B}), k_{T\colon d}]$ und
+    sendet dies an Alice.
+  \item<+-> Alice schickt die Nachricht~$E[(N_{A}, I_{A}), k_{B\colon
+      e}]$ an Bob.
+  \item<+-> Bob schickt an Trent das Tupel~$(I_{B}, I_{A})$ und erhält
+    zurück $E[(k_{A\colon e}, I_{A}), k_{T\colon d}]$.
+  \item<+-> Bob schickt an Alice $E[(N_{A}, N_{B}), k_{A\colon e}]$
+    und erhält zurück $E[N_{B}, k_{B\colon e}]$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Diffie-Hellman-Schlüsselaustausch}
+  \begin{itemize}
+  \item<+-> Sinn: Sichere Vereinbarung zweier Schlüssel zwischen Alice
+    und Bob
+  \item<+-> Beide berechnen gemeinsamen, geheimen Sitzungsschlüssel
+    unter Kenntnis diverser Informationen
+  \item<+-> keine Übertragung des Schlüssels über ein unsicheres Medium
+  \item<+-> \emph{keine Authentifikation}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Diffie-Hellman-Schlüsselaustausch}
+  Sei $G$ eine Gruppe mit dem Einheitselement $e$ und $g\in G$. Dann
+  heißt $n$ mit $g^{n}=e$ \emph{Ordnung} von $g$.\pause{}
+  \begin{enumerate}
+  \item<+-> Alice wählt $a\in\{2,\dotsc,n-1\}$ und sendet $g^{a}$ an Bob.
+  \item<+-> Bob wählt $b\in\{2,\dotsc,n-1\}$ und sendet $g^{b}$ an Alice.
+  \item<+-> Alice berechnet $(g^{b})^{a}= g^{ba}$ und Bob
+    $(g^{a})^{b}= g^{ab}$.
+  \item<+-> Der gemeinsame Schlüssel ist $g^{ab}=g^{ba}$.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Löschung von Schlüsseln}
+  Abhängig, wo Schlüssel gespeichert wurden
+  \begin{itemize}
+  \item<+-> EEPROM
+  \item<+-> EPROM, PROM
+  \item<+-> Festplatten
+  \item<+-> Cache, Swapspeicher
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
