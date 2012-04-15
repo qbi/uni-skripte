@@ -1,0 +1,177 @@
+\input{kopfteil.ltx}
+\subtitle{SSL/TLS}
+\begin{document}
+
+\begin{frame}
+  \titlepage{}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Überblick}
+  Secure Sockets Layer (SSL) bzw. Transport Layer Security (TLS) ist
+  ein Protokoll zur Verschlüsselung von Daten. Dabei werden
+  assymetrische Verfahren und Zertifikate verwendet. Die Verbindung
+  wird von einem Ende zum anderen verschlüsselt. Man spricht von
+  Ende"=zu"=Ende"=Verschlüsselung.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Geschichte}
+  \begin{columns}
+    \begin{column}{.7\textwidth}
+      \begin{itemize}
+      \item<+-> 1994 von Netscape entwickelt
+      \item<+-> 1995 versucht sich Microsoft mit Private Communication
+        Technology (PCT)
+      \item<+-> Umbenennung in TLS in RFC~2246, dann RFC~4346 (TLS~1.1
+        2006) und RFC~5246 (TLS~1.2 2008)
+      \end{itemize}
+    \end{column}
+    \begin{column}{.3\textwidth}
+      \includegraphics[width=\textwidth]{bilder/mosaic}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zertifikate}
+  Zertifikate sind die Grundlage von SSL/TLS. Im Zertifikat sind die
+  zur Prüfung wichtigen Daten enthalten. Basis ist der Standard X.509
+  der ITU.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bestandteile eines Zertifikats}
+  \begin{itemize}
+  \item Versionsnummer
+  \item Seriennummer
+  \item Signaturalgorithmus
+  \item Aussteller
+  \item Gültigkeit
+    \begin{itemize}
+    \item von
+    \item bis
+    \end{itemize}
+  \item Zertifikatsinhaber
+  \item Schlüsselinformationen
+  \item Erweiterungen
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zertifikate}
+  \framesubtitle{Erweiterungen}
+  Die \emph{Key Usage} legt fest, für welchen Zweck der Schlüssel
+  eingesetzt werden darf.\pause{}
+  \begin{itemize}
+  \item<+-> Digitale Signatur
+  \item<+-> Nichtabstreitbarkeit
+  \item<+-> Schlüsselverschlüsselung (key encipherment)
+  \item<+-> Datenverschlüsselung (data encipherment)
+  \item<+-> Schlüsselvereinbarung
+  \item<+-> Zertifikatsignatur
+  \item<+-> CRL"=Signatur
+  \item<+-> Nur zur Ver-/Entschlüsselung
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zertifizierungsstelle}
+  Eine Zertifizierungsstelle (certificate authority, CA) ist eine
+  Firma, Behörde etc., welche Zertifikate prüft bzw. ausstellt.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Public-Key-Infrastruktur}
+  \framesubtitle{Bestandteile}
+  \begin{itemize}
+  \item CA
+  \item Registration Authority (RA)
+  \item Verzeichnisdienst
+  \item Certificate Revocation List (CRL)
+  \item evtl. Zeitstempeldienst
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Protokolle von TLS}
+  \begin{itemize}
+  \item Handshake Protocols
+      \begin{itemize}
+      \item Change Cipher Spec Protocol
+      \item Alert Protocol
+      \item Handshake Protocol
+      \end{itemize}
+
+  \item Record Protocol
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Handshake Protocol}
+  \begin{enumerate}
+  \item<+-> Verhandlungsphase
+      \begin{itemize}
+      \item<+-> Der Client sendet \texttt{ClientHello} mit
+        TLS"=Version, Zufallszahl, Cipher Suite, SessionID und mehr.
+      \item<+-> Der Server antwortet  \texttt{ServerHello}  mit
+        Zeitstempel, Zufallszahl und diversen Verfahren.
+      \item<+-> Eventuell sendet Server ein Zertifikat und fordert
+        ggf. vom Client ein Zertifikat an (\texttt{CertificateRequest}).
+      \item<+-> Ohne Zertifikat sendet Server
+        \texttt{ServerKeyExchange} mit temporärem RSA"=Schlüssel.
+      \item<+-> Server sendet \texttt{ServerHelloDone}.
+      \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Handshake Protocol}
+  Nun sendet der Client wieder eine Nachricht. Zunächst wird mittels
+  \texttt{ClientKeyExchange} ein 48~Byte großes Pre-Master-Secret
+  übermittelt. Daraus wird später das Master-Secret berechnet.\pause{} Das
+  \texttt{ChangeCipherSpec} teilt dem Server mit, dass nun alles
+  authentifiziert ist.  Es folgt ein \texttt{Finished} mit einem Hash
+  und einem MAC über die vorigen Handshakes.\pause{}
+
+  Auch der Server sendet \texttt{ChangeCipherSpec} und
+  \texttt{Finished}. Damit haben beide Seiten die Parameter akzeptiert
+  und senden ohne weitere Bestätigung verschlüsselte Werte.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Master Secret}
+  Das Master Secret $M$ wird aus dem Pre-Master-Secret $P$ sowie aus
+  $R_{C}$ und $R_{S}$ berechnet:
+  \begin{align*}
+    M &= \text{MD5} (P | \text{SHA} (\text{'A'}|P|R_{C}|R_{S}))|\\
+    &\qquad\text{MD5} (P|\text{SHA} (\text{'BB'}|P|R_{C}|R_{S}))|\\
+    &\qquad\text{MD5} (P|\text{SHA} (\text{'CCC'}|P|R_{C}|R_{S}))
+  \end{align*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{(Un)sicherheit}
+  Bei SSL in der Version 2.0
+  \begin{itemize}
+  \item werden identische Schlüssel für Authentifizierung und
+    Verschlüsselung verwendet
+  \item wird eine schwache Konstruktionsvariante von MACs verwendet
+  \item gibt es keinen Schutz für den Handshake
+  \end{itemize}
+  \pause{}
+
+  Alle aktuellen Browser setzen keine Version 2.0 mehr ein.
+\end{frame}
+
+\begin{frame}
+  \frametitle{(Un)sicherheit}
+  \begin{itemize}
+  \item<+-> Downgrade des Protokolls
+  \item<+-> Rogue-CA
+  \item<+-> Kaputte CAs
+  \item<+-> BEAST
+  \end{itemize}
+\end{frame}
+
+\end{document}
