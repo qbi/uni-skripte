@@ -1,0 +1,315 @@
+\input{kopfteil.ltx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\subtitle{Hashes und Signaturen}
+
+\begin{document}
+\begin{frame}
+  \titlepage{}
+\end{frame}
+
+\section{Hashfunktionen}
+
+
+\begin{frame}
+  \frametitle{Hashfunktion}
+  \begin{definition}
+    Sei $n\in\mathbb{N}$. Eine Abbildung
+    $h\colon\mathbb{Z}_{2}^{\infty}\rightarrow \mathbb{Z}_{2}^{n}$
+    heißt \emph{Hashfunktion}.
+  \end{definition}
+  \pause{}
+  \begin{itemize}
+  \item<+-> macht aus beliebig langer Nachricht eine Nachricht fester Länge
+  \item<+-> injektiv?
+  \item<+-> Beispiel
+  \item<+-> Umsetzung des Schutzzieles Integrität (Was ist bei
+    $h(m_{1})= h (m_{2})$?)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kollisionsresistenz}
+  \begin{definition}
+    Eine Hashfunktion heißt \emph{kollisionsresistent}, falls sich in
+    vertretbarer Zeit kein $h(m_{1})=h (m_{2})$ für $m_{1}\neq m_{2}$
+    finden lässt.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kollisionsresistenz}
+  \begin{description}
+  \item[First preimage] Gegeben ist ein Hashwert $h(m_{1})$ und gesucht
+    ist eine Nachricht $m_{2}$ mit $h(m_{1})=h (m_{2})$.
+  \item[Second preimage] Gegeben ist eine Nachricht $m_{1}$ und  gesucht
+    ist eine Nachricht $m_{2}$ mit $h(m_{1})=h (m_{2})$.
+  \item[Prefix collision] Gegeben seien zwei Präfixe $p_{1}, p_{2}$
+    und gesucht sind zwei Nachrichten $m_{1}, m_{2}$ mit $h (p_{1}
+    ||m_{1}) =h (p_{2} ||m_{2})$.
+  \item[Kollision] siehe oben
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Angriffe beim SHA-3-Wettbewerb}
+\footnotesize{\begin{tabular}{|c|c|c|c|}
+    \toprule
+    \cellcolor{brown}Abacus &
+    ARIRANG &
+    \cellcolor{brown}AURORA&
+    BLAKE \\
+    \cellcolor{red}Blender & 
+    Blue Midnight Wish&
+    \cellcolor{red}Boole &
+    Cheetah\\
+    CHI &
+    CRUNCH &
+    \cellcolor{brown}CubeHash&
+    \cellcolor{red}DCH\\
+    \cellcolor{red}Dynamic SHA &
+    \cellcolor{red}Dynamic SHA &
+    ECHO&
+    \cellcolor{brown}ECOH\\
+    \cellcolor{yellow}Edon-R &
+    \cellcolor{red}EnRUPT&
+    \cellcolor{red}ESSENCE &
+    FSB \\
+    Fugue&
+    Grøstl &
+    Hamsi &
+    \cellcolor{brown}HASH 2X\\
+    \cellcolor{brown}JH &
+    Keccak &
+    \cellcolor{red}Khichdi-1&
+    LANE \\
+    Lesamnta &
+    Luffa&
+    \cellcolor{red}LUX &
+    \cellcolor{yellow}Maraca \\
+    \cellcolor{brown}MCSSHA-3&
+    MD6&
+    \cellcolor{brown}MeshHash&
+    \cellcolor{red}NaSHA\\
+    \cellcolor{red}NKS2D&
+    \cellcolor{brown}Ponic&
+    SANDstorm &
+    \cellcolor{yellow}Sarmal\\
+    \cellcolor{red}Sgàil&
+    Shabal&
+    \cellcolor{red}SHAMATA&
+    SHAvite-3\\
+    SIMD&
+    Skein&
+    \cellcolor{red}Spectral Hash&
+    \cellcolor{red}StreamHash \\
+    SWIFFTX&
+    \cellcolor{red}Tangle&
+    \cellcolor{red}TIB3&
+    \cellcolor{yellow}Twister\\
+    \cellcolor{yellow}Vortex&
+    \cellcolor{red}WaMM&
+    \cellcolor{red}Waterfall&
+    ZK-Crypt \\
+    \midrule
+    \cellcolor{yellow}Preimage & \cellcolor{brown}2nd preimage &
+    \cellcolor{red} Collision & kein Angriff\\
+    \bottomrule
+  \end{tabular}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Hashalgorithmen in der Praxis}
+  \begin{itemize}
+  \item<+-> MD5
+  \item<+-> SHA-1, SHA-224, SHA-256, SHA-384, SHA-512
+  \end{itemize}
+  \pause{}
+  Daneben existieren Hashalgorithmen auf der Basis von Blockchiffren.
+\end{frame}
+
+\subsection{MAC}
+
+
+\begin{frame}
+  \frametitle{Message Authentication Code}
+  \begin{definition}
+    Ein \emph{Message Authentication Code (MAC)} ist eine
+    Hashfunktion, die zusätzlich einen Schlüssel~$k$ verwendet.
+  \end{definition}
+  \pause{}
+  \begin{itemize}
+  \item<+-> kein Nachweis der Authentizität
+  \item<+-> CBC-MAC
+  \item<+-> MD5-MAC
+  \end{itemize}
+\end{frame}
+
+\subsection{HMAC}
+
+
+\begin{frame}
+  \frametitle{Hash-Based MAC}
+  Gegeben sei eine Hashfunktion~$h$ mit Blocklänge~$r$ und ein
+  Schlüssel~$k$.
+  \begin{enumerate}
+  \item<+-> Wenn $\abs{k}<r$, fülle Schlüssel bis zur Länge~$r$ mit
+    Nullen auf.
+  \item<+-> Wenn $\abs{k}>r$, berechne $h(k)$ und gehe ggf. wieder zu 1.
+  \end{enumerate}
+  \pause{}
+  Danach werden zwei Strings \texttt{ipad} und \texttt{opad}
+  erzeugt. Der Wert von \texttt{ipad} entsteht durch $r$-malige
+  Konkatenation des Bitstrings~00110110 und \texttt{opad} durch
+  $r$-malige Konkatenation von 01011100.
+  \pause{}
+
+  Schließlich wird der HMAC-Wert der Nachricht~$m$ durch
+  \begin{gather*}
+    \text{HMAC} (m,k)= h (k\oplus\text{opad}, h (k\oplus\text{ipad},m))
+  \end{gather*}
+  berechnet.
+\end{frame}
+
+\section{Elektronische Signaturen}
+
+\begin{frame}
+  \frametitle{Anforderungen an Signaturen}
+  Eine \emph{Signatur} ist eine digitale Unterschrift, die ein
+  digitales Dokument einem Subjekt zuordnet.
+  \pause{}
+  Anforderungen:
+  \begin{itemize}
+  \item<+-> Signatur muss überprüfbar sein.
+  \item<+-> Signatur darf nicht einfach an ein Dokument angehangen werden.
+  \item<+-> Jede Kopie einer Nachricht ist mit dem Original identisch.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Signatursystem}
+  \begin{definition}
+    Ein \emph{Signatursystem} ist ein Tripel~$(\mathcal{P,U,K})$ aus
+    den endlichen Mengen der Nachrichten~$\mathcal{P}$, der
+    Unterschriften~$\mathcal{U}$ und den Schlüsseln~$\mathcal{K}$.
+    \pause{}
+
+    Für jedes $k\in\mathcal{K}$ existieren \emph{Signaturen}
+    $u_{k}\colon \mathcal{P}\rightarrow\mathcal{U}$ und
+    \emph{Verifikationsfunktionen} $v_{k}\colon\mathcal{P} \times
+    \mathcal{U}\rightarrow \{0,1\}$. Dabei gilt für $x\in\mathcal{P}$
+    und $u\in\mathcal{U}$:
+    \begin{gather*}
+      v_{k}(x,u)=
+      \begin{cases}
+        0 & u_{k}(x)=u\\
+        1 & \text{sonst}
+      \end{cases}
+    \end{gather*}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Beispiel: RSA-Signatur}
+  Alice hat, wie beim RSA"=Algorithmus, einen öffentlichen
+  Schlüssel~$(n,e)$ und einen privaten Schlüssel~$(d,e)$. Sie will
+  eine Nachricht~$m\in\mathcal{P}$ unterzeichnen. Sie berechnet:
+  \begin{gather*}
+    u=u(x)\equiv m^{d}\mod{n}
+  \end{gather*}
+  und veröffentlicht
+  \begin{gather*}
+    v (m,u)=
+    \begin{cases}
+      0 & m=u^{e}\mod{n}\\
+      1 & \text{sonst}
+    \end{cases}
+  \end{gather*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Elektronische Signaturen in der Praxis}
+  \framesubtitle{Signaturgesetz}
+  \begin{itemize}
+  \item<+-> Schaffung von Rahmenbedingungen für elektronische
+    Signaturen (§\,1 Abs.\,1 SigG)
+  \item<+-> Rechtssicherheit für E-Commerce und E-Goverment
+  \item<+-> erste Version vom 1.\,August~1997, am 16.\,Mai~2001 neu
+    gefasst (letzte Änderung 28.\,Dezember~2009)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Signaturgesetz}
+  \framesubtitle{Arten einer elektronischen Signatur}
+  Das Gesetz definiert drei Arten einer elektronischen Signatur:
+  \begin{itemize}
+  \item<+-> einfache elektronische Signatur
+  \item<+-> fortgeschrittene elektronische Signatur
+  \item<+-> qualifizierte elektronische Signatur
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Signaturgesetz}
+  \framesubtitle{einfache elektronische Signatur}
+  \begin{definition}
+    Eine \emph{einfache elektronische Signatur} ist ein Datum, dass
+    anderen Daten beigefügt oder mit diesen verknüpft ist und dient
+    zur Authentifizierung.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Signaturgesetz}
+  \framesubtitle{fortgeschrittene elektronische Signatur}
+  \begin{definition}
+    Eine \emph{fortgeschrittene elektronische Signatur} ist eine
+    einfache elektronische Signatur, die
+    \begin{enumerate}
+    \item die ausschließlich dem Inhaber eines Signaturschlüssels
+      zugeordnet ist
+    \item die Identifizierung des Inhabers eines Signaturschlüssels ermöglicht
+    \item mit Mitteln erzeugt wird, die der Inhabers eines
+      Signaturschlüssels unter seiner Kontrolle halten kann und
+    \item mit den Daten so verknüpft ist, dass eine nachträgliche
+      Änderung erkannt werden kann.
+    \end{enumerate}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Signaturgesetz}
+  \framesubtitle{qualifizierte elektronische Signatur}
+  \begin{definition}
+    Eine \emph{qualifizierte elektronische Signatur} ist eine
+    fortgeschrittene elektronische Signatur, die
+    \begin{enumerate}
+    \item auf einem zum Zeitpunkt der Erzeugung gültigen Zertifikat
+      beruht und
+    \item mit einer sicheren Signaturerstellungseinheit erzeugt wurde.
+    \end{enumerate}
+  \end{definition}
+  \pause{}
+  Nur diese Form der Signatur dient als Ersatz für die eigenhändige
+  Unterschrift bzw. als Beweismittel vor Gericht.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Signaturgesetz}
+  \framesubtitle{Sichere Signaturerstellungseinheit}
+  \begin{itemize}
+  \item<+-> Hard- oder Software
+  \item<+-> soll Fälschungen sicher erkennen
+  \end{itemize}
+\end{frame}
+\end{document}
