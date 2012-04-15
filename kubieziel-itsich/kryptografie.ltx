@@ -1,0 +1,674 @@
+\input{kopfteil.ltx}
+\subtitle{Kryptographie}
+\date{18.\,November~2011}
+
+% Counter fuer das Vigenère-Quadrat
+% \newcounter{cnt}
+% \setcounter{cnt}{1}
+% \whiledo{\thecnt < 27}{%
+%   \DeclareGraphicsRule{.\thecnt}{\ifpdf mps\else eps\fi}{*}{}%
+%   \stepcounter{cnt}%
+% }
+
+\begin{document}
+\begin{frame}
+  \titlepage{}
+\end{frame}
+
+\section{Kryptographie}
+
+\begin{frame}
+  \frametitle{Kryptographie}
+  \begin{definition}
+    \emph{Kryptographie} ist die Lehre von den Methoden zur Ver- und
+    Entschlüsselung von Nachrichten.
+  \end{definition}
+  \begin{definition}
+    \emph{Kryptoanalyse} ist die Lehre von der Entschlüsselung von
+    Nachrichten ohne Zugriff auf den Schlüssel.
+  \end{definition}
+  \begin{definition}
+    \emph{Kryptologie} ist der Oberbegriff der beiden Teilgebiete.
+  \end{definition}
+\end{frame}
+
+\subsection{Kryptosystem}
+
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \framesubtitle{Alphabet}
+  Seien $\Sigma$ und $\Gamma$ zwei endliche Alphabete und
+  $\Sigma^{\ast}, \Gamma^{\ast}$ die Menge aller Worte über $\Sigma$
+  bzw. $\Gamma$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \framesubtitle{Klartextraum}
+  \begin{definition}
+    Eine nichtleere Menge von Nachrichten $\mathcal{M}\subseteq\Sigma^{\ast}$
+    wird als \emph{Klartextraum} bezeichnet. Ein Element
+    $m\in\mathcal{M}$ heißt \emph{Nachricht}.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \framesubtitle{Geheimtextraum}
+  \begin{definition}
+    Eine nichtleere Menge von Chiffretexten
+    $\mathcal{C}\subseteq\Gamma^{\ast}$ wird als \emph{Geheimtextraum}
+    bezeichnet. Ein Element $c\in\mathcal{C}$ heißt Chiffrat oder
+    Geheimtext.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \framesubtitle{Schlüsselraum}
+  \begin{definition}
+    Der \emph{Schlüsselraum} besteht aus nichtleeren Mengen $K_{e}$
+    und $K_{d}$ sowie einer bijektiven Abbildung $f\colon
+    K_{e}\rightarrow K_{d}$.
+  \end{definition}
+  Somit gibt es für jeden Schlüssel zur Verschlüsselung $k_{e}\in
+  K_{e}$ einen passenden Schlüssel zur Entschlüsselung $k_{d}\in
+  K_{d}$. Also $f(K_{e})= K_{d}$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \framesubtitle{Verschlüsselungsalgorithmus}
+  \begin{definition}
+    Eine linkstotale und injektive Abbildung $E\colon\mathcal{M}\times
+    \mathcal{K}\rightarrow\mathcal{C}$ wird als
+    \emph{Verschlüsselungsalgorithmus} bezeichnet.
+  \end{definition}
+  \pause{}
+  \begin{description}
+  \item[linkstotal] Jede Nachricht $m\in\mathcal{M}$ und jeder
+    Schlüssel $k\in\mathcal{K}$ kann auf einen Geheimtext
+    $c\in\mathcal{C}$ abgebildet werden.
+  \item[injektiv] Jedes Chiffrat $c\in\mathcal{C}$ wird höchstens ein
+    Mal als Funktionswert angenommen.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \framesubtitle{Entschlüsselungsalgorithmus}
+  \begin{definition}
+    Eine Abbildung $D\colon \mathcal{C}\times
+    \mathcal{K}\rightarrow\mathcal{M}$ mit der Eigenschaft $\forall
+    m\in\mathcal{M}\colon D(E(m,k_{e}), k_{d})=m$ für $k_{e}\in K_{e},
+    k_{d}\in K_{d}$ und mit $f(K_{e})= K_{d}$ heißt \emph{Entschlüsselungsalgorithmus}.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptosystem}
+  \begin{definition}
+  Ein \emph{Kryptosystem}~$\mathcal{S}$ ist ein Fünftupel
+  $\mathcal{S}=(\mathcal{M}, \mathcal{C}, \mathcal{K}, E, D)$.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dramatis personae}
+  \begin{description}
+  \item[Alice und Bob] "`Die Guten"', wollen untereinander Nachrichten austauschen.
+  \item[Eve] eavesdropper, belauscht die Übertragung von Nachrichten,
+    passiver Angreifer
+  \item[Mallory] malicious person, greift in die Übertragung ein,
+    aktiver Angreifer
+  \item[Trent] trusted entity, Notar
+  \end{description}
+\end{frame}
+
+\subsection{Geschichtlicher Abriss}
+
+
+\begin{frame}
+  \frametitle{Geschichtlicher Abriss}
+  \begin{itemize}
+  \item Skytale
+  \item \textsc{Caesar}"=Code
+  \item Vigenère"=Chiffre (Friedman"=Test)
+  \item ENIGMA
+  \item DES
+  \item Public"=Key"=Kryptographie und RSA
+  \item Crypto for the masses: PGP, GnuPG, SSL, FDE
+  \item ECC
+  \item Quantenkryptographie
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Geschichtlicher Abriss}
+  \framesubtitle{Skytale}
+\href{http://upload.wikimedia.org/wikipedia/commons/5/51/Skytale.png}{\includegraphics[width=.75\textwidth]{bilder/Skytale}}
+
+Quelle:
+\href{https://secure.wikimedia.org/wikipedia/en/wiki/Scytale}{Wikipedia:
+Scytale}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Vigenère-Chiffre}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      \begin{itemize}
+      \item gefunden von \textsc{Giovan Battista Bellaso} und später
+        \textsc{Blaise de Vigenère} zugeschrieben
+      \item polyalphabetische Chiffre
+      \item Grundlage für One Time Pad (OTP)
+      \end{itemize}
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \includegraphics[width=.8\textwidth]{bilder/Vigenere}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Vigenère-Chiffre}
+\includegraphics[width=.6\textwidth]{bilder/vsquare}
+  % \begin{minipage}{.7\textwidth}
+  %   \ttfamily\tiny\raggedright~~~%
+  %   \setcounter{cnt}{1}%
+  %   \whiledo{\thecnt < 27}{%
+  %     \alph{cnt}~~%
+  %     \stepcounter{cnt}%
+  %   }\\
+  %   \newcounter{cntline}\setcounter{cntline}{1}%
+  %   \newcounter{cntcol}%
+  %   \setcounter{cnt}{1}%
+  %   \whiledo{\thecntline < 27}{%
+  %     \ifthenelse{\thecnt > 26}{\addtocounter{cnt}{-26}}{}%
+  %     \alph{cnt}~~%
+  %     \setcounter{cntcol}{1}%
+  %     \whiledo{\thecntcol < 27}{%
+  %       \ifthenelse{\thecnt > 26}{\addtocounter{cnt}{-26}}{}%
+  %       \Alph{cnt}~~%
+  %       \stepcounter{cnt}%
+  %       \stepcounter{cntcol}%
+  %     }\\
+  %     \stepcounter{cnt}%
+  %     \stepcounter{cntline}%
+  %   }
+  % \end{minipage}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Vigenère-Chiffre}
+  Kryptoanalyse erfolgt über Erkennen der Schlüssellänge und Analyse
+  der Häufigkeiten:
+  \pause{}
+  \begin{Verbatim}[commandchars=\\\{\}]
+    LIG\textcolor{blue}{OML}OQROBR\textcolor{green}{NIP}XYPKYQ\textcolor{green}{NIP}GMC\textcolor{green}{NIP}RSJERE\textcolor{blue}{OML}OW\textcolor{red}{XOM}ARIL
+    CFCCXCRX\textcolor{red}{XOM}EDWGMLBSINOVGYHCERKSXROPZKVGWKCRIGWXCHX
+  \end{Verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{ENIGMA}
+  \includegraphics[width=.7\textwidth]{bilder/enigma-ru}
+
+  Quelle: Bundesarchiv
+\end{frame}
+
+\begin{frame}
+  \frametitle{Aktuelle Entwicklungen}
+  \begin{itemize}
+  \item DES
+  \item RSA
+  \item AES
+  \item Kryptografie in Anwendungen
+  \end{itemize}
+\end{frame}
+
+\subsection{Kryptoanalyse}
+
+
+\begin{frame}
+  \frametitle{Kryptoanalyse}
+  Ziel der Kryptoanalyse ist es, aus einem bestehenden Geheimtext und
+  eventuellen Zusatzinformationen den Klartext zu ermitteln. Einen
+  Versuch bezeichnet man als \emph{Angriff}.
+  \pause{}
+  \begin{description}
+  \item[Ciphertext-only] einer oder mehrere Chiffretexte sind bekannt.
+  \item[Known-plaintext] Zu einigen Nachrichten ist sowohl Chiffrat
+    wie auch Klartext bekannt.
+  \item[Chosen-plaintext] Der zu verschlüsselnde Text kann vom
+    Angreifer gewählt werden.
+  \item[Adaptive-chosen-plaintext] Spezialfall von oben, basierend auf
+    dem Ergebnis der Verschlüsselung wird Klartext modifiziert.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kryptoanalyse}
+  \framesubtitle{Rubber-Hose-Angriff}
+  \href{http://xkcd.com/538/}{\includegraphics[width=.75\textwidth]{bilder/security}}
+
+  Quelle: \href{http://xkcd.com/}{xkcd}.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kerckhoffssche Prinzipien}
+  \begin{enumerate}
+  \item<+-> Wenn ein System nicht theoretisch beweisbar sicher ist, so
+    sollte es praktisch sicher sein.
+  \item<+-> Das Design eines System sollte keine Geheimhaltung
+    erfordern und sollte sich ohne Gefahr in den Händen des Feindes
+    befinden können.
+  \item<+-> Der Schlüssel soll einfach zu merken und zu ändern sein.
+  \item<+-> Kryptogramme sollen per Telegraph übertragbar sein.
+  \item<+-> Ein Kryptosystem soll portabel sein und dessen Bedienung
+    nicht mehrere Menschen erfordern.
+  \item<+-> Ein Kryptosystem muss einfach bedienbar sein.
+  \end{enumerate}
+\end{frame}
+
+\subsection{Verschlüsselungsalgorithmen}
+
+\begin{frame}
+  \frametitle{Substitution}
+  \begin{definition}
+    Eine \emph{Substitution} bezeichnet die Ersetzung eines
+    Klartextbuchstaben durch einen Buchstaben des Chiffretexts.
+  \end{definition}
+  \pause{}
+  Es gibt vier Typen von Substitutionschiffren:
+  \begin{enumerate}
+  \item Monoalphabetische Chiffre
+  \item Homophone Substitutionschiffre
+  \item Polygramchiffre
+  \item polyalphabetische Chiffre
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Substitution}
+  \framesubtitle{Beispiele}
+  \begin{exampleblock}{Freimaurercode}
+    {\pigpenfont HEUTZUTAGE NUTZEN DAS EHER SCHULKINDER.}
+  \end{exampleblock}
+  \begin{exampleblock}{\textsc{Caesar}-Chiffre}<2->
+    KHXWCXWDJHQXWCHQGDVHKHUVFKXONLQGHU
+  \end{exampleblock}
+  \begin{exampleblock}{ROT-13}<3->
+    \texttt{CZHLPDODQJHZHQGHWHUJLEWVLFKGHUNODUWHAW}
+    \texttt{ZWEIMALANGEWENDETERGIBTSICHDERKLARTEXT}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Transposition}
+  \begin{definition}
+    Eine \emph{Transposition} erhält den Klartext und ändert die
+    Anordnung der Buchstaben.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Transposition}
+  \framesubtitle{Beispiel}
+  \begin{itemize}
+  \item ADFGVX-Chiffre
+  \item Enigma
+  \end{itemize}
+\end{frame}
+
+\subsubsection{Symmetrische Chiffren}
+
+\begin{frame}
+  \frametitle{Symmetrische Chiffren}
+  \begin{definition}
+    Bei einer \emph{symmetrischen Chiffre} kann der Schlüssel zur
+    Verschlüsselung $k_{e}$ aus dem Schlüssel zur Entschlüsselung
+    $k_{d}$ und umgekehrt berechnet werden.
+  \end{definition}
+  
+  Bei den meisten Algorithmen gilt: $k_{e}= k_{d}$.  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Strom- und Blockchiffren}
+  Man unterscheidet zwei Arten von symmetrischen Chiffren:
+  \begin{itemize}
+  \item Stromchiffren
+  \item Blockchiffren.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Betriebsmodi von Blockchiffren}
+  Urspünglich in \href{http://www.itl.nist.gov/fipspubs/fip81.htm}{DES
+  modes of operation (FIPS~81)} festgelegt: 
+\begin{itemize}
+\item Electronic Code Book (ECB)
+\item Cipher Block Chaining (CBC)
+\item Cipher Feedback (CFB)
+\item Output Feedback (OFB)
+\end{itemize}
+
+Weitere wurden später entwickelt und spezifiziert. Beispiele sind der
+\href{http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf}{Counter
+  Modus (CTR)} oder
+\href{http://csrc.nist.gov/publications/nistpubs/800-38E/nist-sp-800-38E.pdf}{XEX
+  Tweakable Block Cipher with Ciphertext Stealing (XTS-AES)}.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Betriebsmodi von Blockchiffren}
+  \framesubtitle{Electronic Code Book}
+  \begin{itemize}
+  \item<+-> offensichtliche Anwendungsart
+  \item<+-> Jeder Klartextblock wird in denselben Geheimtextblock verschlüsselt.
+  \item<+-> Padding oder Ciphertext Stealing
+  \item<+-> Problem: Wiedereinspielen von Blöcken
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Betriebsmodi von Blockchiffren}
+  \framesubtitle{Cipher Block Chaining}
+  \begin{itemize}
+  \item<+-> Chaining heißt, dass eine Rückkopplung (Feedback)
+    eingebaut wird.
+  \item<+-> Ergebnis der vorigen Verschlüsselung fließt in die
+    Verschlüsselung des aktuellen Blocks mit ein.
+  \item<+-> $c_{i}= E_{k} (m_{i}\oplus c_{i-1})$
+  \item<+-> Initialisierungsvektor
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data Encryption Algorithm}
+  \framesubtitle{Geschichte}
+  \begin{itemize}
+  \item<+-> vor den 1970er Jahren keine systematische öffentliche Forschung
+  \item<+-> 1973/4 Ausschreibung für öffentlichen Algorithmus durch NBS
+  \item<+-> eine Einreichung von IBM: Lucifer
+  \item<+-> Evaluierung durch NSA
+  \item<+-> 23.\,November~1976 Veröffentlichung als FIPS PUB 46
+  \item<+-> 1987 und 1993 nolens volens reevaluiert
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data Encryption Algorithm}
+  \framesubtitle{Design}
+  \begin{itemize}
+  \item<+-> Feistel-Chiffre
+  \item<+-> 64 Bit Blocklänge, 56~Bit (effektive) Schlüssellänge
+  \item<+-> Rundenfunktion und Schlüsselexpansion
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data Encryption Algorithm}
+  \framesubtitle{Angriff}
+  \begin{itemize}
+  \item<+-> Schlüssellänge
+    \begin{itemize}
+    \item<+-> 1976 Diffie/Hellman: Parallelrechner für 20~Mio.\,USD
+      benötigt einen Tag
+    \item<+-> 1983 Wiener: Rechner für 1~Mio.\,USD benötigt 3,5~Stunden
+    \item<+-> 1998 EFF: Rechner für 250\,000~USD benötigt 56~Stunden
+    \item<+-> 2009 RUB: Rechner für 10\,000~USD benötigt 6~Tage
+    \end{itemize}
+  \item<+-> "`schwache Schlüssel"' (weak keys)
+  \item<+-> Differentielle Kryptoanalyse (Biham/Shamir)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Der AES-Algorithmus}
+  \framesubtitle{Grundlagen}
+  \begin{itemize}
+  \item<+-> Block in 16~Teile zu 8~Bit=1~Byte aufgeteilt
+  \item<+-> Operation in $\mathbb{F}_{2^{8}}= \mathbb{F}_{2}[x]/g\mathbb{F}_{2}[x]$  mit
+    dem irreduziblen Polynom
+    \begin{gather*}
+      g = x^{8}+ x^{4}+ x^{3}+x+ 1
+    \end{gather*}
+  \item<+-> Byte $b_{7}b_{6}b_{5}b_{4}b_{3}b_{2}b_{1}b_{0}$
+    repräsentiert durch ein Polynom aus $\mathbb{F}_{2^{8}}$
+  \item<+-> Schreibweise als $4\times4$"=Matrix:
+    \begin{gather*}
+      M=
+      \begin{pmatrix}
+        a_{00} & a_{01} & a_{02} & a_{03}\\
+        a_{10} & a_{11} & a_{12} & a_{13}\\
+        a_{20} & a_{21} & a_{22} & a_{23}\\
+        a_{30} & a_{31} & a_{32} & a_{33}\\
+      \end{pmatrix}\qquad a_{ij}\in\mathbb{F}_{2^{8}}
+    \end{gather*}
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{Rundentransformation}
+    Insgesamt gibt es neun Runden mit den Operationen:
+    \begin{enumerate}
+    \item<+-> \texttt{AddRoundKey}
+    \item<+-> \texttt{SubBytes}
+    \item<+-> \texttt{ShiftRows}
+    \item<+-> \texttt{MixColumns}
+    \end{enumerate}\pause{}
+    und eine Abschlussrunde \emph{ohne} die obige Operation
+    \texttt{MixColumns}.\pause{}
+    Weiterhin werden für jede Runde separate Schlüssel errechnet.
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{SubBytes}}
+    Sei $a_{ij}\in\mathbb{F}_{2^{8}}$ aus der Matrix $M$ und $S=g\circ f$
+    mit $f(a) =
+      \begin{cases}
+        a^{-1} & x\neq0\\
+        0 & x=0
+      \end{cases}$ und\pause{}
+    \begin{align*}      
+g
+\begin{pmatrix}
+  a_{7}\\ a_{6}\\ a_{5}\\ a_{4}\\ a_{3}\\ a_{2}\\ a_{1}\\ a_{0}\\
+\end{pmatrix} &=
+\begin{pmatrix}
+  1 & 1 & 1 & 1 & 1 & 0 & 0 & 0\\
+  0 & 1 & 1 & 1 & 1 & 1 & 0 & 0\\
+  0 & 0 & 1 & 1 & 1 & 1 & 1 & 0\\
+  0 & 0 & 0 & 1 & 1 & 1 & 1 & 1\\
+  1 & 0 & 0 & 0 & 1 & 1 & 1 & 1\\
+  1 & 1 & 0 & 0 & 0 & 1 & 1 & 1\\
+  1 & 1 & 1 & 0 & 0 & 0 & 1 & 1\\
+  1 & 1 & 1 & 1 & 0 & 0 & 0 & 1\\
+\end{pmatrix}
+\begin{pmatrix}
+  a^{7}\\ a^{6}\\ a^{5}\\ a^{4}\\ a^{3}\\ a^{2}\\ a^{1}\\ a^{0}\\
+\end{pmatrix} +
+\begin{pmatrix}
+  0\\ 1\\ 1\\ 0\\ 0\\ 0\\ 1\\1
+\end{pmatrix}
+    \end{align*}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{ShiftRows}}
+    \begin{gather*}
+      \begin{pmatrix}
+        a_{00} & a_{01} & a_{02} & a_{03}\\
+        a_{10} & a_{11} & a_{12} & a_{13}\\
+        a_{20} & a_{21} & a_{22} & a_{23}\\
+        a_{30} & a_{31} & a_{32} & a_{33}\\
+      \end{pmatrix}\rightarrow
+      \begin{pmatrix}
+        a_{00} & a_{01} & a_{02} & a_{03}\\
+        a_{11} & a_{12} & a_{13} & a_{10}\\
+        a_{22} & a_{23} & a_{20} & a_{21}\\
+        a_{33} & a_{30} & a_{31} & a_{32}\\
+      \end{pmatrix}
+      \end{gather*}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{MixColumns}}
+    Jede Eingabespalte $a_{i.}$ wird mit einem Polynom $c(x)= 03\cdot
+    x^{3}+ 01\cdot x^{2}+ 01\cdot x+ 02$ modulo $x^{4}+1$
+    multipliziert.\pause{}
+    Schreibweise als Matrixmultiplikation:
+    \begin{gather*}
+      \begin{pmatrix}
+        b_{i0}\\ b_{i1}\\ b_{i2}\\ b_{i3}
+      \end{pmatrix}=
+      \begin{pmatrix}
+        02 & 03 & 01 & 01\\
+        01 & 02 & 03 & 01\\
+        01 & 01 & 02 & 03\\
+        03 & 01 & 01 & 02
+      \end{pmatrix}\cdot
+      \begin{pmatrix}
+        a_{i0}\\ a_{i1}\\ a_{i2}\\ a_{i3}
+      \end{pmatrix}
+    \end{gather*}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Der AES-Algorithmus}
+    \framesubtitle{\texttt{AddRoundKey}}
+    Addition der Matrix $M$ mit dem Rundenschlüssel modulo $2$
+  \end{frame}
+
+\begin{frame}
+  \frametitle{Angriffe}
+  \begin{itemize}
+  \item<+-> Lineare und differenzielle Kryptoanalyse
+  \item<+-> XSL-Angriff
+  \item<+-> Darstellung als Kettenbruch
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Angriffe}
+  \framesubtitle{Darstellung als Kettenbruch}
+\begin{gather*}
+  a_{i,j}^{(6)} = K+ \sum\limits_{\substack{e_{5}\in\mathcal{E}\\
+      d_{5}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{4}\in\mathcal{E}\\
+      d_{4}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{3}\in\mathcal{E}\\
+      d_{3}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{2}\in\mathcal{E}\\
+      d_{2}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+ \sum\limits_{\substack{e_{1}\in\mathcal{E}\\
+      d_{1}\in\mathcal{D}}}
+\cfrac{C}{K^{*}+p_{*}^{*}}}}}}
+\end{gather*}
+\end{frame}
+
+\subsubsection{Public-Key-Kryptographie}
+
+\begin{frame}
+  \frametitle{Schlüsselverteilung}
+  Lösung des Problems durch unterschiedliche Schlüssel:
+  \begin{description}
+  \item[Public key] Öffentlicher Schlüssel kann überall hinterlegt
+    werden und wird dazu benutzt, Nachrichten an Alice zu verschlüsseln.
+  \item[Private key] Geheimer Schlüssel kennt nur Alice und wird
+    benutzt, um eingehende Nachrichten zu entschlüsseln.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zur Geschichte}
+  \begin{itemize}
+  \item<+-> entdeckt durch GCHQ (zufälliges Rauschen)
+  \item<+-> öffentlich bekannt durch \textsc{Rivest}, \textsc{Shamir}
+    und \textsc{Adleman} bzw. \textsc{Diffie} und \textsc{Hellman}
+  \item<+-> Algorithmen: RSA, ElGamal etc.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Einwegfunktion}
+  \begin{definition}
+    Seien $X$ und $Y$ Mengen. Eine injektive Funktion $f\colon
+    X\rightarrow Y$ heißt \emph{Einwegfunktion}, falls man für jedes
+    $x\in X$ den Wert $y=f(x)$ schnell berechnen kann und für jedes
+    beliebige $y\in\text{Bld }f\subseteq Y$ das Urbild $f^{-1}(y)=x$
+    nicht in vertretbarer Zeit finden kann.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Public-Key-Kryptosystem}
+  \begin{definition}
+    Ein Kryptosystem $\mathbb{K}$ heißt
+    \emph{Public-Key-Kryptosystem}, wenn jede Chiffrierfunktion
+    $e_k\colon \mathcal{P}\rightarrow\mathcal{C}$ mit $k\in
+    \mathcal{K}$ eine Einwegfunktion ist.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Public-Key-Kryptosystem}
+  \framesubtitle{Beispiele}
+  \begin{itemize}
+  \item Berechnung des diskreten Logarithmus
+  \item Faktorisierung großer Zahlen
+  \end{itemize}
+\end{frame}
+
+\subsection{RSA}
+
+\begin{frame}
+  \frametitle{Der Algorithmus}
+  \begin{enumerate}
+  \item<+-> Wähle $p,q\in\mathbb{P}$ mit $p\neq q$
+  \item<+-> Berechne $n=p\cdot q$ und $\varphi(n)=
+    \varphi(p)\varphi(q)= (p-1)(q-1)$
+  \item<+-> Wähle $e\in\mathbb{N}$ mit $1<e<\varphi(n)$ und $e\nmid \varphi(n)$
+  \item<+-> Berechne $d\in\mathbb{N}$ mit
+    \begin{align*}
+      ed\equiv 1\mod \varphi(n)
+    \end{align*}
+  \item<+-> Fertig $\checkmark$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schlüssel}
+  \begin{itemize}
+  \item<+-> öffentlicher Schlüssel: $(n,e)$
+  \item<+-> privater Schlüssel: $(n,d)$
+  \item<+-> Verschlüsseln:
+    \begin{align*}
+      e_B&\colon \mathbb{Z}_n\rightarrow\mathbb{Z}_n & x\mapsto
+      y=x^e\mod n
+    \end{align*}
+  \item<+-> Entschlüsseln:
+    \begin{align*}
+      d_B&\colon \mathbb{Z}_n\rightarrow\mathbb{Z}_n & y\mapsto
+      y^d\mod n
+    \end{align*}
+  \end{itemize}
+\pause{}
+Funktioniert das?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Satz über die Entschlüsselung}
+  \begin{theorem}[Satz]
+    Es gilt, $d_B (e_B(x))=x$ für alle $x\in\mathbb{Z}_n$.
+  \end{theorem}
+\end{frame}
+
+\end{document}
