@@ -1,0 +1,489 @@
+\input{kopfteil.ltx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\title{Sicherheitsmodelle}
+\date{\today{}}
+\begin{document}
+\begin{frame}
+  \titlepage{}
+\end{frame}
+
+\section{Klassifikation des Modells}
+\label{sec:klass-des-modells}
+
+\begin{frame}
+  \frametitle{Modellierung}
+  \begin{itemize}
+  \item<+-> Hohe Evaluationsstufen benötigen (semi-)formale Modelle.
+  \item<+-> Daher wollen wir Modelle realer Systeme erstellen.
+  \item<+-> Modellbildung erfolgt abstrakt.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modellbildung}
+  \begin{itemize}
+  \item<+-> Orientierung an problemspezifischen Anforderungen und
+    Möglichkeiten des jeweiligen Modells
+  \item<+-> Analyse des Modells auf beschreibbare Eigenschaften
+    \pause{} $\Rightarrow$ Einsatz entsprechend der Anforderungen
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Objekte und Subjekte}
+  In der Einleitung:
+  \begin{itemize}
+  \item<+-> Informationen sind in \emph{Objekten} gespeichert.
+  \item<+-> \emph{Subjekte} sind Benutzer eines Systems oder Objekte, die
+    im Auftrag eines Benutzers aktiv sind.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Objekte und Subjekte}
+  \framesubtitle{Grobkörnige Modellierung}
+  \begin{itemize}
+  \item<+-> Objekte werden auf Schutzwürdigkeit geprüft
+  \item<+-> Zugriffskontrolle geschieht nur für zu schützende Objekte
+  \item<+-> unvollständige Erfassung führt zu Sicherheitslücken (Keine
+    Kontrolle für nicht erfasste Objekte)
+  \item<+-> Erfüllung des Prinzips der minimalen Rechte (need to know) schwer
+  \item<+-> leicht mit Betriebssystemmitteln umzusetzen
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Objekte und Subjekte}
+  Nutzer lassen sich ebenfalls grobkörnig modellieren. In dem Fall
+  sind Aktionen einzelner Nutzer nicht differenziert kontrollierbar.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Objekte und Subjekte}
+  \framesubtitle{Anwedungsspezifische Körnung}
+  \begin{itemize}
+  \item<+-> Zugriffsrechte für Objekte müssen beliebig gesetzt und
+    kontrolliert werden können
+  \item<+-> Das garantiert Umsetzung des Prinzips der minimalen Rechte
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsrechte}
+  \begin{definition}
+    Zugriffsrechte sind \emph{universell}, wenn durch sie allgemeine
+    Operationen bezeichnet werden.
+  \end{definition}
+  \pause{}
+  \begin{definition}
+    Zugriffsrechte sind \emph{objektspezifisch}, wenn
+    Zugriffsmöglichkeiten auf den funktionalen Kontext und auf das
+    betreffende Objekt beschränkt werden können.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsbeschränkungen}
+  \begin{definition}
+    Eine Zugriffsbeschränkungen heißt \emph{einfach}, wenn ein Subjekt
+    für den Zugriff auf das Objekt nur das entsprechende Zugriffsrecht
+    besitzen muss.
+  \end{definition}
+  \pause{}
+  \begin{definition}
+    Eine Zugriffsbeschränkung heißt \emph{komplex}, wenn ein
+    zulässiger Zugriff sowohl das entsprechende Zugriffsrecht wie
+    weitere Bedingungen erfordert.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsbeschränkungen}
+  \framesubtitle{Beispiele}
+  \begin{exampleblock}{Beispiele}
+    \begin{itemize}
+    \item<+-> Zugriff nur zwischen 10--22~Uhr erlaubt (globale Regel)
+    \item<+-> Regeln beim Geldabheben (objektlokale Regel)
+    \end{itemize}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsstrategien}
+  \begin{itemize}
+  \item<+-> Zugriffskontrollstrategie
+    \begin{itemize}
+    \item<+-> Benutzerbestimmbare Zugriffskontrollstrategie
+    \item<+-> Systembestimmte Zugriffskontrollstrategie
+    \item<+-> Rollenbasierte Zugriffskontrollstrategie
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsstrategien}
+  \framesubtitle{Benutzerbestimmbare Zugriffskontrollstrategie}
+  \begin{itemize}
+  \item abgekürzt mit DAC vom englischen Discretionary Access Control
+  \item Eigentümer eines Objekts ist für Rechtevergabe verantwortlich
+  \item Zugriffsrechte werden auf Basis von Objekten vergeben
+  \item Keine Betrachtung von Abhängigkeiten zwischen Objekten
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsstrategien}
+  \framesubtitle{Systembestimmte Zugriffskontrollstrategie}
+  \begin{itemize}
+  \item abgekürzt MAC vom Englischen Mandatory Access Control
+  \item Festlegung von systemglobalen Eigenschaften
+  \item MAC dominieren DAC
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsstrategien}
+  \framesubtitle{Rollenbasierte Zugriffskontrollstrategie}
+  \begin{itemize}
+  \item abgekürzt RBAC vom Englischen Role Based Access Control
+  \item Zugriffsrechte werden in Abhängigkeit von der Aufgabe des
+    Subjekts vergeben
+  \end{itemize}
+\end{frame}
+
+\section{Zugriffskontrollmodelle}
+\label{sec:zugr}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \begin{definition}
+    Der Schutzzustand eines Systems zu einem Zeitpunkt~$t$ wird durch
+    eine $\abs{S_{t}}\times\abs{O_{t}}$-Matrix~$M_{t}$ modelliert. Es
+    gilt:
+    \begin{itemize}
+    \item $O_{t}$ bezeichnet die endliche Menge der Objekte zum
+      Zeitpunkt~$t$ (Spalten der Matrix)
+    \item $S_{t}$ bezeichnet die endliche Menge der Subjekte zum
+      Zeitpunkt~$t$ (Zeilen der Matrix)
+    \item $M_{t}\colon S_{t}\times O_{t}\rightarrow \mathfrak{P}(R)$
+      mit $R$ als der Menge der Zugriffsrechte
+    \end{itemize}
+  \end{definition}
+  \pause{}
+  Ein Eintrag~$M_{t} (s,o)$ ist die Menge der Rechte, die ein Subjekt
+  zu einem Zeitpunkt~$t$ an einem Objekt besitzt.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Beispiel für eine Zugriffsmatrix}
+\scriptsize{\begin{tabularx}{\textwidth}{c|X|X|X|X|X|X|}
+    \toprule
+              & Datei 1 & Datei 2 & Prozess 1 & Prozess 2 & Prozess 3 & Prozess
+    4\\
+    \midrule
+    Prozess 1 &         &       &             & control, send &  &
+    control\\
+    \midrule
+    Prozess 2 &         &       &  wait, signal &             &
+    control &\\
+    \midrule
+    Prozess 3 & read, write & write, owner & & receive & & send\\
+    \midrule
+    Prozess 4 &         & read, write &       &          & send & \\
+    \bottomrule
+  \end{tabularx}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Statische und dynamische Matrix}
+  \begin{itemize}
+  \item Bei einer statischen Matrix ist keine Änderung der
+    Rechtevergabe möglich.
+  \item Rechte müssen im vornherein bekannt und über lange Zeiträume
+    konstant sein.
+  \item<2-> Bei einer dynamischen Matrix werden Zustandsübergänge
+    durch Ausführungen von Kommandos modelliert.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Sicherheitseigenschaften}
+  \begin{enumerate}
+  \item Safety-Problem
+  \item Soll-Ist-Vergleich
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Safety-Problem}
+  \begin{exampleblock}{Problemstellung}
+    Das \emph{Safety-Problem} behandelt die Frage, ob ausgehend von
+    einem Zustand~$M_{t}$ ein Subjekt~$s$ das Recht~$r$ am Objekt~$o$
+    erhalten kann, wenn es das Recht in $M_{t}$ noch nicht besitzt.
+  \end{exampleblock}
+  \pause{}
+  Anders ausgedrückt: Es ist zu zeigen, dass, ausgehend von $M_{t}$ mit
+  $r\notin M_{t} (s,o)$, ein Zustand~$M_{t'}$ mit $t'>t$ erreichbar
+  ist, für den $r\in M_{t'} (s,o)$ gilt.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Safety-Problem}
+  \begin{definition}
+    Eine Konfiguration~$K_{t}$ zum Zeitpunkt~$t$ ist durch den
+    Schutzzustand~$M_{t}$ und die Mengen $S_{t}$ und $O_{t}$
+    festgelegt, also $K_{t}= (M_{t}, O_{t}, S_{t})$.
+    Mit $K_{t}\models_{\textop} K_{t+1}$ wird der
+    Konfigurationsübergang durch das Kommando \texttt{op}
+    bezeichnet. Sei $K_{0}$ eine Ausgangskonfiguration und für $K_{t}$
+    gelte, $r\notin M_{t} (s,o)$.
+
+    Das \emph{Safety-Problem} ist also die Frage, ob, ausgehend von
+    $K_{t}$, eine Konfiguration~$K_{t+n}$ mit $K_{0}\models_{*}
+    K_{t}\models_{\text{op}_{1}} K_{t+1}\models_{\text{op}_{2}}
+    \dotso\models_{\text{op}_{n}} K_{t+n}$ und $r\in M_{t+n} (s,o)$.
+  \end{definition}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Zugriffsmatrixmodell}
+  \framesubtitle{Soll-Ist-Vergleich}
+  Beim \emph{Soll-Ist-Vergleich} ist ein Modell mit einer Menge
+  Kommandos und einem Schutzzustand~$M_{t}$ gegeben. Die erwünschten
+  Sicherheitseigenschaften des modellierten Systems sind gegeben und
+  es ist zu prüfen, ob das System (Ist-Zustand) den Anforderungen
+  (Soll-Zustand) genügt.
+\end{frame}
+
+\section{Rollenbasierte Modelle}
+
+\begin{frame}
+  \frametitle{Rollenbasierte Modelle}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      \begin{itemize}
+      \item<+-> Modell knüpft Berechtigung an Rollen und Aufgaben
+      \item<+-> Subjekte führen Aufgaben aus
+      \item<+-> Modell legt fest, welches Subjekt welche Aufgaben
+        durchführen darf
+      \item<+-> 1992 eingeführt von D.\,F.\,Ferraiolo  und D.\,R.\,Kuhn
+      \item<+-> 2004 als ANSI"=Standard
+      \end{itemize}
+    \end{column}
+    \begin{column}{.35\textwidth}
+      \includegraphics[width=\textwidth]{bilder/rbac-ferraiolo-kuhn}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Rollenbasierte Modelle}
+  \framesubtitle{Definition}
+  \begin{definition}
+    Ein Tupel $(S,O,R,P, \text{sr}, \text{pr}, \text{session})$ mit der
+    \pause endlichen Menge der Benutzer~$S$, \pause der endlichen
+    Menge der zu schützenden Objekte~$O$, \pause der endlichen Menge
+    von Rollen~$R$, \pause der endlichen Menge der
+    Berechtigungen~$P$ und \pause den Relationen $\text{sr},
+    \text{pr}, \text{session}$ heißt \emph{rollenbasiertes Sicherheitsmodell}.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Rollenbasierte Modelle}
+  \framesubtitle{Rollenmitglied}
+  Die Abbildung $\text{sr}$ bildet die Rollenmitgliedschaft eines
+  Subjekts~$s\in S$ ab:
+  \begin{gather*}
+    \text{sr}\colon S\rightarrow\mathfrak{P}(R)
+  \end{gather*}
+  \pause{}
+  Ein Subjekt~$s$ ist in den Rollen~$R_{1},\dotsc,R_{n}$ autorisiert,
+  falls gilt, $\text{sr}(s)= \{R_{1},\dotsc, R_{n}\}$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Rollenbasierte Modelle}
+  \framesubtitle{Berechtigung}
+  Mit der Abbildung
+  \begin{gather*}
+    \text{pr}\colon R\rightarrow \mathfrak{P}(P)
+  \end{gather*}
+  wird jeder Rolle~$r\in R$ die Menge der Zugriffsrechte zugeordnet,
+  die die Mitglieder der Rolle wahrnehmen dürfen.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Rollenbasierte Modelle}
+  \framesubtitle{Sitzung}
+  Die Relation $\text{session}\subseteq S\times\mathfrak{P}(R)$
+  beschreibt Tupel~$(s,r)$. Diese werden als \emph{Sitzung}
+  bezeichnet. Dabei gilt, $r\subseteq \text{sr}(s)$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Rollenbasierte Modelle}
+  \framesubtitle{Sicherheitseigenschaften}
+  \begin{enumerate}
+  \item<+-> Ein Subjekt darf nur in Rollen aktiv sein, in denen es
+    Mitglied ist.
+  \item<+-> Ein Subjekt nimmt nur die Rechte wahr, die einer Rolle
+    zugeordnet sind, in der es aktiv ist.
+  \item<+-> In einem hierarchischen, rollenbasierten Modell erbt ein
+    Subjekt alle Rechte von Rollen, die von seinen aktiven Rollen
+    dominiert werden.
+  \end{enumerate}
+\end{frame}
+
+\section{Bell-LaPadula-Modell}
+
+\begin{frame}
+  \frametitle{Bell-LaPadula-Modell}
+  \begin{itemize}
+  \item<+-> dynamisches Zugriffsmatrixmodell mit weiteren Regeln
+  \item<+-> Auftrag der USAF 1970 an The MITRE Corporation
+  \item<+-> 1973 von David Elliott Bell und Leonard J.\,LaPadula veröffentlicht
+  \item<+-> Bell-LaPadula-Modell ist eines der wichtigsten Sicherheitsmodelle
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Elemente des Modells}
+  \begin{itemize}
+  \item Objekte und Subjekte
+  \item Zugriffsrechte
+    \begin{itemize}
+    \item \texttt{read-only}
+    \item \texttt{append}
+    \item \texttt{execute}
+    \item \texttt{read-write}
+    \item \texttt{control}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsklassen}
+  \begin{itemize}
+  \item Einführung einer geordneten Menge von Sicherheitsklassen~\textit{SC}
+  \item Durchführung von systembestimmter Zugriffskontrolle (MAC)
+  \item Element der Sicherheitsklasse wird durch Sicherheitsmarke und
+    -kategorien beschrieben
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsklassen}
+  \framesubtitle{Sicherheitsmarken}
+  Sicherheitsmarken sind uns bereits unter dem Namen
+  "`Sensitivitätsklassen"' begegnet.
+  \pause{}
+  \begin{tabular}{l|l|l|l|l}
+    \toprule
+    Deutschland & Streng Geheim & Geheim & VS-Vertraulich & VS-NfD\\
+    USA & Top Secret & Secret & Confidential & Restricted\\
+    Ägypten & Sirri Lilghayeh & SirriKhas & Mehoud & Jidden\\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsklassen}
+  \framesubtitle{Sicherheitskategorien}
+  \begin{itemize}
+  \item dienen zur Modellierung funktionaler Einheiten
+  \item Kategorie ist eine Sensibilitätszuordnung nach dem Prinzip der
+    minimalen Rechte
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsklassen}
+  \begin{enumerate}
+  \item<+-> Subjekte
+    \begin{itemize}
+    \item Grad für die Vertrauenswürdigkeit eines Subjekts
+    \item Sicherheitsklasse ist vom Zeitpunkt abhängig
+    \item maximale Sicherheitsklasse heißt \emph{Clearance}
+    \end{itemize}
+  \item<+-> Objekte
+    \begin{itemize}
+    \item Grad für Vertraulichkeit eines Objekts
+    \item Objekte besitzen nur eine Sicherheitsklasse
+    \item Diese heißt \emph{Klassifikation}
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sicherheitsklassen}
+  \framesubtitle{Halbordnung}
+  Auf der Menge der Sicherheitsklassen ist mit der $\leq$"=Relation
+  eine Halbordnung definiert. Für zwei Elemente $S_{1}= (A_{1},
+  B_{1})$ und $S_{2}= (A_{2},B_{2})$ mit $A_{1}, A_{2}$
+  Sicherheitsmarke und $B_{1}, B_{2}$ Sicherheitskategorie ist
+  $S_{1}\leq S_{2}$, wenn
+  \begin{align*}
+    A_{1} &\leq A_{2}\quad \text{und}\\
+    B_{1} &\leq B_{2}
+  \end{align*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Systembestimmte Regeln}
+  Es gibt zwei systembestimmte Regeln:
+  \begin{enumerate}
+  \item<+-> Simple-Security-Regel
+  \item<+-> $\star$-Regel
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Systembestimmte Regeln}
+  \framesubtitle{Simple-Security-Regel}
+  Ein Zugriff mit den Rechten \texttt{read-only} oder \texttt{execute}
+  ist nur zulässig, wenn
+  \begin{enumerate}
+  \item<+-> das Subjekt das entsprechende Zugriffsrecht besitzt und
+  \item<+-> die Klassifikation des Objekts kleiner oder gleich der
+    Clearance des Subjekts ist.
+  \end{enumerate}
+  \pause{}
+  Die Regel wird manchmal als \emph{no read up} bezeichnet.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Systembestimmte Regeln}
+  \framesubtitle{$\star$-Regel}
+  Befindet sich ein Tripel (Subjekt, Objekt, Zugriffsrecht) in der
+  aktuellen Zugriffsmenge, so ist
+  \begin{enumerate}
+  \item<+-> das Zugriffsrecht \texttt{append} nur zulässig, wenn die
+    Klassifikation des Objekts mindestens so groß wie die Clearance
+    des Subjekts ist und
+  \item<+-> das Zugriffsrecht \texttt{read-write} nur zulässig, wenn
+    die Klassifikation des Objekts \emph{gleich} der Clearance des
+    Subjekts ist.
+  \end{enumerate}
+  \pause{}
+  Die Regel wird manchmal als \emph{no write down} bezeichnet.
+\end{frame}
+
+\end{document}
