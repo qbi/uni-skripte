@@ -1,0 +1,371 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: index.tool      xindy
+% rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst} % einbinden der neuen
+                   % Trennmuster, diese korrigieren einige Fehler der alten
+                   % und bieten mehr Trennstellen
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final,babel]{microtype} % Verbesserung der Typographie
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
+                         % Markierungen für offene Aufgaben zu setzen; wird
+                         % auch für \help (s.u.) verwendet
+% \usepackage[text]{esdiff} % Zum Setzen von (partiellen) Ableitungen
+                            % (df/dx). Das d wird korrekt in roman
+                            % gesetzt. Verwendung: \diff{f}{x} oder
+                            % \diffp{f}{x} für partielle Ableitungen
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Für die Gaußklammer empfiehlt sich ebenso eine Definition mit
+% Benutzung von mathtools.
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Lie"~Gruppen und Lie"~Algebren}
+\author{Prof.\,Dr.\,Oksana Yakimova}
+\date{Semester: SS 2012}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2012)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Erstes Kapitel}
+\section{Erster Abschnitt}
+
+\begin{satz}[Toller Satz]\label{satz:1}
+  Dies ist ein ganz toller und wichtiger Satz mit einer ganz einfachen
+  Formel
+  \begin{gather*}
+    a\cdot0=0
+  \end{gather*}
+
+  \begin{proof}
+    Daher müssen wir ihn auch beweisen:
+    \begin{align*}
+      a\cdot 0 &= a\cdot(1-1)\\
+      &= a-a&\text{durch ausmultiplizieren}\\
+      &= 0&\text{n.\,Definition d.\,Inversen d.\,Addition}
+    \end{align*}
+  \end{proof}
+\end{satz}
+
+Die Umgebung \texttt{proof} sollte immer innerhalb der Umgebung stehen, zu der
+der Beweis gehört. Das hat den Vorteil, dass man Umgebungen ohne Beweis z.\,B.
+mit $\scriptstyle\Box$ enden lassen kann, wärend Umgebungen mit Beweisen
+mit $\scriptstyle\blacksquare$ enden. Dadurch kann man im laufenden Text
+auch das Ende von Sätzen, Bemerkungen und dergleichen erkennen, was sonst
+schwer ist, da die gleiche Schrift sowohl innerhalb als auch außerhalb
+verwendet wird.
+% Man beachte die speziellen Anweisungen bei der theorem-Definition in der
+% Präampel
+
+\begin{bemerk}
+  Der ganz tolle und wichtige \autoref{satz:1} ist gar nicht so toll und
+  wichtig ist er schon gar nicht.
+\end{bemerk}
+
+\begin{bemerk}[Wichtiger Hinweis]
+  Aber merke: Keine \texttt{equation}-Umgebung mehr verwenden.
+  % \todo am Besten immer in eine eigene Zeile schreiben, so kann man diese
+  % Löschen und der Commit berührt nicht den Text, sofern dies nicht
+  % erforderlich ist.
+  \todo{Dokument darauf prüfen}
+  Stattdessen lieber \texttt{gather}. Siehe \url{news:d9bfko$fdp$1@news.BelWue.DE}
+  \href{ftp://cam.ctan.org/tex-archive/macros/latex/contrib/onlyamsmath/onlyamsmath.dvi}
+  {Dokumentation von onlyamsmath}
+  und einfach mal "`\texttt{texdoc amsldoc}"' aufrufen.
+
+  Auf \url{http://www.dante.de/CTAN/info/german/l2tabu/l2tabu.pdf} sind
+  weitere nützliche Hinweise zu finden.
+\end{bemerk}
+
+\begin{satz}[Verwendung von Grafiken]
+  Grafiken sollten prinzipell in einem Vektorformat erstellt werden. Dazu
+  eignet sich \texttt{xfig} sehr gut. Wird das Bild mit
+  \texttt{\textbackslash{}includegraphics\{bild\}} eingebunden, erstellt
+  \texttt{rubber} automatisch daraus die benötigte Datei
+  -- \texttt{bild.pdf} oder \texttt{bild.eps} -- für \LaTeX{}.
+
+  Für besondere Schriften (z.\,B. mathmatische Zeichen oder
+  Hoch-/Tiefstellen) kann man in \texttt{xfig} das "`Special Flag"' für
+  Text setzen und das Bild mit
+  \texttt{\textbackslash{}input\{bild.pdf\_t\}} einbinden. Damit wird die
+  Schrift direkt von \LaTeX{} erzeugt und man hat (fast) alle
+  Möglichkeiten, die \LaTeX{} bietet. \texttt{rubber} erkennt
+  selbstständig, welches Grafikformat benötigt wird und erzeugt
+  unabhängig vom Namen das Bild als PDF oder PS.
+\end{satz}
+
+\begin{festl}
+  Im Mathematikmodus drückt man mit einem Doppelpunkt \texttt{:} nicht
+  unbedingt das aus, was man will. Der Doppelpunk ist der
+  Divisionsoperator, wie er z.\,B. in "`$1:2 = 0,5$"'%
+  \footnote{Da im Englischen das Komma der Trenner für die
+    Tausenderstelle ist, muss man das Paket \textsf{isonums} verwenden,
+    sonst stimmt der Abstand nicht: $\ZifferAus 0,5\ZifferAn$ (ohne) statt
+    $0,5$ (mit). Siehe auch
+    \href{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+    {Mathmode von Herbert Voss}\cite{mathmode} Abschnitt
+    "`11.4 Dot versus comma"'}
+  verwendet wird. Wenn man jedoch $f\colon \R\rightarrow\R$ oder
+  $\{a\colon a\in\N\cap\Q\}$ ausdrücken will, muss man \verb+\colon+
+  verwenden.
+
+  Der Unterschied zeigt sich u.\,a. im linken und rechten Abstand
+  $g:A\rightarrow B$ mit Doppelpunkt im Vergleich zu $g\colon
+  A\rightarrow B$ mit \verb+\colon+. Siehe
+  \href{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+  {Short Math Guide for \LaTeX{}}\cite{shmathguide}
+\end{festl}
+
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{mathmode} Math mode von Herbert Voss,\\
+  \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+ \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+% Behebt das Problem der vielen "`overfull \hbox"' im Index
+% <news:3419172.ueajl5DJLB@mjk.komascript.de>
+\setlength{\parfillskip}{0pt plus 1fil}
+\printindex
+
+\end{document}
