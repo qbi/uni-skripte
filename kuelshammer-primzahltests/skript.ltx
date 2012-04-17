@@ -73,6 +73,9 @@
                             % (df/dx). Das d wird korrekt in roman
                             % gesetzt. Verwendung: \diff{f}{x} oder
                             % \diffp{f}{x} für partielle Ableitungen
+\usepackage{braket}
+\usepackage{makeidx}
+\usepackage{nicefrac}
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -198,7 +201,7 @@
 
 \begin{document}
 
-\title{Primzahltests}
+\title{Primzahltests und Faktorisierungsalgorithmen}
 \author{Prof.\,Dr.\,Burkhard Külshammer}
 \date{Semester: SS 2012}
 \maketitle
@@ -262,7 +265,192 @@
 % \theoremlisttype{all}
 \listtheorems{defini,festl}
 
-\chapter{XXX}
+\chapter{Kreisteilungspolynome}
+
+%bem 1.1
+\begin{bemerk}
+  Sei $n\in \N=\{1,2,3,\dotsc\}$. Dann ist
+  \begin{gather*}
+    \Z/n\Z= \Set{z+n\Z | z\in\Z}= \{0+n\Z, 1+n\Z, \dotsc,n-1+n\Z\}
+  \end{gather*}
+  ein kommutativer Ring mit Nullelement $0+n\Z$ und Einselement $1+n\Z$. Der
+  Ring heißt \highl{Restklassenring} modulo $n$. Die
+  \highl[Restklassengruppe!prime]{prime
+  Restklassengruppe}\index{Restklassengruppe} modulo $n$ ist
+  \begin{gather*}
+    (\Z/n\Z)^{\times}\coloneqq\Set{a+n\Z\in Z/n\Z | \exists
+       b+n\Z\in\Z/n\Z\colon (a+n\Z)(b+n\Z)=1+n\Z}= \Set{a+n\Z\in\Z/n\Z |
+       \ggt(a,n)=1}
+  \end{gather*}
+  eine Gruppe bezüglich der Multiplikation. Man setzt
+  \begin{gather*}
+    \phi(n)\coloneqq\abs{(\Z/n\Z)^{\times}}= \abs{\Set{a\in Z | 1\leq a\leq n,
+       \ggt(a,n)=1}}
+  \end{gather*}
+  und erhält die \textsc{Euler}"~Funktion bzw. Eulersche $\phi$-Funktion
+  $\phi\colon\N\rightarrow\C$. Hat $n$ die Primfaktorzerlegung $n=
+  p_{1}^{a_{1}}\cdot\dotso \cdot p_{r}^{a_{r}}$, dann gilt:
+  \begin{gather*}
+    \phi(n)= p_{1}^{a_{1}-1}(a_{1}-1)\cdot\dotso \cdot
+       p_{r}^{a_{r}-1}(p_{r}-1)= n\prod_{i=1}^{r} (1-\frac{1}{p_{i}})
+  \end{gather*}
+\end{bemerk}
+
+\begin{satz}
+  Seien $n,m\in\N$. Ist jeder Primteiler von $m$ auch einer von $n$, dann gilt:
+  \begin{gather*}
+    \phi(mn)=m\phi(n)
+  \end{gather*}
+  \begin{proof}
+    Die Primfaktorzerlegung von $n$ sei $n=p_{1}^{a_{1}}\cdot\dotso \cdot
+    p_{r}^{a_{r}}$. Dann existieren $b_{1},\dotsc, b_{r}\in\N_{0}$ mit
+    $m=p_{1}^{b_{1}}\cdot\dotso \cdot p_{r}^{b_{r}}$ und $m\cdot n$ hat die
+    Primfaktorzerlegung $mn= p_{1}^{a_{1}+b_{1}}\cdot\dotso \cdot
+    p_{r}^{a_{r}+b_{r}}$. Daher:
+    \begin{gather*}
+      \phi(mn)= \prod_{i=1}^{r} p_{i}^{a_{i}+b_{i}-1}(p_{i}-1)= m
+	 \prod_{i=1}^{r} p_{i}^{a_{i}-1}(p_{i}-1)= m\phi(n)
+    \end{gather*}
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  Für $n=24= 2^{3}\cdot 3$ ist $\phi(n)= 2^{3-1}(2-1)\cdot3^{1-1}(3-1)=
+  4\cdot2= 8$. Genauer:
+  \begin{gather*}
+    (\Z/24\Z)^{\times}= \Set{\pm1+24\Z, \pm5+24\Z, \pm7+24\Z, \pm11+24\Z}
+  \end{gather*}
+\end{bsp}
+
+%satz 1.2
+\begin{satz}
+  Für $n\in\N$ ist
+  \begin{gather*}
+    n=\sum_{d\mid n}\phi(d)
+  \end{gather*}
+  Dabei durchläuft $d$ alle positiven Teiler von $n$.
+  \begin{proof}
+    Es ist $M\coloneqq\{1,\dotsc,n\}=\dotcup_{d\mid n} M_{d}$ mit
+    $M_{d}\coloneqq\Set{m\in M | \ggt(m,n)=d}$. Dabei ist
+    \begin{gather*}
+      M_{d}\rightarrow\Set{i\in\N | 1\leq i\leq \nicefrac{n}{d},
+	 \ggt(i,\nicefrac{n}{d}=1)}\qquad m\mapsto\nicefrac{m}{d}
+    \end{gather*}
+    bijektiv. Insbesondere ist $\abs{M_{d}}= \phi(\nicefrac{n}{d})$. Also ist
+    $n= \sum_{d\mid n} \phi(\nicefrac{n}{d})=\sum_{e\mid n} \phi(e)$.
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  $n=12$: $\phi(1)+\phi(2)+\phi(3)+\phi(4)+\phi(6)+\phi(12)= 1+1+2+2+2+4=12$
+\end{bsp}
+
+%bem 1.3
+\begin{bemerk}
+  \missingfigure{Zeichnung mit Kreis rechts steht 1, ifrgendwo $\zeta$ und
+    $\zeta^{i}$, Punkte verbinden}
+  Sei $n\in\N$ und $\zeta\coloneqq \zeta_{n}\coloneqq e^{\nicefrac{2\pi
+  i}{n}}\in\C$. Dann $\zeta^{n}=e^{2\pi i}=1$ und $\abs{\zeta^{n}}=1$. Die
+  Elemente $1=\zeta^{0}, \zeta^{1}=\zeta, \zeta^{2}, \dotsc,\zeta^{n-1}$
+  bilden die Ecken eines regelmäßigen $n$"~Ecks in $\C$. Die Elemente
+  $1,\zeta, \zeta^{2},\dotsc,\zeta^{n-1}\in\C$ bilden die Lösungen der
+  Gleichung $X^{n}=1$. Man nennt sie die $n$"~ten
+  \highl[Einheitswurzel]{Einheitswurzeln} (in $\C$).  Daher:
+  \begin{gather*}
+    X^{n}-1= \prod_{i=0}^{n-1}(X-\zeta^{i})
+  \end{gather*}
+  Es bilden die $1,\zeta,\zeta^{2},\dotsc,\zeta^{n-1}$ bilden eine zyklische
+  Untergruppe $\langle \zeta\rangle$ der Ordnung $n$ von $\C^{\times}$.
+  Bekanntlich hat $\zeta^{i}$ für $i\in\Z$ die Ordnung $\frac{n}{\ggt(n,i)}$.
+  Insbesondere hat $\zeta^{i}$ genau im Fall $\ggt(n,i)=1$ wieder die
+  Ordnung~$n$. Gegebenenfalls heißt $\zeta^{i}$
+  \highl[Einheitswurzel!primitive]{primitive $n$"~te
+    Einheitswurzel}\index{primitiv}. Von den $n$ verschiedenen $n$"~ten
+  Einheitswurzeln $1,\zeta,\zeta^{2},\dotsc,\zeta^{n-1}$ sind also genau
+  $\phi(n)$ primitiv.
+  \begin{gather*}
+    \Phi_{n}\coloneqq\prod_{i=0, \ggt(n,i)=1}^{n-1} (X-\zeta^{i})\in\C[X]
+  \end{gather*}\todo{index stacken}
+  heißt $n$"~tes \highl{Kreisteilungspolynom}.  Der Grad ist $\deg(\Phi_{n})=
+  \phi(n)$.
+\end{bemerk}
+
+\begin{bsp}
+  $\Phi_{1}= X-1$, $\Phi_{2}= X+1$, $\Phi_{4}= (X-i)(X+i)=
+  X^{2}-i^{2}=X^{2}+1$. Für $n=p\in\PP$ ist $X^{p}-1= \prod_{i=0}^{p-1}
+  (X-\zeta^{i})= (X-1)\prod_{i=1}^{p-1}(X-\zeta^{i})=(X-1)\Phi_{p}$. Also ist
+  $\Phi_{p}= \frac{X^{p}-1}{X-1}= X^{p-1}+X^{p-2}+\dotsb+ X+1$. Insbesondere
+  ist $\Phi_{3}= X^{2}+X+1$ und $\Phi_{5}= X^{4}+X^{3}+X^{2}+X+1$.
+\end{bsp}
+
+\begin{satz}\label{satz:1.3}
+  Für $n\in\N$ gilt: 
+  \begin{gather*}
+    X^{n}-1=\prod_{d\mid n} \Phi_{d}
+  \end{gather*}
+  \begin{proof}
+    Ist $d\mid n$ und $\eta$ eine Nullstelle von $\Phi_{d}$, so $\eta^{d}=1$,
+    also auch $\eta^{n}=1$. Somit ist $\eta$ eine Nullstelle von $X^{n}-1$,
+    d.\,h. $X-\eta\mid X^{n}-1$. Da $\Phi_{d}$ ein Produkt verschiedener
+    Faktoren der Form $X-\eta$ ist, folgt, dass $\Phi_{d}$ ein Teiler von
+    $X^{n}-1$ ist.
+
+    Für $e\mid n$ mit $d\neq e$ ist $\ggt(\Phi_{d},\Phi_{e})=1$. Denn sonst
+    hätten $\Phi_{d}$ und $\Phi_{e}$ eine gemeinsame Nullstelle. Aber eine
+    primitive $d$"~te Einheitswurzel ist keine primitive $e$"~te
+    Einheitswurzel und umgekehrt. Dies zeigt: $\prod_{d\mid n} \Phi_{d}|
+    X^{n}-1$.
+
+    Andererseits: $\deg(X^{n}-1)=n= \sum_{d\mid n} \phi(d)= \sum_{d\mid n}
+    \deg\Phi_{d}= \deg\prod_{d\mid n} \Phi_{d}$. Folglich ist das Produkt
+    $\prod_{d\mid n}\Phi_{d}= c(X^{n}-1)$ für ein $c\in\C$. Ein Vergleich der
+    höchsten Koeffizienten ergibt, $c=1$.
+  \end{proof}
+\end{satz}
+
+%bem 1.4
+\begin{bemerk}
+  Mit \autoref{satz:1.3} kann man Kreisteilungspolynome rekursiv berechnen:
+  \begin{bsp}
+    \begin{itemize}
+     \item $X^{6}-1= \Phi_{1}\Phi_{2}\Phi_{3}\Phi_{6}=(X^{3}-1)(X+1)$, d.\,h.
+      $\Phi_{2}\Phi_{6}= \frac{X^{6}-1}{X^{3}-1}= X^{3}+1$ und
+      $\Phi_{6}=\frac{X^{3}+1}{X+1}= X^{2}-X+1$.
+     \item $X^{8}-1= \Phi_{1}\Phi_{2}\Phi_{4}\Phi_{8}=
+      (X^{4}-1)\Phi_{8}\Rightarrow\Phi_{8}= \frac{X^{8}-1}{X^{4}-1}= X^{4}+1$
+    \end{itemize}
+  \end{bsp}
+\end{bemerk}
+
+\begin{satz}
+  Für $n\in\N$ hat das Polynom $\Phi_{n}$ Koeffizienten in $\Z$, d.\,h.
+  $\Phi_{n}\in\Z[X]$.
+  \begin{proof}
+    Erfolgt per Induktion nach $n$:
+    Sei $n=1$. Dann ist $\Phi_{1}=X-1$. Nun sei $n>1$. Nach dem
+    \autoref{satz:1.3} ist $\Phi_{n}= \frac{X^{n}-1}{\prod_{n\neq d\mid
+    n}\Phi_{d}}$. Dabei sind nach Induktionsvoraussetzung Zähler und Nenner in
+    $\Z[X]$. Da der Nenner den höchsten Koeffizienten hat, treten bei der
+    Polynomdivision keine Nenner auf. Also ist $\Phi_{n}\in\Z[X]$.
+  \end{proof}
+\end{satz}
+
+%bem 1.5
+\begin{bemerk}
+  Die folgenden Aussagen vereinfachen die Berechnung von
+  Kreisteilungspolynomen.
+\end{bemerk}
+
+\begin{satz}
+  Für $m,n\in\N$ gilt:
+  \begin{enumerate}
+   \item $\Phi_{m\cdot n}\mid\Phi_{n}(X^{m})$
+   \item Ist jeder Primteiler von $m$ auch einer von $n$, so ist $\Phi_{m\cdot
+    n}= \Phi_{n}(X^{m})$.
+   \item Ist $n=n'n''$ mit $n'\coloneqq\prod_{p\in\PP, p\mid n} p$, so ist
+    $\Phi_{n}=\Phi_{n'}(X^{n''})$.
+  \end{enumerate}
+\end{satz}
 
 \clearpage
 \appendix
