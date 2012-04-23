@@ -1,0 +1,409 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: index.tool      xindy
+% rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst} % einbinden der neuen
+                   % Trennmuster, diese korrigieren einige Fehler der alten
+                   % und bieten mehr Trennstellen
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final,babel]{microtype} % Verbesserung der Typographie
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
+                         % Markierungen für offene Aufgaben zu setzen; wird
+                         % auch für \help (s.u.) verwendet
+% \usepackage[text]{esdiff} % Zum Setzen von (partiellen) Ableitungen
+                            % (df/dx). Das d wird korrekt in roman
+                            % gesetzt. Verwendung: \diff{f}{x} oder
+                            % \diffp{f}{x} für partielle Ableitungen
+\usepackage{braket}
+\usepackage{nicefrac}
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Für die Gaußklammer empfiehlt sich ebenso eine Definition mit
+% Benutzung von mathtools.
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
+% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
+% description mit normaler Schrift
+\newenvironment*{mdescription}%
+                {\renewcommand*{\descriptionlabel}[1]%
+ 			       {\hspace\labelsep\normalfont ##1}%
+		 \begin{description}}%
+		{\end{description}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Wavelets}
+\author{Sickel}
+\date{Semester: SS 2012}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2012)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Einführung}
+
+Die Wavelets entstammen aus der Signalanalyse. Man hat eine Funktion $f(t)$
+mit $t\in[a,b]$. Bei der Übertragung von Signalen in Radio und TV kommt es auf
+Geschwindigkeit und Qualität an. Bei CDs und DVDs ist jedoch nur die Qualität
+wichtig.
+
+Es existieren Orthonormalbasen in $L_{2}(\R)$, denn es ist ein Hilbertraum. Es
+ist $\langle f,g\rangle= \int_{-\infty}^{\infty} f(t)\overline{g(t)}\,dt$.
+Jedes $f\in L_{2}(\R)$ lässt sich entwickeln in eine in $L_{2}$ konvergente
+Reihe. Also können wir das $f$ schreiben als $f=_{L_{2}} \sum_{n=1}^{\infty}
+a_{n} f_{n}$ mit $a_{n}= \langle f,f_{n}\rangle$. Und wir wissen, dass
+$\norm{f|L_{2}(\R)}^{2}= \sum_{n=1}^{\infty} \abs{a_{n}}^{2}$. Weiter ist
+$\langle f_{n},f_{m}\rangle=\delta_{n,m}=
+\begin{cases}
+  1 & n=m\\
+  0 & \text{sonst}
+\end{cases}$. Alle Informationen über $f$ sind in den Koeefizienten enthalten
+$(a_{n})_{n}$ enthalten. Damit müssen wir nur noch abzählbar viele Daten
+verarbeiten.
+
+Wir ersetzen nun $\sum_{n=1}^{\infty} a_{n}(f)$ durch $\sum_{n\in A}a_{n}
+f_{n}$ mit $A\subseteq\N$ und $\abs{A}<\infty$. Nun entsteht das Problem,
+welche Metrik man zur Messung des Fehlers verwendet. Die einfachste Variante
+ist die $L_{2}$"~Metrik. Eine andere Möglichkeit ist die $\sup$"~Metrik.
+
+$\norm{\sum_{n=1}^{\infty} a_{n}(f)f_{n}-\sum_{n\in A}
+a_{n}(f)f_{n}|L_{2}(\R)}= \norm{\sum_{n\notin A} a_{n}(f)f_{n}|L_{2}(\R)}=
+\sqrt{\sum_{n\notin A}\abs{a_{n}(f)}^{2}}$.
+Die Summe wird klein, wenn große Koeffizienten entfernt werden. Daher ist die
+optimale Wahl von $A$ in Abhängigkeit von $f$: $A(f)=\Set{a_{n_{1}},\dotsc,
+a_{n_{N}}}$ mit
+$\abs{a_{n_{1}}}\geq\abs{a_{n_{2}}}\geq\dotsb\geq\abs{a_{n_{N}}}\geq\abs{a_{n_{j}}}$
+für $j\notin A$. Dabei ist $A$ nicht eindeutig bestimmt.
+
+Bezüglich der $C$"~Norm ist es im Allgemeinen nicht richtig, dass $\sum_{n\in
+A(f)} a_{n}(f)f_{n}$ eine optimale Approximation darstellt.
+
+Welche Eigenschaften von Orthonormalbasen sind in diesem Zusammenhang
+wünschenswert? Die trigonometrische Orthonormalbasis: $\frac{1}{\sqrt{2\pi}}$,
+$\frac{\cos x}{\sqrt{\pi}}$, $\frac{\sin x}{\sqrt{\pi}}$,
+$\frac{\cos2x}{\sqrt{\pi}}$, $\frac{\sin 2x}{\sqrt{\pi}}$, usw. ist ein
+Orthonormalbasis in $L_{2}(-\pi,\pi)$. Die komplexe Variante ist
+$\Set{\frac{e^{inx}}{\sqrt{2\pi}} | n\in\Z}$.
+
+Betrachte $\Psi(x)= \frac{e^{ix}}{\sqrt{2\pi}}$ und $\psi_{n}(x)= \psi(nx)$
+mit $n\in\Z$. Dies führt zu dem Wunsch, die Elemente $f_{n}$ der
+Orthonormalbasis sollen möglichst aus wenigen (einer) Grundfunktion
+berechenbar sein.
+
+Man wünscht sich eine lokale Fehlerausbreitung. Am Beispiel des
+trigonometrischen Systems bedeutet dies: $f\in L_{2}(-\pi,\pi)$, $a_{n}=
+\frac{1}{\pi} \int_{-\infty}^{\infty} f(t)\cos nt\,dt$ und $b_{n}=
+\frac{1}{\pi} \int_{-\infty}^{\infty} f(t) \sin nt\,dt$. Die Fourierreihe ist
+$S[f](t)= \frac{a_{0}}{2}+ \sum_{n=1}^{\infty} a_{n}\cos nt+ b_{n}\sin nt$.
+Nehmen wir nun an, dass wir bei der Berechnung von $a_{n_{0}}$ einen Fehler
+machen: $a_{n_{0}}\cdot\cos n_{0}t$ wird fehlerhaft auf $[-\pi,\pi]$ ohne die
+Nullstellen von $\cos n_{0}t$ »breitgeschmiert«. Also wirkt sich der Fehler
+auf das Gesamtintervall aus.
+
+Nun machen wir einen Fehler bei der Berechnung von $f$ im Punkt $x_{0}$ oder
+in einem Intervall $(x_{0}-\epsilon,x_{0}+\epsilon)$. Dann wirkt sich das auf
+jeden Koeffizienten aus. Also  wird $f$ global fehlerbehaftet. Dies soll
+möglichst nicht passieren.
+
+Die trigonometrischen Orthonormalbasen garantieren keine lokale
+Fehlerausbreitung.
+
+Ein weiterer Wunsch besteht in einer gewissen Robustheit. Wir nehmen an, dass
+wir statt $a_{n}$ nur $\tilde{a_{n}}$ mit einem gewissen Fehler berechnen
+können. Für $f=\sum_{n=1}^{\infty} a_{n}f_{n}$ ist dann
+$\tilde{f}=\sum_{n=1}^{\infty} \tilde{a_{n}} f_{n}$. Weiter ist
+$\norm{f-\tilde{f}|L_{2}}= \sqrt{\sum_{n=1}^{\infty}
+\abs{a_{n}}-\tilde{a_{n}}^{2}}$. Beim trigonometrischen System gilt folgendes:
+Beliebig kleine Abweichungen in den Koeffizienten können zu beliebig großen
+Abweichungen in der Supremumsnorm führen. Gleiches gilt für die $C_{1}$"~Metrik.
+
+Das motiviert zu folgender Definition, die zentral für die Vorlesung ist.
+\begin{defini}[Wavelet]
+  Eine Funktion $\psi\in L_{2}(\R)$ heißt \highl{Wavelet}, falls die Familie
+  $\psi_{j,k}\coloneqq2^{\nicefrac{1}{2}}\psi(2^{j}x-k)$ mit $j,k\in\Z$ eine
+  Orthonormalbasis für den $L_{2}(\R)$ ist.
+\end{defini}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $\int_{-\infty}^{\infty} \abs{2^{\nicefrac{j}{2}}
+    \psi(2^{j}x-k)}^{2}\,dx= \int_{-\infty}^{\infty} \abs{2^{\nicefrac{j}{2}}
+    \psi(z)}^{2} 2^{-j}\,dz= \int_{-\infty}^{\infty} \abs{\psi(z)}^{2}\,dz=1$
+   \item Man bezeichnet die $\psi_{j,k}$ als \highl{Wavelet"=Basis} des
+    $L_{2}(\R)$ mit dem \highl{Generator} $\psi$.
+   \item Wunschliste: Per definitionem ist das eine Orthonormalbasis. Einfache
+    Berechenbarkeit ist ebenso erledigt. Die lokale Fehlerausbreitung ist
+    gleichbedeutend damit, dass der Träger von $\psi$ kompakt ist. Die
+    Robustheit hängt mit der Regularität des Generators zusammen.
+   \item In Kapitel 3\todo{Link einbauen} wird ein konstruktives Verfahren zur
+    Erzeugung von Wavelets vorgestellt. Dort wird auch die Flexibilität des
+    Begriffs diskutiert.
+    \begin{itemize}
+     \item Regularität von $\psi$ (stetig, stetig
+      differenzierbar,\dots{}, $C^{\infty}$, analytisch)
+     \item Abklingverhalten im Unendlichen (kompakter Träger, exponentieller
+      Abfall bei Unendlich, polynomialer Abfall bei Unendlich)
+     \item Symmetrien (gerade, ungerade, \dots{})
+    \end{itemize}
+  \end{enumerate}
+\end{bemerk}
+
+Zuerst ist natürlich die Frage zu klären, ob es überhaupt Wavelets gibt. Im
+Jahr 1910 hat \textsc{Alfred Haar} seine Dissertation verteidigt. Dort
+betrachtete er die Funktion:
+\begin{gather*}
+  \psi(x)=
+     \begin{cases}
+       1 & 0\leq x<\nicefrac{1}{2}\\
+       -1 & \nicefrac{1}{2}\leq x<1\\
+       0 & \text{sonst}
+     \end{cases}
+\end{gather*}
+Er bewies, das dies ein Wavelet ist.
+
+Um das Jahr 1984 gab es in Frankreich eine Gruppe Physiker, die mit den
+Mathematikern \textsc{Meyer} und \textsc{Lemarie} den Beweis antraten, dass es
+$\psi\in C^{\infty}$ gibt. Kurz danach hat die belgische Physikerin
+\textsc{Daubechies} beweisen, dass Wavelets mit kompaktem Träger existieren.
+\clearpage
+\appendix
+\begin{thebibliography}{99}
+ \bibitem{mathmode} Math mode von Herbert Voss,\\
+  \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
+
+ \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+% Behebt das Problem der vielen "`overfull \hbox"' im Index
+% <news:3419172.ueajl5DJLB@mjk.komascript.de>
+\setlength{\parfillskip}{0pt plus 1fil}
+\printindex
+
+\end{document}
