@@ -24,17 +24,13 @@
 
 \usepackage{ifthen}
 \usepackage{index}
-% \usepackage[final]{graphicx}  % Für Grafiken
 \usepackage{xcolor}
 \usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
 
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
-% \usepackage{nicefrac}
-% \usepackage{tabularx}
 
 \usepackage{lmodern}		% Latin Modern
-% \usepackage{type1ec}           % cm-super
 \usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
 \usepackage{textcomp}           % wird benötigt, damit der \textbullet
                                 % für itemize in lmodern gefunden wird.
@@ -60,8 +56,6 @@
                          % dafür muss in SVN noch das Flag svn:keywords
                          % auf "LastChangedRevision LastChangedDate"
                          % gesetzt werden
-% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
-                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
 \usepackage{ellipsis}    % Korrektur für \dots
 \usepackage{fixltx2e}
 \usepackage[final,babel]{microtype} % Verbesserung der Typographie
@@ -69,12 +63,17 @@
 \usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
                          % Markierungen für offene Aufgaben zu setzen; wird
                          % auch für \help (s.u.) verwendet
-% \usepackage[text]{esdiff} % Zum Setzen von (partiellen) Ableitungen
+\usepackage[text]{esdiff} % Zum Setzen von (partiellen) Ableitungen
                             % (df/dx). Das d wird korrekt in roman
                             % gesetzt. Verwendung: \diff{f}{x} oder
                             % \diffp{f}{x} für partielle Ableitungen
 \usepackage{braket}
 \usepackage{nicefrac}
+\usepackage{charter}
+\usepackage[charter]{mathdesign}
+\usepackage[scaled=.92]{helvet}
+%\usepackage{xfrac}
+
 
 % Damit auch die Zeichen im Mathemode in Überschriften fett sind
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
@@ -103,6 +102,8 @@
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -123,6 +124,7 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\lemmaautorefname}{Lemma}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -153,19 +155,6 @@
 % Befehl für die Darstellung der Gliederungsüberschriften im Index
 \newcommand*{\lettergroup}[1]{\minisec{#1}}
 
-% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
-\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
-
-% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
-% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
-% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
-% sondern \Leftrightarrow.
-\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw\mspace{8mu}}%
-			       {$gdw$\xspace}}
-\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
-			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
-			       {$gdw_{def}$\xspace}}
 
 % Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
 % Striche bekommt, sind diese Befehle da. Damit kann man nicht die
@@ -184,15 +173,7 @@
 % ... und mancheinem gefällt auch das Phi nicht
 \renewcommand*{\phi}{\varphi}
 
-% Manchmal möchte man Begriffe erklären oder etwas aufzählen, das aber
-% nicht fett gedruckt werden soll. Dazu diese Umdefinition einer
-% description mit normaler Schrift
-\newenvironment*{mdescription}%
-                {\renewcommand*{\descriptionlabel}[1]%
- 			       {\hspace\labelsep\normalfont ##1}%
-		 \begin{description}}%
-		{\end{description}}
-
+\DeclareMathOperator{\supp}{supp}          % Träger
 \makeindex
 
 \SVN $LastChangedRevision$
@@ -344,7 +325,7 @@ Abweichungen in der Supremumsnorm führen. Gleiches gilt für die $C_{1}$"~Metri
 Das motiviert zu folgender Definition, die zentral für die Vorlesung ist.
 \begin{defini}[Wavelet]
   Eine Funktion $\psi\in L_{2}(\R)$ heißt \highl{Wavelet}, falls die Familie
-  $\psi_{j,k}\coloneqq2^{\nicefrac{1}{2}}\psi(2^{j}x-k)$ mit $j,k\in\Z$ eine
+  $\psi_{j,k}\coloneqq2^{\nicefrac{j}{2}}\psi(2^{j}x-k)$ mit $j,k\in\Z$ eine
   Orthonormalbasis für den $L_{2}(\R)$ ist.
 \end{defini}
 
@@ -389,14 +370,228 @@ Um das Jahr 1984 gab es in Frankreich eine Gruppe Physiker, die mit den
 Mathematikern \textsc{Meyer} und \textsc{Lemarie} den Beweis antraten, dass es
 $\psi\in C^{\infty}$ gibt. Kurz danach hat die belgische Physikerin
 \textsc{Daubechies} beweisen, dass Wavelets mit kompaktem Träger existieren.
+
+
+% Vorlesung vom 18.4.2012
+\chapter{Das Haar-Wavelet}
+
+\begin{defini}
+  Die Funktion $\psi$ mit
+  \begin{gather*}
+    \psi(x)\coloneqq
+  \begin{cases}
+    1 & [0,\nicefrac{1}{2})\\
+    -1& [\nicefrac{1}{2},1)\\
+    0& \text{sonst}
+  \end{cases}
+  \end{gather*}
+  heißt Haar"=Wavelet.
+\end{defini}
+
+\begin{satz}
+  $\psi$ ist ein Wavelet.
+\end{satz}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item Das Haar"=Wavelet ist das am längsten bekannte Wavelet. Es wurde von
+    \textsc{Alfred Haar} im Jahr 1909 eingeführt.
+   \item Das Haar"=Wavelet besitzt den kleinsten Träger innerhalb der Wavelets.
+   \item $\psi$ besitzt auch die einfachste Struktur.
+  \end{enumerate}
+\end{bemerk}
+
+\section{Eine lokale Variante der Haar"=Basis}
+
+Wir arbeiten nun mit $L_{2}([0,1])$. Es ist $\chi(x)=1$ im Intervall $0\leq
+x<1$ und sonst $0$. Weiterhin sei $\psi_{j,k}(x)=
+2^{\nicefrac{j}{k}}\psi(2^{j}x-k)$ für $j,k\in\Z$. Der Träger von $\psi_{j,k}$
+ist $\supp\psi_{j,k}= [2^{-j}k,2^{-j}(k+1)$. Wann liegt der Träger im
+Intervall $0$ und $1$: $\supp\psi_{j,k}\subseteq[0,1]\Leftrightarrow
+j\in\N_{0}\wedge 0\leq k<2^{j}$. Es gilt,
+$\emptyset\neq\supp\psi_{j,k}\cap(0,1)\Leftrightarrow$ entweder ist
+$\supp\psi_{j,k}\subseteq[0,1]$ oder $[0,1]\subseteq\supp\psi_{j,k}$
+
+\begin{satz}
+  Die Familie $\psi_{j,k}$ mit $j\in\N_{0}$ und $0\leq k<2^{j}$ ergänzt durch
+  $\chi$ bildet eine Orthonormalbasis des $L_{2}([0,1])$.
+  \begin{proof}
+    Der Beweis erstreckt sich über mehrere Lemmata. siehe unten.
+  \end{proof}
+\end{satz}
+
+\begin{lemma}
+  \begin{enumerate}
+   \item  Die Familie $\psi_{j,k}$ mit $j\in\N_{0}$, $0\leq k<2^{j}$ und $\chi$ bilden
+    ein Orthonormalsystem in  $L_{2}([0,1])$.
+   \item Die Familie $\psi_{j,k}$ mit $j,k\in\Z$ bildet ein Orthonormalsystem
+    in $L_{2}(\R)$.
+  \end{enumerate}
+  \begin{proof}
+    \begin{enumerate}[Schr{i}tt~1]
+     \item $\langle\psi_{j,k},\psi_{j,k}\rangle= \int_{-\infty}^{\infty}
+      2^{\nicefrac{j}{2}} \psi(2^{j}x-k)\overline{2^{\nicefrac{j}{2}}
+      \psi(2^{j}x-k)}\,dx= \int_{-\infty}^{\infty}
+      \psi(y)\overline{\psi(y)}\,dy= \int_{0}^{1} \psi^{2}(x)\,dx=1$
+
+      Koordinatentransformation mit $y=2^{j}x-k$
+
+      Es ist $\norm{\psi_{j,k}|L_{2}(\R)}=1$ für alle $j,k\in\Z$ und weiter
+      $\norm{\psi_{j,k}|L_{2}([0,1])}=1$ für alle $j\in\N_{0}, 0\leq k<2^{j}$.
+     \item $\langle\psi_{j,k},\psi_{j',k'}\rangle=
+      2^{j}\int_{-\infty}^{\infty} \psi(2^{j}x-k)\psi(2^{j}x-k')\,dx=0$ für
+      $j=j'$ und $k\neq k'$.
+
+      Sei nun $j\neq j'$ und $k,k'\in\Z$. Dann gilt für $j'>j$:
+      \begin{gather*}
+	2^{\nicefrac{j}{2}}2^{\nicefrac{j'}{2}} \int_{-\infty}^{\infty}
+	   \psi(2^{j}x-k)\psi(2^{j'}x-k')\,dx= 2^{\nicefrac{j}{2}}
+	   2^{\nicefrac{j'}{2}} \int_{-\infty}^{\infty}
+	   \psi(y)\psi(2^{j'-j}y+2^{j'}k-k')\dy = 2^{\nicefrac{j}{2}}
+	   2^{\nicefrac{j'}{2}} \int_{-\infty}^{\infty}
+	   \psi(y)\psi(2^{r}y-l)\,dy= 2^{\nicefrac{j}{2}}
+	   2^{\nicefrac{j'}{2}} \int_{0}^{1} \psi(y) \psi(2^{r}y-l)\,dy
+      \end{gather*}
+	   Der
+	   Träger $[2^{-r}l, 2^{-r}(l+1)]$ liegt entweder in $[0,1]$ oder der
+	   Durchschnitt der beiden offenen Intervalle ist leer. Im letzten
+	   Fall ist $\langle\psi_{j,k}\psi_{j',k'\rangle}=0$. Also müssen wir
+	   einen Blick auf den ersten Fall werfen. Wir haben $r\in\N$. Also
+	   gilt entweder $(2^{-r}l, 2^{-r}(l+1))\subseteq(0,\nicefrac{1}{2})$
+	   oder $(2^{-r}l, 2^{-r}(l+1))\subseteq(\nicefrac{1}{2},1)$. Bei der
+	   ersten Variante ist das Integral dann: $\int_{0}^{\nicefrac{1}{2}}
+	   1 \psi(2^{r}y-l)\,dy= \int_{-\infty}^{\infty} \psi(2^{r}y-l)\,dy=
+	   2^{-r} \int_{-\infty}^{\infty} \psi(z)\,dz=0$. Im zweiten Fall
+	   lässt sich genauso argumentieren. Lediglich beim Integral ist die
+	   $1$ durch $-1$ zu ersetzen.
+     \item Wenn der Träger in $[0,1]$ gilt:
+      \begin{gather*}
+	\int_{-\infty}^{\infty} \psi_{j,k} (x)\psi_{j',k'}(x)\,dx=\int_{0}^{1}\psi_{j,k} (x)\psi_{j',k'}(x)\,dx
+      \end{gather*}
+      Für $\supp\psi_{j,k}\subseteq[0,1]$ haben wir
+      $\langle\psi_{j,k},\chi\rangle= 2^{\nicefrac{j}{2}} \int_{0}^{1}
+      \psi_{j,k}(x) \chi(x)\,dx= 2^{\nicefrac{j}{2}} \int_{0}^{1}
+      \psi_{j,k}(x)\,dx= 2^{\nicefrac{j}{2}} \int_{-\infty}^{\infty}
+      \psi_{j,k}(x)\,dx=0$
+    \end{enumerate}
+  \end{proof}
+\end{lemma}
+
+%lem 2
+\begin{lemma}\label{lem:2}
+  Für alle $f\in L_{2}(\R)$ gilt:
+  \begin{gather*}
+    f_{L_{2}}= \lim_{n\rightarrow\infty} \sum_{k=-\infty}^{\infty} a_{n,k}
+       \chi(2^{n}x-k)\qquad a_{n,k}= 2^{n} \int_{2^{-n}k}^{2^{-n}(k+1)} f(y)\,dy
+  \end{gather*}
+  \begin{proof}
+    Der Beweis erfolgt später unter Benutzung der Fouriertransormation.
+    \todo{Link einbauen}
+  \end{proof}
+\end{lemma}
+
+\begin{bemerk}
+  \begin{enumerate}
+   \item $\abs{\int_{2^{-n}k}^{2^{-n}(k+1)}1\cdot f(y)\,dy}\leq
+    \sqrt{\int_{2^{-n}k}^{2^{-n}(k+1)} \abs{f(y)}^{2}\,dy}
+    \sqrt{\int_{2^{-n}k}^{2^{-n}(k+1)} 1^{2}\,dy}$
+  \end{enumerate}
+\end{bemerk}
+
+% lem 2'
+\begin{lemma}\label{lem:2-strich}
+  Für jedes $g\in L_{2}([0,1])$ gilt:
+  \begin{gather*}
+    g_{L_{2}}= \lim_{n\rightarrow\infty} \sum_{k=0}^{2^{n}-1} a_{n,k}
+       \chi(2^{n}x-k)\qquad a_{n,k}= 2^{n} \int_{2^{-n}k}^{2^{-n}(k+1)} g(y)\,dy
+  \end{gather*}
+  \begin{proof}
+    Man definiert $f(x)$ als Fortsetzung von $g$ und setzt $0$ sonst. Damit
+    folgt das Lemma unmittelbar aus \autoref{lem:2}.
+  \end{proof}
+\end{lemma}
+
+Wir führen nun den folgenden Raum ein:
+\begin{align*}
+  L_{n}&\coloneqq\Set{\sum_{k=0}^{2^{n}-1} c_{k}\chi(2^{n}x-k) | c\in\C}\\
+  &=\Set{f\colon[0,1]\rightarrow\C | f \text{ konstant auf jedem } [2^{-n}k,
+     2^{-n}(k+1)], k=0,\dotsc,2^{n}-1}
+\end{align*}
+Das ist die lineare Hülle von $\chi(2^{n}x),\dotsc,\chi(2^{n}x-2^{n}+1)$. Die
+Dimension von $L_{n}$ muss errechnet werden. Die Grundfunktionen bilden ein
+Orthonormalsystem, also ist das Orthonormalbasis von $L_{n}$. Damit ist
+$\dim L_{n}=2^{n}$ für $n\in\N_{0}$.
+
+Nun sei $G_{0}$ die lineare Hülle von $\chi$ und $G_{n}$ die lineare Hülle von
+$(\{\chi\}\cup\Set{\psi_{j,k}
+| 0\leq j<n, k=,\dotsc,2^{j}-1})$.
+
+%lem 3
+\begin{lemma}
+  \begin{gather*}
+    G_{n}=L_{n}\qquad\forall n\in\N_{0}
+  \end{gather*}
+  \begin{proof}
+    Es ist $f=c\chi+ \sum_{j=0}^{n-1} \sum_{k=0}^{2^{j}-1} c_{j,k}
+    \psi_{j,k}$. Die Funktion ist konstant auf dyadischen Teilintervallen
+    $[2^{-n}(2k), 2^{-n}(2k+1))$. Also ist $f\in L_{n}$ und damit
+    $G_{n}\subseteq L_{n}$.
+
+    Nun bilden die Funktionen $\chi$, $\psi_{j,k}$ ein Orthonormalsystem in
+    $L_{2}(0,1)$. Also sind sie linear unabhängig. Somit ist $\dim G_{n}=
+    1+\sum_{j=0}^{n-1} \sum_{k=0}^{2^{j}-1}1= 1+\sum_{j=0}^{n-1} 2^{j}=
+    1+\frac{2^{n}-1}{2-1}= 2^{n}$.
+  \end{proof}
+\end{lemma}
+
+Die Konsequenz aus \autoref{lem:2-strich} ist
+\begin{gather}\label{eq:1}
+  L_{2}(0,1)= \overline{\bigcup_{n=0}^{\infty} L_{n}} =
+     \overline{\bigcup_{n=0}^{\infty} G_{n}}
+\end{gather}
+Eigenschaften von Orthonormalsystemen in Hilberträumen:
+Ein Orthonormalsystem $(u_{j})_{j}\subseteq H$ (Hilbertraum) ist genau dann
+eine Orthonormalbasis, wenn der Abschluß der linearen Hülle der $u_{j}$ der
+ganze Raum ist. Diese elementaren Eigenschaften findet u.\,a. in
+\cite{triebel} in Kapitel II.\,8.
+
+Aus \autoref{eq:1} folgt, dass $\{\chi\}\cup\Set{\psi_{j,k} | j\in\N_{0},
+k=0,\dotsc,2^{j}-1}$ eine Orthonormalbasis ist.
+
+
 \clearpage
 \appendix
-\begin{thebibliography}{99}
- \bibitem{mathmode} Math mode von Herbert Voss,\\
-  \url{http://www.dante.de/CTAN//info/math/voss/mathmode/Mathmode.pdf}
 
- \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
-  \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+\part{Übungsaufgaben}
+
+\section{Übungsserie 1}
+
+Sei $\chi$ die charakteristische Funktion des Intervalls $I=[0,1]$. Sei
+\begin{gather*}
+  \psi(t)\coloneqq
+     \begin{cases}
+       1 & 0\leq t<\nicefrac{1}{2}\\
+       -1 & \nicefrac{1}{2}\leq t<1\\
+       0& \text{sonst}
+     \end{cases}
+\end{gather*}
+das Haar"=Wavelet und
+\begin{gather*}
+  \psi_{j,k}(t)\coloneqq2^{\nicefrac{j}{2}} \psi(2^{j}t-k)\qquad j,k\in\Z
+\end{gather*}
+die zugeordnete Orthonormalbasis für den $L_{2}(\R)$.
+\begin{itemize}
+ \item Berechnen Sie die Fourierreihenentwicklung von $\chi$ bezüglich dieser
+  Orthonormalbasis.
+ \item Untesuchen Sie die punktweise Konvergenz dieser Entwicklung.
+ \item Weisen Sie die $L_{p}$"~Konvergenz dieser Entwicklung für jedes $p$ mit
+  $1<p\leq\infty$ nach.
+ \item Zeigen Sie die Divergenz der Entwicklung für $p=1$.
+\end{itemize}
+
+
+\begin{thebibliography}{99}
+  \bibitem{triebel}\textsc{Triebel}: Höhere Analysis
 \end{thebibliography}
 
 \clearpage
