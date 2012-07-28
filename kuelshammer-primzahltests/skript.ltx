@@ -1,0 +1,666 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: index.tool      xindy
+% rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst} % einbinden der neuen
+                   % Trennmuster, diese korrigieren einige Fehler der alten
+                   % und bieten mehr Trennstellen
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final,babel]{microtype} % Verbesserung der Typographie
+
+\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
+                         % Markierungen für offene Aufgaben zu setzen; wird
+                         % auch für \help (s.u.) verwendet
+% \usepackage[text]{esdiff} % Zum Setzen von (partiellen) Ableitungen
+                            % (df/dx). Das d wird korrekt in roman
+                            % gesetzt. Verwendung: \diff{f}{x} oder
+                            % \diffp{f}{x} für partielle Ableitungen
+\usepackage{braket}
+\usepackage{xfrac}
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+%\usepackage[scaled=.92]{helvet}
+%\usepackage{sansmath}
+\usepackage{charter}
+\usepackage[charter]{mathdesign}
+\usepackage{nicefrac}
+
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{exerc}{Aufgabe}
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\exercautorefname}{Übungsaufgabe}
+
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\PP}{\mathbb{P}}      % Primzahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Herr Kuelshammer nummeriert mit (i), (ii), ...
+% bei paralist muss das per \setdefaultenum eingestellt werden
+\setdefaultenum{(i)}{}{}{}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Für die Gaußklammer empfiehlt sich ebenso eine Definition mit
+% Benutzung von mathtools.
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+
+\DeclareMathOperator{\ggt}{ggT}           % größter gemeinsamer Teiler
+\DeclareMathOperator{\kgv}{kgV}           % kleinstes gemeinsames Vielfaches
+
+% Zeichen für die disjunkte Vereinigung
+\newcommand*{\dotcup}{\ensuremath{\mathbin{\mathaccent\cdot\cup}}}
+% In der Vorlesung wird vermutlich viel \Z/n\Z benutzt. Daher wird hier ein
+% Befehl dafür definiert.
+\newcommand*{\znz}{\sfrac{\Z}{n\Z}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Primzahltests und Faktorisierungsalgorithmen}
+\author{Prof.\,Dr.\,Burkhard Külshammer}
+\date{Semester: SS 2012}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:Jens@kubieziel.de}{Jens Kubieziel
+    \nolinkurl{<jens@kubieziel.de>}} (2012)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Kreisteilungspolynome}
+
+%bem 1.1
+\begin{bemerk}
+  Sei $n\in \N=\{1,2,3,\dotsc\}$. Dann ist
+  \begin{gather*}
+    \znz= \Set{z+n\Z | z\in\Z}= \{0+n\Z, 1+n\Z, \dotsc,n-1+n\Z\}
+  \end{gather*}
+  ein kommutativer Ring mit Nullelement $0+n\Z$ und Einselement $1+n\Z$. Der
+  Ring heißt \highl{Restklassenring} modulo $n$. Die
+  \highl[Restklassengruppe!prime]{prime
+  Restklassengruppe}\index{Restklassengruppe}\index{prim}\index{Gruppe!Restklassengruppe} modulo $n$ ist
+  \begin{align*}
+    \left(\znz\right)^{\times}&\coloneqq\Set{a+n\Z\in \znz | \exists
+       b+n\Z\in\znz\colon (a+n\Z)(b+n\Z)=1+n\Z}\\
+    &= \Set{a+n\Z\in\znz | \ggt(a,n)=1}
+  \end{align*}
+  eine Gruppe bezüglich der Multiplikation. Man setzt
+  \begin{gather*}
+    \phi(n)\coloneqq\abs{(\znz)^{\times}}= \abs{\Set{a\in Z | 1\leq a\leq n,
+       \ggt(a,n)=1}}
+  \end{gather*}
+  und erhält die \highl[Euler-Funktion]{\textsc{Euler}"~Funktion} bzw.
+  \highl[Phi-Funktion!Eulersche]{Eulersche $\phi$-Funktion}
+  $\phi\colon\N\rightarrow\C$. Hat $n$ die
+  Primfaktorzerlegung\index{Primfaktorzerlegung} $n=
+  p_{1}^{a_{1}}\cdot\dotso \cdot p_{r}^{a_{r}}$, dann gilt:
+  \begin{gather*}
+    \phi(n)= p_{1}^{a_{1}-1}(a_{1}-1)\cdot\dotso \cdot
+       p_{r}^{a_{r}-1}(a_{r}-1)= n\prod_{i=1}^{r} \left(1-\frac{1}{p_{i}}\right)
+  \end{gather*}
+\end{bemerk}
+
+\begin{satz}\label{satz:1.1}
+  Seien $n,m\in\N$. Ist jeder Primteiler von $m$ auch einer von $n$, dann gilt:
+  \begin{gather*}
+    \phi(mn)=m\phi(n)
+  \end{gather*}
+  \begin{proof}
+    Die Primfaktorzerlegung von $n$ sei $n=p_{1}^{a_{1}}\cdot\dotso \cdot
+    p_{r}^{a_{r}}$. Dann existieren $b_{1},\dotsc, b_{r}\in\N_{0}$ mit
+    $m=p_{1}^{b_{1}}\cdot\dotso \cdot p_{r}^{b_{r}}$ und $m\cdot n$ hat die
+    Primfaktorzerlegung $mn= p_{1}^{a_{1}+b_{1}}\cdot\dotso \cdot
+    p_{r}^{a_{r}+b_{r}}$. Daher:
+    \begin{gather*}
+      \phi(mn)= \prod_{i=1}^{r} p_{i}^{a_{i}+b_{i}-1}(p_{i}-1)= m
+	 \prod_{i=1}^{r} p_{i}^{a_{i}-1}(p_{i}-1)= m\phi(n)
+    \end{gather*}
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  Für $n=24= 2^{3}\cdot 3$ ist $\phi(n)= 2^{3-1}(2-1)\cdot3^{1-1}(3-1)=
+  4\cdot2= 8$. Genauer:
+  \begin{gather*}
+    (\sfrac{\Z}{24\Z})^{\times}= \Set{\pm1+24\Z, \pm5+24\Z, \pm7+24\Z, \pm11+24\Z}
+  \end{gather*}
+\end{bsp}
+
+%satz 1.2
+\begin{satz}
+  Für $n\in\N$ ist
+  \begin{gather*}
+    n=\sum_{d\mid n}\phi(d)
+  \end{gather*}
+  Dabei durchläuft $d$ alle positiven Teiler von $n$.
+  \begin{proof}
+    Es ist $M\coloneqq\{1,\dotsc,n\}=\dotcup_{d\mid n} M_{d}$ mit
+    $M_{d}\coloneqq\Set{m\in M | \ggt(m,n)=d}$. Dabei ist
+    \begin{gather*}
+      M_{d}\rightarrow\Set{i\in\N | 1\leq i\leq \sfrac{n}{d},
+	 \ggt(i,\sfrac{n}{d}=1)}\qquad m\mapsto\sfrac{m}{d}
+    \end{gather*}
+    bijektiv. Insbesondere ist $\abs{M_{d}}= \phi(\sfrac{n}{d})$. Also ist
+    $n= \sum_{d\mid n} \phi(\sfrac{n}{d})=\sum_{e\mid n} \phi(e)$.
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  $n=12$: $\phi(1)+\phi(2)+\phi(3)+\phi(4)+\phi(6)+\phi(12)= 1+1+2+2+2+4=12$
+\end{bsp}
+
+%bem 1.3
+\begin{bemerk}
+  \missingfigure{Zeichnung mit Kreis rechts steht 1, ifrgendwo $\zeta$ und
+    $\zeta^{i}$, Punkte verbinden}
+  Sei $n\in\N$ und $\zeta\coloneqq \zeta_{n}\coloneqq e^{\sfrac{2\pi
+  i}{n}}\in\C$. Dann $\zeta^{n}=e^{2\pi i}=1$ und $\abs{\zeta^{n}}=1$. Die
+  Elemente $1=\zeta^{0}, \zeta^{1}=\zeta, \zeta^{2}, \dotsc,\zeta^{n-1}$
+  bilden die Ecken eines regelmäßigen $n$"~Ecks in $\C$. Die Elemente
+  $1,\zeta, \zeta^{2},\dotsc,\zeta^{n-1}\in\C$ bilden die Lösungen der
+  Gleichung $X^{n}=1$. Man nennt sie die $n$"~ten
+  \highl[Einheitswurzel]{Einheitswurzeln} (in $\C$).  Daher:
+  \begin{gather*}
+    X^{n}-1= \prod_{i=0}^{n-1}(X-\zeta^{i})
+  \end{gather*}
+  Es bilden die $1,\zeta,\zeta^{2},\dotsc,\zeta^{n-1}$ eine zyklische
+  Untergruppe $\langle \zeta\rangle$ der Ordnung $n$ von $\C^{\times}$.
+  Bekanntlich hat $\zeta^{i}$ für $i\in\Z$ die Ordnung $\frac{n}{\ggt(n,i)}$.
+  Insbesondere hat $\zeta^{i}$ genau im Fall $\ggt(n,i)=1$ wieder die
+  Ordnung~$n$. Gegebenenfalls heißt $\zeta^{i}$
+  \highl[Einheitswurzel!primitive]{primitive $n$"~te
+    Einheitswurzel}\index{primitiv}. Von den $n$ verschiedenen $n$"~ten
+  Einheitswurzeln $1,\zeta,\zeta^{2},\dotsc,\zeta^{n-1}$ sind also genau
+  $\phi(n)$ primitiv.
+  \begin{gather*}
+    \Phi_{n}\coloneqq\prod_{\substack{i=0\\ \ggt(n,i)=1}}^{n-1} (X-\zeta^{i})\in\C[X]
+  \end{gather*}
+  heißt $n$"~tes \highl{Kreisteilungspolynom}.  Der Grad ist $\deg(\Phi_{n})=
+  \phi(n)$.
+\end{bemerk}
+
+\begin{bsp}
+  \begin{align*}
+    \Phi_{1} &= X-1\\
+    \Phi_{2} &= X+1\\
+    \Phi_{4} &= (X-i)(X+i)= X^{2}-i^{2}=X^{2}+1
+  \end{align*}
+  Für $n=p\in\PP$ ist $X^{p}-1= \prod_{i=0}^{p-1}
+  (X-\zeta^{i})= (X-1)\prod_{i=1}^{p-1}(X-\zeta^{i})=(X-1)\Phi_{p}$. Also ist
+  $\Phi_{p}= \frac{X^{p}-1}{X-1}= X^{p-1}+X^{p-2}+\dotsb+ X+1$. Insbesondere
+  ist $\Phi_{3}= X^{2}+X+1$ und $\Phi_{5}= X^{4}+X^{3}+X^{2}+X+1$.
+\end{bsp}
+
+\begin{satz}\label{satz:1.3}
+  Für $n\in\N$ gilt: 
+  \begin{gather*}
+    X^{n}-1=\prod_{d\mid n} \Phi_{d}
+  \end{gather*}
+  \begin{proof}
+    Ist $d\mid n$ und $\eta$ eine Nullstelle von $\Phi_{d}$, so $\eta^{d}=1$,
+    also auch $\eta^{n}=1$. Somit ist $\eta$ eine Nullstelle von $X^{n}-1$,
+    d.\,h. $X-\eta\mid X^{n}-1$. Da $\Phi_{d}$ ein Produkt verschiedener
+    Faktoren der Form $X-\eta$ ist, folgt, dass $\Phi_{d}$ ein Teiler von
+    $X^{n}-1$ ist.
+
+    Für $e\mid n$ mit $d\neq e$ ist $\ggt(\Phi_{d},\Phi_{e})=1$. Denn sonst
+    hätten $\Phi_{d}$ und $\Phi_{e}$ eine gemeinsame Nullstelle. Aber eine
+    primitive $d$"~te Einheitswurzel ist keine primitive $e$"~te
+    Einheitswurzel und umgekehrt. Dies zeigt: $\prod_{d\mid n} \Phi_{d}|
+    X^{n}-1$.
+
+    Andererseits: $\deg(X^{n}-1)=n= \sum_{d\mid n} \phi(d)= \sum_{d\mid n}
+    \deg\Phi_{d}= \deg\prod_{d\mid n} \Phi_{d}$. Folglich ist das Produkt
+    $\prod_{d\mid n}\Phi_{d}= c(X^{n}-1)$ für ein $c\in\C$. Ein Vergleich der
+    höchsten Koeffizienten ergibt, $c=1$.
+  \end{proof}
+\end{satz}
+
+%bem 1.4
+\begin{bemerk}
+  Mit \autoref{satz:1.3} kann man Kreisteilungspolynome rekursiv berechnen:
+  \begin{bsp}
+    \begin{itemize}
+     \item $X^{6}-1= \Phi_{1}\Phi_{2}\Phi_{3}\Phi_{6}=(X^{3}-1)(X+1)$, d.\,h.
+      $\Phi_{2}\Phi_{6}= \frac{X^{6}-1}{X^{3}-1}= X^{3}+1$ und
+      $\Phi_{6}=\frac{X^{3}+1}{X+1}= X^{2}-X+1$.
+     \item $X^{8}-1= \Phi_{1}\Phi_{2}\Phi_{4}\Phi_{8}=
+      (X^{4}-1)\Phi_{8}\Rightarrow\Phi_{8}= \frac{X^{8}-1}{X^{4}-1}= X^{4}+1$
+    \end{itemize}
+  \end{bsp}
+\end{bemerk}
+
+\begin{satz}
+  Für $n\in\N$ hat das Polynom $\Phi_{n}$ Koeffizienten in $\Z$, d.\,h.
+  $\Phi_{n}\in\Z[X]$.
+  \begin{proof}
+    Erfolgt per Induktion nach $n$:
+    Sei $n=1$. Dann ist $\Phi_{1}=X-1$. Nun sei $n>1$. Nach dem
+    \autoref{satz:1.3} ist $\Phi_{n}= \frac{X^{n}-1}{\prod_{n\neq d\mid
+    n}\Phi_{d}}$. Dabei sind nach Induktionsvoraussetzung Zähler und Nenner in
+    $\Z[X]$. Da der Nenner den höchsten Koeffizienten hat, treten bei der
+    Polynomdivision keine Nenner auf. Also ist $\Phi_{n}\in\Z[X]$.
+  \end{proof}
+\end{satz}
+
+%bem 1.5
+\begin{bemerk}
+  Die folgenden Aussagen vereinfachen die Berechnung von
+  Kreisteilungspolynomen.
+\end{bemerk}
+
+\begin{satz}\label{satz:1.5}
+  Für $m,n\in\N$ gilt:
+  \begin{enumerate}
+   \item $\Phi_{m\cdot n}\mid\Phi_{n}(X^{m})$
+   \item Ist jeder Primteiler von $m$ auch einer von $n$, so ist $\Phi_{m\cdot
+    n}= \Phi_{n}(X^{m})$.
+   \item Ist $n=n'n''$ mit $n'\coloneqq\prod_{p\in\PP, p\mid n} p$, so ist
+    $\Phi_{n}=\Phi_{n'}(X^{n''})$.
+  \end{enumerate}
+  %Vorlesung vom 19.4.2012
+  \begin{proof}
+    \begin{enumerate}
+     \item Jede Nullstelle $\alpha$ von $\Phi_{mn}$ ist eine primitive
+      $mn$"~te Einheitswurzel. Daher ist $\alpha^{m}$ eine primitive $n$"~te
+      Einheitswurzel, d.\,h. $\Phi_{n}(\alpha^{m})=0$. Daher ist $\alpha$ eine
+      Nullstelle von $\Phi_{n}(X^{m})$, d.\,h. $X-\alpha\mid\Phi_{n}(X^{m})$.
+
+      Da $\Phi_{mn}$ ein Produkt verschiedener solcher Faktoren $X-\alpha$
+      ist, folgt, $\Phi_{mn}\mid \Phi_{n}(X^{m})$.
+     \item Nach \autoref{satz:1.1} ist $\deg \Phi_{mn}= \phi(mn)= m\phi(n)=
+      \deg\Phi_{n}(X^{m})$. Wegen der obigen Eigenschaft existiert ein
+      $c\in\C$ mit $\Phi_{mn}=c\Phi_{n}(X^{m})$. Ein Vergleich der höchsten
+      Koeffizienten ergibt $c=1$.
+     \item Da jeder Primteiler von $n''$ auch einer von $n$ ist und damit
+      einer von $n'$, gilt nach $(ii)$: $\Phi_{n}= \Phi_{n'n''}=
+      \Phi_{n'}(X^{n''})$.
+    \end{enumerate}
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  Für $p\in\PP$ und $k\in\N$ ist also $\Phi_{p^{k}}=\Phi_{p}(X^{p^{k-1}})=
+  \sum_{i=0}^{p-1} X^{p^{k-1}i}$, z.\,B. $\Phi_{9}=\Phi_{3}(X^{3})=
+  X^{6}+X^{3}+1$. 
+\end{bsp}
+
+%satz 1.6
+\begin{satz}
+  Seien $m,n\in\N\setminus\{1\}$, $\ggt(m,n)=1$ und $E$ die Menge der primitiven $m$"~ten
+  Einheitswurzeln. Also $\abs{E}=\phi(m)$. Dann gilt:
+  \begin{gather*}
+    \Phi_{mn}= \prod_{\xi\in E} \Phi_{n}(\xi X)
+  \end{gather*}
+  \begin{proof}
+    Sei $\eta$ eine primitive $m\cdot n$"~te Einheitswurzel. Dann ist
+    $\sigma\coloneqq\eta^{n}$ eine primitive $m$"~te Einheitswurzel. Wegen
+    $\ggt(m,n)=1$ existieren $a,b\in\Z$ mit $an+bm=1$ und auch $an+bm=-1$. Sei
+    \OE{} $a\in\N$. Wegen $\ggt(a,m)=1$ ist auch $\mu\coloneqq\sigma^{a}$ eine
+    primitive $m$"~te Einheitswurzel, insbesondere ist $\mu^{m}=1$. Daher:
+    $(\mu\eta)^{n}=\mu^{n}\eta^{n}= \sigma^{an}\sigma= \sigma^{1+an}=
+    \sigma^{-bm}=(\sigma^{m})^{-b}=1^{-b}=1$. Die Ordnung~$r$ von $\mu\eta$
+    ist also ein Teiler von $n$. Andererseits: $1=1^{m}=(\mu\eta)^{rm}=
+    \mu^{rm}\eta^{rm}= 1^{r}\eta^{rm}= \eta^{rm}$. Daher ist $mn\mid rm$,
+    d.\,h. also $n\mid r$. Insgesamt ist also $r=n$, d.\,h. $\mu\eta$ ist eine
+    primitive $n$"~te Einheitswurzel. Daher: $\Phi_{n}(\mu\eta)=0$, d.\,h.
+    $\eta$ ist Nullstelle von $\Phi_{n}(\mu X)$. Folglich
+    $X-\eta\mid\Phi_{n}(\mu X)\mid\prod_{\xi\in E} \Phi_{n}(\xi X)$.
+    Da $\Phi_{mn}$ ein Produkt verschiedener solcher $X-\eta$ ist, folgt,
+    $\Phi_{mn}$ ist ein Teiler von $\prod_{\xi\in E}\Phi_{n}(\xi X)$.
+
+    Andererseits ist $\deg\prod_{\xi\in E} \Phi_{n}(\xi X)= \sum_{\xi\in E}
+    \deg\Phi_{n}(\xi X)= \sum_{\xi\in E}\phi(n)= \abs{E}\phi(n)=
+    \phi(m)\phi(n)= \phi(mn)= \deg\Phi_{mn}$. Daher existiert eine Konstante
+    $c\in\C$ mit $\Phi_{mn}= c\prod_{\xi\in E}\Phi_{n}(\xi X)$. Der höchste
+    Koeffizient von $\Phi_{mn}$ ist $1$ und der von $\prod_{\xi\in
+    E}\Phi_{n}(\xi X)$ ist $\prod_{\xi\in E} \xi^{\phi(n)}= (\prod_{\xi\in
+    E}\xi)^{\phi(n)}$.
+
+    Im Fall $m=2$ ist $E=\{-1\}$. Wegen $\ggt(m,n)=1$ ist $n$ ungerade und
+    $n\geq3$. Daher ist $\phi(n)$ gerade, also ist $(\prod_{\xi\in
+    E}\xi)^{\phi(n)}=(-1)^{\phi(n)}= 1$.
+
+    Im Fall $m>2$ ist für jede primitive $m$"~te Einheitswurzel $\xi$ auch
+    $\xi^{-1}$ eine primitive $m$"~te Einheitswurzel. Daher kürzen sich in
+    $\prod_{\xi\in E}\xi$ alle Faktoren paarweise weg, d.\,h. $\prod_{\xi\in
+    E}\xi=1$.
+
+    In beiden Fällen ist also der höchste Koeffizient von $\prod_{\xi\in
+    E}\Phi_{n}(\xi X)$ gleich $1$, d.\,h. $c=1$.
+  \end{proof}
+\end{satz}
+
+\begin{bsp}
+  Sei $m=2$ und $1\neq n\in\N$ ungerade. Dann $E=\{-1\}$, d.\,h.
+  $\Phi_{2n}=\Phi_{n}(-X)$.
+
+  $\Phi_{6}= \Phi_{3}(-X)= X^{2}-X+1$, $\Phi_{10}= \Phi_{5}(-X)=
+  X^{4}-X^{3}+X^{2}-X+1$.
+\end{bsp}
+
+\begin{bemerk}
+  Man kann zeigen, dass jedes $\Phi_{n}$ irreduzibel in $\Q[X]$ ist.
+\end{bemerk}
+
+%satz 1.7
+\begin{satz}
+  Für $n\in\N$ und $p\in\PP$ mit $2\neq p\nmid n$ gilt:
+  \begin{gather*}
+    \Phi_{n}\Phi_{pn}= \Phi_{n}(X^{p})
+  \end{gather*}
+  \begin{proof}
+    Nach dem \autoref{satz:1.5} gilt: $\Phi_{pn}\mid\Phi_{n}(X^{p})$. Für jede
+    primitive $n$"~te Einheitswurzel $\eta$ ist auch $\eta^{p}$ eine primitive
+    $n$"~te Einheitswurzel, d.\,h. $\Phi_{n}(\eta^{p})=0$.  Daher ist $\eta$
+    Nullstelle von $\Phi_{n}(X^{p})$, d.\,h. $X-\eta\mid\Phi_{n}(X^{p})$. Da
+    $\Phi_{n}$ ein Produkt solcher $X-\eta$ ist, folgt,
+    $\Phi_{n}\mid\Phi_{n}(X^{p})$.
+
+    Ferner ist $\ggt(\Phi_{n}, \Phi_{pn})=1$. Denn primitive $pn$"~te
+    Einheitswurzeln sind keine primitiven $n$"~ten Einheitswurzeln und
+    umgekehrt.  Daher ist $\Phi_{n}\Phi_{pn}\mid\Phi_{n}(X^{p})$.
+
+    Andererseits ist $\deg(\Phi_{n}, \Phi_{pn})= \deg\Phi_{N}+\deg\Phi_{pn}=
+    \phi(n)+\phi(pn)= \phi(n)+(p-1)\phi(n)=p\phi(n)=\deg\Phi_{n}(X^{p})$.
+    Daher existiert ein $c\in \C$ mit $\Phi_{n}\Phi_{pn}= c\Phi_{n}(X^{p})$.
+    Ein Vergleich der höchsten Koeffizienten ergibt $c=1$.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Also: $\Phi_{pn}= \frac{\Phi_{n}(X^{p})}{\Phi_{n}}$. Beispielsweise ist
+  $\Phi_{15}= \frac{\Phi_{5}(X^{3})}{\Phi_{5}}= \frac{X^{12}+X^{9}+X^{6}+X^{3}+1}{X^{4}+X^{3}+X^{2}+X+1}$
+\end{bemerk}
+
+
+\chapter{Zsigmondy"=Primzahlen}
+
+%bem 2.1
+\begin{bemerk}
+  Für $p\in\PP$ und $x\in\Z$ sei $v_{p}(x)\coloneqq\sup\Set{l\in\N_{0} |
+  p^{l}\mid x}$ die \highl{Bewertung} (valuation). Insbesondere ist
+  $v_{p}(0)=\infty$.
+
+  Dann gilt für $x,y\in\Z$:
+  \begin{enumerate}
+   \item $v_{p}(xy)=v_{p}(x)+v_{p}(y)$.
+   \item $v_{p}(x+y)\geq\min\{v_{p}(x),v_{p}(y)\}$
+   \item $v_{p}(x+y)=\min\{v_{p}(x),v_{p}(y)\}$, wenn $v_{p}(x)\neq v_{p}(y)$
+  \end{enumerate}
+\end{bemerk}
+
+\begin{bsp}
+  $v_{2}(24)=3$, $v_{2}(16)=4$, $v_{2}(24+16)= v_{2}(40)= 3$
+\end{bsp}
+
+\begin{satz}
+  Sei $p\in\PP$ und $1\neq a\in\N$ mit $p\nmid a$. Weiter sei $f$ die Ordnung
+  von $a+p\Z$ in $(\sfrac{\Z}{p\Z})^{\times}$. (Also ist $f\mid p-1$ nach dem
+  Satz von \textsc{Lagrange}.)
+  \begin{enumerate}[(I)]
+   \item Im Fall $p\neq2$ gilt dann:
+    \begin{enumerate}[(i)]
+     \item Ist $m\in\N$ mit $v_{p}(\Phi_{m}(a))>0$, d.\,h. $p\mid\Phi_{m}(a)$,
+      so existiert ein $i\in\N_{0}$ mit $m=fp^{i}$.
+     \item $v_{p}(\Phi_{f}(a))>0$, d.\,h. $p\mid\Phi_{f}(a)$
+     \item $v_{p}(\Phi_{fp^{i}}(a)=1$ für $i\in\N$.$)$
+     \item Ist $n\in\N$ mit $v_{p}(a^{n}-1)>0$, d.\,h.  $p\mid a^{n}-a$, so
+      ist $f\mid n$.
+     \item Für $f\mid n$ ist $v_{p}(a^{n}-1)= v_{p}(a^{f}-1)+v_{p}(n)$.
+    \end{enumerate}
+   \item Im Fall $p=2$ gilt:
+    \begin{enumerate}[(i)]
+     \item Ist $n\in\N$ mit $v_{2}(\Phi_{n}(a))>0$, d.\,h. $2\mid\Phi_{n}(a)$,
+      so ist $n=2^{i}$ für $i\in\N_{0}$.
+     \item Für $i\in\N$ mit $i\geq2$ ist $v_{2}(\Phi_{2^{i}}(a))=1$.
+    \end{enumerate}
+  \end{enumerate}
+\end{satz}
+
+\clearpage
+\appendix
+
+\chapter{Übungsaufgaben}
+\section*{Übungsblatt 1}
+
+%a 1
+\begin{exerc}
+  Berechnen Sie die Kreisteilungspolynome $\Phi_{1},\dotsc,\Phi_{50}$.
+\end{exerc}
+
+%a2
+\begin{exerc}
+  Zeigen Sie, dass für alle $x,y\in\R$ mit $x\geq3$ und $y\geq3$ gilt:
+  \begin{gather*}
+    x^{y-1}\geq xy
+  \end{gather*}
+\end{exerc}
+
+%a3
+\begin{exerc}
+  Sei $n\in\N$ mit Primfaktorzerlegung $n=p_{1}^{a_{1}}\cdot\dotso \cdot
+  p_{r}^{a_{r}}$ und
+  $k\coloneqq\kgv\left(\phi(p_{1}^{a_{1}}),\dotsc,\phi(p_{r}^{a_{r}})\right)$. Zeigen
+  Sie, dass für alle $a\in\Z$ mit $\ggt(a,n)=1$ gilt:
+  \begin{gather*}
+    a^{k}\equiv1\pmod{n}
+  \end{gather*}
+\end{exerc}
+
+%a4
+\begin{exerc}
+  Seien $k,n\in\N$ mit $\phi(n^{2})=k^{2}$. Zeigen Sie: $n=k=1$.
+\end{exerc}
+
+\begin{thebibliography}{99}
+ \bibitem{riesel11} \textsc{Hans Riesel}: Prime Numbers and Computer Methods
+  for Factorization. Birkhäuser Boston, 2011. 2.\,Auflage.
+ \bibitem{randall05} \textsc{Richard Crandall}, \textsc{Carl Pomerance}: Prime
+  numbers. A computational perspective. Springer, 2005. 2.\,Auflage.
+\end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+% Behebt das Problem der vielen "`overfull \hbox"' im Index
+% <news:3419172.ueajl5DJLB@mjk.komascript.de>
+\setlength{\parfillskip}{0pt plus 1fil}
+\printindex
+
+\end{document}
