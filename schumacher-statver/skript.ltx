@@ -1,0 +1,407 @@
+% Einige zusätzliche Informationen für rubber
+%  rubber erkennt nicht, dass die Datei weg kann, daher sagen wir es ihm
+% rubber: clean $base.thm
+%  rubber soll nach Änderungen an der Datei nochmal bauen
+% rubber: watch $base.thm
+% rubber: index.tool      xindy
+% rubber: index.language  german-din
+%
+% scrreprt trifft am Besten die Bedürfnisse eines Skripts, das ganze wird
+% zweiseitig (twoside), d.h. es wird zwischen linker und rechter Seite
+% unterschieden, und wir verwenden zwischen den Absätzen einen Abstand
+% von einer halben Zeile (halfparskip) und dafür keinen Absatzeinzug,
+% wobei die letzte Zeile eines Absatzes zu min. 1/4 leer ist.
+
+\RequirePackage[l2tabu,orthodox]{nag}  % nag überprüft den Text auf veraltete
+                   % Befehle oder solche, die man nicht in LaTeX verwenden
+                   % soll -- l2tabu-Checker in LaTeX
+
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst} % einbinden der neuen
+                   % Trennmuster, diese korrigieren einige Fehler der alten
+                   % und bieten mehr Trennstellen
+
+\documentclass[ngerman,draft,parskip=half*,twoside]{scrreprt}
+
+\usepackage{ifthen}
+\usepackage{index}
+% \usepackage[final]{graphicx}  % Für Grafiken
+\usepackage{xcolor}
+\usepackage[draft=false,colorlinks,bookmarksnumbered,linkcolor=blue,breaklinks]{hyperref}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+% \usepackage{nicefrac}
+% \usepackage{xfrac}           % xfrac erfüllt einen ähnlichen Zweck wie
+			       % nicefrac. Jedoch macht nicefrac bei einigen
+			       % Schriften Probleme. Dies behebt xfrac. Daher
+			       % sollte eher das Paket verwendet werden.
+                               % xfrac muss vor mathtools geladen werden!
+% \usepackage{tabularx}
+
+\usepackage{lmodern}		% Latin Modern
+% \usepackage{type1ec}           % cm-super
+\usepackage[T1]{fontenc}        % T1-Schriften notwendig für PDFs
+\usepackage{textcomp}           % wird benötigt, damit der \textbullet
+                                % für itemize in lmodern gefunden wird.
+
+\usepackage[intlimits,leqno]{amsmath}
+\usepackage[all,warning]{onlyamsmath}  % warnt bei Verwendung von nicht
+                                       % amsmath-Umgebungen z.\,B. $$...$$
+\usepackage{amssymb}     % wird für \R, \C,... gebraucht
+\usepackage{fixmath}     % ISO-konforme griech. Buchstaben
+\usepackage[euro]{isonums} % definiert Komma als Dezimaltrennzeichen
+
+\usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
+                                                 % (satz, defini, bemerk)
+\usepackage{xspace}      % wird weiter unten gebraucht
+\usepackage{slashbox}    % für schräge Striche links oben in der
+                         % Tabelle; s. texdoc slashbox
+
+\usepackage{paralist}    % besseres enumerate und itemize und neue
+                         % compactenum/compactitem; s. texdoc paralist
+
+\usepackage{svn}         % Zum Auswerten und ordentlichen Darstellen der
+                         % SVN-Schlüsselwörter (s. vor \begin{document})
+                         % dafür muss in SVN noch das Flag svn:keywords
+                         % auf "LastChangedRevision LastChangedDate"
+                         % gesetzt werden
+% \usepackage{ifpdf}       % Erkennung, ob PDF generiert wird; nützlich zur
+                         % Unterscheidung bei Grafiken \input{XYZ.pdf_t}
+\usepackage{ellipsis}    % Korrektur für \dots
+\usepackage{fixltx2e}
+\usepackage[final,babel]{microtype} % Verbesserung der Typographie
+\usepackage{mathtools}   % Zur Definition von \abs und \norm
+\usepackage{todonotes}   % definiert den Befehl \todo{} um sich leicht
+                         % Markierungen für offene Aufgaben zu setzen; wird
+                         % auch für \help (s.u.) verwendet
+% \usepackage[text]{esdiff} % Zum Setzen von (partiellen) Ableitungen
+                            % (df/dx). Das d wird korrekt in roman
+                            % gesetzt. Verwendung: \diff{f}{x} oder
+                            % \diffp{f}{x} für partielle Ableitungen
+% \usepackage{tikz-cd}  % Einfaches Zeichnen von kommutativen
+                        % Diagrammen. Durch die Benutzung von TikZ ist
+                        % das mächtiger als xypic.
+% Damit auch die Zeichen im Mathemode in Überschriften fett sind
+% <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
+\usepackage{braket}
+\addtokomafont{sectioning}{\boldmath}
+
+% nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
+% Körpers ist normal und der Kopf wird fett gesetzt
+\theoremstyle{break}
+\theoremnumbering{arabic}
+\theorembodyfont{\normalfont}
+\theoremheaderfont{\normalfont\bfseries}
+
+% Das Ende von Umgebungen, für die kein Beweis erbracht wurde, soll mit einer
+% leeren Box gekennzeichnet werden. Wenn jedoch ein Beweis erbracht wurde,
+% soll kein Zeichen ausgegeben werden (die ausgefüllte Box vom proof wird
+% verwendet); man beachte die spezielle Definition von \theoremheaderfont für
+% die Umgebung proof
+% \newboolean{hasproof}
+% \theoremheaderfont{\global\hasprooffalse\normalfont\bfseries}
+% \theoremsymbol{\ifthenelse{\boolean{hasproof}}{}{\ensuremath{_\Box}}}
+
+% Die folgenden Umgebungen werden einzeln nummeriert und am Ende jedes
+% Kapitels zurückgesetzt
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{bemerk}{Bemerkung}[chapter]
+\newtheorem{defini}{Definition}[chapter]
+\newtheorem{bsp}{Beispiel}[chapter]
+\newtheorem{festl}{Festlegung}[chapter]
+
+% Die folgenden Theoremumgebungen bekommen keine Nummer
+\theoremstyle{nonumberbreak}
+\newtheorem{fakt}{Fakt}
+
+% \theoremheaderfont{\global\hasprooftrue\scshape}
+\theoremheaderfont{\scshape}
+\theorembodyfont{\normalfont}
+% Das Zeichen am Ende eines Beweises
+\theoremsymbol{\ensuremath{_\blacksquare}}
+% \theoremsymbol{q.\,e.\,d.}
+\newtheorem{proof}{Beweis:}
+
+% Hier die Definition, wie \autoref die Umgebungen nennen soll, die mit
+% \newtheorem definiert wurden
+\newcommand*{\satzautorefname}{Satz}
+\newcommand*{\bemerkautorefname}{Bemerkung}
+\newcommand*{\definiautorefname}{Definition}
+\newcommand*{\bspautorefname}{Beispiel}
+\newcommand*{\festlautorefname}{Festlegung}
+% Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
+% werden.
+\renewcommand*{\subsectionautorefname}{Abschnitt}
+\renewcommand*{\subsubsectionautorefname}{Abschnitt}
+
+\pagestyle{headings}
+
+\newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
+\newcommand*{\C}{\mathbb{C}}      % komplexe Zahlen
+\newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
+\newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
+\newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+
+% Wenn irgendwo Unklarheiten zum Inhalt im Skript auftreten, können sie
+% einfach mit \help{Ich verstehe das nicht} hervorgehoben werden. Dies
+% macht es leichter sie alle zu finden und auch ganz einfach
+% auszublenden, indem man den Befehl einfach leer definiert
+\newcommand*{\help}[1]{\todo[color=green!40]{#1}}
+
+% Um wichtige Begriffe im Text überall gleich vorzuheben (gleiches
+% Markup), sollte dieser Befehl verwendet werden. Das Argument wird
+% automatisch als Indexeintrag verwendet. Dieser kann aber auch als
+% optionales Argument selbst bestimmt werden.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+  \ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+% Befehl für die Darstellung der Gliederungsüberschriften im Index
+\newcommand*{\lettergroup}[1]{\minisec{#1}}
+
+% Für Leute, die nicht gern o.\,B.\,d.\,A. jedesmal eintippen wollen
+\newcommand*{\obda}{o.\,B.\,d.\,A.\xspace}
+
+% Diese Befehle sind dafür gedacht, dass die Symbole für "genau dann wenn"
+% im ganzen Dokument gleich aussehen. Außerdem erlaubt es eine schnelle
+% Veränderung aller Stellen, falls der Prof. doch nicht mehr gdw nimmt,
+% sondern \Leftrightarrow.
+\newcommand*{\gdw}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw\mspace{8mu}}%
+			       {$gdw$\xspace}}
+\newcommand*{\gdwdef}{\ifthenelse{\boolean{mmode}}%
+			       {\mspace{8mu}gdw_{def}\mspace{8mu}}%
+			       {$gdw_{def}$\xspace}}
+
+% Um sicherzustellen, dass jeder Betrag/jede Norm links und rechts die
+% Striche bekommt, sind diese Befehle da. Damit kann man nicht die
+% rechten Striche vergessen und es wird etwas übersichtlicher. Aus
+% mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Für die Gaußklammer empfiehlt sich ebenso eine Definition mit
+% Benutzung von mathtools.
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% Das original Epsilon sieht nicht so toll aus
+\renewcommand*{\epsilon}{\varepsilon}
+% ... und mancheinem gefällt auch das Phi nicht
+\renewcommand*{\phi}{\varphi}
+
+\newcommand*{\CA}{\mathcal{A}}
+\newcommand*{\CL}{\mathcal{L}}
+
+\newcommand*{\EE}{\mathbb{E}}
+
+\makeindex
+
+\SVN $LastChangedRevision$
+\SVN $LastChangedDate$
+
+\begin{document}
+
+\title{Statistische Verfahren}
+\author{Jens Schumacher}
+\date{Semester:  WS 2012/13}
+\maketitle
+
+\clearpage
+\chapter*{Vorwort}
+
+{\itshape
+  Dieses Dokument wurde als Skript für die auf der
+  Titelseite genannte Vorlesung erstellt und wird jetzt im Rahmen des
+  Projekts
+  "`\href{http://uni-skripte.lug-jena.de/}
+  {Vorlesungsskripte der Fakultät für Mathematik}
+  \href{http://uni-skripte.lug-jena.de/}{und Informatik}"'
+  weiter betreut. Das
+  Dokument wurde nach bestem Wissen und Gewissen angefertigt. Dennoch
+  garantiert weder der auf der Titelseite genannte Dozent, die Personen,
+  die an dem Dokument mitgewirkt haben, noch die
+  Mitglieder des Projekts für dessen Fehlerfreiheit. Für etwaige Fehler
+  und dessen Folgen wird von keiner der genannten Personen eine Haftung
+  übernommen. Es steht jeder Person frei, dieses Dokument zu lesen, zu
+  verändern oder auf anderen Medien verfügbar zu machen, solange ein
+  Verweis auf die Internetadresse des Projekts
+  \url{http://uni-skripte.lug-jena.de/}
+  enthalten ist.
+
+  Diese Ausgabe trägt die Versionsnummer~\SVNLastChangedRevision{} und ist vom
+  \SVNDate{}. Eine neue Ausgabe könnte auf der Webseite des Projekts verfügbar
+  sein.
+
+  Jeder ist dazu aufgerufen, Verbesserungen, Erweiterungen und
+  Fehlerkorrekturen für das Skript einzureichen bzw. zu melden oder diese
+  selbst einzupflegen -- einfach eine E-Mail an die
+  \href{mailto:uni-skripte@lug-jena.de}{Mailingliste
+  \nolinkurl{<uni-skripte@lug-jena.de>}} senden. Weitere Informationen
+  sind unter der oben genannten Internetadresse verfügbar.
+
+  Hiermit möchten wir allen Personen, die an diesem Skript mitgewirkt
+  haben, vielmals danken:
+  \begin{itemize}
+   \item \href{mailto:email}{Person \nolinkurl{<email>}} (Jahr)
+  \end{itemize}
+}
+
+\clearpage
+\pdfbookmark[0]{Inhaltsverzeichnis}{inhaltsverzeichnis}
+\tableofcontents
+
+\clearpage
+\pdfbookmark[0]{Auflistung der Sätze}{theoremlist}
+\chapter*{Auflistung der Theoreme}
+
+\pdfbookmark[1]{Sätze}{satzlist}
+\section*{Sätze}
+\theoremlisttype{optname}
+\listtheorems{satz}
+
+\pdfbookmark[1]{Definitionen und Festlegungen}{definilist}
+\section*{Definitionen und Festlegungen}
+% \theoremlisttype{all}
+\listtheorems{defini,festl}
+
+\chapter{Einführung}
+
+In der Wahrscheinlichkeitstheorie gibt es einen Raum $(\Omega,\CA,P)$. Dann
+hat man eine Zufallsvariable~$Y$. Diese bildet die folgende Abbildung
+$(\Omega,\CA,P)\xrightarrow{Y} (\Omega_{Y}, \CA_{Y}, P^{Y})$. Für das
+Wahrscheinlichkeitsmaß gilt: $P^{Y}\colon \CA_{Y}\rightarrow[0,1]$.
+
+\begin{bsp}
+  Es kann $P^{Y}$ das Lebesgue-Maß auf $[0,1]$ sein. Dies entspricht der
+  Dichtefunktion. Falls eine Dichtefunktion existiert, so gilt:
+  \begin{gather*}
+    P(\Set{\omega | Y(\omega)\in[a,b]})= \int_{a}^{b} f(y)\,dy\\
+    P(a\leq Y\leq b)=\int_{a}^{b} f(y)\,dy
+  \end{gather*}
+
+  Für die Normalverteilung schreibt man $Y\sim N(\mu,\sigma^{2})$. Die
+  Dichtefunktion ist
+  \begin{gather*}
+    f(y)=
+       \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp{-\frac{(y-\mu)^{2}}{2\sigma^{2}}}=
+       \phi_{\mu,\sigma^{2}}(y)
+  \end{gather*}
+
+  Die Poissonverteilung hat keine Dichtefunktion. Es ist $\Omega_{N}=\N$.
+  \begin{gather*}
+    P(\Set{\omega | Y(\omega)=k})=P(Y=k)=P^{Y}(\{k\})= \frac{\lambda^{k}}{k!}
+       e^{-\lambda}\\
+    P(Y\in[a,b])= \sum_{a\leq k\leq b} \frac{\lambda^{k}}{k!}e^{-\lambda}
+  \end{gather*}
+\end{bsp}
+
+Wenn wir uns andererseits mit Statistik beschäftigen, ist nicht die »ideale
+Situation« gegeben. Typischerweise hat man ein (statistisches) Experiment. Wie
+schon oben bei der Wahrscheinlichkeitstheorie haben wir
+$(\Omega,\CA,P)\xrightarrow{Y}(\Omega_{Y},\CA_{Y},\Set{P_{\theta} | \theta \in\Theta})$
+Letzteres ist eine Familie von Wahrscheinlichkeitsmaßen, wobei der
+Parameter~$\theta$ unbekannt ist.
+
+\begin{defini}
+  $(Y,\Omega,\CA,\Set{P_{\theta} | \theta \in\Theta})$
+  heißt \highl[Experiment!statistisches]{statistisches Experiment}.
+\end{defini}
+
+\begin{defini}
+  Ein \highl{Schätzer} ist eine messbare Abbildung $T\colon
+  \Omega_{Y}\rightarrow \Theta$.
+\end{defini}
+
+\begin{bemerk}
+  Vorschrift zur Berechnung eines Schätzwertes für unbekannte Parameter.
+\end{bemerk}
+
+\begin{defini}
+  Für eine konkrete Realisierung $y=Y(\omega)$ heißt $T(y)$ \highl{Schätzung}
+  für den unbekannten Parameter~$\theta$.
+\end{defini}
+
+Es ist sinnvoll, die Definition des zentralen Grenzwertsatzes sowie die das
+Poissonschen Grenzwertsatzes zu wiederholen.
+
+\chapter{Konstruktion von Schätzern}
+
+\begin{itemize}
+ \item Momentenmethode
+ \item Maximum"=Likelihood"=Methode
+\end{itemize}
+
+\begin{bsp}
+  Poissonverteilung: Wir haben Beobachtungen $y_{1},\dotsc, y_{n}$. Diese
+  werden als Realisierung von unabhängigen poissonverteilten Zufallsgrößen mit
+  dem Parameter~$\lambda$  aufgefasst. Wir nennen die $Y_{1},\dotsc, Y_{n}$,
+  d.\,h. das statistische Experiment sieht wie folgt aus:
+  $(\underline{Y}=(Y_{1},\dotsc, Y_{n}), \Omega, \CA,
+  \text{Poisson}(\lambda))$ mit $\lambda>0$. Eigentlich ist das Poissonmaß ein
+  Produktmaß, wird also $n$"~mal multipliziert. Wenn der unbekannte
+  Parameter~$\lambda$ bekannt wäre, könnte man alle interessierenden
+  Wahrscheinlichkeiten ausrechnen: $P(Y_{1}=y_{1},\dotsc, Y_{n}=y_{n})$ ist
+  wegen der Unabhängigkeit gleich dem Ausdruck $P(Y_{1}=y_{1})\cdot\dotso
+  \cdot P(Y_{n}=y_{n})$. Dies ist aber:
+  \begin{gather*}
+    \frac{\lambda^{y_{1}}}{y_{1}!}e^{-\lambda}\cdot\dotso
+       \cdot\frac{\lambda^{y_{n}}}{y_{n}!}e^{-\lambda}=
+       \frac{\lambda^{y_{1}+\dotsb+ y_{n}}}{y_{1}!\cdot\dotso \cdot y_{n}!}
+       e^{-n\lambda}
+  \end{gather*}
+\end{bsp}
+
+Die Grundidee der Maximum"=Likelihood"=Methode ist es, als Schätzer für den
+unbekannten Parameter denjenigen Wert zu wählen, der die Wahrscheinlichkeit
+der beobachteten Daten maximiert.
+
+Likelihood"=Funktion: Betrachte für konkrete Realisierungen (Beobachtungen)
+$y_{1},\dotsc, y_{n}$ die Wahrscheinlichkeit $P(Y_{1}=y_{1},\dotsc,
+Y_{n}=y_{n})$ als Funktion des unbekannten Parameters:
+$\CL(\lambda|(y_{1},\dotsc, y_{n}))= \frac{\lambda^{y_{1}+\dotsb+
+y_{n}}}{y_{1}!\cdot\dotso \cdot y_{n}!} e^{-n\lambda}$. Vor dem Ableiten und
+Nullsetzen erfolgt der Übergang zur
+Log"~Likelihood"=Funktion~$l(\lambda|(y_{1},\dotsc, y_{n}))=
+\log(\CL(\lambda|(y_{1},\dotsc, y_{n})))= (y_{1}+\dotsb+
+y_{n})\cdot\log\lambda-n\lambda -\log(y_{1}!\cdot\dotso y_{n}!)$. Die
+Ableitung ist $\frac{\partial }{\partial\lambda}l(\lambda|(y_{1},\dotsc,
+y_{n}))= \frac{y_{1}+\dotsb+ y_{n}}{\lambda} -n\neq0\Rightarrow\hat{\lambda}
+=\frac{y_{1}+\dotsb+ y_{n}}{n}$. Das ist die Maximum"=Likelihood"=Schätzung
+für den unbekannten Parameter.
+
+Welche Art von Modellen werden wir behandeln?
+\begin{itemize}
+ \item unabhängige Beobachtungen
+ \item nicht notwendig identische Verteilung der Beobachtungen
+\end{itemize}
+
+\begin{bsp}[Körpergewicht eines Säuglings im ersten Lebensjahr]
+  Beobachtungen: $y_{i}$ Körpergewicht und $x_{i}$ Alter für $i=1,\dotsc,n$;
+  Insgesamt also $(y_{i}, x_{i})$\\
+  Statistisches Modell: Wir sehen $x_{i}$ als fest an. Das $y_{i}$ ist die
+  Realisierung einer Zufallsgröße~$Y_{i}$.\\
+  deterministischer Teil: $\EE Y_{i}= f(x_{i})=
+  \beta_{1}+\beta_{2}x_{i}=\colon\mu_{i}$\\
+  stochastischer Teil: $Y_{i}\sim N(\mu_{i},\sigma^{2})$\\
+  Dies ist ein einfaches lineares Regressionsmodell.
+\end{bsp}
+
+
+
+
+\clearpage
+% \appendix
+% \begin{thebibliography}{99}
+%  \bibitem{shmathguide} Short Math Guide for \LaTeX{},\\
+%   \url{ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf}
+% \end{thebibliography}
+
+\clearpage
+\pdfbookmark[0]{Index}{index}
+% Behebt das Problem der vielen "`overfull \hbox"' im Index
+% <news:3419172.ueajl5DJLB@mjk.komascript.de>
+\setlength{\parfillskip}{0pt plus 1fil}
+\printindex
+
+\end{document}
