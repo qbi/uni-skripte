@@ -85,6 +85,7 @@
 % <news:lzfyyvx3pt.fsf@tfkp12.physik.uni-erlangen.de>
 \usepackage{braket}
 \usepackage[text]{esdiff}
+\usepackage{mathabx}
 \addtokomafont{sectioning}{\boldmath}
 
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
@@ -389,7 +390,212 @@ Welche Art von Modellen werden wir behandeln?
   \beta_{1}+\beta_{2}x_{i}=\colon\mu_{i}$\\
   stochastischer Teil: $Y_{i}\sim N(\mu_{i},\sigma^{2})$\\
   Dies ist ein einfaches lineares Regressionsmodell.
+
+  % VL vom 16.10.2012
+  Wir wollen uns überlegen, warum Maximum"=Likelihood"=Schätzung der Parameter
+  $\beta_{1}$ und $\beta_{2}$ zum Erfolg führt. Die Likelihood"=Funktion ist
+  \begin{gather*}
+    \CL(\beta_{1},\beta_{2}| y_{1},\dotsc, y_{n})= \prod_{i=1}^{n}
+  \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp{-\frac{(y_{i}- (\beta_{1}+
+  \beta_{2}x_{i})^{2})}{2\sigma^{2}}}
+  \end{gather*}
+  und die entsprechende Log"~Likelihood"=Funktion:
+  \begin{gather*}
+    l(\beta_{1},\beta_{2}| y_{1},\dotsc, y_{n})= \sum_{i=1}^{n} -\frac{1}{2}
+       \log{2\pi\sigma^{2}} -\frac{(y_{i}- (\beta_{1}+
+       \beta_{2}x_{i}))^{2}}{2\sigma^{2}}
+  \end{gather*}
+  partielle Ableitungen:
+  \begin{gather*}
+    \diffp{l(\beta_{1},\beta_{2})}{{\beta_{1}}}= \sum_{i=1}^{n} -\frac{2(y_{i}-
+       (\beta_{1}+ \beta_{2}x_{i}))}{2\sigma^{2}}\cdot(-1)=
+       \frac{1}{\sigma^{2}} \sum_{i=1}^{n} y_{i}-
+       y_{i}(\beta_{1}+\beta_{2}x_{i})= 0\\
+    \diffp{l(\beta_{1},\beta_{2})}{{\beta_{2}}}= \sum_{i=1}^{n} -\frac{2(y_{i}+
+       (\beta_{1}+\beta_{2}x_{i}))}{2\sigma^{2}} \cdot(-x_{i})=
+       \frac{1}{\sigma^{2}} \sum_{i=1}^{n}
+       x_{i}y_{i}-(\beta_{1}+\beta_{2}x_{i})x_{i}=0
+  \end{gather*}
+
+  Weiterhin ist:
+  \begin{align*}
+    \sum_{i=1}^{n} (y_{i}-\beta_{1}-\beta_{2}x_{i}) &= 0\\
+    \sum_{i=1}^{n} y_{i}-n\beta_{1}-\beta_{2}\sum_{i=1}^{n}x_{i} &= 0\\
+    \frac{1}{n} \sum_{i=1}^{n} y_{i}- \beta_{2}\frac{1}{n} \sum_{i=1}^{n}
+       x_{i} &= \beta_{1}\\
+    \overline{y_{n}}-\beta_{2}\overline{x_{n}} &= \beta_{1}\\
+    \text{Einsetzen}\\
+    \sum_{i=1}^{n} (x_{i}y_{i}-( \overline{y_{n}} -\beta_{2}\overline{x_{n}}
+       +\beta_{2}x_{i})x_{i}) &=0\\
+    \sum_{i=1}^{n} x_{i}y_{i} -\overline{y_{n}} \sum_{i=1}^{n} x_{i}+
+       \beta_{2} \overline{x_{n}} \sum_{i=1}^{n} x_{i}-\beta_{2}\sum_{i=1}^{n}
+       x_{i}^{2} &= 0\\
+    \hat{\beta_{2}} &= \frac{\sum_{i=1}^{n} x_{i}y_{i} -\overline{y_{n}}
+       \sum_{i=1}^{n} x_{i}}{\sum_{i=1}^{n} x_{i}^{2}- \overline{x_{n}}
+       \sum_{i=1}^{n} x_{i}}\\
+    &= \frac{\frac{1}{n} \sum_{i=1}^{n} x_{i}y_{i} -\overline{x_{n}}
+       \overline{y_{n}}}{\frac{1}{n} \sum_{i=1}^{n} x_{i}^{2}-
+       \overline{x_{n}}^{2}}\\
+    \hat{\beta_{1}} &= \overline{y_{n}}- \hat{\beta_{2}} \overline{x_{n}}
+  \end{align*}
+  Die $(\hat{\beta_{1}}, \hat{\beta_{2}})$ stellen das Maximum der
+  Likelihood"=Funktion dar. Dazu müssen wir die zweite Ableitung untersuchen.
+  Weiterhin ist $\hat{\beta_{2}}$ genau dann nicht eindeutig bestimmt, wenn
+  $x_{1}= \dotsb= x_{n}= \overline{x_{n}}$.
 \end{bsp}
+
+\begin{bemerk}
+  Die Maximum"=Likelihood"=Schätzung maximiert:
+  \begin{gather*}
+    \sum_{i=1}^{n} -(y_{i}+(\beta_{1}+\beta_{2}x_{i}))^{2}
+  \end{gather*}
+  also minimiert die Summe $\sum_{i=1}^{n}
+  (y_{i}-(\beta_{1}+\beta_{2}x_{i}))^{2}$, d.\,h. Summe der quadratischen
+  Abweichungen zwischen beobachteten Werten und vom Modell vorhergesagten
+  Werten. Also ist der Maximum"=Likelihood"=Schätzer gleich dem Schätzer nach
+  der Methode der kleinsten Quadrate.
+\end{bemerk}
+
+\begin{bsp}[Artenzahlen auf den Galapagos"=Inseln]
+  \begin{itemize}
+   \item nichtlinearer Zusammenhang
+   \item Normalverteilung nicht sinnvoll, da
+    \begin{itemize}
+     \item diskrete Zielgröße
+     \item nichtnegative Zielgröße
+    \end{itemize}
+   \item Variabilität der Zielgröße wächst mit steigender Inselgröße
+  \end{itemize}
+
+  Für den stochastischen Teil nehmen wir an, dass eine Poissonverteilung
+  vorliegt: $Y_{i}\sim\text{Poisson}(\mu_{i})$. Im deterministischen Teil
+  haben wir: $\mu_{i}= \EE Y_{i}= \beta_{1}+ \beta_{2}x_{i}$. Der lineare
+  Ansatz kann zu unmöglichen Erwartungswerten führen.  Daher betrachten wir
+  $\log(\mu_{i})= \log(\EE Y_{i})= \beta_{1}+\beta_{2}x_{i}$. Dies heißt dann
+  \highl[Poissonregression!einfache]{einfache Poissonregression}.
+  Die Varianz von $Y_{i}$ ist $\mu_{i}= \exp{\beta_{1}+\beta_{2}x_{i}}$.
+
+  Kann man mit der Maximum"=Likelihood"=Schätzer der Parameter zum Erfolg
+  kommen? Die Likelihood"=Funktion ist
+  \begin{gather*}
+    \CL(\beta_{1},\beta_{2}| y_{1},\dotsc, y_{n})= \prod_{i=1}^{n}
+       \frac{\mu_{i}^{y_{i}}}{y_{i}!} e^{-\mu_{i}}
+  \end{gather*}
+  Die Log"~Likelihood"=Funktion ist
+  \begin{gather*}
+    l(\beta_{1},\beta_{2}| y_{1},\dotsc, y_{n})= \sum_{i=1}^{n} y_{i} \log
+       \mu_{i}- \log y_{i}!- \mu_{i}= \sum_{i=1}^{n}
+       y_{i}(\beta_{1}+\beta_{2}x_{i}) -\log y_{i}!
+       -\exp{\beta_{1}+\beta_{2}x_{i}}
+  \end{gather*}
+  Die partiellen Ableitungen sind:
+  \begin{align*}
+    \diffp{l(\beta_{1},\beta_{2})}{{\beta_{1}}} &= \sum_{i=1}^{n} (y_{i}-
+       \exp{\beta_{1}+\beta_{2}x_{i}})=0)\\
+    \diffp{l(\beta_{1},\beta_{2})}{{\beta_{2}}} &= \sum_{i=1}^{n} (y_{i}x_{i}
+       -\exp{\beta_{1}+\beta_{2}x_{i}}\cdot x_{i})=0
+  \end{align*}
+  Dies ist ein nichtlineares Gleichungssystem in $\beta_{1}, \beta_{2}$. Zur
+  Lösung müssen wir laos numerische Lösungsverfahren des Gleichungssystems
+  anwenden.
+\end{bsp}
+
+\begin{bsp}[Schwefeldioxodbelastung der Luft in amerikanischen Städten]
+  Das $y_{i}$ stellt den Schwefeldioxodgehalt der Luft dar. Hier gibt es
+  mehrere Einflussgrößen: $x_{i2}$ ist die mittlere Jahrestemperatur, $x_{i3}$
+  ist die Anzahl der Betriebe mit mehr als 20~Beschäftigten, $x_{i4}$ die
+  Einwohnerzahl, $x_{i5}$ mittlerer Jahresniederschlag, $x_{i6}$ mittlere
+  Windgeschwindigkeit, $x_{i7}$ mittlere Anzahl der Regentage.
+
+  Wenn wir ein Modell dafür bauen wollen, so soll es nicht zu kompliziert
+  sein. Für den deterministischen Teil sagen wir, $y_{i}$ eine Realisierung
+  einer Zufallsgröße $Y_{i}$ und $\EE Y_{i}= \beta_{1}+\beta_{2}x_{i2}+\dotsb+
+  \beta_{7}x_{i7}=\mu_{i}$. Für den stochastischen Teil nehmen wir an, dass
+  $Y_{i}\sim N(\mu_{i},\sigma^{2})$. Dies ist ein
+  \highl[Regressionsmodell!multiples]{multiples lineares Regressionsmodell}. 
+\end{bsp}
+
+\begin{bsp}[Geburtsgewicht von Säuglingen]
+  Das $x_{i}$ ist die Dauer der Schwangerschaft und $y_{i}$ ist das
+  Geburtsgewicht. Letzteres fassen wir als Realisierung einer Zufallsgröße
+  $Y_{i}$ auf. Im deterministischen Teil ist
+  \begin{gather*}
+    \EE Y_{i}= \mu_{i}=
+       \begin{cases}
+	 \beta_{11}+\beta_{21}x_{i} & \boy\\
+	 \beta_{12}+\beta_{22}x_{i} & \girl
+       \end{cases}
+  \end{gather*}
+  Eine interessante Hypothese wäre, dass die beiden Parameter
+  $\beta_{21}=\beta_{22}$ gegen die Alternativhypothese
+  $\beta_{21}\neq\beta_{22}$.
+
+  Man kann ein gemeinsames Modell für Mädchen und Jungen mit Hilfe von
+  \highl{Indikatorvariablen} (oder \highl{Dummyvariablen}). Es ist:
+  \begin{gather*}
+    \mathbb{1}_{i}=
+       \begin{cases}
+	 1 & \girl\\
+	 0 & \boy
+       \end{cases}\\
+    \EE Y_{i}= \mu_{i}= \beta_{1}+ \beta_{2}\mathbb{1}_{i}+ \beta_{3}x_{i}+
+       \beta_{4}x_{i}\mathbb{1}_{i}= \beta_{1}+\beta_{2}x_{i2}+
+       \beta_{3}x_{i3}+ \beta_{4}x_{i4}
+  \end{gather*}
+  Dies ist ein multiples lineares Regressionsmodell mit sehr speziellen
+  Einflussgrößen. Es ist
+  \begin{gather*}
+    \EE Y_{i}=
+       \begin{cases}
+	 \beta_{1}+\beta_{3}x_{i}& \boy\\
+	 (\beta_{1}+\beta_{2})+ (\beta_{3}+\beta_{4})x_{i} & \girl
+       \end{cases}
+  \end{gather*}
+  Die ursprüngliche Hypothese entspricht $H_{0}\colon\beta_{4}=0$.
+
+  Für den stochastischen nehmen wir wieder an, dass $Y_{i}\sim
+  N(\mu_{i},\sigma^{2})$. Aus historischen Gründen wird hier von einem
+  \highl{Kovarianz-Analyse-Modell} oder \highl{Kovarianzanalyse} gesprochen.
+\end{bsp}
+
+\begin{bsp}[Beregnungsexperiment]
+  Die Einflussgröße sind vier unterschiedliche Beregnungsverfahren. Die
+  Zielgröße ist der Ertrag einer Kartoffelsorte. Beim $Y_{ij}$ steht das $i$
+  für ein Beregnungsverfahren und das $j$ für eine Parzelle. Es ist $\EE
+  Y_{ij}= \mu_{i}$. Der Erwartungswert des Ertrags hängt vom
+  Beregnungsverfahren ab. Der stochastische Teil ist $Y_{ij}\sim
+  N(\mu_{i},\sigma^{2})$. Wir verwenden wieder Dummyvariablen
+  \begin{gather*}
+    \mathbb{1}_{ij2}=
+       \begin{cases}
+	 1 & i=2\\
+	 0 &
+       \end{cases}\\
+       \mathbb{1}_{ij3}=
+       \begin{cases}
+	 1 & i=3\\
+	 0
+       \end{cases}\\
+    \mathbb{1}_{ij4}=
+       \begin{cases}
+	 1& i=4\\
+	 0
+       \end{cases}\\
+    \EE Y_{ij}= \beta_{1}+\beta_{2}\mathbb{1}_{ij2}+
+       \beta_{3}\mathbb{1}_{ij3}+ \beta_{4}\mathbb{1}_{ij4}\\
+    =
+       \begin{cases}
+	 \beta_{1} & i=1\\
+	 \beta_{1}+\beta_{2} & i=2\\
+	 \beta_{1}+\beta_{3} &i=3\\
+	 \beta_{1}+\beta_{4}& i=4
+       \end{cases}
+  \end{gather*}
+  Interessante Hypothese: $H_{0}\colon \mu_{1}=\mu_{2}=\mu_{3}=\mu_{4}$ bzw.
+  $H_{0}\colon \beta_{2}=\beta_{3}=\beta_{4}$. Bei nur qualitativen
+  Einflussgrößen spricht man von einer \highl{Varianzanalyse}.
+\end{bsp}
+
 
 
 
