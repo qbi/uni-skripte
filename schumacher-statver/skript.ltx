@@ -963,6 +963,173 @@ ist $f_{Z}(z)= c(z,\phi)e^{\frac{\theta z-A(\theta)}{\phi}}$.
   von $Y$ gleich $\phi A''(\theta)=\phi v(\mu)$.
 \end{bemerk}
 
+%Vorlesung vom 29.10.2012
+\chapter{Die Maximum"=Likelihood"=Schätzung und Fisher"=Information}
+Der Ausgangspunkt ist, dass wir eine parametrisierte Familie von
+Wahrscheinlichkeitsverteilungen haben. In unserem Fall ist das immer eine
+Exponential"=Dispersionsfamilie mit der Dichte $c(y,\phi)e^{\frac{\theta
+y-A(\theta)}{\phi}}$. Auf der Grundlage konkreter Beobachtungen $y_{1},\dotsc,
+y_{n}$ soll der unbekannte Parameter $\theta$ geschätzt werden. Im
+statistischen Modell nehmen wir an, dass die $y_{1},\dotsc, y_{n}$
+Realisierung von unabhängig und identisch verteilten Zufallsgrößen
+$Y_{1},\dotsc, Y_{n}$ mit der Dichtefunktion $f_{Y}(y)= f(y; \theta)=
+f_{\theta}(y)$ sind.
+
+Damit können wir die Likelihood"=Funktion schreiben: $\CL(\theta|
+y_{1},\dotsc, y_{n})= \prod_{i=1}^{n}
+f_{\theta}(y_{i})$
+
+\begin{bsp}\label{bsp:4.1}
+  Nehmen wir poissonverteilte Zufallsgrößen mit $n=10$ und $y_{1}=4$,
+  $y_{2}=4$, $y_{3}=5$, $y_{4}=8$, $y_{5}=3$, $y_{6}=8$, $y_{7}=9$, $y_{8}=6$,
+  $y_{9}=6$, $y_{10}=2$. Die Likelihood"=Funktion ist dann $\CL(\theta|
+  y_{1},\dotsc, y_{10})= \prod_{i=1}^{10} \frac{\mu^{y_{i}}}{y_{i}!} e^{-\mu}=
+  e^{-10\mu}\cdot\mu^{\sum_{i=1}^{10} y_{i}} \prod_{i=1}^{10} \frac{1}{y_{i}!}$
+\end{bsp}
+
+\begin{defini}
+  $\hat{\theta}=\hat{\theta}(y_{1},\dotsc, y_{n})$ heißt
+  \highl{Maximum"=Likelihood"=Schätzung}, falls gilt,
+  $\CL(\hat{\theta}|y_{1},\dotsc, y_{n})= \sup_{\theta\in\Theta}
+  \CL(\theta|y_{1},\dotsc, y_{n})$.
+\end{defini}
+
+\section{Berechnung der Maximum"=Likelihood"=Schätzung}
+Zunächst erfolgt der Übergang zur Log"~Likelihood"=Funktion
+$l(\theta|y_{1},\dotsc, y_{n})= \log\CL(\theta|y_{1},\dotsc, y_{n})=
+\log\prod_{i=1}^{n} f_{\theta}(y_{i})= \sum_{i=1}^{n} \log f_{\theta}(y_{i})$.
+
+\begin{defini}
+  Die Ableitung der Log"~Likelihood"=Funktion nach dem Parameter $\theta$:
+  \begin{gather*}
+    s(\theta|y_{1},\dotsc, y_{n})= \diffp{}{\theta} l(\theta|y_{1},\dotsc,
+       y_{n})= \sum_{i=1}^{n} \diffp{}{\theta} (\log f_{\theta}(y_{i}))
+  \end{gather*}
+  heißt \highl{Scorefunktion}. Die Gleichung $s(\theta|y_{1},\dotsc, y_{n})=0$
+  heißt \highl{Scoregleichung}.
+\end{defini}
+
+\begin{bsp}
+  Weiterführung von \autoref{bsp:4.1}:
+  \begin{align*}
+    s(\theta|y_{1},\dotsc, y_{n}) &= \sum_{i=1}^{n} \diffp{}{\theta} (-\theta
+       +y_{i}\log\theta-\log y_{i}!)= \sum_{i=1}^{n} (-1+\frac{y_{i}}{\theta})\\
+    &= -n +\sum_{i=1}^{n} \frac{y_{i}}{\theta}
+  \end{align*}
+\end{bsp}
+
+Wie gut ist nun die Maximum"=Likelihood"=Schätzung für den Parameter $\theta$?
+Die Gestalt der Likelihood"=Funktion in der Umgebung der Maximalstelle liefert
+ein Maß für die Genauigkeit der Maximum"=Likelihood"=Schätzung. Eine Idee ist
+es, eine quadratische Approximation der Loh"~Likelihood"=Funktion in der
+Umgebung der Maximalstelle zu machen:
+\begin{align*}
+  l(\theta|y_{1},\dotsc, y_{n}) &= \log\CL(\theta| y_{1},\dotsc, y_{n})\\
+  &= l(\hat{\theta}|y_{1},\dotsc, y_{n})+ \underbrace{l'(\hat{\theta}|y_{1},\dotsc,
+     y_{n})}_{s(\hat{\theta}|y_{1},\dotsc, y_{n})=0}(\theta-\hat{\theta})+
+     \nicefrac{1}{2}l''(\hat{\theta}|y_{1},\dotsc, y_{n})
+     (\theta-\hat{\theta})^{2}+R\\
+  &= l(\hat{\theta}|y_{1},\dotsc, y_{n})+     \nicefrac{1}{2}l''(\hat{\theta}|y_{1},\dotsc, y_{n})
+     (\theta-\hat{\theta})^{2}+R
+\end{align*}
+
+\begin{defini}
+  Die Funktion $I(\theta|y_{1},\dotsc, y_{n})= -\diffp[2]{}{\theta}
+  l(\theta|y_{1},\dotsc, y_{n})$ heißt \highl{Fisher"=Information}. Die Größe
+  $I(\hat{\theta}|y_{1},\dotsc, y_{n})= -\diffp[2]{}{\theta}
+  l(\theta|y_{1},\dotsc, y_{n})|_{\theta=\hat{\theta}}$ heißt
+  \highl[Fisher-Information!beobachtete]{beobachtete Fisher"=Information}.
+\end{defini}
+
+\begin{bsp}
+  Seien $Y_{1},\dotsc, Y_{n}$ unabhängig, identisch verteilte Zufallsgrößen
+  mit $N(\mu,\sigma^{2})$ mit bekanntem $\sigma^{2}$. Die Beobachtungen sind
+  $y_{1},\dotsc, y_{n}$. Die Likelihood"=Funktion ist:
+  \begin{gather*}
+    \CL(\theta|y_{1},\dotsc, y_{n}) = \prod_{i=1}^{n}
+       \frac{1}{\sqrt{2\pi\sigma^{2}}} e^{-\frac{(y_{i}-\theta)}{2\sigma^{2}}}\\
+    l(\theta|y_{1},\dotsc, y_{n})= \sum_{i=1}^{n} (-\frac{1}{2}
+       \log(2\pi\sigma^{2})-\frac{(y_{i}-\theta)}{2\sigma^{2}})\\
+    s(\theta|y_{1},\dotsc, y_{n})= \sum_{i=1}^{n}
+       -\frac{2(y_{i}-\theta)}{2\sigma^{2}}\cdot(-1)= \frac{1}{\sigma^{2}}
+       \sum_{i=1}^{n} (y_{i}-\theta)\\
+    s(\theta|y_{1},\dotsc, y_{n})=  \frac{1}{\sigma^{2}}
+       \sum_{i=1}^{n} (y_{i}-\theta)=0\Rightarrow\hat{\theta}=\frac{1}{n}
+       \sum_{i=1}^{n} y_{i}\\
+    I(\theta|y_{1},\dotsc, y_{n})= -\diffp[2]{}{\theta} l(\theta|y_{1},\dotsc,
+       y_{n})= -\diffp{}{\theta}s(\theta|y_{1},\dotsc, y_{n})=
+       -(-\frac{n}{\sigma^{2}})=\frac{n}{\sigma^{2}}=
+       I(\hat{\theta}|y_{1},\dotsc, y_{n})
+  \end{gather*}
+
+  Andererseits: $\text{Var}(\hat{\theta})= \text{Var}(\frac{1}{n}
+  \sum_{i=1}^{n} Y_{i})= \frac{1}{n^{2}}\text{Var}(\sum_{i=1}^{n} Y_{i})=
+  \frac{1}{n^{2}} \sum_{i=1}^{n} \text{Var}(Y_{i})=
+  \frac{1}{n^{2}}n\cdot\sigma^{2}= \frac{\sigma^{2}}{n}=
+  \frac{1}{I(\hat{\theta})}$.
+\end{bsp}
+
+\begin{bsp}
+  In dem Beispiel kommen wir wieder zur Poissonverteilung zurück. Dabei hatten
+  wir $s(\theta|y_{1},\dotsc, y_{n})= -n+\frac{1}{\theta}\sum_{i=1}^{n} y_{i}$
+  bestimmt. Es ist $n=\frac{1}{\theta}\sum_{i=1}^{n}y_{i}$, also
+  $\hat{\theta}= \frac{1}{n} \sum_{i=1}^{n} y_{i}$. Weiterhin ist
+  $I(\theta|y_{1},\dotsc, y_{n})= -\diffp{}{\theta} s(\theta|y_{1},\dotsc,
+  y_{n})= \frac{1}{\theta^{2}} \sum_{i=1}^{n} y_{i}$. Schließlich haben wir
+  $I(\hat{\theta}|y_{1},\dotsc, y_{n})= \frac{n^{2}}{(\sum_{i=1}^{n}
+  y_{i})^{2}} \sum_{i=1}^{n} y_{i}= \frac{n^{2}}{\sum_{i=1}^{n} y_{i}}$.
+\end{bsp}
+
+Wir betrachten die eingeführten Begriffe jetzt nicht mehr für konkrete
+Beobachtungen $y_{1},\dotsc, y_{n}$, sondern für Zufallsgrößen $Y_{1},\dotsc,
+Y_{n}$.
+
+Die Scorefunktion kann für unterschiedliche Beobachtungen jeweils verschiedene
+Formen annehmen, d.\,h. $\hat{\theta}$ hat je nach Beobachtung verschiedene
+Werte.
+
+\begin{defini}
+  Für jeden festen Wert $\theta$ heißt die Zufallsgröße
+  $s(\theta|Y_{1},\dotsc, Y_{n})=S(\theta)$ \highl{Scorestatistik}.
+\end{defini}
+
+\begin{satz}
+  Unter Regularitätsbedingungen, die die Vertauschung von Differentiation und
+  Integration erlauben, gilt:
+  \begin{gather*}
+    \EE_{\theta} S(\theta)= 0
+  \end{gather*}
+  \begin{proof}
+    Es ist $\EE_{\theta}S(\theta)= \EE_{\theta}\diffp{}{\theta}
+    \log\CL(\theta|Y_{1},\dotsc, Y_{n})= \int \diffp{}{\theta}
+    \log\CL(\theta|y_{1},\dotsc, y_{n})\cdot\prod_{i=1}^{n}
+    f_{\theta}(y_{i})\,dy_{1}\dotso y_{n}=
+    \int\frac{1}{\CL(\theta|y_{y},\dotsc, y_{n})}
+    \diffp{}{\theta}\CL(\theta|y_{1},\dotsc, y_{n})\prod_{i=1}^{n}
+    f_{\theta}(y_{i})\,dy_{1}\dotso y_{n}= \int\diffp{}{\theta}
+    \CL(\theta|y_{1},\dotsc, y_{n})\,dy_{1}\dotso y_{n}= \diffp{}{\theta}\int
+    \CL(\theta|y_{1},\dotsc, y_{n})\,dy_{1}\dotso y_{n}\diffp{}{\theta}1=0$.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  Die Vertauschung von Differentiation und Integration ist insbesondere in den
+  Exponential"=Dispersionsfamilien möglich. Für den unbekannten wahren
+  Parameter $\theta$ schwanken die Werte der Scorestatistik bzw. der
+  Scorefunktionen für unterschiedliche mögliche Beobachtungen $y_{1},\dotsc,
+  y_{n}$ um $0$.
+\end{bemerk}
+
+Wir betrachten nun an Stelle der Fisher"=Information $I(\theta|y_{1},\dotsc,
+y_{n})$ den Ausdruck $I(\theta|Y_{1},\dotsc, Y_{n})$. Dann erhalten wir für
+jedes $\theta$ eine Zufallsgröße. Dann gehen wir wieder zum Erwartungswert über.
+
+\begin{defini}
+  Die Größe $F(\theta)= \EE_{\theta} I(\theta|Y_{1},\dotsc, Y_{n})=
+  \EE_{\theta} -\diffp[2]{}{\theta} l(\theta|Y_{1},\dotsc, Y_{n})$ heißt
+  \highl[Fisher"=Information!erwartete]{erwartete Fisher"=Information}.
+\end{defini}
+
 \clearpage
 \appendix
 \chapter{Übungsaufgaben}
