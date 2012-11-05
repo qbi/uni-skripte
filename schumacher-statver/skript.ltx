@@ -96,6 +96,8 @@
 \newtheorem{defini}{Definition}[chapter]
 \newtheorem{bsp}{Beispiel}[chapter]
 \newtheorem{festl}{Festlegung}[chapter]
+\newtheorem{folg}{Folgerung}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
 
 % Die folgenden Theoremumgebungen bekommen keine Nummer
 \theoremstyle{nonumberbreak}
@@ -116,6 +118,8 @@
 \newcommand*{\definiautorefname}{Definition}
 \newcommand*{\bspautorefname}{Beispiel}
 \newcommand*{\festlautorefname}{Festlegung}
+\newcommand*{\folgautorefname}{Folgerung}
+\newcommand*{\lemmaautorefname}{Lemma}
 % Zwischen Unter- und Unterunterabschnitten sollte nicht unterschieden
 % werden.
 \renewcommand*{\subsectionautorefname}{Abschnitt}
@@ -1114,6 +1118,201 @@ jedes $\theta$ eine Zufallsgröße. Dann gehen wir wieder zum Erwartungswert üb
   \EE_{\theta} -\diffp[2]{}{\theta} l(\theta|Y_{1},\dotsc, Y_{n})$ heißt
   \highl[Fisher"=Information!erwartete]{erwartete Fisher"=Information}.
 \end{defini}
+
+% Vorlesung vom 5.11.2012
+\begin{bsp}[Poissonverteilung]
+  Fisher"=Information: $I(\theta)= -\diffp[2]{l(\theta)}{\theta}=
+  \frac{1}{\theta} \sum_{i=1}^{n} y_{i}$. Uns interessiert die beobachtete
+  Fisher"=Information an der $\theta=\hat{\theta}= \frac{1}{n} \sum_{i=1}^{n}
+  y_{i}$. Also ist $I(\hat{\theta})= \frac{n}{\sum_{i=1}^{n} y_{i}}$. Die
+  erwartete Fisher"=Information ist $F(\theta)=
+  \EE_{\theta}(I(\theta|Y_{1},\dotsc, Y_{n})=
+  \EE_{\theta}-\diffp[2]{l(\theta|Y_{1},\dotsc, Y_{n})}{\theta})=
+  \frac{1}{\theta^{2}} \EE_{\theta}\sum_{i=1}^{n} Y_{i}= \sum_{i=1}^{n}
+  \EE_{\theta}Y_{i}= \frac{1}{\theta^{2}} n\theta= \frac{n}{\theta}$.
+\end{bsp}
+
+\chapter{Lineare Modelle}
+
+\section{Statistisches Modell}
+
+Wir gehen davon aus, dass wir Daten $y_{i}$ für $i=1,\dotsc,n$ haben. Dies
+sind Beobachtungen der Zielgröße. Dazu haben wir ein Tupel $(x_{i2},\dotsc,
+x_{ik})$ für $i=1,\dotsc,n$. Diese werden »erklärende Variablen« genannt.
+Beide können wir zu dem $k$"~Tupel von Beobachtungen $(y_{i},x_{i2},\dotsc,
+x_{ik})\in\R^{k}$ zusammenfassen.
+
+Der Modellansatz ist nun $y_{i}=\beta_{1}+b_{2}x_{i2}+\dotsb+
+\beta_{k}x_{ik}+u_{i}$. Das $u_{i}$ ist der \highl[Fehlerterm]{Fehler-} oder
+\highl{Störterm} und ist nicht direkt beobachtbar. Die $\beta_{j}$ sind
+unbekannte, aber als fest angenommene Regressionskoeffizienten. Weiterhin
+machen wir Annahmen zu Abweichungen vom linearen Modellansatz. Das
+statistische Modell  wäre $u_{i}$ ist eine Realisierung einer Zufallsgröße
+$U_{i}$ mit Erwartungswert $0$, d.\,h. keine systematische Abweichung.
+Weiterhin ist $U_{i}$ normalverteilt mit Varianz $\sigma^{2}$ ($U_{i}\sim
+N(0,\sigma^{2})$, konstante Varianz). Die $y_{i}$ sind Realisierungen von
+Zufallsgrößen $Y_{i}$ mit $Y_{i}\sim N(\beta_{1}+\beta_{2}x_{i2}+\dotsb+
+\beta_{k}x_{ik}, \sigma^{2})$. Weiterhin wurde implizit eine weitere Annahme
+gemacht. Nämlich $x_{i2},\dotsc, x_{ik}$ sind \emph{nicht} zufällig, sondern
+fest. Schließlich nehmen wir an, dass die Beobachtungen unabhängig sind,
+d.\,h. $Y_{i},\dotsc, Y_{n}$ sind unabhängige Zufallsgrößen.
+Dann ergibt sich für das Modell
+\begin{gather*}
+  Y_{i}= \beta_{1}+\beta_{2}x_{i2}+\dotsb+ \beta kx_{ik}+ U_{i}\qquad
+     Y_{i}\sim N(\beta_{1}+\dotsb+\beta_{k}x_{ik}, \sigma^{2}), \text{unabhängig}
+\end{gather*}
+Dies kann man in einen deterministischen Teil
+\begin{gather*}
+  \EE Y_{i}= \beta_{1}+\beta_{2}x_{i2}+\dotsb+ \beta_{k}x_{ik}=\colon\mu_{i}
+\end{gather*}
+und einen stochastischen Teil
+\begin{gather*}
+  Y_{i}\sim N(\mu_{i}, \sigma^{2}), \text{unabhängig}
+\end{gather*}
+trennen.
+
+\begin{gather*}
+  \underline{Y}=
+     \begin{pmatrix}
+       Y_{1}\\
+       \vdots\\
+       \vdots\\
+       Y_{n}
+     \end{pmatrix}=
+     \begin{pmatrix}
+       1& x_{12}& \dotso & x_{1k}\\
+       1& x_{22}& \dotso & x_{2k}\\
+       \vdots& \vdots& \ddots & \vdots\\
+       1& x_{n2}& \dotso & x_{nk}
+     \end{pmatrix}
+     \begin{pmatrix}
+       \beta_{1}\\
+       \beta_{2}\\
+       \vdots\\
+       \beta_{k}
+     \end{pmatrix}+
+     \begin{pmatrix}
+       U_{1}\\
+       U_{2}\\
+       \vdots\\
+       U_{n}
+     \end{pmatrix}\\
+  \underline{Y}= \mathbb{X}\underline{\beta}+ \underline{U}
+\end{gather*}
+
+Das $\mathbb{X}$ sind alle Beobachtungen der Einflussgröße. Die erste Spalte
+entspricht dem Absolutterm $\beta_{1}$ und ist üblicherweise enthalten. Die
+Matrix heißt auch \highl{Designmatrix}.
+
+\section{Zufallsvektoren und Transformationen}
+
+Die Zufallsvektoren $\underline{Y}=(Y_{1},\dotsc, Y_{n})$ sind
+Zusammenfassungen von einzelnen Zufallsgrößen zu einem Objekt.  Sie sind
+charakterisiert durch Verteilungsfunktion $F_{\underline{Y}}(t_{1},\dotsc,
+t_{n})= P(Y_{1}<t_{1}, Y_{2}<t_{2},\dotsc, Y_{n}yt_{n})=
+P(\Set{\omega\in\Omega | Y_{1}(\omega)<t_{1}\wedge\dotsb\wedge
+Y_{n}(\omega)<t_{n}})$. Die Abbildung 
+$F_{\underline{Y}}\colon\R^{n}\rightarrow[0,1]$ ist monoton wachsend in jedem
+Argument. Die Verteilungsdichte
+$f_{\underline{Y}}\colon\R^{n}\rightarrow[0,\infty)$ derart, dass
+$F_{\underline{Y}}(t_{1},\dotsc, t_{n})= \int_{-\infty}^{t_{1}} \dotso
+\int_{-\infty}^{t_{n}} f_{\underline{Y}}(y_{1},\dotsc, y_{n})\,dy_{1}\dotso
+dy_{n}$ und $P(\underline{Y}\in B)\subseteq\R^{n}= \iint_{B}
+f_{\underline{Y}}(y_{1},\dotsc, y_{n})\,dy_{1}\dotso dy_{n}$
+
+\begin{bsp}[$n$"~dimensionale Normalverteilung]
+  Ein Zufallsvektor $\underline{Y}=(Y_{1},\dotsc, Y_{n})$ besitzt eine
+  (reguläre) Normalverteilung, wenn er eine Verteilungsdichte der Form
+  $f_{\underline{Y}}(t_{1},\dotsc, t_{n})= \frac{1}{(2\pi)^{\nicefrac{n}{2}}
+  \sqrt{\det\Sigma}} \exp\{-\frac{1}{2} (\underline{t}-\underline{\mu})^{T}
+  \Sigma^{-1}(\underline{t}-\underline{\mu})\}$ besitzt. Unabhängige
+  normalverteilte Zufallsgrößen $Y_{i}\sim N(\mu_{i},\sigma^{2})$ ergeben
+  damit $P(Y_{1}<t_{1},\dotsc, Y_{n}<t_{n})= P(Y_{1}<t_{1})\cdot\dotso \cdot
+  P(Y_{n}<t_{n})$. Also ist $F_{\underline{Y}}(t_{1},\dotsc, t_{n})=
+  \int_{-\infty}^{t_{1}}\dotso \int_{-\infty}^{t_{n}}
+  \frac{1}{(2\pi)^{\nicefrac{n}{2}} (\sigma^{2})^{\nicefrac{n}{2}}}
+  \exp\{-\frac{1}{2\sigma^{2}} \sum_{i=1}^{n}
+  (y_{i}-\mu_{i})^{2}\}\,dy_{1}\dotso dy_{n}=   \int_{-\infty}^{t_{1}}\dotso \int_{-\infty}^{t_{n}}
+  \frac{1}{(2\pi)^{\nicefrac{n}{2}} (\sigma^{2})^{\nicefrac{n}{2}}}
+  \exp\{-\frac{1}{2\sigma^{2}} 
+  (\underline{y}-\underline{\mu})^{T}\cdot\mathbb{I}_{n}\underline{y}-\underline{\mu})\}\,dy_{1}\dotso
+  dy_{n}$. Aus weiterer Umstellung ergibt sich:
+  \begin{gather*}
+    \Sigma=
+       \begin{pmatrix}
+	 \sigma^{2}& & 0\\
+	 & \ddots& \\
+	 0& & \sigma^{2}
+       \end{pmatrix}
+  \end{gather*}
+\end{bsp}
+
+\begin{defini}[Erwartungswertvektor]
+  Falls für die Komponenten $Y_{i}$ für $i=1,\dotsc,n$ der Erwartungswert $\EE
+  Y_{i}$ existiert, dann heißt $\EE\underline{Y}$ \highl{Erwartungswertvektor}
+  des Zufallsvektors $\underline{Y}$.
+\end{defini}
+
+\begin{defini}
+  Falls für alle $Y_{i}$ der Erwartungswert von $Y_{i}$ endlich ist, dann
+  heißt
+  $\text{Cov}(\underline{Y})=\Sigma_{\underline{Y}}=(\text{cov}(Y_{i},Y_{j}))_{i=1,\dotsc,n,
+  j=1,\dotsc,n}$ \highl{Kovarianzmatrix} des Zufallsvektors $\underline{Y}$.
+\end{defini}
+
+\begin{bemerk}
+  Es ist $\text{cov}(Y_{i},Y_{j})= \EE (Y_{i}-\EE Y_{i})(Y_{j}-\EE Y_{j})$.
+
+  Die Kovarianzmatrix wird manchmal auch nur als Varianz bezeichnet. 
+\end{bemerk}
+
+\begin{bsp}
+  Für die $n$"~dimensionale Normalverteilung ist $\EE \underline{Y}=
+  \underline{\mu}$ und $\text{Cov}(\underline{Y})=\Sigma$.
+\end{bsp}
+
+\begin{lemma}[Rechenregeln]
+  Es sei $\underline{Y}$ ein Zufallsvektor mit existierenden
+  Erwartungswertvektor $\EE\underline{Y}$ und Kovarianzmatrix
+  $\Sigma\underline{Y}$. Ferner seien $A$ eine $m\times n$"~Matrix und
+  \underline{b}$\in\R^{n}$. Dann gilt für $\underline{Z}=
+  A\underline{Y}+\underline{b}$:
+  \begin{itemize}
+   \item $\EE\underline{Z}$ und Kovarianzmatrix existieren
+   \item $\EE\underline{Z}= \EE(A\underline{Y}+\underline{b})=
+    A(\EE\underline{Y}+\underline{b})$
+   \item $\text{Cov}(\underline{Z})= \text{Cov}(A\underline{Y}+\underline{b})=
+    A\Sigma_{\underline{Y}}A^{T}$
+  \end{itemize}
+\end{lemma}
+
+Eigenschaften der Kovarianzmatrix
+\begin{itemize}
+ \item $\text{Cov}(\underline{Y})=(\text{cov}(Y_{i},Y_{j}))_{i=1,\dotsc,n,
+  j=1,\dotsc,n}$ ist symmetrisch.
+ \item ist positiv semidefinit.
+\end{itemize}
+
+\begin{satz}
+  Sei $\underline{Y}\sim N(\underline{\mu},\Sigma)$ und $A$ eine reguläre
+  $(n\times n)$"~Matrix und $\underline{b}\in\R^{n}$. Dann gilt für
+  $\underline{Z}=A\underline{Y}+\underline{b}$:
+  \begin{gather*}
+    \underline{Z}\sim N(A\underline{\mu}+\underline{b}, A\Sigma A^{T})
+  \end{gather*}
+\end{satz}
+
+\begin{folg}
+  Sei $\underline{Y}\sim N(\underline{\mu},\Sigma)$. Dann existiert eine
+  orthogonale Matrix $A_{0}$ derart, dass für $\underline{Z}=
+  A_{0}\underline{Y}$ gilt, $\underline{Z}\sim N(A_{0}\underline{\mu},
+  \begin{pmatrix}
+    d_{1}& & 0\\
+    & \ddots& \\
+    0& & d_{n}
+  \end{pmatrix})$. Hauptachsentransformation, Diagonalisierung der
+  Kovarianzmatrix. 
+\end{folg}
 
 \clearpage
 \appendix
