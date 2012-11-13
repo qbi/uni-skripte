@@ -1322,8 +1322,159 @@ Eigenschaften der Kovarianzmatrix
     & \ddots& \\
     0& & d_{n}
   \end{pmatrix})$. Hauptachsentransformation, Diagonalisierung der
-  Kovarianzmatrix. 
+  Kovarianzmatrix.
+  \begin{proof}
+    Wir wissen, die Kovarianzmatrix $\Sigma$ ist symmetrisch und positiv
+    semidefinit. Die Eigenwerte der Matrix sind damit alle reell und größer
+    oder gleich Null. Wir bezeichnen die Eigenwerte mit $d_{1},\dotsc, d_{n}$
+    mit den Eigenvektoren $a^{(1)},\dotsc, a^{(n)}$. Die Vektoren können wir
+    zu einer Matrix $A=(a^{(1)},\dotsc, a^{(n)})$ zusammenfassen. Es ist
+    $\Sigma A= (\Sigma a^{(1)},\dotsc, \Sigma a^{(n)})= (d_{1}a^{(1)},\dotsc,
+    d_{n} a^{(n)})$. Die Eigenvektoren der Matrix $A$ sind normiert und damit
+    sind sie orthogonal. Die inverse Matrix $A^{-1}$ ist $A^{T}$ und
+    $A^{-1}\Sigma A$ ist eine Diagonalmatrix mit den Eigenwerten auf der
+    Hauptachse. Wir bezeichnen diese mit $D$, also ist
+    $\Sigma=ADA^{-1}=ADA^{T}$ (Singulärwert- oder Spektralzerlegung).
+
+    Wir wählen $A_{0}=A^{-1}=A^{T}$ und erhalten $\underline{Z}=
+    A_{0}\underline{Y}= A^{T}\underline{Y}\sim N(A^{T}\underline{\mu},
+    A^{T}\Sigma A)= N(A^{T}\underline{\mu},
+    A^{T}ADA^{T}A)=N(A^{T}\underline{\mu}, D)$.
+  \end{proof}
 \end{folg}
+
+\section{Maximum"=Likelihood"=Schätzung im linearen Modell}
+
+Wir haben $\EE Y_{i}= \beta_{1}+\beta_{2}x_{i2}+\dotsb+
+\beta_{k}x_{ik}=\colon\mu_{i}$ und $Y_{i}\sim N(\mu_{i},\sigma^{2})$
+unabhängig. Das $\underline{\beta}=(\beta_{1},\dotsc,\beta_{k})^{T}$ ist der
+Vektor der unbekannten Regressionskoeffizienten. In Matrixschreibweise:
+$\EE\underline{Y}= \mathbb{X}\cdot\underline{\beta}=\colon\underline{\mu}$ und
+$\underline{Y}\sim N(\underline{\mu}, \sigma^{2}\II_{n})$. Wir haben konkrete
+Beobachtungen $(y_{1},\dotsc, y_{n})$ und suchen eine Schätzung für
+$\underline{\beta}$.
+
+Wir beginnen mit der Likelihood"=Funktion:
+$\CL(\underline{\beta}|y_{1},\dotsc, y_{n})= \prod_{i=1}^{n}
+\frac{1}{\sqrt{2\pi\sigma^{2}}} e^{-\frac{1}{2\sigma^{2}}
+  (y_{i}-\mu_{i})^{2}}= \frac{1}{(2\pi)^{\nicefrac{n}{2}}
+(\sigma^{2})^{\nicefrac{n}{2}}} e^{-\frac{1}{2\sigma^{2}} \sum_{i=1}^{n}
+(y_{i}-\mu_{i})^{2}}=  \frac{1}{(2\pi)^{\nicefrac{n}{2}}
+(\sigma^{2})^{\nicefrac{n}{2}}} e^{-\frac{1}{2\sigma^{2}} \sum_{i=1}^{n}
+(y_{i}-\underline{x}_{(i)}^{T}\underline{\beta})^{2}}$.
+Die Log"~Likelihood"=Funktion ist $l(\underline{\beta}|y_{1},\dotsc, y_{n})=
+-\frac{n}{2} \log(2\pi) -\frac{n}{2} \log(\sigma^{2})-\frac{1}{2\sigma^{2}}
+\sum_{i=1}^{n} (y_{i}- \underline{x}_{(i)}^{T}\underline{\beta})^{2}$.
+Schließlich müssen wir die Scorefunktionen ermitteln:
+$\diffp{l(\underline{\beta}|y_{1},\dotsc, y_{n})}{{\beta_{j}}}=
+-\frac{1}{2\sigma^{2}} \sum_{i=1}^{n}
+2(y_{i}-\underline{x}_{(i)}^{T}\underline{\beta})(-x_{ij})=
+\frac{1}{\sigma^{2}} \sum_{i=1}^{n}
+(y_{i}-\underline{x}_{(i)}^{T}\underline{\beta})x_{ij}$. Wenn wir dies
+zusammenfassen, ergibt sich
+$\diffp{l(\underline{\beta}|y_{1},\dotsc,y_{n})}{{\underline{\beta}}}=
+(\diffp{l}{{\beta_{1}}},\dotsc,\diffp{l}{{\beta_{k}}})$.
+Die Log"~Likelihood"=Funktion in Matrixschreibweise:
+$l(\underline{\beta}|y_{1},\dotsc, y_{n})=
+-\frac{n}{2}\log(2\pi)-\frac{n}{2}\log\sigma^{2}- \frac{1}{2\sigma^{2}}
+(\underline{y}-
+\mathbb{X}\underline{\beta})^{T}(\underline{y}-\mathbb{X}\underline{\beta})=
+-\frac{n}{2}\log(2\pi)-\frac{n}{2}\log\sigma^{2}-
+\frac{1}{2\sigma^{2}}(\underline{y}^{T}\underline{y}-2\underline{y}^{T}\mathbb{X}\underline{\beta}+
+\underline{\beta}^{T}\mathbb{X}^{T}\mathbb{X}\underline{\beta})$. Schließlich
+haben wir $\diffp{l(\underline{\beta}|y_{1},\dotsc,
+y_{n})}{{\underline{\beta}}}= -\frac{1}{2\sigma^{2}}
+(-2\mathbb{X}^{T}\underline{y}+ 2\mathbb{X}^{T}\mathbb{X}\underline{\beta})$.
+Das Score"=Gleichungssystem ist dann $ -\frac{1}{2\sigma^{2}}
+(-2\mathbb{X}^{T}\underline{y}+
+2\mathbb{X}^{T}\mathbb{X}\underline{\beta})=0$. Umstellung ergibt
+$\hat{\underline{\beta}}=
+(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}\underline{y}$. Dies ist die
+Maximum"=Likelihood"=Schätzung für den unbekannten Parameter"=Vektor
+$\underline{\beta}$ bei gegebenen Beobachtungen $y_{1},\dotsc, y_{n}$ der
+Zielgröße. Die Inverse $(\mathbb{X}^{T}\mathbb{X})^{-1}$ existiert genau dann,
+wenn $\mathbb{X}$ vollen Spaltenrang hat.
+
+Wenn wir annehmen, dass $\mathbb{X}$ \emph{nicht} den vollen Spaltenrang
+besitzt, dann ist $\underline{x}^{(k)}= \sum_{i=1}^{k-1}
+c_{i}\underline{x}^{(i)}$ und $\underline{\mu}= \mathbb{X}\underline{\beta}=
+(\underline{x}^{(1)},\dotsc,\underline{x}^{(k)})\underline{\beta}=
+\beta_{1}\underline{x}^{(1)}+\dotsb+\beta_{k-1}\underline{x}^{(k-1)})+(\beta_{k}+\epsilon)x^{(k)}-\epsilon(c_{1}\underline{x}^{(1)}+\dotsb+
+c_{k-1}\underline{x}^{(k-1)})$. Damit ist $\underline{\beta}$ nicht eindeutig
+identifizierbar. Das lineare Score"=Gleichungssystem ist unterbestimmt.
+
+Daher machen wir iin Zukunft immer eine zusätzliche Annahme: Der Rang von
+$\mathbb{X}$ soll gleich $k$ sein. Das bedeutet, $n\geq k$.
+
+\section{Eigenschaften des Maximum"=Likelihood"=Schätzers im linearen Modell}
+
+Der Maximum"=Likelihood"=Schätzer ist $\hat{\underline{\beta}}=
+(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}\underline{Y}$ und ist eine
+lineare Transformation eines Zufallsvektors $\underline{Y}$.
+
+\begin{satz}
+  Im linearen Modell $\EE\underline{Y}=\mathbb{X}\underline{y}$,
+  $\underline{Y}\sim N(\mathbb{X}\underline{\beta}, \sigma^{2}\II_{n})$ mit
+  dem Rang von $\mathbb{X}$ gleich $k$ gilt für den
+  Maximum"=Likelihood"=Schätzer $\hat{\underline{\beta}}=
+(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}\underline{Y}$:
+  \begin{gather*}
+    \hat{\underline{\beta}}\sim N(\underline{\beta},
+       \sigma^{2}(\mathbb{X}^{T}\mathbb{X})^{-1})
+  \end{gather*}
+  \begin{proof}
+    \begin{align*}
+      \EE\hat{\underline{\beta}} &=
+	 \EE((\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T})\underline{Y})=
+	 (\mathbb{X}^{T}\mathbb{X})^{-1})\mathbb{X}^{T} \EE\underline{Y}\\
+      &=	 (\mathbb{X}^{T}\mathbb{X})^{-1})\mathbb{X}^{T}
+	 \mathbb{X}\underline{\beta}= \underline{\beta}
+    \end{align*}
+    Damit ist $\hat{\underline{\beta}}$ ein erwartungstreuer Schätzer für
+    $\underline{\beta}$. Die Kovarianzmatrix ist
+    $\text{Cov}(\hat{\underline{\beta}})= \Sigma_{\hat{\underline{\beta}}}=
+    \Sigma_{(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}\underline{Y}}=\dotsb=
+    \sigma^{2}(\mathbb{X}^{T}\mathbb{X})^{-1}$.
+  \end{proof}
+\end{satz}
+
+\begin{bemerk}
+  $(\mathbb{X}^{T}\mathbb{X})^{-1}$ ist im Allgemeinen \emph{keine}
+  Diagonalmatrix. Das heißt, die Schätzer $\hat{\beta_{i}}$ und
+  $\hat{\beta_{j}}$ sind im Allgemeinen nicht unabhängig. Falls (im
+  Experiment) die Designmatrix frei gewählt werden kann, ist es häufig
+  erstrebenswert, dass $(\mathbb{X}^{T}\mathbb{X})^{-1}$ eine Diagonalmatrix
+  ist.
+\end{bemerk}
+
+Die Log"~Likelihood"=Funktion hängt auch vom unbekannten Wert $\sigma^{2}$ ab:
+$l(\underline{\beta}|y_{1},\dotsc, y_{n})= -\frac{n}{2} \log(2\pi)- \frac{n}{2} \log\sigma^{2}
+- \frac{1}{2\sigma^{2}} \sum_{i=1}^{n}
+(y_{i}-\underline{x}_{(i)}^{T}\underline{\beta})^{2}$. Die Score"=Gleichung
+für $\sigma^{2}$ ist: $\diffp{l(\underline{\beta},\sigma^{2}|y_{1},\dotsc,
+y_{n})}{{\sigma^{2}}}= -\frac{n}{2}\frac{1}{\sigma^{2}} -(-1)
+\frac{1}{2\sigma^{4}} \sum_{i=1}^{n}
+(y_{i}-\underline{x}_{(i)}^{T}\underline{\beta})^{2}=0$. Umstellen der
+Gleichung ergibt: $\hat{\sigma^{2}}= \frac{1}{n} \sum_{i=1}^{n} (y_{i}-
+\underline{x}_{(i)}^{T}\hat{\underline{\beta}})^{2}= \frac{1}{n}
+(\underline{y}-
+\mathbb{X}\hat{\underline{\beta}})^{T}(\underline{y}-\mathbb{X}\hat{\underline{\beta}})$.
+
+\section{Eigenschaften des Maximum"=Likelihood"=Schätzers für $\sigma^{2}$}
+
+Es ist $\hat{\sigma^{2}}= \frac{1}{n} (\underline{Y}-
+\mathbb{X}\hat{\underline{\beta}})^{T}(\underline{Y}-\mathbb{X}\hat{\underline{\beta}})$=
+$\frac{1}{n}
+(\underline{Y}-\mathbb{X}(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}\underline{Y})^{T}
+(\underline{Y}-
+\mathbb{X}(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}\underline{Y})=
+\frac{1}{n}
+\underline{Y}^{T}(\II_{n}-\mathbb{X}(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X})^{T}
+(\II_{n}-\mathbb{X}(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X})\underline{Y}$.
+Welche Eigenschaften hat nun $P\coloneqq\II_{n}-
+\mathbb{X}(\mathbb{X}^{T}\mathbb{X})^{-1}\mathbb{X}^{T}$? $P$ ist symmetrisch
+und $PP= P$ (idempotent). Das heißt, $P$ beschreibt eine Orthogonalprojektion
+im linearen Teilraum. 
 
 \clearpage
 \appendix
