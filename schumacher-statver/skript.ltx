@@ -1826,6 +1826,178 @@ Varianz der logistischen Verteilungsfunktion angenommen wird: $\sigma^{2}=
 Verteilungsfunktion sind kaum unterscheidbar. Parameterschätzer aus Logit- und
 Probit-Modell unterscheiden sich etwa um den Faktor $\frac{\pi}{\sqrt{3}}$.
 
+% Vorlesung vom 10.12.2012
+\section{Binäre Regressionsmodelle als Schwellenwertmodelle}
+
+Wir nehmen an, dass wir eine unbeobachtbare (latente) Variable $\tilde{Y}$
+haben, für die ein lineares Modell gilt. Das heißt, $\EE\tilde{Y}_{i}=
+\underline{x}_{i}^{T} \underline{\beta}$ oder $\tilde{Y}_{i}=
+\underline{x}_{i}^{T} \underline{\beta}+ U_{i}$. Wir beobachten: $Y_{i}=
+\begin{cases}
+  1& \tilde{Y}_{i}\geq0\\
+  0& \tilde{Y}_{i}<0
+\end{cases}$.
+Wir brauchen ein Modell für den Erwartungswert von $Y_{i}$. Das ist $\EE
+Y_{i}= \mu_{i}= P(Y_{i}=1)= P(\tilde{Y}_{i}\geq0)= P(\underline{x}_{i}^{T}
+\underline{\beta}+ U_{i}\geq0)
+P(U_{i}\geq-\underline{x}_{i}^{T}\underline{\beta})=
+1-F(\underline{x}_{i}^{T}\underline{\beta})$, wobei $F$ die
+Verteilungsfunktion der Zufallsgröße $U_{i}$ ist.
+
+Sei beispielsweise $F=\Phi$ die Standardnormalverteilungsfunktion. Dann haben
+wir $1-\Phi(\underline{x}_{i}^{T}\underline{\beta})=
+\Phi(\underline{x}_{i}^{T}\underline{\beta})$. Das entspricht dem oben
+besprochenen Probit"=Modell.
+
+Annahme über die Verteilung der zufälligen Störterme im latenten linearen
+Modell führt zu unterschiedlichen Response"=Funktionen im binären
+Regressionsmodell.
+
+\section{Gruppierte Daten im binären Regressionsmodell}
+
+\begin{bsp}[Infektionen nach Sectio caesarea]
+  Die Zielgröße ist $Y_{i}$. Die ist $1$, wenn eine Infektion auftritt und
+  sonst $0$. Die Einflussgrößen sind $x_{i2}$ und $x_{i3}$. Die erste gibt an,
+  ob die Sectio geplant war und die letzte zeigt, ob Risikofaktoren vorhanden
+  waren. Schließlich haben wir noch die Einflussgröße $x_{i4}$, die angibt, ob
+  Antibiotika"=Prophylaxe erfolgte.
+
+  \begin{tabular}{c|c|c|l|l}
+    $x_{2}$ & $x_{3}$ & $x_{4}$ & $Y_{p}$ & $Y_{n}$\\
+    1& 1& 1 & 1 & 17\\
+    1& 1& 0 & 0 & 2\\
+    1& 0& 1 \\
+    1& 0& 0 \\
+    0& 1& 1\\
+    0& 1& 0\\
+    0& 0& 1\\
+    0& 0& 0
+  \end{tabular}
+  Die letzte Spalte ist die Gesamtzahl der Erfolge ($p$) oder Misserfolge
+  ($n$) als Information.
+
+  Zunächst schreiben wir die Likelihood"=Funktion auf: $\CL(\underline{\beta}|
+  y_{1},\dotsc, y_{n})= \prod_{i=1}^{n} f(y_{i}|
+  \underline{\beta}\underline{x}_{i})= \prod_{i=1}^{n} \mu_{i}^{y_{i}}
+  (1-\mu_{i})^{1-y_{i}}= \prod_{i=1}^{n} h(\underline{x}_{i}^{T}
+  \underline{\beta})^{y_{i}}
+  (1-h(\underline{x}_{i}^{T}\underline{\beta})^{1-y_{i}}$. Nun gehen wir zur
+  Log"~Likelihood"=Funktion über: $l(\underline{\beta}|
+  y_{1},\dotsc, y_{n})= \sum_{i=1}^{n} y_{i}\log\mu_{i}+ (1-y_{i})
+  \log(1-y_{i})= \sum_{i=1}^{n} y_{i}\log\frac{\mu_{i}}{1-\mu_{i}}+
+  \log(1-\mu_{i})$. Es ist $\theta_{i}=\log\frac{\mu_{i}}{1-\mu_{i}}$ der
+  Exponential"=Dispersionsfamilie.
+
+  Wir betrachten die einfachste Situation: $\log\frac{\mu_{i}}{1-\mu_{i}}=
+  \theta_{i}= \underline{x}_{i}^{T}\underline{\beta}$. Wir können das
+  umstellen: $\mu_{i}= \frac{e^{\underline{x}_{i}^{T} \underline{\beta}}}{1+
+  e^{\underline{x}_{i}^{T} \underline{\beta}}}$.  Dies entspricht dem
+  Logit"=Modell.
+
+  Damit folgt, dass $l(\underline{\beta}| y_{1},\dotsc, y_{n})= \sum_{i=1}^{n}
+  y_{i} (\underline{x}_{i}^{T}\underline{\beta})-
+  \log(1+e^{\underline{x}_{i}^{T} \underline{\beta}})$. Das leiten wir ab und
+  erhalten die Scorefunktionen: $S_{j}(\underline{\beta})=
+  \diffp{l(\underline{\beta})}{{(\beta_{j})}}= \sum_{i=1}^{n} y_{i}x_{ij}-
+  \frac{1}{1+e^{\eta_{i}}} e^{\eta_{i}} x_{ij}= \sum_{i=1}^{n}
+  (y_{i}-\mu_{i})x_{ij}$ für $j=1,\dotsc,k$. Dies ist eine nichtlineare
+  Funktion des Parametervektors $\underline{\beta}$, da $\mu_{i}=
+  h(\underline{x}_{i}^{T} \underline{\beta})$ und das $h$ ist die logistische
+  Verteilungsfunktion.
+
+  Aber, wenn wir betrachten $\EE_{\underline{\beta}} S(\underline{\beta})= \sum_{i=1}^{n}
+  (\EE Y_{i}-\mu_{i})\underline{x}_{i}=\underline{0}_{k}$. Die
+  Scoregleichungen werden wie folgt geschrieben: $S(\underline{\beta})=
+  \sum_{i=1}^{n} (y_{i}-\mu_{i})\underline{x}_{i}= \underline{0}_{k}$. Das ist
+  ein nichtlineares Gleichungssystem in $\underline{\beta}$. Wir müssen das
+  also numerisch behandeln.
+\end{bsp}
+
+% Original 5.2
+\section{Allgemeine Formulierung des verallgemeinerten linearen Modells}
+Die Zielgröße ist $Y_{i}$. Wir fordern, dass die einer Verteilung aus einer
+Exponential"=Dispersionsfamilie genügt. Die hat die Dichtefunktion
+$f(y_{i}|\theta, \phi)= c(y_{i}, \phi) \exp\{\frac{y_{i}
+\theta_{i}-A(\theta_{i})}{\phi}\}$. Weiter fordern wir, dass wir unabhängige
+Beobachten haben. Damit können wir Erwartungswert und Varianz vergleichsweise
+einfach bestimmen: $\EE Y_{i}= A'(\theta_{i})$ und $\text{Var}(Y_{i})= \phi
+A''(\theta_{i})$. Obiges ist der stochastische Teil des Modells. Der
+deterministische Teil ergibt sich durch die Modellierung des Erwartungswertes
+als Funktion von Einflussgrößen. Mann kann sagen, $\mu_{i}= f(x_{i2},\dotsc,
+x_{ik}|\underline{\beta})$. Wir lassen nicht alles zu, was denkbar ist und
+behalten ein wenig Linearität, genauer $\mu_{i}= h(\underline{x}_{i}^{T}
+\underline{\beta})= h(\beta_{1}+ \beta_{2}x_{i2}+\dotsb+ \beta_{k} x_{ik}=
+h(\eta_{i}))$. Die Funktion $h$ heißt Response"=Funktion. Diese ist
+möglicherweise nichtlinear. Sie sollte streng monoton, stetig und hinreichend
+oft differenzierbar (meist reicht zweimal) sein. Also ist sie invertierbar.
+Wir bezeichnen die inverse Funktion mit $g\coloneqq h^{-1}$ und haben
+$g(\mu_{i})= \eta_{i}$. Die Funktion $g$ wird als Linkfunktion bezeichnet.
+
+Spezialfall: $g(\mu_{i})= \eta_{i}= \theta_{i}$. Dies heißt dann kanonische
+Linkfunktion.
+
+\begin{bsp}
+  Klassisches lineares Modell:
+  \begin{tabular}{l|l}
+    Deterministischer Teil & Stochastischer Teil\\
+    $\EE Y_{i}= \underline{x}_{i}^{T} \underline{\beta}= \mu_{i}$ & $Y_{i}\sim
+       N(\mu_{i}, \sigma^{2})$\\
+  \end{tabular}
+
+  Binäre Regressionsmodelle: det. Teil: $\mu_{i}= \EE Y_{i}=
+  h(\underline{x}_{i}^{T} \underline{\beta})$ mit Probit- und Logit"=Modell und dem stoch. Teil:
+  $Y_{i}\sim\text{Bin}(1,\mu_{i})$.
+
+  Poission"=Regression: det. Teil: $\mu_{i}= \EE Y_{i}=
+  h(\underline{x}_{i}^{T} \underline{\beta})$ mit $h= e^{\eta}$ sowie der
+  kanonischen Linkfunktion $g(\mu)= \log\mu$, weiter geht auch $h(\eta)=\eta$
+  oder $h(\eta)=\eta^{2}$ und stoch. Teil:
+  $Y_{i}\sim\text{Poisson}(\mu_{i})$
+\end{bsp}
+
+\section{Maximum"=Likelihood"=Schätzung im verallgemeinerten linearen Modell}
+
+Die Likelihood"=Funktion ist $\CL(\underline{\beta}|y_{1},\dotsc, y_{n})=
+\prod_{i=1}^{n} c(y_{i}, \phi) \exp\{\frac{y_{i}
+\theta_{i}-A(\theta_{i})}{\phi}\}$ und die Log"~Likelihood"=Funktion:
+$l(\underline{\beta}|y_{1},\dotsc, y_{n})= \sum_{i=1}^{n} \left(\log c(y_{i},\phi) + \frac{y_{i}
+\theta_{i}-A(\theta_{i})}{\phi}\right)$. Nun kommen wir zur Scorefunktion
+$S_{j}(\underline{\beta})= \diffp{l(\underline{\beta})}{{\beta_{j}}}=
+\frac{1}{\phi} \sum_{i=1}^{n} y_{i} \diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}} - A'(\theta_{i}(\underline{\beta}) \diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}}=\frac{1}{\phi} \sum_{i=1}^{n} (y_{i}-
+A'(\theta_{i}(\underline{\beta}))\diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}}=\frac{1}{\phi} \sum_{i=1}^{n}
+(y_{i}- \mu_{i}) \diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}}$.
+
+Wir betrachten nun $\diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}}$ und wissen $\mu_{i}=
+A'(\theta_{i}(\underline{\beta}))= h(\underline{x}_{i}^{T}
+\underline{\beta})$. Damit folgt, $A''(\theta_{i}(\underline{\beta})) \diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}}= h'(\underline{x}_{i}^{T}
+\underline{\beta}) x_{ij}$. Umstellen ergibt $\diffp{{\theta_{i}
+(\underline{\beta})}}{{\beta_{j}}}= \frac{h'(\underline{x}_{i}^{T}
+\underline{\beta})}{A''(\theta_{i}(\underline{\beta}))} x_{ij}= \frac{h'(\underline{x}_{i}^{T}
+\underline{\beta})}{\nicefrac{\text{Var}(Y_{i})}{\phi}} x_{ij}$. Für die
+Scorefunktion ergibt sich $S_{j}(\underline{\beta})=
+\diffp{l(\underline{\beta})}{{\beta_{j}}}= \sum_{i=1}^{n} \frac{y_{i}-
+\mu_{i}}{\text{Var}(Y_{i})} h'(\underline{x}_{i}^{T} \underline{\beta})
+x_{ij}$. Dann ist $S(\underline{\beta})=
+\diffp{l(\underline{\beta})}{{\underline{\beta}}}= \sum_{i=1}^{n}
+\frac{y_{i}-\mu_{i}}{\text{Var}(Y_{i})} h'(\underline{x}_{i}^{T}
+\underline{\beta}) \underline{x}_{i}$.
+
+Nun betrachten wir noch den Spezialfall der kanonischen Linkfunktion: Die
+Scorefunktion ist exakt die gleiche wie für den obigen Spezialfall. Die
+Scorefunktionen sehen für alle verallgemeinerten linearen Modelle mit
+kanonischer Linkfunktion identisch aus. Unterschiede entstehen durch die
+verschiedenen Modellierungen von $\mu_{i}$.
+
+Die Fisher"=Informationsmatrix:  $I(\underline{\beta})=
+\left(-\diffp[2]{l(\underline{\beta})}{{\beta_{i}\beta_{j}}}\right)_{i,j=1,\dotsc,k}$
+sowie die beobachtete Fisher"=Informationsmatrix $I(\hat{\underline{\beta}})$.
+
 
 
 
