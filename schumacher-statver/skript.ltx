@@ -1995,10 +1995,208 @@ kanonischer Linkfunktion identisch aus. Unterschiede entstehen durch die
 verschiedenen Modellierungen von $\mu_{i}$.
 
 Die Fisher"=Informationsmatrix:  $I(\underline{\beta})=
-\left(-\diffp[2]{l(\underline{\beta})}{{\beta_{i}\beta_{j}}}\right)_{i,j=1,\dotsc,k}$
-sowie die beobachtete Fisher"=Informationsmatrix $I(\hat{\underline{\beta}})$.
+-\diffp*{l(\underline{\beta})}{{\beta_{i}}{\beta_{j}}}{i,j=1,\dotsc,k}$
+sowie die beobachtete Fisher"=Informationsmatrix $I(\hat{\underline{\beta}})$,
+wobei $\underline{\hat{\beta}}$ der Maximum"=Likelihood"=Schätzer ist.
 
+%Vorlesung vom 17.12.2012
+Das nichtlineare Gleichungssystem kann man numerisch lösen. Dies passiert
+durch eine Approximation einer Taylorentwicklung:
+\begin{align*}
+  S(\underline{\beta}) &\approx S(\underline{\beta}^{(0)})+
+     S'(\underline{\beta}^{(0)})(\underline{\beta}-\underline{\beta}^{(0)})=0
+\end{align*}
+Eine Iteration ergibt $\underline{\beta}^{(l+1)}= \underline{\beta}^{(l)}-
+S'(\underline{\beta}^{(l)})\cdot S(\underline{\beta}^{(l)})=
+\underline{\beta}^{(l)}+ \underline{T}(\underline{\beta}^{(l)})^{-1}\cdot
+S(\underline{\beta}^{(l)})$. Bei der Verwendung von numerischen Verfahren hat
+man immer Probleme mit Konvergenz bzw. mit der Wahl von Startwerten. Wir
+schauen uns das am Beispiel der kanonischen Linkfunktion an.
 
+Der Ausgangspunkt ist die spezielle einfache Gestalt der Scoregleichung:
+$S_{j}(\underline{\beta})= \sum_{i=1}^{n} \frac{(y_{i}-\mu_{i})}{\phi}
+x_{ij}$. Wir leiten diese Scorefunktion ab:
+$\diffp{S_{j}(\underline{\beta})}{{\beta_{l}}}=
+\diffp{l(\underline{\beta})}{{\beta_{j}}{\beta_{l}}}= \sum_{i=1}^{n}
+\frac{1}{\phi} x_{ij} \left(- \diffp{\mu_{i}}{{\beta_{l}}}\right)$. Es ist
+$\mu_{i}= A'(\theta_{i})= A'(\underline{x}_{i}^{T} \underline{\beta})$ der
+Prädiktor. Nun leiten wir wieder ab: $\diffp{\mu_{i}}{{\beta_{l}}}=
+A''(\underline{x}_{i}^{T} \underline{\beta})\cdot x_{il}$. Also ergibt sich
+für die obige Funktion: $\diffp{S_{j}(\underline{\beta})}{{\beta_{l}}}=
+\frac{1}{\phi} \sum_{i=1}^{n} -A''(\underline{x}_{i}^{T} \underline{\beta})
+x_{ij} x_{il}$. Also haben wir $I(\underline{\beta})= -
+\diffp*{l(\underline{\beta})}{{\beta_{j}}{\beta_{l}}}{j,l=1,\dotsc,k}= \frac{1}{\phi}\XX^{T}
+\begin{pmatrix}
+  A''(\underline{x}_{1}^{T} \underline{\beta})& \dotso  & 0\\
+  \vdots& \ddots& \vdots\\
+  0& \dotso & A''(\underline{x}_{n}^{T} \underline{\beta})
+\end{pmatrix}
+\XX$.
+
+Weiterhin haben wir $\phi\cdot A''(\underline{x}_{i}^{T} \underline{\beta})=
+\text{Var}(Y_{i})>0$. Denn dies ist eine Eigenschaft der
+Exponential"=Dispersionsfamilie. Damit ist die Fisher"=Informationsmatrix
+positiv definit, falls $\XX$ den vollen Spaltenrang hat. Insgesamt ist die
+Log"~Likelihood"=Funktion streng konkav und hat ein eindeutiges Maximum. Das
+Iterationsverfahren konvergiert gegen das Maximum unabhängig von den
+Startwerten.
+
+Das einzig mögliche Problem bei Iterationsverfahren ist, dass das Maximum
+außerhalb des zulässigen Berichs für $\underline{\beta}$ liegt.
+
+Im folgenden wollen wir Betrachtungen für den Fall anstellen, dass keine
+kanonische Linkfunktion vorliegt. Der Ausgangspunkt ist die Scoregleichung
+$S_{j}(\underline{\beta})= \sum_{i=1}^{n}
+\frac{(y_{i}-\mu_{i})}{\text{Var}(Y_{i})} x_{ij} h'(\underline{x}_{i}^{T}
+\underline{\beta})$. Für das Iterationsverfahren haben wir
+$\underline{\beta}^{(l+1)}= \underline{\beta}^{(l)}+
+I(\underline{\beta}^{(l)})^{-1}\cdot S(\underline{\beta}^{(l)})$. Nun ist die
+Fisher"=Informationsmatrix nicht notwendigerweise positiv definit. Eventuell
+bekommt man dadurch mehrere lokale Maxima der Log"~Likelihood"=Funktion und
+die Konvergenz hängt von der Wahl der Startwerte ab.
+
+Wie lassen sich am besten die Startwerte wählen? Dazu gibt es mehrere
+Möglichkeiten. Das Naheliegende wäre Startwerte für $\underline{\beta}$
+vorzugeben. Aus einer inhaltlichen Interpretation der Parameter $\beta_{j}$
+können die extrahiert werden. Weiterhin kann auch ein vereinfachtes (lineares)
+Modell angewandt werden.
+
+\begin{bsp}
+  Wir haben eine Zielgröße $Y_{i}$, die poisson"=verteilt ist und eine
+  Einflussgröße. Die Varianz wird mit zunehmenden Erwartungswert größer. In
+  der Situation kann man ein vereinfachtes Modell betrachten: $\EE Y_{i}=
+  \beta_{1}+ \beta_{2}x_{i}= \mu_{i}$ und $Y_{i}\sim N(\mu_{i}, \sigma^{2})$.
+  Damit werden $\hat{\beta}_{1}$ und $\hat{\beta}_{2}$ aus dem linearen Modell
+  als Startwerte für das Poisson"=Regressionsmodell genommen: $\EE Y_{i}=
+  \beta_{1}+ \beta_{2}x_{i}= \mu_{i}$ und $Y_{i}\sim\text{Poisson}(\mu_{i})$.
+\end{bsp}
+
+Wir haben die Beziehung $\mu_{i}= h(\underline{x}_{i}^{T} \underline{\beta})=
+h(\eta_{i})$ oder $g(\mu_{i})= \underline{x}_{i}^{T} \underline{\beta}$. Also
+können wir schreiben $S_{j}(\underline{\beta})= \sum_{i=1}^{n}
+\frac{(y_{i}-\mu_{i})}{\text{Var}(Y_{i})} x_{ij} h'(g(\mu_{i}))$ oder $S_{j}(\underline{\beta})= \sum_{i=1}^{n}
+\frac{(y_{i}-h(\eta_{i}))}{\text{Var}(Y_{i})} x_{ij} h'(\eta_{i})$. Mit der
+Variante würde man nicht Startwerte für $\underline{\beta}$ vorgeben, sondern
+$\underline{\mu}= (\mu_{1},\dotsc,\mu_{n})$. Wir können die Beobachtungen als
+Startwerte für $\mu_{i}$ betrachten. Das ist sinnvoll, denn $\EE Y_{i}=
+\mu_{i}$.
+
+\section{Asymptotische Eigenschaften des Maximum"=Likelihood"=Schätzers im
+  verallgemeinerten linearen Modell}
+
+Es sind die $Y_{1},\dotsc, Y_{n}$ die Zielgrößen und die
+$\underline{x}_{1},\dotsc,\underline{x}_{n}$ die dazugehörigen Beobachtungen
+der Einflussgrößen. Weiterhin ist $\EE Y_{i}= \mu_{i}= h(\underline{x}_{i}^{T}
+\underline{\beta})$ und die Dichtefunktion $f_{Y_{i}}(y_{i})= c(y_{i}, \phi)
+e^{\frac{y_{i} \theta_{i}-A(\theta_{i})}{\phi}}$. Wir betrachten eine Folge
+$\{\underline{\hat{\beta}}^{(n)}\}$ von Maximum"=Likelihood"=Schätzern für
+$\underline{\beta}$ bei wachsendem Stichprobenumfang $n$. Es stellen sich die
+Fragen, ob bei wachsendem Stichprobenumfang beliebig genau geschätzt werden
+kann und kann die Verteilung der Maximum"=Likelihood"=Schätzer
+$\underline{\hat{\beta}}^{(n)}$ approximiert werden.
+
+\begin{satz}
+  Unter Regularitätsbedingungen gilt für die Folge der
+  Maximum"=Likelihood"=Schätzer $\underline{\hat{\beta}}^{(n)}$ im
+  verallgemeinerten linearen Modell:
+  \begin{gather*}
+    P(\norm{\underline{\hat{\beta}}^{(n)} -
+       \underline{\beta}}>\epsilon)\xrightarrow[n\rightarrow\infty]{}0\qquad\forall\epsilon>0
+  \end{gather*}
+  Das heißt, die Folge ist eine konsistente Folge von Schätzern für
+  $\underline{\beta}$.
+
+  Weiterhin ist:
+  \begin{gather*}
+    I_{n}(\underline{\beta})^{\nicefrac{T}{2}}
+       (\underline{\hat{\beta}}^{(n)}-\underline{\beta})\xrightarrow[n\rightarrow\infty]{d}
+       N(\underline{0}_{k}, \II_{k})
+  \end{gather*}
+  Wobei $I_{n}(\underline{\beta})$ die Fisher"=Informationsmatrix ist und
+  $I_{n}(\underline{\beta})= I_{n}^{\nicefrac{T}{2}}(\underline{\beta})
+  I_{n}^{\nicefrac{1}{2}}(\underline{\beta})=
+  (I_{n}^{\nicefrac{1}{2}}(\underline{\beta}))^{T}
+  I_{n}^{\nicefrac{1}{2}}(\underline{\beta})$.
+\end{satz}
+
+\begin{bemerk}
+  Für große Stichprobenumfänge $n$ können die Wahrscheinlichkeiten
+  $P(I_{n}^{\nicefrac{T}{2}}(\underline{\beta})
+  (\underline{\hat{\beta}}^{(n)}- \underline{\beta})\in A)$ durch
+  $\Phi_{\underline{0}_{k}, \II_{k}}(A)$ approximiert werden. Wir transformieren
+  durch Multiplikation mit dem Inversen der Matrix:
+  $P((\underline{\hat{\beta}}^{(n)}- \underline{\beta})\in
+  \underbrace{I_{n}^{-\nicefrac{T}{2}}A}_{=A^{*}})\approx
+  \Phi_{\underline{0}_{k}, I_{k}}(A)= \Phi_{\underline{0}_{k},
+  I_{n}^{-1}(\underline{\beta})} (A^{*})$.
+
+  In dieser Approximation kann das unbekannte $\underline{\beta}$ durch
+  $\underline{\hat{\beta}}^{(n)}$ ersetzt werden. Denn
+  $\underline{\hat{\beta}}^{(n)}\xrightarrow[n\rightarrow\infty]{P}
+  \underline{\beta}$ (Konsistenz) und es folgt,
+  $I_{n}^{-1}(\underline{\hat{\beta}}^{(n)})\xrightarrow[n\rightarrow\infty]{P}
+  I_{n}^{-1}(\underline{\beta})$ wegen des Continuous Mapping Theorems. Also
+  haben wir $P(\underline{\hat{\beta}}^{(n)}-\underline{\beta}\in
+  A^{*})\approx \Phi_{\underline{0}_{k},
+  I_{n}^{-1}(\underline{\hat{\beta}}^{(n)})} (A^{*})$.
+\end{bemerk}
+
+\section{Konstruktion von statistischen Tests und Konfidenzintervallen im
+  verallgemeinerten linearen Modell}
+
+Im linearen Modell haben wir gesagt: $\frac{\underline{c}^{T}
+\underline{\hat{\beta}} - \underline{c}^{T}
+\underline{\beta}}{\sqrt{\underline{c}^{T} (\XX^{T}\XX)^{-1} \underline{c}
+\overline{\sigma^{2}}}} \sim t_{n-k}$. Jetzt haben wir
+$\underline{\hat{\beta}}^{(n)}- \underline{\beta}\approx N(\underline{0}_{k},
+I_{n}^{-1}(\underline{\hat{\beta}}^{(n)}))\Rightarrow \underline{c}^{T}
+\underline{\hat{\beta}}^{(n)}- \underline{c}^{T}\underline{\beta}\approx N(0,
+\underline{c}^{T} I_{n}^{-1}(\underline{\hat{\beta}}^{(n)}) \underline{c})
+\Rightarrow \frac{\underline{c}^{T}
+\underline{\hat{\beta}}^{(n)}-
+\underline{c}^{T}\underline{\beta}}{\sqrt{\underline{c}^{T}
+I_{n}^{-1}(\underline{\hat{\beta}}^{(n)}) \underline{c}}} \approx N(0,1)$.
+
+\begin{bemerk}
+  Die benötigte Inverse der Fisher"=Informationsmatrix
+  $I_{n}^{-1}(\underline{\hat{\beta}}^{(n)})$ bekommen wir als Nebenprodukt des
+  Iterationsverfahrens, da dort in jedem Schritt
+  $I_{n}^{-1}(\underline{\beta}^{(l)})$ bei der Lösung des linearisierten
+  Gleichungssystems benötigt wird. Damit können wir den Wert aus dem letzten
+  Iterationsschriit verwenden.
+\end{bemerk}
+
+Nun führen wir einen statistischen Test der Hypothese durch:
+$H_{0}\colon\underline{c}^{T} \underline{\beta}= c_{0}$ gegen
+$H_{1}\colon\underline{c}^{T} \underline{\beta}\neq c_{0}$. Wir betrachten die
+Teststatistik $T(\underline{Y})=
+\frac{\underline{c}^{T}\underline{\hat{\beta}}}{\sqrt{\underline{c}^{T}
+I_{n}(\underline{\hat{\beta}}^{(n)})^{-1} \underline{c}}}$. Unter $H_{0}$
+gilt, $P(T(Y)<d)\xrightarrow[n\rightarrow\infty]{} P(Z<d)$ mit $Z\sim N(0,1)$.
+Es folgt,
+$P(-z_{1-\nicefrac{\alpha}{2}}<T(Y)<z_{1-\nicefrac{\alpha}{2}})\xrightarrow[n\rightarrow\infty]{}
+P(-z_{1-\nicefrac{\alpha}{2}}<Z<z_{1-\nicefrac{\alpha}{2}})= 1-\alpha$, wobei
+$z_{1-\nicefrac{\alpha}{2}}$ das $(1-\frac{\alpha}{2})$"~Quantil der
+$N(0,1)$"~Verteilung ist.
+
+Insgesamt bringt uns dies zu der Entscheidungsregel: Lehne $H_{0}$ ab, falls
+$\abs{T(\underline{y})}>z_{1-\nicefrac{\alpha}{2}}$. Das führt zu einem
+asymptotischen $\alpha$-Test, d.\,h. die Fehlerwahrscheinlichkeit der ersten
+Art konvergiert für $n\rightarrow\infty$ gegen $\alpha$.
+
+\begin{bemerk}
+  Für konkreten endlichen Stichprobenumfang kennen wir das Signifikanzniveau
+  nicht, hoffen aber, dass die Approximation durch die Normalverteilung gut
+  ist.
+
+  Analytisch ist das tatsächliche Signifikanzniveau kaum bestimmbar,
+  kann aber durch Simulationen beliebig genau bestimmt werden.
+
+  Häufig wird statt $z_{1-\nicefrac{\alpha}{2}}$ das Quantil der
+  $t$"~Verteilung $t_{n-k,1-\nicefrac{\alpha}{2}}$ verwendet. Denn die
+  $t$"~Verteilung konvergiert für $n\rightarrow \infty$ gegen die
+  Normalverteilung. Somit konvergiert auch das Quantil.
+\end{bemerk}
 
 
 \clearpage
