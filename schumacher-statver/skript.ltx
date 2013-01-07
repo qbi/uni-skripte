@@ -41,7 +41,7 @@
 \usepackage[amsmath,thmmarks,hyperref]{ntheorem} % für die Theorem-Umgebungen
                                                  % (satz, defini, bemerk)
 \usepackage{xspace}      % wird weiter unten gebraucht
-\usepackage{slashbox}    % für schräge Striche links oben in der
+%\usepackage{slashbox}    % für schräge Striche links oben in der
                          % Tabelle; s. texdoc slashbox
 
 \usepackage{paralist}    % besseres enumerate und itemize und neue
@@ -70,6 +70,7 @@
 \usepackage{nicefrac}
 
 \usepackage[text]{esdiff}
+\usepackage{wasysym}
 
 
 \addtokomafont{sectioning}{\boldmath}
@@ -1356,7 +1357,7 @@ Eigenschaften der Kovarianzmatrix
   \end{proof}
 \end{folg}
 
-\section{Maximum"=Likelihood"=Schätzung im linearen Modell}
+\section{Maximum-Likelihood-Schätzung im linearen Modell}
 
 Wir haben $\EE Y_{i}= \beta_{1}+\beta_{2}x_{i2}+\dotsb+
 \beta_{k}x_{ik}=\colon\mu_{i}$ und $Y_{i}\sim N(\mu_{i},\sigma^{2})$
@@ -1955,7 +1956,7 @@ Linkfunktion.
   $Y_{i}\sim\text{Poisson}(\mu_{i})$
 \end{bsp}
 
-\section{Maximum"=Likelihood"=Schätzung im verallgemeinerten linearen Modell}
+\section{Maximum-Likelihood-Schätzung im verallgemeinerten linearen Modell}
 
 Die Likelihood"=Funktion ist $\CL(\underline{\beta}|y_{1},\dotsc, y_{n})=
 \prod_{i=1}^{n} c(y_{i}, \phi) \exp\{\frac{y_{i}
@@ -2197,6 +2198,262 @@ Art konvergiert für $n\rightarrow\infty$ gegen $\alpha$.
   $t$"~Verteilung konvergiert für $n\rightarrow \infty$ gegen die
   Normalverteilung. Somit konvergiert auch das Quantil.
 \end{bemerk}
+
+% Vorlesung vom 07.01.2013
+\chapter{Modellwahlverfahren}
+
+\section{Modellwahl mit Hilfe statistischer Tests}
+
+Bisher hatten wir statistische Tests von Hypothesen der Gestalt
+$H_{0}\colon\beta_{j}=0$ gegen $H_{1}\colon\beta_{j}\neq0$. Jetzt stellen wir
+eine Hierarchie von Modellen auf und zerlegen den Parametervektor
+$\underline{\beta}=
+\begin{pmatrix}
+  \underline{\psi}\\
+  \underline{\gamma}
+\end{pmatrix}$ mit $\underline{\psi}\in\R^{r}$, $\underline{\gamma}\in\R^{k-r}$
+und $\underline{\beta}\in\R^{k}$. Wir wollen testen: $H_{0}\colon
+\underline{\psi}= \underline{\psi}_{0}$ gegen
+$H_{1}\colon\underline{\psi}\neq\underline{\psi}_{0}$. Somit  wird mehr als
+eine Komponente des Vektors $\underline{\beta}$ in der Hypothese betrachtet.
+Wie kann nun eine Statistik aussehen, die die Hypothese prüft? Es wird wohl
+etwas mit Maximum"=Likelihood zu tun haben. \smiley
+
+Im folgenden soll die Grundidee zur Konstruktion der Statistik dargestellt
+werden: Maximum"=Likelihood"=Schätzer unter $H_{0}$ und $H_{1}$: Unter $H_{1}$
+haben wir $\underline{\hat{\beta}}^{(1)}=
+\begin{pmatrix}
+  \underline{\hat{\psi}}\\
+  \underline{\hat{\gamma}}
+\end{pmatrix}$ und unter $H_{0}$ haben wir $\underline{\hat{\beta}}^{(0)}=
+\begin{pmatrix}
+  \underline{\psi}_{0}\\
+  \underline{\hat{\gamma}}^{(0)}
+\end{pmatrix}$. Im letzten Fall muss das $\underline{\psi}$ nicht geschätzt
+werden. Unter $H_{0}$ wird die Likelihoodfunktion unter der Nebenbedingung
+$\underline{\psi}= \underline{\psi}_{0}$ maximiert. Also ist das Maximum der
+Likelihoodfunktion unter $H_{1}$ größer als unter $H_{0}$. Damit soll die
+Nullhypothese abgelehnt werden, wenn das Maximum unter $H_{1}$
+\emph{wesentlich} größer ist, als unter $H_{0}$. Es ist
+$\CL(\underline{\hat{\beta}}^{(1)})\geq\CL(\underline{\hat{\beta}}^{(0)})$.
+Wir betrachten:
+\begin{gather*}
+  2\log\frac{\CL(\underline{\hat{\beta}}^{(1)})}{\CL(\underline{\hat{\beta}}^{(0)})}=
+     T(\underline{Y})
+\end{gather*}
+und suchen die asymptotische Verteilung dieser Teststatistik unter $H_{0}$.
+
+\begin{bemerk}
+  Diese Statistik $T(\underline{Y})$ heißt
+  \highl{Likelihood"=Quotienten"=Statistik}. Üblicherweise schreibt man
+  $T(\underline{Y})=
+  2(\log\CL(\underline{\hat{\beta}}^{(1)})-\log\CL(\underline{\hat{\beta}}^{(0)}))=
+  2(l(\underline{\hat{\beta}}^{(1)})- l(\underline{\hat{\beta}}^{(0)}))$.
+\end{bemerk}
+
+Wir betrachten die Taylorentwicklung von $l(\underline{\beta})$ um
+$\underline{\beta}= \underline{\hat{\beta}}^{(1)}$:
+$l(\underline{\beta})\approx l(\underline{\hat{\beta}}^{(1)})+ \sum_{j=1}^{k}
+\diffp{l(\underline{\beta})}{{\beta_{j}}} (\beta_{j}- \hat{\beta}_{j}^{(1)}) +
+\frac{1}{2} \sum_{j=1}^{k} \sum_{l=1}^{k}
+\diffp[2]{l(\underline{\beta})}{{\beta_{j}}{\beta_{l}}}
+(\beta_{j}-\hat{\beta}_{j}^{(1)})(\beta_{l}- \hat{\beta}_{l}^{(1)})$. Da
+$\underline{\hat{\beta}}^{(1)}$ ein Maximum"=Likelihood"=Schätzer ist, fallen
+die linearen Terme weg. Also haben wir $l(\underline{\beta})\approx
+l(\underline{\hat{\beta}}^{(1)}) - (\underline{\beta}- \hat{\beta}_{j}^{(1)})
+I(\underline{\hat{\beta}}^{(1)}) (\underline{\beta}- \hat{\beta}_{j}^{(1)})$.
+Dabei ist $I$ die Fishersche Informationsmatrix.
+
+Nun schreiben wir dies wegen $\underline{\beta}= (\underline{\psi},
+\underline{\gamma})^{T}$ wie folgt auf:
+\begin{gather*}
+  l(
+     \begin{pmatrix}
+       \underline{\psi}\\
+       \underline{\gamma}
+     \end{pmatrix}\approx l(
+     \begin{pmatrix}
+       \underline{\psi}\\
+       \underline{\gamma}
+     \end{pmatrix}- \frac{1}{2}
+     \begin{pmatrix}
+       \underline{\psi}-\underline{\hat{\psi}}\\
+       \underline{\gamma}-\underline{\hat{\gamma}}
+     \end{pmatrix}^{T}
+     \begin{pmatrix}
+       I_{\psi\psi}& I_{\psi\gamma}\\
+       I_{\gamma\psi}& I_{\gamma\gamma}
+     \end{pmatrix}
+          \begin{pmatrix}
+       \underline{\psi}-\underline{\hat{\psi}}\\
+       \underline{\gamma}-\underline{\hat{\gamma}}
+     \end{pmatrix}
+\end{gather*}
+Dies ist eine Approximation der Log"~Likelihood"=Funktion unter $H_{0}$. Wir
+wollen das Maximum von $l$ unter $H_{0}$, d.\,h. wir wissen, dass
+$\underline{\psi}= \underline{\psi}_{0}$.
+
+Zur Bestimmung des Maximums der approximierten Log"~Likelihood"=Funktion
+betrachten wir:
+$\CL\left(
+\begin{pmatrix}
+  \underline{\psi}\\
+  \underline{\gamma}
+\end{pmatrix}
+\right)= \exp\left\{l\left(
+\begin{pmatrix}
+  \underline{\psi}\\
+  \underline{\gamma}
+\end{pmatrix}
+\right)\right\}=\CL\left(
+\begin{pmatrix}
+  \underline{\psi}\\
+  \underline{\gamma}
+\end{pmatrix}
+\right)\cdot\exp\left\{
+	    - \frac{1}{2}
+     \begin{pmatrix}
+       \underline{\psi}-\underline{\hat{\psi}}\\
+       \underline{\gamma}-\underline{\hat{\gamma}}
+     \end{pmatrix}^{T}
+     \begin{pmatrix}
+       I_{\psi\psi}& I_{\psi\gamma}\\
+       I_{\gamma\psi}& I_{\gamma\gamma}
+     \end{pmatrix}
+          \begin{pmatrix}
+       \underline{\psi}-\underline{\hat{\psi}}\\
+       \underline{\gamma}-\underline{\hat{\gamma}}
+     \end{pmatrix}\right\}$
+
+Dies ist proportional zur Dichtefunktion einer $k$"~dimensionalen
+Normalverteilung.
+
+\begin{lemma}
+  Sei
+  \begin{gather*}
+    \begin{pmatrix}
+      Y_{1}\\
+      Y_{2}
+    \end{pmatrix}\sim N(
+       \begin{pmatrix}
+	 \mu_{1}\\
+	 \mu_{2}
+       \end{pmatrix}, \sum=
+       \begin{pmatrix}
+	 \sigma^{2}_{1}& \rho\sigma_{1}\sigma_{2}\\
+	 \rho\sigma_{1}\sigma_{2}& \sigma^{2}_{2}
+       \end{pmatrix})
+  \end{gather*}
+  ein zweidimensionaler normalverteilter Zufallsvektor. Dann gilt für die
+  bedingte Verteilung von $Y_{2}$ unter der Bedingung, dass $Y_{1}=Y_{2}$:
+  \begin{gather*}
+    Y_{2}|Y_{1}=y_{1} \sim
+       N(\mu_{2}+\rho\frac{\sigma_{2}}{\sigma_{1}}(y_{1}-\mu_{1}),
+       \sigma^{2}_{1}(1-\rho^{2}))
+  \end{gather*}
+
+  Allgemein gilt:
+    Sei
+  \begin{gather*}
+    \begin{pmatrix}
+      Y_{1}\\
+      Y_{2}
+    \end{pmatrix}\sim N(
+       \begin{pmatrix}
+	 \mu_{1}\\
+	 \mu_{2}
+       \end{pmatrix}, \sum=
+       \begin{pmatrix}
+	 \Sigma_{11}& \Sigma_{12}\\
+	 \Sigma_{21}& \Sigma_{22}
+       \end{pmatrix})
+  \end{gather*}
+  ein normalverteilter Zufallsvektor. Dann gilt:
+  \begin{gather*}
+    Y_{2}|Y_{1}=y_{1} \sim
+       N(\mu_{2}+\Sigma_{21}\Sigma_{11}^{-1}(y_{1}-\mu_{1}), \Sigma_{22}-
+       \Sigma_{21}\Sigma_{11}^{-1}\Sigma_{12})
+  \end{gather*}
+\end{lemma}
+
+Wenn wir $\underline{\psi}= \underline{\psi}_{0}$ fixieren, ist das Maximum
+der approximierten Likelihoodfunktion gegeben durch:
+$\underline{\hat{\gamma}}^{(0)}= \underline{\hat{\gamma}}+ \Sigma_{\gamma\psi}
+\Sigma_{\psi\psi}^{-1}(\underline{\psi}_{0}- \underline{\hat{\psi}})$
+Wobei die Matrix aus den $\Sigma$ die Inverse der Fisherschen
+Informationsmatrix ist.
+
+Wir betrachten nun den Zusammenhang zwischen $\Sigma$ und $I$. Wir haben
+\begin{gather*}
+  \begin{pmatrix}
+    \Sigma_{\psi\psi}& \Sigma_{\psi\gamma}\\
+    \Sigma_{\gamma\psi}& \Sigma_{\gamma \gamma}
+  \end{pmatrix}
+     \begin{pmatrix}
+       I_{\psi\psi}& I_{\psi\gamma}\\
+       I_{\gamma\psi}& I_{\gamma\gamma}
+     \end{pmatrix}=
+     \begin{pmatrix}
+       \II_{r}& 0_{r,k-r}\\
+       0_{k-r,r}& \II_{k-r}
+     \end{pmatrix}
+\end{gather*}
+
+\todo{Matrix ausrechnen}
+Es ergibt sich $\Sigma_{\gamma\psi}\Sigma_{\gamma\gamma}^{-1}= -
+I_{\gamma\gamma}^{-1}I_{\gamma\psi}$ und können schreiben:
+$\underline{\hat{\gamma}}^{(0)}= \underline{\hat{\gamma}}+ \Sigma_{\gamma\psi}
+\Sigma_{\psi\psi}^{-1}(\underline{\psi}_{0}- \underline{\hat{\psi}}) =
+\hat{\gamma}- I_{\gamma\gamma}^{-1}I_{\gamma\psi}(\underline{\psi}_{0}-
+\hat{\psi})$.
+
+Das Einsetzen in die Teststatistik ergibt:
+\begin{align*}
+  T(\underline{Y})&= 2\left(l\left(
+     \begin{pmatrix}
+       \underline{\hat{\psi}}\\
+       \underline{\hat{\gamma}}
+     \end{pmatrix}\right)-l\left(
+     \begin{pmatrix}
+       \underline{\hat{\psi}}_{0}\\
+       \underline{\hat{\gamma}}^{(0)}
+     \end{pmatrix}\right)\right)\\
+  &=\begin{pmatrix}
+    \underline{\psi}_{0}-\underline{\hat{\psi}}\\
+    -I_{\gamma\gamma}^{-1}I_{\gamma\psi}(\underline{\psi}_{0}-
+    \underline{\hat{\psi}})
+  \end{pmatrix}^{T}
+     \begin{pmatrix}
+       I_{\psi\psi}& I_{\psi\gamma}\\
+       I_{\gamma\psi}& I_{\gamma\gamma}
+     \end{pmatrix}
+       \begin{pmatrix}
+    \underline{\psi}_{0}-\underline{\hat{\psi}}\\
+    -I_{\gamma\gamma}^{-1}I_{\gamma\psi}(\underline{\psi}_{0}-
+    \underline{\hat{\psi}})
+  \end{pmatrix}\\
+  &=(\underline{\psi}_{0}-\underline{\hat{\psi}})^{T} (I_{\psi\psi}-
+     I_{\psi\gamma}I_{\gamma\gamma}^{-1}I_{\gamma\psi}) (\underline{\psi}_{0}-\underline{\hat{\psi}})\\
+  &=(\underline{\psi}_{0}-\underline{\hat{\psi}})^{T} \Sigma_{\psi\psi}^{-1} (\underline{\psi}_{0}-\underline{\hat{\psi}})
+\end{align*}
+
+Damit gilt unter Regularitätsbedingungen unter $H_{0}$: $\underline{\psi}_{0}-
+\underline{\hat{\psi}}\approx N(\underline{0}_{r}, I_{\psi\psi}^{-1})=
+N(\underline{0}_{r}, \Sigma_{\psi\psi})$.
+
+Die asymptotische Verteilung der Likelihood"=Quotienten"=Statistik unter
+$H_{0}$ entspricht der einer quadratischen Form $Z^{T}\Sigma^{-1} Z$ mit $Z\sim
+N(0_{r}, \Sigma)$. Es ist $\Sigma=ADA^{T}$ und $\Sigma^{-1}= AD^{-1}A^{T}$.
+Also haben wir $Z^{T}\Sigma^{-1}Z= Z^{T}AD^{-1}A^{T}Z=
+Z^{T}AD^{-\nicefrac{1}{2}} D^{-\nicefrac{1}{2}}A^{T}Z= W^{T}W$ mit $W\sim
+N(0_{r}, \II_{r})$. Also ist $W^{T}W= \sum_{j=1}^{r} W_{i}^{2}$ mit $W_{i}\sim
+N(0,1)$. Also haben wir insgesamt $\chi_{r}^{2}$.
+
+\begin{satz}
+  Unter Regularitätsbedingungen gil, die Likelihood"=Quotienten"=Statistik
+  $T(\underline{Y})$ für den Test der Hypothese $H_{0}$ gegen $H_{1}$ besitzt
+  eine asymptotische $\chi^{2}$-Verteilung mit $r$ Freiheitsgraden.
+\end{satz}
 
 
 \clearpage
