@@ -2456,6 +2456,199 @@ N(0,1)$. Also haben wir insgesamt $\chi_{r}^{2}$.
 \end{satz}
 
 
+\todo[inline]{Fehlende Vorlesungen}
+
+% Vorlesung vom 28.1.2013
+4. Schätzung von SPSE mit Hilfe der Residuenquadratsumme:
+\begin{align*}
+  RSS &= \sum_{i=1}^{n} \left(Y_{i}- \hat{Y_{i}}^{(M)}\right)^{2}\\
+  \EE RSS &= \sum_{i=1}^{n} \EE\left(Y_{i}- \hat{Y_{i}}^{(M)}\right)^{2}\\
+  &= \sum_{i=1}^{n} \EE\left(Y_{i}-\mu_{i}\right)^{2}+ \EE(\hat{Y_{i}}^{(M)}-
+     \mu_{i})^{2}+ 2\EE(Y_{-i}-\mu_{i})(\mu_{i}-\hat{Y_{i}}^{(M)})
+\end{align*}
+Die letzten Terme sind nicht unabhängig, da die Beobachtung $Y_{i}$ in der
+Schätzung $\hat{Y_{i}}^{(M)}$ verwendet wird.
+
+\begin{align*}
+  \sum_{i=1}^{n} \EE(Y_{i}-\mu_{i})(\mu_{i}-\hat{Y_{i}}^{(M)}) &=
+     \EE(\underline{Y}-\underline{\mu})^{T}(\underline{\mu}-\underline{\hat{Y}}^{(M)})\\
+  &= \EE\underline{Y}^{T}\underline{\mu}-
+     \EE\underline{Y}^{T}\underline{\hat{Y}}^{(M)}-
+     \EE\underline{\mu}^{T}\underline{\mu}+
+     \EE\underline{\mu}^{T}\underline{\hat{Y}}^{(M)}\\
+  &= \underline{\mu}^{T}\underline{\mu}-\EE\underline{Y}^{T}
+     \XX_{M}(\XX_{M}^{T} \XX_{M})^{-1} \XX_{M}^{T}\underline{Y} -
+     \underline{\mu}^{T}\underline{\mu}+ \underline{\mu}^{T}
+     \XX_{M}(\XX_{M}^{T}\XX_{M})^{-1} \XX_{M}^{T}\underline{\mu}
+\end{align*}
+
+\begin{lemma}
+  Sei $Y$ ein $n$"~dimensionaler Zufallsvektor mit dem Erwartungswertvektor
+  $\underline{\mu}$ und Kovarianzmatrix $\Sigma$.  Ferner sei $A$ eine (nicht
+  zufällige) $n\times n$ Matrix. Dann gilt:
+  \begin{gather*}
+    \EE\underline{Y}^{T}A\underline{Y}= \underline{\mu}^{T}A\underline{\mu}+
+       \text{spur}(A\Sigma)
+  \end{gather*}
+  \begin{proof}
+    Es ist $\EE\underline{Y}^{T}A\underline{Y}=
+    \text{spur}(\EE\underline{Y}^{T}A\underline{Y})=
+    \EE\text{spur}(\underline{Y}^{T}A\underline{Y})=
+    \EE\text{spur}(A\underline{Y}\underline{Y}^{T})=
+    \text{spur}(A\EE\underline{Y}\underline{Y}^{T})=
+    \text{spur}(A(\EE(\underline{Y}-\underline{\mu})(\underline{Y}-\underline{\mu})^{T}+
+    \underline{\mu}\underline{\mu}^{T}))= \text{spur}(A\Sigma)+
+    \text{spur}(A\underline{\mu}\underline{\mu}^{T})= \text{spur}(A\Sigma)+
+    \text{spur}(\underline{\mu}^{T}A\underline{\mu})= \text{spur}(A\Sigma)+
+    \underline{\mu}^{T}A\underline{\mu}$.
+  \end{proof}
+\end{lemma}
+
+Nun setzen wir das opbige Ergebnis ein: $\sum_{i=1}^{n}
+\EE(Y_{i}-\mu_{i})(\mu_{i}-\hat{Y_{i}}^{(M)})= - \underline{\mu}^{T}
+\XX_{M}(\XX_{M}^{T}\XX_{M})^{-1} \XX_{M}^{T}\underline{\mu}-
+\text{spur}(\XX_{M}(\XX_{M}^{T}\XX_{M})^{-1}\XX_{M}^{T} \cdot\sigma^{2}I_{n})+
+\underline{\mu}^{T}(\XX_{M}(\XX_{M}^{T}\XX_{M})^{-1}\XX_{M}^{T})\underline{\mu}=
+-\sigma^{2}\text{spur}(\XX_{M}(\XX_{M}^{T}\XX_{M})^{-1}\XX_{M}^{T})=
+-\sigma^{2}\abs{M}$.
+
+Damit ist $\EE RSS= \sum_{i=1}^{n} \EE(Y_{i}-\mu_{i})^{2}+ \sum_{i=1}^{n}
+\EE(\hat{Y_{i}}^{(M)}-\mu_{i})^{2}- 2\sigma^{2}\cdot\abs{M}= n\sigma^{2}+\sum_{i=1}^{n}
+\EE(\hat{Y_{i}}^{(M)}-\mu_{i})^{2}- 2\sigma^{2}\cdot\abs{M}=
+SPSE-2\sigma^{2}\abs{M}$. Das heißt, RSS unterschätzt den Vorhersagefehler.
+
+Diese Unterschätzung kann quantifiziert werden. Daraus ergibt sich ein neuer
+Schätzer $\hat{SPSE}= \sum_{i=1}^{n} (Y_{i}-\hat{Y_{i}}^{(M)})^{2}+
+2\hat{\sigma}^{2}\abs{M}$.
+
+Der Schätzer für $\sigma^{2}$ sollte erwartungstreu sein. Aber der
+modifizierte Maximum"=Likelihood"=Schätzer im Modell $M$:
+\begin{gather*}
+  \hat{\sigma}^{2(M)}= \frac{1}{n-\abs{M}} \sum_{i=1}^{n}
+     (Y_{i}-\hat{Y_{i}}^{(M)})^{2}
+\end{gather*}
+ist \emph{nicht} erwartungstreu, falls das Modell $M$ ein falsches Modell ist.
+Als Schätzer für $\sigma^{2}$ wird der erwartungstreue Schätezr im größten
+Modell verwendet und zwar \emph{für alle} Kandidatenmodelle $M$, d.\,h.
+$\hat{SPSE}= \sum_{i=1}^{n} (Y_{i}-\hat{Y_{i}}^{(M)})^{2}+
+2\tilde{\sigma}^{2}\abs{M}$.
+
+Wähle dasjenige Modell $M$, das den geschätzten Prognosefehler minimiert.
+
+% Weiter von 4. oben
+5. \textsc{Mallow}'s $C_{p}$: Er führte einen Komplexitätsparameter $C_{p}$
+ein:
+\begin{gather*}
+  C_{p}= \frac{\sum_{i=1}^{n}
+     (Y_{i}-\hat{Y_{i}}^{(M)})^{2}}{\tilde{\sigma}^{2}} -n-2\abs{M}
+\end{gather*}
+Wenn wir die Gleichung mit $\tilde{\sigma}^{2}$ multiplizieren, sehen wir
+sofort die Ähnlichkeit mit dem Modell aus dem vorigen Punkt.  Das heißt, die
+Modellwahl basierend auf \textsc{Mallow}'s Komplexitätsparameter ist
+äquivalent zu oben.
+
+\chapter{Akaikes Informationskriterium}
+
+Hier wird ebenfalls versucht, den Prognosefehler zu minimieren. Die Frage ist,
+wie der Prognosefehler in den allgemeineren Modellen zu messen ist.
+
+Wir stellen den Zusammenhang zwischen SPSE und der Log"~Likelihood"=Funktion
+im linearen dar: $l_{M}(\underline{\hat{\beta}}^{(M)})=
+l_{M}(\underline{\hat{Y}}^{(M)})= -\frac{n}{2}\log(2\pi)-\frac{n}{2}
+\log\sigma^{2}-\frac{1}{2\sigma^{2}} \sum_{i=1}^{n}
+(Y_{i}-\hat{Y_{i}}^{(M)})^{2}$. Des Weiteren ist die Log"~Likelihood"=Funktion
+für das »wahre« Modell: $l_{o}(\mu_{i})= -\frac{n}{2}\log(2\pi)- \frac{n}{2}
+\log\sigma^{2}-\frac{1}{2\sigma^{2}} \sum_{i=1}^{n} (Y_{i}-\mu_{i})^{2}$. Wir
+betrachten die Differenz multipliziert mit $2\sigma^{2}$.
+\begin{align*}
+  2\sigma^{2}(l_{o}(\underline{\mu})- l_{M}(\underline{\hat{Y}}^{(M)})) &=
+     \sum_{i=1}^{n} (Y_{i}-\hat{Y_{i}}^{(M)})^{2}- \sum_{i=1}^{n}
+     (Y_{i}-\mu_{i})^{2}
+\end{align*}
+
+Die erwartete Differenz der Log"~Likelihood"=Funktion für neue Beobachtungen
+ist $2\sigma^{2}\EE(l_{o}(\underline{\mu})- l_{M}(\underline{\hat{Y}}^{(M)}))=
+SPSE- n\sigma^{2}$. Damit folgt, dass SPSE bis auf den modellunabhängigen Term
+$n\sigma^{2}$ proportional zur erwarteten Differenz der
+Log"~Likelihood"=Funktion. Die erwartete Differenz der
+Log"~Likelihood"=Funktion als Maß für den Prognosefehler im allgemeinen
+Modell.
+
+Wir wollen dies ein wenig formalisieren. Dazu haben wir die Beobachtungen
+$\underline{Y}= (Y_{1},\dotsc, Y_{n})^{T}$ und die Kandidatenmodelle
+beschrieben durch Parametervektoren $\underline{\theta}$ bzw. die
+Dichtefunktion $f_{\underline{\theta}}(\underline{y})= \CL(\underline{\theta}
+|\underline{y})$. Wir bezeichnen das unbekannte, wahre Modell mit
+$f_{0}(\underline{y})$. Dies muss nicht in der Menge
+$\{f_{\underline{\theta}}(\underline{y}), \underline{\theta}\in\Theta\}$
+enthalten sein.
+
+\begin{defini}
+  Die Größe
+  \begin{gather*}
+    K(f_{\underline{\theta}}, f_{0})= \EE_{f_{0}} (l_{0}-
+       l(\underline{\theta}| \underline{y}))= \EE_{f_{0}} (\log
+       f_{0}(\underline{y})- \log f_{\underline{\theta}}(\underline{y}))\\
+    = \int(\log f_{0}(\underline{y})- \log
+       f_{\underline{\theta}}(\underline{y}))
+       f_{0}(\underline{y})\,d\underline{y}
+  \end{gather*}
+  heißt \highl{Kullback"=Leibler"=Divergenz} zwischen $f_{\underline{\theta}}$
+  und $f_{0}$.
+\end{defini}
+
+\begin{bemerk}
+  In der Literatur findet sich auch die Bezeichnung Kullback"=Leiber"=Abstand.
+  Jedoch ist das kein Abstand im mathematischen Sinne. Denn beispielsweise
+  kann die Symmetrie nicht garantiert werden.
+\end{bemerk}
+
+Realistisch muss $K(f_{\underline{\theta}}, f_{0})$ geschätzt werden, da
+$f_{0}$ und $\underline{\theta}$ unbekannt. Wir versuchen uns mit einer
+Taylorentwicklung zu behelfen.
+\begin{gather*}
+  \log f_{\underline{\theta}}(\underline{y})\approx \log
+     f_{\underline{\theta}_{KL}}(\underline{y})+
+     (\underline{\theta}-\underline{\theta}_{KL})^{T}
+     \diffp{l(\underline{\theta})}{{\underline{\theta}}}+ \frac{1}{2}
+     (\underline{\theta}-\underline{\theta}_{KL})^{T}
+     \diffp[2]{l(\underline{\theta})}{{\underline{\theta}}{\underline{\theta}^{T}}}
+\end{gather*}
+Die Maximum"=Likelihood"=Schätzung des Parameters $\underline{\theta}$ ergibt:
+$K(f_{\underline{\theta}}, f_{0})\approx\int\left(\log f_{0}(\underline{y})- \log
+     f_{\underline{\theta}_{KL}}(\underline{y})+
+     (\underline{\theta}-\underline{\theta}_{KL})^{T}
+     \diffp{l(\underline{\theta})}{{\underline{\theta}}}+ \frac{1}{2}
+     (\underline{\theta}-\underline{\theta}_{KL})^{T}
+     \diffp[2]{l(\underline{\theta})}{{\underline{\theta}}{\underline{\theta}^{T}}}\right)f_{0}(\underline{y})\,d\underline{y}=
+\int \left(\log f_{0}(\underline{y})- \log
+     f_{\underline{\theta}_{KL}}(\underline{y})\right)
+f_{0}(\underline{y})\,d\underline{y} -\int \frac{1}{2}
+     (\underline{\theta}-\underline{\theta}_{KL})^{T}
+     \diffp[2]{l(\underline{\theta})}{{\underline{\theta}}{\underline{\theta}^{T}}}\right)f_{0}(\underline{y})\,d\underline{y}=
+K(f_{\underline{\theta}_{KL}}, f_{0})+ \frac{1}{2}
+\EE_{f_{0}}(\underline{\hat{\theta}}- \underline{\theta}_{KL})^{T}
+I(\underline{\theta}_{KL})(\underline{\hat{\theta}_{KL}}-\underline{\theta}_{KL}))$
+\todo{Ausdruck prüfen (Klammer, Fehler etc.)}
+
+Der obige Ausdruck ist wieder eine quadratische Form und konvergiert gegen
+eine $\chi^{2}$"~Verteilung. Die Freiheitsgrade ist die Anzahl der Parameter.
+Es fehlt noch ein Schätzwert für $K(f_{\underline{\theta}_{KL}}, f_{0})$. Dazu
+gehen wir wie folgt vor: $\EE_{f_{0}}(-l(\underline{\hat{\theta}}))=
+\EE_{f_{0}}(-l(\underline{\theta}_{KL})-l(\underline{\hat{\theta}})+
+l(\underline{\theta}_{KL})= \int-
+l(\underline{\theta}_{KL})f_{0}(\underline{y})\,d\underline{y}-
+\EE_{f_{0}}(l(\underline{\hat{\theta}})- l(\underline{\theta}_{KL}))= \int
+(l_{0}- l(\underline{\theta}_{KL}))f_{0}(\underline{y})\,d\underline{y}-
+\EE_{f_{0}} (l(\underline{\hat{\theta}})- l(\underline{\theta}_{KL}))- \int
+l_{0} f_{0}(\underline{y})\,d\underline{y}\approx
+K(f_{\underline{\theta}_{KL}}, f_{0})-\frac{1}{2} \text{Anzahl Parameter}-
+\int l_{0} f_{0}(\underline{y})\,d\underline{y})$.
+
+
+
+
+
 \clearpage
 \appendix
 \chapter{Übungsaufgaben}
