@@ -1,0 +1,879 @@
+%%
+%% This is file `nameauth.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% nameauth.dtx  (with options: `package')
+%% 
+%% This is a generated file.
+%% 
+%% Copyright (C) 2011 by Charles P. Schaum <charles dot schaum at comcast dot net>
+%% 
+%% This file may be distributed and/or modified under the conditions of
+%% the LaTeX Project Public License, either version 1.2 of this license
+%% or (at your option) any later version.  The latest version of this
+%% license is in:
+%% 
+%%    http://www.latex-project.org/lppl.txt
+%% 
+%% and version 1.2 or later is part of all distributions of LaTeX version
+%% 1999/12/01 or later.
+%% 
+\NeedsTeXFormat{LaTeX2e}[2005/12/01]
+\ProvidesPackage{nameauth}
+    [2013/09/19 v1.8 name authority macros to aid consistent display and indexing of names]
+\newif\if@nameauth@FullName
+\newif\if@nameauth@FirstName
+\newif\if@nameauth@AltAKA
+\newif\if@nameauth@DoFormat
+\newif\if@nameauth@DoIndex
+\newif\if@nameauth@AlwaysFormat
+\newif\if@nameauth@ShowComma
+\newif\if@nameauth@Comma
+\newif\if@nameauth@Punct
+\newif\if@nameauth@DoCaps
+\newif\if@nameauth@AllCaps
+\newif\if@nameauth@AllThis
+\newif\if@nameauth@RevAll
+\newif\if@nameauth@RevThis
+\newif\if@nameauth@RevAllComma
+\newif\if@nameauth@RevThisComma
+\newcommand{\NamesFormat}{}
+\DeclareOption{mainmatter}{\@nameauth@DoFormattrue}
+\DeclareOption{frontmatter}{\@nameauth@DoFormatfalse}
+\DeclareOption{smallcaps}{\renewcommand{\NamesFormat}{\scshape}}
+\DeclareOption{italic}{\renewcommand{\NamesFormat}{\itshape}}
+\DeclareOption{boldface}{\renewcommand{\NamesFormat}{\bfseries}}
+\DeclareOption{noformat}{\renewcommand{\NamesFormat}{}}
+\DeclareOption{alwaysformat}{\@nameauth@AlwaysFormattrue}
+\DeclareOption{allcaps}{\@nameauth@AllCapstrue}
+\DeclareOption{normalcaps}{\@nameauth@AllCapsfalse}
+\DeclareOption{allreversed}{\@nameauth@RevAlltrue\@nameauth@RevAllCommafalse}
+\DeclareOption{allrevcomma}{\@nameauth@RevAlltrue\@nameauth@RevAllCommatrue}
+\DeclareOption{notreversed}{\@nameauth@RevAllfalse\@nameauth@RevAllCommafalse}
+\DeclareOption{comma}{\protected@edef\Interspace{,\space}}
+\DeclareOption{nocomma}{\protected@edef\Interspace{\space}}
+\DeclareOption{index}{\@nameauth@DoIndextrue}
+\DeclareOption{noindex}{\@nameauth@DoIndexfalse}
+\ExecuteOptions{nocomma,mainmatter,index,normalcaps,notreversed,smallcaps}
+\ProcessOptions\relax
+\RequirePackage{etoolbox}
+\RequirePackage{trimspaces}
+\RequirePackage{suffix}
+\RequirePackage{xargs}
+\newcommand*{\@nameauth@CleanName}[1]%
+{%
+  \expandafter\zap@space\detokenize{#1} \@empty%
+}
+\newcommand*{\@nameauth@Root}[1]%
+{%
+  \@nameauth@TrimRoot#1,\@empty\relax%
+}
+\def\@nameauth@TrimRoot#1,#2\relax{#1}
+\newcommand*{\@nameauth@CapRoot}[1]%
+{%
+  \@nameauth@CR#1\relax%
+}
+\def\@nameauth@CR#1#2\relax{\uppercase{#1}\@nameauth@Root{#2}}
+\newcommand*{\@nameauth@AllCapRoot}[1]%
+{%
+  \uppercase{\@nameauth@Root{#1}}%
+}
+\newcommand*{\@nameauth@Suffix}[1]%
+{%
+  \@nameauth@TrimSuffix#1\relax%
+}
+\def\@nameauth@TrimSuffix#1,#2\relax{\trim@spaces{#2}}
+\def\@nameauth@CheckDot{\futurelet\@token\@nameauth@EvalDot}
+\def\@nameauth@EvalDot%
+{%
+  \let\@period=.\ifx\@token\@period\expandafter\@gobble \fi%
+}
+\newcommand*{\@nameauth@TestDot}[1]%
+{%
+  \def\TestDot##1.\TestEnd##2\TestStop{\TestPunct{##2}}%
+  \def\TestPunct##1%
+    {\ifx\TestPunct##1\TestPunct\else\@nameauth@Puncttrue\fi}%
+  \@nameauth@Punctfalse%
+  \TestDot#1\TestEnd.\TestEnd\TestStop%
+}
+\newcommand{\@nameauth@FmtName}[1]%
+{%
+  \@nameauth@TestDot{#1}%
+  \if@nameauth@DoFormat%
+    \bgroup\NamesFormat{#1}\egroup%
+  \else%
+    #1%
+  \fi%
+}
+\WithSuffix\newcommand\@nameauth@FmtName*[1]%
+{%
+  \@nameauth@TestDot{#1}%
+  \if@nameauth@DoFormat%
+    \if@nameauth@AlwaysFormat%
+      \bgroup\NamesFormat{#1}\egroup%
+    \else%
+      #1%
+    \fi%
+  \else%
+    #1%
+  \fi%
+}
+\newcommandx\@nameauth@Index[2][2=\@empty]%
+{%
+  \ifx#2\@empty%
+    \if@nameauth@DoIndex\index{#1}\fi%
+  \else%
+    \ifcsname#2\endcsname%
+      \if@nameauth@DoIndex\index{#1\csname#2\endcsname}\fi%
+    \else%
+      \if@nameauth@DoIndex\index{#1}\fi%
+    \fi%
+  \fi%
+}
+\newcommand{\CapThis}%
+{%
+  \@nameauth@DoCapstrue%
+}
+\newcommand{\CapName}%
+{%
+  \@nameauth@AllThistrue%
+}
+\newcommand{\RevName}%
+{%
+  \@nameauth@RevThistrue%
+}
+\newcommand{\RevComma}%
+{%
+  \@nameauth@RevThistrue%
+  \@nameauth@RevThisCommatrue%
+}
+\newcommand{\ShowComma}%
+{%
+  \@nameauth@ShowCommatrue%
+}
+\newcommandx\Name[3][1=\@empty, 3=\@empty]%
+{%
+  \leavevmode\hbox{}%
+  \protected@edef\testi{#1}%
+  \protected@edef\testii{#2}%
+  \protected@edef\testiii{#3}%
+  \if@nameauth@AllCaps\CapName\fi%
+  \if@nameauth@RevAll\RevName\fi%
+  \if@nameauth@RevAllComma\RevComma\fi%
+  \if@nameauth@ShowComma%
+    \protected@edef\Space{,\space}%
+  \else%
+    \let\Space\Interspace%
+  \fi%
+  \protected@edef\RawShort{\@nameauth@Root{#2}}%
+  \protected@edef\CapShort{\@nameauth@CapRoot{#2}}%
+  \protected@edef\AllCapShort{\@nameauth@AllCapRoot{#2}}%
+  \let\IndexShort\RawShort%
+  \ifx\testii\RawShort%
+    \protected@edef\Suffix{\@empty}%
+    \let\IndexSurnames\RawShort%
+    \let\Reversed\RawShort%
+    \let\Surnames\RawShort%
+    \let\PrintShort\RawShort%
+    \if@nameauth@DoCaps%
+      \let\Reversed\CapShort%
+      \let\Surnames\CapShort%
+      \let\PrintShort\CapShort%
+    \fi%
+    \if@nameauth@AllThis%
+      \let\Reversed\AllCapShort%
+      \let\Surnames\AllCapShort%
+      \let\PrintShort\AllCapShort%
+    \fi%
+  \else%
+    \protected@edef\Suffix{\@nameauth@Suffix{#2}}%
+    \protected@edef\IndexSurnames{\RawShort\Space\Suffix}%
+    \protected@edef\Reversed{\Suffix\Space\RawShort}%
+    \protected@edef\Surnames{\RawShort\Space\Suffix}%
+    \if@nameauth@RevThis%
+      \let\PrintShort\Suffix%
+    \else%
+      \let\PrintShort\RawShort%
+    \fi%
+    \if@nameauth@DoCaps%
+      \protected@edef\Reversed{\Suffix\Space\CapShort}%
+      \protected@edef\Surnames{\CapShort\Space\Suffix}%
+      \if@nameauth@RevThis%
+        \let\PrintShort\Suffix%
+      \else%
+        \let\PrintShort\CapShort%
+      \fi%
+    \fi%
+    \if@nameauth@AllThis%
+      \protected@edef\Reversed{\Suffix\Space\AllCapShort}%
+      \protected@edef\Surnames{\AllCapShort\Space\Suffix}%
+      \if@nameauth@RevThis%
+        \let\PrintShort\Suffix%
+      \else%
+        \let\PrintShort\AllCapShort%
+      \fi%
+    \fi%
+  \fi%
+  \@nameauth@DoCapsfalse%
+  \@nameauth@AllThisfalse%
+  \@nameauth@ShowCommafalse%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \ifcsname\@nameauth@CleanName{#2!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \Name: Xref: #2 cannot be a page reference.}%
+      \else%
+        \@nameauth@Index{\IndexSurnames}[\@nameauth@CleanName{#2}]%
+      \fi%
+      \if@nameauth@DoFormat%
+          \ifcsname\@nameauth@CleanName{#2!MN!}\endcsname%
+            \if@nameauth@FirstName%
+              \@nameauth@FullNamefalse%
+              \@nameauth@FirstNamefalse%
+            \fi%
+            \if@nameauth@FullName%
+              \@nameauth@FullNamefalse%
+              \if@nameauth@RevThis%
+                \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Reversed}%
+              \else%
+                \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Surnames}%
+              \fi%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\PrintShort}%
+            \fi%
+          \else%
+            \@nameauth@FullNamefalse%
+            \@nameauth@FirstNamefalse%
+            \csgdef{\@nameauth@CleanName{#2!MN!}}{}%
+            \if@nameauth@RevThis%
+              \expandafter\@nameauth@FmtName\expandafter{\Reversed}%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter{\Surnames}%
+            \fi%
+          \fi%
+      \else%
+          \ifcsname\@nameauth@CleanName{#2!NF!}\endcsname%
+            \if@nameauth@FirstName%
+              \@nameauth@FullNamefalse%
+              \@nameauth@FirstNamefalse%
+            \fi%
+            \if@nameauth@FullName%
+              \@nameauth@FullNamefalse%
+              \if@nameauth@RevThis%
+                \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Reversed}%
+              \else%
+                \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Surnames}%
+              \fi%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\PrintShort}%
+            \fi%
+          \else%
+            \@nameauth@FullNamefalse%
+            \@nameauth@FirstNamefalse%
+            \csgdef{\@nameauth@CleanName{#2!NF!}}{}%
+            \if@nameauth@RevThis%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Reversed}%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Surnames}%
+            \fi%
+          \fi%
+      \fi%
+    \else%
+      \ifcsname\@nameauth@CleanName{#2#3!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \Name: Xref: #2 #3 cannot be a page reference.}%
+      \else%
+        \@nameauth@Index{\IndexSurnames\space#3}[\@nameauth@CleanName{#2#3}]%
+      \fi%
+      \if@nameauth@DoFormat%
+        \ifcsname\@nameauth@CleanName{#2#3!MN!}\endcsname%
+          \if@nameauth@FirstName%
+            \@nameauth@FullNamefalse%
+            \@nameauth@FirstNamefalse%
+          \fi%
+          \if@nameauth@FullName%
+            \@nameauth@FullNamefalse%
+            \if@nameauth@RevThis%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+                \expandafter\testiii\expandafter\space\Surnames}%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+                \expandafter\Surnames\expandafter\space#3}%
+            \fi%
+          \else%
+            \if@nameauth@RevThis%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\testiii}%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\PrintShort}%
+            \fi%
+          \fi%
+        \else%
+          \@nameauth@FullNamefalse%
+          \@nameauth@FirstNamefalse%
+          \csgdef{\@nameauth@CleanName{#2#3!MN!}}{}%
+          \if@nameauth@RevThis%
+            \expandafter\@nameauth@FmtName\expandafter{%
+              \expandafter\testiii\expandafter\space\Surnames}%
+          \else%
+            \expandafter\@nameauth@FmtName\expandafter{%
+              \expandafter\Surnames\expandafter\space#3}%
+          \fi%
+        \fi%
+      \else%
+        \ifcsname\@nameauth@CleanName{#2#3!NF!}\endcsname%
+          \if@nameauth@FirstName%
+            \@nameauth@FullNamefalse%
+            \@nameauth@FirstNamefalse%
+          \fi%
+          \if@nameauth@FullName%
+            \@nameauth@FullNamefalse%
+            \if@nameauth@RevThis%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+                \expandafter\testiii\expandafter\space\Surnames}%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+                \expandafter\Surnames\expandafter\space#3}%
+            \fi%
+          \else%
+            \if@nameauth@RevThis%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\testiii}%
+            \else%
+              \expandafter\@nameauth@FmtName\expandafter*\expandafter{\PrintShort}%
+            \fi%
+          \fi%
+        \else%
+          \@nameauth@FullNamefalse%
+          \@nameauth@FirstNamefalse%
+          \csgdef{\@nameauth@CleanName{#2#3!NF!}}{}%
+          \if@nameauth@RevThis%
+            \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+              \expandafter\testiii\expandafter\space\Surnames}%
+          \else%
+            \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+              \expandafter\Surnames\expandafter\space#3}%
+          \fi%
+        \fi%
+      \fi%
+    \fi%
+  \else%
+    \if@nameauth@RevThisComma%
+      \protected@edef\Space{,\space}%
+    \else%
+      \let\Space\Interspace%
+    \fi%
+    \ifx\testiii\@empty%
+      \protected@edef\Forenames{#1}%
+    \else%
+      \protected@edef\Forenames{#3}%
+    \fi
+    \ifcsname\@nameauth@CleanName{#1#2!PN!}\endcsname%
+      \PackageWarning{nameauth}%
+      {macro \Name: Xref: #1 #2 cannot be a page reference.}%
+    \else%
+      \ifx\Suffix\@empty%
+        \@nameauth@Index{\IndexShort, #1}[\@nameauth@CleanName{#1#2}]%
+      \else%
+        \@nameauth@Index{\IndexShort, #1, \Suffix}[\@nameauth@CleanName{#1#2}]%
+      \fi%
+    \fi%
+    \if@nameauth@DoFormat%
+      \ifcsname\@nameauth@CleanName{#1#2!MN!}\endcsname%
+        \if@nameauth@FirstName%
+          \@nameauth@FullNamefalse%
+          \@nameauth@FirstNamefalse%
+          \let\PrintShort\Forenames%
+        \fi%
+        \if@nameauth@FullName%
+          \@nameauth@FullNamefalse%
+          \if@nameauth@RevThis%
+            \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+              \expandafter\Surnames\expandafter\Space\Forenames}%
+          \else%
+            \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+              \expandafter\Forenames\expandafter\space\Surnames}%
+          \fi%
+        \else%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{\PrintShort}%
+        \fi%
+      \else%
+        \@nameauth@FullNamefalse%
+        \@nameauth@FirstNamefalse%
+        \csgdef{\@nameauth@CleanName{#1#2!MN!}}{}%
+        \if@nameauth@RevThis%
+          \expandafter\@nameauth@FmtName\expandafter{%
+            \expandafter\Surnames\expandafter\Space\Forenames}%
+        \else%
+          \expandafter\@nameauth@FmtName\expandafter{%
+            \expandafter\Forenames\expandafter\space\Surnames}%
+        \fi%
+      \fi%
+    \else%
+      \ifcsname\@nameauth@CleanName{#1#2!NF!}\endcsname%
+        \if@nameauth@FirstName%
+          \@nameauth@FullNamefalse%
+          \@nameauth@FirstNamefalse%
+          \let\PrintShort\Forenames%
+        \fi%
+        \if@nameauth@FullName%
+          \@nameauth@FullNamefalse%
+          \if@nameauth@RevThis%
+            \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+              \expandafter\Surnames\expandafter\Space\Forenames}%
+          \else%
+            \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+              \expandafter\Forenames\expandafter\space\Surnames}%
+          \fi%
+        \else%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{\PrintShort}%
+        \fi%
+      \else%
+        \@nameauth@FullNamefalse%
+        \@nameauth@FirstNamefalse%
+        \csgdef{\@nameauth@CleanName{#1#2!NF!}}{}%
+        \if@nameauth@RevThis%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+            \expandafter\Surnames\expandafter\Space\Forenames}%
+        \else%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+            \expandafter\Forenames\expandafter\space\Surnames}%
+        \fi%
+      \fi%
+    \fi%
+  \fi%
+  \@nameauth@RevThisfalse%
+  \@nameauth@RevThisCommafalse%
+  \if@nameauth@Punct\expandafter\@nameauth@CheckDot\fi%
+}
+\WithSuffix\newcommandx\Name*[3][1=\@empty, 3=\@empty]%
+{%
+  \@nameauth@FullNametrue%
+  \Name[#1]{#2}[#3]%
+}
+\newcommandx\FName[3][1=\@empty, 3=\@empty]%
+{%
+  \@nameauth@FirstNametrue%
+  \Name[#1]{#2}[#3]%
+}
+\WithSuffix\newcommandx\FName*[3][1=\@empty, 3=\@empty]%
+{%
+  \@nameauth@FirstNametrue%
+  \Name[#1]{#2}[#3]%
+}
+\newcommandx\AKA[5][1=\@empty, 3=\@empty, 5=\@empty]%
+{%
+  \leavevmode\hbox{}%
+  \protected@edef\testi{#1}%
+  \protected@edef\testii{#2}%
+  \protected@edef\testiii{#3}%
+  \protected@edef\testiv{#4}%
+  \protected@edef\testv{#5}%
+  \if@nameauth@AllCaps\CapName\fi%
+  \if@nameauth@RevAll\RevName\fi%
+  \if@nameauth@RevAll\RevComma\fi%
+  \if@nameauth@ShowComma%
+    \protected@edef\Space{,\space}%
+  \else%
+    \let\Space\Interspace%
+  \fi%
+  \protected@edef\Shortii{\@nameauth@Root{#2}}%
+  \protected@edef\Shortiv{\@nameauth@Root{#4}}%
+  \ifx\testii\Shortii%
+    \let\Surnamesii\Shortii%
+    \protected@edef\Suffixii{\@empty}%
+  \else%
+    \protected@edef\Suffixii{\@nameauth@Suffix{#2}}%
+    \protected@edef\Surnamesii{\Shortii\Space\Suffixii}%
+  \fi%
+  \ifx\testiv\Shortiv%
+    \protected@edef\Suffixiv{\@empty}%
+    \let\Surnamesiv\Shortiv%
+    \let\Reverseiv\Shortiv%
+  \else%
+    \protected@edef\Suffixiv{\@nameauth@Suffix{#4}}%
+    \protected@edef\Surnamesiv{\Shortiv\Space\Suffixiv}%
+    \protected@edef\Reverseiv{\Suffixiv\Space\Shortiv}%
+  \fi%
+  \@nameauth@ShowCommafalse%
+  \@nameauth@AllThisfalse%
+  \ifx\testiii\@empty%
+    \ifx\testv\@empty%
+      \ifcsname\@nameauth@CleanName{#4!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \AKA: XRef: #4 exists.}%
+      \else%
+        \ifcsname\@nameauth@CleanName{#4!MN!}\endcsname%
+          \PackageWarning{nameauth}%
+          {macro \AKA: Name reference: #4 already exists; no see ref.}%
+        \else%
+          \ifcsname\@nameauth@CleanName{#4#5!NF!}\endcsname%
+            \PackageWarning{nameauth}%
+            {macro \AKA: Name reference: #4 already exists; no see ref.}%
+          \else%
+            \csgdef{\@nameauth@CleanName{#4!PN!}}{}%
+            \ifx\testi\@empty%
+              \@nameauth@Index{\Surnamesiv|see{\Surnamesii}}%
+            \else%
+              \ifx\Suffixii\@empty \@nameauth@Index{\Surnamesiv|see{\Surnamesii, #1}}%
+              \else \@nameauth@Index{\Surnamesiv|see{\Shortii, #1, \Suffixii}}\fi%
+            \fi%
+          \fi%
+        \fi%
+      \fi%
+      \@nameauth@AltAKAfalse%
+      \if@nameauth@RevThisComma%
+        \protected@edef\Space{,\space}%
+      \else%
+        \let\Space\Interspace%
+      \fi%
+      \if@nameauth@RevThis%
+        \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Reverseiv}%
+      \else%
+        \expandafter\@nameauth@FmtName\expandafter*\expandafter{\Surnamesiv}%
+      \fi%
+    \else%
+      \ifcsname\@nameauth@CleanName{#4#5!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \AKA: XRef: #4 #5 exists.}%
+      \else%
+        \ifcsname\@nameauth@CleanName{#4#5!MN!}\endcsname%
+          \PackageWarning{nameauth}%
+          {macro \AKA: Name reference: #4 #5 already exists; no see ref.}%
+        \else%
+          \ifcsname\@nameauth@CleanName{#4#5!NF!}\endcsname%
+            \PackageWarning{nameauth}%
+            {macro \AKA: Name reference: #4 #5 already exists; no see ref.}%
+          \else%
+            \csgdef{\@nameauth@CleanName{#4#5!PN!}}{}%
+            \ifx\testi\@empty%
+              \@nameauth@Index{\Surnamesiv\space#5|see{\Surnamesii}}%
+            \else%
+              \ifx\Suffixii\@empty \@nameauth@Index{\Surnamesiv\space#5|see{\Surnamesii, #1}}%
+              \else \@nameauth@Index{\Surnamesiv\space#5|see{\Shortii, #1, \Suffixii}}\fi%
+            \fi%
+          \fi%
+        \fi%
+      \fi%
+      \if@nameauth@RevThisComma%
+        \protected@edef\Space{,\space}%
+      \else%
+        \let\Space\Interspace%
+      \fi%
+      \if@nameauth@AltAKA%
+        \@nameauth@AltAKAfalse%
+        \if@nameauth@RevThis%
+        \else%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{\testv}%
+        \fi%
+      \else%
+        \@nameauth@AltAKAfalse%
+        \if@nameauth@RevThis%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{\expandafter\testv\expandafter\Space\Surnamesiv}%
+        \else%
+          \expandafter\@nameauth@FmtName\expandafter*\expandafter{\expandafter\Surnamesiv\expandafter\space\testv}%
+        \fi%
+      \fi%
+    \fi%
+  \else%
+    \ifcsname\@nameauth@CleanName{#3#4!PN!}\endcsname%
+      \PackageWarning{nameauth}%
+      {macro \AKA: XRef: #3 #4 exists.}%
+    \else%
+      \ifcsname\@nameauth@CleanName{#3#4!MN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \AKA: Name reference: #3 #4 already exists; no see ref.}%
+      \else%
+        \ifcsname\@nameauth@CleanName{#3#4!NF!}\endcsname%
+          \PackageWarning{nameauth}%
+          {macro \AKA: Name reference: #3 #4 already exists; no see ref.}%
+        \else%
+          \csgdef{\@nameauth@CleanName{#3#4!PN!}}{}%
+          \ifx\testi\@empty%
+            \ifx\Suffixiv\@empty \@nameauth@Index{\Surnamesiv, #3|see{\Surnamesii}}%
+            \else \@nameauth@Index{\Shortiv, #3, \Suffixiv|see{\Surnamesii}}\fi%
+          \else%
+            \ifx\Suffixii\@empty%
+              \ifx\Suffixiv\@empty%
+                \@nameauth@Index{\Surnamesiv, #3|see{\Surnamesii, #1}}%
+              \else%
+                \@nameauth@Index{\Shortiv, #3, \Suffixiv|see{\Surnamesii, #1}}%
+              \fi%
+            \else%
+              \ifx\Suffixiv\@empty%
+                \@nameauth@Index{\Surnamesiv, #3|see{\Shortii, #1, \Suffixii}}%
+              \else%
+                \@nameauth@Index{\Shortiv, #3, \Suffixiv|see{\Shortii, #1, \Suffixii}}%
+              \fi%
+            \fi%
+          \fi%
+        \fi%
+      \fi%
+    \fi%
+    \@nameauth@AltAKAfalse%
+    \if@nameauth@RevThisComma%
+      \protected@edef\Space{,\space}%
+    \else%
+      \let\Space\Interspace%
+    \fi%
+    \ifx\testv\@empty%
+      \protected@edef\Forenames{#3}%
+    \else%
+      \protected@edef\Forenames{#5}%
+    \fi%
+    \if@nameauth@RevThis%
+      \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+        \expandafter\Surnamesiv\expandafter\Space\Forenames}%
+    \else%
+      \expandafter\@nameauth@FmtName\expandafter*\expandafter{%
+        \expandafter\Forenames\expandafter\space\Surnamesiv}%
+    \fi%
+  \fi%
+  \@nameauth@RevThisfalse%
+  \@nameauth@RevThisCommafalse%
+  \if@nameauth@Punct\expandafter\@nameauth@CheckDot\fi%
+}
+\WithSuffix\newcommandx\AKA*[5][1=\@empty,3=\@empty,5=\@empty]%
+{%
+  \@nameauth@AltAKAtrue%
+  \AKA[#1]{#2}[#3]{#4}[#5]%
+}
+\newcommandx\PName[5][1=\@empty,3=\@empty,5=\@empty]%
+{%
+  \Name[#1]{#2}\space(\AKA[#1]{#2}[#3]{#4}[#5])%
+}
+\WithSuffix\newcommandx\PName*[5][1=\@empty,3=\@empty,5=\@empty]%
+{%
+  \Name*[#1]{#2}\space(\AKA[#1]{#2}[#3]{#4}[#5])%
+}
+\newcommandx\TagName[4][1=\@empty, 3=\@empty]%
+{%
+  \protected@edef\testi{#1}%
+  \protected@edef\testiii{#3}%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \ifcsname\@nameauth@CleanName{#2!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \textbackslash TagName Cannot tag xref: #2.}%
+      \else%
+        \csgdef{\@nameauth@CleanName{#2}}{#4}%
+      \fi%
+    \else%
+      \ifcsname\@nameauth@CleanName{#2#3!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \textbackslash TagName Cannot tag xref: #2 #3.}%
+      \else%
+        \csgdef{\@nameauth@CleanName{#2#3}}{#4}%
+      \fi%
+    \fi%
+  \else%
+      \ifcsname\@nameauth@CleanName{#1#2!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \textbackslash TagName Cannot tag xref: #1 #2.}%
+      \else%
+        \csgdef{\@nameauth@CleanName{#1#2}}{#4}%
+      \fi%
+  \fi%
+}
+\newcommandx\UntagName[3][1=\@empty, 3=\@empty]%
+{%
+  \protected@edef\testi{#1}%
+  \protected@edef\testiii{#3}%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \csundef{\@nameauth@CleanName{#2}}%
+    \else%
+      \csundef{\@nameauth@CleanName{#2#3}}%
+    \fi%
+  \else%
+      \csundef{\@nameauth@CleanName{#1#2}}%
+  \fi%
+}
+\newcommandx\IndexName[3][1=\@empty, 3=\@empty]%
+{%
+  \protected@edef\testi{#1}%
+  \protected@edef\testii{#2}%
+  \protected@edef\testiii{#3}%
+  \if@nameauth@ShowComma%
+    \protected@edef\Space{,\space}%
+  \else%
+    \let\Space\Interspace%
+  \fi%
+  \protected@edef\Short{\@nameauth@Root{#2}}%
+  \ifx\testii\Short%
+    \let\Surnames\Short%
+    \protected@edef\Suffix{\@empty}%
+  \else%
+    \protected@edef\Suffix{\@nameauth@Suffix{#2}}%
+    \protected@edef\Surnames{\Short\Space\Suffix}%
+  \fi%
+  \@nameauth@ShowCommafalse%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \ifcsname\@nameauth@CleanName{#2!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \IndexName: XRef: #2 exists.}%
+      \else%
+        \@nameauth@Index{\Surnames}[\@nameauth@CleanName{#2}]%
+      \fi%
+    \else%
+      \ifcsname\@nameauth@CleanName{#2#3!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \IndexName: XRef: #2 #3 exists.}%
+      \else%
+        \@nameauth@Index{\Surnames\space#3}[\@nameauth@CleanName{#2#3}]%
+      \fi%
+    \fi%
+  \else%
+      \ifcsname\@nameauth@CleanName{#1#2!PN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \IndexName: XRef: #1 #2 exists.}%
+      \else%
+        \ifx\Suffix\@empty \@nameauth@Index{\Short, #1}[\@nameauth@CleanName{#1#2}]%
+        \else \@nameauth@Index{\Short, #1, \Suffix}[\@nameauth@CleanName{#1#2}]\fi%
+      \fi%
+  \fi%
+}
+\newcommandx\ExcludeName[3][1=\@empty, 3=\@empty]%
+{%
+  \protected@edef\testi{#1}%
+  \protected@edef\testiii{#3}%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \ifcsname\@nameauth@CleanName{#2!PN!}\endcsname\relax%
+      \else%
+        \ifcsname\@nameauth@CleanName{#2!MN!}\endcsname%
+          \PackageWarning{nameauth}%
+          {macro \ExcludeName: Reference: #2 already exists; no exclusion.}%
+        \else%
+          \ifcsname\@nameauth@CleanName{#2!NF!}\endcsname%
+            \PackageWarning{nameauth}%
+            {macro \ExcludeName: Reference: #2 already exists; no exclusion.}%
+          \else%
+            \csgdef{\@nameauth@CleanName{#2!PN!}}{}%
+          \fi%
+        \fi%
+      \fi%
+    \else%
+      \ifcsname\@nameauth@CleanName{#2#3!PN!}\endcsname\relax%
+      \else%
+        \ifcsname\@nameauth@CleanName{#2#3!MN!}\endcsname%
+          \PackageWarning{nameauth}%
+          {macro \ExcludeName: Reference: #2 #3 already exists; no exclusion.}%
+        \else%
+          \ifcsname\@nameauth@CleanName{#2#3!NF!}\endcsname%
+            \PackageWarning{nameauth}%
+            {macro \ExcludeName: Reference: #2 #3 already exists; no exclusion.}%
+          \else%
+            \csgdef{\@nameauth@CleanName{#2#3!PN!}}{}%
+          \fi%
+        \fi%
+      \fi%
+    \fi%
+  \else%
+    \ifcsname\@nameauth@CleanName{#1#2!PN!}\endcsname%
+      \PackageWarning{nameauth}%
+      {macro \ExcludeName: XRef: #1 #2 exists.}%
+    \else%
+      \ifcsname\@nameauth@CleanName{#1#2!MN!}\endcsname%
+        \PackageWarning{nameauth}%
+        {macro \ExcludeName: Reference: #1 #2 already exists; no exclusion.}%
+      \else%
+        \ifcsname\@nameauth@CleanName{#1#2!NF!}\endcsname%
+          \PackageWarning{nameauth}%
+          {macro \ExcludeName: Reference: #1 #2 already exists; no exclusion.}%
+        \else%
+          \csgdef{\@nameauth@CleanName{#1#2!PN!}}{}%
+        \fi%
+      \fi%
+    \fi%
+  \fi%
+}
+\newcommandx\ForgetName[3][1=\@empty, 3=\@empty]%
+{%
+  \protected@edef\testi{#1}%
+  \protected@edef\testiii{#3}%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \csundef{\@nameauth@CleanName{#2!MN!}}%
+      \csundef{\@nameauth@CleanName{#2!NF!}}%
+    \else%
+      \csundef{\@nameauth@CleanName{#2#3!MN!}}%
+      \csundef{\@nameauth@CleanName{#2#3!NF!}}%
+    \fi%
+  \else%
+      \csundef{\@nameauth@CleanName{#1#2!MN!}}%
+      \csundef{\@nameauth@CleanName{#1#2!NF!}}%
+  \fi%
+}
+\newcommandx\SubvertName[3][1=\@empty, 3=\@empty]%
+{%
+  \protected@edef\testi{#1}%
+  \protected@edef\testiii{#3}%
+  \ifx\testi\@empty%
+    \ifx\testiii\@empty%
+      \csgdef{\@nameauth@CleanName{#2!MN!}}{}%
+      \csgdef{\@nameauth@CleanName{#2!NF!}}{}%
+    \else%
+      \csgdef{\@nameauth@CleanName{#2#3!MN!}}{}%
+      \csgdef{\@nameauth@CleanName{#2#3!NF!}}{}%
+    \fi%
+  \else%
+      \csgdef{\@nameauth@CleanName{#1#2!MN!}}{}%
+      \csgdef{\@nameauth@CleanName{#1#2!NF!}}{}%
+  \fi%
+}
+\newcommand{\NamesInactive}{\@nameauth@DoFormatfalse}
+\newcommand{\NamesActive}{\@nameauth@DoFormattrue}
+\newcommand{\AllCapsInactive}{\@nameauth@AllCapsfalse}
+\newcommand{\AllCapsActive}{\@nameauth@AllCapstrue}
+\newcommand{\ReverseInactive}{\@nameauth@RevAllfalse}
+\newcommand{\ReverseActive}{\@nameauth@RevAlltrue}
+\newcommand{\ReverseCommaInactive}{\@nameauth@RevAllfalse\@nameauth@RevAllCommafalse}
+\newcommand{\ReverseCommaActive}{\@nameauth@RevAlltrue\@nameauth@RevAllCommatrue}
+\newcommand{\IndexInactive}{\@nameauth@DoIndexfalse}
+\newcommand{\IndexActive}{\@nameauth@DoIndextrue}
+\newenvironment{nameauth}{%
+  \begingroup%
+  \csdef{<}##1&##2&##3&##4>{%
+    \protected@edef\arga{\trim@spaces{##1}}%
+    \protected@edef\argb{\trim@spaces{##2}}%
+    \protected@edef\argc{\trim@spaces{##3}}%
+    \protected@edef\argd{\trim@spaces{##4}}%
+    \ifx\arga\@empty
+        \PackageError{nameauth}%
+        {environment nameauth: Control sequence missing.}%
+    \else
+      \ifx\argc\@empty
+        \PackageError{nameauth}%
+        {environment nameauth: Essential name missing.}%
+      \else
+        \ifx\argd\@empty
+          \ifx\argb\@empty
+            \csxdef{\arga}{\Name{\argc}}%
+            \csxdef{L\arga}{\Name*{\argc}}%
+            \csxdef{S\arga}{\FName{\argc}}%
+          \else
+            \csxdef{\arga}{\Name[\argb]{\argc}}%
+            \csxdef{L\arga}{\Name*[\argb]{\argc}}%
+            \csxdef{S\arga}{\FName[\argb]{\argc}}%
+          \fi
+        \else
+          \ifx\argb\@empty
+            \csxdef{\arga}{\Name{\argc}[\argd]}%
+            \csxdef{L\arga}{\Name*{\argc}[\argd]}%
+            \csxdef{S\arga}{\FName{\argc}[\argd]}%
+          \else
+            \csxdef{\arga}{\Name[\argb]{\argc}[\argd]}%
+            \csxdef{L\arga}{\Name*[\argb]{\argc}[\argd]}%
+            \csxdef{S\arga}{\FName[\argb]{\argc}[\argd]}%
+          \fi
+        \fi
+      \fi
+    \fi
+    \ignorespaces%
+  }%
+}{\endgroup}
+\endinput
+%%
+%% End of file `nameauth.sty'.
