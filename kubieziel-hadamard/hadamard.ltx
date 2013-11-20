@@ -19,7 +19,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[ngerman]{babel}
-
+\usepackage[table]{xcolor}
 \usepackage{xfrac}           % xfrac erfüllt einen ähnlichen Zweck wie
 			       % nicefrac. Jedoch macht nicefrac bei einigen
 			       % Schriften Probleme. Dies behebt xfrac. Daher
@@ -56,6 +56,12 @@
 \usepackage[autostyle,german=guillemets]{csquotes}
 
 \usepackage{nameauth}
+
+% Pakete für das Zeichnen der Hadamard-Matrizen
+
+\usepackage{pgfplotstable}
+\usetikzlibrary{calc}
+% \pgfplotsset{compat=1.8}
 
 %%%% Namen der verwendeten Autoren
 \begin{nameauth}
@@ -131,6 +137,45 @@
 % mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+% Setup für die grafische Darstellung der Hadamard-Matrizen
+% Das Beispiel stammt von TeX.SE:
+% <URL:http://tex.stackexchange.com/a/123728/201>
+
+\makeatletter
+\tikzset{
+    zero color/.initial=white,
+    zero color/.get=\zerocol,
+    zero color/.store in=\zerocol,
+    one color/.initial=black,
+    one color/.get=\onecol,
+    one color/.store in=\onecol,
+    cell wd/.initial=1ex,
+    cell wd/.get=\cellwd,
+    cell wd/.store in=\cellwd,
+    cell ht/.initial=1ex,
+    cell ht/.get=\cellht,
+    cell ht/.store in=\cellht,
+}
+
+\newcommand{\drawgrid}[2][]{
+\medskip
+\begin{tikzpicture}[#1]
+  \pgfplotstableforeachcolumn#2\as\col{
+    \pgfplotstableforeachcolumnelement{\col}\of#2\as\colcnt{%
+      \ifnum\colcnt=0
+        \fill[\zerocol]($ -\pgfplotstablerow*(0,\cellht) + \col*(\cellwd,0) $) rectangle+(\cellwd,\cellht);
+      \fi
+      \ifnum\colcnt=1
+        \fill[\onecol]($ -\pgfplotstablerow*(0,\cellht) + \col*(\cellwd,0) $) rectangle+(\cellwd,\cellht);
+      \fi
+    }
+  }
+\end{tikzpicture}
+\medskip
+}
+\makeatother
+
 
 \begin{document}
 \title{Hadamard-Matrizen}
