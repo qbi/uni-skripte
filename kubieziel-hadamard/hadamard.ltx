@@ -188,6 +188,32 @@
 \makeatother
 
 
+%% Legendre-Symbol
+\makeatletter
+\def\legendre@dash#1#2{\hb@xt@#1{%
+  \kern-#2\p@
+  \cleaders\hbox{\kern.5\p@
+    \vrule\@height.2\p@\@depth.2\p@\@width\p@
+    \kern.5\p@}\hfil
+  \kern-#2\p@
+  }}
+\def\@legendre#1#2#3#4#5{\mathopen{}\left(
+  \sbox\z@{$\genfrac{}{}{0pt}{#1}{#3#4}{#3#5}$}%
+  \dimen@=\wd\z@
+  \kern-\p@\vcenter{\box0}\kern-\dimen@\vcenter{\legendre@dash\dimen@{#2}}\kern-\p@
+  \right)\mathclose{}}
+\newcommand\legendre[2]{\mathchoice
+  {\@legendre{0}{1}{}{#1}{#2}}
+  {\@legendre{1}{.5}{\vphantom{1}}{#1}{#2}}
+  {\@legendre{2}{0}{\vphantom{1}}{#1}{#2}}
+  {\@legendre{3}{0}{\vphantom{1}}{#1}{#2}}
+}
+\def\dlegendre{\@legendre{0}{1}{}}
+\def\tlegendre{\@legendre{1}{0.5}{\vphantom{1}}}
+\makeatother
+
+
+
 \begin{document}
 \title{Hadamard-Matrizen}
 \author{Jens Kubieziel}
@@ -511,7 +537,20 @@ Kronecker"=Produkt:\todo{Eventuell weitere ergänzen}
 \todo{Eventuell Eigenschaften von QR}
 
 
-
+\begin{defini}
+  Sei $p>2$ eine Primzahl. Ist $a\in\Z$ teilerfremd zu $p$, ist das
+  Legendre-Symbol:
+  \begin{gather*}
+    \legendre{a}{p}\coloneqq
+    \begin{cases}
+      0 & p\mid a\\
+      1 & a \text{ ist QR }\mod{p}\\
+      -1 & a \text{ ist NR }\mod{p}\\
+    \end{cases}
+  \end{gather*}
+  Dabei bedeutet QR quadratischer Rest und NR Nichtrest.
+\end{defini}
+\todo{Lieber \dlegendre{a}{p} oder $\chi(a)$ verwenden?}
 
 
 \chapter{Konstruktion von Hadamard-Matrizen}
@@ -608,7 +647,13 @@ bezeichnet. Dabei ist $S(1)= H_{1}$ aus \autoref{bsp:hm}.
 \section{Konstruktionen nach \Payley}
 \label{sec:konst-payley}
 
-\subsection{\Payley{} I}
+Bevor die onstruktionen nach \Payley{} eingeführt werden können, ist
+etwas Vorarbeit nötig. Die Begriffe des quadratischen Rests und
+Legendre-Symbol wurden in \autoref{sec:quadr-resid} eingeführt.
+
+
+
+
 
 \subsection{\Payley{} II}
 
