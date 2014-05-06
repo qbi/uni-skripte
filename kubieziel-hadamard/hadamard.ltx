@@ -50,30 +50,51 @@
                          % auch für \help (s.u.) verwendet
 
 
-\usepackage[backend=bibtex]{biblatex}  % Bibliography
+\usepackage[backend=biber]{biblatex}  % Bibliography
 \bibliography{hadamard}
 
 \usepackage[autostyle,german=guillemets]{csquotes}
 
 \usepackage{siunitx}
 
-\usepackage{nameauth}
+\usepackage[alwaysformat]{nameauth}
 
 % Pakete für das Zeichnen der Hadamard-Matrizen
-
 \usepackage{pgfplotstable}
 \usetikzlibrary{calc}
 % \pgfplotsset{compat=1.8}
 
+%% tikz und onlyamsmath sind nicht 100%ig kompatibel. Daher wurde der
+%% untige Hack eingebaut. Quelle: https://tex.stackexchange.com/a/31863
+\usepackage{etoolbox}
+\preto\tikzpicture{\catcode`$=3 }
+\preto\tikz{\catcode`$=3 }
+
+
 %%%% Namen der verwendeten Autoren
 \begin{nameauth}
   \<Sylvester & James Joseph & Sylvester & >
-  \<Hadamard & Jacques Solomon & Hadamard & Jacques >
+  \<Hadamard & Jacques Solomon & Hadamard & >
   \<Hall & Marshall & Hall junior & >
   \<Kimura & Hiroshi & Kimura & >
   \<Kharaghani & Hadi & Kharaghani & >
   \<Tayfeh & Behruz  & Tayfeh-Rezaie & >
   \<Orrick & William P. & Orrick & >
+  \<Seberry & Jennifer & Seberry & >
+  \<Yamada & Mieko & Yamada & >
+  \<Paley & R.\,E.\,A.\,C. & Paley & >
+  \<Williamson & John & Williamson & >
+  \<Dagum & Paul & Dagum & >
+  \<Luby & Michael & Luby & >
+  \<Wanless & Ian M. & Wanless & >
+  \<Rualdi & Richard A. & Rualdi & >
+  \<Cathain & Padraig & \'O Cath\'ain & >
+  \<Sloane & Neil J.\,A. & Sloane & >
+  \<Butson & Alton T. & Butson & >
+  \<Koukouvinos & Christos & Koukouvinos & >
+  \<Stylianou & Stella & Stylianou & >
+  \<Goethals & Jean-Marie & Goethals & >
+  \<Seidel & Johan Jacob & Seidel & >
 \end{nameauth}
 
 \newcommand*{\R}{\mathbb{R}}      % reelle Zahlen
@@ -81,6 +102,13 @@
 \newcommand*{\N}{\mathbb{N}}      % natürliche Zahlen
 \newcommand*{\Q}{\mathbb{Q}}      % gebrochene Zahlen
 \newcommand*{\Z}{\mathbb{Z}}      % ganze Zahlen
+\newcommand*{\F}{\mathbb{F}}      % endliche Körper
+\newcommand*{\PP}{\mathbb{P}}      % Primzahlen
+
+\newcommand*{\CO}{\mathcal{O}}
+\newcommand*{\perm}{\mathrm{perm}}
+\newcommand*{\HM}{Hadamard-Matrix}
+\newcommand*{\HMen}{Hadamard-Matrizen}
 
 % nach dem Theoremkopf wird ein Zeilenumbruch eingefügt, die Schrift des
 % Körpers ist normal und der Kopf wird fett gesetzt
@@ -144,6 +172,7 @@
 % mathtools.pdf, z. B. \abs[\big]{\abs{a}-\abs{b}} \leq \abs{a+b}
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
 
 % Setup für die grafische Darstellung der Hadamard-Matrizen
 % Das Beispiel stammt von TeX.SE:
@@ -184,6 +213,32 @@
 \makeatother
 
 
+% %% Legendre-Symbol
+% \makeatletter
+% \def\legendre@dash#1#2{\hb@xt@#1{%
+%   \kern-#2\p@
+%   \cleaders\hbox{\kern.5\p@
+%     \vrule\@height.2\p@\@depth.2\p@\@width\p@
+%     \kern.5\p@}\hfil
+%   \kern-#2\p@
+%   }}
+% \def\@legendre#1#2#3#4#5{\mathopen{}\left(
+%   \sbox\z@{$\genfrac{}{}{0pt}{#1}{#3#4}{#3#5}$}%
+%   \dimen@=\wd\z@
+%   \kern-\p@\vcenter{\box0}\kern-\dimen@\vcenter{\legendre@dash\dimen@{#2}}\kern-\p@
+%   \right)\mathclose{}}
+% \newcommand\legendre[2]{\mathchoice
+%   {\@legendre{0}{1}{}{#1}{#2}}
+%   {\@legendre{1}{.5}{\vphantom{1}}{#1}{#2}}
+%   {\@legendre{2}{0}{\vphantom{1}}{#1}{#2}}
+%   {\@legendre{3}{0}{\vphantom{1}}{#1}{#2}}
+% }
+% \def\dlegendre{\@legendre{0}{1}{}}
+% \def\tlegendre{\@legendre{1}{0.5}{\vphantom{1}}}
+% \makeatother
+\newcommand*{\legendre}[2]{\ensuremath{\genfrac(){}{}{#1}{#2}}}
+
+
 \begin{document}
 \title{Hadamard-Matrizen}
 \author{Jens Kubieziel}
@@ -211,30 +266,48 @@
 \label{chap:einf}
 
 Das folgende Kapitel ist eine Einführung in die Thematik der
-Hadamard-Matrizen. Grundlegende Begriffe werden definiert und anhand
+\HMen. Grundlegende Begriffe werden definiert und anhand
 von Beispielen erläutert.
 
 \section{Einleitung}
 \label{sec:einleitung}
 
-Die Forschung zu Hadamard-Matrizen begann im Jahr 1867. Der britische
+Die Forschung zu \HMen{} begann im Jahr 1867. Der britische
 Mathematiker \Sylvester{} veröffentlichte den Artikel
-\citetitle{Sylvester1867}\cite{Sylvester1867}. Darin stellte er
-Beispiele und Konstruktionsverfahren vor. \Hadamard{}\todo{Wie bekommt
-  man den Joseph?}  bewies 1893 die Ungleichung
+\citetitle{Sylvester1867}~\cite{Sylvester1867}. Darin stellte er
+Beispiele und Konstruktionsverfahren vor. In dieser Veröffentlichung
+trugen die Matrizen noch nicht den Namen von \LHadamard{}.  Erst im
+Jahr 1893 bewies \Hadamard{} die
+Ungleichung~\cite{hadamard1893resolution}\footnote{Eine
+  englischsprachige Übersetzung des Werkes wurde von \Cathain{}
+  angefertigt~\cite{cathainhada}.}
 \begin{gather}\label{eq:had-ungl}
-  \abs{\det (a_{ij})}\leq\prod_{j}\left(\sum_{i} \abs{a_{ij}}^{2}\right)^{\sfrac{1}{2}}
+  \abs{\det (a_{ij})}\leq\prod_{j=1}^{n}\left(\sum_{i=1}^{n} \abs{a_{ij}}^{2}\right)^{\sfrac{1}{2}}
 \end{gather}
-Dies ist als \Hadamard sches Problem der maximalen Determinante in
-die Literatur eingegangen. Insbesondere zeigte \Hadamard{}, wann
-Gleichheit gilt.
+Dabei sei $A=(a_{ij})_{i,j=1,\dots,n}$ eine reelle $n\times n$
+Matrix. Die Determinante von $A$ kann als das Volumen des durch die
+Spaltenvektoren von $A$ aufgespannten Parallelepipeds aufgefasst
+werden. Bezeichne $a_{i}$ den $i$-ten Spaltenvektor und sei
+$\norm{\cdot}_{2}^{2}$ die bekannte euklidische Norm. Der $i$-te
+Spaltenvektor besitzt die Länge~$l_{i}= \norm{a_{i}}$. Damit ist das
+Volumen eines Quaders mit den Seitenlängen~$l_{i}$ für $i=1,\dots,n$
+eine obere Schranke für das Volumen des Parallelepipeds. Also haben
+wir $\det(A)\leq\prod_{j=1}^{n} \norm{a_{j}}_{2}= \prod_{j=1}^{n}(\sum_{i=1}^{n}
+\abs{a_{ij}}^{2})^{\sfrac{1}{2}}$ und die Behauptung ist gezeigt.
 
-\section{Hadamard-Matrizen}
+Dies ist als \Hadamard sches Problem der maximalen Determinante in die
+Literatur eingegangen. Aufgrund des Beweis wird sofort klar, dass die
+Gleichheit genau dann gilt, wenn die Spaltenvektoren senkrecht
+zueinander sind. Seit dem Beweis tragen die speziellen Matrizen den
+Namen von \Hadamard{}.
+
+\section{\HMen}
 \label{sec:hm}
 
-\begin{defini}[Hadamard-Matrix]\label{def:hadamard-matrizen}
-  Eine \highl{Hadamard-Matrix} der Ordnung~$n$ ist eine $n\times n$
-  Matrix~$H$ mit Einträgen aus $\{\pm1\}$ mit folgender Eigenschaft:
+\begin{defini}[\HM]\label{def:hadamard-matrizen}
+  Eine \highl{\HM} der Ordnung~$n$ ist eine $n\times n$
+  Matrix~$H$ mit Einträgen aus $\{\pm1\}$, die die  folgende
+  Eigenschaft besitzt:
   \begin{gather}
     \label{eq:hm-eigensch}
     HH^{T}=nI_{n}
@@ -242,26 +315,26 @@ Gleichheit gilt.
 \end{defini}
 
 Mit der Definition ist sofort klar, dass die Zeilen oder Spalten einer
-Hadamard-Matrix orthogonal sein müssen. Denn die Multiplikation zweier
+\HM{} orthogonal sein müssen. Denn die Multiplikation zweier
 Spalten~$i$ und $j$ für $i\neq j$ entspricht nach der
 \autoref{def:hadamard-matrizen} der Multiplikation von Spalte~$i$ und
 Zeile~$j$. Das ergibt aber $0$.
 
-Weiterhin ist die transponierte Hadamard-Matrix wiederum eine
-Hadamard-Matrix. Wenn die \autoref{eq:had-ungl} mit $n$ dividiert
-wird, ergibt sich $\sfrac{H}{\sqrt{n}}\cdot\sfrac{H^{T}}{\sqrt{n}}=
-I_{n}$. Aus der linearen Algebra ist bekannt, dass eine Matrix genau
-dann surjektiv ist, wenn diese surjektiv ist. Da aber
-$\sfrac{H}{\sqrt{n}}$ ein Rechtsinverses hat, ist $H$ injektiv, hat
-also auch ein Linksinverses. Damit lässt sich errechnen, dass das
-Linksinverse von $\sfrac{H}{\sqrt{n}}$ der Term
-$\sfrac{H^{T}}{\sqrt{n}}$ ist. Also ist $H^{T}H=nI_{n}$.
+Weiterhin ist die transponierte \HM{} wiederum eine \HM{}. Wenn die
+\autoref{eq:had-ungl} durch $n$ dividiert wird, ergibt sich
+$\sfrac{H}{\sqrt{n}}\cdot\sfrac{H^{T}}{\sqrt{n}}= I_{n}$. Aus der
+linearen Algebra ist bekannt, dass eine Abbildung genau dann surjektiv
+ist, wenn diese injektiv ist. Da aber $\sfrac{H}{\sqrt{n}}$ ein
+Rechtsinverses hat, ist $H$ injektiv, hat also auch ein
+Linksinverses. Damit lässt sich errechnen, dass das Linksinverse von
+$\sfrac{H}{\sqrt{n}}$ der Term $\sfrac{H^{T}}{\sqrt{n}}$ ist. Also ist
+$H^{T}H=nI_{n}$.
 
-Die Zeilen oder Spalten einer Hadamard-Matrix können beliebig
+Die Zeilen oder Spalten einer \HM{} können beliebig
 vertauscht werden. Da eine Vertauschung die Orthogonalitätseigenschaft
-beibehält, ist das Ergebnis wieder eine Hadamard-Matrix. Die
-Multiplikation von Zeilen oder Spalten mit $-1$ einer Hadamard-Matrix
-erzeugt wiederum eine Hadamard-Matrix. Angenommen die $i$-te Zeile
+beibehält, ist das Ergebnis wieder eine \HM{}. Die
+Multiplikation von Zeilen oder Spalten einer \HM{} mit $-1$
+erzeugt wiederum eine \HM. Angenommen die $i$-te Zeile
 wird mit $-1$ multipliziert. Das Skalarprodukt der Zeile mit sich
 bleibt in dem Fall gleich. Das Skalarprodukt der Zeilen~$i$ und $j$
 mit $i\neq j$ ist dann $\sum_{k=1}^{n} -h_{i,j}h_{k,j}=
@@ -269,15 +342,16 @@ mit $i\neq j$ ist dann $\sum_{k=1}^{n} -h_{i,j}h_{k,j}=
 erhalten.
 
 \begin{satz}\label{satz:grad-hm}
-  Sei $k\in \N$. Der Grad~$n$ einer Hadamard-Matrix ist dann $n=1,2$
-  oder $n=4k$.
+  Der Grad~$n$ einer \HM{} ist $n=1$, $2$ oder $n=4k$ für ein $k\in
+  \N$.
   \begin{proof}
-    Hadamard"=Matrizen vom Grad~$1$ und $2$ sind in \ref{bsp:hm}
-    genannt. Im folgende wird davon ausgegangen, dass die
-    Hadamard"=Matrix aus mindestens drei Zeilen besteht. \OE{} bestehe
-    die erste Zeile aus $+1$-Einträgen. Gegebenenfalls muss die Matrix
-    durch die oben aufgeführten Umformungen transformiert werden. Die
-    ersten drei Zeilen können nun folgende Form haben:
+    \HMen{} vom Grad~$1$ und $2$ sind in \autoref{bsp:hm} genannt. Im
+    folgenden wird davon ausgegangen, dass die \HM{} aus mindestens
+    drei Zeilen besteht. \OE{} bestehe die erste Zeile aus
+    $+1$-Einträgen. Gegebenenfalls muss die Matrix durch die oben
+    aufgeführten Umformungen transformiert werden. Die ersten drei
+    Zeilen können nach geeigneter Spaltenvertauschung nun folgende
+    Form haben:
     \begin{gather*}
       \begin{pmatrix}
         +1\cdots+1 & +1\cdots+1 & +1\cdots+1 & +1\cdots+1\\
@@ -294,16 +368,31 @@ erhalten.
 \end{satz}
 
 Die Umkehrung von \autoref{satz:grad-hm}, also die Frage, es für jedes
-$n=4k$ eine Hadamard"=Matrix gibt, ist bisher unbeantwortet. Eine
-Annäherung an die Frage bietet die Konstruktion von Hadamard"=Matrizen
-(~\ref{chap:konstr}). In der Vergangenheit entstanden verschiedene
+$n=4k$ eine \HM{} gibt, ist bisher unbeantwortet und wird als die
+Vermutung von \Hadamard{} bezeichnet.
+
+Eine Annäherung an die Frage bietet die Konstruktion von \HMen{}
+(\autoref{chap:konstr}). In der Vergangenheit entstanden verschiedene
 Verfahren zur Konstruktion und darüber konnte die Existenz einer
-Vielzahl von Hadamard"=Matrizen nachgewiesen werden. Allerdings ist
-bereits im Fall $n=668$ unklar, ob hierfür eine Hadamard"=Matrix
-existiert.\todo{Verweis auf die Webseite von Sloane}
+Vielzahl von \HMen{} nachgewiesen werden. Allerdings ist bereits im
+Fall $n=668$ unklar, ob hierfür eine \HM{} existiert. Bis zum Jahr
+2004 war der Fall $n=428$ offen und die entsprechende \HM{} von
+\Kharaghani{} und \Tayfeh{} nachgewiesen~\cite{JCD:JCD20043}.
+
+Eine weitere Annäherung an die \Hadamard sche Vermutung erfolgte über
+asymptotische Abschätzungen. So gelang \Seberry{} der Nachweis, dass
+es für jedes $q\in\N$ ein von $q$ abhängiges $t_{q}$ existiert, so
+dass es eine \HM{}  des Grades~$2^{s}t_{q}$ für $s\geq t_{q}$
+gibt.\todo{Verbessern!} Die oben genannte Vermutung besagt, dass $s=2$
+ist. \Seberry{} zeigte 1976, dass gilt, $s\geq
+\floor{2\log_{2}(\sfrac{t_{q}-3}{2})}$.
+Diese Schranke wurde in den vergangenen Jahren weiter
+verbessert und liegt derzeit bei
+$\sfrac{1}{5}\log_{2}(\sfrac{t_{q}-1}{2} +13)$~\cite{Livinskyi2012}.
+
 
 \begin{bsp}\label{bsp:hm}
-  Untenstehend sind Beispiele für Hadamard-Matrizen vom Grad~$1$, $2$
+  Untenstehend sind Beispiele für \HMen{} vom Grad~$1$, $2$
   und $4$ aufgeführt:
   \begin{align*}
     H_{1} &=
@@ -326,7 +415,12 @@ existiert.\todo{Verweis auf die Webseite von Sloane}
   Für höhere Grade wird die Struktur der Matrizen schnell
   unübersichtlich. Daher hat es sich eingebürgert, diese Beispiele
   grafisch darzustellen. Untenstehend sind drei Beispiele von
-  Hadamard-Matrizen des Grades~$20$ aufgeführt.
+  \HMen{} des Grades~$20$ aufgeführt.
+
+  Dabei steht ein schwarzes Feld für einen Matrixeintrag $+1$ und ein
+  weißes Feld kennzeichnet die $-1$. Die Beispiele wurden der
+  Webseite\footnote{\url{http://neilsloane.com/hadamard/}} von
+  \Sloane{} entnommen. Er listet \HMen{} bis zum Grad~$256$ auf~\cite{sloanehad}.
   \begin{figure}[htb]
     \centering
     \pgfplotstableread{beispiele/had20.paley}{\hzwanzigpaley}
@@ -335,18 +429,98 @@ existiert.\todo{Verweis auf die Webseite von Sloane}
     \drawgrid{\hzwanzigpaley}\hfill{}
     \drawgrid{\hzwanzigwill}\hfill{}
     \drawgrid{\hzwanzigton}
-    \caption{Drei Hadamard-Matrizen vom Grad~$20$}
+    \caption{Drei \HMen{} vom Grad~$20$}
     \label{fig:had20}
   \end{figure}
 \end{bsp}
 
-\section{Äquivalenz von Hadamard-Matrizen}
+\section{Weitere Arten von \HMen}
+\label{sec:hm-typen}
+
+Die ersten Arbeiten zu den Matrizen, die später als \HMen{} bekannt
+wurden, bezogen sich auf komplexe Zahlen. In dieser Arbeit werden
+hauptsächlich Matrixeinträge aus $\{\pm1\}$ betrachtet. Jedoch werden
+\HMen{} mit komplexen Einträgen weiter erforscht. Eine Übersicht
+verschiedener Ergebnisse bietet u.\,a. die Promotionsarbeit von
+\citeauthor{2011PhDT378S}~\cite{2011PhDT378S}. Daneben benutzten
+Forscher verschiedene Eigenschaften von \HMen{} und gaben Matrizen mit
+diesen Eigenschaften Namen. Dieser Abschnitt soll eine Übersicht über
+die verschiedenen Arten von \HMen{} geben.
+
+\begin{defini}[Komplexe \HM{}]
+  Sei $n\in\N$. Eine \highl[\HM|komplexe]{komplexe \HM{}} vom Grad~$n$
+  ist eine $n\times n$ Matrix~$H$ mit Einträgen aus $\{\pm1, \pm i\}$
+  und
+  \begin{gather*}
+    H\overline{H}^{T}=nI_{n}
+  \end{gather*}
+  Dabei bezeichnet $\overline{H}$ die komplexe Konjugation.
+\end{defini}
+Komplexe \HMen{} werden in der Literatur üblicherweise als Spezialfall
+so genannter Butson"=Matrizen\footnote{In der Literatur wird für
+  Butson"=Matrizen auch der Term \enquote{komplexe \HM{}} oder, wie in
+  der Originalarbeit, \enquote{verallgemeinerte \HM{}} verwendet.}
+verstanden. \Butson{} konstruierte Matrizen aus $m$-ten
+Einheitswurzeln~\cite{zbMATH03178660}. Eine Vorstellung dieser Matrizen
+führt im Rahmen dieser Arbeit zu weit und der Leser sei auf die
+Veröffentlichung \citetitle{zbMATH03178660} bzw. die oben vorgestellte
+Promotionsarbeit von \citeauthor{2011PhDT378S} verwiesen.
+
+\begin{defini}[Schiefe \HM{}]
+  Sei $n\in\N$ und $1_{n}$ ein $1\times n$ Vektor, der nur aus
+  Eins"=Einträgen besteht. Weiterhin sei $C$ eine schiefsymmetrische
+  Matrix mit Einträgen aus $\{0,\pm1\}$ sowie $I_{n}$ die $n\times n$
+  Einheitsmatrix. Dann heißt die $n\times n$ Matrix~$H$
+  \highl[\HM|schiefe]{schief}, wenn diese wie folgt geschrieben werden
+  kann:
+  \begin{gather*}
+    H= 
+    \begin{pmatrix}
+      1 & 1_{n-1}^{T}\\
+      -1_{n-1} & C+I
+    \end{pmatrix}
+  \end{gather*}
+\end{defini}
+Eine gute Übersicht über diese Art von \HMen{} bietet die
+Veröffentlichung von \Koukouvinos{} und \Stylianou{} mit dem Titel
+\citetitle{zbMATH05280707}~\cite{zbMATH05280707}.\todo{Werden noch mehr
+Eigenschaften der SHM gebraucht?}
+
+\begin{defini}[Verträgliche \HMen{}]
+  Sei $n\in\N$ und $H_{1}$ eine schiefe $n\times n$ \HM{} sowie
+  $H_{2}$ eine \HM{} mit $H_{2}= H_{2}^{T}$. Dann heißen $H_{1}$ und
+  $H_{2}$ \highl[\HM|verträglich]{verträglich},\footnote{In der
+    deutschsprachigen Literatur war hierfür kein eindeutiger Begriff
+    zu finden. De Autor versuchte daher, dass englische Wort
+    \enquote{amicable} in das Deutsche zu übertragen.} wenn gilt
+  \begin{enumerate}
+  \item $H_{1}= I+S$ mit der Einheitsmatrix~$I$ und einer schiefsymmetrischen \HM{}~$S$
+  \item $H_{1}H_{2}^{T}= H_{2}H_{1}^{T}$
+  \end{enumerate}
+\end{defini}
+Verträgliche \HMen{} können dazu benutzt werden, schiefe \HMen{} zu
+konstruieren und letztere dienen zum Teil für die Konstruktion von
+\HMen{}. Für zwei verträgliche \HMen{} $H_{1}= I+S$ und $H_{2}$ wie
+oben, gilt weiterhin $SH_{2}^{T}= H_{2}S^{T}$. Denn $H_{1}H_{2}^{T}=
+(I+S)H_{2}^{T} = H_{2}^{T}+SH_{2}^{T}= H_{2}+SH_{2}^{T}$ und
+$H_{2}H_{1}^{T}= H_{2}(I+S)^{T}= H_{2}+ H_{2}S^{T}$. Also ist
+$H_{1}H_{2}^{T}= H_{2}+SH_{2}^{T}= H_{2}+ H_{2}S^{T}= H_{2}H_{1}^{T}$
+und damit $SH_{2}^{T}= H_{2}S^{T}$.
+
+\begin{defini}[Normalisierte \HM{}, Kern]
+  Sei $n\in\N$. Eine $n\times n$ \HM{} heißt
+  \highl[\HM|normalisierte]{normalisiert}, wenn alle Einträge in der
+  ersten Spalte und Zeile $1$ sind. Die Untermatrix ohne die erste
+  Zeile und Spalte heißt der \highl{Kern} der \HM{}.
+\end{defini}
+
+\section{Äquivalenz von \HMen}
 \label{sec:aequi-hm}
 
-Im \autoref{bsp:hm} ist eine Hadamard"=Matrix vom Grad~$2$
+Im \autoref{bsp:hm} ist eine \HM{} vom Grad~$2$
 aufgeführt. Durch Bildung der Transponierten, Multiplikation von
 Zeilen oder Spalten mit $-1$ oder Permutation der Zeilen oder Spalten
-lassen sich andere Hadamard"=Matrizen erzeugen.
+lassen sich andere \HMen{} erzeugen.
 \begin{alignat*}{3}
   \begin{pmatrix}
     1 & 1\\
@@ -381,16 +555,16 @@ lassen sich andere Hadamard"=Matrizen erzeugen.
     -1 & -1
   \end{pmatrix}
 \end{alignat*}
-Durch die Betrachtung von Hadamard"=Matrizen, die durch die oben genannten
+Durch die Betrachtung von \HMen{}, die durch die oben genannten
 Umformungen enstanden sind, sind keine wesentlich neuen Erkenntnisse
-zu erwarten. Andererseits sind im \autoref{fig:had20} drei
-Hadamard"=Matrizen vom Grad~$20$ aufgeführt, die nicht durch
+zu erwarten. Andererseits sind in \autoref{fig:had20} drei
+\HMen{} vom Grad~$20$ aufgeführt, die nicht durch
 Umformungen entstanden sind. In den drei Fällen gibt es keine
 Möglichkeit, die Matrizen durch Vertauschung oder Multiplikation mit
 $-1$ ineinander zu überführen.
 
-In der Literatur wird von äquivalenten Hadamard"=Matrizen gesprochen,
-wenn sich zwei Hadamard"=Matrizen durch Vertauschung von Reihen oder
+In der Literatur wird von äquivalenten \HMen{} gesprochen,
+wenn sich zwei \HMen{} durch Vertauschung von Zeilen oder
 Spalten oder Multiplikation mit $-1$ ineinander überführen
 lassen. Diese Transformation kann ebenfalls durch Multiplikation mit
 entsprechenden Permutationsmatrizen dargestellt werden. Im Rahmen
@@ -400,50 +574,527 @@ genau einer Zeile und Spalte einen Eintrag, der von $0$ verschieden
 ist. Der Begriff der Äquivalenz wird nun unter Ausnutzung dieser
 Tatsache formuliert.
 \begin{defini}
-  Seien $H_{1}$ und $H_{2}$ zwei $n\times n$ Hadamard"=Matrizen sowie
-  $P$, $Q$ zwei $n\times n$ Permutationsmatrizen. Die Matrizen $H_{1}$
+  Seien $H_{1}$ und $H_{2}$ zwei $n\times n$ \HMen{}. Die Matrizen $H_{1}$
   und $H_{2}$ heißen
   \highl[Hadamard-Matrix!äquivalent]{äquivalent}\index{äquivalent},
-  wenn gilt
+  wenn $n\times n$  Permutationsmatrizen $P$, $Q$ mit
   \begin{gather*}
     H_{1} = PH_{2}Q^{T}
   \end{gather*}
+  existieren.
 \end{defini}
 
-Damit zerfallen die Hadamard"=Matrizen vom Grad~$n$ in
-Äquivalenzklassen. Für die Grade~$1$, $2$, $4$, $8$ und $12$ existiert
-eine Äquivalenzklasse. Für $n=16$ fand \Hall{} 1961 heraus, dass es
-fünf Äquivalenzklassen gibt\cite{hall1961hadamard}. Vier Jahre später
-zeigte er, dass es $n=20$ zwei Klassen weniger
-hat\cite{hall1965hadamard}.  Die Klassifikation von $n=24$ wurde 1989
-durch \Kimura{} abgeschlossen\cite{zbMATH04135959}. Aufbauend auf
-einer Arbeit von Ito et.\,al \cite{zbMATH03749020} zeigte er, dass
-60~Äquivalenzklassen existieren. Schließlich existieren für
-Hadamard"=Matrizen vom Grad~$28$ insgesamt
-487~Klassen\cite{HoradamHM1951}. Bei höheren Graden ist die Anzahl
+Damit zerfallen die \HMen{} vom Grad~$n$ in Äquivalenzklassen. Für die
+Grade~$1$, $2$, $4$, $8$ und $12$ existiert genau eine
+Äquivalenzklasse. Für $n=16$ fand \Hall{} 1961 heraus, dass es fünf
+Äquivalenzklassen gibt~\cite{hall1961hadamard} und 1965 zeigte er,
+dass es 14~Klassen für $n=20$ gibt~\cite{zbMATH01321696}.  Die
+Klassifikation von $n=24$ wurde 1989 durch \Kimura{}
+abgeschlossen~\cite{zbMATH04135959}. Aufbauend auf einer Arbeit von
+Ito et.\,al~\cite{zbMATH03749020} zeigte er, dass 60~Äquivalenzklassen
+existieren. Schließlich existieren für \HMen{} vom Grad~$28$ insgesamt
+487~Klassen~\cite{HoradamHM1951}. Bei höheren Graden ist die Anzahl
 nicht mehr einfach ermittelbar. Die Literatur spricht hier von einer
 algorithmischen Explosion und hat diese Fälle durch Abschätzungen nach
 unten behandelt. Erst im Jahr 2013 gelang es \Kharaghani{} und
 \Tayfeh{} die Anzahl der Äquivalenzklassen genau zu bestimmen. In
-ihrer Arbeit \citetitle{JCD:JCD21323} \cite{JCD:JCD21323} kommen sie
+ihrer Arbeit \citetitle{JCD:JCD21323}~\cite{JCD:JCD21323} kommen sie
 zu dem Ergebnis, dass genau \num{13710027}~Äquivalenzklassen
 existieren. Zum Zeitpunkt der Niederschrift dieser Arbeit existierte
-aktuellste Abschätzung für den Grad~$n=36$ von
-\Orrick{}\cite{orrick2008}. Diese besagt, dass die Anzahl der
+die aktuellste Abschätzung für den Grad~$n=36$ von
+\Orrick{}~\cite{orrick2008}. Diese besagt, dass die Anzahl der
 Äquivalenzklassen größer als \num{18292717} ist.
 
-\Orrick{} definiert in seiner Arbeit \citetitle{orrick2008} den
-Begriff der $Q$-Äquivalenz. Dies ist eine schwächere Form des
+\Orrick{} definiert in seiner Arbeit
+\citetitle{orrick2008}~\cite{orrick2008} den Begriff der
+$Q$-Äquivalenz. Dies ist eine schwächere Form des
 Äquivalenzbegriffs. Daneben gibt es weitere Versuche, eine schwächere
 Definition zur Handhabung der Äquivalenzen zu finden. Hierauf soll im
 folgenden nicht näher eingegangen werden.
 
+\section{Weitere Begriffe}
+\label{sec:weitere-begriffe}
+
+Der folgende Abschnitt führt Begriffe ein, die für die weitere Arbeit
+von Wichtigkeit sind.
+
+\subsection{Kronecker-Produkt}
+\label{sec:kronecker-produkt}
+
+\begin{defini}
+  Sei $R$ ein Ring, $A=(a_{ij})$ eine $m\times m$ Matrix und $B=(b_{kl})$ eine $n\times
+  n$ Matrix mit $a_{ij}, b_{kl}\in R$ für $i,j=1,\dots,m$ und
+  $k,l=1,\dots,n$. Das \highl{Tensorprodukt} $A\otimes B$ in
+  \autoref{eq:kron-prod} wird als \highl{Kronecker-Podukt} bezeichnet.
+  \begin{gather}
+    \label{eq:kron-prod}
+    A\otimes B=
+    \begin{pmatrix}
+      a_{11}B & a_{12}B & a_{13}B & \dots& a_{1m}B\\
+      a_{21}B & a_{22}B & a_{23}B & \dots& a_{2m}B\\
+      \hdots& \hdots&\ddots& \hdots& \hdots\\
+      a_{m1}B & a_{m2}B & a_{m3}B & \dots& a_{mm}B
+    \end{pmatrix}
+  \end{gather}
+\end{defini}
+
+Das Kronecker"=Produkt stellt die Grundlage für viele
+Konstruktionsverfahren von \HMen{} dar. Daher sind die
+Elemente aus $A$ und $B$ in den folgenden Betrachtungen meist aus
+$\Z$ bzw. aus der Menge $\{0, \pm1\}$. Weiterhin kann das
+Kronecker"=Produkt allgemeiner für $m\times n$ und $p\times q$
+Matrizen definiert werden. Da im Rahmen der Arbeit in der Regel nur
+quadratische Matrizen betrachtet werden, wurde diese Einschränkung
+vorgenommen.
+
+Folgende Eigenschaften gelten für das
+Kronecker"=Produkt:
+\begin{itemize}
+\item Assoziativität: $A\otimes(B\otimes C)= (A\otimes B)\otimes C$
+  für Matrizen $A$, $B$ und $C$ mit Einträgen aus einem Ring~$R$.
+\item Distributivität: $A\otimes(B+C)= (A\otimes B)+(A\otimes C)$ und
+  $(A+B)\otimes C= (A\otimes C)+ (B\otimes C)$ für
+  Matrizen $A$, $B$ und $C$  mit Einträgen aus einem Ring~$R$.
+\item Seien $A$, $B$, $C$ und $D$ vier $n\times n$ Matrizen. Dann
+  gilt, $(A\otimes B)(C\otimes D)= AC\otimes BD$.
+\item Die transponierte Matrix aus dem Kronecker"=Produkt entspricht
+  dem Kronecker"=Produkt der transponierten Matrizen: $(A\otimes
+  B)^{T}= A^{T}\otimes B^{T}$.
+\item Für quadratische, reguläre Matrizen entspricht das Inverse des
+  Kronecker"=Produkts dem Kronecker"=Produkt der inversen Matrizen:
+  $(A\otimes B)^{-1}= A^{-1}\otimes B^{-1}$.
+\end{itemize}
 
 
-\chapter{Konstruktion von Hadamard-Matrizen}
+\subsection{Quadratischer Rest und Legendre-Symbol}
+\label{sec:quadr-resid}
+
+\begin{defini}
+  Seien $a\in\Z$ und $n\in\N$ teilerfremd. Dann heißt $a$
+  \highl[Rest!quadratischer]{quadratischer Rest} modulo $n$, wenn die
+  Kongruenz $b^{2}\equiv a\pmod{n}$ für $b\in\Z$ lösbar
+  ist. Andernfalls heißt $a$ \highl{Nichtrest}.
+\end{defini}
+\todo{Eventuell Eigenschaften von QR}
+
+
+\begin{defini}
+  Sei $p>2$ eine Primzahl. Ist $a\in\Z$ teilerfremd zu $p$, ist das
+  Legendre-Symbol:
+  \begin{gather*}
+    \legendre{a}{p}\coloneqq
+    \begin{cases}
+      0 & p\mid a\\
+      1 & a \text{ ist QR }\mod{p}\\
+      -1 & a \text{ ist NR }\mod{p}\\
+    \end{cases}
+  \end{gather*}
+  Dabei bedeutet QR quadratischer Rest und NR Nichtrest.
+\end{defini}
+
+\subsection{Permanente}
+\label{sec:permanente}
+
+Innerhalb der linearen Algebra ist die Determinante bekannt. Hingegen
+wird die mehr in der Kombinatorik gebräuchliche Permanente weniger
+häufig benutzt. Diese ist wie die Determinante ein Polynom in den
+Einträgen der Matrix und besitzt folgende Definition:
+\begin{defini}[Permanente]
+  Sei $n\in\N$ und $S_{n}$ die symmetrische Gruppe aller Permutationen
+  von $n$. Die \highl{Permanente} einer $n\times n$ Matrix~$A=(a_{ij})$ ist
+  definiert durch:
+  \begin{gather}
+    \label{eq:permanente}
+    \perm(A)\coloneqq\sum_{\sigma\in S_{n}} \prod_{i=1}^{n} a_{i,\sigma(i)}
+  \end{gather}
+\end{defini}
+Unter Zugrundelegung der Leibnizschen Formel unterscheidet sich die
+obenstehende Definition nur durch die fehlende Signumsfunktion von der
+Determinante einer Matrix.
+\begin{bsp}
+  \begin{align*}
+    \det
+    \begin{pmatrix}
+      a_{11} & a_{12}\\
+      a_{21} & a_{22}
+    \end{pmatrix} &= a_{11}a_{22}-a_{12}a_{21}\qquad
+    \perm
+    \begin{pmatrix}
+      a_{11} & a_{12}\\
+      a_{21} & a_{22}
+    \end{pmatrix} = a_{11}a_{22}+a_{12}a_{21} \\
+    \det
+    \begin{pmatrix}
+      a_{11} & a_{12} & a_{13}\\
+      a_{21} & a_{22} & a_{23}\\
+      a_{31} & a_{32} & a_{33}
+    \end{pmatrix} &= a_{11}a_{22}a_{33}+ a_{13}a_{21}a_{32} +
+    a_{12}a_{23}a_{31}\\
+    &\quad- a_{13}a_{22}a_{31}- a_{12}a_{21}a_{33}- a_{11}a_{23}a_{32}\\
+    \perm
+    \begin{pmatrix}
+      a_{11} & a_{12} & a_{13}\\
+      a_{21} & a_{22} & a_{23}\\
+      a_{31} & a_{32} & a_{33}
+    \end{pmatrix} &= a_{11}a_{22}a_{33}+ a_{13}a_{21}a_{32} +
+    a_{12}a_{23}a_{31}\\
+    &\quad+ a_{13}a_{22}a_{31}+ a_{12}a_{21}a_{33}+ a_{11}a_{23}a_{32}\\
+  \end{align*}
+\end{bsp}
+Ein weiterer Unterschied der Permanente im Vergleich zur Determinante
+besteht in der Berechnung des Wertes. Für die Ermittlung der
+Determinante sind aus der Numerik verschiedene schnelle Verfahren
+bekannt. Diese Verfahren benötigen $\CO(n^{3})$ Zeit. Die Forscher
+\Dagum{} und \Luby{} konnten 1992 zeigen, dass die Berechnung der
+Permanente in die Klasse der \#P"=vollständigen gehört. Das bedeutet,
+dass dies mindestens in der Klasse NP liegt und es damit vermutlich
+keinen Algorithmus gibt, der dies in polynomialer Zeit lösen
+kann.\todo{Evtl. weitere Eigenschaften}
+
+Zu den Eigenschaften der Permanente von \HMen{} ist wenig
+bekannt. Wegen der \autoref{eq:had-ungl} ist leicht\todo{wie?} zu sehen, dass für
+eine \HM~$H$ gilt, $\abs{\perm(H)}\leq \abs{\det(H)}=
+n^{\sfrac{n}{2}}$. Weiterhin gelang es 2005, \Wanless{} die
+Permanenten aller \HMen{} bis zum Grad~28 zu berechnen. Im
+\autoref{chap:konstr} sollen weitere Ergebnisse vorgestellt werden.
+\todo[inline]{Was ist mit äquivalenten \HMen?}
+
+\subsection{Zyklische Matrix}
+\label{sec:circulant}
+
+Zyklische Matrixen werden benutzt, um \HMen{} zu konstruieren. Daher
+soll der Begriff hier mit eingeführt werden.
+\begin{defini}[Zyklische Matrix]
+  Sei $n\in\N$. Eine $n\times n$ Matrix~$C$ heißt
+  \highl[Matrix|zyklische]{zyklisch}, wenn jede Zeile durch die
+  Verschiebung aus der vorigen entsteht:
+  \begin{gather*}
+    C=
+    \begin{pmatrix}
+      c_{1} & c_{2} & c_{3} & \dots & c_{n}\\
+      c_{n} & c_{1} & c_{2} & \dots & c_{n-1}\\
+      c_{n-1} & c_{n} & c_{1} & \dots & c_{n-2}\\
+      \vdots & \vdots & \vdots & \ddots & \vdots\\
+      c_{2} & c_{3} & c_{4} & \dots & c_{1}
+    \end{pmatrix}
+  \end{gather*}
+\end{defini}
+Eine zyklische Matrix kann vollständig durch einen Zeilenvektor
+charakterisiert werden und es gilt, $C=c_{0}I_{n}+ c_{1}P+
+c_{2}P^{2}+\dots+ c_{n-1}P^{n-1}$ für eine Permutationsmatrix~$P$ mit
+\begin{gather*}
+  P=
+  \begin{pmatrix}
+    0 & 0 & \dots & 0 & 1\\
+    1 & 0 & \dots & 0 & 0\\
+    0 & 1 & \dots & 0 & 0\\
+    \vdots & \vdots& \ddots& \vdots& \vdots\\
+    0 & 0 & \dots & 1 & 0
+  \end{pmatrix}
+\end{gather*}
+
+Neben der obigen allgemein bekannten Permutationsmatrix werden bei der
+Konstruktion von \HMen{} verallgemeinerte Permutationsmatrizen
+verwendet.
+\begin{defini}[Verallgemeinerte Permutationsmatrix]
+  Sei $n\in\N$. Eine
+  \highl[Permutationsmatrix|verallgemeinerte]{verallgemeinerte
+    Permutationsmatrix} ist eine $n\times n$ Matrix~$P$ über einem
+  assoziativen Ring mit Einselement. In jeder Zeile und Spalte ist
+  genau ein Element ungleich $0$.
+\end{defini}
+Falls die Nicht"=Null"=Einträge gleich $1$ sind, ergibt sich wieder
+die bekannte Permutationsmatrix.
+
+
+\chapter{Konstruktion von \HMen}
 \label{chap:konstr}
 
-\chapter{Anwendungen von Hadamard-Matrizen}
+Eine Annäherung an das Problem von \Hadamard{} erfolgt über die
+explizite Konstruktion von \HMen{}. So zeigte bereits
+\Sylvester{}~\cite{Sylvester1867}, dass sich für $n\geq1$
+\HMen{} vom Grad~$2^{n}$ konstruieren lassen. Nachdem
+\Hadamard{} in seiner Arbeit einige Spezialfälle zeigen konnte, gelang
+es \Paley{} zwei neue allgemeine Konstruktionen zu finden. Seither
+wurden die Verfahren weiter verfeinert. Allerdings verbleiben auch in
+diesen Verfahren offene Fälle. Die Ordnung~$668$ ist die derzeit
+kleinste Zahl für die keine \HM{} gefunden werden konnte.
+
+Im folgenden soll ein Überblick über existierende Verfahren gegeben
+werden. Dabei werden Verfahren in deren historischem Erscheinen
+angegeben. Das Ende des Kapitels versucht eine Kategorisierung der
+Verfahren einzuführen. Diese richtet sich nach einem Vorschlag von
+\Seberry{} und \Yamada{}. Diese schlugen vor, folgende Einteilung
+vorzunehmen~\cite{zbMATH02128113}.
+\begin{itemize}
+\item Multiplikationstheoreme (Multiplication theorems)
+\item Direkte Konstruktionen (Direct constructions)
+\item Plug-In-Methoden (\enquote{Plug-in} methods)
+\end{itemize}
+Die Multiplikationstheoreme nutzen den Fakt, dass das
+(Kronecker-)Produkt zweier \HMen{} wieder eine
+\HM{} ist. \Sylvester{} nutzte dies in seiner
+Konstruktion für Matrizen des Grads~$2^{k}$ für
+$k\in\N$.
+
+Die Konstruktionsverfahren nach \Paley{} sind direkte
+Konstruktionen.\todo{ein wenig mehr zu Paley}
+
+\Williamson{} verwendete verschiedene Matrizen und \enquote{steckte}
+diese zu \HMen{} zusammen. Daher spricht man von
+Plug"=In"=Methoden.
+
+\section{Konstruktion nach \Sylvester}
+\label{sec:konst-sylvester}
+
+\Sylvester{} präsentierte als Erster ein direktes
+Konstruktionsverfahren. Hierzu nutzte er das Kronecker"=Produkt
+(\autoref{sec:kronecker-produkt}) um \HMen{} vom
+Grad~$2^{n}$ für $n\geq 1$ zu konstruieren. Die Matrix~$H_{1}$ ist
+definiert wie in \autoref{bsp:hm}.
+\begin{defini}
+  \HMen{} nach \Sylvester{} sind Matrizen der Form
+  $\{H_{i}=\otimes^{i} H_{1}\colon i\geq1\}$. Dabei bezeichnet
+  $\otimes^{i}$ die $i$-fache Hintereinanderausführung des
+  Kronecker-Produkts.
+\end{defini}
+
+In der Literatur werden diese Matrizen mit $S(k)$ für $k\in\N$
+bezeichnet. Dabei ist $S(1)= H_{1}$ aus \autoref{bsp:hm}.
+\begin{bsp}
+  \begin{align*}
+    S(2) &= \otimes^{2}H_{1}= H_{1}\otimes H_{1}=     \begin{pmatrix}
+      1 & 1\\
+      1 & -1
+    \end{pmatrix} \otimes
+    \begin{pmatrix}
+      1 & 1\\
+      1 & -1
+    \end{pmatrix}\\
+    &=
+    \begin{pmatrix}
+      1    \begin{pmatrix}
+      1 & 1\\
+      1 & -1
+    \end{pmatrix} & 1    \begin{pmatrix}
+      1 & 1\\
+      1 & -1
+    \end{pmatrix} \\
+      1    \begin{pmatrix}
+      1 & 1\\
+      1 & -1
+    \end{pmatrix}  & -1    \begin{pmatrix}
+      1 & 1\\
+      1 & -1
+    \end{pmatrix}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      1 & 1& 1 & 1\\
+      1 & -1 & 1& -1\\
+      1 & 1 & -1 & -1\\
+      1 & -1 & -1 & 1
+    \end{pmatrix}
+  \end{align*}
+\end{bsp}
+
+In \autoref{sec:permanente} wurde der Begriff der Permanente
+eingeführt. Dabei stellt sich die Frage, ob für eine \HM~$H$ vom
+Grad~$n$, gilt $\perm(H)=0$ für $n>2$. \Wanless{} evaluierte dies für
+alle Fälle bis $n<32$~\cite{zbMATH02206586}. Der folgende Satz gibt
+eine hinreichende Bedingung. Damit kann im Fall des
+Konstruktionsverfahrens nach \Sylvester{} eine negative Antwort
+gegeben werden~\cite{2013arXiv1311.2427A}.
+\begin{satz}
+  Sei $H_{n}$ eine \HM{} und $I_{n}$ eine Einheitsmatrix vom Grad~$n$
+  für $n\in\N$. Wenn gilt,
+  \begin{gather}\label{eq:permungl}
+    \perm((H_{2^{n}}\otimes I_{2^{m}})(I_{2^{n}}\otimes H_{2^{m}}))
+    \geq \perm(H_{2^{n}}\otimes I_{2^{m}})\perm(I_{2^{n}}\otimes H_{2^{m}})
+  \end{gather}
+  für $m,n\geq2$, dann ist die Permanente einer \HM{} vom Grad~$2^{k}$
+  nach dem Konstruktionsverfahren von \Sylvester{} immer größer als
+  $0$.
+  \begin{proof}
+    Für zwei quadratische Matrizen $A$ und $B$ lässt sich das
+    Kronecker-Produkt auch in der Form $A\otimes B= (A\otimes
+    I_{m})(I_{n}\otimes B)$ schreiben. Weiterhin ist bekannt, dass für
+    das Kronecker-Produkt die Assoziativität gilt. Damit folgt,
+    $H_{2^{m+n}}= H_{2^{m}}\otimes H_{2^{m}}= (H_{2^{m}}\otimes
+    I_{2^{n}})(I_{2^{m}}\otimes H_{n})$.
+
+    Für die Permanente von quadratischen Matrizen $A$ und $B$ ist
+    bekannt, dass gilt, $\perm(I_{n}\otimes A)=(\perm(A))^{n}$ und
+    $\perm(A\otimes B)= \perm(B\otimes A)$. Gelte nun die Bedingung
+    aus \autoref{eq:permungl}, dann ergibt sich folgende Ungleichung:
+    \begin{align*}
+      \perm(H_{2^{m+n}}) &= \perm((H_{2^{m}}\otimes
+      I_{2^{n}})(I_{2^{m}}\otimes H_{2^{n}}))\\
+      &\geq\perm(H_{2^{m}}\otimes I_{2^{n}})\perm(I_{2^{m}}\otimes
+      H_{2^{n}})\\
+      &= (\perm(H_{2^{m}}))^{2^{n}}(\perm(H_{2^{n}}))^{2^{m}}
+    \end{align*}
+    Da bekannt ist, dass $\perm(H_{4})=8$ ergibt sich die Behauptung.
+  \end{proof}
+\end{satz}
+
+Es stellt sich die Frage, ob die \autoref{eq:permungl} immer
+gilt. Der Beweis für die volle Allgemeinheit ist noch offen. \Rualdi{}
+konnte die Behauptung für nicht-negative Matrizen
+zeigen~\cite{zbMATH03229568}.
+
+\section{Konstruktionen nach \Paley}
+\label{sec:konst-payley}
+
+Bevor die Konstruktionen nach \Paley{} eingeführt werden können, ist
+etwas Vorarbeit nötig. Die Begriffe des quadratischen Rests und
+Legendre-Symbol wurden in \autoref{sec:quadr-resid} eingeführt. Mit
+Hilfe dessen kann die Jacobsthal"=Matrix definiert werden.
+\begin{defini}[Jacobsthal-Matrix]
+  Sei $p\in\PP$ und $\F_{p}$ ein endlicher Körper. Eine
+  \highl{Jacobsthal-Matrix} ist eine $p\times p$ Matrix~$Q$. Die
+  Einträge werden beginnend mit $0$ indexiert und errechnen sich
+  durch:
+  \begin{gather*}
+    q_{ij} = \legendre{j-1}{p}
+  \end{gather*}
+\end{defini}
+
+\begin{bsp}
+  Sei $p=5$. Dann sind die quadratischen Reste $1$ und $4$ und die
+  Jacobsthal-Matrix~$Q$ ergibt sich:
+  \begin{gather*}
+    Q=
+    \begin{pmatrix}
+      0 & 1 & -1 & -1 & 1\\
+      1 & 0 & -1 & -1 & -1\\
+      -1 & 1 & 0 & 1 & -1\\
+      -1 & -1 & 1 & 0 & 1\\
+      1 & -1 & -1 & 1 &0
+    \end{pmatrix}
+  \end{gather*}
+\end{bsp}
+
+\subsection{\Paley{} I}
+
+\begin{defini}[Konstruktionsverfahren nach \Paley{} I]
+  Sei $p\in\PP$ mit $p\equiv 3 \pmod{4}$, dann ist die Matrix
+  \begin{gather*}
+    H_{p}=
+    \begin{pmatrix}
+      1 & -1^{T}_{p}\\
+      1_{p} & Q+I_{p}
+    \end{pmatrix}
+  \end{gather*}
+    eine \HM vom Grad $p+1$. Dabei bezeichnet $1_{p}$ einen
+    Spaltenvektor bestehend aus Eins"=Einträgen und $I_{p}$ die
+    Einheitsmatrix.
+\end{defini}
+
+
+\subsection{\Paley{} II}
+
+\begin{defini}[Konstruktionsverfahren nach \Paley{} I]
+  Sei $p\in\PP$ mit $p>$ und $p\equiv 1 \pmod{4}$. Die
+  Jacobsthal-Matrix berechne sich durch $\legendre{g_{i}-g_{j}}{p}$
+  für $g_{i}\in\F_{p}$ und sei $S$ die $(p+1)\times (p+1)$ Matrix
+  gebildet durch
+  \begin{gather*}
+    S=
+    \begin{pmatrix}
+      0 & 1^{T}_{p}\\
+      1_{p} & Q
+    \end{pmatrix}
+  \end{gather*}
+  Dabei bezeichnet $1_{p}$ einen Spaltenvektor bestehend aus
+  Eins"=Einträgen. Dann ergibt sich durch folgende Konstruktion
+  \begin{gather*}
+    H_{p}=
+    \begin{pmatrix}
+      S+I_{p+1} & S-I_{p+1}\\
+      S-I_{p+1} & -S-I_{p+1}
+    \end{pmatrix}
+  \end{gather*}
+  eine \HM{} vom Grad~$2(p+1)$.
+\end{defini}
+
+\todo[inline]{evtl. Beispiel einbauen}
+
+Die Jacobsthal-Matrix~$Q$ ist für den Fall $p\equiv3\pmod{4}$
+schiefsymmetrisch, d.\,h. es gilt $Q^{T}= -Q$, und für den Fall
+$p\equiv1\pmod{4}$ ist sie symmetrisch.
+
+Die \HMen{}, die durch die obigen Konstruktionsverfahren von \Paley{}
+erzeugt wurden, sind üblicherweise nicht äquivalent. Die Äquivalenz
+gilt genau dann, wenn $p=11$ im ersten Konstruktionsverfahren nach
+\Paley{} und $q=5$ im zweiten Konstruktionsverfahren nach
+\Paley{}~\cite[Corollary~4.1]{zbMATH05280728}.
+
+\section{Konstruktion nach \Williamson}
+
+\Williamson{} legte in seiner Arbeit
+\citetitle{zbMATH03095564}~\cite{zbMATH03095564} den Grundstein für
+eine weitere Klasse von Konstruktionsverfahren. Er definierte vier
+Matrizen, die er zu einer \HM{} kombinierte.
+\begin{defini}
+  Seien $A$, $B$, $C$ und $D$ Matrizen vom Grad~$k$ mit Einträgen
+  aus $\{\pm1\}$ mit der Eigenschaft $XY^{T}= YX^{T}$ für
+  $X,Y\in\{A,B,C,D\}$ und $X\neq Y$ sowie
+  $AA^{T}+BB^{T}+CC^{T}+DD^{T}= 4kI_{k}$. Dann ergibt sich mit
+  \begin{gather*}
+    \begin{pmatrix}
+      A & B & C & D\\
+      B & -A & D & -C\\
+      C & -D & -A & B\\
+      D & C & -B & -A
+    \end{pmatrix}
+  \end{gather*}
+  eine \HM{} vom Grad~$4k$.
+\end{defini}
+
+
+
+\section{Konstruktion nach Goethals-Seidel}
+
+Die Arbeit von \Williamson{} erwies sich als sehr reichhaltig. Es
+existieren einige Konstruktionsverfahren, die diese Methoden nutzen
+oder sogar ausbauen. \Goethals{} und \Seidel{} konnten zeigen, dass
+die ursprünglich von \Williamson{} gewählten Bedingungen zu restriktiv
+sind und verallgemeinerten seine Ergebnisse~\cite{zbMATH03249824}.
+
+
+\begin{defini}[Konstruktionsverfahren nach \Goethals-\Seidel{}]
+  Seien $n\in\N$ sowie $A$, $B$, $C$ und $D$ zyklische $n\times n$
+  Matrizen mit der Eigenschaft $AA^{T}+BB^{T}+CC^{T}+DD^{T}=
+  4nI_{n}$. Weiterhin sei $R$ eine $n\times n$ Matrix, die
+  Eins"=Einträge auf der Nebendiagonale besitzt, also $r_{i,j}=1$ für
+  $i+j=n+1$ und sonst $0$ für $i,j=1,\dots,n$. Dann ist die Matrix~$H$
+  eine \HM{}:
+  \begin{gather*}
+    H=
+    \begin{pmatrix}
+      A & BR & CR & DR\\
+      -BR & A & D^{T}R & B^{T}R\\
+      -CR & -D^{T}R & A & B^{T}R\\
+      -DR & D^{T}R & -B^{T}R & A
+    \end{pmatrix}
+  \end{gather*}
+\end{defini}
+
+
+
+\section{Konstruktion nach Kimura}
+
+
+
+\section{Kozyklische \HMen}
+
+\subsection{subsection}
+
+
+
+
+\chapter{Anwendungen von \HMen}
 \label{chap:anwend}
 
 \printbibliography{}
