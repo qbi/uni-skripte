@@ -1,0 +1,76 @@
+% Standard-Präambel.
+% Diese Datei lädt alle Pakete und Optionen, die nicht für mathematische Zwecke gebraucht werden.
+
+% Einige Inspiration habe ich mir hier von Jens Kubiziel et al. (uni-skripte.lug-jena.de) geholt.
+
+% LuaLaTeX gehört die Zukunft.
+\usepackage{luatextra}
+\directlua{dofile("../../Shared/luafunctions.lua")}
+
+% Deutsche Sprache.
+\usepackage{index}
+\usepackage[ngerman]{babel}
+\usepackage[ngerman=ngerman-x-latest]{hyphsubst}
+\usepackage[babel,german=quotes]{csquotes}
+
+% Seitenlayout.
+\usepackage{parskip}
+\usepackage[a4paper,twoside]{geometry}
+
+\usepackage{fancyhdr}
+
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[LE]{\rightmark}
+\fancyhead[RO]{\rightmark}
+\fancyfoot[LE,RO]{\thepage}
+
+\pagestyle{fancy}
+
+% Weitere Pakete.
+%\usepackage{enumerate}
+\usepackage{paralist}
+\usepackage[hidelinks]{hyperref}
+\usepackage{longtable}
+\usepackage{multicol}
+\usepackage{etoolbox}
+\usepackage{url}
+
+\newif\ifnormalLT
+\normalLTtrue
+
+\makeatletter
+\patchcmd {\LT@start}
+          {\vfil \break}
+          {\ifnormalLT \vfil \break \fi}
+          {\typeout{Patching longtable succeeded!}}
+          {\typeout{Patching longtable failed!}\ERROR}
+\patchcmd {\LT@start}
+          {\penalty \z@}
+          {\ifnormalLT \penalty \z@ \fi}
+          {\typeout{Patching longtable succeeded!}}
+          {\typeout{Patching longtable failed!}\ERROR}
+\makeatother
+
+\setdefaultenum{(i)}{}{}{}
+
+% Grafikpakete.
+\usepackage{pgf,tikz}
+\usetikzlibrary{shapes,snakes,trees,positioning,arrows}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{colortbl}
+
+% Hervorhebung für wichtige Begriffe, insbesondere Definitionen.
+% Sofort verknüpft mit dem Index.
+\newcommand*{\highl}[2][]{\textbf{\boldmath{#2}}%
+	\ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+\newcommand*{\nenne}[2][]{#2%
+	\ifthenelse{\equal{#1}{}}{\index{#2}}{\index{#1}}%
+}
+
+\newcommand{\gqq}[1]{\glqq{}#1\grqq{}}
+\newcommand{\gq}[1]{\glq{}#1\grq{}}
+
+\makeindex
